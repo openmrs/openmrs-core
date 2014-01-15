@@ -134,6 +134,8 @@
 				<prop key="/admin/orders/orderDrug.list">orderListByPatient</prop>
 				<prop key="/admin/orders/orderDrug.form">orderDrugForm</prop>
 				<prop key="/admin/orders/order.form">orderForm</prop>
+				<prop key="/admin/orders/orderType.list">orderTypeList</prop>
+				<prop key="/admin/orders/orderType.form">orderTypeForm</prop>
 
 				<prop key="admin/patients/patient.form">patientForm</prop>
 				<prop key="admin/patients/mergePatients.form">mergePatientsForm</prop>
@@ -184,6 +186,7 @@
 				<prop key="admin/concepts/conceptProposal.form">conceptProposalForm</prop>
 				<prop key="admin/concepts/proposeConcept.form">proposeConceptForm</prop>
 				<prop key="admin/concepts/conceptIndex.form">conceptIndexForm</prop>
+				<prop key="admin/concepts/conceptSetDerived.form">conceptSetDerivedForm</prop>
 				<prop key="admin/hl7/hl7Source.list">hl7SourceList</prop>
 				<prop key="admin/hl7/hl7Source.form">hl7SourceForm</prop>
 
@@ -316,8 +319,25 @@
 
 	<!-- ** Order Type ** -->
 	<!--this is the optional method of declaring values in the constructor-->
+	<!--<bean id="orderTypeList" class="org.openmrs.web.controller.OrderTypeListController" />-->
+	<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
 
-	
+	<bean id="orderTypeList" class="org.openmrs.web.controller.order.OrderTypeListController">
+		<property name="commandName"><value>orderTypeList</value></property>
+		<property name="formView"><value>/admin/orders/orderTypeList</value></property>
+		<property name="successView"><value>orderType.list</value></property>
+	</bean>
+
+	<!--  Form Controller for the add/edit order types page -->
+	<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
+		<property name="commandName"><value>orderType</value></property>
+		<property name="validator">
+			<ref bean="orderTypeValidator" />
+		</property>
+		<property name="formView"><value>/admin/orders/orderTypeForm</value></property>
+		<property name="successView"><value>orderType.list</value></property>
+	</bean>
+	<!-- ** /Order Type ** -->
 	<!-- ====== /Order Sector ====== -->
 
 
@@ -660,6 +680,15 @@
 		<property name="successView"><value>conceptIndex.form</value></property>
 	</bean>
 	<!-- ** /ConceptIndex ** -->
+	<!-- ** Concept Set Derived ** -->
+	<bean id="conceptSetDerivedForm"
+		class="org.openmrs.web.controller.concept.ConceptSetDerivedFormController">
+		<property name="commandName"><value>conceptId</value></property>
+		<property name="commandClass"><value>java.lang.String</value></property>
+		<property name="formView"><value>/admin/concepts/conceptSetDerivedForm</value></property>
+		<property name="successView"><value>conceptSetDerived.form</value></property>
+	</bean>
+	<!-- ** /Concept Set Derived ** -->
 	<!--  ** Concept Proposal ** -->
 	<bean id="conceptProposalList"
 		class="org.openmrs.web.controller.concept.ConceptProposalListController">
@@ -735,9 +764,6 @@
 
 	<bean id="fieldForm" class="org.openmrs.web.controller.form.FieldFormController">
 		<property name="commandName"><value>field</value></property>
-		<property name="validator">
-			<ref bean="fieldValidator" />
-		</property>
 		<property name="formView"><value>/admin/forms/fieldForm</value></property>
 		<property name="successView"><value>field.list</value></property>
 	</bean>
@@ -1047,6 +1073,9 @@
 				<prop key="org.openmrs.Concept">
 					org.openmrs.web.taglib.fieldgen.ConceptHandler
 				</prop>
+				<prop key="org.openmrs.OrderType">
+					org.openmrs.web.taglib.fieldgen.OrderTypeHandler
+				</prop>
 				<prop key="org.openmrs.Encounter">
 					org.openmrs.web.taglib.fieldgen.EncounterHandler
 				</prop>
@@ -1063,9 +1092,6 @@
 				</prop>
 				<prop key="org.openmrs.Patient.exitReason">
 					org.openmrs.web.taglib.fieldgen.GenericReasonHandler
-				</prop>
-				<prop key="org.openmrs.Orderable">
-					org.openmrs.web.taglib.fieldgen.OrderableHandler
 				</prop>
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 				<prop key="org.openmrs.util.AttributableDate">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
@@ -1266,7 +1292,6 @@
 	        <list value-type="org.openmrs.api.GlobalPropertyListener">
 	            <bean class="org.openmrs.web.controller.PseudoStaticContentController" />
 	            <bean class="org.openmrs.web.dwr.DWRPatientService" />
-	            <bean class="org.openmrs.web.WebUtil" />
 	        </list>
 	    </property>
 	</bean>

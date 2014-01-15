@@ -216,16 +216,11 @@
 									<c:catch var="exp">
 										<spring:bind path="${token.codeName}">
 											<c:if test="${token.codeName == 'endDate'}"><input type="hidden" name="_${status.expression}"></c:if>
-											<c:set var="elementValue" value="${status.value}" />
-											<c:if test="${model.isNew && empty elementValue && not empty model.layoutTemplate.elementDefaults && not empty model.layoutTemplate.elementDefaults[token.codeName]}">
-												<c:set var="elementValue" value="${model.layoutTemplate.elementDefaults[token.codeName]}" />
-											</c:if>
-											<input id="${status.expression}" type="text" name="${status.expression}" value="${elementValue}" size="${token.displaySize}" 
+											<input id="${status.expression}" type="text" name="${status.expression}" value="<c:out value="${status.value}"/>" size="${token.displaySize}" 
                                             	<c:if test="${token.codeName == 'startDate' || token.codeName == 'endDate'}">onfocus='showCalendar(this,60)'</c:if> 
                                             	<c:if test="${token.codeName == 'endDate' && status.value == ''}">disabled="disabled" </c:if>
                                                 onkeyup="<c:if test='${model.layoutTemplate.elementRegex[token.codeName] !="" }'>validateFormat(this, '${model.layoutTemplate.elementRegex[token.codeName]}','${token.codeName}' )</c:if>"
                                             />
-                                            <c:remove var="elementValue" scope="page" />
                                             <c:if test="${token.codeName == 'endDate'}">
                                             <script type="text/javascript">updateActiveCheckbox('${status.expression}', ${status.value == ''});</script>
                                             </c:if>
@@ -265,7 +260,7 @@
 									<tr>
 										<td><openmrs:message code="general.createdBy" /></td>
 										<td colspan="4">
-											<c:out value="${status.value.personName}" /> -
+											${status.value.personName} -
 											<openmrs:formatDate path="dateCreated" type="long" />
 										</td>
 									</tr>
@@ -276,7 +271,7 @@
 									<tr>
 										<td><openmrs:message code="general.changedBy" /></td>
 										<td colspan="4">
-											<c:out value="${status.value.personName}" /> -
+											${status.value.personName} -
 											<openmrs:formatDate path="dateChanged" type="long" />
 										</td>
 									</tr>
@@ -290,9 +285,9 @@
 											<input type="hidden" name="_${status.expression}"/>
 											<input type="checkbox" name="${status.expression}" 
 												   <c:if test="${status.value == true}">checked="checked"</c:if> 
+										</spring:bind>
 												   onClick="toggleLayer('<spring:bind path="personAddressId">voidReasonAddressRow-${status.value}</spring:bind>'); if (voidedBoxClicked) voidedBoxClicked(this); "
 											/>
-										</spring:bind>
 									</td>
 								</tr>
 								<tr id="<spring:bind path="personAddressId">voidReasonAddressRow-${status.value}</spring:bind>"
@@ -310,7 +305,7 @@
 										<tr>
 											<td><openmrs:message code="general.voidedBy" /></td>
 											<td colspan="4">
-												<c:out value="${status.value.personName}" /> -
+												${status.value.personName} -
 												<openmrs:formatDate path="dateVoided" type="long" />
 											</td>
 										</tr>

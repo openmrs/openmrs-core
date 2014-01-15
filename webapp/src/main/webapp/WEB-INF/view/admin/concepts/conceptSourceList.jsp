@@ -18,6 +18,7 @@
 	<table>
 		<tr>
 			<th> </th>
+			<th> </th>
 			<th> <openmrs:message code="general.name"/> </th>
 			<th> <openmrs:message code="ConceptSource.hl7Code"/> </th>
 			<th> <openmrs:message code="general.description"/> </th>
@@ -25,15 +26,9 @@
 		<c:forEach var="conceptSource" items="${conceptSourceList}">
 			<tr <c:if test="${conceptSource == implIdSource}">class="sourceId"</c:if>> 
 				<td valign="top"><c:if test="${conceptSource == implIdSource}"><c:set var="implidfound" value="true"/>**</c:if></td>
+				<td valign="top"><input type="checkbox" name="conceptSourceId" value="${conceptSource.conceptSourceId}"></td>
 				<td valign="top"><a href="conceptSource.form?conceptSourceId=${conceptSource.conceptSourceId}">
-					  <c:choose>
-					  <c:when test="${conceptSource.retired == true}">
-					 	 <del> ${conceptSource.name}</del>
-					  </c:when>
-					  <c:otherwise>
-					 	 ${conceptSource.name}
-					  </c:otherwise>
-					  </c:choose>
+					   ${conceptSource.name}
 					</a>
 				</td>
 				<td valign="top">${conceptSource.hl7Code}</td>
@@ -41,6 +36,12 @@
 			</tr>
 		</c:forEach>
 	</table>
+	<c:if test="${fn:length(conceptSourceList) > 0}">
+		<br/>
+		<openmrs:message code="general.retiredReason"/>
+		<input type="text" name="retireReason" /><br/>
+		<input type="submit" value="<openmrs:message code="ConceptSource.retire"/>" name="action">
+	</c:if>
 </form>
 
 <c:if test="${implidfound == 'true'}">

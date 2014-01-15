@@ -27,9 +27,9 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
-
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;

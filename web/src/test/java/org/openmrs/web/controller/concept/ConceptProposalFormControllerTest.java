@@ -44,10 +44,9 @@ public class ConceptProposalFormControllerTest extends BaseWebContextSensitiveTe
 	 * @see {@link ConceptProposalFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
 	 */
 	@Test
-	@Verifies(value = "should create a single unique synonym and obs for all similar proposals", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
-	public void onSubmit_shouldCreateASingleUniqueSynonymAndObsForAllSimilarProposals() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-proposals.xml");
-		
+	@Verifies(value = "should create a single unique synonym for all similar proposals", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldCreateASingleUniqueSynonymForAllSimilarProposals() throws Exception {
+		executeDataSet("org/openmrs/web/include/ConceptProposalFormControllerTest.xml");
 		ConceptService cs = Context.getConceptService();
 		ObsService os = Context.getObsService();
 		final Integer conceptproposalId = 5;

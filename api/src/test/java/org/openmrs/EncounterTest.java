@@ -17,10 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -32,11 +29,8 @@ import java.util.Set;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextMockTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
@@ -44,13 +38,7 @@ import org.openmrs.test.Verifies;
  * 
  * @see Encounter
  */
-public class EncounterTest extends BaseContextMockTest {
-	
-	@Mock
-	EncounterService encounterService;
-	
-	@Mock
-	ProviderService providerService;
+public class EncounterTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link Encounter#toString()}
@@ -813,8 +801,8 @@ public class EncounterTest extends BaseContextMockTest {
 	 * @see {@link Encounter#addOrder(Order)}
 	 */
 	@Test
-	@Verifies(value = "should add order to non null initial order set", method = "addOrder(Order)")
-	public void addOrder_shouldAddOrderToNonNullInitialOrderSet() throws Exception {
+	@Verifies(value = "should add order to non nul initial order set", method = "addOrder(Order)")
+	public void addOrder_shouldAddOrderToNonNulInitialOrderSet() throws Exception {
 		Encounter encounter = new Encounter();
 		Set<Order> orderSet = new HashSet<Order>();
 		orderSet.add(new Order(1));
@@ -823,19 +811,6 @@ public class EncounterTest extends BaseContextMockTest {
 		
 		encounter.addOrder(new Order(2));
 		assertEquals(2, encounter.getOrders().size());
-	}
-	
-	/**
-	 * @see {@link Encounter#getOrders()}
-	 */
-	@Test
-	@Verifies(value = "should add order to encounter when adding order to set returned from getOrders", method = "getOrders()")
-	public void addOrders_shouldAddOrderToEncounterWhenAddingOrderToSetReturnedFromGetOrders() throws Exception {
-		Encounter encounter = new Encounter();
-		Order order = new Order();
-		encounter.getOrders().add(order);
-		
-		assertEquals(1, encounter.getOrders().size());
 	}
 	
 	/**
@@ -1223,24 +1198,19 @@ public class EncounterTest extends BaseContextMockTest {
 	public void setProvider_shouldSetExistingProviderForUnknownRole() throws Exception {
 		//given
 		Encounter encounter = new Encounter();
-		EncounterRole unknownRole = new EncounterRole();
-		Person person = new Person();
-		Provider provider = new Provider();
-		provider.setPerson(person);
-		List<Provider> providers = new ArrayList<Provider>();
-		providers.add(provider);
 		
-		when(encounterService.getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID)).thenReturn(unknownRole);
+		Person person = Context.getPersonService().getPerson(1);
+		Collection<Provider> providers = Context.getProviderService().getProvidersByPerson(person);
 		
-		when(providerService.getProvidersByPerson(person)).thenReturn(providers);
+		EncounterRole role = Context.getEncounterService().getEncounterRoleByUuid(EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
+		Assert.assertNotNull("Unknown role", role);
 		
 		//when
 		encounter.setProvider(person);
 		
 		//then
-		assertEquals(1, encounter.getProvidersByRoles().size());
-		assertEquals(1, encounter.getProvidersByRole(unknownRole).size());
-		assertEquals(provider, encounter.getProvidersByRole(unknownRole).iterator().next());
+		Assert.assertEquals(1, encounter.getProvidersByRole(role).size());
+		Assert.assertTrue(encounter.getProvidersByRole(role).contains(providers.iterator().next()));
 	}
 	
 	/**
@@ -1331,4 +1301,5 @@ public class EncounterTest extends BaseContextMockTest {
 		//should contain the voided provider
 		Assert.assertTrue(encounter.getProvidersByRole(role, true).contains(provider));
 	}
+	
 }

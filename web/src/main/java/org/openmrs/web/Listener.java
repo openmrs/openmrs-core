@@ -13,42 +13,6 @@
  */
 package org.openmrs.web;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.LogManager;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.MandatoryModuleException;
-import org.openmrs.module.Module;
-import org.openmrs.module.ModuleFactory;
-import org.openmrs.module.ModuleMustStartException;
-import org.openmrs.module.OpenmrsCoreModuleException;
-import org.openmrs.module.web.WebModuleUtil;
-import org.openmrs.scheduler.SchedulerUtil;
-import org.openmrs.util.DatabaseUpdateException;
-import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.MemoryLeakUtil;
-import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.filter.initialization.InitializationFilter;
-import org.openmrs.web.filter.update.UpdateFilter;
-import org.springframework.context.ApplicationContext;
-import org.springframework.util.StringUtils;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -64,14 +28,47 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.LogManager;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.MandatoryModuleException;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.ModuleMustStartException;
+import org.openmrs.module.OpenmrsCoreModuleException;
+import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.scheduler.SchedulerUtil;
+import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.InputRequiredException;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.filter.initialization.InitializationFilter;
+import org.openmrs.web.filter.update.UpdateFilter;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.ContextLoaderListener;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 /**
  * Our Listener class performs the basic starting functions for our webapp. Basic needs for starting
  * the API: 1) Get the runtime properties 2) Start Spring 3) Start the OpenMRS APi (via
  * Context.startup) Basic startup needs specific to the web layer: 1) Do the web startup of the
  * modules 2) Copy the custom look/images/messages over into the web layer
  */
-public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
-
+public final class Listener extends ContextLoaderListener {
+	
 	private static boolean runtimePropertiesFound = false;
 	
 	private static Throwable errorAtStartup = null;
@@ -147,18 +144,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// found but before the database update is done
 				copyCustomizationIntoWebapp(servletContext, props);
 				
-				//super.contextInitialized(event);
-				// also see commented out line in contextDestroyed
-				
-				/** This logic is from ContextLoader.initWebApplicationContext.
-				 * Copied here instead of calling that so that the context is not cached
-				 * and hence not garbage collected
-				 */
-				ApplicationContext parent = loadParentContext(servletContext);
-				WebApplicationContext context = createWebApplicationContext(servletContext, parent);
-				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
-				/** */
-				
+				super.contextInitialized(event);
 				WebDaemon.startOpenmrs(event.getServletContext());
 			}
 			
@@ -507,19 +493,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			}
 		}
 		finally {
-			if ("true".equalsIgnoreCase(System.getProperty("FUNCTIONAL_TEST_MODE"))) {
-				//Delete the temporary file created for functional testing and shutdown the mysql daemon
-				String filename = WebConstants.WEBAPP_NAME + "-test-runtime.properties";
-				File file = new File(OpenmrsUtil.getApplicationDataDirectory(), filename);
-				System.out.println(filename + " delete=" + file.delete());
-				//new com.mysql.management.MysqldResource(new File("../openmrs/target/database")).shutdown();
-			}
 			// remove the user context that we set earlier
 			Context.closeSession();
 		}
 		
-		// commented out because we are not init'ing it in the contextInitialization anymore
-		// super.contextDestroyed(event);
+		super.contextDestroyed(event);
 		
 		try {
 			for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {
@@ -538,9 +516,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
 			e.printStackTrace();
 		}
-		
-		MemoryLeakUtil.shutdownMysqlCancellationTimer();
-		MemoryLeakUtil.shutdownKeepAliveTimer();
 		
 		OpenmrsClassLoader.onShutdown();
 		

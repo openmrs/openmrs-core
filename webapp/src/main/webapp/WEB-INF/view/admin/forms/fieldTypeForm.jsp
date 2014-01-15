@@ -7,14 +7,11 @@
 
 <h2><openmrs:message code="FieldType.edit" /></h2>
 
-<form method="post" onSubmit="return validateForm()">
+<form method="post">
 	<table>
 		<tr>
 			<td><openmrs:message code="general.name" /></td>
-			<td>
-				<input type="text" name="name" id="fieldTypeName" value="${fieldType.name}" size="35" onKeyUp="hideError('nameError');"/>
-				<span class="error" id="nameError"><openmrs:message code="error.name"/></span>
-			</td>
+			<td><input type="text" name="name" value="${fieldType.name}" size="35" /></td>
 		</tr>
 		<tr>
 			<td><openmrs:message code="FieldType.isSet" /></td>
@@ -29,7 +26,7 @@
 			<tr>
 				<td><openmrs:message code="general.createdBy" /></td>
 				<td>
-					<c:out value="${orderType.creator.personName}" /> -
+					${orderType.creator.personName} -
 					<openmrs:formatDate date="${orderType.dateCreated}" type="long" />
 				</td>
 			</tr>
@@ -38,18 +35,5 @@
 	<br />
 	<input type="submit" value="<openmrs:message code="FieldType.save"/>">
 </form>
-
-		<script type="text/javascript"><!--
-			hideError("nameError");
-			function validateForm() {
-				var name = document.getElementById("fieldTypeName");
-				var result = true;
-				if (name.value.trim() == "") {
-					showError("nameError"); 
-					result = false;
-				}
-				return result;
-			}
-		--></script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -17,12 +17,20 @@
 	
 </script>
 
+<script type="text/javascript">
+   function forceMaxLength(object, maxLength) {
+      if( object.value.length >= maxLength) {
+         object.value = object.value.substring(0, maxLength); 
+      }
+   }
+</script>
+
 <h2><openmrs:message code="VisitType.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.visits.visitForm.belowTitle" type="html" parameters="visitTypeId=${visitType.visitTypeId}" />
 
 <spring:hasBindErrors name="visitType">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">

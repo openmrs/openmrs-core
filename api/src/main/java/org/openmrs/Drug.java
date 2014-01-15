@@ -13,24 +13,16 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Locale;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Drug
  */
-public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, Orderable<DrugOrder> {
+public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 285L;
-	
-	private static final String IDENTIFIER_PREFIX = "org.openmrs.Drug:";
-	
-	private static final Log log = LogFactory.getLog(Drug.class);
 	
 	// Fields
 	
@@ -52,13 +44,10 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	private Concept concept;
 	
-	private Collection<DrugIngredient> ingredients;
-	
 	// Constructors
 	
 	/** default constructor */
 	public Drug() {
-		ingredients = new LinkedHashSet<DrugIngredient>();
 	}
 	
 	/** constructor with id */
@@ -87,8 +76,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	}
 	
 	/**
-	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug:
-	 * DRUGNAME)
+	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug: DRUGNAME)
 	 * 
 	 * @param locale
 	 * @return full drug name (with concept name appended)
@@ -217,23 +205,6 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	}
 	
 	/**
-	 * @return Returns the ingredients
-	 * @since 1.10
-	 */
-	public Collection<DrugIngredient> getIngredients() {
-		return ingredients;
-	}
-	
-	/**
-	 * @param ingredients
-	 *            The ingredients to set
-	 * @since 1.10
-	 */
-	public void setIngredients(Collection<DrugIngredient> ingredients) {
-		this.ingredients = ingredients;
-	}
-	
-	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -248,42 +219,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 */
 	public void setId(Integer id) {
 		setDrugId(id);
-	}
-	
-	/**
-	 * @see org.openmrs.Orderable#getUniqueIdentifier()
-	 */
-	@Override
-	public String getUniqueIdentifier() {
-		return "org.openmrs.Drug:" + drugId;
-	}
-	
-	/**
-	 * Gets a numeric identifier from a string identifier.
-	 * 
-	 * @param identifier
-	 *            the string identifier.
-	 * @return the numeric identifier if it is a valid one, else null
-	 * @should return numeric identifier of valid string identifier
-	 * @should return null for an invalid string identifier
-	 * @should fail if null or empty passed in
-	 * @since 1.10
-	 */
-	public static Integer getNumericIdentifier(String identifier) {
-		if (StringUtils.isBlank(identifier))
-			throw new IllegalArgumentException("identifier cannot be null");
 		
-		if (!identifier.startsWith(IDENTIFIER_PREFIX))
-			return null;
-		
-		try {
-			return Integer.valueOf(identifier.substring(IDENTIFIER_PREFIX.length()));
-		}
-		catch (NumberFormatException ex) {
-			log.error("invalid unique identifier for Drug:" + identifier, ex);
-		}
-		
-		return null;
 	}
 	
 	/**

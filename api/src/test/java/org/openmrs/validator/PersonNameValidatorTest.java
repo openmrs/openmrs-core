@@ -16,7 +16,6 @@ package org.openmrs.validator;
 import junit.framework.Assert;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonName;
@@ -31,15 +30,6 @@ import org.springframework.validation.Errors;
  * Tests methods on the {@link PersonNameValidator} class.
  */
 public class PersonNameValidatorTest extends BaseContextSensitiveTest {
-	
-	/**
-	 * Set the GP to a regex used during validation
-	 */
-	@Before
-	public void createNameRegex() {
-		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, "^[a-zA-Z \\-]+$"));
-	}
 	
 	/**
 	 * @see {@link PatientNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
@@ -203,7 +193,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.prefix is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNamePrefixIsExactlyMaxLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setPrefix("12345678901234567890123456789012345678901234567890"); // exactly 50 characters long
+		personName.setPrefix("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		Errors errors = new BindException(personName, "prefix");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("prefix"));
@@ -243,7 +233,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.givenName is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameGivenNameIsExactlyMaxLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setGivenName("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"); // exactly 50 characters long
+		personName.setGivenName("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		Errors errors = new BindException(personName, "givenName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("givenName"));
@@ -256,7 +246,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.givenName is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameGivenNameIsLessThanMaxFieldLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setGivenName("abcdefghij");
+		personName.setGivenName("1234567890");
 		Errors errors = new BindException(personName, "givenName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("givenName"));
@@ -283,7 +273,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.middleName is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameMiddleNameIsExactlyMaxLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setMiddleName("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"); // exactly 50 characters long
+		personName.setMiddleName("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		Errors errors = new BindException(personName, "middleName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("middleName"));
@@ -296,7 +286,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.middleName is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameMiddleNameIsLessThanMaxFieldLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setMiddleName("abcdefghij");
+		personName.setMiddleName("1234567890");
 		Errors errors = new BindException(personName, "middleName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("middleName"));
@@ -323,7 +313,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.familyNamePrefix is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameFamilyNamePrefixIsExactlyMaxLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setFamilyNamePrefix("12345678901234567890123456789012345678901234567890"); // exactly 50 characters long
+		personName.setFamilyNamePrefix("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		Errors errors = new BindException(personName, "familyNamePrefix");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("familyNamePrefix"));
@@ -363,7 +353,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.familyName is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsExactlyMaxLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setFamilyName("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"); // exactly 50 characters long
+		personName.setFamilyName("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		Errors errors = new BindException(personName, "familyName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("familyName"));
@@ -376,7 +366,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.familyName is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsLessThanMaxFieldLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setFamilyName("abcdefghij");
+		personName.setFamilyName("1234567890");
 		Errors errors = new BindException(personName, "familyName");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("familyName"));
@@ -403,7 +393,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.familyName2 is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameFamilyName2IsExactlyMaxLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setFamilyName2("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"); // exactly 50 characters long
+		personName.setFamilyName2("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		Errors errors = new BindException(personName, "familyName2");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("familyName2"));
@@ -416,7 +406,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.familyName2 is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameFamilyName2IsLessThanMaxFieldLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setFamilyName2("abcdefghij");
+		personName.setFamilyName2("1234567890");
 		Errors errors = new BindException(personName, "familyName2");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("familyName2"));
@@ -443,7 +433,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.familyNameSuffix is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameFamilyNameSuffixIsExactlyMaxLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setFamilyNameSuffix("12345678901234567890123456789012345678901234567890"); // exactly 50 characters long
+		personName.setFamilyNameSuffix("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		Errors errors = new BindException(personName, "familyNameSuffix");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("familyNameSuffix"));
@@ -483,7 +473,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if PersonName.degree is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldPassValidationIfPersonNameDegreeIsExactlyMaxLength() throws Exception {
 		PersonName personName = new PersonName();
-		personName.setDegree("12345678901234567890123456789012345678901234567890"); // exactly 50 characters long
+		personName.setDegree("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		Errors errors = new BindException(personName, "degree");
 		new PersonNameValidator().validatePersonName(personName, errors, false, true);
 		Assert.assertFalse(errors.hasFieldErrors("degree"));
@@ -503,161 +493,6 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if PersonName.givenName is invalid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldFailValidationIfPersonNameGivenNameIsInvalid() throws Exception {
-		PersonName personName = new PersonName();
-		personName.setGivenName("34dfgd");
-		Errors errors = new BindException(personName, "givenName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertTrue(errors.hasFieldErrors("givenName"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should pass validation if PersonName.givenName is valid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldPassValidationIfPersonNameGivenNameIsValid() throws Exception {
-		PersonName personName = new PersonName();
-		personName.setGivenName("alex");
-		Errors errors = new BindException(personName, "givenName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertFalse(errors.hasFieldErrors("givenName"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if PersonName.middleName is invalid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldFailValidationIfPersonNameMiddleNameIsInvalid() throws Exception {
-		PersonName personName = new PersonName();
-		personName.setMiddleName("34dfgd");
-		Errors errors = new BindException(personName, "middleName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertTrue(errors.hasFieldErrors("middleName"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should pass validation if PersonName.middleName is valid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldPassValidationIfPersonNameMiddleNameIsValid() throws Exception {
-		PersonName personName = new PersonName();
-		personName.setMiddleName("de");
-		Errors errors = new BindException(personName, "middleName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertFalse(errors.hasFieldErrors("middleName"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if PersonName.familyName is invalid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldFailValidationIfPersonNameFamilyNameIsInvalid() throws Exception {
-		PersonName personName = new PersonName();
-		personName.setFamilyName("34dfgd");
-		Errors errors = new BindException(personName, "familyName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertTrue(errors.hasFieldErrors("familyName"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should pass validation if PersonName.familyName is valid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldPassValidationIfPersonNameFamilyNameIsValid() throws Exception {
-		PersonName personName = new PersonName();
-		personName.setFamilyName("souza");
-		Errors errors = new BindException(personName, "familyName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if PersonName.familyName2 is invalid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldFailValidationIfPersonNameFamilyName2IsInvalid() throws Exception {
-		PersonName personName = new PersonName();
-		personName.setFamilyName2("34dfgd");
-		Errors errors = new BindException(personName, "familyName2");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertTrue(errors.hasFieldErrors("familyName2"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should pass validation if PersonName.familyName2 is valid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldPassValidationIfPersonNameFamilyName2IsValid() throws Exception {
-		PersonName personName = new PersonName();
-		personName.setFamilyName2("souza-");
-		Errors errors = new BindException(personName, "familyName2");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertFalse(errors.hasFieldErrors("familyName2"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should pass validation if regex string is null", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldSkipRegexValidationIfValidationStringIsNull() throws Exception {
-		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, null));
-		PersonName personName = new PersonName();
-		personName.setFamilyName("asd123");
-		Errors errors = new BindException(personName, "familyName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertFalse(errors.hasFieldErrors("familyName"));
-	}
-	
-	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
-	 */
-	@Test
-	@Verifies(value = "should pass validation if regex string is empty", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
-	public void validate_shouldSkipRegexValidationIfValidationStringIsEmpty() throws Exception {
-		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, ""));
-		PersonName personName = new PersonName();
-		personName.setGivenName("123asd");
-		Errors errors = new BindException(personName, "givenName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertFalse(errors.hasFieldErrors("givenName"));
-	}
-	
-	/**
-	 * @see {@link PersonNameValidator#validatePersonName(PersonName,Errors,null,null)}
-	 */
-	@Test
-	@Verifies(value = "should not validate against regex for blank names", method = "validatePersonName(PersonName,Errors,null,null)")
-	public void validatePersonName_shouldNotValidateAgainstRegexForBlankNames() throws Exception {
-		String regex = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
-		//the regex string should be set for the test to be valid
-		Assert.assertFalse(StringUtils.isBlank(regex));
-		
-		PersonName personName = new PersonName();
-		personName.setGivenName("given");
-		personName.setFamilyName("family");
-		personName.setMiddleName("");
-		personName.setFamilyName2("");
-		Errors errors = new BindException(personName, "personName");
-		new PersonNameValidator().validatePersonName(personName, errors, false, true);
-		Assert.assertFalse(errors.hasErrors());
-	}
-	
-	/**
 	 * @see PersonNameValidator#validate(Object,Errors)
 	 * @verifies pass validation if name is invalid but voided
 	 */
@@ -665,9 +500,9 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfNameIsInvalidButVoided() throws Exception {
 		PersonName personName = new PersonName();
 		personName.setVoided(true);
-		personName.setFamilyName2("34dfgd"); //invalid familyName2
+		personName.setFamilyNameSuffix("1234567890123456789012345678901234567890123456789"); // exactly 50 characters long
 		
-		Errors errors = new BindException(personName, "familyName2");
+		Errors errors = new BindException(personName, "familyNameSuffix");
 		new PersonNameValidator().validate(personName, errors);
 		
 		Assert.assertFalse(errors.hasErrors());

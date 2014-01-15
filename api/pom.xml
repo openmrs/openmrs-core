@@ -2,7 +2,7 @@
    <parent>
       <groupId>org.openmrs</groupId>
       <artifactId>openmrs</artifactId>
-      <version>1.11.0-SNAPSHOT</version>
+      <version>1.9.8-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.api</groupId>
@@ -31,10 +31,6 @@
       <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
-      </dependency>
-      <dependency>
-		<groupId>com.google.guava</groupId>
-		<artifactId>guava</artifactId>
       </dependency>
       <dependency>
          <groupId>org.azeckoski</groupId>
@@ -94,15 +90,7 @@
       </dependency>
       <dependency>
          <groupId>ca.uhn.hapi</groupId>
-         <artifactId>hapi-base</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>ca.uhn.hapi</groupId>
-         <artifactId>hapi-structures-v25</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>ca.uhn.hapi</groupId>
-         <artifactId>hapi-structures-v26</artifactId>
+         <artifactId>hapi</artifactId>
       </dependency>
       <dependency>
          <groupId>org.openmrs.simpleframework</groupId>
@@ -207,16 +195,8 @@
            <artifactId>validation-api</artifactId>
        </dependency>
        <dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-	   </dependency>
-       <dependency>
-           <groupId>org.codehaus.jackson</groupId>
-           <artifactId>jackson-core-asl</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>org.codehaus.jackson</groupId>
-           <artifactId>jackson-mapper-asl</artifactId>
+           <groupId>org.hibernate</groupId>
+           <artifactId>hibernate-validator</artifactId>
        </dependency>
    </dependencies>
    <build>
@@ -293,16 +273,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
-			<id>performance-only</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.openmrs.contrib</groupId>
-					<artifactId>mvpconceptdictionary</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
 		</profile>
 	</profiles>
 </project>

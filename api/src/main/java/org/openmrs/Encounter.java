@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.VoidHandler;
@@ -62,7 +61,6 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Set<Order> orders;
 	
-	@AllowDirectAccess
 	private Set<Obs> obs;
 	
 	private Visit visit;
@@ -335,7 +333,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public Set<Order> getOrders() {
 		if (orders == null) {
-			orders = new LinkedHashSet<Order>();
+			return new HashSet<Order>();
 		}
 		return orders;
 	}
@@ -354,13 +352,14 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should add order with null values
 	 * @should not fail with null obs passed to add order
 	 * @should set encounter attribute
-	 * @should add order to non null initial order set
-	 * @should add order to encounter when adding order to set returned from getOrders
+	 * @should add order to non nul initial order set
 	 */
 	public void addOrder(Order order) {
+		if (orders == null)
+			orders = new HashSet<Order>();
 		if (order != null) {
 			order.setEncounter(this);
-			getOrders().add(order);
+			orders.add(order);
 		}
 	}
 	

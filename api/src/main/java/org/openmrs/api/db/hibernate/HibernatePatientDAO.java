@@ -13,6 +13,26 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.PatientDAO;
+
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,25 +43,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientIdentifierType.UniquenessBehavior;
-import org.openmrs.Person;
-import org.openmrs.PersonName;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.PatientDAO;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -96,9 +97,9 @@ public class HibernatePatientDAO implements PatientDAO {
 			// things up
 			insertPatientStubIfNeeded(patient);
 			
-			// Note: A merge might be necessary here because hibernate thinks that Patients
-			// and Persons are the same objects.  So it sees a Person object in the
-			// cache and claims it is a duplicate of this Patient object.
+			// TODO: A merge is necessary here because hibernate thinks that Patients and
+			// 		Persons are the same objects.  So it sees a Person object in the
+			//      cache and claims it is a duplicate of this Patient object.
 			//patient = (Patient) sessionFactory.getCurrentSession().merge(patient);
 			sessionFactory.getCurrentSession().saveOrUpdate(patient);
 			
@@ -189,8 +190,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 *
-	 * @should not search on voided patients
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
 	 *      Integer, boolean)
 	 */
@@ -228,8 +227,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		
-		if (!includeVoided)
-			criteria.add(Restrictions.eq("voided", false));
+		if (includeVoided == false)
+			criteria.add(Expression.eq("voided", false));
 		
 		return criteria.list();
 	}
@@ -243,7 +242,10 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.Boolean)
+	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifiers(java.lang.String, java.util.List,
+	 *      java.util.List, java.util.List, java.lang.Boolean)
+	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
+	 *      java.util.List, java.util.List, java.lang.Boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
@@ -254,27 +256,30 @@ public class HibernatePatientDAO implements PatientDAO {
 		// join with the patient table to prevent patient identifiers from patients
 		// that already voided getting returned
 		criteria.createAlias("patient", "patient");
-		criteria.add(Restrictions.eq("patient.voided", false));
+		criteria.add(Expression.eq("patient.voided", false));
 		
+		// TODO add junit test for not getting voided
 		// make sure the patient object isn't voided
-		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Expression.eq("voided", false));
 		
+		// TODO add junit test for getting by identifier (and for not getting by partial here)
 		if (identifier != null)
-			criteria.add(Restrictions.eq("identifier", identifier));
+			criteria.add(Expression.eq("identifier", identifier));
 		
 		// TODO add junit test for getting by identifier type
 		if (patientIdentifierTypes.size() > 0)
-			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
+			criteria.add(Expression.in("identifierType", patientIdentifierTypes));
 		
 		if (locations.size() > 0)
-			criteria.add(Restrictions.in("location", locations));
+			criteria.add(Expression.in("location", locations));
 		
 		// TODO add junit test for getting by patients
 		if (patients.size() > 0)
-			criteria.add(Restrictions.in("patient", patients));
+			criteria.add(Expression.in("patient", patients));
 		
+		// TODO add junit test for getting by null/true/false isPreferred
 		if (isPreferred != null)
-			criteria.add(Restrictions.eq("preferred", isPreferred));
+			criteria.add(Expression.eq("preferred", isPreferred));
 		
 		return criteria.list();
 	}
@@ -303,14 +308,18 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @should not return null when includeRetired is false
-	 * @should not return retired when includeRetired is false
-	 * @should not return null when includeRetired is true
-	 * @should return all when includeRetired is true
+	 * @should not return null excluding retired
+	 * @should not return retired
+	 * @should not return null including retired
+	 * @should return all
+	 * @should return ordered
 	 * @see org.openmrs.api.db.PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException {
+		
+		// TODO test this method
+		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		
 		if (!includeRetired) {
@@ -333,6 +342,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
 	        Boolean hasCheckDigit) throws DAOException {
+		// TODO test this method
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		
@@ -516,8 +526,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
 		boolean checkPatient = patientIdentifier.getPatient() != null
 		        && patientIdentifier.getPatient().getPatientId() != null;
-		boolean checkLocation = patientIdentifier.getLocation() != null
-		        && patientIdentifier.getIdentifierType().getUniquenessBehavior() == UniquenessBehavior.LOCATION;
 		
 		// switched this to an hql query so the hibernate cache can be considered as well as the database
 		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
@@ -526,18 +534,12 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (checkPatient) {
 			hql += " and p.patientId != :ptId";
 		}
-		if (checkLocation) {
-			hql += " and pi.location = :locationId";
-		}
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		query.setString("identifier", patientIdentifier.getIdentifier());
 		query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
 		if (checkPatient) {
 			query.setInteger("ptId", patientIdentifier.getPatient().getPatientId());
-		}
-		if (checkLocation) {
-			query.setInteger("locationId", patientIdentifier.getLocation().getLocationId());
 		}
 		return !query.uniqueResult().toString().equals("0");
 	}

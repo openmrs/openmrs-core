@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -219,8 +220,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	/**
 	 * Checks if specified locale object is valid
 	 * 
-	 * @param locale
-	 *            object for validation
+	 * @param locale object for validation
 	 * @return true if locale is available
 	 */
 	public static boolean isValid(Locale locale) {

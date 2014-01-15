@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>1.11.0-SNAPSHOT</version>
+	<version>1.9.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -31,7 +30,8 @@
 		<connection>scm:git:https://github.com/openmrs/openmrs-core</connection>
 		<developerConnection>scm:git:https://github.com/openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<modules>
 		<module>tools</module>
@@ -39,7 +39,6 @@
 		<module>api</module>
 		<module>web</module>
 		<module>webapp</module>
-		<module>release-test</module>
 	</modules>
 
 	<dependencyManagement>
@@ -77,11 +76,6 @@
                 <artifactId>openmrs-webapp</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
-            </dependency>
-            <dependency>
-                <groupId>org.openmrs</groupId>
-                <artifactId>openmrs-release-test</artifactId>
-                <version>${project.version}</version>
             </dependency>
 
 			<dependency>
@@ -163,11 +157,6 @@
 				<artifactId>commons-lang3</artifactId>
 				<version>3.1</version>
 			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-			    <artifactId>guava</artifactId>
-			    <version>13.0.1</version>
-			</dependency>
 
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -184,53 +173,108 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-beans</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-aop</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-orm</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-tx</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-jdbc</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-oxm</artifactId>
 				<version>${springVersion}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
-			<!-- For the upgrade to Spring 3.0, antlr-runtime-3.2.jar is required.
-				However, Hibernate 3.25 needs antlr_2.7.6.jar and they can both exist because
-				their packaging is different. The earlier version, 2.7.6, is antlr.* whereas
-				3.2 is org.antlr.*, so they can co-habitate here just fine. For more information,
-				see this article: http://blog.newsplore.com/2009/03/07/upgrading-to-spring-30 -->
+			<!--
+			For the upgrade to Spring 3.0, antlr-runtime-3.2.jar is required. However, Hibernate 3.25 needs antlr_2.7.6.jar and they can
+			both exist because their packaging is different. The earlier version, 2.7.6, is antlr.* whereas 3.2 is org.antlr.*, so 
+			they can co-habitate here just fine.
+			For more information, see this article: http://blog.newsplore.com/2009/03/07/upgrading-to-spring-30
+			-->
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr-runtime</artifactId>
@@ -320,7 +364,7 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<dependency>
+			<dependency> 
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-ehcache</artifactId>
 				<version>3.6.0.Final</version>
@@ -430,20 +474,29 @@
 				<version>1.6.0</version>
 				<scope>runtime</scope>
 			</dependency>
+
 			<dependency>
 				<groupId>ca.uhn.hapi</groupId>
-				<artifactId>hapi-base</artifactId>
-				<version>2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi</groupId>
-				<artifactId>hapi-structures-v25</artifactId>
-				<version>2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>ca.uhn.hapi</groupId>
-				<artifactId>hapi-structures-v26</artifactId>
-				<version>2.0</version>
+				<artifactId>hapi</artifactId>
+				<version>0.5</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-cli</groupId>
+						<artifactId>commons-cli</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.jdom</groupId>
+						<artifactId>jdom</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xalan</groupId>
+						<artifactId>xalan</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.openmrs.simpleframework</groupId>
@@ -533,11 +586,6 @@
 				<version>5.1.8</version>
 				<scope>runtime</scope>
 			</dependency>
-            <dependency>
-                <groupId>com.mysql</groupId>
-                <artifactId>mysql-connector-mxj</artifactId>
-                <version>5.0.11</version>
-            </dependency>
 			<dependency>
 				<groupId>postgresql</groupId>
 				<artifactId>postgresql</artifactId>
@@ -630,7 +678,7 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.3.173</version>
+				<version>1.2.135</version>
 			</dependency>
 			<dependency>
 				<groupId>org.dbunit</groupId>
@@ -643,42 +691,20 @@
 				<version>1.3</version>
 			</dependency>
 			<dependency>
-			    <groupId>com.carrotsearch</groupId>
-			    <artifactId>junit-benchmarks</artifactId>
-			    <version>0.7.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openmrs.contrib</groupId>
-				<artifactId>mvpconceptdictionary</artifactId>
-				<version>1.9.3-20120727</version> 
-			</dependency>
-			<dependency>
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache-core</artifactId>
 				<version>2.2.0</version>
 			</dependency>
-
-            <dependency>
-                <groupId>com.googlecode.lambdaj</groupId>
-                <artifactId>lambdaj</artifactId>
-                <version>2.2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
             <dependency>
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
                 <version>1.0.0.GA</version>
             </dependency>
             <dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-validator</artifactId>
-				<version>4.2.0.Final</version>
-			</dependency>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                    <version>4.2.0.Final</version>
+            </dependency>
         </dependencies>
 	</dependencyManagement>
 
@@ -734,6 +760,11 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.6.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
 					<version>2.8</version>
 				</plugin>
@@ -783,7 +814,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.1</version>
+					<version>2.4.1</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -825,8 +856,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings
-					only. It has no influence on the Maven build itself. -->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -850,7 +880,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -869,28 +899,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-dependency-plugin
-										</artifactId>
-										<versionRange>
-											[2.1,)
-										</versionRange>
-										<goals>
-											<goal>
-												unpack
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -940,84 +949,11 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
-					<includes>
-						<include>**/*Test.java</include>
-					</includes>
-					<excludes>
-     					<exclude>**/*PerformanceTest.java</exclude>
-          			</excludes>
 					<argLine>-Duser.language=en -Duser.region=US -Xmx512m -XX:MaxPermSize=512m ${customArgLineForTesting}</argLine>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-			</plugin>
 		</plugins>
 	</build>
-	
-	<profiles>
-		<profile>
-			<id>integration</id>
-			<build>
-				<plugins>
-					<plugin>
-        				<groupId>org.apache.maven.plugins</groupId>
-        				<artifactId>maven-surefire-plugin</artifactId>
-        				<configuration>
-							<includes>
-            					<include>**/*IT.java</include>
-            					<include>**/*Test.java</include>
-          					</includes>
-          					<excludes>
-          						<exclude>**/*PerformanceIT.java</exclude>
-            					<exclude>**/*PerformanceTest.java</exclude>
-          					</excludes>
-						</configuration>
-      				</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>integration-only</id>
-			<build>
-				<plugins>
-					<plugin>
-        				<groupId>org.apache.maven.plugins</groupId>
-        				<artifactId>maven-surefire-plugin</artifactId>
-        				<configuration>
-							<includes>
-            					<include>**/*IT.java</include>
-          					</includes>
-          					<excludes>
-          						<exclude>**/*PerformanceIT.java</exclude>
-          					</excludes>
-						</configuration>
-      				</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>performance-only</id>
-			<build>
-				<plugins>
-					<plugin>
-        				<groupId>org.apache.maven.plugins</groupId>
-        				<artifactId>maven-surefire-plugin</artifactId>
-        				<configuration>
-							<includes>
-            					<include>**/*PerformanceIT.java</include>
-            					<include>**/*PerformanceTest.java</include>
-          					</includes>
-						</configuration>
-      				</plugin>
-				</plugins>
-			</build>
-			<properties>
-				<customArgLineForTesting>-Djub.consumers=CONSOLE,H2 -Djub.db.file=target/benchmarks/results -Djub.charts.dir=target/benchmarks</customArgLineForTesting>
-			</properties>
-		</profile>
-	</profiles>
 
 	<reporting>
 		<plugins>
@@ -1027,10 +963,8 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
-					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these
-						libraries are in active
-						development and subject to
-						change&lt;/small&gt;&lt;/em&gt;</bottom>
+					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active
+						development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
 					<header>&lt;a href="http://www.openmrs.org"
 						target=_top&gt;&lt;img
 						src="resources/openmrs-logo-small.gif"
@@ -1040,11 +974,14 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
+
+					<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
 				<version>2.3</version>
-			</plugin>
-		</plugins>
+
+           	</plugins>
+
+        </plugin>
 	</reporting>
 
 	<repositories>
@@ -1090,6 +1027,6 @@
 		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
 
 		<springVersion>3.0.5.RELEASE</springVersion>
-		<customArgLineForTesting></customArgLineForTesting>
+		<customArgLineForTesting />
 	</properties>
 </project>

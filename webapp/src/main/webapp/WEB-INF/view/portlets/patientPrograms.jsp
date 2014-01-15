@@ -73,10 +73,10 @@
 		if (currentProgramBeingEdited == null)
 			return;
 		var idToSave = currentProgramBeingEdited;
-		var startDate = parseDate(jQuery('#enrollmentDateElement').val());
-		var endDate = parseDate(jQuery('#completionDateElement').val());
-		var locationId = jQuery('#programLocationElement').val();
-		var outcomeId = jQuery('#programOutcomeConceptElement').val();
+		var startDate = parseDate($('enrollmentDateElement').value);
+		var endDate = parseDate($('completionDateElement').value);
+		var locationId = $('programLocationElement').value;
+		var outcomeId = $('programOutcomeConceptElement').value;
 		if (endDate != '' && !$j('#editProgramOutcomeRow').is(':hidden')
 				&& outcomeId == '') {
 			alert("<openmrs:message code="PatientProgram.error.outcomeRequired" />");
@@ -110,11 +110,11 @@
 
 		var ppId = patientProgramForWorkflowEdited;
 		var wfId = currentWorkflowBeingEdited;
-		var stateId = jQuery('#changeToState').val();
-		var onDate = parseDate(jQuery('#changeStateOnDate').val());
-		var lastStateStartDate = parseDate(jQuery('#lastStateStartDate').val());
-		var lastStateEndDate = parseDate(jQuery('#lastStateEndDate').val());
-		var lastState = jQuery('#lastState').val();
+		var stateId = $('changeToState').value;
+		var onDate = parseDate($('changeStateOnDate').value);
+		var lastStateStartDate = parseDate($('lastStateStartDate').value);
+		var lastStateEndDate = parseDate($('lastStateEndDate').value);
+		var lastState = $('lastState').value;
 
 		if (isEmpty(stateId)) {
 			alert('<openmrs:message code="State.error.noState" javaScriptEscape="true"/>');
@@ -158,7 +158,7 @@
 		currentWorkflowBeingEdited = programWorkflowId;
 		patientProgramForWorkflowEdited = patientProgramId;
 		showLayer('editWorkflowPopup');
-		jQuery('#workflowPopupTitle').html(wfName);
+		$('workflowPopupTitle').innerHTML = wfName;
 		dwr.util.removeAllRows('workflowTable');
 		dwr.util
 				.addRows(
@@ -174,7 +174,7 @@
 				.addOptions(
 						'changeToState',
 						[ '<openmrs:message code="general.loading" javaScriptEscape="true"/>' ]);
-		jQuery('#changeStateOnDate').val('');
+		$('changeStateOnDate').value = '';
 		DWRProgramWorkflowService
 				.getPatientStates(
 						patientProgramId,
@@ -198,9 +198,9 @@
 														if (!isEmpty(state.endDate)) str += ' <openmrs:message code="general.toDate" javaScriptEscape="true" /> ' + formatDate(state.endDate);
 														if (count == goUntil) {
 															str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
-															jQuery('#lastStateStartDate').val(formatDate(state.startDate));
-															jQuery('#lastStateEndDate').val(formatDate(state.endDate));
-															jQuery('#lastState').val(state.stateName);
+															$('lastStateStartDate').value = formatDate(state.startDate);
+															$('lastStateEndDate').value = formatDate(state.endDate);
+															$('lastState').value = state.stateName;
 														}
 														return str;
 													},
@@ -251,29 +251,29 @@
 		hideLayer('editProgramOutcomeRow');
 		$j('#programOutcomeConceptElement').attr('disabled', true);
 		currentProgramBeingEdited = patientProgramId;
-		jQuery('#programNameElement').html('<openmrs:message code="general.loading" javaScriptEscape="true"/>');
-		jQuery('#enrollmentDateElement').val('');
-		jQuery('#completionDateElement').val('');
+		$('programNameElement').innerHTML = '<openmrs:message code="general.loading" javaScriptEscape="true"/>';
+		$('enrollmentDateElement').value = '';
+		$('completionDateElement').value = '';
 		showLayer('editPatientProgramPopup');
 		DWRProgramWorkflowService
 				.getPatientProgram(
 						patientProgramId,
 						function(program) {
-							jQuery('#programNameElement').html(program.name);
-							jQuery('#enrollmentDateElement').val(formatDate(program.dateEnrolled));
-							jQuery('#completionDateElement').val(formatDate(program.dateCompleted));
+							$('programNameElement').innerHTML = program.name;
+							$('enrollmentDateElement').value = formatDate(program.dateEnrolled);
+							$('completionDateElement').value = formatDate(program.dateCompleted);
 							if (!isEmpty(program.dateCompletedAsYmd))
 								$j('#programOutcomeConceptElement').attr(
 										'disabled', false);
 
 							setEditPatientProgramPopupSelectedLocation(program.location.locationId);
 
-							jQuery('#createdByElement').html(program.creator);//program.creator is just a String object, not User class
-							jQuery('#dateCreatedElement').html(formatDate(program.dateCreated));
+							$('createdByElement').innerHTML = program.creator;//program.creator is just a String object, not User class
+							$('dateCreatedElement').innerHTML = formatDate(program.dateCreated);
 							//show changedBy and date_changed only if changedBy is not empty
 							if (!isEmpty(program.changedBy)) {
-								jQuery('#changedByElement').html(program.changedBy);//program.creator is just a String object, not User class
-								jQuery('#dateChangedElement').html(formatDate(program.dateChanged));
+								$('changedByElement').innerHTML = program.changedBy;//program.creator is just a String object, not User class
+								$('dateChangedElement').innerHTML = formatDate(program.dateChanged);
 								showLayer('changedByTR');
 							}
 							DWRProgramWorkflowService
@@ -434,7 +434,7 @@
 								<small><i>[<openmrs:message code="Program.completed"/>]</i></small>
 							</c:if>
 							<a href="javascript:showEditPatientProgramPopup(${program.patientProgramId})">
-							<openmrs:format program="${program.program}" caseConversion="global"/>
+							<openmrs:format program="${program.program}"/>
 							</a>
 						</td>
 						<td align="left" valign="top">
@@ -459,8 +459,8 @@
 								<c:forEach var="workflow" items="${program.program.workflows}">
 									<tr>
 										<td style="" valign="top">
-											
-											<small><openmrs:format concept="${workflow.concept}" caseConversion="global"/>:</small>
+										
+											<small><openmrs:format concept="${workflow.concept}"/>:</small>
 											<br/>
 											
 											<c:set var="stateId" value="" />
@@ -473,7 +473,7 @@
 											</c:forEach>
 											<c:choose>
 												<c:when test="${not empty stateId}">
-													<b><openmrs:format conceptId="${stateId}" caseConversion="global"/></b>
+													<b><openmrs:format conceptId="${stateId}"/></b>
 													<i>(<openmrs:message code="general.since" /> 
 													<openmrs:formatDate date="${stateStart}" type="medium" />)</i>
 												</c:when>
@@ -538,13 +538,7 @@
 	});
 
 	function handleEnrollInProgram() {
-		if ($j('#programSelector').val() == ""){
-			alert('<openmrs:message code="Program.error.programRequired" />');
-		}
-		else{
-			$j('#enrollForm').submit();
-		}
-
+		$j('#enrollForm').submit();
 	}
 </script>
 
@@ -553,8 +547,8 @@
 	<div id="enrollError" class="error" style="display:none;"></div>
 	<form id="enrollForm" name="enrollForm" method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
 		<input type="hidden" name="method" value="enroll"/>
-		<input type="hidden" name="patientId" value="<c:out value="${model.patientId}" />"/>
-		<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=<c:out value="${model.patientId}" />"/>
+		<input type="hidden" name="patientId" value="${model.patientId}"/>
+		<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${model.patientId}"/>
 		<table style="margin: 0px 0px 1em 2em;">
 			<tr>
 				<td nowrap><openmrs:message code="Program.program" javaScriptEscape="true"/>:</td>

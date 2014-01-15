@@ -186,8 +186,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldRejectAProviderIfItHasFewerThanMinOccursOfAnAttribute() throws Exception {
-		provider.setId(null);
-		provider.setPerson(null);
 		executeDataSet(PROVIDER_ATTRIBUTE_TYPES_XML);
 		ProviderAttributeType attributeType = providerService.getProviderAttributeType(1);
 		attributeType.setMinOccurs(2);
@@ -206,8 +204,6 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldRejectAProviderIfItHasMoreThanMaxOccursOfAnAttribute() throws Exception {
-		provider.setId(null);
-		provider.setPerson(null);
 		executeDataSet(PROVIDER_ATTRIBUTE_TYPES_XML);
 		provider.addAttribute(makeAttribute("one"));
 		provider.addAttribute(makeAttribute("two"));

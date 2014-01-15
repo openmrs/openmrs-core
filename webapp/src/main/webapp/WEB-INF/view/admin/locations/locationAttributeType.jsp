@@ -50,7 +50,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationAttributeType.belowTitle" type="html" parameters="id=${ attributeType.id }" />
 
 <spring:hasBindErrors name="attributeType">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
@@ -146,7 +146,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				<c:out value="${attributeType.creator.personName}" /> -
+				${attributeType.creator.personName} -
 				<openmrs:formatDate date="${attributeType.dateCreated}" type="long" />
 			</td>
 		</tr>

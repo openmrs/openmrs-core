@@ -1,10 +1,8 @@
-<%@page import="org.openmrs.util.PrivilegeConstants"%>
-
 <ul id="menu">
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><openmrs:message code="admin.title.short"/></a>
 	</li>
-	<openmrs:hasPrivilege privilege="<%= PrivilegeConstants.MANAGE_FORMS %>">
+	<openmrs:hasPrivilege privilege="Add Forms,Edit Forms,Delete Forms,View Forms">
 		<li <c:if test='<%= request.getRequestURI().contains("forms/form") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/forms/form.list" class="retired">
 				<openmrs:message code="Form.manage"/>
@@ -32,7 +30,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="<%= PrivilegeConstants.MANAGE_FORMS %>">
+	<openmrs:hasPrivilege privilege="Manage Forms">
 		<li <c:if test='<%= request.getRequestURI().contains("auditField") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/forms/auditField.form">
 				<openmrs:message code="FormField.auditButton"/>
@@ -42,7 +40,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
-					<a href="<openmrs_tag:url value="${link.key}"/>"><openmrs:message code="${link.value}"/></a>
+					<a href="${pageContext.request.contextPath}/${link.key}"><openmrs:message code="${link.value}"/></a>
 				</li>
 			</c:forEach>
 	</openmrs:extensionPoint>

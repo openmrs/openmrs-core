@@ -9,29 +9,40 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.afterTitle" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 
-<table class="left-aligned-th">
+<%--  <form method="post"> --%>
+<table>
 	<tr>
-		<th><openmrs:message code="general.name"/></th>
-		<td><c:out value="${conceptDatatype.name}"/></td>
+		<td><openmrs:message code="general.name"/></td>
+		<td>
+			<spring:bind path="conceptDatatype.name">
+				<input type="text" name="name" value="${status.value}" size="35" readonly="1"/>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
 	</tr>
 	<tr>
-		<th valign="top"><openmrs:message code="general.description"/></th>
-		<td><openmrs:message code="${conceptDatatype.description}"/></td>
+		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td>
+			<spring:bind path="conceptDatatype.description">
+				<textarea name="description" rows="3" cols="40" type="_moz" readonly="1">${status.value}</textarea>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="ConceptDatatype.hl7Abbreviation"/></th>
-		<td><c:out value="${conceptDatatype.hl7Abbreviation}"/></td>
+		<td><openmrs:message code="ConceptDatatype.hl7Abbreviation"/></td>
+		<td>
+			<spring:bind path="conceptDatatype.hl7Abbreviation">
+				<input type="text" name="hl7Abbreviation" value="${status.value}" size="5" readonly="1"/>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
 	</tr>
-	<tr>
-		<th><openmrs:message code="general.uuid"/></th>
-		<td><c:out value="${conceptDatatype.uuid}"/></td>
-	</tr>
-
 	<c:if test="${!(conceptDatatype.creator == null)}">
 		<tr>
-			<th><openmrs:message code="general.createdBy" /></th>
+			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				<c:out value="${conceptDatatype.creator.personName}"/> -
+				${conceptDatatype.creator.personName} -
 				<openmrs:formatDate date="${conceptDatatype.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -39,6 +50,8 @@
 </table>
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.inForm" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 <br />
+<%-- <input type="submit" value="<openmrs:message code="ConceptDatatype.save"/>">
+</form> --%>
 
 <div id="conceptDatatypeFormReadOnly">(<openmrs:message code="general.readonly"/>)</div>
 

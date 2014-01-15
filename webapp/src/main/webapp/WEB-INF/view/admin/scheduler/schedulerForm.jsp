@@ -142,7 +142,7 @@ window.onload = init;
 
 
 <spring:hasBindErrors name="concept">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
 			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
@@ -152,7 +152,7 @@ window.onload = init;
 </spring:hasBindErrors>
 
 <spring:hasBindErrors name="task">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 

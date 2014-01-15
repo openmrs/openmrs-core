@@ -16,7 +16,7 @@
 
 <h2><openmrs:message code="Order.list.patient.title" arguments="${patient.patientId},${personName.familyName},${personName.givenName},${personName.middleName}" /></h2>
 
-<a href="orderDrug.form?patientId=<c:out value="${patient.patientId}" />"><openmrs:message code="Order.drug.place.patient"/></a>
+<a href="orderDrug.form?patientId=${patient.patientId}"><openmrs:message code="Order.drug.place.patient"/></a>
 <br />
 
 <span class="boxHeader">
@@ -28,7 +28,7 @@
 <c:if test="${not empty orderDrugList}">
 <div class="box">
 	<form method="post">
-		<input type="hidden" name="patientId" value="<c:out value="${patient.patientId}" />" />
+		<input type="hidden" name="patientId" value="${patient.patientId}" />
 		<table id="orderDrugTable" cellpadding="5" cellspacing="0">
 			<tr>
 				<th> </th>
@@ -48,14 +48,14 @@
 					</td>
 					<td valign="top">
 						<a href="orderDrug.form?orderId=${order.orderId}">
-							<c:out value="${order.drug.name}" />
+							${order.drug.name}
 						</a>
 					</td>
 					<td valign="top">
 					   ${order.dose}
 					</td>
 					<td valign="top">
-					   ${order.doseUnits}
+					   ${order.units}
 					</td>
 					<td valign="top">
 					   ${order.frequency}

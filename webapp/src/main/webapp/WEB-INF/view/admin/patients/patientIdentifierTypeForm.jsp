@@ -24,10 +24,10 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.retiredBy"/>
-				<c:out value="${patientIdentifierType.retiredBy.personName}" />
+				${patientIdentifierType.retiredBy.personName}
 				<openmrs:formatDate date="${patientIdentifierType.dateRetired}" type="medium" />
 				-
-				<c:out value="${patientIdentifierType.retireReason}" />
+				${patientIdentifierType.retireReason}
 				<input type="submit" value='<openmrs:message code="PatientIdentifierType.unretirePatientIdentifierType"/>' name="unretire"/>
 			</div>
 		</div>
@@ -101,22 +101,6 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="PatientIdentifierType.uniquenessBehavior" /></td>
-		<td><spring:bind path="patientIdentifierType.uniquenessBehavior">
-			<select name="${status.expression}">
-				<option value=""></option>
-				<c:forEach var="uniquenessBehavior" items="${uniquenessBehaviors}">
-					<option value="${uniquenessBehavior}" <c:if test="${status.value == uniquenessBehavior}">selected</c:if>>
-						<openmrs:message code="PatientIdentifierType.uniquenessBehavior.${uniquenessBehavior}" />
-					</option>
-				</c:forEach>
-			</select>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
-	</tr>
-	<tr>
 		<td><openmrs:message code="PatientIdentifierType.validator" /></td>
 		<td><spring:bind path="patientIdentifierType.validator">
 			<select name="${status.expression}">
@@ -125,7 +109,7 @@
 					<option value="${piv['class'].name}" 
 						<c:if test="${status.value == piv['class'].name}">selected</c:if> 
 					/>
-					<c:out value="${piv.name}" />
+					${piv.name}
 						<c:if test="${defaultValidatorName == piv.name}"> (default)</c:if>
 					</option>
 				</c:forEach>
@@ -139,7 +123,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				<c:out value="${patientIdentifierType.creator.personName}" /> -
+				${patientIdentifierType.creator.personName} -
 				<openmrs:formatDate date="${patientIdentifierType.dateCreated}" type="long" />
 			</td>
 		</tr>

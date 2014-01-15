@@ -1,7 +1,7 @@
 <table>
 	<tr>
 		<th align="left"><openmrs:message code="general.id"/></th>
-		<td><c:out value="${patient.patientId}" /></td>
+		<td>${patient.patientId}</td>
 	</tr>
 	<tr>
 		<th align="left"><openmrs:message code="Person.gender"/></th>
@@ -34,14 +34,14 @@
 	<tr>
 		<th align="left"><openmrs:message code="general.createdBy" /></th>
 		<td>
-			<c:out value="${patient.creator.personName}" /> -
+			${patient.creator.personName} -
 			<openmrs:formatDate date="${patient.dateCreated}" type="long" />
 		</td>
 	</tr>
 	<tr>
 		<th align="left"><openmrs:message code="general.changedBy" /></th>
 		<td>
-			<c:out value="${patient.changedBy.personName}" /> -
+			${patient.changedBy.personName} -
 			<openmrs:formatDate date="${patient.dateChanged}" type="long" />
 		</td>
 	</tr>

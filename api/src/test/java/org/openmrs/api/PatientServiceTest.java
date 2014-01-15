@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.validation.ValidationException;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,7 +59,6 @@ import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientIdentifierType.UniquenessBehavior;
 import org.openmrs.PatientProgram;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -189,7 +190,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
-		patient.setDeathdateEstimated(true);
 		
 		return patient;
 	}
@@ -223,7 +223,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
-		patient.setBirthdateEstimated(true);
 		// patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
@@ -2040,8 +2039,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// run with correctly-formed parameters first to make sure that the
 		// null is the problem when running with a null parameter
 		try {
-			patientService
-			        .exitFromCare(patientService.getPatient(7), new Date(), Context.getConceptService().getConcept(16));
+			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
 		}
 		catch (Exception e) {
 			fail("failed with correct parameters");
@@ -2060,8 +2058,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// run with correctly-formed parameters first to make sure that the
 		// null is the problem when running with a null parameter
 		try {
-			patientService
-			        .exitFromCare(patientService.getPatient(7), new Date(), Context.getConceptService().getConcept(16));
+			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
 		}
 		catch (Exception e) {
 			fail("failed with correct parameters");
@@ -2080,8 +2077,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// run with correctly-formed parameters first to make sure that the
 		// null is the problem when running with a null parameter
 		try {
-			patientService
-			        .exitFromCare(patientService.getPatient(7), new Date(), Context.getConceptService().getConcept(16));
+			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
 		}
 		catch (Exception e) {
 			fail("failed with correct parameters");
@@ -2174,6 +2170,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @verifies {@link PatientService#savePatientIdentifier(PatientIdentifier)} test = should throw
+	 *           an APIException when a null argument is passed
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw an APIException when a null argument is passed", method = "savePatientIdentifier(PatientIdentifier)")
+	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenANullArgumentIsPassed() throws Exception {
+		patientService.savePatientIdentifier(null);
+	}
+	
+	/**
+	 * @verifies {@link PatientService#savePatientIdentifier(PatientIdentifier)} test = should throw
 	 *           an APIException when one of the required fields is null
 	 */
 	@Test(expected = APIException.class)
@@ -2207,30 +2213,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
 		patientIdentifier.setIdentifier("");
-		patientService.savePatientIdentifier(patientIdentifier);
-	}
-	
-	/**
-	 * @see {@link PatientService#savePatientIdentifier(PatientIdentifier)}
-	 */
-	@Test
-	@Verifies(value = "should pass if patient identifer type's location behaviour is NOT_USED and location is null", method = "savePatientIdentifier(PatientIdentifierType)")
-	public void savePatientIdentifier_shouldAllowLocationToBeNullWhenLocationBehaviourIsNotUsed() {
-		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
-		patientIdentifier.setLocation(null);
-		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
-		patientService.savePatientIdentifier(patientIdentifier);
-	}
-	
-	/**
-	 * @see {@link PatientService#savePatientIdentifier(PatientIdentifier)}
-	 */
-	@Test(expected = ValidationException.class)
-	@Verifies(value = "should fail if patient identifer type's location behaviour is REQUIRED and location is null", method = "savePatientIdentifier(PatientIdentifierType)")
-	public void savePatientIdentifier_shouldAllowLocationToBeNullWhenLocationBehaviourIsRequired() {
-		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
-		patientIdentifier.setLocation(null);
-		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
 		patientService.savePatientIdentifier(patientIdentifier);
 	}
 	
@@ -2628,32 +2610,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(2);
 		
 		//retrieve order for notPreferred patient
-		List<Order> ordersForUnPreferredPatient = Context.getOrderService().getOrdersByPatient(notPreferred);
-		List<Order> undiscontinuedOrders = new ArrayList<Order>();
-		for (Order or : ordersForUnPreferredPatient) {
-			if (!or.getDiscontinued())
-				undiscontinuedOrders.add(or);
-		}
-		Assert.assertFalse(undiscontinuedOrders.isEmpty());
+		Order order = Context.getOrderService().getOrdersByPatient(notPreferred).get(0);
+		
 		//merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		
+		//find the UUID of the order that was created for preferred patient as a result of the merge
+		String addedOrderUuid = null;
 		List<Order> orders = Context.getOrderService().getOrdersByPatient(preferred);
-		for (Order or : undiscontinuedOrders) {
-			//find the UUID of the order that was created for preferred patient as a result of the merge
-			String addedOrderUuid = null;
-			for (Order o : orders) {
-				if (o.getOrderNumber().equals(or.getOrderNumber())) {
-					addedOrderUuid = o.getUuid();
-				}
+		for (Order o : orders) {
+			if (o.getInstructions().equals(order.getInstructions())) {
+				addedOrderUuid = o.getUuid();
 			}
-			
-			Assert.assertNotNull("expected new order was not found for the preferred patient after the merge",
-			    addedOrderUuid);
-			
-			Assert.assertTrue("order creation not audited", isValueInList(addedOrderUuid, audit.getPersonMergeLogData()
-			        .getCreatedOrders()));
 		}
+		Assert.assertNotNull("expected new order was not found for the preferred patient after the merge", addedOrderUuid);
+		Assert.assertTrue("order creation not audited", isValueInList(addedOrderUuid, audit.getPersonMergeLogData()
+		        .getCreatedOrders()));
 	}
 	
 	/**
@@ -2884,27 +2856,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior date of death was not audited", cDate.getTime(), audit.getPersonMergeLogData()
 		        .getPriorDateOfDeath());
-		
-	}
-	
-	/**
-	 * @see PatientService#mergePatients(Patient,Patient)
-	 * @verifies audit prior date of death estimated
-	 */
-	@Test
-	public void mergePatients_shouldAuditPriorDateOfDeathEstimated() throws Exception {
-		//retrieve preferred patient and set a date of death
-		GregorianCalendar cDate = new GregorianCalendar();
-		cDate.setTime(new Date());
-		Patient preferred = patientService.getPatient(999);
-		preferred.setDeathDate(cDate.getTime());
-		preferred.setDeathdateEstimated(true);
-		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
-		patientService.savePatient(preferred);
-		Patient notPreferred = patientService.getPatient(7);
-		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
-		Assert.assertTrue("prior estimated date of death was not audited", audit.getPersonMergeLogData()
-		        .getPriorDateOfDeathEstimated());
 	}
 	
 	/**
@@ -3150,77 +3101,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-	 */
-	@Test
-	@Verifies(value = "should return true if in use and id type uniqueness is null", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseAndIdTypeUniquenessIsNull() throws Exception {
-		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
-		Assert.assertNotNull(duplicateId.getLocation());
-		
-		PatientIdentifierType idType = duplicateId.getIdentifierType();
-		Assert.assertNull(idType.getUniquenessBehavior());
-		
-		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, duplicateId.getLocation());
-		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(pi));
-	}
-	
-	/**
-	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-	 */
-	@Test
-	@Verifies(value = "should return true if in use and id type uniqueness is set to unique", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseAndIdTypeUniquenessIsSetToUnique() throws Exception {
-		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
-		Assert.assertNotNull(duplicateId.getLocation());
-		
-		PatientIdentifierType idType = duplicateId.getIdentifierType();
-		idType.setUniquenessBehavior(UniquenessBehavior.UNIQUE);
-		patientService.savePatientIdentifierType(idType);
-		
-		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, duplicateId.getLocation());
-		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(pi));
-	}
-	
-	/**
-	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-	 */
-	@Test
-	@Verifies(value = "should return true if in use for a location and id type uniqueness is set to location", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueIfInUseForALocationAndIdTypeUniquenessIsSetToLocation()
-	        throws Exception {
-		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
-		Assert.assertNotNull(duplicateId.getLocation());
-		
-		PatientIdentifierType idType = duplicateId.getIdentifierType();
-		idType.setUniquenessBehavior(UniquenessBehavior.LOCATION);
-		patientService.savePatientIdentifierType(idType);
-		
-		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, duplicateId.getLocation());
-		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(pi));
-	}
-	
-	/**
-	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-	 */
-	@Test
-	@Verifies(value = "should return false if in use for another location and id uniqueness is set to location", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseIfInUseForAnotherLocationAndIdUniquenessIsSetToLocation()
-	        throws Exception {
-		PatientIdentifier duplicateId = patientService.getPatientIdentifier(1);
-		Assert.assertNotNull(duplicateId.getLocation());
-		
-		PatientIdentifierType idType = duplicateId.getIdentifierType();
-		idType.setUniquenessBehavior(UniquenessBehavior.LOCATION);
-		patientService.savePatientIdentifierType(idType);
-		
-		Location idLocation = locationService.getLocation(2);
-		Assert.assertNotSame(idLocation, duplicateId.getLocation());//sanity check
-		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, idLocation);
-		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(pi));
-	}
-	
-	/**
 	 * @see PatientService#getAllPatientIdentifierTypes(boolean)
 	 * @verifies order as default comparator
 	 */
@@ -3291,110 +3171,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see PatientService#savePatient(Patient)
-	 * @verifies set the preferred name address and identifier if none is specified
-	 */
-	@Test
-	public void savePatient_shouldSetThePreferredNameAddressAndIdentifierIfNoneIsSpecified() throws Exception {
-		Patient patient = new Patient();
-		patient.setGender("M");
-		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
-		        locationService.getLocation(1));
-		patient.addIdentifier(identifier);
-		PersonName name = new PersonName("givenName", "middleName", "familyName");
-		patient.addName(name);
-		PersonAddress address = new PersonAddress();
-		address.setAddress1("some address");
-		patient.addAddress(address);
-		
-		patientService.savePatient(patient);
-		Assert.assertTrue(identifier.isPreferred());
-		Assert.assertTrue(name.isPreferred());
-		Assert.assertTrue(address.isPreferred());
-	}
-	
-	/**
-	 * @see PatientService#savePatient(Patient)
-	 * @verifies not set the preferred name address and identifier if they already exist
-	 */
-	@Test
-	public void savePatient_shouldNotSetThePreferredNameAddressAndIdentifierIfTheyAlreadyExist() throws Exception {
-		Patient patient = new Patient();
-		patient.setGender("M");
-		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
-		        locationService.getLocation(1));
-		PatientIdentifier preferredIdentifier = new PatientIdentifier("QWERTY2", patientService.getPatientIdentifierType(2),
-		        locationService.getLocation(1));
-		preferredIdentifier.setPreferred(true);
-		patient.addIdentifier(identifier);
-		patient.addIdentifier(preferredIdentifier);
-		
-		PersonName name = new PersonName("givenName", "middleName", "familyName");
-		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
-		preferredName.setPreferred(true);
-		patient.addName(name);
-		patient.addName(preferredName);
-		
-		PersonAddress address = new PersonAddress();
-		address.setAddress1("some address");
-		PersonAddress preferredAddress = new PersonAddress();
-		preferredAddress.setAddress1("another address");
-		preferredAddress.setPreferred(true);
-		patient.addAddress(address);
-		patient.addAddress(preferredAddress);
-		
-		patientService.savePatient(patient);
-		Assert.assertTrue(preferredIdentifier.isPreferred());
-		Assert.assertTrue(preferredName.isPreferred());
-		Assert.assertTrue(preferredAddress.isPreferred());
-		Assert.assertFalse(identifier.isPreferred());
-		Assert.assertFalse(name.isPreferred());
-		Assert.assertFalse(address.isPreferred());
-	}
-	
-	/**
-	 * @see PatientService#savePatient(Patient)
-	 * @verifies not set a voided name or address or identifier as preferred
-	 */
-	@Test
-	public void savePatient_shouldNotSetAVoidedNameOrAddressOrIdentifierAsPreferred() throws Exception {
-		Patient patient = new Patient();
-		patient.setGender("M");
-		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
-		        locationService.getLocation(1));
-		PatientIdentifier preferredIdentifier = new PatientIdentifier("QWERTY2", patientService.getPatientIdentifierType(2),
-		        locationService.getLocation(1));
-		preferredIdentifier.setPreferred(true);
-		preferredIdentifier.setVoided(true);
-		patient.addIdentifier(identifier);
-		patient.addIdentifier(preferredIdentifier);
-		
-		PersonName name = new PersonName("givenName", "middleName", "familyName");
-		PersonName preferredName = new PersonName("givenName", "middleName", "familyName");
-		preferredName.setPreferred(true);
-		preferredName.setVoided(true);
-		patient.addName(name);
-		patient.addName(preferredName);
-		
-		PersonAddress address = new PersonAddress();
-		address.setAddress1("some address");
-		PersonAddress preferredAddress = new PersonAddress();
-		preferredAddress.setAddress1("another address");
-		preferredAddress.setPreferred(true);
-		preferredAddress.setVoided(true);
-		patient.addAddress(address);
-		patient.addAddress(preferredAddress);
-		
-		patientService.savePatient(patient);
-		Assert.assertFalse(preferredIdentifier.isPreferred());
-		Assert.assertFalse(preferredName.isPreferred());
-		Assert.assertFalse(preferredAddress.isPreferred());
-		Assert.assertTrue(identifier.isPreferred());
-		Assert.assertTrue(name.isPreferred());
-		Assert.assertTrue(address.isPreferred());
-	}
-	
-	/**
 	 * https://tickets.openmrs.org/browse/TRUNK-3728
 	 * 
 	 * @see {@link PatientService#savePatient(Patient)}
@@ -3447,12 +3223,26 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#savePatientIdentifier(PatientIdentifier)} test = should throw
-	 *           an APIException when a null argument is passed
+	 * @see {@link PatientService#savePatientIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should pass if patient identifer type's location behaviour is NOT_USED and location is null", method = "savePatientIdentifier(PatientIdentifierType)")
+	public void savePatientIdentifier_shouldAllowLocationToBeNullWhenLocationBehaviourIsNotUsed() {
+		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
+		patientIdentifier.setLocation(null);
+		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+		patientService.savePatientIdentifier(patientIdentifier);
+	}
+	
+	/**
+	 * @see {@link PatientService#savePatientIdentifier(PatientIdentifier)}
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should throw an APIException when a null argument is passed", method = "savePatientIdentifier(PatientIdentifier)")
-	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenANullArgumentIsPassed() throws Exception {
-		patientService.savePatientIdentifier(null);
+	@Verifies(value = "should fail if patient identifer type's location behaviour is REQUIRED and location is null", method = "savePatientIdentifier(PatientIdentifierType)")
+	public void savePatientIdentifier_shouldAllowLocationToBeNullWhenLocationBehaviourIsRequired() {
+		PatientIdentifier patientIdentifier = patientService.getPatientIdentifier(7);
+		patientIdentifier.setLocation(null);
+		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
+		patientService.savePatientIdentifier(patientIdentifier);
 	}
 }

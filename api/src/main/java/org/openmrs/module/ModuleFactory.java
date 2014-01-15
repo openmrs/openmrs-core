@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.Vector;
@@ -53,7 +52,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.Advisor;
-import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.util.StringUtils;
 
 /**
@@ -303,7 +301,7 @@ public class ModuleFactory {
 		try {
 			// Add the privileges necessary for notifySuperUsers
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
-			Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 			
 			// Send an alert to all administrators
 			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
@@ -313,7 +311,7 @@ public class ModuleFactory {
 		}
 		finally {
 			// Remove added privileges
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}
@@ -482,31 +480,17 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * @see #startModule(Module, boolean, AbstractRefreshableApplicationContext)
+	 * Runs through extensionPoints and then calls {@link BaseModuleActivator#willStart()} on the
+	 * Module's activator. This method is run in a new thread and is authenticated as the Daemon
+	 * user
+	 * 
+	 * @param module Module to start
+	 * @throws ModuleException if the module throws any kind of error at startup or in an activator
 	 * @see #startModuleInternal(Module)
 	 * @see Daemon#startModule(Module)
 	 */
 	public static Module startModule(Module module) throws ModuleException {
 		return Daemon.startModule(module);
-	}
-	
-	/**
-	 * Runs through extensionPoints and then calls {@link BaseModuleActivator#willStart()} on the
-	 * Module's activator. This method is run in a new thread and is authenticated as the Daemon
-	 * user. If a non null application context is passed in, it gets refreshed to make the module's
-	 * services available
-	 * 
-	 * @param module Module to start
-	 * @param isOpenmrsStartup Specifies whether this module is being started at application startup
-	 *            or not, this argument is ignored if a null application context is passed in
-	 * @param applicationContext the spring application context instance to refresh
-	 * @throws ModuleException if the module throws any kind of error at startup or in an activator
-	 * @see #startModuleInternal(Module, boolean, AbstractRefreshableApplicationContext)
-	 * @see Daemon#startModule(Module, boolean, AbstractRefreshableApplicationContext)
-	 */
-	public static Module startModule(Module module, boolean isOpenmrsStartup,
-	        AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
-		return Daemon.startModule(module, isOpenmrsStartup, applicationContext);
 	}
 	
 	/**
@@ -521,29 +505,6 @@ public class ModuleFactory {
 	 * @param module Module to start
 	 */
 	public static Module startModuleInternal(Module module) throws ModuleException {
-		return startModuleInternal(module, false, null);
-	}
-	
-	/**
-	 * This method should not be called directly.<br/>
-	 * <br/>
-	 * The {@link #startModule(Module)} (and hence {@link Daemon#startModule(Module)}) calls this
-	 * method in a new Thread and is authenticated as the {@link Daemon} user<br/>
-	 * <br/>
-	 * Runs through extensionPoints and then calls {@link BaseModuleActivator#willStart()} on the
-	 * Module's activator. <br/>
-	 * <br/>
-	 * If a non null application context is passed in, it gets refreshed to make the module's
-	 * services available
-	 * 
-	 * @param module Module to start
-	 * @param isOpenmrsStartup Specifies whether this module is being started at application startup
-	 *            or not, this argument is ignored if a null application context is passed in
-	 * @param applicationContext the spring application context instance to refresh
-	 * @param applicationContext the spring application context instance to refresh
-	 */
-	public static Module startModuleInternal(Module module, boolean isOpenmrsStartup,
-	        AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
 		
 		if (module != null) {
 			
@@ -573,43 +534,18 @@ public class ModuleFactory {
 				// a spring context refresh anyway, so skip the advice loading here
 				// loadAdvice(module);
 				
-				// map extension point to a list of extensions for this module only
-				Map<String, List<Extension>> moduleExtensionMap = new HashMap<String, List<Extension>>();
+				// add all of this module's extensions to the extension map
 				for (Extension ext : module.getExtensions()) {
 					
 					String extId = ext.getExtensionId();
-					List<Extension> tmpExtensions = moduleExtensionMap.get(extId);
-					if (tmpExtensions == null) {
+					List<Extension> tmpExtensions = getExtensions(extId);
+					if (tmpExtensions == null)
 						tmpExtensions = new Vector<Extension>();
-						moduleExtensionMap.put(extId, tmpExtensions);
-					}
+					
+					log.debug("Adding to mapping ext: " + ext.getExtensionId() + " ext.class: " + ext.getClass());
 					
 					tmpExtensions.add(ext);
-				}
-				
-				// Sort this module's extensions, and merge them into the full extensions map
-				Comparator<Extension> sortOrder = new Comparator<Extension>() {
-					
-					@Override
-					public int compare(Extension e1, Extension e2) {
-						return Integer.valueOf(e1.getOrder()).compareTo(Integer.valueOf(e2.getOrder()));
-					}
-				};
-				for (Map.Entry<String, List<Extension>> moduleExtensionEntry : moduleExtensionMap.entrySet()) {
-					// Sort this module's extensions for current extension point
-					List<Extension> sortedModuleExtensions = moduleExtensionEntry.getValue();
-					Collections.sort(sortedModuleExtensions, sortOrder);
-					
-					// Get existing extensions, and append the ones from the new module
-					List<Extension> extensions = getExtensionMap().get(moduleExtensionEntry.getKey());
-					if (extensions == null) {
-						extensions = new Vector<Extension>();
-						getExtensionMap().put(moduleExtensionEntry.getKey(), extensions);
-					}
-					for (Extension ext : sortedModuleExtensions) {
-						log.debug("Adding to mapping ext: " + ext.getExtensionId() + " ext.class: " + ext.getClass());
-						extensions.add(ext);
-					}
+					getExtensionMap().put(extId, tmpExtensions);
 				}
 				
 				// run the module's sql update script
@@ -719,8 +655,7 @@ public class ModuleFactory {
 			
 		}
 		
-		if (applicationContext != null)
-			ModuleUtil.refreshApplicationContext(applicationContext, isOpenmrsStartup, module);
+		// refresh spring service context?
 		
 		return module;
 	}
@@ -1493,29 +1428,5 @@ public class ModuleFactory {
 		catch (Throwable t) {
 			log.warn("Unable to save the global property", t);
 		}
-	}
-	
-	/**
-	 * Convenience method used to identify module interdependencies and alert the user before modules are shut down.
-	 * 
-	 * @param moduleId the moduleId used to identify the module being validated
-	 * @return List<dependentModules> the list of moduleId's which depend on the module about to be shutdown.
-	 * @since 1.10
-	 */
-	public static List<String> getDependencies(String moduleId) {
-		List<String> dependentModules = null;
-		Module module = getModuleById(moduleId);
-		
-		Map<String, Module> startedModules = getStartedModulesMap();
-		String modulePackage = module.getPackageName();
-		
-		for (Entry<String, Module> entry : startedModules.entrySet()) {
-			if (!moduleId.equals(entry.getKey()) && entry.getValue().getRequiredModules().contains(modulePackage)) {
-				if (dependentModules == null)
-					dependentModules = new ArrayList<String>();
-				dependentModules.add(entry.getKey() + " " + entry.getValue().getVersion());
-			}
-		}
-		return dependentModules;
 	}
 }

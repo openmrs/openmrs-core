@@ -214,6 +214,7 @@ public class DatabaseUpdater {
 		
 		try {
 			database = liquibase.getDatabase();
+			
 			lockHandler = LockService.getInstance(database);
 			lockHandler.waitForLock();
 			
@@ -268,7 +269,6 @@ public class DatabaseUpdater {
 			// if there is a db lock but there are no db changes we undo the
 			// lock
 			DatabaseUpdater.releaseDatabaseLock();
-			log.debug("db lock found and released automatically");
 			return false;
 		}
 		

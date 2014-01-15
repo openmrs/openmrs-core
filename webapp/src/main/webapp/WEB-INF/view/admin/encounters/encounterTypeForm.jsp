@@ -17,12 +17,20 @@
 	
 </script>
 
+<script type="text/javascript">
+   function forceMaxLength(object, maxLength) {
+      if( object.value.length >= maxLength) {
+         object.value = object.value.substring(0, maxLength); 
+      }
+   }
+</script>
+
 <h2><openmrs:message code="EncounterType.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.belowTitle" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />
 
 <spring:hasBindErrors name="encounterType">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
@@ -46,41 +54,11 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<td><openmrs:message code="EncounterType.editPrivilege"/></td>
-		<td>
-			<spring:bind path="encounterType.editPrivilege">
-				<select name="editPrivilege">
-					<option value=""></option>
-					<c:forEach items="${privileges}" var="privilege">
-						<option value="${privilege.privilege}" <c:if test="${privilege.privilege == status.value}">selected</c:if>>${privilege.privilege}</option>
-					</c:forEach>
-				</select>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-		<td><i><openmrs:message code="EncounterType.editPrivilege.help"/></i></td>
-	</tr>
-	<tr>
-		<td><openmrs:message code="EncounterType.viewPrivilege"/></td>
-		<td>
-			<spring:bind path="encounterType.viewPrivilege">
-				<select name="viewPrivilege">
-					<option value=""></option>
-					<c:forEach items="${privileges}" var="privilege">
-						<option value="${privilege.privilege}" <c:if test="${privilege.privilege == status.value}">selected</c:if>>${privilege.privilege}</option>
-					</c:forEach>
-				</select>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-		<td><i><openmrs:message code="EncounterType.viewPrivilege.help"/></i></td>
-	</tr>		
 	<c:if test="${!(encounterType.creator == null)}">
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				<c:out value="${encounterType.creator.personName}" /> -
+				${encounterType.creator.personName} -
 				<openmrs:formatDate date="${encounterType.dateCreated}" type="long" />
 			</td>
 		</tr>

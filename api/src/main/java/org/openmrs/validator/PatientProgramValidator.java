@@ -117,8 +117,6 @@ public class PatientProgramValidator implements Validator {
 					}
 					
 					//state should belong to one of the workflows in the program
-					// note that we are iterating over getAllWorkflows() here because we want to include
-					// retired workflows, and the workflows variable does not include retired workflows
 					boolean isValidPatientState = false;
 					for (ProgramWorkflow wf : patientProgram.getProgram().getAllWorkflows()) {
 						if (wf.getStates().contains(patientState.getState())) {
@@ -140,7 +138,7 @@ public class PatientProgramValidator implements Validator {
 					if (OpenmrsUtil.compareWithNullAsLatest(patientState.getEndDate(), patientState.getStartDate()) < 0) {
 						errors.rejectValue("states", "PatientState.error.endDateCannotBeBeforeStartDate");
 						return;
-					} else if (statesAndStartDates.contains(patientState.getState().getUuid() + ""
+					} else if (statesAndStartDates.contains(patientState.getState().getId() + ""
 					        + patientState.getStartDate())) {
 						// we already have a patient state with the same work flow state and start date
 						errors.rejectValue("states", "PatientState.error.duplicatePatientStates");
@@ -185,7 +183,7 @@ public class PatientProgramValidator implements Validator {
 						}
 					}
 					
-					statesAndStartDates.add(patientState.getState().getUuid() + "" + patientState.getStartDate());
+					statesAndStartDates.add(patientState.getState().getId() + "" + patientState.getStartDate());
 				}
 			}
 		}

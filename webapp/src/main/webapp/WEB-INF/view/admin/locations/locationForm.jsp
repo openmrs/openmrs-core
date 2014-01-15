@@ -14,7 +14,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.retiredBy"/>
-				<c:out value="${location.retiredBy.personName}" />
+				${location.retiredBy.personName}
 				<openmrs:formatDate date="${location.dateRetired}" type="medium" />
 				-
 				${location.retireReason}
@@ -25,7 +25,7 @@
 </c:if>
 
 <spring:hasBindErrors name="location">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.globalErrors}" var="error">
 			<openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/><br/><!-- ${error} -->
@@ -55,7 +55,7 @@
 			</td>
 		</tr>
 		<spring:nestedPath path="location">
-			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false|isNew=${location.locationId == null}" />
+			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false" />
 		</spring:nestedPath>
 		<tr>
 			<th valign="top"><openmrs:message code="Location.parentLocation"/></th>
@@ -104,7 +104,7 @@
 			<tr>
 				<th><openmrs:message code="general.createdBy" /></th>
 				<td colspan="5">
-					<c:out value="${location.creator.personName}" /> -
+					${location.creator.personName} -
 					<openmrs:formatDate date="${location.dateCreated}" type="long" />
 				</td>
 			</tr>

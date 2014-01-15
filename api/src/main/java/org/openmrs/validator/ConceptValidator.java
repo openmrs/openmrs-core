@@ -35,10 +35,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates {@link Concept} objects. <br>
- * These validations are also documented at <a
- * href="https://wiki.openmrs.org/x/-gkdAg">https://wiki.openmrs.org/x/-gkdAg</a>. Any changes made
- * to this source also need to be reflected on that page.
+ * Validates {@link Concept} objects.
  */
 @Handler(supports = { Concept.class }, order = 50)
 public class ConceptValidator implements Validator {
@@ -85,6 +82,8 @@ public class ConceptValidator implements Validator {
 	 *         the system locale
 	 * @should pass for a new concept with a map created with deprecated concept map methods
 	 * @should pass for an edited concept with a map created with deprecated concept map methods
+	 * @should fail if there is a duplicate unretired concept name in the same locale different than
+	 *         the system locale
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -177,9 +176,8 @@ public class ConceptValidator implements Validator {
 									continue;
 								
 								//skip same
-								String uuid = conceptToValidate.getUuid();
-								if (conceptToValidate.getConceptId() != null && uuid != null
-								        && uuid.equals(concept.getUuid()))
+								if (conceptToValidate.getConceptId() != null
+								        && conceptToValidate.getConceptId().equals(concept.getConceptId()))
 									continue;
 								
 								//should be a unique name amongst all preferred and fully specified names in its locale system wide

@@ -11,13 +11,14 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+
 package org.openmrs;
 
 /**
- * This is a type of order that adds tests specific attributes like: specimen source, laterality,
+ * This is a type of order that adds tests specific attributes like: laterality,
  * clinical history, etc.
- * 
- * @since 1.9
+ *
+ * @since 1.9.2, 1.10
  */
 public class TestOrder extends Order {
 	
@@ -40,18 +41,14 @@ public class TestOrder extends Order {
 	}
 	
 	/**
-	 * Gets the specimen source.
-	 *
-	 * @return the specimen source.
+	 * @return the specimenSource
 	 */
 	public Concept getSpecimenSource() {
 		return specimenSource;
 	}
 	
 	/**
-	 * Sets the specimen source.
-	 * 
-	 * @param specimenSource the specimen source to set.
+	 * @param specimenSource the specimenSource to set
 	 */
 	public void setSpecimenSource(Concept specimenSource) {
 		this.specimenSource = specimenSource;
@@ -59,9 +56,8 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Gets the laterality.
-	 * 
+	 *
 	 * @return the laterality.
-	 * @since 1.10
 	 */
 	public Laterality getLaterality() {
 		return laterality;
@@ -69,9 +65,8 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Sets the laterality.
-	 * 
+	 *
 	 * @param laterality the laterality to set.
-	 * @since 1.10
 	 */
 	public void setLaterality(Laterality laterality) {
 		this.laterality = laterality;
@@ -79,7 +74,7 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Gets the clinical history.
-	 * 
+	 *
 	 * @return the clinical history.
 	 */
 	public String getClinicalHistory() {
@@ -88,7 +83,7 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Sets the clinical history.
-	 * 
+	 *
 	 * @param clinicalHistory the clinical history to set.
 	 */
 	public void setClinicalHistory(String clinicalHistory) {

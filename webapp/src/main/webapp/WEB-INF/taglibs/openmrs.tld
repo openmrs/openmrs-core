@@ -178,16 +178,6 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
-	<attribute>
-		<description>
-			Specifies if text like 'Today' or 'Yesterday' can be prepended to the date in case the day of the year 
-			of the passed in date instance is the same as that of the current date instance or the day of the year 
-			of the passed in date instance is immediately before that of the current date instance respectively
-		</description>
-		<name>showTodayOrYesterday</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
 </tag>
 
 <tag>
@@ -411,12 +401,6 @@
 	</attribute>
 	<attribute>
 		<name>nameVar</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-		<type>java.lang.String</type>
-	</attribute>
-	<attribute>
-		<name>shortestNameVar</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
@@ -1208,11 +1192,6 @@
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 	<attribute>
-		<name>object</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
 		<name>concept</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
@@ -1359,11 +1338,6 @@
 	</attribute>
 	<attribute>
 		<name>form</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>caseConversion</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>

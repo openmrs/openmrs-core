@@ -29,7 +29,6 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -44,10 +43,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -55,9 +52,7 @@ import org.dbunit.dataset.DefaultDataSet;
 import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.stream.StreamingDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.dataset.xml.FlatXmlProducer;
 import org.dbunit.dataset.xml.XmlDataSet;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
@@ -67,23 +62,17 @@ import org.hibernate.dialect.H2Dialect;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
-import org.xml.sax.InputSource;
 
 /**
  * This is the base for spring/context tests. Tests that NEED to use calls to the Context class and
@@ -97,7 +86,6 @@ import org.xml.sax.InputSource;
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
         StartModuleExecutionListener.class })
 @Transactional
-@TransactionConfiguration(defaultRollback = true)
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
 	private static Log log = LogFactory.getLog(BaseContextSensitiveTest.class);
@@ -139,23 +127,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	private static Integer loadCount = 0;
 	
 	/**
-	 * Allows to determine if the DB is initialized with standard data
-	 */
-	private static boolean isBaseSetup;
-	
-	/**
-	 * Stores a user authenticated for running tests which allows to discover a situation when some
-	 * test authenticates as a different user and we need to revert to the original one
-	 */
-	private User authenticatedUser;
-	
-	/**
-	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
-	 */
-	@InjectMocks
-	protected ContextMockHelper contextMockHelper;
-	
-	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
 	 * the classloader and the properties file so that by the type spring gets around to finally
 	 * starting, the openmrs runtime properties are already in place A static load count is kept to
@@ -175,24 +146,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;
-	}
-	
-	/**
-	 * Initializes fields annotated with {@link Mock}.
-	 * 
-	 * @since 1.10
-	 */
-	@Before
-	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
-	}
-	
-	/**
-	 * @since 1.10
-	 */
-	@After
-	public void revertContextMocks() {
-		contextMockHelper.revertMocks();
 	}
 	
 	/**
@@ -249,7 +202,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// properties
 		if (useInMemoryDatabase() == true) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			runtimeProperties.setProperty(Environment.URL, "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000");
+			runtimeProperties.setProperty(Environment.URL, "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30");
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
 			runtimeProperties.setProperty(Environment.PASS, "");
@@ -291,13 +244,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @throws Exception
 	 */
 	public void authenticate() throws Exception {
-		if (Context.isAuthenticated() && Context.getAuthenticatedUser().equals(authenticatedUser)) {
+		if (Context.isAuthenticated())
 			return;
-		}
 		
 		try {
 			Context.authenticate("admin", "test");
-			authenticatedUser = Context.getAuthenticatedUser();
 			return;
 		}
 		catch (ContextAuthenticationException wrongCredentialsError) {
@@ -314,7 +265,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		String message = null;
 		
 		// only need to authenticate once per session
-		while (!Context.isAuthenticated() && attempts < 3) {
+		while (Context.isAuthenticated() == false && attempts < 3) {
 			
 			// look in the runtime properties for a defined username and
 			// password first
@@ -347,7 +298,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			// popup
 			try {
 				Context.authenticate(credentials[0], credentials[1]);
-				authenticatedUser = Context.getAuthenticatedUser();
 			}
 			catch (ContextAuthenticationException e) {
 				message = "Invalid username/password.  Try again.";
@@ -462,10 +412,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
-	 * Get the database connection currently in use by the testing framework.
-	 * <p>
-	 * Note that if you commit a transaction, any changes done by a test will not be rolled back and
-	 * you will need to clean up yourself by calling for example {@link #deleteAllData()}.
+	 * Get the database connection currently in use by the testing framework
 	 * 
 	 * @return Connection jdbc connection to the database
 	 */
@@ -477,46 +424,16 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
-	 * This initializes the empty in-memory database with some rows in order to actually run some
-	 * tests
+	 * This initializes the empty in-memory hsql database with some rows in order to actually run
+	 * some tests
 	 */
 	public void initializeInMemoryDatabase() throws Exception {
-		//Don't allow the user to overwrite data
-		if (!useInMemoryDatabase())
+		// don't allow the user to overwrite their data
+		if (useInMemoryDatabase() == false)
 			throw new Exception(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 		
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
-	}
-	
-	/**
-	 * Note that with the H2 DB this operation always commits an open transaction.
-	 * 
-	 * @param connection
-	 * @throws SQLException
-	 */
-	private void turnOnDBConstraints(Connection connection) throws SQLException {
-		String constraintsOnSql;
-		if (useInMemoryDatabase()) {
-			constraintsOnSql = "SET REFERENTIAL_INTEGRITY TRUE";
-		} else {
-			constraintsOnSql = "SET FOREIGN_KEY_CHECKS=1;";
-		}
-		PreparedStatement ps = connection.prepareStatement(constraintsOnSql);
-		ps.execute();
-		ps.close();
-	}
-	
-	private void turnOffDBConstraints(Connection connection) throws SQLException {
-		String constraintsOffSql;
-		if (useInMemoryDatabase()) {
-			constraintsOffSql = "SET REFERENTIAL_INTEGRITY FALSE";
-		} else {
-			constraintsOffSql = "SET FOREIGN_KEY_CHECKS=0;";
-		}
-		PreparedStatement ps = connection.prepareStatement(constraintsOffSql);
-		ps.execute();
-		ps.close();
 	}
 	
 	/**
@@ -545,29 +462,30 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			File file = new File(datasetFilename);
 			
 			InputStream fileInInputStreamFormat = null;
+			
+			// try to load the file if its a straight up path to the file or
+			// if its a classpath path to the file
+			if (file.exists())
+				fileInInputStreamFormat = new FileInputStream(datasetFilename);
+			else {
+				fileInInputStreamFormat = getClass().getClassLoader().getResourceAsStream(datasetFilename);
+				if (fileInInputStreamFormat == null)
+					throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+			}
+			
 			Reader reader = null;
 			try {
-				// try to load the file if its a straight up path to the file or
-				// if its a classpath path to the file
-				if (file.exists()) {
-					fileInInputStreamFormat = new FileInputStream(datasetFilename);
-				} else {
-					fileInInputStreamFormat = getClass().getClassLoader().getResourceAsStream(datasetFilename);
-					if (fileInInputStreamFormat == null)
-						throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
-				}
-				
 				reader = new InputStreamReader(fileInInputStreamFormat);
 				ReplacementDataSet replacementDataSet = new ReplacementDataSet(
 				        new FlatXmlDataSet(reader, false, true, false));
 				replacementDataSet.addReplacementObject("[NULL]", null);
 				xmlDataSetToRun = replacementDataSet;
-				
-				reader.close();
 			}
 			finally {
-				IOUtils.closeQuietly(fileInInputStreamFormat);
-				IOUtils.closeQuietly(reader);
+				fileInInputStreamFormat.close();
+				
+				if (reader != null)
+					reader.close();
 			}
 			
 			// cache the xmldataset for future runs of this file
@@ -575,41 +493,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		executeDataSet(xmlDataSetToRun);
-	}
-	
-	/**
-	 * Runs the large flat xml dataset. It does not cache the file as opposed to
-	 * {@link #executeDataSet(String)}.
-	 * 
-	 * @param datasetFilename
-	 * @throws Exception
-	 * @since 1.10
-	 */
-	public void executeLargeDataSet(String datasetFilename) throws Exception {
-		InputStream inputStream = null;
-		try {
-			final File file = new File(datasetFilename);
-			if (file.exists()) {
-				inputStream = new FileInputStream(datasetFilename);
-			} else {
-				inputStream = getClass().getClassLoader().getResourceAsStream(datasetFilename);
-				if (inputStream == null)
-					throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
-			}
-			
-			final FlatXmlProducer flatXmlProducer = new FlatXmlProducer(new InputSource(inputStream));
-			final StreamingDataSet streamingDataSet = new StreamingDataSet(flatXmlProducer);
-			
-			final ReplacementDataSet replacementDataSet = new ReplacementDataSet(streamingDataSet);
-			replacementDataSet.addReplacementObject("[NULL]", null);
-			
-			executeDataSet(replacementDataSet);
-			
-			inputStream.close();
-		}
-		finally {
-			IOUtils.closeQuietly(inputStream);
-		}
 	}
 	
 	/**
@@ -638,25 +521,23 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			InputStream fileInInputStreamFormat = null;
 			
+			// try to load the file if its a straight up path to the file or
+			// if its a classpath path to the file
+			if (file.exists())
+				fileInInputStreamFormat = new FileInputStream(datasetFilename);
+			else {
+				fileInInputStreamFormat = getClass().getClassLoader().getResourceAsStream(datasetFilename);
+				if (fileInInputStreamFormat == null)
+					throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+			}
+			
+			XmlDataSet xmlDataSet = null;
 			try {
-				// try to load the file if its a straight up path to the file or
-				// if its a classpath path to the file
-				if (file.exists())
-					fileInInputStreamFormat = new FileInputStream(datasetFilename);
-				else {
-					fileInInputStreamFormat = getClass().getClassLoader().getResourceAsStream(datasetFilename);
-					if (fileInInputStreamFormat == null)
-						throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
-				}
-				
-				XmlDataSet xmlDataSet = null;
 				xmlDataSet = new XmlDataSet(fileInInputStreamFormat);
 				xmlDataSetToRun = xmlDataSet;
-				
-				fileInInputStreamFormat.close();
 			}
 			finally {
-				IOUtils.closeQuietly(fileInInputStreamFormat);
+				fileInInputStreamFormat.close();
 			}
 			
 			// cache the xmldataset for future runs of this file
@@ -675,38 +556,67 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public void executeDataSet(IDataSet dataset) throws Exception {
 		Connection connection = getConnection();
 		
-		IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
-		
-		//Do the actual update/insert:
-		//insert new rows, update existing rows, and leave others alone
-		DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
-	}
-	
-	private IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
+		// convert the current session's connection to a dbunit connection
 		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
 		
+		// turn off the database constraints
 		if (useInMemoryDatabase()) {
-			//Setup the db connection to use H2 config.
+			// use the hsql datatypefactory so that boolean properties work correctly
 			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+			
+			// for the hsql database
+			String sql = "SET REFERENTIAL_INTEGRITY FALSE";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
+		} else {
+			// for the mysql database
+			String sql = "SET FOREIGN_KEY_CHECKS=0;";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
 		}
 		
-		return dbUnitConn;
+		// do the actual update/insert:
+		// insert new rows, update existing rows, and leave others alone
+		DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
+		
+		//turn foreign key checks back on
+		if (useInMemoryDatabase()) {
+			// for the hsql database
+			String sql = "SET REFERENTIAL_INTEGRITY TRUE";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
+		} else {
+			// for the mysql db
+			String sql = "SET FOREIGN_KEY_CHECKS=1;";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
+		}
 	}
 	
 	/**
-	 * This is a convenience method to clear out all rows in all tables in the current connection.
-	 * <p>
-	 * This operation always results in a commit.
+	 * This is a convenience method to clear out all rows in all tables in the current connection
 	 * 
 	 * @throws Exception
 	 */
+	@After
 	public void deleteAllData() throws Exception {
 		Connection connection = getConnection();
+		// convert the current session's connection to a dbunit connection
+		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
 		
-		turnOffDBConstraints(connection);
-		
-		IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
+		// turn off the database constraints so we can delete tables willy-nilly
+		if (useInMemoryDatabase()) {
+			// for the hsql database
+			String sql = "SET REFERENTIAL_INTEGRITY FALSE";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
+		}
 		
 		// find all the tables for this connection
 		ResultSet resultSet = connection.getMetaData().getTables(null, "PUBLIC", "%", null);
@@ -717,9 +627,17 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		// do the actual deleting/truncating
-		DatabaseOperation.DELETE_ALL.execute(dbUnitConn, dataset);
+		if (useInMemoryDatabase())
+			DatabaseOperation.DELETE_ALL.execute(dbUnitConn, dataset);
 		
-		turnOnDBConstraints(connection);
+		// turn constraints back on for this connection
+		if (useInMemoryDatabase()) {
+			// for the hsql database
+			String sql = "SET REFERENTIAL_INTEGRITY TRUE";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
+		}
 		
 		// clear the (hibernate) session to make sure nothing is cached, etc
 		Context.clearSession();
@@ -729,10 +647,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (Context.isSessionOpen())
 			Context.logout();
 		
-		//Commit, but note that it will be committed even earlier when turning on DB constraints
-		connection.commit();
-		
-		isBaseSetup = false;
 	}
 	
 	/**
@@ -752,9 +666,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * {@link #INITIAL_XML_DATASET_PACKAGE_PATH} and {@link #EXAMPLE_XML_DATASET_PACKAGE_PATH} xml
 	 * files. This method will also ask to be authenticated against the current Context and
 	 * database. The {@link #initializeInMemoryDatabase()} method has a user of admin:test.
-	 * <p>
-	 * If you annotate a test with "@SkipBaseSetup", this method will call {@link #deleteAllData()},
-	 * but only if you use the in memory DB.
 	 * 
 	 * @see SkipBaseSetup
 	 * @see SkipBaseSetupAnnotationExecutionListener
@@ -764,35 +675,21 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@Before
 	public void baseSetupWithStandardDataAndAuthentication() throws Exception {
-		// Open a session if needed
+		// only open one session per class
 		if (!Context.isSessionOpen()) {
 			Context.openSession();
 		}
 		
-		// The skipBaseSetup flag is controlled by the @SkipBaseSetup
-		// annotation. If it is deflagged or if the developer has
-		// marked this class as a non-inmemory database, skip these base steps.
-		if (useInMemoryDatabase()) {
-			if (!skipBaseSetup) {
-				if (!isBaseSetup) {
-					initializeInMemoryDatabase();
-					
-					executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
-					
-					//Commit so that it is not rolled back after a test.
-					getConnection().commit();
-					
-					isBaseSetup = true;
-				}
-				
-				authenticate();
-			} else {
-				if (isBaseSetup) {
-					deleteAllData();
-				}
-			}
+		// the skipBaseSetup flag is controlled by the @SkipBaseSetup
+		// annotation.  If it is deflagged or if the developer has
+		// marked this class as a non-inmemory database, skip these base steps
+		if (skipBaseSetup == false && useInMemoryDatabase()) {
+			initializeInMemoryDatabase();
+			
+			executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
+			
+			authenticate();
 		}
-		
 		Context.clearSession();
 	}
 	
@@ -802,11 +699,14 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * surrounded by a pair of open/close session calls.
 	 * 
 	 * @throws Exception
-	 * @deprecated As of 1.10 it does nothing.
 	 */
 	@AfterClass
-	@Deprecated
 	public static void closeSessionAfterEachClass() throws Exception {
+		// close any modules that might have been loaded by the @StartModules class annotation
+		ModuleUtil.shutdown();
+		
+		// clean up the session so we don't leak memory
+		Context.closeSession();
 	}
 	
 	/**

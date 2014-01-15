@@ -91,13 +91,13 @@ import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.annotation.AddOnStartup;
-import org.openmrs.annotation.HasAddOnStartupPrivileges;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -424,28 +424,23 @@ public class OpenmrsUtil {
 	public static Map<String, String> getCorePrivileges() {
 		Map<String, String> corePrivileges = new HashMap<String, String>();
 		
-		// TODO getCorePrivileges() is called so so many times that getClassesWithAnnotation() better do some catching.
-		List<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
-		
-		for (Class cls : classes) {
-			Field flds[] = cls.getDeclaredFields();
-			for (Field fld : flds) {
-				String fieldValue = null;
-				
-				AddOnStartup privilegeAnnotation = fld.getAnnotation(AddOnStartup.class);
-				if (null == privilegeAnnotation)
-					continue;
-				if (!privilegeAnnotation.core())
-					continue;
-				
-				try {
-					fieldValue = (String) fld.get(null);
-				}
-				catch (IllegalAccessException e) {
-					log.error("Field is inaccessible.", e);
-				}
-				corePrivileges.put(fieldValue, privilegeAnnotation.description());
+		Field flds[] = PrivilegeConstants.class.getDeclaredFields();
+		for (Field fld : flds) {
+			String fieldValue = null;
+			
+			AddOnStartup privilegeAnnotation = fld.getAnnotation(AddOnStartup.class);
+			if (null == privilegeAnnotation)
+				continue;
+			if (!privilegeAnnotation.core())
+				continue;
+			
+			try {
+				fieldValue = (String) fld.get(null);
 			}
+			catch (IllegalAccessException e) {
+				log.error("Field is inaccessible.", e);
+			}
+			corePrivileges.put(fieldValue, privilegeAnnotation.description());
 		}
 		
 		// always add the module core privileges back on
@@ -2497,7 +2492,6 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Checks whether the system is running in test mode
-	 * 
 	 * @return boolean
 	 */
 	
@@ -2570,7 +2564,6 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Gets OpenMRS version name under test mode.
-	 * 
 	 * @return String openmrs version number
 	 */
 	public static String getOpenMRSVersionInTestMode() {
@@ -2597,39 +2590,19 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * This method converts the given Long value to an Integer. If the Long value will not fit in an
-	 * Integer an exception is thrown
+	 * This method converts the given Long value to an Integer. If the Long
+	 * value will not fit in an Integer an exception is thrown
 	 * 
-	 * @param longValue the value to convert
+	 * @param longValue
+	 *            the value to convert
 	 * @return the long value in integer form.
-	 * @throws IllegalArgumentException if the long value does not fit into an integer
+	 * @throws IllegalArgumentException
+	 *             if the long value does not fit into an integer
 	 */
 	public static Integer convertToInteger(Long longValue) {
 		if (longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(longValue + " cannot be cast to Integer without changing its value.");
 		}
 		return longValue.intValue();
-	}
-	
-	/**
-	 * Checks if the passed in date's day of the year is the one that comes immediately before that
-	 * of the current date
-	 * 
-	 * @param date the date to check
-	 * @since 1.9
-	 * @return true if the date comes immediately before the current date otherwise false
-	 */
-	public static boolean isYesterday(Date date) {
-		if (date == null)
-			return false;
-		
-		Calendar c1 = Calendar.getInstance();
-		c1.add(Calendar.DAY_OF_YEAR, -1); // yesterday
-		
-		Calendar c2 = Calendar.getInstance();
-		c2.setTime(date);
-		
-		return (c1.get(Calendar.ERA) == c2.get(Calendar.ERA) && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1
-		        .get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR));
 	}
 }

@@ -13,10 +13,6 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,6 +22,10 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Test the methods in {@link DWRPatientsServiceTest}

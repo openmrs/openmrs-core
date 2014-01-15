@@ -22,7 +22,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.hl7.Hl7SourceForm.belowTitle" type="html" parameters="id=${hl7Source.id}" />
 
 <spring:hasBindErrors name="hl7Source">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
@@ -50,7 +50,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				<c:out value="${hl7Source.creator.personName}" /> -
+				${hl7Source.creator.personName} -
 				<openmrs:formatDate date="${hl7Source.dateCreated}" type="long" />
 			</td>
 		</tr>

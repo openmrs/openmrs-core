@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.hibernate.FlushMode;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -43,6 +44,7 @@ import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 /**
@@ -52,11 +54,14 @@ import org.springframework.validation.Errors;
  * 
  * <pre>
  * 
+ * 
+ * 
  * List&lt;GlobalProperty&gt; globalProperties = Context.getAdministrationService().getGlobalProperties();
  * </pre>
  * 
  * @see org.openmrs.api.context.Context
  */
+@Transactional
 public interface AdministrationService extends OpenmrsService {
 	
 	/**
@@ -348,6 +353,23 @@ public interface AdministrationService extends OpenmrsService {
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 	
 	/**
+	 * Updates the concept set derived business table for this concept (bursting the concept sets)
+	 * 
+	 * @param concept
+	 * @throws APIException
+	 * @deprecated moved to {@link org.openmrs.api.ConceptService#updateConceptSetDerived(Concept)};
+	 */
+	public void updateConceptSetDerived(Concept concept) throws APIException;
+	
+	/**
+	 * Iterates over all concepts calling updateConceptSetDerived(concept)
+	 * 
+	 * @throws APIException
+	 * @deprecated moved to {@link org.openmrs.api.ConceptService#updateConceptSetDerived()}
+	 */
+	public void updateConceptSetDerived() throws APIException;
+	
+	/**
 	 * Create a concept proposal
 	 * 
 	 * @param cp
@@ -396,7 +418,7 @@ public interface AdministrationService extends OpenmrsService {
 	/**
 	 * @deprecated use the mrngen module instead
 	 */
-	
+	@Transactional(readOnly = true)
 	public Collection<?> getMRNGeneratorLog();
 	
 	/**
@@ -407,6 +429,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
+	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws APIException;
 	
 	/**
@@ -415,7 +438,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return a map from variable name to variable value
 	 * @should return all registered system variables
 	 */
-	
+	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
 	public SortedMap<String, String> getSystemVariables() throws APIException;
 	
@@ -425,6 +448,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return a map from variable name to a map of the information
 	 * @should return all system information
 	 */
+	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
 	public Map<String, Map<String, String>> getSystemInformation() throws APIException;
 	
@@ -441,6 +465,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should get property value given valid property name
 	 * @should get property in case insensitive way
 	 */
+	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException;
 	
 	/**
@@ -457,6 +482,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should return default value if property name does not exist
 	 * @should not fail with null default value
 	 */
+	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException;
 	
 	/**
@@ -466,6 +492,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return the global property that matches the given <code>propertyName</code>
 	 * @should return null when no global property match given property name
 	 */
+	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
@@ -476,6 +503,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.5
 	 * @should return all relevant global properties in the database
 	 */
+	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
 	
 	/**
@@ -486,6 +514,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @since 1.6
 	 * @should return all relevant global properties in the database
 	 */
+	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
 	
 	/**
@@ -494,12 +523,14 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return list of global properties
 	 * @should return all global properties in the database
 	 */
+	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> getAllGlobalProperties() throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllGlobalProperties()}
 	 */
+	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalProperties();
 	
 	/**
@@ -552,29 +583,15 @@ public interface AdministrationService extends OpenmrsService {
 	public void deleteGlobalProperty(String propertyName);
 	
 	/**
-	 * Save the given global property to the database. If the global property already exists,
-	 * then it will be overwritten
+	 * Use
 	 * 
-	 * @param propertyName the name of the global property to save
-	 * @param propertyValue the value of the global property to save
-	 * @should create global property in database
-	 * @should overwrite global property if exists
-	 * @should save a global property whose typed value is handled by a custom datatype
+	 * <pre>
+	 * saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
+	 * </pre>
+	 * 
+	 * @deprecated use #saveGlobalProperty(GlobalProperty)
 	 */
 	public void setGlobalProperty(String propertyName, String propertyValue);
-	
-	/**
-	 * Overwrites the value of the global property if it already exists. If the global property does
-	 * not exist, an exception will be thrown
-	 * @since 1.10
-	 * @param propertyName  the name of the global property to overwrite
-	 * @param propertyValue  the value of the global property to overwrite
-	 * @throws IllegalStateException
-	 * @should update global property in database
-	 * @should fail if global property being updated does not already exist
-	 * @should update a global property whose typed value is handled by a custom datatype
-	 */
-	public void updateGlobalProperty(String propertyName, String propertyValue) throws IllegalStateException;
 	
 	/**
 	 * Save the given global property to the database
@@ -641,6 +658,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return ImplementationId object that is this implementation's unique id
 	 * @should return null if no implementation id is defined yet
 	 */
+	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID)
 	public ImplementationId getImplementationId() throws APIException;
 	
@@ -671,6 +689,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should not fail if not global property for locales allowed defined yet
 	 * @should not return duplicates even if the global property has them
 	 */
+	@Transactional(readOnly = true)
 	public List<Locale> getAllowedLocales();
 	
 	/**
@@ -683,6 +702,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should return at least one locale if no locales defined in database yet
 	 * @should not return more locales than message source service locales
 	 */
+	@Transactional(readOnly = true)
 	public Set<Locale> getPresentationLocales();
 	
 	/**
@@ -702,6 +722,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param fieldName name of the field to get the length for
 	 * @return the max field length of a property
 	 */
+	@Transactional(readOnly = true)
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName);
 	
 	/**
@@ -709,13 +730,14 @@ public interface AdministrationService extends OpenmrsService {
 	 * <p>
 	 * Used by {@link ValidateUtil#validate(Object)}.
 	 * 
+	 * @see FlushMode
 	 * @since 1.9
 	 * @param object
 	 * @param errors
 	 * @should pass for a valid object
 	 * @should fail for an invalid object
-	 * @should throw throw APIException if the input is null
 	 */
+	@Transactional(readOnly = true)
 	public void validate(Object object, Errors errors) throws APIException;
 	
 	/**

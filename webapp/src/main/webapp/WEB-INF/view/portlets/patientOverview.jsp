@@ -22,14 +22,13 @@
 	</openmrs:hasPrivilege>
 </openmrs:extensionPoint>
 
-<openmrs:hasPrivilege privilege="Patient Overview - View Patient Actions">
 <div id="patientActionsBoxHeader" class="boxHeader${model.patientVariation}"><openmrs:message code="Patient.actions" /></div>
 <div id="patientActionsBox" class="box${model.patientVariation}">
 	<table id="patientActions">
 		<tr class="patientActionsRow">
 			<td id="patientActionsPatientSummary">
 				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.patientSummary" parameters="patientId=${model.patient.patientId}">
-					<a href="javascript:window.open('<openmrs_tag:url value="${extension.url}"/>?patientId=<c:out value="${model.patient.patientId}" />', 'summaryWindow', 'toolbar=no,width=660,height=600,resizable=yes,scrollbars=yes').focus()"><c:out value="${extension.label}" /></a>
+					<a href="javascript:window.open('${extension.url}?patientId=${model.patient.patientId}', 'summaryWindow', 'toolbar=no,width=660,height=600,resizable=yes,scrollbars=yes').focus()">${extension.label}</a>
 				</openmrs:extensionPoint>
 			</td>
 		</tr>
@@ -121,7 +120,7 @@
 								var exitTypeText = exitTypeSelect[exitTypeSelect.selectedIndex].text;
 								var answer = confirm("<openmrs:message code="Patient.outcome.readyToSubmit" />" + "\n<openmrs:message code="Patient.outcome.exitType" />: " + exitTypeText + "\n<openmrs:message code="Patient.outcome.exitDate" />: " + outcomeDate);
 								if ( answer ) {
-									DWRPatientService.exitPatientFromCare( <c:out value="${model.patient.patientId}" />, outcomeType, outcomeDate, outcomeCauseOfDeath, outcomeCauseOther, confirmExit );
+									DWRPatientService.exitPatientFromCare( ${model.patient.patientId}, outcomeType, outcomeDate, outcomeCauseOfDeath, outcomeCauseOther, confirmExit );
 								}
 							}
 						}
@@ -181,14 +180,14 @@
 	</div>
 	<p>
 </c:if>
-</openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Patient Overview - View Programs">
+<openmrs:hasPrivilege privilege="View Patient Programs">
 	<div id="patientProgramsBoxHeader" class="boxHeader${model.patientVariation}"><openmrs:message code="Program.title"/></div>
 	<div id="patientProgramsBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
 	</div>
 	<br/>
+</openmrs:hasPrivilege>
 
 <openmrs:globalProperty var="conceptIdsToUse" key="dashboard.overview.showConcepts" />
 <c:if test="${not empty conceptIdsToUse}">
@@ -198,9 +197,8 @@
 	</div>
 	<br/>
 </c:if>
-</openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Patient Overview - View Relationships">
+<openmrs:hasPrivilege privilege="View Relationships">
 	<div id="patientRelationshipsBoxHeader" class="boxHeader${model.patientVariation}"><openmrs:message code="Relationship.relationships" /></div>
 	<div id="patientRelationshipsBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="personRelationships" size="normal" patientId="${patient.patientId}" />
@@ -208,7 +206,7 @@
 	<br/>
 </openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Patient Overview - View Allergies">
+<openmrs:hasPrivilege privilege="View Allergies">
 	<div id="patientActiveListsAllergyBoxHeader" class="boxHeader${model.patientVariation}"><openmrs:message code="ActiveLists.allergy.title" /></div>
 	<div id="patientActiveListsAllergyBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="activeListAllergy" patientId="${patient.patientId}" parameters="type=allergy"/>
@@ -216,7 +214,7 @@
 	<br/>
 </openmrs:hasPrivilege>
 
-<openmrs:hasPrivilege privilege="Patient Overview - View Problem List">
+<openmrs:hasPrivilege privilege="View Problems">
 	<div id="patientActiveListsProblemBoxHeader" class="boxHeader${model.patientVariation}"><openmrs:message code="ActiveLists.problem.title" /></div>
 	<div id="patientActiveListsProblemBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="activeListProblem" patientId="${patient.patientId}" parameters="type=problem"/>

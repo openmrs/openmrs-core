@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,8 +24,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -78,12 +76,16 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String)
-	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String gender)
+	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException {
 		if (birthyear == null)
 			birthyear = 0;
+		
+		// TODO return the matched name instead of the primary name
+		// possible solution: "select new" org.openmrs.PersonListItem and return
+		// a list of those
 		
 		Set<Person> people = new LinkedHashSet<Person>();
 		
@@ -250,89 +252,25 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPeople(java.lang.String, java.lang.Boolean)
-	 *
-	 * @should get no one by null
-	 * @should get every one by empty string
-	 *
-	 * @should get no one by non-existing attribute
-	 * @should get no one by non-searchable attribute
-	 * @should get no one by voided attribute
-	 * @should get one person by attribute
-	 * @should get one person by random case attribute
-	 * @should get one person by searching for a mix of attribute and voided attribute
-	 * @should get multiple people by single attribute
-	 * @should get multiple people by multiple attributes
-	 *
-	 * @should get no one by non-existing name
-	 * @should get one person by name
-	 * @should get one person by random case name
-	 * @should get multiple people by single name
-	 * @should get multiple people by multiple names
-	 *
-	 * @should get no one by non-existing name and non-existing attribute
-	 * @should get no one by non-existing name and non-searchable attribute
-	 * @should get no one by non-existing name and voided attribute
-	 * @should get one person by name and attribute
-	 * @should get one person by name and voided attribute
-	 * @should get multiple people by name and attribute
-	 *
-	 * @should get one person by given name
-	 * @should get multiple people by given name
-	 *
-	 * @should get one person by middle name
-	 * @should get multiple people by middle name
-	 *
-	 * @should get one person by family name
-	 * @should get multiple people by family name
-	 *
-	 * @should get one person by family name2
-	 * @should get multiple people by family name2
-	 *
-	 * @should get one person by multiple name parts
-	 * @should get multiple people by multiple name parts
-	 *
-	 * @should get no one by voided name
-	 * @should not get voided person
-	 *
-	 * @should not get dead person
-	 * @should get single dead person
-	 * @should get multiple dead people
 	 */
-	
 	@SuppressWarnings("unchecked")
-	public List<Person> getPeople(String searchString, Boolean dead) {
-		if (searchString == null)
-			return new ArrayList<Person>();
-		
-		searchString = searchString.replace(", ", " ");
-		String[] values = searchString.split(" ");
+	public List<Person> getPeople(String name, Boolean dead) {
+		name = name.replace(", ", " ");
+		String[] names = name.split(" ");
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
-		
-		criteria.createAlias("names", "name", CriteriaSpecification.LEFT_JOIN);
-		criteria.createAlias("attributes", "attribute", CriteriaSpecification.LEFT_JOIN);
-		criteria.createAlias("attribute.attributeType", "attributeType", CriteriaSpecification.LEFT_JOIN);
-		
-		criteria.add(Restrictions.eq("personVoided", false));
-		if (dead != null)
-			criteria.add(Restrictions.eq("dead", dead));
-		
-		Disjunction disjunction = Restrictions.disjunction();
-		for (String value : values) {
-			if (value != null && value.length() > 0) {
-				disjunction.add(
-				    Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
-				        Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START)).add(
-				            Restrictions.ilike("name.middleName", value, MatchMode.START)).add(
-				            Restrictions.ilike("name.familyName", value, MatchMode.START)).add(
-				            Restrictions.ilike("name.familyName2", value, MatchMode.START)))).add(
-				    Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
-				        Restrictions.eq("attribute.voided", false)).add(
-				        Restrictions.ilike("attribute.value", value, MatchMode.ANYWHERE)));
+		criteria.createAlias("names", "name");
+		for (String n : names) {
+			if (n != null && n.length() > 0) {
+				criteria.add(Expression.or(Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression
+				        .like("name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
+				    MatchMode.START), Expression.like("name.familyName2", n, MatchMode.START)))));
 			}
 		}
-		criteria.add(disjunction);
 		
+		criteria.add(Expression.eq("personVoided", false));
+		if (dead != null)
+			criteria.add(Expression.eq("dead", dead));
 		criteria.addOrder(Order.asc("personId"));
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		criteria.setMaxResults(getMaximumSearchResults());
@@ -409,7 +347,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			criteria.add(Expression.eq("retired", false));
 		}
 		
 		criteria.addOrder(Order.asc("sortWeight"));
@@ -421,23 +359,22 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getPersonAttributeTypes(java.lang.String, java.lang.String,
 	 *      java.lang.Integer, java.lang.Boolean)
 	 */
-	// TODO - PersonServiceTest fails here
 	@SuppressWarnings("unchecked")
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	        Boolean searchable) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
 		if (exactName != null)
-			criteria.add(Restrictions.eq("name", exactName));
+			criteria.add(Expression.eq("name", exactName));
 		
 		if (format != null)
-			criteria.add(Restrictions.eq("format", format));
+			criteria.add(Expression.eq("format", format));
 		
 		if (foreignKey != null)
-			criteria.add(Restrictions.eq("foreignKey", foreignKey));
+			criteria.add(Expression.eq("foreignKey", foreignKey));
 		
 		if (searchable != null)
-			criteria.add(Restrictions.eq("searchable", searchable));
+			criteria.add(Expression.eq("searchable", searchable));
 		
 		return criteria.list();
 	}
@@ -462,7 +399,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
 		if (!includeVoided) {
-			criteria.add(Restrictions.eq("voided", false));
+			criteria.add(Expression.eq("voided", false));
 		}
 		
 		return criteria.list();
@@ -479,13 +416,13 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
 		if (fromPerson != null)
-			criteria.add(Restrictions.eq("personA", fromPerson));
+			criteria.add(Expression.eq("personA", fromPerson));
 		if (toPerson != null)
-			criteria.add(Restrictions.eq("personB", toPerson));
+			criteria.add(Expression.eq("personB", toPerson));
 		if (relType != null)
-			criteria.add(Restrictions.eq("relationshipType", relType));
+			criteria.add(Expression.eq("relationshipType", relType));
 		
-		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Expression.eq("voided", false));
 		
 		return criteria.list();
 	}
@@ -502,28 +439,27 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
 		if (fromPerson != null)
-			criteria.add(Restrictions.eq("personA", fromPerson));
+			criteria.add(Expression.eq("personA", fromPerson));
 		if (toPerson != null)
-			criteria.add(Restrictions.eq("personB", toPerson));
+			criteria.add(Expression.eq("personB", toPerson));
 		if (relType != null)
-			criteria.add(Restrictions.eq("relationshipType", relType));
+			criteria.add(Expression.eq("relationshipType", relType));
 		if (startEffectiveDate != null) {
 			criteria.add(Restrictions.disjunction().add(
-			    Restrictions.and(Restrictions.le("startDate", startEffectiveDate), Restrictions.ge("endDate",
-			        startEffectiveDate))).add(
-			    Restrictions.and(Restrictions.le("startDate", startEffectiveDate), Restrictions.isNull("endDate"))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.ge("endDate", startEffectiveDate))).add(
+			    Restrictions.and(Expression.le("startDate", startEffectiveDate), Expression
+			            .ge("endDate", startEffectiveDate))).add(
+			    Restrictions.and(Expression.le("startDate", startEffectiveDate), Restrictions.isNull("endDate"))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Expression.ge("endDate", startEffectiveDate))).add(
 			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
 		}
 		if (endEffectiveDate != null) {
 			criteria.add(Restrictions.disjunction().add(
-			    Restrictions.and(Restrictions.le("startDate", endEffectiveDate), Restrictions
-			            .ge("endDate", endEffectiveDate))).add(
-			    Restrictions.and(Restrictions.le("startDate", endEffectiveDate), Restrictions.isNull("endDate"))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.ge("endDate", endEffectiveDate))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
+			    Restrictions.and(Expression.le("startDate", endEffectiveDate), Expression.ge("endDate", endEffectiveDate)))
+			        .add(Restrictions.and(Expression.le("startDate", endEffectiveDate), Restrictions.isNull("endDate")))
+			        .add(Restrictions.and(Restrictions.isNull("startDate"), Expression.ge("endDate", endEffectiveDate)))
+			        .add(Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
 		}
-		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Expression.eq("voided", false));
 		
 		return criteria.list();
 	}
@@ -552,7 +488,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		    new StringType()));
 		
 		if (preferred != null)
-			criteria.add(Restrictions.eq("preferred", preferred));
+			criteria.add(Expression.eq("preferred", preferred));
 		
 		return criteria.list();
 	}
@@ -726,7 +662,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PersonDAO#getAllPersonMergeLogs()
+	 * @see org.openmrs.api.db.PersonDAO#getPersonMergeLogsByWinner(Person)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -779,8 +715,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
 		criteria.addOrder(Order.asc("weight"));
 		
-		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+		if (includeRetired == false) {
+			criteria.add(Expression.eq("retired", false));
 		}
 		
 		return criteria.list();

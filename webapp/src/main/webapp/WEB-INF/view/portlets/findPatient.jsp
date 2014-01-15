@@ -153,12 +153,6 @@
 			
 			<script type="text/javascript">
 				var lastSearch;
-				
-				// Get relevant parameter value, in current URL
-				function getURLParameter(name) {
-					return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20')) || null;
-				}
-				
 				$j(document).ready(function() {
 					new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler,
 						[	{fieldName:"identifier", header:omsgs.identifier},
@@ -167,13 +161,11 @@
 							{fieldName:"familyName", header:omsgs.familyName},
 							{fieldName:"age", header:omsgs.age},
 							{fieldName:"gender", header:omsgs.gender},
-							{fieldName:"birthdateString", header:omsgs.birthdate},
-							{fieldName:"deathDateString", header:omsgs.deathdate}
+							{fieldName:"birthdateString", header:omsgs.birthdate}
 						],
 						{
                             searchLabel: '<openmrs:message code="Patient.searchBox" javaScriptEscape="true"/>',
                             searchPlaceholder:'<openmrs:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>',
-                            lastSearchParams : getURLParameter('lastSearchText') ? {'lastSearchText' : getURLParameter('lastSearchText')} : null,
                             attributes: [
                                      	<c:forEach var="attribute" items="${fn:split(attributesToList, ',')}" varStatus="varStatus">
                                            <c:if test="${fn:trim(attribute) != ''}">
@@ -203,13 +195,6 @@
 				});
 
 				function doSelectionHandler(index, data) {
-					// Check the browser compatibility and, add an entry to history
-					if (window.history.pushState) {
-						window.history.pushState(
-							{}, "",
-							document.location.pathname + "?lastSearchText=" + document.getElementById('inputNode').value
-						);
-					}
 					document.location = "${model.postURL}?patientId=" + data.patientId + "&phrase=" + lastSearch;
 				}
 
@@ -245,7 +230,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html"
 		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-			<a href="<openmrs_tag:url value="${extension.url}"/>"><openmrs:message code="${extension.label}"/></a>
+			<a href="${extension.url}"><openmrs:message code="${extension.label}"/></a>
 			<br/>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>
@@ -255,7 +240,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html"
 		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-			<a href="<openmrs_tag:url value="${extension.url}"/>"><openmrs:message code="${extension.label}"/></a>
+			<a href="${extension.url}"><openmrs:message code="${extension.label}"/></a>
 			<br/>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>

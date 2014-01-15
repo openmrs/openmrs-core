@@ -155,19 +155,7 @@
 			<i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i>
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 		</spring:bind>
-		&nbsp; &nbsp;
-
-    	<openmrs:message code="Person.deathdateEstimated"/>
-			<spring:bind path="deathdateEstimated">
-				<input type="hidden" name="_${status.expression}"> 
-                   <input type="checkbox" name="${status.expression}" value="true" 
-					<c:if test="${status.value == true}">checked</c:if> 
-					   id="deathdateEstimatedInput" 
-				 />					
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-			&nbsp; 
-		 
+		&nbsp; &nbsp; 
 		<openmrs:message code="Person.causeOfDeath"/>
 		<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
 		<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
@@ -188,7 +176,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				<c:out value="${status.value.personName}" /> -
+				${status.value.personName} -
 				<openmrs:formatDate path="dateCreated" type="long" />
 			</td>
 		</tr>
@@ -200,7 +188,7 @@
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
 			<td colspan="2">
-				<c:out value="${status.value.personName}" /> -
+				${status.value.personName} -
 				<openmrs:formatDate path="dateChanged" type="long" />
 			</td>
 		</tr>
@@ -222,7 +210,7 @@
 		<tr>
 			<td><openmrs:message code="general.voidedBy"/></td>
 			<td>
-				<c:out value="${status.value.personName}" /> -
+				${status.value.personName} -
 				<openmrs:formatDate path="dateVoided" type="long" />
 			</td>
 		</tr>

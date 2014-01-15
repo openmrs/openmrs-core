@@ -41,7 +41,9 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public interface PatientSetService extends OpenmrsService {
 	
 	public void setPatientSetDAO(PatientSetDAO dao);
@@ -53,12 +55,16 @@ public interface PatientSetService extends OpenmrsService {
 	 * @return an XML representation of this patient-set, including patient characteristics, and
 	 *         observations
 	 */
+	@Transactional(readOnly = true)
 	public String exportXml(Cohort ps);
 	
+	@Transactional(readOnly = true)
 	public String exportXml(Integer patientId);
 	
+	@Transactional(readOnly = true)
 	public Cohort getAllPatients() throws DAOException;
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException;
 	
 	/**
@@ -81,6 +87,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @should get patients who are alive
 	 * @should get patients who are dead
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	        Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
 	
@@ -106,9 +113,11 @@ public interface PatientSetService extends OpenmrsService {
 	 * @should get patients who are dead
 	 * @should not get patients born after effectiveDate
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	        Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate) throws DAOException;
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier,
 	        PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate);
 	
@@ -125,6 +134,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @should get patients by concept and true boolean value
 	 * @should get patients by concept and false boolean value
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, Modifier modifier, Object value,
 	        Date fromDate, Date toDate);
 	
@@ -141,6 +151,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @return all patients with encounters matching the arguments to this method
 	 * @should get all patients with encounters when no parameters specified
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate,
 	        Date toDate, Integer minCount, Integer maxCount);
 	
@@ -167,6 +178,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @should get patients with at most n encounters
 	 * @should get all patients with encounters when passed an empty encounterTypeList
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
 	        Date fromDate, Date toDate, Integer minCount, Integer maxCount);
 	
@@ -190,23 +202,32 @@ public interface PatientSetService extends OpenmrsService {
 	 * @should get patients in state to date
 	 * @should get patients in state between dates
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate,
 	        Date toDate);
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsInProgram(Program program, Date fromDate, Date toDate);
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime);
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier);
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier);
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingLocation(Location loc);
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingLocation(Location loc, PatientLocationMethod method);
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingLocation(Integer locationId);
 	
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingLocation(Integer locationId, PatientLocationMethod method);
 	
 	/**
@@ -218,6 +239,7 @@ public interface PatientSetService extends OpenmrsService {
 	 *            "any drug" or NULL to mean "no drugs")
 	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate);
 	
 	/**
@@ -241,6 +263,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @should get patients with drug orders to date
 	 * @should get patients with drug order for drug between dates
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> drugIds,
 	        GroupMethod groupMethod, Date fromDate, Date toDate);
 	
@@ -249,6 +272,7 @@ public interface PatientSetService extends OpenmrsService {
 	 *         dates within a range, with end dates within a range, and a reason for
 	 *         discontinuation.
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingDrugOrder(List<Drug> drug, List<Concept> drugConcept, Date startDateFrom,
 	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> discontinuedReason);
 	
@@ -260,15 +284,19 @@ public interface PatientSetService extends OpenmrsService {
 	 * @return Cohort of patients who have a person attribute (optionally) with attributeType of
 	 *         attribute and (optionally) value of value.
 	 */
+	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value);
 	
+	@Transactional(readOnly = true)
 	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds);
 	
+	@Transactional(readOnly = true)
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept);
 	
 	/**
 	 * Date range is inclusive of both endpoints
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate);
 	
 	/**
@@ -278,6 +306,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param c
 	 * @return Map<patientId, List<Obs values>>
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c);
 	
 	/**
@@ -285,6 +314,7 @@ public interface PatientSetService extends OpenmrsService {
 	 *             instead
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes);
 	
 	/**
@@ -302,6 +332,7 @@ public interface PatientSetService extends OpenmrsService {
 	 *            List<List<Object>>
 	 * @return <code>Map<patientId, List<List< attribute value >>></code>
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
 	        Integer limit, boolean showMostRecentFirst);
 	
@@ -312,6 +343,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param encType the type of the encounter
 	 * @return Map<Integer, Encounter> of patientId to encounters matching a specific type
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType);
 	
 	/**
@@ -331,6 +363,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param encType List<EncounterType> to include in the search
 	 * @return Map<Integer, Encounter> of patientId to encounters matching a specific type
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> encType);
 	
 	/**
@@ -342,6 +375,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param patients Cohort of patients to search
 	 * @return Map<Integer, Encounter> of all encounters for specified patients.
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getEncounters(Cohort patients);
 	
 	/**
@@ -352,6 +386,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from
 	 *         a specific type
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType);
 	
 	/**
@@ -362,6 +397,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from
 	 *         a specific list of types
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, List<EncounterType> types);
 	
 	/**
@@ -372,6 +408,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param attr
 	 * @return Map<Integer, Object> of patientId to first encounters properties
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Object> getFirstEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr);
 	
 	/**
@@ -383,6 +420,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param returnAll
 	 * @return Map<Integer, Object> of patientId to patient properties
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll);
 	
 	/**
@@ -393,6 +431,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param returnAll
 	 * @return Map<Integer, Object> of patientId to patient properties
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String classNameDotProperty, boolean returnAll);
 	
 	/**
@@ -405,6 +444,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param returnAll
 	 * @return Map<Integer, Object> of patientId to person properties
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeName, String joinClass,
 	        String joinProperty, String outputColumn, boolean returnAll);
 	
@@ -414,6 +454,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param patients Cohort of patients to look up
 	 * @return Map<Integer,Map<String,Object>> with characteristics of specified patients
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
 	
 	/**
@@ -423,6 +464,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @deprecated use method by same name that returns just the string instead of the whole object
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type);
 	
 	/**
@@ -432,6 +474,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param type PatientIdentifierType to retrieve
 	 * @return Map of patient identifiers (strings) for all patients in the specified cohort
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, String> getPatientIdentifierStringsByType(Cohort patients, PatientIdentifierType type);
 	
 	/**
@@ -440,6 +483,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param identifiers List of String patient identifiers
 	 * @return Cohort of patients matching specified identifiers
 	 */
+	@Transactional(readOnly = true)
 	public Cohort convertPatientIdentifier(List<String> identifiers);
 	
 	/**
@@ -448,6 +492,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param patientIds
 	 * @return List of matching patients
 	 */
+	@Transactional(readOnly = true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
 	
 	/**
@@ -459,8 +504,10 @@ public interface PatientSetService extends OpenmrsService {
 	 * 
 	 * @should return an empty map if cohort is empty
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf);
 	
+	@Transactional(readOnly = true)
 	public Map<Integer, PatientProgram> getCurrentPatientPrograms(Cohort ps, Program program);
 	
 	/**
@@ -472,16 +519,20 @@ public interface PatientSetService extends OpenmrsService {
 	 * @return a Map from patientId to PatientProgram
 	 * @should get program enrollments for the given cohort
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, PatientProgram> getPatientPrograms(Cohort ps, Program program);
 	
+	@Transactional(readOnly = true)
 	public Map<Integer, List<Relationship>> getRelationships(Cohort ps, RelationshipType relType);
 	
+	@Transactional(readOnly = true)
 	public Map<Integer, List<Person>> getRelatives(Cohort ps, RelationshipType relType, boolean forwards);
 	
 	/**
 	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's
 	 *         null)
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(Cohort ps, Concept drugSet);
 	
 	/**
@@ -489,6 +540,7 @@ public interface PatientSetService extends OpenmrsService {
 	 *         drugs if that's null)
 	 * @should return an empty list if cohort is empty
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort ps, Concept drugSet);
 	
 	/**
@@ -498,6 +550,7 @@ public interface PatientSetService extends OpenmrsService {
 	 *            patients)
 	 * @param form List<Form> of the forms to filter by
 	 */
+	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByForm(Cohort patients, List<Form> form);
 	
 	public enum Modifier {

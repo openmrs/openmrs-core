@@ -24,12 +24,14 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service contains methods relating to providers.
  * 
  * @since 1.9
  */
+@Transactional
 @Handler(supports = Provider.class)
 public interface ProviderService extends OpenmrsService {
 	
@@ -41,6 +43,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get all providers
 	 */
 	
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getAllProviders();
 	
@@ -50,6 +53,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @param includeRetired - whether or not to include retired Provider
 	 * @should get all providers that are unretired
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getAllProviders(boolean includeRetired);
 	
@@ -88,6 +92,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return the provider by it's id
 	 * @should get provider given ID
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Provider getProvider(Integer providerId);
 	
@@ -107,6 +112,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return the Provider object having the given uuid
 	 * @should get provider given Uuid
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Provider getProviderByUuid(String uuid);
 	
@@ -118,6 +124,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should return providers for given person
 	 * @should fail if person is null
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Collection<Provider> getProvidersByPerson(Person person);
 	
@@ -132,6 +139,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should fail if person is null
 	 * @since 1.10, 1.9.1
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired);
 	
@@ -154,6 +162,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should return all providers if query is empty
 	 * @should find provider by identifier
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes, boolean includeRetired);
@@ -174,7 +183,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get all visits with given attribute values
 	 * @should not find any visits if none have given attribute values
 	 * @should return all providers if query is empty
-	 * @should return retired providers
+	 * @should not return retired providers
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public List<Provider> getProviders(String query, Integer start, Integer length,
@@ -185,6 +194,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return Count-Integer
 	 * @should exclude retired providers
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Integer getCountOfProviders(String query);
 	
@@ -199,7 +209,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should include retired providers if includeRetired is set to true
 	 * @since 1.9.4
 	 */
-	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Integer getCountOfProviders(String query, boolean includeRetired);
 	
 	/**
@@ -209,6 +219,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return a list of provider attribute type objects.
 	 * @should get all provider attribute types including retired by default
 	 */
+	@Transactional(readOnly = true)
 	public List<ProviderAttributeType> getAllProviderAttributeTypes();
 	
 	/**
@@ -219,6 +230,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should get all provider attribute types excluding retired
 	 * @should get all provider attribute types including retired
 	 */
+	@Transactional(readOnly = true)
 	public List<ProviderAttributeType> getAllProviderAttributeTypes(boolean includeRetired);
 	
 	/**
@@ -303,6 +315,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @should return true if the identifier is null
 	 * @should return true if the identifier is a blank string
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public boolean isProviderIdentifierUnique(Provider provider) throws APIException;
 	
@@ -313,6 +326,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @return a {@link Provider}
 	 * @should get a provider matching the specified identifier ignoring case
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Provider getProviderByIdentifier(String identifier);
 }

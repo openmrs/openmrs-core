@@ -60,12 +60,15 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.afterTitle" type="html" parameters="drugId=${drug.drugId}" />
 
+<openmrs:globalProperty var="dosageFormConceptClasses" key="conceptDrug.dosageForm.conceptClasses" defaultValue=""/>
+<openmrs:globalProperty var="routeConceptClasses" key="conceptDrug.route.conceptClasses" defaultValue=""/>
+
 <c:if test="${drug.retired}">
 <form action="" method="post">
 	<div class="retiredMessage">
 	<div>
 	<openmrs:message code="ConceptDrug.retiredMessage"/>
-	<c:out value="${drug.retiredBy.personName}" />
+	${drug.retiredBy.personName}
 				<openmrs:formatDate date="${drug.dateRetired}" type="medium" />
 				-
 				${drug.retireReason}
@@ -77,12 +80,9 @@
 </c:if>
 
 <spring:hasBindErrors name="drug">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
-
-<openmrs:globalProperty var="dosageFormConceptClasses" key="conceptDrug.dosageForm.conceptClasses" defaultValue=""/>
-<openmrs:globalProperty var="routeConceptClasses" key="conceptDrug.route.conceptClasses" defaultValue=""/>
 
 <form method="post">
 <fieldset>
@@ -91,8 +91,8 @@
 		<th><openmrs:message code="general.name"/></th>
 		<td>
 			<spring:bind path="drug.name">			
-				<input type="text" name="${status.expression}" size="40"
-					   value="<c:out value="${status.value}" />" />
+				<input type="text" name="${status.expression}" size="40" 
+					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>
@@ -131,7 +131,7 @@
 		<td>
 			<spring:bind path="drug.doseStrength">			
 				<input type="text" name="${status.expression}" size="10" 
-					   value="<c:out value="${status.value}" />" />
+					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>
@@ -141,7 +141,7 @@
 		<td>
 			<spring:bind path="drug.units">			
 				<input type="text" name="${status.expression}" size="10" 
-					   value="<c:out value="${status.value}" />" />
+					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>
@@ -151,7 +151,7 @@
 		<td>
 			<spring:bind path="drug.minimumDailyDose">			
 				<input type="text" name="${status.expression}" size="10" 
-					   value="<c:out value="${status.value}" />" />
+					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>
@@ -161,7 +161,7 @@
 		<td>
 			<spring:bind path="drug.maximumDailyDose">
 				<input type="text" name="${status.expression}" size="10" 
-					   value="<c:out value="${status.value}" />" />
+					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>
@@ -175,24 +175,12 @@
 			</spring:bind>
 		</td>
 	</tr>
-
-	<tr>
-		
-		<th><openmrs:message code="ConceptDrug.ingredients"/></th>
-		<td>
-			<table cellpadding="3" cellspacing="0">
-					<c:forEach var="ingredient" items="${drug.ingredients}">
-						<tr><td><openmrs:format concept="${ingredient.ingredient}"/> - ${ingredient.quantity} <openmrs:format concept="${ingredient.units}"/></td></tr>        
-					</c:forEach>
-			</table>
-		</td>
-	</tr>
 	
 	<c:if test="${drug.creator != null}">
 		<tr>
 			<th><openmrs:message code="general.createdBy" /></th>
 			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${drug.creator.userId}')"><c:out value="${drug.creator.personName}" /></a> -
+				<a href="#View User" onclick="return gotoUser(null, '${drug.creator.userId}')">${drug.creator.personName}</a> -
 				<openmrs:formatDate date="${drug.dateCreated}" type="medium" />
 			</td>
 		</tr>
@@ -201,7 +189,7 @@
 		<tr>
 			<th><openmrs:message code="general.changedBy" /></th>
 			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${drug.changedBy.userId}')"><c:out value="${drug.changedBy.personName}" /></a>
+				<a href="#View User" onclick="return gotoUser(null, '${drug.changedBy.userId}')">${drug.changedBy.personName}</a> 
 				<openmrs:formatDate date="${drug.dateChanged}" type="medium" />
 			</td>
 		</tr>

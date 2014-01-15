@@ -54,7 +54,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				<c:if test="${isJavaUtilDate != ''}">
 					<br/>
-					<span class="error"><openmrs:message htmlEscape="false" code="PersonAttributeType.java.util.Date.warning"/></span>
+					<span class="error"><openmrs:message code="PersonAttributeType.java.util.Date.warning"/></span>
 				</c:if>
 			</spring:bind>
 		</td>
@@ -111,7 +111,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				<c:out value="${personAttributeType.creator.personName}" /> -
+				${personAttributeType.creator.personName} -
 				<openmrs:formatDate date="${personAttributeType.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -120,7 +120,7 @@
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
 			<td>
-				<c:out value="${personAttributeType.changedBy.personName}" /> -
+				${personAttributeType.changedBy.personName} -
 				<openmrs:formatDate date="${personAttributeType.dateChanged}" type="long" />
 			</td>
 		</tr>

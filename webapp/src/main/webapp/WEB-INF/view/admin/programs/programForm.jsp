@@ -95,7 +95,7 @@
 <h2><openmrs:message code="Program.addEdit.title"/></h2>
 
 <spring:hasBindErrors name="program">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
@@ -189,7 +189,7 @@
 	</tr>
 </table>
 <br />
-<input type="submit" value='<openmrs:message code="Program.save"/>' onClick="jQuery('#theForm').submit()" />
+<input type="submit" value='<openmrs:message code="Program.save"/>' onClick="$('theForm').submit()" />
 </form>
 
 <script type="text/javascript">

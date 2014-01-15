@@ -978,17 +978,4 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(encounterId, ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
 	}
 	
-	/**
-	 * @see {@link VisitService#getAllVisitTypes(boolean)}
-	 */
-	@Test
-	@Verifies(value = "get all visit types based on include retired flag", method = "getAllVisitTypes(boolean)")
-	public void getAllVisitTypes_shouldGetAllVisitTypesBasedOnIncludeRetiredFlag() throws Exception {
-		VisitService visitService = Context.getVisitService();
-		List<VisitType> visitTypes = visitService.getAllVisitTypes(true);
-		assertEquals("get all visit types including retired", 3, visitTypes.size());
-		visitTypes = visitService.getAllVisitTypes(false);
-		assertEquals("get all visit types excluding retired", 2, visitTypes.size());
-	}
-	
 }

@@ -43,6 +43,7 @@ import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.dwr.ConceptListItem;
@@ -111,7 +112,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
-	 * @should create a single unique synonym and obs for all similar proposals
+	 * @should create a single unique synonym for all similar proposals
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {

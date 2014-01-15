@@ -15,7 +15,6 @@ package org.openmrs.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptStateConversion;
-import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
@@ -162,7 +160,8 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Context.getProgramWorkflowService().saveProgram(program);
 		
 		assertEquals("Failed to create program", numBefore + 1, Context.getProgramWorkflowService().getAllPrograms().size());
-		Program p = Context.getProgramWorkflowService().getProgramByName("TEST PROGRAM");
+		Program p = Context.getProgramWorkflowService().getProgramByName("COUGH SYRUP");
+		//System.out.println("TEST Program = " + p);
 		assertNotNull("Program is null", p);
 		assertNotNull("Workflows is null", p.getWorkflows());
 		assertEquals("Wrong number of workflows", 1, p.getWorkflows().size());
@@ -386,43 +385,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		program = Context.getProgramWorkflowService().saveProgram(program);
 		Assert.assertEquals("new description", program.getDescription());
-	}
-	
-	/**
-	 * @see {@link ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)}
-	 */
-	@Test
-	@Verifies(value = "should skip past patient programs that are already completed", method = "triggerStateConversion(Patient,Concept,Date)")
-	public void triggerStateConversion_shouldSkipPastPatientProgramsThatAreAlreadyCompleted() throws Exception {
-		Integer patientProgramId = 1;
-		PatientProgram pp = pws.getPatientProgram(patientProgramId);
-		Date originalDateCompleted = new Date();
-		pp.setDateCompleted(originalDateCompleted);
-		pp = pws.savePatientProgram(pp);
-		
-		Concept diedConcept = cs.getConcept(16);
-		//sanity check to ensure the patient died is a possible state in one of the work flows
-		Assert.assertNotNull(pp.getProgram().getWorkflow(1).getState(diedConcept));
-		
-		Thread.sleep(10);//delay so that we have a time difference
-		pws.triggerStateConversion(pp.getPatient(), diedConcept, new Date());
-		
-		pp = pws.getPatientProgram(patientProgramId);
-		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());
-	}
-	
-	@Test
-	@Verifies(value = "should return program when name matches", method = "getProgramByName()")
-	public void getProgramByName_shouldReturnProgramWhenNameMatches() {
-		Program p = pws.getProgramByName("program name");
-		assertNotNull(p);
-	}
-	
-	@Test
-	@Verifies(value = "should return null when program does not exist with given name", method = "getProgramByName()")
-	public void getProgramByName_shouldReturnNullWhenNoProgramForGivenName() {
-		Program p = pws.getProgramByName("unexisting program");
-		assertNull(p);
 	}
 	
 	//	/**

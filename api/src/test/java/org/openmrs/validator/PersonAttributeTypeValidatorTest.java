@@ -15,7 +15,6 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -76,25 +75,14 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should fail validation if description is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDescriptionIsNull() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
-		type.setName("name");
-		type.setDescription(null);
+		type.setName("Zodiac");
 		
-		Errors errors = new BindException(type, "type");
+		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
 		
-		type.setDescription("");
-		errors = new BindException(type, "type");
-		new PersonAttributeTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
-		
-		type.setDescription(" ");
-		errors = new BindException(type, "type");
-		new PersonAttributeTypeValidator().validate(type, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
 	}
-	
 }

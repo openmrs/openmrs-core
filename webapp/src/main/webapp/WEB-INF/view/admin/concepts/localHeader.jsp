@@ -2,14 +2,14 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><openmrs:message code="admin.title.short"/></a>
 	</li>
-	<openmrs:hasPrivilege privilege="Manage Concepts,View Concepts">
+	<openmrs:hasPrivilege privilege="Add Concepts,Edit Concepts,Delete Concepts,View Concepts">
 		<li <c:if test='<%= request.getRequestURI().contains("concepts/index") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/dictionary">
 				<openmrs:message code="Concept.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Manage Concepts">
+	<openmrs:hasPrivilege privilege="Add Concepts,Edit Concepts">
 		<li <c:if test='<%= request.getRequestURI().contains("conceptDrug") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/concepts/conceptDrug.list">
 				<openmrs:message code="ConceptDrug.manage"/>
@@ -23,12 +23,17 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Manage Concepts">
+	<openmrs:hasPrivilege privilege="Edit Concepts">
 		<li <c:if test='<%= request.getRequestURI().contains("conceptIndex") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/concepts/conceptIndex.form">
 				<openmrs:message code="ConceptWord.manage"/>
 			</a>
 		</li>
+		<li <c:if test='<%= request.getRequestURI().contains("SetDerived") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptSetDerived.form" style="display:none">
+				<openmrs:message code="ConceptSetDerived.manage"/>
+			</a>
+		</li>	
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Concept Classes">
 		<li <c:if test='<%= request.getRequestURI().contains("Class") %>'>class="active"</c:if>>
@@ -78,7 +83,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
-					<a href="<openmrs_tag:url value="${link.key}"/>"><openmrs:message code="${link.value}"/></a>
+					<a href="${pageContext.request.contextPath}/${link.key}"><openmrs:message code="${link.value}"/></a>
 				</li>
 			</c:forEach>
 	</openmrs:extensionPoint>

@@ -15,8 +15,6 @@ package org.openmrs;
 
 import java.util.UUID;
 
-import com.google.common.base.Objects;
-
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br/>
  * It implements the uuid variable that all objects are expected to have.
@@ -84,18 +82,28 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	}
 	
 	/**
-	 * Returns a string equal to the value of: <blockquote>ClassName{hashCode=...,
-	 * uuid=...}</blockquote>
-	 * <p>
-	 * If the <code>uuid</code> field is <code>null</code>, it returns: <blockquote>
-	 * ClassName{hashCode=...} </blockquote>
+	 * Returns a string consisting of the name of the class of which the object is an instance and
+	 * the <code>uuid</code> field surrounded by <code>[</code> and <code>]</code>. In other words,
+	 * this method returns a string equal to the value of: <blockquote>
 	 * 
-	 * @should include hashCode if uuid is null
-	 * @should include uuid if not null
+	 * <pre>
+	 * getClass().getName() + '[' + uuid + ']'
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * <p>
+	 * If the <code>uuid</code> field is <code>null</code>, it delegates to
+	 * {@link Object#toString()}
+	 * 
+	 * @see java.lang.Object#toString()
+	 * @should not fail if uuid is null
 	 */
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("hashCode", Integer.toHexString(hashCode())).add("uuid", getUuid())
-		        .omitNullValues().toString();
+		if (getUuid() != null) {
+			return getClass().getName() + "[" + getUuid() + "]";
+		} else {
+			return super.toString();
+		}
 	}
 }

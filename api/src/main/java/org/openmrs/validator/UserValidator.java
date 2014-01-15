@@ -26,7 +26,6 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.PrivilegeConstants;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -82,31 +81,22 @@ public class UserValidator implements Validator {
 					errors.rejectValue("person.dead", "error.null");
 				if (person.getVoided() == null)
 					errors.rejectValue("person.voided", "error.null");
-				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().getFullName()))
+				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().toString()))
 					errors.rejectValue("person", "Person.names.length");
 			}
-			
-			AdministrationService as = Context.getAdministrationService();
-			boolean emailAsUsername = false;
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-				emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
-				    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
+		}
+		AdministrationService as = Context.getAdministrationService();
+		boolean emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
+		if (emailAsUsername) {
+			boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
+			if (!isValidUserName) {
+				errors.rejectValue("username", "error.username.email");
 			}
-			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			}
-			
-			if (emailAsUsername) {
-				boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
-				if (!isValidUserName) {
-					errors.rejectValue("username", "error.username.email");
-				}
-			} else {
-				boolean isValidUserName = isUserNameValid(user.getUsername());
-				if (!isValidUserName) {
-					errors.rejectValue("username", "error.username.pattern");
-				}
+		} else {
+			boolean isValidUserName = isUserNameValid(user.getUsername());
+			if (!isValidUserName) {
+				errors.rejectValue("username", "error.username.pattern");
 			}
 		}
 	}

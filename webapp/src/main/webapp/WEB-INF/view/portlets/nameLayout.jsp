@@ -183,7 +183,7 @@
 									<tr>
 										<td><openmrs:message code="general.createdBy" /></td>
 										<td colspan="4">
-                                            <c:out value="${status.value.personName}" /> -
+											${status.value.personName} -
 											<openmrs:formatDate path="dateCreated" type="long" />
 										</td>
 									</tr>
@@ -194,7 +194,7 @@
 									<tr>
 										<td><openmrs:message code="general.changedBy" /></td>
 										<td colspan="4">
-                                            <c:out value="${status.value.personName}" /> -
+											${status.value.personName} -
 											<openmrs:formatDate path="dateChanged" type="long" />
 										</td>
 									</tr>
@@ -208,9 +208,9 @@
 											<input type="hidden" name="_${status.expression}"/>
 											<input type="checkbox" name="${status.expression}" 
 												   <c:if test="${status.value == true}">checked="checked"</c:if>
+										</spring:bind> 
 												   onClick="toggleLayer('<spring:bind path="personNameId">voidReasonNameRow-${status.value}</spring:bind>'); if (voidedBoxClicked) voidedBoxClicked(this); "
 											/>
-										</spring:bind>
 									</td>
 								</tr>
 								<tr id="<spring:bind path="personNameId">voidReasonNameRow-${status.value}</spring:bind>"
@@ -228,7 +228,7 @@
 										<tr>
 											<td><openmrs:message code="general.voidedBy" /></td>
 											<td colspan="4">
-                                                <c:out value="${status.value.personName}" /> -
+												${status.value.personName} -
 												<openmrs:formatDate path="dateVoided" type="long" />
 											</td>
 										</tr>

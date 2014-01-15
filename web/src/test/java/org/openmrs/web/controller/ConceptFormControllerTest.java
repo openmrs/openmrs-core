@@ -13,34 +13,14 @@
  */
 package org.openmrs.web.controller;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collection;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
-import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
-import org.openmrs.ConceptReferenceTerm;
-import org.openmrs.ConceptReferenceTermMap;
-import org.openmrs.ConceptSource;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
@@ -55,6 +35,21 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.Locale;
+
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit testing for the ConceptFormController.
@@ -970,69 +965,11 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ConceptFormController#validateConceptUsesPersistedObjects(Concept,BindException)
-	 * @verifies add error if map type is not saved
-	 */
-	@Test
-	public void validateConceptReferenceTermUsesPersistedObjects_shouldAddErrorIfMapTypeIsNotSaved() throws Exception {
-		Concept concept = new Concept();
-		ConceptReferenceTerm term = new ConceptReferenceTerm();
-		term.setName("name");
-		term.setCode("code");
-		term.setConceptSource(new ConceptSource(1));
-		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType()));
-		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
-		BindException errors = new BindException(concept, "concept");
-		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
-		Assert.assertEquals(1, errors.getErrorCount());
-		Assert.assertEquals(true, errors
-		        .hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptReferenceTermMaps[0].conceptMapType"));
-	}
-	
-	/**
-	 * @see ConceptFormController#validateConceptUsesPersistedObjects(Concept,BindException)
-	 * @verifies add error if source is not saved
-	 */
-	@Test
-	public void validateConceptReferenceTermUsesPersistedObjects_shouldAddErrorIfSourceIsNotSaved() throws Exception {
-		Concept concept = new Concept();
-		ConceptReferenceTerm term = new ConceptReferenceTerm();
-		term.setName("name");
-		term.setCode("code");
-		term.setConceptSource(new ConceptSource());
-		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(1), new ConceptMapType(1)));
-		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
-		BindException errors = new BindException(concept, "concept");
-		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
-		Assert.assertEquals(1, errors.getErrorCount());
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptSource"));
-	}
-	
-	/**
-	 * @see ConceptFormController#validateConceptUsesPersistedObjects(Concept,BindException)
-	 * @verifies add error if term b is not saved
-	 */
-	@Test
-	public void validateConceptReferenceTermUsesPersistedObjects_shouldAddErrorIfTermBIsNotSaved() throws Exception {
-		Concept concept = new Concept();
-		ConceptReferenceTerm term = new ConceptReferenceTerm();
-		term.setName("name");
-		term.setCode("code");
-		term.setConceptSource(new ConceptSource(1));
-		term.addConceptReferenceTermMap(new ConceptReferenceTermMap(new ConceptReferenceTerm(), new ConceptMapType(1)));
-		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
-		BindException errors = new BindException(concept, "concept");
-		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
-		Assert.assertEquals(1, errors.getErrorCount());
-		Assert.assertEquals(true, errors
-		        .hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptReferenceTermMaps[0].termB"));
-	}
-	
-	/**
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 * @verifies not save changes if there are validation errors
 	 */
 	@Test
+	@NotTransactional
 	public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
 		Integer conceptId = 792;
 		

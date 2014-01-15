@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -32,7 +31,6 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
-import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
@@ -64,7 +62,6 @@ import org.springframework.validation.Errors;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.EncounterService
  */
-@Transactional
 public class EncounterServiceImpl extends BaseOpenmrsService implements EncounterService {
 	
 	// private Log log = LogFactory.getLog(this.getClass());
@@ -82,24 +79,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncountersByPatient(java.lang.String, boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatient(String query, boolean includeVoided) throws APIException {
 		if (query == null)
 			throw new IllegalArgumentException("The 'query' parameter is required and cannot be null");
 		
-		return filterEncountersByViewPermissions(dao.getEncounters(query, null, null, null, includeVoided), null);
+		return dao.getEncounters(query, null, null, null, includeVoided);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
 	 */
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
-		
-		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to edit encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
-		}
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
 		if (encounter.getEncounterId() == null) {
@@ -198,23 +188,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounter(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
 	public Encounter getEncounter(Integer encounterId) throws APIException {
-		Encounter encounter = dao.getEncounter(encounterId);
-		if (encounter == null) {
-			return null;
-		} else if (canViewEncounter(encounter, null)) {
-			return encounter;
-		} else {
-			throw new APIException(String.format("Privilege %s required to view encounters of this type", encounter
-			        .getEncounterType().getViewPrivilege()));
-		}
+		return dao.getEncounter(encounterId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncountersByPatient(org.openmrs.Patient)
 	 */
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatient(Patient patient) throws APIException {
 		if (patient == null)
 			throw new IllegalArgumentException("The 'patient' parameter is requred and cannot be null");
@@ -224,26 +204,23 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncountersByPatient(String)
 	 */
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatient(String query) throws APIException {
 		
-		return filterEncountersByViewPermissions(getEncountersByPatient(query, false), null);
+		return getEncountersByPatient(query, false);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncountersByPatientId(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException {
 		if (patientId == null)
 			throw new IllegalArgumentException("The 'patientId' parameter is requred and cannot be null");
-		return filterEncountersByViewPermissions(dao.getEncountersByPatientId(patientId), null);
+		return dao.getEncountersByPatientId(patientId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncountersByPatientIdentifier(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException {
 		if (identifier == null)
 			throw new IllegalArgumentException("The 'identifier' parameter is required and cannot be null");
@@ -252,7 +229,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		for (Patient p : Context.getPatientService().getPatients(null, identifier, null, false)) {
 			encs.addAll(getEncountersByPatientId(p.getPatientId()));
 		}
-		return filterEncountersByViewPermissions(encs, null);
+		return encs;
 	}
 	
 	/**
@@ -263,7 +240,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, boolean includeVoided) {
 		return getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, null, includeVoided);
@@ -277,12 +253,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, Collection, boolean)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
 	        boolean includeVoided) {
-		return filterEncountersByViewPermissions(dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms,
-		    encounterTypes, usersToProviders(providers), null, null, includeVoided), null);
+		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, usersToProviders(providers),
+		    null, null, includeVoided);
 	}
 	
 	/**
@@ -308,25 +283,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
-		return filterEncountersByViewPermissions(dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms,
-		    encounterTypes, providers, visitTypes, visits, includeVoided), null);
+		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, visitTypes, visits,
+		    includeVoided);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#voidEncounter(org.openmrs.Encounter, java.lang.String)
 	 */
 	public Encounter voidEncounter(Encounter encounter, String reason) {
-		
-		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to void encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
-		}
-		
 		if (reason == null)
 			throw new IllegalArgumentException("The argument 'reason' is required and so cannot be null");
 		
@@ -360,13 +327,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#unvoidEncounter(org.openmrs.Encounter)
 	 */
 	public Encounter unvoidEncounter(Encounter encounter) throws APIException {
-		
-		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to unvoid encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
-		}
-		
 		String voidReason = encounter.getVoidReason();
 		if (voidReason == null)
 			voidReason = "";
@@ -395,11 +355,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#purgeEncounter(org.openmrs.Encounter)
 	 */
 	public void purgeEncounter(Encounter encounter) throws APIException {
-		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to purge encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
-		}
 		dao.deleteEncounter(encounter);
 	}
 	
@@ -407,13 +362,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#purgeEncounter(Encounter, boolean)
 	 */
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException {
-		
-		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to purge encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
-		}
-		
 		if (cascade) {
 			ObsService obsService = Context.getObsService();
 			List<Encounter> justThisEncounter = new ArrayList<Encounter>();
@@ -442,7 +390,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException {
 		return dao.getEncounterType(encounterTypeId);
 	}
@@ -450,7 +397,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
 	public EncounterType getEncounterType(String name) throws APIException {
 		return dao.getEncounterType(name);
 	}
@@ -458,7 +404,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getAllEncounterTypes()
 	 */
-	@Transactional(readOnly = true)
 	public List<EncounterType> getAllEncounterTypes() throws APIException {
 		return dao.getAllEncounterTypes(true);
 	}
@@ -466,7 +411,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getAllEncounterTypes(boolean)
 	 */
-	@Transactional(readOnly = true)
 	public List<EncounterType> getAllEncounterTypes(boolean includeRetired) throws APIException {
 		return dao.getAllEncounterTypes(includeRetired);
 	}
@@ -474,7 +418,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#findEncounterTypes(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
 	public List<EncounterType> findEncounterTypes(String name) throws APIException {
 		return dao.findEncounterTypes(name);
 	}
@@ -546,7 +489,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated replaced by {@link #getEncountersByPatientId(Integer)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatientId(Integer patientId, boolean includeVoided) throws APIException {
 		return getEncountersByPatientId(patientId);
 	}
@@ -557,7 +499,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated replaced by {@link #getEncountersByPatientIdentifier(String)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier, boolean includeVoided) throws APIException {
 		return getEncountersByPatientIdentifier(identifier);
 	}
@@ -567,9 +508,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated replaced by {@link #getEncountersByPatient(Patient patient)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who) {
-		return filterEncountersByViewPermissions(getEncountersByPatient(who), null);
+		return getEncountersByPatient(who);
 	}
 	
 	/**
@@ -578,7 +518,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, boolean includeVoided) {
 		return getEncounters(who, null, null, null, null, null, null, includeVoided);
 	}
@@ -590,7 +529,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location where) {
 		return getEncounters(who, where, null, null, null, null, null, false);
 	}
@@ -602,7 +540,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
 		return getEncounters(who, null, fromDate, toDate, null, null, null, false);
 	}
@@ -613,7 +550,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public Collection<Encounter> getEncounters(Date fromDate, Date toDate) {
 		return getEncounters(null, null, fromDate, toDate, null, null, null, false);
 	}
@@ -625,7 +561,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Location loc, Date fromDate, Date toDate) {
 		return getEncounters(null, loc, fromDate, toDate, null, null, null, false);
 	}
@@ -635,7 +570,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated replaced by {@link #getAllEncounterTypes()}
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<EncounterType> getEncounterTypes() {
 		return getAllEncounterTypes();
 	}
@@ -645,7 +579,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated use LocationService.getAllLocations()
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Location> getLocations() throws APIException {
 		return Context.getLocationService().getAllLocations();
 	}
@@ -655,7 +588,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated use LocationService.getLocation(locationId)
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public Location getLocation(Integer locationId) throws APIException {
 		return Context.getLocationService().getLocation(locationId);
 	}
@@ -665,7 +597,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated use LocationService.getLocation(name)
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public Location getLocationByName(String name) throws APIException {
 		return Context.getLocationService().getLocation(name);
 	}
@@ -675,7 +606,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated use LocationService.getLocations(name)
 	 */
 	@Deprecated
-	@Transactional(readOnly = true)
 	public List<Location> findLocations(String name) throws APIException {
 		return Context.getLocationService().getLocations(name);
 	}
@@ -683,7 +613,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
 	public Encounter getEncounterByUuid(String uuid) throws APIException {
 		return dao.getEncounterByUuid(uuid);
 	}
@@ -691,7 +620,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterTypeByUuid(java.lang.String)
 	 */
-	@Transactional(readOnly = true)
 	public EncounterType getEncounterTypeByUuid(String uuid) throws APIException {
 		return dao.getEncounterTypeByUuid(uuid);
 	}
@@ -700,7 +628,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getAllEncounters(org.openmrs.Cohort)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
 		return dao.getAllEncounters(patients);
 	}
@@ -710,28 +637,26 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *      java.lang.Integer, boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
 	        throws APIException {
-		return filterEncountersByViewPermissions(dao.getEncounters(query, null, start, length, includeVoided), null);
+		return dao.getEncounters(query, null, start, length, includeVoided);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(java.lang.String, java.lang.Integer,
-	 *      java.lang.Integer, java.lang.Integer, boolean)
+	 * java.lang.Integer, java.lang.Integer, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
 	        boolean includeVoided) throws APIException {
-		return filterEncountersByViewPermissions(dao.getEncounters(query, patientId, start, length, includeVoided), null);
+		return dao.getEncounters(query, patientId, start, length, includeVoided);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getCountOfEncounters(java.lang.String, boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
 		return OpenmrsUtil.convertToInteger(dao.getCountOfEncounters(query, null, includeVoided));
 	}
@@ -740,13 +665,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see EncounterService#getEncountersByVisit(Visit, boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByVisit(Visit visit, boolean includeVoided) {
-		return filterEncountersByViewPermissions(dao.getEncountersByVisit(visit, includeVoided), null);
+		return dao.getEncountersByVisit(visit, includeVoided);
 	}
 	
 	@Override
-	@Transactional(readOnly = true)
 	public List<EncounterVisitHandler> getEncounterVisitHandlers() {
 		List<EncounterVisitHandler> handlers = HandlerUtil.getHandlersForType(EncounterVisitHandler.class, null);
 		
@@ -757,7 +680,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getActiveEncounterVisitHandler()
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public EncounterVisitHandler getActiveEncounterVisitHandler() throws APIException {
 		
 		String handlerGlobalValue = Context.getAdministrationService().getGlobalProperty(
@@ -810,7 +732,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounterRole(Integer)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public EncounterRole getEncounterRole(Integer encounterRoleId) throws APIException {
 		return dao.getEncounterRole(encounterRoleId);
 	}
@@ -827,7 +748,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getAllEncounterRoles(boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired) {
 		return dao.getAllEncounterRoles(includeRetired);
 	}
@@ -836,17 +756,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounterRoleByUuid(String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException {
 		return dao.getEncounterRoleByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounterRoleByName(String)
-	 */
-	@Override
-	public EncounterRole getEncounterRoleByName(String name) {
-		return dao.getEncounterRoleByName(name);
 	}
 	
 	/**
@@ -871,150 +782,26 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncountersNotAssignedToAnyVisit(org.openmrs.Patient)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws APIException {
-		return filterEncountersByViewPermissions(dao.getEncountersNotAssignedToAnyVisit(patient), null);
+		return dao.getEncountersNotAssignedToAnyVisit(patient);
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatient(org.openmrs.Patient,
-	 *      boolean, java.lang.String, java.lang.Integer, java.lang.Integer)
+	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatient(org.openmrs.Patient, boolean, java.lang.String, java.lang.Integer, java.lang.Integer)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
 	        Integer start, Integer length) throws APIException {
-		return filterEncountersByViewPermissions(dao.getEncountersByVisitsAndPatient(patient, includeVoided, query, start,
-		    length), null);
+		return dao.getEncountersByVisitsAndPatient(patient, includeVoided, query, start, length);
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatientCount(org.openmrs.Patient,
-	 *      boolean, java.lang.String)
+	 * @see org.openmrs.api.EncounterService#getEncountersByVisitsAndPatientCount(org.openmrs.Patient, boolean, java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
 	        throws APIException {
 		return dao.getEncountersByVisitsAndPatientCount(patient, includeVoided, query);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#filterEncountersByViewPermissions(java.util.List,
-	 *      org.openmrs.User)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<Encounter> filterEncountersByViewPermissions(List<Encounter> encounters, User user) {
-		if (encounters != null) {
-			// if user is not specified then use authenticated user from context by default
-			if (user == null) {
-				user = Context.getAuthenticatedUser();
-			}
-			for (Iterator<Encounter> iterator = encounters.iterator(); iterator.hasNext();) {
-				Encounter encounter = iterator.next();
-				// determine whether it's need to include this encounter into result or not
-				// as it can be not accessed by current user due to permissions lack
-				EncounterType et = encounter.getEncounterType();
-				if (et != null && !userHasEncounterPrivilege(et.getViewPrivilege(), user)) {
-					// exclude this encounter from result
-					iterator.remove();
-				}
-			}
-		}
-		return encounters;
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#canViewAllEncounterTypes(org.openmrs.User)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public boolean canViewAllEncounterTypes(User subject) {
-		boolean canView = Boolean.TRUE;
-		for (EncounterType et : Context.getEncounterService().getAllEncounterTypes()) {
-			if (!userHasEncounterPrivilege(et.getViewPrivilege(), subject)) {
-				canView = Boolean.FALSE;
-				break;
-			}
-		}
-		return canView;
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#canEditAllEncounterTypes(org.openmrs.User)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public boolean canEditAllEncounterTypes(User subject) {
-		boolean canEdit = Boolean.TRUE;
-		for (EncounterType et : Context.getEncounterService().getAllEncounterTypes()) {
-			if (!userHasEncounterPrivilege(et.getEditPrivilege(), subject)) {
-				canEdit = Boolean.FALSE;
-				break;
-			}
-		}
-		return canEdit;
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#canEditEncounter(org.openmrs.Encounter,
-	 *      org.openmrs.User)
-	 */
-	@Override
-	public boolean canEditEncounter(Encounter encounter, User user) {
-		// if passed in encounter is null raise an exception
-		if (encounter == null) {
-			throw new IllegalArgumentException("The encounter argument can not be null");
-		}
-		// since we restrict by encounter type, if it does not exist, then anyone is allowed to edit the encounter
-		if (encounter.getEncounterType() == null) {
-			return Boolean.TRUE;
-		}
-		// if user is not specified, then use authenticated user from context by default
-		if (user == null) {
-			user = Context.getAuthenticatedUser();
-		}
-		
-		return userHasEncounterPrivilege(encounter.getEncounterType().getEditPrivilege(), user);
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#canViewEncounter(org.openmrs.Encounter,
-	 *      org.openmrs.User)
-	 */
-	@Override
-	public boolean canViewEncounter(Encounter encounter, User user) {
-		// if passed in encounter is null raise an exception
-		if (encounter == null) {
-			throw new IllegalArgumentException("The encounter argument can not be null");
-		}
-		// since we restrict by encounter type, if it does not exist, then anyone is allowed to view the encounter
-		if (encounter.getEncounterType() == null) {
-			return Boolean.TRUE;
-		}
-		// if user is not specified, then use authenticated user from context by default
-		if (user == null) {
-			user = Context.getAuthenticatedUser();
-		}
-		
-		return userHasEncounterPrivilege(encounter.getEncounterType().getViewPrivilege(), user);
-	}
-	
-	/**
-	 * Convenient method that safely checks if user has given encounter privilege
-	 * 
-	 * @param privilege the privilege to test
-	 * @param user the user instance to check if it has given privilege
-	 * @return true if given user has specified privilege
-	 */
-	private boolean userHasEncounterPrivilege(Privilege privilege, User user) {
-		//If the encounter privilege is null, everyone can see and edit the encounter.
-		if (privilege == null) {
-			return true;
-		}
-		
-		return user.hasPrivilege(privilege.getPrivilege());
 	}
 	
 	/**
@@ -1027,14 +814,5 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (locked.toLowerCase().equals("true")) {
 			throw new EncounterTypeLockedException();
 		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService#getEncounterRolesByName(String)
-	 */
-	
-	@Override
-	public List<EncounterRole> getEncounterRolesByName(String name) {
-		return dao.getEncounterRolesByName(name);
 	}
 }

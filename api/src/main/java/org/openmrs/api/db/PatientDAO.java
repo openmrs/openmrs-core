@@ -13,13 +13,13 @@
  */
 package org.openmrs.api.db;
 
-import java.util.List;
-
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
+
+import java.util.List;
 
 /**
  * Database methods for the PatientService
@@ -66,7 +66,6 @@ public interface PatientDAO {
 	 * @should escape underscore character in identifier phrase
 	 * @should escape an asterix character in identifier phrase
 	 * @should get patients with a matching identifier and type
-	 * @should not search on voided patients
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
@@ -75,15 +74,6 @@ public interface PatientDAO {
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
 	 *      java.util.List, java.util.List, java.lang.Boolean)
-	 *      
-	 * @should return all matching non voided patient identifiers if is preferred is set to null
-	 * @should return all matching non voided patient identifiers if is preferred is set to true
-	 * @should return all matching non voided patient identifiers if is preferred is set to false
-	 * @should fetch all patient identifiers belong to given patient
-	 * @should fetch all patient identifiers belong to given patients
-	 * @should fetch patient identifiers that equals given identifier
-	 * @should not fetch patient identifiers that partially matches given identifier  
-	 * @should not get voided patient identifiers 
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
 	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
@@ -95,10 +85,6 @@ public interface PatientDAO {
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException;
 	
 	/**
-	 * @should not return null when includeRetired is false
-	 * @should not return retired when includeRetired is false
-	 * @should not return null when includeRetired is true
-	 * @should return all when includeRetired is true
 	 * @see org.openmrs.api.PatientService#getAllPatientIdentifierTypes(boolean)
 	 */
 	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired) throws DAOException;

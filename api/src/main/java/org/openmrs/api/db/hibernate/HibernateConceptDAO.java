@@ -38,7 +38,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -65,6 +64,7 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.ConceptWord;
@@ -378,27 +378,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
-		if (!includeRetired)
+		if (includeRetired == false)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		if (drugName != null)
 			searchCriteria.add(Restrictions.eq("drug.name", drugName));
 		return (List<Drug>) searchCriteria.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getDrugsByIngredient(org.openmrs.Concept)
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Drug> getDrugsByIngredient(Concept ingredient) {
-		Criteria searchDrugCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
-		Criterion rhs = Restrictions.eq("drug.concept", ingredient);
-		searchDrugCriteria.createAlias("ingredients", "ingredients");
-		Criterion lhs = Restrictions.eq("ingredients.ingredient", ingredient);
-		searchDrugCriteria.add(Restrictions.or(lhs, rhs));
-		
-		return (List<Drug>) searchDrugCriteria.list();
 	}
 	
 	/**
@@ -453,7 +439,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		
 		// Minor bug - was assigning includeRetired instead of evaluating
-		if (!includeRetired)
+		if (includeRetired == false)
 			crit.add(Restrictions.eq("retired", false));
 		
 		return crit.list();
@@ -475,13 +461,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptNameTag(org.openmrs.ConceptNameTag)
-	 */
-	public void deleteConceptNameTag(ConceptNameTag cnt) throws DAOException {
-		sessionFactory.getCurrentSession().delete(cnt);
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatype(java.lang.Integer)
 	 */
 	public ConceptDatatype getConceptDatatype(Integer i) {
@@ -495,7 +474,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
 		
-		if (!includeRetired)
+		if (includeRetired == false)
 			crit.add(Restrictions.eq("retired", false));
 		
 		return crit.list();
@@ -791,7 +770,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptProposal> getAllConceptProposals(boolean includeCompleted) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		
-		if (!includeCompleted) {
+		if (includeCompleted == false) {
 			crit.add(Restrictions.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
 		}
 		crit.addOrder(Order.asc("originalText"));
@@ -846,6 +825,125 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptSet> getSetsContainingConcept(Concept concept) {
 		return sessionFactory.getCurrentSession().createCriteria(ConceptSet.class).add(Restrictions.eq("concept", concept))
 		        .list();
+	}
+	
+	//TODO:  eventually, this method should probably just run updateConceptSetDerived(Concept) inside an iteration of all concepts... (or something else less transactionally-intense)
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#updateConceptSetDerived()
+	 */
+	public void updateConceptSetDerived() throws DAOException {
+		sessionFactory.getCurrentSession().createQuery("delete ConceptSetDerived").executeUpdate();
+		try {
+			// remake the derived table by copying over the basic concept_set table
+			sessionFactory
+			        .getCurrentSession()
+			        .connection()
+			        .prepareStatement(
+			            "insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs.concept_id, cs.concept_set, cs.sort_weight from concept_set cs where not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs.concept_id and csd.concept_set = cs.concept_set)")
+			        .execute();
+			
+			// burst the concept sets -- make grandchildren direct children of grandparents
+			sessionFactory
+			        .getCurrentSession()
+			        .connection()
+			        .prepareStatement(
+			            "insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs1.concept_id, cs2.concept_set, cs1.sort_weight from concept_set cs1 join concept_set cs2 where cs2.concept_id = cs1.concept_set and not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs1.concept_id and csd.concept_set = cs2.concept_set)")
+			        .execute();
+			
+			// burst the concept sets -- make greatgrandchildren direct child of greatgrandparents
+			sessionFactory
+			        .getCurrentSession()
+			        .connection()
+			        .prepareStatement(
+			            "insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs1.concept_id, cs3.concept_set, cs1.sort_weight from concept_set cs1 join concept_set cs2 join concept_set cs3 where cs1.concept_set = cs2.concept_id and cs2.concept_set = cs3.concept_id and not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs1.concept_id and csd.concept_set = cs3.concept_set)")
+			        .execute();
+			
+			// TODO This 'algorithm' only solves three layers of children.  Options for correction:
+			//	1) Add a few more join statements to cover 5 layers (conceivable upper limit of layers)
+			//	2) Find the deepest layer and programmatically create the sql statements
+			//	3) Run the joins on
+		}
+		catch (SQLException e) {
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
+	 * utility method used in updateConceptSetDerived(...)
+	 * 
+	 * @param List of parent Concept objects
+	 * @param Concept current
+	 * @return Set of ConceptSetDerived
+	 */
+	private Set<ConceptSetDerived> deriveChildren(List<Concept> parents, Concept current) {
+		Set<ConceptSetDerived> updates = new HashSet<ConceptSetDerived>();
+		
+		ConceptSetDerived derivedSet = null;
+		// make each child a direct child of each parent/grandparent
+		for (ConceptSet childSet : current.getConceptSets()) {
+			Concept child = childSet.getConcept();
+			log.debug("Deriving child: " + child.getConceptId());
+			Double sort_weight = childSet.getSortWeight();
+			for (Concept parent : parents) {
+				log.debug("Matching child: " + child.getConceptId() + " with parent: " + parent.getConceptId());
+				derivedSet = new ConceptSetDerived(parent, child, sort_weight++);
+				updates.add(derivedSet);
+			}
+			
+			//recurse if this child is a set as well
+			if (child.isSet()) {
+				log.debug("Concept id: " + child.getConceptId() + " is a set");
+				List<Concept> new_parents = new Vector<Concept>();
+				new_parents.addAll(parents);
+				new_parents.add(child);
+				updates.addAll(deriveChildren(new_parents, child));
+			}
+		}
+		
+		return updates;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#updateConceptSetDerived(org.openmrs.Concept)
+	 */
+	public void updateConceptSetDerived(Concept concept) throws DAOException {
+		log.debug("Updating concept set derivisions for #" + concept.getConceptId().toString());
+		
+		// deletes current concept's sets and matching parent's sets
+		
+		//recursively get all parents
+		List<Concept> parents = getParents(concept);
+		
+		// delete this concept's children and their bursted parents
+		for (Concept parent : parents) {
+			sessionFactory
+			        .getCurrentSession()
+			        .createQuery(
+			            "delete from ConceptSetDerived csd where csd.concept in (select cs.concept from ConceptSet cs where cs.conceptSet = :c) and csd.conceptSet = :parent)")
+			        .setParameter("c", concept).setParameter("parent", parent).executeUpdate();
+		}
+		
+		//set of updates to be passed to the server (unique list)
+		Set<ConceptSetDerived> updates = new HashSet<ConceptSetDerived>();
+		
+		//add parents as sets of parents below
+		ConceptSetDerived csd;
+		for (Integer a = 0; a < parents.size() - 1; a++) {
+			Concept set = parents.get(a);
+			for (Integer b = a + 1; b < parents.size(); b++) {
+				Concept conc = parents.get(b);
+				csd = new ConceptSetDerived(set, conc, Double.valueOf(b.doubleValue()));
+				updates.add(csd);
+			}
+		}
+		
+		//recursively add parents to children
+		updates.addAll(deriveChildren(parents, concept));
+		
+		for (ConceptSetDerived c : updates) {
+			sessionFactory.getCurrentSession().saveOrUpdate(c);
+		}
+		
 	}
 	
 	/**
@@ -930,13 +1028,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptSources()
 	 */
-	
 	@SuppressWarnings("unchecked")
-	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws DAOException {
+	public List<ConceptSource> getAllConceptSources() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
 		
-		if (!includeRetired)
-			criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("retired", false));
 		
 		return criteria.list();
 	}
@@ -1101,6 +1197,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public ConceptSet getConceptSetByUuid(String uuid) {
 		return (ConceptSet) sessionFactory.getCurrentSession().createQuery("from ConceptSet cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	public ConceptSetDerived getConceptSetDerivedByUuid(String uuid) {
+		return (ConceptSetDerived) sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptSetDerived cc where cc.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
 	public ConceptSource getConceptSourceByUuid(String uuid) {
@@ -1353,7 +1454,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class, "cw1");
 			searchCriteria.add(Restrictions.in("locale", locales));
 			
-			if (!includeRetired) {
+			if (includeRetired == false) {
 				searchCriteria.createAlias("concept", "concept");
 				searchCriteria.add(Restrictions.eq("concept.retired", false));
 			}
@@ -1408,7 +1509,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return 0L;
 		
-		if (!includeRetired)
+		if (includeRetired == false)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
@@ -1436,7 +1537,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return Collections.emptyList();
 		
-		if (!includeRetired)
+		if (includeRetired == false)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
@@ -1524,6 +1625,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		//by default every word must at least weigh 1+
 		weight = 1.0;
+		//TODO make the numbers 5.0, 3.0, 1.0 etc constants
 		//Index terms rank highly since they were added for searching
 		
 		//This is the actual match

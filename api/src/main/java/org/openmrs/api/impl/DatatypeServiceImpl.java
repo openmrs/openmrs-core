@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Standard implementation of {@link DatatypeService}
  * @since 1.9
  */
-@Transactional
 public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeService {
 	
 	private List<Class<? extends CustomDatatype>> datatypeClasses;
@@ -122,6 +121,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 			if (datatypeClassHandled(candidate).equals(datatype))
 				ret.add(candidate);
 		}
+		// TODO sort the preferred one to the top
 		return ret;
 	}
 	
@@ -195,7 +195,6 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getClobDatatypeStorage(java.lang.Integer)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public ClobDatatypeStorage getClobDatatypeStorage(Integer id) {
 		return dao.getClobDatatypeStorage(id);
 	}
@@ -204,7 +203,6 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getClobDatatypeStorageByUuid(java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public ClobDatatypeStorage getClobDatatypeStorageByUuid(String uuid) {
 		return dao.getClobDatatypeStorageByUuid(uuid);
 	}

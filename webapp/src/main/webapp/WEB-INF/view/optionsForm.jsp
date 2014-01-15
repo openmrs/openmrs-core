@@ -121,7 +121,7 @@ function containsError(element) {
 <h2><openmrs:message code="options.title" /></h2>
 
 <spring:hasBindErrors name="opts">
-	<openmrs:message htmlEscape="false" code="fix.error" />
+	<openmrs:message code="fix.error" />
 	<div class="error"><c:forEach items="${errors.allErrors}" var="error">
 		<openmrs:message code="${error.code}" text="${error.code}" />
 		<br />
@@ -247,10 +247,7 @@ function containsError(element) {
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
 			</spring:bind>
-			<%-- Don't print empty brackets --%>
-			<c:if test="${passwordHint != ''}">
-				(${passwordHint})
-			</c:if>
+			<openmrs:message code="options.login.password.hint"/>
 		</td>
 	</tr>
 	<tr>

@@ -14,9 +14,7 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -24,9 +22,6 @@ import java.util.Set;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -46,7 +41,6 @@ import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -58,7 +52,7 @@ import org.openmrs.customdatatype.DownloadableDatatypeHandler;
 import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler;
-import org.springframework.web.util.HtmlUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
 /**
@@ -75,8 +69,6 @@ public class FormatTag extends TagSupport {
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private String var;
-	
-	private Object object;
 	
 	private Integer conceptId;
 	
@@ -136,20 +128,9 @@ public class FormatTag extends TagSupport {
 	
 	private SingleCustomValue<?> singleCustomValue;
 	
-	/**
-	 * Applies case conversion to metadata
-	 * @since 1.10
-	 */
-	private String caseConversion;
-	
 	@Override
 	public int doStartTag() {
 		StringBuilder sb = new StringBuilder();
-		
-		if (object != null) {
-			printObject(sb, object);
-		}
-		
 		if (conceptId != null)
 			concept = Context.getConceptService().getConcept(conceptId);
 		if (concept != null) {
@@ -172,7 +153,13 @@ public class FormatTag extends TagSupport {
 		if (encounterId != null)
 			encounter = Context.getEncounterService().getEncounter(encounterId);
 		if (encounter != null) {
-			printEncounter(sb, encounter);
+			printMetadata(sb, encounter.getEncounterType());
+			sb.append(" @");
+			printMetadata(sb, encounter.getLocation());
+			sb.append(" | ");
+			printDate(sb, encounter.getEncounterDatetime());
+			sb.append(" | ");
+			printPerson(sb, encounter.getProvider());
 		}
 		
 		if (encounterTypeId != null)
@@ -190,7 +177,11 @@ public class FormatTag extends TagSupport {
 		if (visitId != null)
 			visit = Context.getVisitService().getVisit(visitId);
 		if (visit != null) {
-			printVisit(sb, visit);
+			printMetadata(sb, visit.getVisitType());
+			sb.append(" @");
+			printMetadata(sb, visit.getLocation());
+			sb.append(" | ");
+			printDate(sb, visit.getStartDatetime());
 		}
 		
 		if (locationId != null)
@@ -208,7 +199,11 @@ public class FormatTag extends TagSupport {
 		if (programId != null)
 			program = Context.getProgramWorkflowService().getProgram(programId);
 		if (program != null) {
-			printProgram(sb, program);
+			if (StringUtils.hasText(program.getName())) {
+				printMetadata(sb, program);
+			} else if (program.getConcept() != null) {
+				printConcept(sb, program.getConcept());
+			}
 		}
 		
 		if (providerId != null)
@@ -228,7 +223,7 @@ public class FormatTag extends TagSupport {
 			printSingleCustomValue(sb, singleCustomValue);
 		}
 		
-		if (StringUtils.isNotEmpty(var)) {
+		if (StringUtils.hasText(var)) {
 			if (javaScriptEscape)
 				pageContext.setAttribute(var, JavaScriptUtils.javaScriptEscape(sb.toString()));
 			else
@@ -248,97 +243,13 @@ public class FormatTag extends TagSupport {
 	}
 	
 	/**
-	 * Formats anything and prints it to string builder. (Delegates to other methods here)
-	 * @param sb the string builder to print object with
-	 * @param o the object to print
-	 */
-	private void printObject(StringBuilder sb, Object o) {
-		if (o instanceof Collection<?>) {
-			for (Iterator<?> i = ((Collection<?>) o).iterator(); i.hasNext();) {
-				printObject(sb, i.next());
-				if (i.hasNext())
-					sb.append(", ");
-			}
-		} else if (o instanceof Date) {
-			printDate(sb, (Date) o);
-		} else if (o instanceof Concept) {
-			printConcept(sb, (Concept) o);
-		} else if (o instanceof Obs) {
-			sb.append(((Obs) o).getValueAsString(Context.getLocale()));
-		} else if (o instanceof User) {
-			printUser(sb, (User) o);
-		} else if (o instanceof Encounter) {
-			printEncounter(sb, (Encounter) o);
-		} else if (o instanceof Visit) {
-			printVisit(sb, (Visit) o);
-		} else if (o instanceof Program) {
-			printProgram(sb, (Program) o);
-		} else if (o instanceof Provider) {
-			printProvider(sb, (Provider) o);
-		} else if (o instanceof Form) {
-			printForm(sb, (Form) o);
-		} else if (o instanceof SingleCustomValue<?>) {
-			printSingleCustomValue(sb, (SingleCustomValue<?>) o);
-		} else if (o instanceof OpenmrsMetadata) {
-			printMetadata(sb, (OpenmrsMetadata) o);
-		} else {
-			sb.append("" + o);
-		}
-	}
-	
-	/**
-	 * Prints encounter into via given string builder
-	 * 
-	 * @param sb the string builder object to print encounter value with
-	 * @param encounter the encounter to print
-	 */
-	private void printEncounter(StringBuilder sb, Encounter encounter) {
-		printMetadata(sb, encounter.getEncounterType());
-		sb.append(" @");
-		printMetadata(sb, encounter.getLocation());
-		sb.append(" | ");
-		printDate(sb, encounter.getEncounterDatetime());
-		sb.append(" | ");
-		printPerson(sb, encounter.getProvider());
-	}
-	
-	/**
-	 * Prints visit via given string builder
-	 * 
-	 * @param sb the string builder to print visit with
-	 * @param visit the visit object to print
-	 */
-	private void printVisit(StringBuilder sb, Visit visit) {
-		printMetadata(sb, visit.getVisitType());
-		sb.append(" @");
-		printMetadata(sb, visit.getLocation());
-		sb.append(" | ");
-		printDate(sb, visit.getStartDatetime());
-	}
-	
-	/**
-	 * Prints program via given string builder
-	 * 
-	 * @param sb the string builder to print program with
-	 * @param program the program object to print
-	 */
-	private void printProgram(StringBuilder sb, Program program) {
-		if (StringUtils.isNotEmpty(program.getName())) {
-			printMetadata(sb, program);
-		} else if (program.getConcept() != null) {
-			printConcept(sb, program.getConcept());
-		}
-	}
-	
-	/**
 	 * Formats a {@link Form} and prints it to sb
 	 * 
 	 * @param sb
 	 * @param form
 	 */
 	private void printForm(StringBuilder sb, Form form) {
-		String name = StringEscapeUtils.escapeHtml(form.getName());
-		sb.append(name + " (v" + form.getVersion() + ")");
+		sb.append(form.getName() + " (v" + form.getVersion() + ")");
 	}
 	
 	/**
@@ -394,7 +305,6 @@ public class FormatTag extends TagSupport {
 	 * @param sb
 	 * @param concept
 	 * @should print the name with the correct name and type
-	 * @should escape html tags
 	 */
 	protected void printConcept(StringBuilder sb, Concept concept) {
 		Locale loc = Context.getLocale();
@@ -412,17 +322,18 @@ public class FormatTag extends TagSupport {
 			
 			ConceptName name = concept.getName(loc, lookForNameType, lookForNameTag);
 			if (name != null) {
-				sb.append(applyConversion(HtmlUtils.htmlEscape(name.getName())));
+				sb.append(name.getName());
 				return;
 			}
 		}
 		
 		ConceptName name = concept.getPreferredName(loc);
 		if (name != null) {
-			sb.append(applyConversion(HtmlUtils.htmlEscape(name.getName())));
+			sb.append(name.getName());
 			return;
 		}
-		sb.append(applyConversion(HtmlUtils.htmlEscape(concept.getDisplayString())));
+		
+		sb.append(concept.getDisplayString());
 	}
 	
 	/**
@@ -436,41 +347,14 @@ public class FormatTag extends TagSupport {
 	}
 	
 	/**
-	 * Apply a case conversion to an input string
-	 * @param source
-	 * @return
-	 */
-	private String applyConversion(String source) {
-		
-		String result = source;
-		
-		// Find global property 
-		if ("global".equalsIgnoreCase(caseConversion)) {
-			AdministrationService adminService = Context.getAdministrationService();
-			caseConversion = adminService.getGlobalProperty(OpenmrsConstants.GP_DASHBOARD_METADATA_CASE_CONVERSION);
-		}
-		
-		// Apply conversion
-		if ("lowercase".equalsIgnoreCase(caseConversion)) {
-			result = StringUtils.lowerCase(result);
-		} else if ("uppercase".equalsIgnoreCase(caseConversion)) {
-			result = StringUtils.upperCase(result);
-		} else if ("capitalize".equalsIgnoreCase(caseConversion)) {
-			result = WordUtils.capitalize(StringUtils.lowerCase(result));
-		}
-		return result;
-	}
-	
-	/**
 	 * formats any OpenmrsMetadata and prints it to sb
 	 * 
 	 * @param sb
 	 * @param metadata
 	 */
 	private void printMetadata(StringBuilder sb, OpenmrsMetadata metadata) {
-		if (metadata != null) {
-			sb.append(applyConversion(metadata.getName()));
-		}
+		if (metadata != null)
+			sb.append(metadata.getName());
 	}
 	
 	/**
@@ -486,7 +370,7 @@ public class FormatTag extends TagSupport {
 		sb.append("</span>");
 		if (u.getPerson() != null) {
 			sb.append("<span class=\"personName\">");
-			sb.append(" (").append(u.getPersonName().getFullName()).append(")");
+			sb.append(" (").append(u.getPersonName()).append(")");
 			sb.append("</span>");
 		}
 		sb.append("</span>");
@@ -500,7 +384,7 @@ public class FormatTag extends TagSupport {
 	 */
 	private void printPerson(StringBuilder sb, Person p) {
 		if (p != null)
-			sb.append(p.getPersonName().getFullName());
+			sb.append(p.getPersonName());
 	}
 	
 	/**
@@ -566,7 +450,7 @@ public class FormatTag extends TagSupport {
 		String encounterRoles = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES, null);
 		
-		if (StringUtils.isEmpty(encounterRoles)) {
+		if (!StringUtils.hasText(encounterRoles)) {
 			
 			//we do not filter if user has not yet set the global property.
 			LinkedHashSet<Provider> allProviders = new LinkedHashSet<Provider>();
@@ -643,7 +527,6 @@ public class FormatTag extends TagSupport {
 	
 	private void reset() {
 		var = null;
-		object = null;
 		conceptId = null;
 		concept = null;
 		withConceptNameType = null;
@@ -670,22 +553,6 @@ public class FormatTag extends TagSupport {
 		encounterProviders = null;
 		form = null;
 		singleCustomValue = null;
-	}
-	
-	/**
-	 * Gets the object property
-	 * @return the object property value
-	 */
-	public Object getObject() {
-		return object;
-	}
-	
-	/**
-	 * Sets the object property
-	 * @param object the object to set
-	 */
-	public void setObject(Object object) {
-		this.object = object;
 	}
 	
 	public Integer getConceptId() {
@@ -980,14 +847,6 @@ public class FormatTag extends TagSupport {
 	 */
 	public void setSingleCustomValue(SingleCustomValue<?> singleCustomValue) {
 		this.singleCustomValue = singleCustomValue;
-	}
-	
-	public String getCaseConversion() {
-		return caseConversion;
-	}
-	
-	public void setCaseConversion(String caseConversion) {
-		this.caseConversion = caseConversion;
 	}
 	
 }

@@ -1,8 +1,4 @@
-<ul class="navList" 
-	xmlns:spring="http://www.springframework.org/tags"
-	xmlns:openmrs="urn:jsptld:/WEB-INF/taglibs/openmrs.tld">
-		
-	<li id="homeNavLink" class="firstChild">
+<ul class="navList">	<li id="homeNavLink" class="firstChild">
 		<a href="${pageContext.request.contextPath}/"><openmrs:message code="Navigation.home"/></a>
 	</li>
 
@@ -27,7 +23,7 @@
 		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 			<li>
-			<a href="<openmrs_tag:url value="${extension.url}"/>"><openmrs:message code="${extension.label}"/></a>
+			<a href="${pageContext.request.contextPath}/${extension.url}"><openmrs:message code="${extension.label}"/></a>
 			</li>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>

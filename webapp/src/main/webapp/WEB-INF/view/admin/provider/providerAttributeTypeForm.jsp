@@ -42,7 +42,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.provider.providerForm.belowTitle" type="html" parameters="providerAttributeTypeId=${providerAttributeType.providerAttributeTypeId}" />
 
 <spring:hasBindErrors name="providerAttributeType">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">

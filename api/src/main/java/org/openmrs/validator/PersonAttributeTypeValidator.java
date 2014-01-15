@@ -42,15 +42,15 @@ public class PersonAttributeTypeValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null
 	 * @should fail validation if name already in use
-	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		PersonAttributeType patObj = (PersonAttributeType) obj;
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "PersonAttributeType.error.nameEmpty");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		PersonService ps = Context.getPersonService();
 		PersonAttributeType pat = ps.getPersonAttributeTypeByName(patObj.getName());
-		if (pat != null && !pat.getUuid().equals(patObj.getUuid())) {
+		if (pat != null && !pat.getPersonAttributeTypeId().equals(patObj.getPersonAttributeTypeId())) {
 			errors.rejectValue("name", "PersonAttributeType.error.nameAlreadyInUse");
 		}
 	}

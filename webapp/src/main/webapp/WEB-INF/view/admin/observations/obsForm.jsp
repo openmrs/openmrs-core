@@ -217,7 +217,7 @@
 <h2><openmrs:message code="Obs.title"/></h2>
 
 <spring:hasBindErrors name="obs">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.globalErrors}" var="error">
 			<openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/><br/><!-- ${error} -->
@@ -231,7 +231,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.voidedBy"/>
-				<c:out value="${obs.voidedBy.personName}" />
+				${obs.voidedBy.personName}
 				<openmrs:formatDate date="${obs.dateVoided}" type="medium" />
 				-
 				${obs.voidReason}
@@ -461,7 +461,30 @@
 	</tr>
 	
 	<openmrs:extensionPoint pointId="org.openmrs.admin.observations.belowValueRow" type="html" parameters="obsId=${obs.obsId}"></openmrs:extensionPoint>
-
+	
+	<%--
+		<tr>
+			<th><openmrs:message code="Obs.dateStarted"/></th>
+			<td>
+				<spring:bind path="dateStarted">			
+					<input type="text" name="${status.expression}" size="10" 
+						   value="${status.value}" onClick="showCalendar(this)" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<th><openmrs:message code="Obs.dateStopped"/></th>
+			<td>
+				<spring:bind path="dateStopped">			
+					<input type="text" name="${status.expression}" size="10" 
+						   value="${status.value}" onClick="showCalendar(this)" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+				</spring:bind>
+			</td>
+		</tr>
+	--%>
+	
 	<tr>
 		<th><openmrs:message code="Obs.comment"/></th>
 		<spring:bind path="comment">
@@ -475,7 +498,7 @@
 		<tr>
 			<th><openmrs:message code="general.createdBy" /></th>
 			<td>
-				<c:out value="${obs.creator.personName}" /> -
+				${obs.creator.personName} -
 				<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
 			</td>
 		</tr>

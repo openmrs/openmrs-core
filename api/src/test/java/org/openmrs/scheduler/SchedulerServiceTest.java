@@ -18,9 +18,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +31,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.springframework.util.StringUtils;
 
 /**
  * TODO test all methods in ScheduleService
@@ -39,12 +38,6 @@ import org.springframework.util.StringUtils;
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
-	
-	// so that we can guarantee tests running accurately instead of tests interfering with the next
-	public final Integer SAVE_TASK_LOCK = new Integer(1);
-	
-	// each task provides a key that will be used in this map.  The value is the output
-	private static Map<String, String> output = new HashMap<String, String>();
 	
 	@Before
 	public void setUp() throws Exception {
@@ -81,40 +74,27 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			assertTrue("Class " + className + " is not a valid Task", true);
 	}
 	
+	private static List<String> outputForConcurrentTasks = new ArrayList<String>();
+	
 	/**
 	 * Longer running class used to demonstrate tasks running concurrently
 	 */
 	public static class ExecutePrintingTask extends AbstractTask {
 		
 		public void execute() {
-			String outputKey = getTaskDefinition().getProperty("outputKey");
-			appendOutput(outputKey, getTaskDefinition().getProperty("id"));
-			
+			synchronized (outputForConcurrentTasks) {
+				outputForConcurrentTasks.add(getTaskDefinition().getProperty("id"));
+			}
 			try {
 				Thread.sleep(Integer.valueOf(getTaskDefinition().getProperty("delay")));
 			}
 			catch (InterruptedException e) {
 				log.error("Error generated", e);
 			}
-			
-			appendOutput(outputKey, getTaskDefinition().getProperty("id"));
-			
+			synchronized (outputForConcurrentTasks) {
+				outputForConcurrentTasks.add(getTaskDefinition().getProperty("id"));
+			}
 		}
-	}
-	
-	/**
-	 * Helper method to append the given text to the "output" static variable map
-	 * <br/>
-	 * Map will contain string like "text, text1, text2"
-	 * 
-	 * @param outputKey the key for the "output" map
-	 * @param the text to append to the value in the output map with the given key
-	 */
-	public synchronized static void appendOutput(String outputKey, String appendText) {
-		if (StringUtils.hasLength(output.get(outputKey)))
-			output.put(outputKey, output.get(outputKey) + ", " + appendText);
-		else
-			output.put(outputKey, appendText);
 	}
 	
 	/**
@@ -140,7 +120,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t1.setTaskClass(ExecutePrintingTask.class.getName());
 		t1.setProperty("id", "TASK-1");
 		t1.setProperty("delay", "400"); // must be longer than t2's delay
-		t1.setProperty("outputKey", "shouldAllowTwoTasksToRunConcurrently");
 		t1.setName("name");
 		t1.setRepeatInterval(5000l);
 		
@@ -151,18 +130,17 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t2.setTaskClass(ExecutePrintingTask.class.getName());
 		t2.setProperty("id", "TASK-2");
 		t2.setProperty("delay", "100"); // must be shorter than t1's delay
-		t2.setProperty("outputKey", "shouldAllowTwoTasksToRunConcurrently");
 		t2.setName("name");
 		t2.setRepeatInterval(5000l);
 		
-		synchronized (SAVE_TASK_LOCK) {
-			schedulerService.scheduleTask(t1);
-			Thread.sleep(50); // so t2 doesn't start before t1 due to random millisecond offsets
-			schedulerService.scheduleTask(t2);
-			Thread.sleep(2500); // must be longer than t2's delay
-			assertEquals("TASK-1, TASK-2, TASK-2, TASK-1", output.get("shouldAllowTwoTasksToRunConcurrently"));
-		}
+		schedulerService.scheduleTask(t1);
+		Thread.sleep(50); // so t2 doesn't start before t1 due to random millisecond offsets
+		schedulerService.scheduleTask(t2);
+		Thread.sleep(2500); // must be longer than t2's delay
+		assertEquals(Arrays.asList("TASK-1", "TASK-2", "TASK-2", "TASK-1"), outputForConcurrentTasks);
 	}
+	
+	private static List<String> outputForConcurrentInit = new ArrayList<String>();
 	
 	/**
 	 * Longer init'ing class for concurrent init test
@@ -170,9 +148,9 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	public static class SimpleTask extends AbstractTask {
 		
 		public void initialize(TaskDefinition config) {
-			String outputKey = config.getProperty("outputKey");
-			appendOutput(outputKey, config.getProperty("id"));
-			
+			synchronized (outputForConcurrentInit) {
+				outputForConcurrentInit.add(config.getProperty("id"));
+			}
 			super.initialize(config);
 			try {
 				// must be less than delay before printing
@@ -181,8 +159,9 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			catch (InterruptedException e) {
 				log.error("Error generated", e);
 			}
-			
-			appendOutput(outputKey, config.getProperty("id"));
+			synchronized (outputForConcurrentInit) {
+				outputForConcurrentInit.add(config.getProperty("id"));
+			}
 		}
 		
 		public void execute() {
@@ -211,7 +190,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t3.setTaskClass(SimpleTask.class.getName());
 		t3.setProperty("id", "TASK-3");
 		t3.setProperty("delay", "300"); // must be longer than t4's delay
-		t3.setProperty("outputKey", "shouldAllowTwoTasksInitMethodsToRunConcurrently");
 		t3.setName("name");
 		t3.setRepeatInterval(5000l);
 		
@@ -221,30 +199,28 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t4.setTaskClass(SimpleTask.class.getName());
 		t4.setProperty("id", "TASK-4");
 		t4.setProperty("delay", "100");
-		t4.setProperty("outputKey", "shouldAllowTwoTasksInitMethodsToRunConcurrently");
 		t4.setName("name");
 		t4.setRepeatInterval(5000l);
 		
 		// both of these tasks start immediately
-		synchronized (SAVE_TASK_LOCK) {
-			schedulerService.scheduleTask(t3); // starts first, ends last
-			schedulerService.scheduleTask(t4); // starts last, ends first
-		}
+		schedulerService.scheduleTask(t3); // starts first, ends last
+		schedulerService.scheduleTask(t4); // starts last, ends first
 		Thread.sleep(500); // must be greater than task3 delay so that it prints out its end
-		assertEquals("TASK-3, TASK-4, TASK-4, TASK-3", output.get("shouldAllowTwoTasksInitMethodsToRunConcurrently"));
+		assertEquals(Arrays.asList("TASK-3", "TASK-4", "TASK-4", "TASK-3"), outputForConcurrentInit);
 		
 		// cleanup
 		schedulerService.shutdownTask(t3);
 		schedulerService.shutdownTask(t4);
 	}
 	
+	private static List<String> outputForInitExecSync = new ArrayList<String>();
+	
 	public static class SampleTask5 extends AbstractTask {
 		
 		public void initialize(TaskDefinition config) {
-			
-			String outputKey = config.getProperty("outputKey");
-			appendOutput(outputKey, "INIT-START-5");
-			
+			synchronized (outputForInitExecSync) {
+				outputForInitExecSync.add("INIT-START-5");
+			}
 			super.initialize(config);
 			try {
 				Thread.sleep(700);
@@ -252,13 +228,15 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			catch (InterruptedException e) {
 				log.error("Error generated", e);
 			}
-			
-			appendOutput(outputKey, "INIT-END-5");
+			synchronized (outputForInitExecSync) {
+				outputForInitExecSync.add("INIT-END-5");
+			}
 		}
 		
 		public void execute() {
-			String outputKey = getTaskDefinition().getProperty("outputKey");
-			appendOutput(outputKey, "IN EXECUTE");
+			synchronized (outputForInitExecSync) {
+				outputForInitExecSync.add("IN EXECUTE");
+			}
 		}
 	}
 	
@@ -284,21 +262,18 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t5.setStartOnStartup(false);
 		t5.setStartTime(null); // immediate start
 		t5.setTaskClass(SampleTask5.class.getName());
-		t5.setProperty("outputKey", "shouldNotAllowTaskExecuteToRunBeforeInitializationIsComplete");
 		t5.setName("name");
 		t5.setRepeatInterval(5000l);
 		
-		synchronized (SAVE_TASK_LOCK) {
-			schedulerService.scheduleTask(t5);
-			Thread.sleep(2500);
-			assertEquals("INIT-START-5, INIT-END-5, IN EXECUTE", output
-			        .get("shouldNotAllowTaskExecuteToRunBeforeInitializationIsComplete"));
-		}
+		schedulerService.scheduleTask(t5);
+		Thread.sleep(2500);
+		assertEquals(Arrays.asList("INIT-START-5", "INIT-END-5", "IN EXECUTE"), outputForInitExecSync);
 	}
 	
 	@Test
 	public void saveTask_shouldSaveTaskToTheDatabase() throws Exception {
 		SchedulerService service = Context.getSchedulerService();
+		Assert.assertEquals(0, service.getRegisteredTasks().size());
 		
 		TaskDefinition def = new TaskDefinition();
 		final String TASK_NAME = "This is my test! 123459876";
@@ -306,12 +281,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		def.setStartOnStartup(false);
 		def.setRepeatInterval(10L);
 		def.setTaskClass(ExecutePrintingTask.class.getName());
-		
-		synchronized (SAVE_TASK_LOCK) {
-			int size = service.getRegisteredTasks().size();
-			service.saveTask(def);
-			Assert.assertEquals(size + 1, service.getRegisteredTasks().size());
-		}
+		service.saveTask(def);
+		Assert.assertEquals(1, service.getRegisteredTasks().size());
 		
 		def = service.getTaskByName(TASK_NAME);
 		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
@@ -364,9 +335,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setName("name");
 		td.setRepeatInterval(5000l);
 		
-		synchronized (SAVE_TASK_LOCK) {
-			schedulerService.scheduleTask(td);
-		}
+		schedulerService.scheduleTask(td);
 		Thread.sleep(500);
 		
 		assertTrue(BareTask.outputList.contains("TEST"));
@@ -382,6 +351,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 				// something would happen here...
 				
 				actualExecutionTime = System.currentTimeMillis();
+				
 			}
 			finally {}
 			
@@ -404,10 +374,9 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setTaskClass(SessionTask.class.getName());
 		td.setStartTime(null);
 		td.setRepeatInterval(new Long(0));//0 indicates single execution
-		synchronized (SAVE_TASK_LOCK) {
-			service.saveTask(td);
-			service.scheduleTask(td);
-		}
+		service.saveTask(td);
+		
+		service.scheduleTask(td);
 		
 		// refetch the task
 		td = service.getTaskByName(NAME);

@@ -28,10 +28,7 @@ function showDateTimePicker(obj) {
         id = obj.id;
     }
     var opts = { appendText: " " };
-
-    if (gp.weekStart)
-		opts["firstDay"] = gp.weekStart;
-	
+    
     var dp = new DateTimePicker(jsDateFormat, jsTimeFormat, id, opts);
 	
     jQuery.datepicker.setDefaults(jQuery.datepicker.regional[jsLocale]);

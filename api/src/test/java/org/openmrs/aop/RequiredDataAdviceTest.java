@@ -13,27 +13,6 @@
  */
 package org.openmrs.aop;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +26,6 @@ import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Person;
 import org.openmrs.User;
-import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -66,6 +44,27 @@ import org.openmrs.util.Reflect;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the {@link RequiredDataAdvice} class.
@@ -97,12 +96,15 @@ public class RequiredDataAdviceTest {
 	}
 	
 	/**
-	 * Class with a private field without getter
+	 * Class that extends {@link OpenmrsObject} so can
 	 */
 	private class MiniOpenmrsObject extends BaseOpenmrsObject {
 		
-		@AllowDirectAccess
 		private List<Location> locations;
+		
+		public List<Location> getLocations() {
+			return locations;
+		}
 		
 		public void setLocations(List<Location> locs) {
 			this.locations = locs;
@@ -133,11 +135,11 @@ public class RequiredDataAdviceTest {
 	}
 	
 	/**
-	 * @see RequiredDataAdvice#getChildCollection(OpenmrsObject,Field)
-	 * @verifies should be able to get annotated private fields
+	 * @see {@link RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)}
 	 */
 	@Test
-	public void getChildCollection_shouldShouldBeAbleToGetAnnotatedPrivateFields() throws Exception {
+	@Verifies(value = "should be able to get private fields in fieldAccess list", method = "getChildCollection(OpenmrsObject,Field)")
+	public void getChildCollection_shouldBeAbleToGetPrivateFieldsInFieldAccessList() throws Exception {
 		MiniOpenmrsObject oo = new MiniOpenmrsObject();
 		oo.setLocations(new ArrayList<Location>());
 		Assert.assertNotNull(RequiredDataAdvice
@@ -147,6 +149,7 @@ public class RequiredDataAdviceTest {
 	/**
 	 * Class that has a mismatched getter name instead of the correct getter name
 	 */
+	@SuppressWarnings( { "UnusedDeclaration" })
 	private class ClassWithBadGetter extends BaseOpenmrsObject {
 		
 		private Set<Location> locations;

@@ -19,9 +19,14 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
@@ -29,6 +34,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.attribute.AttributeType;
 
 /**
  * Hibernate location-related database functions
@@ -74,7 +80,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	@SuppressWarnings("unchecked")
 	public Location getLocation(String name) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class).add(
-		    Restrictions.eq("name", name));
+		    Expression.eq("name", name));
 		
 		List<Location> locations = criteria.list();
 		if (null == locations || locations.isEmpty()) {
@@ -90,7 +96,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public List<Location> getAllLocations(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired", false));
+			criteria.add(Expression.eq("retired", false));
 		} else {
 			//push retired locations to the end of the returned list
 			criteria.addOrder(Order.asc("retired"));
@@ -127,7 +133,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	@SuppressWarnings("unchecked")
 	public LocationTag getLocationTagByName(String tag) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class).add(
-		    Restrictions.eq("name", tag));
+		    Expression.eq("name", tag));
 		
 		List<LocationTag> tags = criteria.list();
 		if (null == tags || tags.isEmpty()) {
@@ -143,7 +149,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
 		if (!includeRetired) {
-			criteria.add(Restrictions.like("retired", false));
+			criteria.add(Expression.like("retired", false));
 		}
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
@@ -156,7 +162,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public List<LocationTag> getLocationTags(String search) {
 		return sessionFactory.getCurrentSession().createCriteria(LocationTag.class)
 		// 'ilike' case insensitive search
-		        .add(Restrictions.ilike("name", search, MatchMode.START)).addOrder(Order.asc("name")).list();
+		        .add(Expression.ilike("name", search, MatchMode.START)).addOrder(Order.asc("name")).list();
 	}
 	
 	/**
@@ -190,10 +196,10 @@ public class HibernateLocationDAO implements LocationDAO {
 	public Long getCountOfLocations(String nameFragment, Boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired)
-			criteria.add(Restrictions.eq("retired", false));
+			criteria.add(Expression.eq("retired", false));
 		
 		if (StringUtils.isNotBlank(nameFragment))
-			criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.START));
+			criteria.add(Expression.ilike("name", nameFragment, MatchMode.START));
 		
 		criteria.setProjection(Projections.rowCount());
 		
@@ -243,9 +249,9 @@ public class HibernateLocationDAO implements LocationDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired)
-			criteria.add(Restrictions.eq("retired", false));
+			criteria.add(Expression.eq("retired", false));
 		
-		criteria.add(Restrictions.isNull("parentLocation"));
+		criteria.add(Expression.isNull("parentLocation"));
 		
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();

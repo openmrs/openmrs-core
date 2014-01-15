@@ -22,6 +22,42 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.model.DataTypeException;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.Type;
+import ca.uhn.hl7v2.model.Varies;
+import ca.uhn.hl7v2.model.v25.datatype.CE;
+import ca.uhn.hl7v2.model.v25.datatype.CWE;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.DLD;
+import ca.uhn.hl7v2.model.v25.datatype.DT;
+import ca.uhn.hl7v2.model.v25.datatype.DTM;
+import ca.uhn.hl7v2.model.v25.datatype.ED;
+import ca.uhn.hl7v2.model.v25.datatype.FT;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
+import ca.uhn.hl7v2.model.v25.datatype.IS;
+import ca.uhn.hl7v2.model.v25.datatype.NM;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.ST;
+import ca.uhn.hl7v2.model.v25.datatype.TM;
+import ca.uhn.hl7v2.model.v25.datatype.TS;
+import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.group.ORU_R01_OBSERVATION;
+import ca.uhn.hl7v2.model.v25.group.ORU_R01_ORDER_OBSERVATION;
+import ca.uhn.hl7v2.model.v25.group.ORU_R01_PATIENT_RESULT;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.MSH;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.OBR;
+import ca.uhn.hl7v2.model.v25.segment.OBX;
+import ca.uhn.hl7v2.model.v25.segment.ORC;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.model.v25.segment.PV1;
+import ca.uhn.hl7v2.parser.EncodingCharacters;
+import ca.uhn.hl7v2.parser.PipeParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -51,44 +87,6 @@ import org.openmrs.obs.ComplexData;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
-
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
-import ca.uhn.hl7v2.model.DataTypeException;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.Type;
-import ca.uhn.hl7v2.model.Varies;
-import ca.uhn.hl7v2.model.v25.datatype.CE;
-import ca.uhn.hl7v2.model.v25.datatype.CWE;
-import ca.uhn.hl7v2.model.v25.datatype.CX;
-import ca.uhn.hl7v2.model.v25.datatype.DLD;
-import ca.uhn.hl7v2.model.v25.datatype.DT;
-import ca.uhn.hl7v2.model.v25.datatype.DTM;
-import ca.uhn.hl7v2.model.v25.datatype.ED;
-import ca.uhn.hl7v2.model.v25.datatype.EI;
-import ca.uhn.hl7v2.model.v25.datatype.FT;
-import ca.uhn.hl7v2.model.v25.datatype.ID;
-import ca.uhn.hl7v2.model.v25.datatype.IS;
-import ca.uhn.hl7v2.model.v25.datatype.NM;
-import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.ST;
-import ca.uhn.hl7v2.model.v25.datatype.TM;
-import ca.uhn.hl7v2.model.v25.datatype.TS;
-import ca.uhn.hl7v2.model.v25.datatype.XCN;
-import ca.uhn.hl7v2.model.v25.group.ORU_R01_OBSERVATION;
-import ca.uhn.hl7v2.model.v25.group.ORU_R01_ORDER_OBSERVATION;
-import ca.uhn.hl7v2.model.v25.group.ORU_R01_PATIENT_RESULT;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
-import ca.uhn.hl7v2.model.v25.segment.MSH;
-import ca.uhn.hl7v2.model.v25.segment.NK1;
-import ca.uhn.hl7v2.model.v25.segment.OBR;
-import ca.uhn.hl7v2.model.v25.segment.OBX;
-import ca.uhn.hl7v2.model.v25.segment.ORC;
-import ca.uhn.hl7v2.model.v25.segment.PID;
-import ca.uhn.hl7v2.model.v25.segment.PV1;
-import ca.uhn.hl7v2.parser.EncodingCharacters;
-import ca.uhn.hl7v2.parser.PipeParser;
 
 /**
  * Parses ORUR01 messages into openmrs Encounter objects Usage: GenericParser parser = new
@@ -140,9 +138,6 @@ public class ORUR01Handler implements Application {
 	 * @should create an encounter and find the provider by uuid
 	 * @should create an encounter and find the provider by providerId
 	 * @should fail if the provider name type code is not specified and is not a personId
-	 * @should understand form uuid if present
-	 * @should prefer form uuid over id if both are present
-	 * @should prefer form id if uuid is not found
 	 * @should set complex data for obs with complex concepts
 	 */
 	@Override
@@ -258,12 +253,6 @@ public class ORUR01Handler implements Application {
 			
 			// the parent obr
 			OBR obr = orderObs.getOBR();
-			
-			if (!StringUtils.hasText(obr.getUniversalServiceIdentifier().getIdentifier().getValue())) {
-				throw new HL7Exception(
-				        "Check to ensure that the form's OBS section is a concept field. Invalid OBR in hl7 message with uid: "
-				                + messageControlId);
-			}
 			
 			// if we're not ignoring this obs group, create an
 			// Obs grouper object that the underlying obs objects will use
@@ -1096,37 +1085,19 @@ public class ORUR01Handler implements Application {
 	 * @throws HL7Exception
 	 */
 	private Form getForm(MSH msh) throws HL7Exception {
-		String uuid = null;
-		String id = null;
-		
-		for (EI identifier : msh.getMessageProfileIdentifier()) {
-			if (identifier != null && identifier.getNamespaceID() != null) {
-				String identifierType = identifier.getNamespaceID().getValue();
-				if (OpenmrsUtil.nullSafeEquals(identifierType, HL7Constants.HL7_FORM_UUID))
-					uuid = identifier.getEntityIdentifier().getValue();
-				else if (OpenmrsUtil.nullSafeEquals(identifierType, HL7Constants.HL7_FORM_ID))
-					id = identifier.getEntityIdentifier().getValue();
-				else
-					log.warn("Form identifier type of " + identifierType + " unknown to ORU R01 processor.");
-			}
+		Integer formId = null;
+		try {
+			formId = Integer.parseInt(msh.getMessageProfileIdentifier(0).getEntityIdentifier().getValue());
+		}
+		catch (Exception e) {
+			throw new HL7Exception("Error parsing form id from message", e);
 		}
 		
+		// must get entire form object in order to get its metadata
+		// (encounterType) later
 		Form form = null;
-		
-		// prefer uuid over id
-		if (uuid != null)
-			form = Context.getFormService().getFormByUuid(uuid);
-		
-		// if uuid did not work ...
-		if (form == null) {
-			try {
-				Integer formId = Integer.parseInt(id);
-				form = Context.getFormService().getForm(formId);
-			}
-			catch (NumberFormatException e) {
-				throw new HL7Exception("Error parsing form id from message", e);
-			}
-		}
+		if (formId != null)
+			form = Context.getFormService().getForm(formId);
 		
 		return form;
 	}

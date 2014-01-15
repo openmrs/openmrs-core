@@ -18,14 +18,6 @@ function markAlertRead(self, alertId) {
 	return false;
 }
 
-function markAllAlertsRead(self) {
-	DWRAlertService.markAllAlertsRead();
-	// hide the entire alert outer div after marking all alerts as read
-	var parent = self.parentNode;
-	parent = parent.parentNode;
-	parent.style.display = "none";
-}
-
 function addClass(obj, c) {
 	if (obj.className.indexOf(c) == -1)
 		obj.className = c + " " + obj.className;
@@ -602,32 +594,4 @@ function addAutoComplete(displayNameInputId, formFieldId, searchFunction, valueF
 		},
 		placeholder: placeHolderText
 	});
-}
-
-/**
- * Show an inline error element for immediate error feedback
- * See view/portlets/addPersonForm.jsp for usage example
- * @param errorName (Required) error element's id. It should have class="error" for best results.
- */
-function showError(errorName) {
-	document.getElementById(errorName).style.display = "";
-}
-/**
- * Hide an inline error element for immediate error feedback
- * @param errorName (Required) error element's id.  It should have class="error" for best results.
- */
-function hideError(errorName) {
-	document.getElementById(errorName).style.display = "none";
-}
-
-/**
- * Forces the length of a field to be a maximum length
- * See view/admin/encounters/encounterTypeForm.jsp for usage example
- * @param object(Required) to be limited.
- * @param maxLength(Required) the length of the limit.
- */
-function forceMaxLength(object, maxLength) {
-    if( object.value.length >= maxLength) {
-       object.value = object.value.substring(0, maxLength); 
-    }
 }

@@ -103,8 +103,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   doSearchWhenEmpty: If it is set to true, it lists all items initially and filters them with the given search phrase. (default:false)
  *   verboseHandler: function to be called to return the text to display as verbose output
  *   attributes: Array of names for attributes types to display in the list of results
- *   showSearchButton: Boolean, indicating whether to use search button for immediate search
- *   lastSearchParams: Object with properties lastSearchText, includeVoided and includeVerbose, to preserve data with browser back button
  *   
  * The styling on this table works like this:
  * <pre>  
@@ -189,13 +187,11 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	verboseCheckBox = div.find("#includeVerbose");
 		    	spinnerObj = div.find("#spinner");
 		    	spinnerObj.css("visibility", "hidden");
-		    	spinnerObj.prop("src", openmrsContextPath+"/images/loading.gif");
+		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
 		    	minCharErrorObj = div.find("#minCharError");
 		    	minCharErrorObj.html(omsgs.minCharRequired.replace("_REQUIRED_NUMBER_", o.minLength));
 		    	notification = div.find("#searchWidgetNotification");
 		    	loadingMsgObj = div.find("#loadingMsg");
-		    	showSearchButton = o.showSearchButton ? true : false;
-		    	lastSearchParams = (o.lastSearchParams !== null) ? o.lastSearchParams : null;
 		    
 		    this._div = div;
 		    
@@ -204,21 +200,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    //3 should be the minimum number of results to display per page
 		    if(o.displayLength < 3)
 		    	o.displayLength = 3;
-		    
-	    	// If need search button
-	    	if (showSearchButton) {
-	    		input.after("<input type='button' id='searchButton' name='searchButton' value='" + omsgs.searchLabel + "' />");
-	    		$j('#searchButton').click(function() {
-	    			if ($j.trim(input.val()) != '' || self.options.doSearchWhenEmpty) {
-	    				//if there is any delay in progress, cancel it
-		    			if(self._searchDelayTimer != null) {
-		    				window.clearTimeout(self._searchDelayTimer);
-		    			}
-	    				self._doSearch($j.trim(input.val()));
-	    				input.focus();
-	    			}
-	    		});
-	    	}
 		    
 		    if(o.showIncludeVoided) {
 		    	var tmp = div.find("#includeVoided");
@@ -245,7 +226,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				});
 			    
 			    if(userProperties.showRetired)
-			    	tmp.prop('checked', true);
+			    	tmp.attr('checked', true);
 		    }
 		    
 		    if(o.showIncludeVerbose) {
@@ -260,7 +241,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	});
 			    
 		    	if(userProperties.showVerbose)
-		    		tmp.prop('checked', true);
+		    		tmp.attr('checked', true);
 		    }
 		    
 		    //this._trigger('initialized');
@@ -269,17 +250,11 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	//LEFT(37), UP(38), RIGHT(39), DOWN(40), ENTER(13), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
 		    	if(((kc >= 33) && (kc <= 40)) || (kc == 13)) {
-		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none') && ($j.trim(input.val()) == '')) {
+		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none')) {
 						return true;
 					}
-		    		if(kc == 13) {
-		    			//if there is any delay in progress, cancel it
-		    			if(self._searchDelayTimer != null) {
-		    				window.clearTimeout(self._searchDelayTimer);
-		    			}
+		    		if(kc == 13)
 		    			self._doKeyEnter();
-		    		}
-		    		
 			    	//kill the event
 			    	event.stopPropagation();
 			    				    	
@@ -313,6 +288,12 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     			if(!inSerialMode && ajaxTimer)
     				window.clearInterval(ajaxTimer);
     			
+    			var searchDelay = SEARCH_DELAY;
+    			if(text.length < o.minLength && !self.options.doSearchWhenEmpty) {
+        			// force a longer delay since we are going to search on a shorter string
+    				searchDelay = 3000;
+    			}
+    			
         		//if there is any delay in progress, cancel it
     			if(self._searchDelayTimer != null)
     				window.clearTimeout(self._searchDelayTimer);
@@ -332,7 +313,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     					self.options.initialData = null;
     					
     				self._doSearch(text);
-    			}, SEARCH_DELAY);
+    			}, searchDelay);
 	    			
 	    		return true;
 		    });
@@ -377,7 +358,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    var numberOfTextInputs = 0;
 		    for(var x in inputs){
 		    	var inputField = inputs[x];
-		    	if(inputField && inputField.type == 'text' && $j(inputField).prop("disabled") == false && 
+		    	if(inputField && inputField.type == 'text' && $j(inputField).attr("disabled") == false && 
 		    			$j(inputField).is(":visible") && $j(inputField).css("visibility") != "hidden")
 		    		numberOfTextInputs++;
 		    }
@@ -394,7 +375,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    if(self.options.searchPlaceholder){
 		        //The value should not contain line feeds or carriage returns.
 		        var textShown=self.options.searchPlaceholder.toString().replace(/(\r\n|\n|\r)/gm,"");
-		        $j('#inputNode').prop('placeHolder', textShown);
+		        $j('#inputNode').attr('placeHolder', textShown);
 		    }
 		    
 		    //Create an array of arrays from the array of objects if we have any initial data
@@ -492,7 +473,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				    		}
 		    		}}
 		    		
-		    		if(!$j(verboseCheckBox).prop('checked')){
+		    		if(!$j(verboseCheckBox).attr('checked')){
 		    			$j('.verbose').hide();
 		    		}
 		    	},
@@ -506,7 +487,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    					self._unHighlightRow(currentNode);
 		    				}
 			    			self.hoverRowSelection = iDisplayIndexFull;
-			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).prop('checked'))
+			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).attr('checked'))
 			    				$j(this.nextSibling).addClass('row_highlight');
 		    			}, function(){
 		    				if(self.curRowSelection != null){
@@ -518,7 +499,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			    			self.hoverRowSelection = null;
 			    			if(self.curRowSelection != null && self._table.fnGetPosition(this) == self.curRowSelection)
 			    				return;
-			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).prop('checked'))
+			    			if(self.options.showIncludeVerbose && $j(verboseCheckBox).attr('checked'))
 			    				$j(this.nextSibling).removeClass('row_highlight');
 		    			}
 		    		);
@@ -541,30 +522,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		return nRow;
 		    	}
 		    });
-		    
-		    // Browser back button support, for preserve data
-		    if (lastSearchParams !== null) {
-		    	$j('#inputNode').val(lastSearchParams.lastSearchText);
-		    	if (lastSearchParams.includeVoided == 1) {
-		    		$j('#includeVoided').attr('checked','checked');
-		    	}
-		    	if (lastSearchParams.includeVerbose == 1) {
-		    		$j('#includeVerbose').attr('checked','checked');
-		    	}
-		    	var keyEvent = jQuery.Event("keyup");
-		    	
-		    	var codex = 13;
-		    	
-		    	// Patient search doesn't support for Enter Key. So invoke keyup
-		    	// event with last character of searched text.
-		    	if (el.attr('id') === "findPatients") {
-		    		var text = $j('#inputNode').val();
-			    	codex = $j('#inputNode').val().charCodeAt($j('#inputNode').val().length - 1);
-		    	}
-		    	
-		    	keyEvent.keyCode = codex;
-		    	$j("#inputNode").trigger(keyEvent);
-		    }
 		    
 		    //register an onchange event handler for the length dropdown so that we don't lose 
 		    //the row highlight when the user makes changes to the length
@@ -634,7 +591,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		
 		_doSearch: function(text) {
 			if(this.options.searchHandler) {
-				var tmpIncludeVoided = (this.options.showIncludeVoided && checkBox.prop('checked'));
+				var tmpIncludeVoided = (this.options.showIncludeVoided && checkBox.attr('checked'));
 				//associate the ajax call to be made to a call count number to track it , so on
 				//its return we can identify it and determine if there are some later calls made 
 				//so that we can make sure older ajax calls donot overwrite later ones
@@ -656,24 +613,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		_handleResults: function(searchText, curCallCount) {
 			var self = this;
 			return function(results) {
-				//Don't display results from delayed ajax calls when the input box is blank or has less 
-				//than the minimum characters, this can arise when user presses backspace relatively fast
-				//yet there were some intermediate calls that might have returned results
-				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == '' && !self.options.doSearchWhenEmpty){
-					if($j('#pageInfo').css("visibility") == 'visible')
-						$j('#pageInfo').css("visibility", "hidden");
-					if($j('#spinner').css("visibility") == 'visible')
-						$j("#spinner").css("visibility", "hidden");
-					$j(".openmrsSearchDiv").hide();
-					return;
-				}
-				
-				if(curCallCount && self._lastCallCount > curCallCount) {
-					//stop old ajax calls from over writing later ones
-					return;
-				}
-				
 				if(results["notification"])
 					$j(notification).html(results["notification"]);
 				
@@ -695,6 +634,26 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				if(matchCount <= self._table.fnSettings()._iDisplayLength){
 					spinnerObj.css("visibility", "hidden");
 					loadingMsgObj.html("");
+				}
+
+				if(curCallCount && self._lastCallCount > curCallCount) {
+					//stop old ajax calls from over writing later ones
+					return;
+				}
+				
+				//Don't display results from delayed ajax calls when the input box is blank or has less 
+				//than the minimum characters, this can arise when user presses backspace relatively fast
+				//yet there were some intermediate calls that might have returned results
+				var currInput = $j.trim($j("#inputNode").val());
+				if(currInput == '' && !self.options.doSearchWhenEmpty){
+					if($j('#pageInfo').css("visibility") == 'visible')
+						$j('#pageInfo').css("visibility", "hidden");
+					if($j('#spinner').css("visibility") == 'visible')
+						$j("#spinner").css("visibility", "hidden");
+					$j(".openmrsSearchDiv").hide();
+					if(currInput.length > 0)
+						$j("#minCharError").css("visibility", "visible");
+					return;
 				}
 				
 				self._doHandleResults(matchCount, searchText);
@@ -743,7 +702,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			}
 			
 			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex, curSubCallCount),
-				false, {includeVoided: this.options.showIncludeVoided && checkBox.prop('checked'),
+				false, {includeVoided: this.options.showIncludeVoided && checkBox.attr('checked'),
 				start: startIndex, length: actualBatchSize});
 					
 			if(inSerialMode)
@@ -928,7 +887,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		_doKeyEnter: function() {
-			
 			var selectedRowIndex = null;
 			if(this.hoverRowSelection != null) {
 				selectedRowIndex = this.hoverRowSelection;
@@ -936,14 +894,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				selectedRowIndex = this.curRowSelection;
 			}
 			
-			if(selectedRowIndex != null) {
+			if(selectedRowIndex != null)
 				this._doSelected(selectedRowIndex, this._results[selectedRowIndex]);
-			} else if (showSearchButton) {
-				if (($j.trim($j('#inputNode').val()) != '') || self.options.doSearchWhenEmpty) {
-					this._doSearch($j.trim($j('#inputNode').val()));
-				}
-			}
-			
 		},
 		
 		_doSelected: function(position, rowData) {
@@ -1125,15 +1077,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 								subCallCounter = self._bufferedAjaxCallCounters[i];
 								//Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
 								//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ignore 5 since it has to wait on 4							
-								bufferedData = buffer[subCallCounter];
-								if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedData){
-									rowsToInsert = new Array();
-									for(var j in bufferedData) {
-										bufferedRowData = bufferedData[j];
-										rowsToInsert.push(self._buildRow(bufferedRowData));
-										self._results.push(bufferedRowData);
-									}
-									self._table.fnAddData(rowsToInsert);
+								bufferedRows = buffer[subCallCounter];
+								if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedRows){
+									self._table.fnAddData(bufferedRows);
 									buffer[subCallCounter] = null;//drop rows from buffer
 									nextSubCallCount++;
 									wasNextSubCallInBuffer = true;
@@ -1153,8 +1099,15 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				}
 				else if(!inSerialMode && curSubCallCount > self._lastSubCallCount){
 					//this ajax request returned before others that were made before it, add its results to the buffer
+					var bufferedRows = new Array();
+					for(var x in data) {
+						bufferedData = data[x];
+						bufferedRows.push(self._buildRow(bufferedData));
+						//add the data to the results list
+						self._results.push(bufferedData);
+					}
 					self._bufferedAjaxCallCounters.push(curSubCallCount);	
-					buffer[curSubCallCount] = data;
+					buffer[curSubCallCount] = bufferedRows;
 
 					return;
 				}

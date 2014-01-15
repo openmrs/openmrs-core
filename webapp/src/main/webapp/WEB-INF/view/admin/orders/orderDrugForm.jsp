@@ -6,14 +6,14 @@
 <%@ include file="localHeader.jsp" %>
 
 <c:if test="${order.patient != null}">
-	<a href="../../patientDashboard.form?patientId=<c:out value="${order.patient.patientId}" />"><openmrs:message code="patientDashboard.viewDashboard"/></a>
+	<a href="../../patientDashboard.form?patientId=${order.patient.patientId}"><openmrs:message code="patientDashboard.viewDashboard"/></a>
 </c:if>
 
 
 <h2><openmrs:message code="Order.drug.title"/></h2>
 
 <spring:hasBindErrors name="order">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
@@ -22,7 +22,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.voidedBy"/>
-				<c:out value="${order.voidedBy.personName}" />
+				${order.voidedBy.personName}
 				<openmrs:formatDate date="${order.dateVoided}" type="medium" />
 				-
 				${order.voidReason}
@@ -40,6 +40,15 @@
 			<td valign="top">
 				<spring:bind path="order.patient">
 					<openmrs:fieldGen type="org.openmrs.Patient" formFieldName="${status.expression}" val="${status.editor.value}" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<td><openmrs:message code="Order.orderType"/></td>
+			<td>
+				<spring:bind path="order.orderType">
+					<openmrs:fieldGen type="org.openmrs.OrderType" formFieldName="${status.expression}" val="${status.editor.value}" parameters="optionHeader=[blank]" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -93,7 +102,7 @@
 			<td valign="top"><openmrs:message code="Order.orderer"/></td>
 			<td valign="top">
 				<spring:bind path="order.orderer">
-					<openmrs:fieldGen type="org.openmrs.Provider" formFieldName="${status.expression}" val="${status.editor.value}" />
+					<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -101,7 +110,7 @@
 		<c:if test="${order.discontinued}">	
 			<tr id="discontinuedBy">
 				<td valign="top"><openmrs:message code="general.discontinuedBy"/></td>
-				<td valign="top"><c:out value="${order.discontinuedBy.personName}" /></td>
+				<td valign="top">${order.discontinuedBy.personName}</td>
 			</tr>
 			<tr id="dateDiscontinued">
 				<td valign="top"><openmrs:message code="general.dateDiscontinued"/></td>
@@ -118,7 +127,7 @@
 			<tr>
 				<td><openmrs:message code="general.createdBy" /></td>
 				<td>
-					<c:out value="${order.creator.personName}" /> - <openmrs:formatDate date="${order.dateCreated}" type="long" />
+					${order.creator.personName} - <openmrs:formatDate date="${order.dateCreated}" type="long" />
 				</td>
 			</tr>
 		</c:if>
@@ -135,7 +144,7 @@
 		<tr>
 			<td valign="top"><openmrs:message code="DrugOrder.units"/></td>
 			<td valign="top">
-				<spring:bind path="order.doseUnits">
+				<spring:bind path="order.units">
 					<openmrs:fieldGen type="java.lang.String" formFieldName="${status.expression}" val="${status.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
@@ -153,7 +162,16 @@
 		<tr>
 			<td valign="top"><openmrs:message code="DrugOrder.prn"/></td>
 			<td valign="top">
-				<spring:bind path="order.asNeeded">
+				<spring:bind path="order.prn">
+					<openmrs:fieldGen type="java.lang.Boolean" formFieldName="${status.expression}" val="${status.editor.value}" parameters="isNullable=false" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top"><openmrs:message code="DrugOrder.complex"/></td>
+			<td valign="top">
+				<spring:bind path="order.complex">
 					<openmrs:fieldGen type="java.lang.Boolean" formFieldName="${status.expression}" val="${status.editor.value}" parameters="isNullable=false" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
@@ -169,28 +187,10 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><openmrs:message code="DrugOrder.quantityUnits"/></td>
-			<td valign="top">
-				<spring:bind path="order.quantityUnits">
-					<openmrs:fieldGen type="java.lang.String" formFieldName="${status.expression}" val="${status.editor.value}" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
 			<td valign="top"><openmrs:message code="DrugOrder.drug"/></td>
 			<td valign="top">
 				<spring:bind path="order.drug">
 					<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="${status.expression}" val="${status.editor.value}" parameters="optionHeader=[blank]" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td valign="top"><openmrs:message code="DrugOrder.brandName"/></td>
-			<td valign="top">
-				<spring:bind path="order.brandName">
-					<openmrs:fieldGen type="java.lang.String" formFieldName="${status.expression}" val="${status.value}" parameters="fieldLength=100|isNullable=false" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

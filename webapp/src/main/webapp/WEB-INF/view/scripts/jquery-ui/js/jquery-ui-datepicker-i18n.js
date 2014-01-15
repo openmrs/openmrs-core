@@ -15,6 +15,7 @@ jQuery(function($){
 		dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','S&aacute;'],
 		weekHeader: 'Sm',
 		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};
@@ -32,6 +33,7 @@ jQuery(function($){
 		dayNamesMin: ['Su','Mo','Tu','We','Th','Fr','Sa'],
 		weekHeader: 'Wk',
 		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};
@@ -48,6 +50,7 @@ jQuery(function($){
 		dayNamesMin: ['Di','Lu','Ma','Me','Je','Ve','Sa'],
 		weekHeader: 'Sm',
 		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};
@@ -65,6 +68,7 @@ jQuery(function($){
 		dayNamesMin: ['Do','Lu','Ma','Me','Gi','Ve','Sa'],
 		weekHeader: 'Sm',
 		dateFormat: 'dd/mm/yy',
+		firstDay: 1,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};
@@ -82,6 +86,7 @@ jQuery(function($){
 		dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
 		weekHeader: 'Sm',
 		dateFormat: 'dd/mm/yy',
+		firstDay: 0,
 		isRTL: false,
 		showMonthAfterYear: false,
 		yearSuffix: ''};

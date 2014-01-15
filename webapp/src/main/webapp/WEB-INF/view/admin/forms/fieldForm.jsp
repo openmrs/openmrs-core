@@ -21,23 +21,23 @@
 			}
 		);
 		
-		chooseFieldType(jQuery('#fieldType').val());
+		chooseFieldType($('fieldType').value);
 		
 	});
 
 
 	function chooseFieldType(fieldTypeId) {
 		if (fieldTypeId == 1) { // == 'Concept'
-			jQuery('#concept').css('display', "");
-			jQuery('#database').css('display', "none");
+			$('concept').style.display = "";
+			$('database').style.display = "none";
 		}
 		else if (fieldTypeId == 2) { // -- db element
-			jQuery('#database').css('display', "");
-			jQuery('#concept').css('display', "none");
+			$('database').style.display = "";
+			$('concept').style.display = "none";
 		}
 		else {
-			jQuery('#concept').css('display', "none");
-			jQuery('#database').css('display', "none");
+			$('concept').style.display = "none";
+			$('database').style.display = "none";
 		}
 	}
 
@@ -48,7 +48,7 @@
 </h2>
 
 <spring:hasBindErrors name="field">
-	<openmrs:message htmlEscape="false" code="fix.error" />
+	<openmrs:message code="fix.error" />
 	<br />
 	<!-- ${errors} -->
 </spring:hasBindErrors>

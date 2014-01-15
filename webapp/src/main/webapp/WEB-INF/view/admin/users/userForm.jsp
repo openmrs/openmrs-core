@@ -30,7 +30,7 @@
 					<h3><openmrs:message code="User.createNewPerson"/></h3>
 					<form method="get" action="user.form">
 						<input type="hidden" name="createNewPerson" value="true"/>
-						<input id="createNewPersonButton" type="submit" value="<openmrs:message code="general.next"/>"/>
+						<input type="submit" value="<openmrs:message code="general.next"/>"/>
 					</form>
 				</td>
 				<td style="padding-left: 5em">
@@ -64,7 +64,7 @@
 </c:if>
 
 <spring:hasBindErrors name="user">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<openmrs:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
 			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->

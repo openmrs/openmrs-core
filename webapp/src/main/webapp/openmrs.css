@@ -368,6 +368,9 @@ tr td#patientHeaderObsWeight{
 tr td#patientHeaderObsRegimen{
 	border-right: 0px solid white;	
 }
+tr td#patientHeaderObsReturnVisit {
+	display: none;
+}
 
 #patientHeader a.offColor, #patientHeader a.offColor:link, #patientHeader a.offColor:active, #patientHeader a.offColor:visited, #patientHeader a.offColor:hover {
 	color: #ffffff;
@@ -395,7 +398,7 @@ tr td#patientHeaderObsRegimen{
 	font-weight: bold;
 }
 
-#patientSubheaderExited th, #patientSubheaderDead th {
+#patientSubheaderExited th {
 	color: #555555;
 	font-weight: bold;
 }
@@ -503,7 +506,7 @@ table.patientTreatmentPrograms td {
 .patientIdentifier {
 	width: 7em;
 }
-.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited, .boxDead, .boxHeaderDead {
+.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
 	border: 1px solid #1aac9b;
 	width: 100%;
 	padding: 5px 2px 5px 2px;
@@ -525,7 +528,7 @@ table.patientTreatmentPrograms td {
 	clear: both;
 }
 
-.box>*, .boxRed>*, .boxExited>*, .boxDead>* {
+.box>*, .boxRed>*, .boxExited>* {
 	font-size: .9em;
 }
 
@@ -540,7 +543,7 @@ table.patientTreatmentPrograms td {
 	border: 1px solid #b82619;
 }
 
-.boxExited,.boxDead {
+.boxExited {
 	border: 1px solid #999999;
 }
 
@@ -552,7 +555,7 @@ table.patientTreatmentPrograms td {
 	background-color: #b82619;
 }
 
-.boxHeaderExited, .boxHeaderDead {
+.boxHeaderExited {
 	color: white;
 	display: block;
 	padding: 2px;
@@ -834,9 +837,6 @@ fieldset {
 	#alertBar img {
 		vertical-align: middle;
 	}
-	#alertBar a {
-		float: right;
-	}
 .markAlertRead, .markAlertRead:link, .markAlertRead:visited {
 	float: right;
 	padding: 0 3px 0 3px;
@@ -1053,12 +1053,6 @@ table#obs td.obsValue {
 	.listItemChecked { 
 		background-color: #8FABC7;
 		color: white;
-	}
-	
-	.listItemSelectAll { 
-		background-color: #EFEFEF;
-		float: none;
-		margin: 5px 0 0;
 	}
 	
 .instructions {
@@ -1401,30 +1395,6 @@ td.dataTables_empty{
 }
 td.dataTables_empty:hover{
 	background-color: #BBCCF7;
-}
-
-#conceptSidebar ul {
-	list-style-type: none;
-	margin-left: 0px;
-	padding-left: 0px;
-	margin-top: 0px;
-	padding-top: 0px;
-}
-#conceptMainarea {
-	float:left;
-	width: 70%;
-}
-#conceptSidebar {
-	float:right;
-	width: 28%;
-	padding: 10px;
-	margin-bottom: 10px;
-}
-#conceptSidebar fieldset:not(:first-child) {
-	margin-top: 15px;
-}
-#conceptSidebar fieldset {
-	padding: 10px;
 }
 .localeSpecific td {
 	background-color: whitesmoke;

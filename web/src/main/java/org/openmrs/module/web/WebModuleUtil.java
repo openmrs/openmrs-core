@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -59,8 +58,6 @@ import org.openmrs.module.web.filter.ModuleFilterMapping;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
-import org.openmrs.web.OpenmrsJspServlet;
-import org.openmrs.web.StaticDispatcherServlet;
 import org.openmrs.web.dwr.OpenmrsDWRServlet;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -78,8 +75,6 @@ public class WebModuleUtil {
 	private static Log log = LogFactory.getLog(WebModuleUtil.class);
 	
 	private static DispatcherServlet dispatcherServlet = null;
-	
-	private static StaticDispatcherServlet staticDispatcherServlet = null;
 	
 	private static OpenmrsDWRServlet dwrServlet = null;
 	
@@ -107,7 +102,7 @@ public class WebModuleUtil {
 	 * value is returned. Otherwise, false is returned
 	 * 
 	 * @param mod Module to start
-	 * @param servletContext the current ServletContext
+	 * @param ServletContext the current ServletContext
 	 * @param delayContextRefresh true/false whether or not to do the context refresh
 	 * @return boolean whether or not the spring context need to be refreshed
 	 */
@@ -334,7 +329,6 @@ public class WebModuleUtil {
 	
 	/**
 	 * Method visibility is package-private for testing
-	 * 
 	 * @param mod
 	 * @param realPath
 	 * @should prefix messages with module id
@@ -371,12 +365,10 @@ public class WebModuleUtil {
 	
 	/**
 	 * Copies a module's messages into the shared module_messages(lang).properties file
-	 * 
+	 *
 	 * @param realPath actual file path of the servlet context
-	 * @param props messages to copy into the shared message properties file (replacing any existing
-	 *            ones)
-	 * @param lang the empty string to represent the locale "en", or something like "_fr" for any
-	 *            other locale
+	 * @param props messages to copy into the shared message properties file (replacing any existing ones)
+	 * @param lang the empty string to represent the locale "en", or something like "_fr" for any other locale
 	 * @return true if the everything worked
 	 */
 	private static boolean insertIntoModuleMessagePropertiesFile(String realPath, Properties props, String lang) {
@@ -676,7 +668,6 @@ public class WebModuleUtil {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			db.setEntityResolver(new EntityResolver() {
 				
-				@Override
 				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 					// When asked to resolve external entities (such as a DTD) we return an InputSource
 					// with no data at the end, causing the parser to ignore the DTD.
@@ -852,34 +843,14 @@ public class WebModuleUtil {
 		if (log.isDebugEnabled())
 			log.debug("Refreshing web applciation Context of class: " + wac.getClass().getName());
 		
-		if (dispatcherServlet != null) {
-			dispatcherServlet.stopAndCloseApplicationContext();
-		}
-		
-		if (staticDispatcherServlet != null) {
-			staticDispatcherServlet.stopAndCloseApplicationContext();
-		}
-		
-		if (OpenmrsJspServlet.jspServlet != null) {
-			OpenmrsJspServlet.jspServlet.stop();
-		}
-		
 		XmlWebApplicationContext newAppContext = (XmlWebApplicationContext) ModuleUtil.refreshApplicationContext(wac,
 		    isOpenmrsStartup, startedModule);
-		
-		if (OpenmrsJspServlet.jspServlet != null) {
-			OpenmrsJspServlet.jspServlet.refresh();
-		}
 		
 		try {
 			// must "refresh" the spring dispatcherservlet as well to add in
 			//the new handlerMappings
 			if (dispatcherServlet != null)
 				dispatcherServlet.reInitFrameworkServlet();
-			
-			if (staticDispatcherServlet != null) {
-				staticDispatcherServlet.refreshApplicationContext();
-			}
 		}
 		catch (ServletException se) {
 			log.warn("Caught a servlet exception while refreshing the dispatcher servlet", se);
@@ -907,16 +878,6 @@ public class WebModuleUtil {
 	}
 	
 	/**
-	 * Save the static content dispatcher servlet for use later when refreshing spring
-	 * 
-	 * @param ds
-	 */
-	public static void setStaticDispatcherServlet(StaticDispatcherServlet ds) {
-		log.debug("Setting dispatcher servlet for static content: " + ds);
-		staticDispatcherServlet = ds;
-	}
-	
-	/**
 	 * Save the dwr servlet for use later (reinitializing things)
 	 * 
 	 * @param ds
@@ -936,37 +897,6 @@ public class WebModuleUtil {
 	 */
 	public static HttpServlet getServlet(String servletName) {
 		return moduleServlets.get(servletName);
-	}
-	
-	/**
-	 * Retrieves a path to a folder that stores web files of a module. <br/>
-	 * (path-to-openmrs/WEB-INF/view/module/moduleid)
-	 * 
-	 * @param moduleId module id (e.g., "basicmodule")
-	 * @return a path to a folder that stores web files or null if not in a web environment
-	 * @should return the correct module folder
-	 * @should return null if the dispatcher servlet is not yet set
-	 * @should return the correct module folder if real path has a trailing slash
-	 */
-	public static String getModuleWebFolder(String moduleId) {
-		if (dispatcherServlet == null) {
-			throw new ModuleException("Dispatcher servlet must be present in the web environment");
-		}
-		
-		String moduleFolder = "WEB-INF/view/module/";
-		String realPath = dispatcherServlet.getServletContext().getRealPath("");
-		String moduleWebFolder;
-		
-		//RealPath may contain '/' on Windows when running tests with the mocked servlet context
-		if (realPath.endsWith(File.separator) || realPath.endsWith("/")) {
-			moduleWebFolder = realPath + moduleFolder;
-		} else {
-			moduleWebFolder = realPath + "/" + moduleFolder;
-		}
-		
-		moduleWebFolder += moduleId;
-		
-		return moduleWebFolder.replace("/", File.separator);
 	}
 	
 }
