@@ -664,7 +664,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<GlobalProperty> getGlobalProperties() throws APIException {
-		return getAllGlobalProperties();
+		return Context.getAdministrationService().getAllGlobalProperties();
 	}
 	
 	/**
@@ -682,7 +682,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void deleteGlobalProperty(String propertyName) throws APIException {
-		purgeGlobalProperty(new GlobalProperty(propertyName));
+		Context.getAdministrationService().purgeGlobalProperty(new GlobalProperty(propertyName));
 	}
 	
 	/**
@@ -690,7 +690,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 *      java.lang.String)
 	 */
 	public void setGlobalProperty(String propertyName, String propertyValue) throws APIException {
-		GlobalProperty gp = getGlobalPropertyObject(propertyName);
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
 		if (gp == null) {
 			gp = new GlobalProperty();
 			gp.setProperty(propertyName);
@@ -855,7 +855,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Transactional(readOnly = true)
 	public ImplementationId getImplementationId() throws APIException {
-		String property = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
+		String property = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
 		
 		// fail early if no gp has been defined yet
 		if (property == null)
@@ -991,7 +992,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		// lazy-load the global locale list and initialize with current global property value
 		if (globalLocaleList == null) {
 			globalLocaleList = new GlobalLocaleList();
-			addGlobalPropertyListener(globalLocaleList);
+			Context.getAdministrationService().addGlobalPropertyListener(globalLocaleList);
 		}
 		
 		Set<Locale> allowedLocales = globalLocaleList.getAllowedLocales();
