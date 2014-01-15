@@ -225,7 +225,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs)
 	 */
 	public void purgeObs(Obs obs) throws APIException {
-		purgeObs(obs, false);
+		Context.getObsService().purgeObs(obs, false);
 	}
 	
 	/**
@@ -235,7 +235,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<MimeType> getMimeTypes() throws APIException {
-		return getAllMimeTypes();
+		return Context.getObsService().getAllMimeTypes();
 	}
 	
 	/**
@@ -358,7 +358,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		List<Obs> returnList = new Vector<Obs>();
 		
 		if (encounters.size() > 0 || persons.size() > 0)
-			returnList = getObservations(persons, encounters, null, null, null, null, null, null, null, null, null, false);
+			returnList = Context.getObsService().getObservations(persons, encounters, null, null, null, null, null, null,
+			    null, null, null, false);
 		
 		// try to search on obsId
 		try {
@@ -425,7 +426,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			obsGroup.addGroupMember(member);
 		}
 		
-		updateObs(obsGroup);
+		Context.getObsService().updateObs(obsGroup);
 	}
 	
 	/**
@@ -444,7 +445,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public List<Obs> getObservationsByPerson(Person who) {
 		List<Person> whom = new Vector<Person>();
 		whom.add(who);
-		return getObservations(whom, null, null, null, null, null, null, null, null, null, null, false);
+		return Context.getObsService().getObservations(whom, null, null, null, null, null, null, null, null, null, null,
+		    false);
 	}
 	
 	/**
@@ -458,7 +460,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			throw new APIException("Voided observations are no longer allowed to be queried");
 		
 		Set<Obs> obsSet = new HashSet<Obs>();
-		obsSet.addAll(getObservationsByPerson(who));
+		obsSet.addAll(Context.getObsService().getObservationsByPerson(who));
 		
 		return obsSet;
 	}
@@ -479,8 +481,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		// make the sort list from the given sort string
 		List<String> sortList = makeSortList(sort);
 		
-		return getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), locations, sortList,
-		    null, null, null, null, includeVoided);
+		return Context.getObsService().getObservations(null, null, questions, null, getPersonTypeEnumerations(personType),
+		    locations, sortList, null, null, null, null, includeVoided);
 	}
 	
 	/**
@@ -545,7 +547,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided) {
-		List<Obs> obs = getObservationsByPersonAndConcept(who, question);
+		List<Obs> obs = Context.getObsService().getObservationsByPersonAndConcept(who, question);
 		Set<Obs> obsSet = new HashSet<Obs>();
 		obsSet.addAll(obs);
 		return obsSet;
@@ -563,7 +565,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(question);
 		
-		return getObservations(whom, null, questions, null, null, null, null, null, null, null, null, false);
+		return Context.getObsService().getObservations(whom, null, questions, null, null, null, null, null, null, null,
+		    null, false);
 	}
 	
 	/**
@@ -579,7 +582,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(question);
 		
-		return getObservations(whom, null, questions, null, null, null, null, n, null, null, null, includeVoided);
+		return Context.getObsService().getObservations(whom, null, questions, null, null, null, null, n, null, null, null,
+		    includeVoided);
 	}
 	
 	/**
@@ -596,8 +600,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		// make the sort list from the given sort string
 		List<String> sortList = makeSortList(sort);
 		
-		return getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), null, sortList, null,
-		    null, null, null, includeVoided);
+		return Context.getObsService().getObservations(null, null, questions, null, getPersonTypeEnumerations(personType),
+		    null, sortList, null, null, null, null, includeVoided);
 	}
 	
 	/**
@@ -611,8 +615,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		List<Concept> answers = new Vector<Concept>();
 		answers.add(answer);
 		
-		return getObservations(null, null, null, answers, getPersonTypeEnumerations(personType), null, null, null, null,
-		    null, null, includeVoided);
+		return Context.getObsService().getObservations(null, null, null, answers, getPersonTypeEnumerations(personType),
+		    null, null, null, null, null, null, includeVoided);
 	}
 	
 	/**
@@ -632,8 +636,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(question);
 		
-		List<Obs> obs = getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), null, sortList,
-		    null, null, null, null, includeVoided);
+		List<Obs> obs = Context.getObsService().getObservations(null, null, questions, null,
+		    getPersonTypeEnumerations(personType), null, sortList, null, null, null, null, includeVoided);
 		
 		List<Object[]> returnList = new Vector<Object[]>();
 		
@@ -661,7 +665,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Obs> getVoidedObservations() {
-		return getObservations(null, null, null, null, null, null, null, null, null, null, null, true);
+		return Context.getObsService().getObservations(null, null, null, null, null, null, null, null, null, null, null,
+		    true);
 	}
 	
 	/**
@@ -673,7 +678,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Transactional(readOnly = true)
 	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType) {
 		// ignoring voided and personTypes now
-		return getObservations(search);
+		return Context.getObsService().getObservations(search);
 	}
 	
 	/**
@@ -683,7 +688,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Obs> findObsByGroupId(Integer obsGroupId) {
-		return getObservations(null, null, null, null, null, null, null, null, obsGroupId, null, null, false);
+		return Context.getObsService().getObservations(null, null, null, null, null, null, null, null, obsGroupId, null,
+		    null, false);
 	}
 	
 	/**
@@ -701,7 +707,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided) {
-		return getObservations(null, null, concepts, null, null, null, null, null, null, fromDate, toDate, includeVoided);
+		return Context.getObsService().getObservations(null, null, concepts, null, null, null, null, null, null, fromDate,
+		    toDate, includeVoided);
 	}
 	
 	/**
@@ -711,7 +718,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate) {
-		return getObservations(null, null, concepts, null, null, null, null, null, null, fromDate, toDate, false);
+		return Context.getObsService().getObservations(null, null, concepts, null, null, null, null, null, null, fromDate,
+		    toDate, false);
 	}
 	
 	/**
@@ -727,7 +735,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			for (Integer memberId : patients.getMemberIds())
 				persons.add(new Person(memberId));
 		
-		return getObservations(persons, null, concepts, null, null, null, null, null, null, fromDate, toDate, false);
+		return Context.getObsService().getObservations(persons, null, concepts, null, null, null, null, null, null,
+		    fromDate, toDate, false);
 	}
 	
 	/**
