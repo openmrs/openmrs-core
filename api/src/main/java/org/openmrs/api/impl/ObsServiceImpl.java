@@ -98,6 +98,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// save or update complexData object on this obs
 			// this is done before the database save so that the obs.valueComplex
 			// can be filled in by the handler.
+			Encounter encounter = obs.getEncounter();
+			if (encounter != null) {
+				obs.setPerson(encounter.getPatient());
+			}
 			ComplexObsHandler handler = getHandler(obs);
 			if (null != handler) {
 				handler.saveObs(obs);
