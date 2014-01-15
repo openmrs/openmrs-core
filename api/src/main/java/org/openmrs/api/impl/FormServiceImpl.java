@@ -110,9 +110,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Transactional(readOnly = true)
 	public List<Form> getForms(boolean publishedOnly) throws APIException {
 		if (publishedOnly)
-			return getPublishedForms();
+			return Context.getFormService().getPublishedForms();
 		else
-			return getAllForms();
+			return Context.getFormService().getAllForms();
 	}
 	
 	/**
@@ -125,14 +125,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		if (publishedOnly && includeRetired) {
 			log.warn("Should probably not be searching for published forms, but including retired ones");
 			List<Form> ret = new ArrayList<Form>();
-			ret.addAll(getPublishedForms());
-			ret.addAll(getForms(null, true, null, true, null, null, null));
+			ret.addAll(Context.getFormService().getPublishedForms());
+			ret.addAll(Context.getFormService().getForms(null, true, null, true, null, null, null));
 			return ret;
 		} else {
 			if (publishedOnly)
-				return getPublishedForms();
+				return Context.getFormService().getPublishedForms();
 			else
-				return getAllForms(includeRetired);
+				return Context.getFormService().getAllForms(includeRetired);
 		}
 	}
 	
@@ -194,7 +194,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public void retireForm(Form form, String reason) throws APIException {
 		form.setRetired(true);
 		form.setRetireReason(reason);
-		saveForm(form);
+		Context.getFormService().saveForm(form);
 	}
 	
 	/**
@@ -202,7 +202,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	public void unretireForm(Form form) throws APIException {
 		form.setRetired(false);
-		saveForm(form);
+		Context.getFormService().saveForm(form);
 	}
 	
 	/**
@@ -221,7 +221,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<FieldType> getFieldTypes() throws APIException {
-		return getAllFieldTypes();
+		return Context.getFormService().getAllFieldTypes();
 	}
 	
 	/**
@@ -229,7 +229,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<FieldType> getAllFieldTypes() throws APIException {
-		return getAllFieldTypes(true);
+		return Context.getFormService().getAllFieldTypes(true);
 	}
 	
 	/**
@@ -255,7 +255,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Form> getForms() throws APIException {
-		return getAllForms();
+		return Context.getFormService().getAllForms();
 	}
 	
 	/**
@@ -265,7 +265,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Set<Form> getForms(Concept c) throws APIException {
-		return new HashSet<Form>(getFormsContainingConcept(c));
+		return new HashSet<Form>(Context.getFormService().getFormsContainingConcept(c));
 	}
 	
 	/**
@@ -290,7 +290,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Field> findFields(String searchPhrase) throws APIException {
-		return getFields(searchPhrase);
+		return Context.getFormService().getFields(searchPhrase);
 	}
 	
 	/**
@@ -300,7 +300,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Field> findFields(Concept concept) throws APIException {
-		return getFieldsByConcept(concept);
+		return Context.getFormService().getFieldsByConcept(concept);
 	}
 	
 	/**
@@ -310,7 +310,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Field> getFields() throws APIException {
-		return getAllFields();
+		return Context.getFormService().getAllFields();
 	}
 	
 	/**
@@ -364,7 +364,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public FormField getFormField(Form form, Concept concept) throws APIException {
-		return getFormField(form, concept, null, false);
+		return Context.getFormService().getFormField(form, concept, null, false);
 	}
 	
 	/**
@@ -453,9 +453,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Transactional(readOnly = true)
 	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
 		if (includeUnpublished)
-			return getForms(text, null, null, includeRetired, null, null, null);
+			return Context.getFormService().getForms(text, null, null, includeRetired, null, null, null);
 		else
-			return getForms(text, true, null, includeRetired, null, null, null);
+			return Context.getFormService().getForms(text, true, null, includeRetired, null, null, null);
 	}
 	
 	/**
@@ -463,7 +463,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Field> getAllFields() throws APIException {
-		return getAllFields(true);
+		return Context.getFormService().getAllFields(true);
 	}
 	
 	/**
@@ -487,7 +487,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Form> getAllForms() throws APIException {
-		return getAllForms(true);
+		return Context.getFormService().getAllForms(true);
 	}
 	
 	/**
@@ -562,7 +562,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Transactional(readOnly = true)
 	public List<Form> getForms(String fuzzyName, boolean onlyLatestVersion) {
 		// get all forms including unpublished and including retired
-		List<Form> forms = getForms(fuzzyName, null, null, null, null, null, null);
+		List<Form> forms = Context.getFormService().getForms(fuzzyName, null, null, null, null, null, null);
 		
 		Set<String> namesAlreadySeen = new HashSet<String>();
 		for (Iterator<Form> i = forms.iterator(); i.hasNext();) {
@@ -584,8 +584,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields) {
 		
-		return getForms(partialName, published, encounterTypes, retired, containingAnyFormField, containingAllFormFields,
-		    null);
+		return Context.getFormService().getForms(partialName, published, encounterTypes, retired, containingAnyFormField,
+		    containingAllFormFields, null);
 	}
 	
 	/**
@@ -645,14 +645,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Form> getPublishedForms() throws APIException {
-		return getForms(null, true, null, false, null, null, null);
+		return Context.getFormService().getForms(null, true, null, false, null, null, null);
 	}
 	
 	/**
 	 * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field)
 	 */
 	public void purgeField(Field field) throws APIException {
-		purgeField(field, false);
+		Context.getFormService().purgeField(field, false);
 	}
 	
 	/**
@@ -669,7 +669,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form)
 	 */
 	public void purgeForm(Form form) throws APIException {
-		purgeForm(form, false);
+		Context.getFormService().purgeForm(form, false);
 	}
 	
 	/**
@@ -699,7 +699,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public Field retireField(Field field) throws APIException {
 		if (field.getRetired() == false) {
 			field.setRetired(true);
-			return saveField(field);
+			return Context.getFormService().saveField(field);
 		} else {
 			return field;
 		}
@@ -780,7 +780,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public Field unretireField(Field field) throws APIException {
 		if (field.getRetired() == true) {
 			field.setRetired(false);
-			return saveField(field);
+			return Context.getFormService().saveField(field);
 		} else {
 			return field;
 		}
@@ -798,7 +798,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Field> getFieldsByConcept(Concept concept) throws APIException {
-		return getFields(null, null, Collections.singleton(concept), null, null, null, null, null, null);
+		return Context.getFormService().getFields(null, null, Collections.singleton(concept), null, null, null, null, null,
+		    null);
 	}
 	
 	/**
