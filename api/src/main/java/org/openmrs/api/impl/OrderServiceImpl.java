@@ -13,12 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.CareSetting;
@@ -35,6 +29,12 @@ import org.openmrs.api.db.OrderDAO;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Default implementation of the Order-related services class. This method should not be invoked by
@@ -68,6 +68,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Order saveOrder(Order order) throws APIException {
 		if (order.getOrderId() == null) {
+			discontinueExistingOrdersIfRequired(order);
 			//TODO call module registered order number generators 
 			//and if there is none, use the default below
 			try {
@@ -81,6 +82,38 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		return dao.saveOrder(order);
+	}
+	
+	private void discontinueExistingOrdersIfRequired(Order order) {
+		//Ignore and return if this is not an order to discontinue
+		if (!Order.Action.DISCONTINUE.equals(order.getAction()))
+			return;
+		
+		//Discontinue previousOrder if it is not already
+		Order previousOrder = order.getPreviousOrder();
+		if (previousOrder != null) {
+			if (!previousOrder.getConcept().equals(order.getConcept())) {
+				throw new APIException("Concept of previous order and this order should be the same");
+			}
+			
+			if (previousOrder.getDateStopped() == null) {
+				discontinueOrder(previousOrder, order.getStartDate());
+			}
+			return;
+		}
+		
+		//Discontinue the first found order corresponding to this DC order.
+		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getClass(), order.getCareSetting(), false);
+		for (Order activeOrder : orders) {
+			if (activeOrder.getConcept().equals(order.getConcept())) {
+				order.setPreviousOrder(activeOrder);
+				discontinueOrder(activeOrder, order.getStartDate());
+				return;
+			}
+		}
+		
+		throw new APIException("We could not find an active order with the concept " + order.getConcept()
+		        + " to discontinue. ");
 	}
 	
 	/**
@@ -255,5 +288,46 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public CareSetting getCareSetting(Integer careSettingId) {
 		return dao.getCareSetting(careSettingId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 */
+	@Override
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) {
+		discontinueOrder(orderToDiscontinue, discontinueDate);
+		
+		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
+		newOrder.setDiscontinuedReason(reasonCoded);
+		
+		return saveOrder(newOrder);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
+	 */
+	@Override
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) {
+		discontinueOrder(orderToDiscontinue, discontinueDate);
+		
+		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
+		newOrder.setDiscontinuedReasonNonCoded(reasonNonCoded);
+		
+		return saveOrder(newOrder);
+	}
+	
+	/**
+	 * Make necessary checks, set necessary fields for discontinuing <code>orderToDiscontinue</code> and save.
+	 *
+	 * @param orderToDiscontinue
+	 * @param discontinueDate
+	 */
+	private void discontinueOrder(Order orderToDiscontinue, Date discontinueDate) {
+		if (orderToDiscontinue.getAction().equals(Order.Action.DISCONTINUE)) {
+			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued. ");
+		}
+		
+		orderToDiscontinue.setDateStopped(discontinueDate);
+		saveOrder(orderToDiscontinue);
 	}
 }

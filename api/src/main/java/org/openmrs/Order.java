@@ -529,4 +529,20 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	public void setCareSetting(CareSetting careSetting) {
 		this.careSetting = careSetting;
 	}
+	
+	/**
+	 * Creates a new order that can be used to discontinue <code>orderToDiscontinue</code>.
+	 *
+	 * @return
+	 * @since 1.10
+	 */
+	public Order cloneForDiscontinuing() {
+		Order newOrder = new Order();
+		newOrder.setCareSetting(this.getCareSetting());
+		newOrder.setConcept(this.getConcept());
+		newOrder.setAction(Action.DISCONTINUE);
+		newOrder.setPreviousOrder(this);
+		
+		return newOrder;
+	}
 }

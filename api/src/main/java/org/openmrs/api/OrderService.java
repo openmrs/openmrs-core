@@ -13,17 +13,17 @@
  */
 package org.openmrs.api;
 
-import java.util.List;
-
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
-import org.openmrs.api.db.OrderDAO;
-import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.annotation.*;
+import org.openmrs.api.db.*;
+import org.openmrs.util.*;
+
+import java.util.*;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
@@ -204,11 +204,38 @@ public interface OrderService extends OpenmrsService {
 	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
 	        Boolean includeVoided);
 	
-	/** Retrieve care setting by type
+	/**
+	 *  Retrieve care setting
 	 *
 	 * @param careSettingId
 	 * @return the care setting
 	 * @since 1.10
 	 */
 	public CareSetting getCareSetting(Integer careSettingId);
+	
+	/**
+	 * Discontinues an order.
+	 * Creates a new order that discontinues the orderToDiscontinue
+	 *
+	 * @param orderToDiscontinue
+	 * @param reasonCoded
+	 * @param discontinueDate
+	 * @return the new order that discontinued orderToDiscontinue
+	 * @throws APIException if the <code>action</code> of orderToDiscontinue is <code>Order.Action.DISCONTINUE</code>
+	 * @since 1.10
+	 */
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate);
+	
+	/**
+	 * Discontinues an order.
+	 * Creates a new order that discontinues the orderToDiscontinue.
+	 *
+	 * @param orderToDiscontinue
+	 * @param reasonNonCoded
+	 * @param discontinueDate
+	 * @return the new order that discontinued orderToDiscontinue
+	 * @throws APIException if the <code>action</code> of orderToDiscontinue is <code>Order.Action.DISCONTINUE</code>
+	 * @since 1.10
+	 */
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate);
 }
