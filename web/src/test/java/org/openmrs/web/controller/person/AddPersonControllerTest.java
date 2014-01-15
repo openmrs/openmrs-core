@@ -48,7 +48,6 @@ public class AddPersonControllerTest extends BaseWebContextSensitiveTest {
 		
 		AddPersonController controller = (AddPersonController) applicationContext.getBean("addPerson");
 		ModelAndView mav = controller.handleRequest(request, response);
-		
 		assertNotNull(mav);
 		assertEquals("Person.birthdate.required", mav.getModel().get("errorMessage"));
 	}
