@@ -70,6 +70,7 @@ import org.openmrs.ConceptStopWord;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
+import org.openmrs.DrugReferenceMap;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -2039,6 +2040,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource, boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Drug.class);
+		DrugReferenceMap drugReferenceMap = new DrugReferenceMap();
+
 		if (includeRetired == false)
 			criteria.add(Restrictions.eq("drug.retired", false));
 		return null;
