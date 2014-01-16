@@ -745,7 +745,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
 		for (PatientProgram patientProgram : Context.getProgramWorkflowService().getPatientPrograms(patient)) {
-			ret.addAll(getCurrentWorkflowsByPatientProgram(patientProgram));
+			ret.addAll(Context.getProgramWorkflowService().getCurrentWorkflowsByPatientProgram(patientProgram));
 		}
 		return ret;
 	}
@@ -791,7 +791,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void terminatePatientProgram(PatientProgram patientProgram, ProgramWorkflowState finalState, Date terminatedOn) {
-		changeToState(patientProgram, finalState.getProgramWorkflow(), finalState, terminatedOn);
+		Context.getProgramWorkflowService().changeToState(patientProgram, finalState.getProgramWorkflow(), finalState,
+		    terminatedOn);
 	}
 	
 	/**
