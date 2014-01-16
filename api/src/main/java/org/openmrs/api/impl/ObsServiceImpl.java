@@ -115,6 +115,11 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			if (changeMessage == null)
 				throw new APIException("ChangeMessage is required when updating an obs in the database");
 			
+			Encounter encounter = obs.getEncounter();
+			if (encounter != null) {
+				obs.setPerson(encounter.getPatient());
+			}
+			
 			// get a copy of the passed in obs and save it to the
 			// database. This allows us to create a new row and new obs_id
 			// this method doesn't copy the obs_id
