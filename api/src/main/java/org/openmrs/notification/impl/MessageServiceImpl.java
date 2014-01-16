@@ -106,7 +106,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param content the content or body of the message
 	 */
 	public Message createMessage(String recipients, String sender, String subject, String content) throws MessageException {
-		return createMessage(recipients, sender, subject, content, null, null, null);
+		return Context.getMessageService().createMessage(recipients, sender, subject, content, null, null, null);
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param content the content or body of the message
 	 */
 	public Message createMessage(String sender, String subject, String content) throws MessageException {
-		return createMessage(null, sender, subject, content);
+		return Context.getMessageService().createMessage(null, sender, subject, content);
 	}
 	
 	/**
@@ -127,7 +127,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param content the content or body of the message
 	 */
 	public Message createMessage(String subject, String content) throws MessageException {
-		return createMessage(null, null, subject, content);
+		return Context.getMessageService().createMessage(null, null, subject, content);
 	}
 	
 	/**
@@ -154,7 +154,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	public void sendMessage(String recipients, String sender, String subject, String content) throws MessageException {
 		Message message = createMessage(recipients, sender, subject, content);
-		sendMessage(message);
+		Context.getMessageService().sendMessage(message);
 	}
 	
 	/**
@@ -168,7 +168,7 @@ public class MessageServiceImpl implements MessageService {
 		User user = Context.getUserService().getUser(recipientId);
 		message.addRecipient(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
 		// message.setFormat( user( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
-		sendMessage(message);
+		Context.getMessageService().sendMessage(message);
 	}
 	
 	/**
@@ -183,7 +183,7 @@ public class MessageServiceImpl implements MessageService {
 		if (address != null)
 			message.addRecipient(address);
 		// message.setFormat( user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
-		sendMessage(message);
+		Context.getMessageService().sendMessage(message);
 	}
 	
 	/**
@@ -196,7 +196,7 @@ public class MessageServiceImpl implements MessageService {
 			if (address != null)
 				message.addRecipient(address);
 		}
-		sendMessage(message);
+		Context.getMessageService().sendMessage(message);
 	}
 	
 	/**
@@ -205,7 +205,7 @@ public class MessageServiceImpl implements MessageService {
 	public void sendMessage(Message message, String roleName) throws MessageException {
 		log.debug("Sending message to role with name " + roleName);
 		Role role = Context.getUserService().getRole(roleName);
-		sendMessage(message, role);
+		Context.getMessageService().sendMessage(message, role);
 	}
 	
 	/**
@@ -221,7 +221,7 @@ public class MessageServiceImpl implements MessageService {
 		Collection<User> users = Context.getUserService().getUsers(null, roles, false);
 		
 		log.debug("Sending message " + message + " to " + users);
-		sendMessage(message, users);
+		Context.getMessageService().sendMessage(message, users);
 	}
 	
 	/**
@@ -248,7 +248,7 @@ public class MessageServiceImpl implements MessageService {
 		try {
 			Template template = (Template) getTemplatesByName(templateName).get(0);
 			template.setData(data);
-			return prepareMessage(template);
+			return Context.getMessageService().prepareMessage(template);
 		}
 		catch (Exception e) {
 			throw new MessageException("Could not prepare message with template " + templateName, e);
@@ -322,7 +322,7 @@ public class MessageServiceImpl implements MessageService {
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public Message prepare(String templateName, Map data) throws MessageException {
-		return prepareMessage(templateName, data);
+		return Context.getMessageService().prepareMessage(templateName, data);
 	}
 	
 	/**
@@ -331,7 +331,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	@Transactional(readOnly = true)
 	public Message prepare(Template template) throws MessageException {
-		return prepareMessage(template);
+		return Context.getMessageService().prepareMessage(template);
 	}
 	
 	/**
@@ -339,7 +339,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated use {@link #sendMessage(Message)}
 	 */
 	public void send(Message message) throws MessageException {
-		sendMessage(message);
+		Context.getMessageService().sendMessage(message);
 	}
 	
 	/**
@@ -348,7 +348,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated use {@link #sendMessage(Message, String)}
 	 */
 	public void send(Message message, String roleName) throws MessageException {
-		sendMessage(message, roleName);
+		Context.getMessageService().sendMessage(message, roleName);
 	}
 	
 	/**
@@ -357,7 +357,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated use {@link #sendMessage(Message, Integer)}
 	 */
 	public void send(Message message, Integer userId) throws MessageException {
-		sendMessage(message, userId);
+		Context.getMessageService().sendMessage(message, userId);
 	}
 	
 	/**
@@ -366,7 +366,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated use {@link #sendMessage(Message, User)}
 	 */
 	public void send(Message message, User user) throws MessageException {
-		sendMessage(message, user);
+		Context.getMessageService().sendMessage(message, user);
 	}
 	
 	/**
@@ -375,7 +375,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated {@link #send(Message, Role)}
 	 */
 	public void send(Message message, Role role) throws MessageException {
-		sendMessage(message, role);
+		Context.getMessageService().sendMessage(message, role);
 	}
 	
 	/**
@@ -384,7 +384,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated {@link #send(Message, Collection)}
 	 */
 	public void send(Message message, Collection<User> users) throws MessageException {
-		sendMessage(message, users);
+		Context.getMessageService().sendMessage(message, users);
 	}
 	
 	/**
@@ -393,7 +393,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated use {@link #send(String, String, String, String)}
 	 */
 	public void send(String recipients, String sender, String subject, String message) throws MessageException {
-		sendMessage(recipients, sender, subject, message);
+		Context.getMessageService().sendMessage(recipients, sender, subject, message);
 	}
 	
 }
