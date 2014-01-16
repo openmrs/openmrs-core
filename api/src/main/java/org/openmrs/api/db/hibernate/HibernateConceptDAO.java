@@ -76,6 +76,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -1701,7 +1702,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			criteria.add(Restrictions.eq("retired", false));
 		if (!includeHidden)
 			criteria.add(Restrictions.eq("isHidden", false));
-		return criteria.list();
+		
+		List<ConceptMapType> conceptMapTypes = criteria.list();
+		Collections.sort(conceptMapTypes, new ConceptMapTypeComparator());
+		
+		return conceptMapTypes;
 	}
 	
 	/**

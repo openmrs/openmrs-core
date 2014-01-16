@@ -201,7 +201,7 @@ $j(document).ready( function() {
 						<spring:bind path="conceptMapType">
 							<select name="${status.expression}">
 							<openmrs:forEachRecord name="conceptMapType">
-								<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> >
+								<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> <c:if test="${record.retired == true}">style="color: #888888 !important;"</c:if> >
 									${record.name}
 								</option>
 							</openmrs:forEachRecord>
@@ -250,7 +250,7 @@ $j(document).ready( function() {
 					<td>						
 						<select name="conceptMapType">
 							<openmrs:forEachRecord  name="conceptMapType">
-								<option value="${record.conceptMapTypeId}">
+								<option value="${record.conceptMapTypeId}" <c:if test="${record.retired == true}">style="color: #888888 !important;"</c:if> >
 									${record.name}
 								</option>
 							</openmrs:forEachRecord>
