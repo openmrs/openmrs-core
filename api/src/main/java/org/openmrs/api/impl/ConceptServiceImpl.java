@@ -2186,15 +2186,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, ConceptSource, boolean)
-	 *
-	 */
-	@Override
-	public Drug getDrugByMapping(String code, ConceptSource conceptSource, boolean includeRetired) throws APIException {
-		return dao.getDrugByMapping(code, conceptSource, includeRetired);
-	}
-
-	/**
 	 *  @see org.openmrs.api.ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
 	 *
 	 */

@@ -2040,19 +2040,6 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
 
 	/**
-	 * Should get the drug with a mapping that exactly matches the specified code in the specified concept source
-	 * @param code
-	 * @param conceptSource
-	 * @param includeRetired
-	 * @since 1.10.x
-	 * @return the {@link Drug}
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public Drug getDrugByMapping(String code, ConceptSource conceptSource, boolean includeRetired) throws APIException;
-
-	/**
 	 * gets all matching drugs
 	 * @param code
 	 * @param conceptSource
