@@ -260,4 +260,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		return order.getDateStopped() == null && order.getAutoExpireDate() == null
 		        && order.getAction() != Action.DISCONTINUE;
 	}
+	
+	/**
+	 * @verifies return the order frequency that matched the specified id
+	 * @see OrderService#getOrderFrequency(Integer)
+	 */
+	@Test
+	public void getOrderFrequency_shouldReturnTheOrderFrequencyThatMatchedTheSpecifiedId() throws Exception {
+		Assert
+		        .assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", Context.getOrderService().getOrderFrequency(1)
+		                .getUuid());
+	}
 }

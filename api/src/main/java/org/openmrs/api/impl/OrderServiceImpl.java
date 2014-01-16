@@ -25,6 +25,7 @@ import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -255,5 +256,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public CareSetting getCareSetting(Integer careSettingId) {
 		return dao.getCareSetting(careSettingId);
+	}
+	
+	/**
+	 * @see OrderService#getOrderFrequency(Integer)
+	 */
+	@Override
+	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
+		return dao.getOrderFrequency(orderFrequencyId);
 	}
 }

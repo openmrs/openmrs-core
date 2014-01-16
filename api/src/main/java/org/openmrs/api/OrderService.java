@@ -19,6 +19,7 @@ import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
@@ -211,4 +212,14 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 */
 	public CareSetting getCareSetting(Integer careSettingId);
+	
+	/**
+	 * Gets OrderFrequenecy that matches the specified orderFrequencyId
+	 *
+	 * @param orderFrequencyId the id to match against
+	 * @return OrderFrequency
+	 * @since 1.10
+	 * @should return the order frequency that matched the specified id
+	 */
+	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
 }

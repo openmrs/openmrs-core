@@ -28,6 +28,7 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
+import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -217,5 +218,13 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public CareSetting getCareSetting(Integer careSettingId) {
 		return (CareSetting) sessionFactory.getCurrentSession().get(CareSetting.class, careSettingId);
+	}
+	
+	/**
+	 * @See OrderDAO#getOrderFrequency
+	 */
+	@Override
+	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
+		return (OrderFrequency) sessionFactory.getCurrentSession().get(OrderFrequency.class, orderFrequencyId);
 	}
 }

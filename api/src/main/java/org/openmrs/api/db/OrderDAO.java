@@ -19,6 +19,7 @@ import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.User;
 
@@ -96,4 +97,9 @@ public interface OrderDAO {
 	 * @return the care setting type
 	 */
 	public CareSetting getCareSetting(Integer careSettingId);
+	
+	/**
+	 * @See OrderService#getOrderFrequency
+	 */
+	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
 }
