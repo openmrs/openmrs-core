@@ -385,7 +385,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order order, String reason) throws APIException {
-		return discontinueOrder(order, reason, null, null);
+		return Context.getOrderService().discontinueOrder(order, reason, null, null);
 	}
 	
 	/**

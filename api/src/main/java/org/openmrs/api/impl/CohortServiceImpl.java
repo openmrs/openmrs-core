@@ -282,7 +282,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			Integer id = Integer.parseInt((keyValues[0] != null) ? keyValues[0] : "0");
 			String className = (keyValues[1] != null) ? keyValues[1] : "";
 			Class clazz = Class.forName(className);
-			return getCohortDefinition(clazz, id);
+			return Context.getCohortService().getCohortDefinition(clazz, id);
 		}
 		catch (ClassNotFoundException e) {
 			throw new APIException(e);
