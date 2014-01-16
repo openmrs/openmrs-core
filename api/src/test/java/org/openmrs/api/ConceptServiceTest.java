@@ -38,6 +38,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +71,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.annotation.ExpectedException;
@@ -1733,9 +1735,27 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
 	 */
 	@Test
+	@Verifies(value = "should return a sorted list ordered as follows: regular, retired, hidden, retired and hidden", method = "getConceptMapTypes(null,null)")
+	public void getConceptMapTypes_shouldReturnSortedList() throws Exception {
+		List<ConceptMapType> conceptMapTypes = Context.getConceptService().getConceptMapTypes(true, true);
+		
+		for (int i = 0; i < conceptMapTypes.size() - 1; i++) {
+			ConceptMapType current = conceptMapTypes.get(i);
+			ConceptMapType next = conceptMapTypes.get(i + 1);
+			int currentWeight = ConceptMapTypeComparator.getConceptMapTypeSortWeight(current);
+			int nextWeight = ConceptMapTypeComparator.getConceptMapTypeSortWeight(next);
+			
+			assertTrue(currentWeight <= nextWeight);
+		}
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptMapTypes(null,null)}
+	 */
+	@Test
 	@Verifies(value = "should return all the concept map types if includeRetired and hidden are set to true", method = "getConceptMapTypes(null,null)")
 	public void getConceptMapTypes_shouldReturnAllTheConceptMapTypesIfIncludeRetiredAndHiddenAreSetToTrue() throws Exception {
-		Assert.assertEquals(7, Context.getConceptService().getConceptMapTypes(true, true).size());
+		Assert.assertEquals(8, Context.getConceptService().getConceptMapTypes(true, true).size());
 	}
 	
 	/**
