@@ -145,7 +145,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 				// we don't write the changes to the database when we save
 				// the fact that the obs is now voided
 				Context.evictFromSession(obs);
-				obs = getObs(obs.getObsId());
+				obs = Context.getObsService().getObs(obs.getObsId());
 				
 				// calling this via the service so that AOP hooks are called
 				Context.getObsService().voidObs(obs, changeMessage);

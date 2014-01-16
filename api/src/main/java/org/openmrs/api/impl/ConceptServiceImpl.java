@@ -178,7 +178,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		for (ConceptMap map : concept.getConceptMappings()) {
 			if (map.getConceptMapType() == null) {
 				if (defaultConceptMapType == null) {
-					defaultConceptMapType = getDefaultConceptMapType();
+					defaultConceptMapType = Context.getConceptService().getDefaultConceptMapType();
 				}
 				map.setConceptMapType(defaultConceptMapType);
 			}
@@ -1112,7 +1112,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *      org.openmrs.Concept)
 	 */
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
-		return mapConceptProposalToConcept(cp, mappedConcept, null);
+		return Context.getConceptService().mapConceptProposalToConcept(cp, mappedConcept, null);
 	}
 	
 	/**
@@ -1155,7 +1155,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<Locale> locales = new Vector<Locale>();
 		locales.add(locale);
 		
-		List<ConceptWord> conceptWords = getConceptWords(phrase, locales, false, null, null, null, null, concept, null, null);
+		List<ConceptWord> conceptWords = Context.getConceptService().getConceptWords(phrase, locales, false, null, null,
+		    null, null, concept, null, null);
 		
 		return weightWords(phrase, locales, conceptWords);
 	}
