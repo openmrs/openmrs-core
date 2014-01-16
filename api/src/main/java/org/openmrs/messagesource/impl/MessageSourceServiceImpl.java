@@ -51,7 +51,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 */
 	@Transactional(readOnly = true)
 	public String getMessage(String s) {
-		return getMessage(s, null, Context.getLocale());
+		return Context.getMessageSourceService().getMessage(s, null, Context.getLocale());
 	}
 	
 	/**
