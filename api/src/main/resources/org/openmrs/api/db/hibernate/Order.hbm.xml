@@ -129,8 +129,8 @@
                 </type>
             </property>
             <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
-            <property name="frequency" type="int" column="frequency"/>
-            <many-to-one name="numberOfRepeats" class="org.openmrs.OrderFrequency">
+            <property name="numberOfRepeats" type="int" column="number_of_repeats"/>
+            <many-to-one name="frequency" class="org.openmrs.OrderFrequency">
             	<column name="order_frequency"/>
             </many-to-one>
 
