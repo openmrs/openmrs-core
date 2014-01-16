@@ -643,7 +643,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
-		String s = getGlobalProperty(propertyName);
+		String s = Context.getAdministrationService().getGlobalProperty(propertyName);
 		if (s == null)
 			return defaultValue;
 		return s;
@@ -704,7 +704,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 *      java.lang.String)
 	 */
 	public void updateGlobalProperty(String propertyName, String propertyValue) throws IllegalStateException {
-		GlobalProperty gp = getGlobalPropertyObject(propertyName);
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
 		if (gp == null) {
 			throw new IllegalStateException("Global property with the given propertyName does not exist" + propertyName);
 		}
@@ -727,7 +727,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void addGlobalProperty(GlobalProperty gp) {
-		setGlobalProperty(gp);
+		Context.getAdministrationService().setGlobalProperty(gp);
 	}
 	
 	/**
@@ -1000,8 +1000,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		// update the GlobalLocaleList.allowedLocales by faking a global property change
 		if (allowedLocales == null) {
 			// use a default language of "english" if they have cleared this GP for some reason
-			String currentPropertyValue = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
-			    LocaleUtility.getDefaultLocale().toString());
+			String currentPropertyValue = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, LocaleUtility.getDefaultLocale().toString());
 			GlobalProperty allowedLocalesProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
 			        currentPropertyValue);
 			globalLocaleList.globalPropertyChanged(allowedLocalesProperty);
@@ -1091,7 +1091,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (defaultValue == null)
 			throw new IllegalArgumentException("The defaultValue argument cannot be null");
 		
-		String propVal = getGlobalProperty(propertyName);
+		String propVal = Context.getAdministrationService().getGlobalProperty(propertyName);
 		if (!StringUtils.hasLength(propVal))
 			return defaultValue;
 		
@@ -1275,7 +1275,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		//limit locales to only allowed locales
-		List<Locale> allowedLocales = getAllowedLocales();
+		List<Locale> allowedLocales = Context.getAdministrationService().getAllowedLocales();
 		if (allowedLocales != null) {
 			Set<Locale> retainLocales = new HashSet<Locale>();
 			
