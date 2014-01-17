@@ -74,8 +74,18 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		
 		return obs;
 	}
-	
-	/**
+
+    @Override
+    public boolean supportsView(String view) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String[] getSupportedViews() {
+        return new String[0];  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
 	 * TODO should this support a StringReader too?
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
