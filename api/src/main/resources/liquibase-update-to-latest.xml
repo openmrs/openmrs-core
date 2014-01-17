@@ -7033,5 +7033,20 @@
 								 referencedColumnNames="user_id"
 								 referencedTableName="users"/>
 	</changeSet>
+	
+	<changeSet id="201401161532-TRUNK-4202" author="k-joseph" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="orders" columnName="orderer" />
+			<not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
+		</preConditions>
+		<comment>Creating provider accounts for all users who have placed orders for patients and have no associated provider accounts</comment>
+		<sql>
+			INSERT INTO provider(person_id, identifier, creator, date_created, retired, uuid)
+			SELECT (SELECT orderer FROM orders WHERE orderer NOT IN (SELECT person_id FROM provider)),
+				CONCAT( "prov: ", SUBSTRING((SELECT uuid FROM person where person_id = (select orderer from orders)), 5)) , 1, NOW() , false, UUID()
+			FROM orders
+			WHERE orderer NOT IN (SELECT person_id FROM provider)
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
