@@ -71,8 +71,8 @@ public class Daemon {
 					Context.openSession();
 					returnedObject = ModuleFactory.startModuleInternal(module, isOpenmrsStartup, applicationContext);
 				}
-				catch (Throwable t) {
-					exceptionThrown = t;
+				catch (Exception e) {
+					exceptionThrown = e;
 				}
 				finally {
 					Context.closeSession();
@@ -131,8 +131,8 @@ public class Daemon {
 					Context.openSession();
 					TimerSchedulerTask.execute(task);
 				}
-				catch (Throwable t) {
-					exceptionThrown = t;
+				catch (Exception e) {
+					exceptionThrown = e;
 				}
 				finally {
 					Context.closeSession();
@@ -222,8 +222,8 @@ public class Daemon {
 					Context.openSession();
 					service.onStartup();
 				}
-				catch (Throwable t) {
-					exceptionThrown = t;
+				catch (Exception e) {
+					exceptionThrown = e;
 				}
 				finally {
 					Context.closeSession();

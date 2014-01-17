@@ -92,8 +92,8 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		try {
 			return serializer.serialize(o);
 		}
-		catch (Throwable t) {
-			throw new SerializationException("An error occurred during serialization of object <" + o + ">", t);
+		catch (Exception e) {
+			throw new SerializationException("An error occurred during serialization of object <" + o + ">", e);
 		}
 	}
 	
@@ -114,9 +114,9 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		try {
 			return (T) serializer.deserialize(serializedObject, objectClass);
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			String msg = "An error occurred during deserialization of data <" + serializedObject + ">";
-			throw new SerializationException(msg, t);
+			throw new SerializationException(msg, e);
 		}
 	}
 	

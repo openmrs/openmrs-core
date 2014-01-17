@@ -761,8 +761,8 @@ public class ModuleUtil {
 				if (module.getModuleActivator() != null)
 					module.getModuleActivator().willRefreshContext();
 			}
-			catch (Throwable t) {
-				log.warn("Unable to call willRefreshContext() method in the module's activator", t);
+			catch (Exception e) {
+				log.warn("Unable to call willRefreshContext() method in the module's activator", e);
 			}
 		}
 		
@@ -833,8 +833,8 @@ public class ModuleUtil {
 					}
 					
 				}
-				catch (Throwable t) {
-					log.warn("Unable to invoke method on the module's activator ", t);
+				catch (Exception e) {
+					log.warn("Unable to invoke method on the module's activator ", e);
 				}
 			}
 		}
@@ -934,8 +934,8 @@ public class ModuleUtil {
 				}
 			}
 		}
-		catch (Throwable t) {
-			log.warn("Unable to get the mandatory module list", t);
+		catch (Exception e) {
+			log.warn("Unable to get the mandatory module list", e);
 		}
 		
 		return mandatoryModuleIds;

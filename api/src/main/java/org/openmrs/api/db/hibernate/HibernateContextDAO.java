@@ -394,7 +394,7 @@ public class HibernateContextDAO implements ContextDAO {
 			try {
 				propertyStream.close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}
