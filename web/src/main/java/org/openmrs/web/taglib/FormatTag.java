@@ -359,14 +359,13 @@ public class FormatTag extends TagSupport {
 			} else {
 				sb.append(summary);
 				sb.append("...");
-				if (handler instanceof HtmlDisplayableDatatypeHandler) {
-					String link = "viewCustomValue.form?handler=" + handler.getClass().getName() + "&datatype="
-					        + datatype.getClass().getName() + "&value=" + val.getValueReference();
-					sb.append(" (<a target=\"_blank\" href=\"" + link + "\">"
-					        + Context.getMessageSourceService().getMessage("general.view") + "</a>)");
-				}
+				String link = "viewCustomValue.form?handler=" + handler.getClass().getName() + "&datatype="
+				        + datatype.getClass().getName() + "&value=" + val.getValueReference();
+				sb.append(" (<a target=\"_blank\" href=\"" + link + "\">"
+				        + Context.getMessageSourceService().getMessage("general.view") + "</a>)");
+				
 				if (handler instanceof DownloadableDatatypeHandler) {
-					String link = "downloadCustomValue.form?handler=" + handler.getClass().getName() + "&datatype="
+					link = "downloadCustomValue.form?handler=" + handler.getClass().getName() + "&datatype="
 					        + datatype.getClass().getName() + "&value=" + val.getValueReference();
 					sb.append(" (<a href=\"" + link + "\">"
 					        + Context.getMessageSourceService().getMessage("general.download") + "</a>)");
