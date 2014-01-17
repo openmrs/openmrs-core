@@ -67,7 +67,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Encounter encounter;
 	
-	private User orderer;
+	private Provider orderer;
 	
 	private Date dateStopped;
 	
@@ -262,14 +262,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return Returns the orderer.
 	 */
-	public User getOrderer() {
+	public Provider getOrderer() {
 		return orderer;
 	}
 	
 	/**
 	 * @param orderer The orderer to set.
 	 */
-	public void setOrderer(User orderer) {
+	public void setOrderer(Provider orderer) {
 		this.orderer = orderer;
 	}
 	
