@@ -138,13 +138,6 @@
 		<div id="content">
 
 			<openmrs:forEachAlert>
-				<c:if test="${varStatus.first}"><div id="alertOuterBox"><div id="alertInnerBox"></c:if>
-					<div class="alert">
-						<a href="#markRead" onClick="return markAlertRead(this, '${alert.alertId}')" HIDEFOCUS class="markAlertRead">
-							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<openmrs:message code="Alert.mark"/>' title='<openmrs:message code="Alert.mark"/>'/> <span class="markAlertText"><openmrs:message code="Alert.markAsRead"/></span>
-						</a>
-						${alert.text} ${alert.dateToExpire} <c:if test="${alert.satisfiedByAny}"><i class="smallMessage">(<openmrs:message code="Alert.mark.satisfiedByAny"/>)</i></c:if>
-					</div>
 				<c:if test="${varStatus.last}">
 					</div>
 					<div id="alertBar">
@@ -154,6 +147,21 @@
 						<a href="#markAllAsRead" onclick="return markAllAlertsRead(this)" HIDEFOCUS class="markAllAsRead" >
 							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<openmrs:message code="Alert.markAllAsRead"/>' title='<openmrs:message code="Alert.markAllAlertsAsRead"/>' /> <span class="markAllAsRead"><openmrs:message code="Alert.markAllAsRead"/></span>
 						</a>
+					</div>
+					</div>
+				</c:if>
+			</openmrs:forEachAlert>
+			<openmrs:forEachAlert>			
+				<c:if test="${varStatus.first}"><div id="alertOuterBox"><div id="alertInnerBox"></c:if>
+				<c:if test="${varStatus.count == 1}">
+					<div class="alert">
+						<a href="#markRead" onClick="return markAlertRead(this, '${alert.alertId}')" HIDEFOCUS class="markAlertRead">
+							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<openmrs:message code="Alert.mark"/>' title='<openmrs:message code="Alert.mark"/>'/> <span class="markAlertText"><openmrs:message code="Alert.markAsRead"/></span>
+						</a>
+						${alert.text} ${alert.dateToExpire} <c:if test="${alert.satisfiedByAny}"><i class="smallMessage">(<openmrs:message code="Alert.mark.satisfiedByAny"/>)</i></c:if>
+					</div>
+				</c:if>
+				<c:if test="${varStatus.last}">
 					</div>
 					</div>
 				</c:if>
@@ -172,4 +180,3 @@
 					<a href="#" onclick="this.parentNode.parentNode.style.display='none'"><openmrs:message code="error.dwr.hide"/></a>
 				</div>
 			</div>
-			
