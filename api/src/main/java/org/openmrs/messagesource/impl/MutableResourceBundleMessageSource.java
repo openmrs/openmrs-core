@@ -16,6 +16,7 @@ package org.openmrs.messagesource.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -224,7 +225,11 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	@Override
 	public void setBasenames(String[] basenames) {
 		super.setBasenames(basenames);
-		this.basenames = basenames;
+		if (basenames == null) {
+			this.basenames = new String[0];
+		} else {
+			this.basenames = Arrays.copyOf(basenames, basenames.length);
+		}
 	}
 	
 	/**
