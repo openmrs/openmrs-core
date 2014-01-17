@@ -62,7 +62,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		}
 		
 		response.setDateHeader("Last-Modified", f.lastModified());
-		response.setContentLength(new Long(f.length()).intValue());
+		response.setContentLength(Long.valueOf(f.length()).intValue());
 		String mimeType = getServletContext().getMimeType(f.getName());
 		response.setContentType(mimeType);
 		
