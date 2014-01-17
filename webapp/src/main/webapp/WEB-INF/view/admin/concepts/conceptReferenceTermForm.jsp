@@ -199,12 +199,20 @@ $j(document).ready( function() {
 				<tr <c:if test="${mapStatus.index % 2 == 0}">class='evenRow'</c:if>>
 					<td>
 						<spring:bind path="conceptMapType">
+							<c:set var="groupOpen" value="false" />
 							<select name="${status.expression}">
 							<openmrs:forEachRecord name="conceptMapType">
+								<c:if test="${record.retired && !groupOpen}">
+									<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
+									<c:set var="groupOpen" value="true" />
+								</c:if>
 								<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> >
 									${record.name}
 								</option>
 							</openmrs:forEachRecord>
+							<c:if test="${groupOpen}">
+								</optgroup>
+							</c:if>
 							</select>
 						</spring:bind>
 					</td>
@@ -247,14 +255,22 @@ $j(document).ready( function() {
 				
 				<%-- The row from which to clone new reference term maps --%>
 				<tr id="newTermMapRow" style="display: none">
-					<td>						
+					<td>
+						<c:set var="groupOpen" value="false" />
 						<select name="conceptMapType">
 							<openmrs:forEachRecord  name="conceptMapType">
+							<c:if test="${record.retired && !groupOpen}">
+								<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
+								<c:set var="groupOpen" value="true" />
+							</c:if>
 								<option value="${record.conceptMapTypeId}">
 									${record.name}
 								</option>
 							</openmrs:forEachRecord>
-						</select>						
+							<c:if test="${groupOpen}">
+								</optgroup>
+							</c:if>
+						</select>
 					</td>
 					<td>
 						<select id="map.source" name="term.source" >
