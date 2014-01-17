@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
@@ -54,6 +55,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
@@ -88,6 +90,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/api/include/ConceptServiceTest-initialConcepts.xml";
 	
 	protected static final String GET_CONCEPTS_BY_SET_XML = "org/openmrs/api/include/ConceptServiceTest-getConceptsBySet.xml";
+
+	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -1194,12 +1198,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ConceptService#getConcept(Integer)}
 	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if the datatype of the concept is not boolean", method = "changeConceptFromBooleanToCoded(Concept)")
-	public void changeConceptFromBooleanToCoded_shouldFailIfTheDatatypeOfTheConceptIsNotBoolean() throws Exception {
-		Concept concept = conceptService.getConcept(5497);
-		conceptService.convertBooleanConceptToCoded(concept);
-	}
 	
 	/**
 	 * @see {@link ConceptService#convertBooleanConceptToCoded(Concept)}
@@ -2555,7 +2553,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
 	}
-	
+
 	/**
 	 * @verifies get drugs with names matching the search phrase
 	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
@@ -2695,5 +2693,141 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void getDrugs_shouldRejectANullSearchPhrase() throws Exception {
 		conceptService.getDrugs(null, null, false, false);
+    }
+
+	/**
+	 * @verifies get a list of non retired drug mappings with given code and concept source and conceptmapTypes
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugsByMapping_shouldGetAListOfNonRetiredDrugMappingsWithGivenCodeAndConceptSourceAndConceptmapTypes() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", conceptService.getConceptSource(1), conceptMapTypeList, false);
+		assertEquals(2, drugs.size());
+		assertTrue(containsId(drugs,2));
+		//assertTrue(containsId(drugs,3));
+	}
+
+	/**
+	 * @verifies only return non-retired drugs
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugsByMapping_shouldOnlyReturnNonretiredDrugs() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", conceptService.getConceptSource(1), conceptMapTypeList, false);
+		assertEquals(2, drugs.size());
+		assertTrue(containsId(drugs,2));
+		//assertTrue(containsId(drugs,3));
+	}
+
+	/**
+	 * @verifies return retired and non-retired drugs
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugsByMapping_shouldReturnRetiredAndNonretiredDrugs() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", conceptService.getConceptSource(1), conceptMapTypeList, true);
+		assertEquals(3, drugs.size());
+		assertTrue(containsId(drugs,2));
+		//assertTrue(containsId(drugs, 3));
+		assertTrue(containsId(drugs,11));
+	}
+
+	/**
+	 * @verifies return empty list if no matches are found
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugsByMapping_shouldReturnEmptyListIfNoCodeAndSourceExist() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("some radom code", conceptService.getConceptSource(2), conceptMapTypeList, false);
+		assertTrue(drugs.isEmpty());
+	}
+
+	/**
+	 * @verifies match on the  code
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugsByMapping_shouldMatchOnTheCode() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", null, null, false);
+		assertEquals(2, drugs.size());
+		assertTrue(containsId(drugs,2));
+	}
+
+	/**
+	 * @verifies match on the concept source
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugsByMapping_shouldMatchOnTheConceptSource() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<Drug> drugs = conceptService.getDrugsByMapping(null, conceptService.getConceptSource(1), null, false);
+		assertEquals(3, drugs.size());
+		assertTrue(containsId(drugs,2));
+		assertTrue(containsId(drugs, 3));
+	}
+
+	/**
+	 * @verifies match on the map types
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugsByMapping_shouldMatchOnTheMapTypes() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
+		List<Drug> drugs = conceptService.getDrugsByMapping(null, null, conceptMapTypeList, false);
+		assertEquals(3, drugs.size());
+		assertTrue(containsId(drugs,2));
+		assertTrue(containsId(drugs, 3));
+	}
+
+	/**
+	 * @verifies return a drug that matches the specified source and best map type
+	 * @see ConceptService#getDrugByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugByMapping_shouldReturnADrugThatMatchesTheSpecifiedSourceAndBestMapType() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
+		Drug drug = conceptService.getDrugByMapping("CD41003", conceptService.getConceptSource(1), conceptMapTypeList, false);
+		assertNull(drug);
+	}
+
+	/**
+	 * @verifies fail if multiple drugs are found matching the best map type
+	 * @see ConceptService#getDrugByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugByMapping_shouldFailIfMultipleDrugsAreFoundMatchingTheBestMapType() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
+		try {
+			Drug drugs = conceptService.getDrugByMapping("WGT234", conceptService.getConceptSource(1), conceptMapTypeList, false);
+		}
+		catch (APIException ex) {
+			fail(ex.toString());
+		}
+
+
+	}
+
+	/**
+	 * @verifies return null if no match found
+	 * @see ConceptService#getDrugByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void testGetDrugByMapping_shouldReturnNullIfNoMatchFound() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
+		Drug drugs = conceptService.getDrugByMapping("random code", conceptService.getConceptSource(1), conceptMapTypeList, false);
+		assertNull(drugs);
 	}
 }

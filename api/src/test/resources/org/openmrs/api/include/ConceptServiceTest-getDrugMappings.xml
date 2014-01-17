@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<drug_reference_map drug_reference_map_id="1" drug_id="2" term_id="1" map_type="1" creator="1" date_created="2014-31-01 00:00:00.0" uuid="fe7693a0-8a55-11e3-8507-1f26fdd6e3f2"/>
+	<drug_reference_map drug_reference_map_id="2" drug_id="3" term_id="2" map_type="2" creator="1" date_created="2014-31-01 00:00:00.0" uuid="e17472ba-8a58-11e3-9d36-1b7d05b63b69"/>
+	<drug_reference_map drug_reference_map_id="3" drug_id="11" term_id="1" map_type="3" creator="1" date_created="2014-31-01 00:00:00.0" uuid="f20a0a36-8a58-11e3-a09a-8f94984ff961"/>
+	<drug_reference_map drug_reference_map_id="4" drug_id="2" term_id="1" map_type="1" creator="1" date_created="2014-31-01 00:00:00.0" uuid="a3c8b976-8ce2-11e3-b6ba-bfe32bfe5b5b"/>
+</dataset>

@@ -13,21 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,6 +64,21 @@ import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
@@ -2077,5 +2077,64 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		return criteria.list();
+    }
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Override
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException {
+
+		Criteria criteria = createSearchDrugByMappingCriteria(code,conceptSource,includeRetired);
+		// match with any of the supplied collection of conceptMapTypes
+		if(withAnyOfTheseTypes !=null) {
+			criteria.add(Restrictions.in("map.conceptMapType", withAnyOfTheseTypes));
+		}
+		//check whether retired on not retired drugs
+		return (List<Drug>) criteria.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugs
+	 */
+	@Override
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws DAOException {
+		Criteria criteria = createSearchDrugByMappingCriteria(code,conceptSource,includeRetired);
+
+		// match with any of the supplied collection or order of preference of conceptMapTypes
+		if(withAnyOfTheseTypesOrOrderOfPreference !=null) {
+			for(ConceptMapType conceptMapType : withAnyOfTheseTypesOrOrderOfPreference) {
+				criteria.add(Restrictions.eq("map.conceptMapType", conceptMapType));
+				if(criteria.list().size() > 1) {
+					throw new DAOException("There are multiple matches for the highest-priority ConceptMapType");
+				}
+				else if(criteria.list().size() == 1) {
+					return (Drug)criteria.list().get(0);
+				}
+			}
+		}
+		return null;
+	}
+
+	private Criteria createSearchDrugByMappingCriteria(String code, ConceptSource conceptSource, boolean includeRetired) {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class);
+		//join to the drugReferenceMap table
+		searchCriteria.createAlias("drugReferenceMaps", "map");
+		// join to the conceptReferenceTerm table
+		searchCriteria.createAlias("map.conceptReferenceTerm", "term");
+		// match the source code to the passed code
+		if(code !=null) {
+			searchCriteria.add(Restrictions.eq("term.code", code));
+		}
+		// match the conceptSource to the passed in concept source, null accepted
+		if(conceptSource !=null) {
+			searchCriteria.add(Restrictions.eq("term.conceptSource", conceptSource));
+		}
+		//check whether retired on not retired drugs
+		if (!includeRetired) {
+			searchCriteria.add(Restrictions.eq("retired", false));
+		}
+		return searchCriteria;
 	}
 }

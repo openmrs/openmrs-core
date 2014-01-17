@@ -12,6 +12,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -662,4 +663,16 @@ public interface ConceptDAO {
 	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
 	 */
 	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired);
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	Drug getDrugByMapping(String code, ConceptSource conceptSource,
+						  Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws DAOException;
 }
