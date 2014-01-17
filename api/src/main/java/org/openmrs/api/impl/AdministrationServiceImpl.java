@@ -867,8 +867,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			
 			return implId;
 		}
-		catch (Throwable t) {
-			log.debug("Error while getting implementation id", t);
+		catch (Exception e) {
+			log.debug("Error while getting implementation id", e);
 		}
 		
 		return null;

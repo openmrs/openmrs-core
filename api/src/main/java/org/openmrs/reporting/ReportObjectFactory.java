@@ -225,7 +225,7 @@ public class ReportObjectFactory {
 				// attempt to populate setters with initialValues Map
 				
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				log.error("Could not create class: " + className + " when trying to get report object from the factory");
 			}
 		}
@@ -250,7 +250,7 @@ public class ReportObjectFactory {
 				reportObj = (AbstractReportObject) ct.newInstance();
 				reportObj = ReportObjectFactory.initInstance(reportObj, initialValues);
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				log.error("Could not instantiate class: " + reportObjectClass.getName()
 				        + " when trying to get report object from the factory");
 			}

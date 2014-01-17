@@ -481,9 +481,9 @@ public class WebModuleUtil {
 				ServletConfig servletConfig = new ModuleServlet.SimpleServletConfig(name, servletContext);
 				httpServlet.init(servletConfig);
 			}
-			catch (Throwable t) {
-				log.warn("Unable to initialize servlet: ", t);
-				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), t);
+			catch (Exception e) {
+				log.warn("Unable to initialize servlet: ", e);
+				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), e);
 			}
 			
 			// don't allow modules to overwrite servlets of other modules.

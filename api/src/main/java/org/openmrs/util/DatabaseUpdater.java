@@ -236,13 +236,13 @@ public class DatabaseUpdater {
 			try {
 				lockHandler.releaseLock();
 			}
-			catch (Throwable t) {
-				log.error("Could not release lock", t);
+			catch (Exception e) {
+				log.error("Could not release lock", e);
 			}
 			try {
 				database.getConnection().close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				//pass
 			}
 		}
@@ -342,7 +342,7 @@ public class DatabaseUpdater {
 			try {
 				propertyStream.close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}
@@ -576,7 +576,7 @@ public class DatabaseUpdater {
 					database.getConnection().close();
 				}
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				//pass
 			}
 		}
@@ -635,7 +635,7 @@ public class DatabaseUpdater {
 			try {
 				database.getConnection().close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				//pass
 			}
 		}
@@ -738,7 +738,7 @@ public class DatabaseUpdater {
 			try {
 				database.getConnection().close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}
@@ -764,7 +764,7 @@ public class DatabaseUpdater {
 			try {
 				database.getConnection().close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}

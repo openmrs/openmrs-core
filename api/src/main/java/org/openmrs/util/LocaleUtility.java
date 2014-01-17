@@ -80,10 +80,10 @@ public class LocaleUtility implements GlobalPropertyListener {
 						}
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception e) {
 					// swallow most of the stack trace for most users
-					log.warn("Unable to get locale global property value. " + t.getMessage());
-					log.trace("Unable to get locale global property value", t);
+					log.warn("Unable to get locale global property value. " + e.getMessage());
+					log.trace("Unable to get locale global property value", e);
 				}
 				
 				// if we weren't able to load the locale from the global property,

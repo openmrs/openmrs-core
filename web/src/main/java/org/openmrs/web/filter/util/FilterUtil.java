@@ -77,8 +77,8 @@ public class FilterUtil {
 					currentLocale = readSystemDefaultLocale(connection);
 				}
 			}
-			catch (Throwable t) {
-				log.error("Error while retriving locale property", t);
+			catch (Exception e) {
+				log.error("Error while retriving locale property", e);
 			}
 			finally {
 				if (connection != null) {
@@ -122,8 +122,8 @@ public class FilterUtil {
 					systemDefaultLocale = results.getString(1);
 			}
 		}
-		catch (Throwable t) {
-			log.error("Error while retrieving system default locale", t);
+		catch (Exception e) {
+			log.error("Error while retrieving system default locale", e);
 		}
 		finally {
 			if (needToCloseConection) {
@@ -177,8 +177,8 @@ public class FilterUtil {
 					log.warn("Unable to set system default locale property.");
 				}
 			}
-			catch (Throwable t) {
-				log.warn("Locale " + locale + " could not be set for user with id " + userId + " .", t);
+			catch (Exception e) {
+				log.warn("Locale " + locale + " could not be set for user with id " + userId + " .", e);
 				return false;
 			}
 			finally {
