@@ -163,9 +163,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			}
 			
 		}
-		catch (Throwable t) {
-			errorAtStartup = t;
-			log.fatal("Got exception while starting up: ", t);
+		catch (Exception e) {
+			errorAtStartup = e;
+			log.fatal("Got exception while starting up: ", e);
 		}
 		
 	}
@@ -324,10 +324,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			elem.setTextContent("");
 			OpenmrsUtil.saveDocument(doc, dwrFile);
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			// got here because the dwr-modules.xml file is empty for some reason.  This might
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
-			log.debug("Error clearing dwr-modules.xml", t);
+			log.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
 			try {
 				FileWriter writer = new FileWriter(dwrFile);
@@ -474,8 +474,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					Module mod = ModuleFactory.loadModule(f);
 					log.debug("Loaded bundled module: " + mod + " successfully");
 				}
-				catch (Throwable t) {
-					log.warn("Error while trying to load bundled module " + f.getName() + "", t);
+				catch (Exception e) {
+					log.warn("Error while trying to load bundled module " + f.getName() + "", e);
 				}
 			}
 		}
@@ -498,12 +498,12 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			WebModuleUtil.shutdownModules(event.getServletContext());
 			
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			// don't print the unhelpful "contextDAO is null" message
-			if (!"contextDAO is null".equals(t.getMessage())) {
+			if (!"contextDAO is null".equals(e.getMessage())) {
 				// not using log.error here so it can be garbage collected
 				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
-				t.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 		finally {
@@ -580,8 +580,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				/* delayContextRefresh */true);
 				someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
 			}
-			catch (Throwable t) {
-				mod.setStartupErrorMessage("Unable to start module", t);
+			catch (Exception e) {
+				mod.setStartupErrorMessage("Unable to start module", e);
 			}
 		}
 		
@@ -593,12 +593,12 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// pass this up to the calling method so that openmrs loading stops
 				throw ex;
 			}
-			catch (Throwable t) {
-				Throwable rootCause = getActualRootCause(t, true);
+			catch (Exception e) {
+				Throwable rootCause = getActualRootCause(e, true);
 				if (rootCause != null)
 					log.fatal("Unable to refresh the spring application context.  Root Cause was:", rootCause);
 				else
-					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
+					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", e);
 				
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
@@ -619,7 +619,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				catch (MandatoryModuleException ex) {
 					// pass this up to the calling method so that openmrs loading stops
 					throw new MandatoryModuleException(ex.getModuleId(), "Got an error while starting a mandatory module: "
-					        + t.getMessage() + ". Check the server logs for more information");
+					        + e.getMessage() + ". Check the server logs for more information");
 				}
 				catch (Throwable t2) {
 					// a mandatory or core module is causing spring to fail to start up.  We don't want those

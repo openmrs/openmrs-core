@@ -869,9 +869,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 				setFatalError(hl7InQueue, "Trouble parsing HL7 message (" + hl7InQueue.getHL7SourceKey() + ")", e);
 			
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			setFatalError(hl7InQueue, "Exception while attempting to process HL7 In Queue (" + hl7InQueue.getHL7SourceKey()
-			        + ")", t);
+			        + ")", e);
 		}
 		
 		return hl7InQueue;

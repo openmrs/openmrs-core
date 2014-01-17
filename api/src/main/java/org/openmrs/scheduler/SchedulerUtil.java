@@ -69,7 +69,7 @@ public class SchedulerUtil {
 		try {
 			service = Context.getSchedulerService();
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			// pass
 		}
 		

@@ -177,8 +177,8 @@ public class ModuleFactory {
 					Module mod = loadModule(f, true); // last module loaded wins
 					log.debug("Loaded module: " + mod + " successfully");
 				}
-				catch (Throwable t) {
-					log.debug("Unable to load file in module directory: " + f + ". Skipping file.", t);
+				catch (Exception e) {
+					log.debug("Unable to load file in module directory: " + f + ". Skipping file.", e);
 				}
 			}
 		}
@@ -940,8 +940,8 @@ public class ModuleFactory {
 				if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
 					mod.getModuleActivator().willStop();
 			}
-			catch (Throwable t) {
-				log.warn("Unable to call module's Activator.willStop() method", t);
+			catch (Exception e) {
+				log.warn("Unable to call module's Activator.willStop() method", e);
 			}
 			
 			String moduleId = mod.getModuleId();
@@ -998,13 +998,13 @@ public class ModuleFactory {
 								Context.removeAdvice(cls, (Advice) aopObject);
 							}
 						}
-						catch (Throwable t) {
-							log.warn("Could not remove advice point: " + advice.getPoint(), t);
+						catch (Exception e) {
+							log.warn("Could not remove advice point: " + advice.getPoint(), e);
 						}
 					}
 				}
-				catch (Throwable t) {
-					log.warn("Error while getting advicePoints from module: " + moduleId, t);
+				catch (Exception e) {
+					log.warn("Error while getting advicePoints from module: " + moduleId, e);
 				}
 				
 				// remove all extensions by this module
@@ -1024,8 +1024,8 @@ public class ModuleFactory {
 						}
 					}
 				}
-				catch (Throwable t) {
-					log.warn("Error while getting extensions from module: " + moduleId, t);
+				catch (Exception e) {
+					log.warn("Error while getting extensions from module: " + moduleId, e);
 				}
 			}
 			
@@ -1043,8 +1043,8 @@ public class ModuleFactory {
 				else
 					mod.getActivator().shutdown();//implements old  Activator interface
 			}
-			catch (Throwable t) {
-				log.warn("Unable to call module's Activator.shutdown() method", t);
+			catch (Exception e) {
+				log.warn("Unable to call module's Activator.shutdown() method", e);
 			}
 			
 			//Since extensions are loaded by the module class loader which is about to be disposed,
@@ -1490,8 +1490,8 @@ public class ModuleFactory {
 			
 			as.saveGlobalProperty(gp);
 		}
-		catch (Throwable t) {
-			log.warn("Unable to save the global property", t);
+		catch (Exception e) {
+			log.warn("Unable to save the global property", e);
 		}
 	}
 	

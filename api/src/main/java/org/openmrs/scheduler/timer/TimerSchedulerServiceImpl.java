@@ -113,8 +113,8 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 					}
 					
 				}
-				catch (Throwable t) {
-					log.error("Failed to schedule task for class " + taskDefinition.getTaskClass(), t);
+				catch (Exception e) {
+					log.error("Failed to schedule task for class " + taskDefinition.getTaskClass(), e);
 				}
 			}
 		}

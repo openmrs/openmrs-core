@@ -1150,8 +1150,8 @@ public class InitializationFilter extends StartupFilter {
 					connection.close();
 				}
 			}
-			catch (Throwable t) {
-				log.warn("Error while closing connection", t);
+			catch (Exception e) {
+				log.warn("Error while closing connection", e);
 			}
 		}
 		
@@ -1686,9 +1686,9 @@ public class InitializationFilter extends StartupFilter {
 								
 								Context.getAdministrationService().setImplementationId(implId);
 							}
-							catch (Throwable t) {
-								reportError(ErrorMessageConstants.ERROR_SET_INPL_ID, DEFAULT_PAGE, t.getMessage());
-								log.warn("Implementation ID could not be set.", t);
+							catch (Exception e) {
+								reportError(ErrorMessageConstants.ERROR_SET_INPL_ID, DEFAULT_PAGE, e.getMessage());
+								log.warn("Implementation ID could not be set.", e);
 								Context.shutdown();
 								WebModuleUtil.shutdownModules(filterConfig.getServletContext());
 								contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
@@ -1711,12 +1711,12 @@ public class InitializationFilter extends StartupFilter {
 								Context.logout();
 							}
 						}
-						catch (Throwable t) {
+						catch (Exception e) {
 							Context.shutdown();
 							WebModuleUtil.shutdownModules(filterConfig.getServletContext());
 							contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
-							reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, t.getMessage());
-							log.warn("Unable to complete the startup.", t);
+							reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
+							log.warn("Unable to complete the startup.", e);
 							return;
 						}
 						
@@ -1793,7 +1793,7 @@ public class InitializationFilter extends StartupFilter {
 						connection.close();
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception e) {
 					//pass
 				}
 			}

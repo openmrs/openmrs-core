@@ -711,7 +711,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			try {
 				previouslyCreatedFile.delete();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}

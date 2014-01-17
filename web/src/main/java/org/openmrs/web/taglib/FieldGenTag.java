@@ -197,7 +197,7 @@ public class FieldGenTag extends TagSupport {
 					try {
 						cls = Class.forName(className);
 					}
-					catch (Throwable t) {
+					catch (Exception e) {
 						cls = null;
 						log.error("Could not instantiate class for this enum of class name [" + className
 						        + "] in FieldGenTag");
