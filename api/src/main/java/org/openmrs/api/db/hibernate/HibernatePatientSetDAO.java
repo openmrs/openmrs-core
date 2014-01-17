@@ -46,6 +46,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
@@ -384,7 +385,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							orderNode.setAttribute("auto_expire_date", df.format(order.getAutoExpireDate()));
 						}
 						if (order.getOrderer() != null) {
-							orderNode.setAttribute("orderer", formatUser(order.getOrderer()));
+							orderNode.setAttribute("orderer", formatProvider(order.getOrderer()));
 						}
 						if (order.getDateStopped() != null) {
 							orderNode.setAttribute("date_stopped", df.format(order.getDateStopped()));
@@ -2222,6 +2223,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		ids.addAll(query.list());
 		
 		return new Cohort("Batch of " + size + " patients starting at " + start, "", ids);
+	}
+	
+	private String formatProvider(Provider p) {
+		return p.getName();
 	}
 	
 }
