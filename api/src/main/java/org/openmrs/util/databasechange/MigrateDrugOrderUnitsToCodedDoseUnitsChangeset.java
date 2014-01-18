@@ -26,10 +26,7 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 			    connection.getUnderlyingConnection());
 			migrateUnitsToCodedValue(connection, uniqueUnits);
 		}
-		catch (SQLException e) {
-			throw new CustomChangeException(e);
-		}
-		catch (DatabaseException e) {
+		catch (Exception e) {
 			throw new CustomChangeException(e);
 		}
 	}

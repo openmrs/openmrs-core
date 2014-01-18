@@ -18,15 +18,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.util.DatabaseUtil;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
 /**
  * Tests database upgrade from OpenMRS 1.9.7 to OpenMRS 1.10.
@@ -104,6 +103,56 @@ public class Database1_9To1_10UpgradeTest {
 		    conceptsToFrequencies.get("113")), row("order_id", "2", "frequency", conceptsToFrequencies.get("113")), row(
 		    "order_id", "3", "frequency", conceptsToFrequencies.get("114")), row("order_id", "4", "frequency",
 		    conceptsToFrequencies.get("113")), row("order_id", "5", "frequency", conceptsToFrequencies.get("114"))));
+	}
+	
+	@Test(expected = Exception.class)
+	public void shouldFailIfAnyDrugOrderUnitsNotMappedToConceptsAreFound() throws IOException, Exception {
+		//sanity check that we have some unmapped drug order dose units
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
+		    upgradeTestUtil.getConnection());
+		Assert.assertTrue(uniqueUnits.size() > 0);
+		
+		//map the frequencies only
+		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings",
+		    "1/day x 7 days/week:113,2/day x 7 days/week:114");
+		
+		upgradeTestUtil.upgrade();
+	}
+	
+	@Test(expected = Exception.class)
+	public void shouldFailIfAnyDrugOrderFrequenciesNotMappedToConceptsAreFound() throws IOException, Exception {
+		//sanity check that we have some unmapped drug order frequencies
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
+		    upgradeTestUtil.getConnection());
+		Assert.assertTrue(uniqueFrequencies.size() > 0);
+		
+		//map the dose units only
+		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings", "mg:111,tab(s):112");
+		
+		upgradeTestUtil.upgrade();
+	}
+	
+	@Test
+	public void shouldPassIfAllExistingDrugOrderUnitsAndFrequenciesAreMappedToConcepts() throws IOException, Exception {
+		//sanity check that we have some drug order dose units and frequencies in the test dataset
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
+		    upgradeTestUtil.getConnection());
+		Assert.assertTrue(uniqueUnits.size() > 0);
+		
+		Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
+		    upgradeTestUtil.getConnection());
+		Assert.assertTrue(uniqueFrequencies.size() > 0);
+		
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		
+		//set the mappings for all existing frequencies and dose units
+		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings",
+		    "mg:111,tab(s):112,1/day x 7 days/week:113,2/day x 7 days/week:114");
+		
+		upgradeTestUtil.upgrade();
 	}
 	
 	private Map<String, String> row(String... values) {

@@ -245,34 +245,18 @@ public class DatabaseUtil {
 	 * @param tableName the table
 	 * @param connection
 	 * @return
-	 * @throws SQLException
+	 * @throws Exception
 	 */
 	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,
-	        Connection connection) throws SQLException {
+	        Connection connection) throws Exception {
 		Set<T> uniqueValues = new HashSet<T>();
-		PreparedStatement pstmt = null;
 		final String alias = "unique_values";
-		
-		try {
-			pstmt = connection.prepareStatement("SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName
-			        + " WHERE " + columnName + " IS NOT NULL");
-			ResultSet resultSet = pstmt.executeQuery();
-			while (resultSet.next()) {
-				Object value = resultSet.getObject(alias);
-				if (value != null) {
-					uniqueValues.add((T) value);
-				}
-			}
-		}
-		finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				}
-				catch (SQLException e) {
-					log.warn("Failed to close the PreparedStatement object");
-				}
-			}
+		String select = "SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName + " WHERE " + columnName
+		        + " IS NOT NULL";
+		List<List<Object>> rows = DatabaseUtil.executeSQL(connection, select, true);
+		for (List<Object> row : rows) {
+			//There can only be one column since we are selecting one
+			uniqueValues.add((T) row.get(0));
 		}
 		
 		return uniqueValues;

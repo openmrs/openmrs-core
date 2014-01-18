@@ -52,8 +52,8 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 			Set<String> unmappedFrequencies = getUnMappedText(frequencies, connection);
 			if (unmappedFrequencies.size() > 0) {
 				throw new CustomPreconditionFailedException(
-				        "Upgrade failed because of the following unmapped drug order frequencies units that were found: ["
-				                + StringUtils.join(unmappedDoseUnits, ", ")
+				        "Upgrade failed because of the following unmapped drug order frequencies that were found: ["
+				                + StringUtils.join(unmappedFrequencies, ", ")
 				                + "]. Please make sure you have mapped all free text dose units and "
 				                + "frequencies via the global property named orderEntry.unitsToConceptsMappings"
 				                + " or use 1.10 upgrade helper module to map them");

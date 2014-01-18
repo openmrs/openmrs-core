@@ -6411,7 +6411,7 @@
     </changeSet>
 
     <changeSet id="201401101645-TRUNK-4187" author="wyclif">
-        <preConditions>
+        <preConditions onFail="HALT">
             <customPrecondition className="org.openmrs.util.databasechange.CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts" />
         </preConditions>
         <comment>

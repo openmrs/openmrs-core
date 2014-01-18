@@ -25,10 +25,7 @@ import org.openmrs.util.DatabaseUtil;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,10 +40,7 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 			    String.class, connection.getUnderlyingConnection());
 			insertUniqueFrequencies(connection, uniqueFrequencies);
 		}
-		catch (SQLException e) {
-			throw new CustomChangeException(e);
-		}
-		catch (DatabaseException e) {
+		catch (Exception e) {
 			throw new CustomChangeException(e);
 		}
 	}

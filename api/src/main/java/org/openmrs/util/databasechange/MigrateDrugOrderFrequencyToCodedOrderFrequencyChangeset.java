@@ -24,10 +24,7 @@ import liquibase.resource.ResourceAccessor;
 import org.openmrs.util.DatabaseUtil;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements CustomTaskChange {
@@ -41,10 +38,7 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 			    String.class, connection.getUnderlyingConnection());
 			migrateFrequenciesToCodedValue(connection, uniqueFrequencies);
 		}
-		catch (SQLException e) {
-			throw new CustomChangeException(e);
-		}
-		catch (DatabaseException e) {
+		catch (Exception e) {
 			throw new CustomChangeException(e);
 		}
 	}
