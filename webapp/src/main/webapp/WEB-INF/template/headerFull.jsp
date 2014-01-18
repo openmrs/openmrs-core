@@ -145,20 +145,19 @@
 						<img src="${pageContext.request.contextPath}/images/alert.gif" align="center" alt='<openmrs:message htmlEscape="false" code="Alert.unreadAlert"/>' title='<openmrs:message htmlEscape="false" code="Alert.unreadAlert"/>'/>
 						<c:if test="${varStatus.count == 1}"><openmrs:message htmlEscape="false" code="Alert.unreadAlert"/></c:if>
 						<c:if test="${varStatus.count != 1}"><openmrs:message htmlEscape="false" code="Alert.unreadAlerts" arguments="${varStatus.count}" /></c:if>
+						<c:if test="${alert.satisfiedByAny}"><i class="smallMessage">(<openmrs:message code="Alert.mark.satisfiedByAny"/>)</i></c:if>
 						<a href="#markAllAsRead" onclick="return markAllAlertsRead(this)" HIDEFOCUS class="markAllAsRead" >
 							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<openmrs:message code="Alert.markAllAsRead"/>' title='<openmrs:message code="Alert.markAllAlertsAsRead"/>' /> <span class="markAllAsRead"><openmrs:message code="Alert.markAllAsRead"/></span>
 						</a>
 				</c:if>
 			</openmrs:forEachAlert>
 			<openmrs:forEachAlert>
-				<c:if test="${varStatus.count == 1}">
 					<div class="alert">
 						<a href="#markRead" onClick="return markAlertRead(this, '${alert.alertId}')" HIDEFOCUS class="markAlertRead">
 							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<openmrs:message code="Alert.mark"/>' title='<openmrs:message code="Alert.mark"/>'/> <span class="markAlertText"><openmrs:message code="Alert.markAsRead"/></span>
 						</a>
-						${alert.text} ${alert.dateToExpire} <c:if test="${alert.satisfiedByAny}"><i class="smallMessage">(<openmrs:message code="Alert.mark.satisfiedByAny"/>)</i></c:if>
+						${alert.text} ${alert.dateToExpire} 
 					</div>
-				</c:if>
 				<c:if test="${varStatus.last}">
 					</div>
 					</div>
