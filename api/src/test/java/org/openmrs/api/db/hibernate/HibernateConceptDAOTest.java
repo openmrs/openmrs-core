@@ -53,17 +53,16 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
-	 * @verifies return distinct drugs when search parameter match multiple times with drug_name
+	 * @verifies return distinct drugs
 	 */
 	@Test
-	@Verifies(value = "return distinct drugs when search parameter match multiple times with drug_name", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
-	public void getDrugs_shouldReturnDistinctDrugsWhenSearchParameterMatchMultipleTimesWithDrugName() throws Exception {
+	@Verifies(value = "return distinct drugs", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
+	public void getDrugs_shouldReturnDistinctDrugs() throws Exception {
 		Session session2 = sessionFactory.getCurrentSession();
 		session2.beginTransaction();
 		Concept concept1 = (Concept) session2.get(Concept.class, 14);
 		
-		// In the test drug list has drug name with "TEST_DRUG_NAME TEST_DRUG_NAME" this drug match two times with search parameter but return only one distinct drug only
-		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME", concept1, true, true, false, 0, 10);
+		List<Drug> drugList = dao.getDrugs("TEST_DRUG", concept1, true, true, false, 0, 10);
 		Assert.assertEquals(1, drugList.size());
 		
 	}
