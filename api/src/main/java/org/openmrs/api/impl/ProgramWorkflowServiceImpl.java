@@ -187,7 +187,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @deprecated Replaced by retireProgram(Program program,String reason)
+	 * @deprecated use {@link #retireProgram(Program program,String reason)}
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
 	@Deprecated
@@ -217,7 +217,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @deprecated replaced by unretireProgram(Program program)
+	 * @deprecated use{@link #unretireProgram(Program program)} 
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
 	@Deprecated

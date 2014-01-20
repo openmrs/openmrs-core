@@ -173,7 +173,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	
 	/**
 	 * Retires the given program 
-	 * @deprecated Replaced by retireProgram(Program program,String reason)
+	 * @deprecated use {@link retireProgram(Program program,String reason)} 
 	 * @param program Program to be retired
 	 * @return the Program which has been retired
 	 * @throws APIException
@@ -181,7 +181,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should retire workflows associated with given program
 	 * @should retire states associated with given program
 	 */
-	@Deprecated
+	@Deprecated  
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program retireProgram(Program program) throws APIException;
 	
@@ -201,7 +201,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Unretires the given program
 	 * 
-	 * @deprecated replaced by unretireProgram(Program program)
+	 * @deprecated use {@link unretireProgram(Program program)} 
 	 * @param program Program to be unretired
 	 * @return the Program which has been unretired
 	 * @throws APIException
