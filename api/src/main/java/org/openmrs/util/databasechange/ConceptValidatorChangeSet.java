@@ -402,11 +402,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		}
 		
 		//pick a name randomly from the conceptName map
-		Set<Locale> localeSet = localeConceptNamesMap.keySet();
-		for (Iterator<Locale> localeIterator = localeSet.iterator(); localeIterator.hasNext();) {
-			Locale locale = localeIterator.next();
+		for (Map.Entry<Locale, List<ConceptName>> entry : localeConceptNamesMap.entrySet()) {
+			Locale locale = entry.getKey();
 			if (locale != null) {
-				ConceptName fullySpecName = localeConceptNamesMap.get(locale).get(0);
+				ConceptName fullySpecName = entry.getValue().get(0);
 				fullySpecName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 				reportUpdatedName(fullySpecName, "ConceptName with id " + fullySpecName.getConceptNameId() + " ("
 				        + fullySpecName.getName() + ") in locale '" + locale.getDisplayName()

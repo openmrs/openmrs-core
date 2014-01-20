@@ -690,8 +690,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			throw new APIException("No Authenticated user found");
 		}
 		user.getUserProperties().clear();
-		for (String key : properties.keySet()) {
-			user.setUserProperty(key, properties.get(key));
+		for (Map.Entry<String, String> entry : properties.entrySet()) {
+			user.setUserProperty(entry.getKey(), entry.getValue());
 		}
 		return dao.saveUser(user, null);
 	}

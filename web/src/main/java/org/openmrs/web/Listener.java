@@ -365,8 +365,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		custom.put("custom.messages_es", "/WEB-INF/custom_messages_es.properties");
 		custom.put("custom.messages_de", "/WEB-INF/custom_messages_de.properties");
 		
-		for (String prop : custom.keySet()) {
-			String webappPath = custom.get(prop);
+		for (Map.Entry<String, String> entry : custom.entrySet()) {
+			String prop = entry.getKey();
+			String webappPath = entry.getValue();
 			String userOverridePath = props.getProperty(prop);
 			// if they defined the variable
 			if (userOverridePath != null) {
