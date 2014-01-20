@@ -19,7 +19,7 @@ import org.openmrs.PersonAttribute;
 
 import java.util.List;
 
-public class HibernatePersonAttributeHelper {
+public class PersonAttributeHelper {
 	
 	private static final String QUERY_ALL_PERSON_ATTRIBUTES = "select pa.* from person_attribute pa";
 	
@@ -30,7 +30,7 @@ public class HibernatePersonAttributeHelper {
 	
 	private SessionFactory sessionFactory;
 	
-	public HibernatePersonAttributeHelper(SessionFactory sessionFactory) {
+	public PersonAttributeHelper(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -54,10 +54,24 @@ public class HibernatePersonAttributeHelper {
 	}
 	
 	/**
+	 * @should return true if a non-voided person attribute exists
+	 */
+	public boolean nonVoidedPersonAttributeExists(String value) {
+		return personAttributeExists(value) && (!voidedPersonAttributeExists(value));
+	}
+	
+	/**
 	 * @should return true if a non-searchable person attribute exists
 	 */
 	public boolean nonSearchablePersonAttributeExists(String value) {
 		return getPersonAttribute(getPersonAttributeList(QUERY_ALL_NON_SEARCHABLE_PERSON_ATTRIBUTES), value) != null;
+	}
+	
+	/**
+	 * @should return true if a searchable person attribute exists
+	 */
+	public boolean searchablePersonAttributeExists(String value) {
+		return personAttributeExists(value) && (!nonSearchablePersonAttributeExists(value));
 	}
 	
 	private List<PersonAttribute> getPersonAttributeList(String queryString) {
