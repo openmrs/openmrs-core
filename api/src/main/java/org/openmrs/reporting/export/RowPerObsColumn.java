@@ -14,6 +14,7 @@
 package org.openmrs.reporting.export;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Used with the RowPerObsDataExport to output data for one concept answered multiple times per
@@ -65,7 +66,11 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 		catch (NumberFormatException e) {
 			this.conceptName = conceptId; // for backwards compatibility to pre 1.0.43
 		}
-		this.extras = extras;
+		if (extras == null) {
+			this.extras = new String[0];
+		} else {
+			this.extras = Arrays.copyOf(extras, extras.length);
+		}
 	}
 	
 	/**
@@ -142,7 +147,11 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 	}
 	
 	public void setExtras(String[] extras) {
-		this.extras = extras;
+		if (extras == null) {
+			this.extras = new String[0];
+		} else {
+			this.extras = Arrays.copyOf(extras, extras.length);
+		}
 	}
 	
 	// returns conceptId if not null, conceptName otherwise
