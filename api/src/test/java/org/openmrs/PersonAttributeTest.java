@@ -80,6 +80,17 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
 	 */
 	@Test
+	@Verifies(value = "should return null when person attribute types are equal", method = "compareTo(PersonAttribute)")
+	public void compareTo_shouldReturnNullWhenPersonAttributeTypesAreEqual() throws Exception {
+		PersonAttribute pa = Context.getPersonService().getPersonAttribute(17);
+		PersonAttribute other = Context.getPersonService().getPersonAttribute(17);
+		Assert.assertTrue(pa.compareTo(other) == 0);
+	}
+	
+	/**
+	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
+	 */
+	@Test
 	@Verifies(value = "should return negative if other attribute has lower value", method = "compareTo(PersonAttribute)")
 	public void compareTo_shouldReturnNegativeIfOtherAttributeHasLowerValue() throws Exception {
 		PersonAttribute pa = new PersonAttribute();
