@@ -1,22 +1,16 @@
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	
@@ -66,13 +60,9 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void getDrugs_shouldReturnDistinctDrugs() throws Exception {
 		Session session2 = sessionFactory.getCurrentSession();
 		session2.beginTransaction();
-		// This concept which contain concept_name
-		// "FAVORITE FOOD, NON-CODED FOOD"
-		Concept concept1 = (Concept) session2.get(Concept.class, 4);
+		Concept concept1 = (Concept) session2.get(Concept.class, 14);
 		
-		// In this test concept_name match two times in concept name but return
-		// one distinct drug only
-		List<Drug> drugList = dao.getDrugs("FOOD", concept1, true, true, false, 0, 10);
+		List<Drug> drugList = dao.getDrugs("TEST_DRUG", concept1, true, true, false, 0, 10);
 		Assert.assertEquals(1, drugList.size());
 		
 	}
