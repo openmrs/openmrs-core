@@ -314,10 +314,11 @@ public class EvaluationContext {
 			Map<Parameter, Object> globalParameters = parameterValues.get(null);
 			if (globalParameters != null) {
 				log.debug("Starting parameters: " + globalParameters);
-				for (Parameter parameter : globalParameters.keySet()) {
+				for (Map.Entry<Parameter, Object> entry : globalParameters.entrySet()) {
+					Parameter parameter = entry.getKey();
 					if (replacement.contains(parameter.getName())) {
 						found = true;
-						Object value = globalParameters.get(parameter);
+						Object value = entry.getValue();
 						if (value == null) { // If parameter is required, but value is null, throw exception
 							throw new ParameterException("Expression [" + replacement + "] requires parameter [" + parameter
 							        + "] which is null.");

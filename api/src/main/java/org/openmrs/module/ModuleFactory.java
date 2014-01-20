@@ -625,8 +625,9 @@ public class ModuleFactory {
 					// be nobody because this is being run at startup)
 					Context.addProxyPrivilege("");
 					
-					for (String version : diffs.keySet()) {
-						String sql = diffs.get(version);
+					for (Map.Entry<String, String> entry : diffs.entrySet()) {
+						String version = entry.getKey();
+						String sql = entry.getValue();
 						if (StringUtils.hasText(sql))
 							runDiff(module, version, sql);
 					}

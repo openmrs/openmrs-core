@@ -269,9 +269,9 @@ public class ReportObjectFactory {
 	@SuppressWarnings("unchecked")
 	private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
 		if (reportObj != null && initialValues != null) {
-			for (Iterator<String> i = initialValues.keySet().iterator(); i.hasNext();) {
-				String key = i.next();
-				Object val = initialValues.get(key);
+			for (Map.Entry<String, Object> entry : initialValues.entrySet()) {
+				String key = entry.getKey();
+				Object val = entry.getValue();
 				Class valClass = val.getClass();
 				String methodName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
 				Class[] setterParamClasses = new Class[1];
