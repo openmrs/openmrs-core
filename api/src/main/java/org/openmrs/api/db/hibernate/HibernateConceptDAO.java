@@ -2055,14 +2055,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		searchCriteria.createAlias("drug", "drug");
 
-		if (!includeRetired) {
-			// ignore retired concepts
+		if (includeRetired == false) {
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
-		} else {
-			// sort retired concepts to the end of the list
-			searchCriteria.addOrder(Order.asc("drug.retired"));
 		}
-
 		return (List<Drug>) searchCriteria.list();
 	}
 
@@ -2086,12 +2081,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 		searchCriteria.createAlias("drug", "drug");
 
-		if (!includeRetired) {
-			// ignore retired concepts
+		if (includeRetired == false) {
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
-		} else {
-			// sort retired concepts to the end of the list
-			searchCriteria.addOrder(Order.asc("drug.retired"));
 		}
 		return (Drug) searchCriteria.uniqueResult();
 	}
