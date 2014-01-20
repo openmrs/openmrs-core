@@ -1013,11 +1013,12 @@ public class Context {
 				currentRoleNames.add(role.getRole().toUpperCase());
 			}
 			Map<String, String> map = OpenmrsUtil.getCoreRoles();
-			for (String roleName : map.keySet()) {
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				String roleName = entry.getKey();
 				if (!currentRoleNames.contains(roleName.toUpperCase())) {
 					Role role = new Role();
 					role.setRole(roleName);
-					role.setDescription(map.get(roleName));
+					role.setDescription(entry.getValue());
 					Context.getUserService().saveRole(role);
 				}
 			}
@@ -1037,11 +1038,12 @@ public class Context {
 				currentPrivilegeNames.add(privilege.getPrivilege().toUpperCase());
 			}
 			Map<String, String> map = OpenmrsUtil.getCorePrivileges();
-			for (String privilegeName : map.keySet()) {
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				String privilegeName = entry.getKey();
 				if (!currentPrivilegeNames.contains(privilegeName.toUpperCase())) {
 					Privilege p = new Privilege();
 					p.setPrivilege(privilegeName);
-					p.setDescription(map.get(privilegeName));
+					p.setDescription(entry.getValue());
 					Context.getUserService().savePrivilege(p);
 				}
 			}

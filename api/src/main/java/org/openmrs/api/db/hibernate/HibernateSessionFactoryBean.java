@@ -67,9 +67,10 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 		Properties moduleProperties = Context.getConfigProperties();
 		
 		// override or initialize config properties with module-provided ones
-		for (Object key : moduleProperties.keySet()) {
+		for (Map.Entry<Object, Object> entry : moduleProperties.entrySet()) {
+			Object key = entry.getKey();
 			String prop = (String) key;
-			String value = (String) moduleProperties.get(key);
+			String value = (String) entry.getValue();
 			log.trace("Setting module property: " + prop + ":" + value);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate"))
@@ -79,9 +80,10 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 		Properties properties = Context.getRuntimeProperties();
 		
 		// loop over runtime properties and override each in the configuration
-		for (Object key : properties.keySet()) {
+		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+			Object key = entry.getKey();
 			String prop = (String) key;
-			String value = (String) properties.get(key);
+			String value = (String) entry.getValue();
 			log.trace("Setting property: " + prop + ":" + value);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate"))

@@ -592,10 +592,10 @@ public class FormatTag extends TagSupport {
 	private LinkedHashSet<Provider> filterProviders(Map<EncounterRole, Set<Provider>> encounterProviders, String[] rolesArray) {
 		LinkedHashSet<Provider> filteredProviders = new LinkedHashSet<Provider>();
 		
-		Set<EncounterRole> roles = encounterProviders.keySet();
-		for (EncounterRole encounterRole : roles) {
+		for (Map.Entry<EncounterRole, Set<Provider>> entry : encounterProviders.entrySet()) {
+			EncounterRole encounterRole = entry.getKey();
 			if (containsRole(encounterRole, rolesArray)) {
-				filteredProviders.addAll(encounterProviders.get(encounterRole));
+				filteredProviders.addAll(entry.getValue());
 			}
 		}
 		

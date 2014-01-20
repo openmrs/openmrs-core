@@ -118,9 +118,10 @@ public class FormFormController extends SimpleFormController {
 					FormService fs = Context.getFormService();
 					
 					TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
-					for (Integer parentFormFieldId : treeMap.keySet()) {
+					for (Map.Entry<Integer, TreeSet<FormField>> entry : treeMap.entrySet()) {
+						Integer parentFormFieldId = entry.getKey();
 						float sortWeight = 0;
-						for (FormField formField : treeMap.get(parentFormFieldId)) {
+						for (FormField formField : entry.getValue()) {
 							formField.setSortWeight(sortWeight);
 							fs.saveFormField(formField);
 							sortWeight += 50;
