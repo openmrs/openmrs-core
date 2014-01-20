@@ -73,15 +73,14 @@ public class DWRAlertService {
 			
 			// fail early and quietly if the current user isn't actually
 			// a recipient on this alert.
-			if (alert.getRecipient(Context.getAuthenticatedUser()) == null)
+			if (alert == null || alert.getRecipient(Context.getAuthenticatedUser()) == null)
 				return;
 			
 			// allow this user to save changes to alerts temporarily
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 			
 			// Mark the alert as read and save it
-			if (alert != null)
-				as.saveAlert(alert.markAlertRead());
+			as.saveAlert(alert.markAlertRead());
 			
 		}
 		catch (Exception e) {

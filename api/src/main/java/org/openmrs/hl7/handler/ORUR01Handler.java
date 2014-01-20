@@ -753,29 +753,47 @@ public class ORUR01Handler implements Application {
 			}
 		} else if ("DT".equals(hl7Datatype)) {
 			DT value = (DT) obx5;
-			Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), 0, 0, 0);
-			if (value == null || valueDate == null) {
+			if (value != null) {
+				Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), 0, 0, 0);
+				if (valueDate != null) {
+					obs.setValueDatetime(valueDate);
+				} else {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
+				}
+			} else {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
-			obs.setValueDatetime(valueDate);
 		} else if ("TS".equals(hl7Datatype)) {
 			DTM value = ((TS) obx5).getTime();
-			Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), value.getHour(), value.getMinute(),
-			    value.getSecond());
-			if (value == null || valueDate == null) {
+			if (value != null) {
+				Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), value.getHour(), value
+				        .getMinute(), value.getSecond());
+				if (valueDate != null) {
+					obs.setValueDatetime(valueDate);
+				} else {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
+				}
+			} else {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
-			obs.setValueDatetime(valueDate);
 		} else if ("TM".equals(hl7Datatype)) {
 			TM value = (TM) obx5;
-			Date valueTime = getDate(0, 0, 0, value.getHour(), value.getMinute(), value.getSecond());
-			if (value == null || valueTime == null) {
+			if (value != null) {
+				Date valueTime = getDate(0, 0, 0, value.getHour(), value.getMinute(), value.getSecond());
+				if (valueTime != null) {
+					obs.setValueDatetime(valueTime);
+				} else {
+					log.warn("Not creating null valued obs for concept " + concept);
+					return null;
+				}
+			} else {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
-			obs.setValueDatetime(valueTime);
 		} else if ("ST".equals(hl7Datatype)) {
 			ST value = (ST) obx5;
 			if (value == null || value.getValue() == null || value.getValue().trim().length() == 0) {

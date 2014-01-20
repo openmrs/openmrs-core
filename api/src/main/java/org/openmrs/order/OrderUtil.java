@@ -306,13 +306,12 @@ public class OrderUtil {
 			log.debug("drugSets is size " + drugSets.size());
 			for (Concept c : drugSets) {
 				List<DrugOrder> ordersForConcept = new ArrayList<DrugOrder>();
-				
 				Collection<ConceptSet> relatedConcepts = c.getConceptSets();
-				log.debug("Concept is " + c.getName(Context.getLocale()) + " and has " + relatedConcepts.size()
-				        + " related concepts");
-				
 				// now we have as a list, let's iterate
+				
 				if (relatedConcepts != null) {
+					log.debug("Concept is " + c.getName(Context.getLocale()) + " and has " + relatedConcepts.size()
+					        + " related concepts");
 					for (ConceptSet cs : relatedConcepts) {
 						Concept csConcept = cs.getConcept();
 						for (DrugOrder currOrder : drugOrders) {

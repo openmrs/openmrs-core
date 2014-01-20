@@ -221,11 +221,15 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 */
 	public static Cohort union(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
-		ret.setName("(" + a.getName() + " + " + b.getName() + ")");
-		if (a != null)
+		if (a != null) {
 			ret.getMemberIds().addAll(a.getMemberIds());
-		if (b != null)
+		}
+		if (b != null) {
 			ret.getMemberIds().addAll(b.getMemberIds());
+		}
+		if (a != null && b != null) {
+			ret.setName("(" + a.getName() + " + " + b.getName() + ")");
+		}
 		return ret;
 	}
 	
@@ -255,11 +259,12 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 */
 	public static Cohort subtract(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
-		ret.setName("(" + a.getName() + " - " + b.getName() + ")");
 		if (a != null) {
 			ret.getMemberIds().addAll(a.getMemberIds());
-			if (b != null)
+			if (b != null) {
 				ret.getMemberIds().removeAll(b.getMemberIds());
+				ret.setName("(" + a.getName() + " - " + b.getName() + ")");
+			}
 		}
 		return ret;
 	}

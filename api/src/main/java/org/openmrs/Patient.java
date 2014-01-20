@@ -172,10 +172,10 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @should not add identifier that is in list already
 	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
-		patientIdentifier.setPatient(this);
 		if (getIdentifiers() == null)
 			identifiers = new LinkedHashSet<PatientIdentifier>();
 		if (patientIdentifier != null) {
+			patientIdentifier.setPatient(this);
 			// make sure the set doesn't already contain an identifier with the same
 			// identifier, identifierType
 			for (PatientIdentifier currentId : getActiveIdentifiers()) {
