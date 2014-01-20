@@ -303,8 +303,8 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
 		if (retValue == 0)
-			retValue = getAttributeType().getPersonAttributeTypeId().compareTo(
-			    other.getAttributeType().getPersonAttributeTypeId());
+			retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType().getPersonAttributeTypeId(), other
+			        .getAttributeType().getPersonAttributeTypeId());
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue());
 		if (retValue == 0)
