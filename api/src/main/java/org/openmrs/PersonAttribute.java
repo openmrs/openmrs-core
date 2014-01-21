@@ -296,15 +296,22 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @should return negative if this attribute has lower attribute type than argument
 	 * @should return negative if other attribute has lower value
 	 * @should return negative if this attribute has lower attribute id than argument
+	 * @should not throw exception if attribute type is null
 	 */
 	public int compareTo(PersonAttribute other) {
 		int retValue = 0;
 		retValue = isVoided().compareTo(other.isVoided());
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
+		if (getAttributeType() == null && other.getAttributeType() == null)
+			return 0;
+		if (getAttributeType() == null && other.getAttributeType() != null)
+			retValue = 1;
+		if (other.getAttributeType() == null && getAttributeType() != null)
+			retValue = -1;
 		if (retValue == 0)
-			retValue = getAttributeType().getPersonAttributeTypeId().compareTo(
-			    other.getAttributeType().getPersonAttributeTypeId());
+			retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType().getPersonAttributeTypeId(), other
+			        .getAttributeType().getPersonAttributeTypeId());
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue());
 		if (retValue == 0)
