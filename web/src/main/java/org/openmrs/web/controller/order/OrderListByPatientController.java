@@ -83,7 +83,7 @@ public class OrderListByPatientController extends SimpleFormController {
 			OrderService os = Context.getOrderService();
 			
 			String success = "";
-			String error = "";
+			StringBuilder error = new StringBuilder("");
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
@@ -104,8 +104,8 @@ public class OrderListByPatientController extends SimpleFormController {
 				catch (APIException e) {
 					log.warn("Error deleting order", e);
 					if (!error.equals(""))
-						error += "<br/>";
-					error += ord + " " + p + " " + notDeleted;
+						error.append("<br/>");
+					error.append(ord).append(" ").append(p).append(" ").append(notDeleted);
 				}
 			}
 			
@@ -115,7 +115,7 @@ public class OrderListByPatientController extends SimpleFormController {
 			if (!success.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
 		return new ModelAndView(new RedirectView(view));

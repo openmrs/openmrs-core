@@ -81,7 +81,7 @@ public class MergePatientsFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		
 		if (Context.isAuthenticated()) {
-			String view = getSuccessView();
+			StringBuilder view = new StringBuilder(getSuccessView());
 			PatientService ps = Context.getPatientService();
 			
 			String pref = request.getParameter("preferred");
@@ -92,10 +92,10 @@ public class MergePatientsFormController extends SimpleFormController {
 			Patient preferred = ps.getPatient(Integer.valueOf(pref));
 			List<Patient> notPreferred = new ArrayList<Patient>();
 			
-			view = view + "?patientId=" + preferred.getPatientId();
+			view.append("?patientId=").append(preferred.getPatientId());
 			for (int i = 0; i < nonPreferred.length; i++) {
 				notPreferred.add(ps.getPatient(Integer.valueOf(nonPreferred[i])));
-				view = view + "&patientId=" + nonPreferred[i];
+				view.append("&patientId=").append(nonPreferred[i]);
 			}
 			
 			try {
@@ -119,7 +119,7 @@ public class MergePatientsFormController extends SimpleFormController {
 				if (redirectURL.contains(getSuccessView()))
 					redirectURL = "findDuplicatePatients.htm";
 			} else
-				redirectURL = view;
+				redirectURL = view.toString();
 			
 			return new ModelAndView(new RedirectView(redirectURL));
 		}

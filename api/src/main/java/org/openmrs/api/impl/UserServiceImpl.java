@@ -462,11 +462,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (requiredPrivs.size() == 1) {
 			throw new APIException("You must have privilege '" + requiredPrivs.get(0) + "' in order to assign it.");
 		} else if (requiredPrivs.size() > 1) {
-			String txt = "You must have the following privileges in order to assign them: ";
+			StringBuilder txt = new StringBuilder("You must have the following privileges in order to assign them: ");
 			for (String s : requiredPrivs)
-				txt += s + ", ";
-			txt = txt.substring(0, txt.length() - 2);
-			throw new APIException(txt);
+				txt.append(s).append(", ");
+			throw new APIException(txt.substring(0, txt.length() - 2));
 		}
 	}
 	

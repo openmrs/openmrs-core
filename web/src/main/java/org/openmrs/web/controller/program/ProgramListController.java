@@ -70,7 +70,7 @@ public class ProgramListController extends SimpleFormController {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			
 			String success = "";
-			String error = "";
+			StringBuilder error = new StringBuilder();
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
@@ -89,8 +89,8 @@ public class ProgramListController extends SimpleFormController {
 					catch (APIException e) {
 						log.warn("Error deleting program", e);
 						if (!error.equals(""))
-							error += "<br/>";
-						error += textProgram + " " + p + " " + notDeleted;
+							error.append("<br/>");
+						error.append(textProgram).append(" ").append(p).append(" ").append(notDeleted);
 					}
 				}
 			} else {
@@ -100,7 +100,7 @@ public class ProgramListController extends SimpleFormController {
 			if (!success.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
 		return new ModelAndView(new RedirectView(view));

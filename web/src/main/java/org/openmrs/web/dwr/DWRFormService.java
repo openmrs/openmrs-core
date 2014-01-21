@@ -255,19 +255,19 @@ public class DWRFormService {
 	}
 	
 	private String generateJSTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Locale locale) {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		if (formFields.containsKey(current)) {
 			TreeSet<FormField> set = formFields.get(current);
 			for (FormField ff : set) {
-				s += generateFormFieldJavascript(ff, locale);
+				s.append(generateFormFieldJavascript(ff, locale));
 				if (formFields.containsKey(ff.getFormFieldId())) {
-					s += generateJSTree(formFields, ff.getFormFieldId(), locale);
+					s.append(generateJSTree(formFields, ff.getFormFieldId(), locale));
 				}
 			}
 		}
 		
-		return s;
+		return s.toString();
 	}
 	
 	private String generateFormFieldJavascript(FormField ff, Locale locale) {

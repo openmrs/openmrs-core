@@ -217,12 +217,13 @@ public class FieldGenTag extends TagSupport {
 									if (startVal == null)
 										startVal = "";
 									output = "<select name=\"" + formFieldName + "\" id=\"" + formFieldName + "\">";
+									StringBuilder options = new StringBuilder();
 									for (int i = 0; i < enumConstants.length; i++) {
-										output += "<option value=\"" + enumConstants[i].toString() + "\""
-										        + (startVal.equals(enumConstants[i].toString()) ? " selected" : "") + ">";
-										output += enumConstants[i].toString();
-										output += "</option>";
+										options.append("<option value=\"").append(enumConstants[i].toString()).append("\"")
+										        .append(startVal.equals(enumConstants[i].toString()) ? " selected" : "")
+										        .append(">").append(enumConstants[i].toString()).append("</option>");
 									}
+									output += options.toString();
 									output += "</select> ";
 								}
 							}
