@@ -37,10 +37,14 @@ public class OpenmrsJspServlet extends JspServlet {
 	
 	public static OpenmrsJspServlet jspServlet;
 	
+	public static void setJspServlet(OpenmrsJspServlet jspServlet) {
+		OpenmrsJspServlet.jspServlet = jspServlet;
+	}
+	
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		
-		jspServlet = this;
+		setJspServlet(this);
 	}
 	
 	public void stop() {

@@ -63,6 +63,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
+		setCohortDefinitionProvidersToNull();
+	}
+	
+	public static void setCohortDefinitionProvidersToNull() {
 		cohortDefinitionProviders = null;
 	}
 	

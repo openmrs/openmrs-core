@@ -58,13 +58,17 @@ public class LocationUtility implements GlobalPropertyListener {
 		return Context.getUserContext().getLocation();
 	}
 	
+	public static void setDefaultLocation(Location defaultLocation) {
+		LocationUtility.defaultLocation = defaultLocation;
+	}
+	
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		// reset the value
-		defaultLocation = null;
+		setDefaultLocation(null);
 	}
 	
 	/**
@@ -73,7 +77,7 @@ public class LocationUtility implements GlobalPropertyListener {
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
 		// reset the value
-		defaultLocation = null;
+		setDefaultLocation(null);
 	}
 	
 	/**

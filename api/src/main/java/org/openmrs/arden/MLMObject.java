@@ -1152,6 +1152,10 @@ public class MLMObject {
 		lastCall.addParameter(parameter);
 	}
 	
+	public static void setCompKeyIdUsed(boolean compKeyIdUsed) {
+		MLMObject.compKeyIdUsed = compKeyIdUsed;
+	}
+	
 	public void addCompOperator(String section, Integer operator, String key) {
 		
 		LinkedHashMap<String, Comparison> compBySection = this.comparisons.get(section);
@@ -1167,11 +1171,15 @@ public class MLMObject {
 				// but if key exists, modify it with __number for the hashmap only
 			} else {
 				compBySection.put(key + "__" + compKeyId, new Comparison(key, operator));
-				compKeyIdUsed = true;
+				setCompKeyIdUsed(true);
 			}
 		} else {
 			compBySection.put(key, new Comparison(key, operator));
 		}
+	}
+	
+	public static void setCompKeyId(int compKeyId) {
+		MLMObject.compKeyId = compKeyId;
 	}
 	
 	public void SetAnswer(String section, Object answer, String key) {
@@ -1186,8 +1194,8 @@ public class MLMObject {
 		if (compKeyIdUsed == true) {
 			lastComparison = compBySection.get(key + "__" + compKeyId);
 			lastComparison.setAnswer(answer);
-			compKeyIdUsed = false;
-			compKeyId++; // for next use
+			setCompKeyIdUsed(false);
+			setCompKeyId(compKeyId + 1); // for next use
 		} else {
 			lastComparison = compBySection.get(key);
 			lastComparison.setAnswer(answer);
@@ -1226,6 +1234,10 @@ public class MLMObject {
 		return retStr;
 	}
 	
+	public static void setKeyId(int keyId) {
+		MLMObject.keyId = keyId;
+	}
+	
 	public boolean SetAnswerListKey(String section, String key) {
 		LinkedHashMap<String, Comparison> compBySection = this.comparisons.get(section);
 		
@@ -1257,9 +1269,9 @@ public class MLMObject {
 					
 					compBySection.remove("__Temp__" + keyId);
 					if (keyId > 100) // At most 100 Temp Keys
-						keyId = 1;
+						setKeyId(1);
 					else
-						keyId++;
+						setKeyId(keyId + 1);
 				}
 			} else if (thisComparison != null) {
 				
@@ -1270,9 +1282,9 @@ public class MLMObject {
 				compBySection.remove("__Temp__" + keyId);
 				retVal = false;
 				if (keyId > 100) // At most 100 Temp Keys
-					keyId = 1;
+					setKeyId(1);
 				else
-					keyId++;
+					setKeyId(keyId + 1);
 				
 			}
 		}

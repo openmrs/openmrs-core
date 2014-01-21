@@ -75,7 +75,7 @@ public class EventListeners {
 	 */
 	public void setGlobalPropertyListenersToEmpty(boolean nullList) {
 		if (nullList)
-			EventListeners.globalPropertyListeners = null;
+			setGlobalPropertyListeners(null);
 		else if (EventListeners.globalPropertyListeners != null)
 			EventListeners.globalPropertyListeners.clear();
 	}

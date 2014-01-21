@@ -195,18 +195,26 @@ public class LocaleUtility implements GlobalPropertyListener {
 		return locales;
 	}
 	
+	public static void setLocalesAllowedListCache(List<Locale> localesAllowedListCache) {
+		LocaleUtility.localesAllowedListCache = localesAllowedListCache;
+	}
+	
+	public static void setDefaultLocaleCache(Locale defaultLocaleCache) {
+		LocaleUtility.defaultLocaleCache = defaultLocaleCache;
+	}
+	
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		// reset the value
-		defaultLocaleCache = null;
-		localesAllowedListCache = null;
+		setDefaultLocaleCache(null);
+		setLocalesAllowedListCache(null);
 	}
 	
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
 		// reset the value
-		defaultLocaleCache = null;
-		localesAllowedListCache = null;
+		setDefaultLocaleCache(null);
+		setLocalesAllowedListCache(null);
 	}
 	
 	@Override

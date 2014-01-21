@@ -181,6 +181,10 @@ public class Context {
 	 * @param dao ContextDAO to set
 	 */
 	public void setContextDAO(ContextDAO dao) {
+		setDao(dao);
+	}
+	
+	private static void setDao(ContextDAO dao) {
 		contextDAO = dao;
 	}
 	
@@ -268,6 +272,10 @@ public class Context {
 	 * @param ctx
 	 */
 	public void setServiceContext(ServiceContext ctx) {
+		setContext(ctx);
+	}
+	
+	public static void setContext(ServiceContext ctx) {
 		serviceContext = ctx;
 	}
 	

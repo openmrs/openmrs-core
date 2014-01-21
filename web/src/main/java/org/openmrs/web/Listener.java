@@ -106,6 +106,14 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		return errorAtStartup;
 	}
 	
+	public static void setRuntimePropertiesFound(boolean runtimePropertiesFound) {
+		Listener.runtimePropertiesFound = runtimePropertiesFound;
+	}
+	
+	public static void setErrorAtStartup(Throwable errorAtStartup) {
+		Listener.errorAtStartup = errorAtStartup;
+	}
+	
 	/**
 	 * This method is called when the servlet context is initialized(when the Web Application is
 	 * deployed). You can initialize servlet context related data here.
@@ -134,7 +142,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			Properties props = getRuntimeProperties();
 			if (props != null) {
 				// the user has defined a runtime properties file
-				runtimePropertiesFound = true;
+				setRuntimePropertiesFound(true);
 				// set props to the context so that they can be
 				// used during sessionFactory creation
 				Context.setRuntimeProperties(props);
@@ -164,7 +172,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			
 		}
 		catch (Throwable t) {
-			errorAtStartup = t;
+			setErrorAtStartup(t);
 			log.fatal("Got exception while starting up: ", t);
 		}
 		

@@ -120,6 +120,10 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 		}
 	}
 	
+	public static void setScheduledTasks(Map<Integer, TimerSchedulerTask> scheduledTasks) {
+		TimerSchedulerServiceImpl.scheduledTasks = scheduledTasks;
+	}
+	
 	/**
 	 * Shutdown hook for the scheduler and all of its scheduled tasks.
 	 */
@@ -134,7 +138,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			log.error("Failed to stop all tasks due to API exception", e);
 		}
 		finally {
-			scheduledTasks = null;
+			setScheduledTasks(null);
 		}
 		
 	}
