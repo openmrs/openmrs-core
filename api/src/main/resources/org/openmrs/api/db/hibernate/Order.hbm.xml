@@ -68,8 +68,8 @@
 			<column name="discontinued_reason" />
 		</many-to-one>
 
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="orderer" class="org.openmrs.User">
+		<!-- bi-directional many-to-one association to Provider -->
+		<many-to-one name="orderer" class="org.openmrs.Provider">
 			<column name="orderer" />
 		</many-to-one>
 
