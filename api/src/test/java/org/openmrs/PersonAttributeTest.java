@@ -83,7 +83,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should not throw exception if attribute type is null", method = "compareTo(PersonAttribute)")
-	public void compareTo_shouldReturnNegativeWhenAnyOfArgumentTypeIdIsNull() throws Exception {
+	public void compareTo_shouldNotThrowExceptionIfAttributeTypeIdIsNull() throws Exception {
 		Assert.assertTrue(new PersonAttribute(1).compareTo(new PersonAttribute(1)) == 0);
 	}
 	
