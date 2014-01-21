@@ -195,7 +195,7 @@ public class FormFormController extends SimpleFormController {
 			fieldTypes = Context.getFormService().getAllFieldTypes();
 			encTypes = Context.getEncounterService().getAllEncounterTypes();
 			// Non-retired types first
-			Collections.sort(encTypes, new MetadataComparator(Context.getLocale())); 
+			Collections.sort(encTypes, new MetadataComparator(Context.getLocale()));
 		}
 		
 		map.put("fieldTypes", fieldTypes);
