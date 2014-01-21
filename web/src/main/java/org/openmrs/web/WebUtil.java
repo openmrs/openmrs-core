@@ -234,12 +234,16 @@ public class WebUtil implements GlobalPropertyListener {
 		return OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT.equals(propertyName);
 	}
 	
+	public static void setDefaultDateCache(String defaultDateCache) {
+		WebUtil.defaultDateCache = defaultDateCache;
+	}
+	
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		defaultDateCache = null;
+		setDefaultDateCache(null);
 	}
 	
 	/**
@@ -247,6 +251,6 @@ public class WebUtil implements GlobalPropertyListener {
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		defaultDateCache = null;
+		setDefaultDateCache(null);
 	}
 }
