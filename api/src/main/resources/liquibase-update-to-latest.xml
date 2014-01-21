@@ -7048,5 +7048,18 @@
 			WHERE orderer NOT IN (SELECT person_id FROM provider)
 		</sql>
 	</changeSet>
+	
+	<changeSet id="201401202238-TRUNK-4202" author="k-joseph" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="orders" columnName="orderer" />
+			<not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
+		</preConditions>
+		<comment>Migrating data in orders.orderer column to be provider_ids instead of user_ids</comment>
+		<sql>
+			UPDATE orders AS o INNER JOIN (SELECT o.orderer, p.provider_id FROM orders o INNER JOIN users u
+			ON o.orderer = u.user_id INNER JOIN provider p ON p.person_id = u.person_id) AS b ON o.orderer = b.orderer
+    		SET o.orderer = b.provider_id
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
