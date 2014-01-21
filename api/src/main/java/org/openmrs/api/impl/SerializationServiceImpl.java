@@ -132,13 +132,17 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		return new ArrayList<OpenmrsSerializer>(serializerMap.values());
 	}
 	
+	public static void setSerializerMap(Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap) {
+		SerializationServiceImpl.serializerMap = serializerMap;
+	}
+	
 	/**
 	 * @param serializers the serializers to set
 	 * @should not reset serializers list when called multiple times
 	 */
 	public void setSerializers(List<? extends OpenmrsSerializer> serializers) {
 		if (serializers == null || serializerMap == null) {
-			serializerMap = new LinkedHashMap<Class<? extends OpenmrsSerializer>, OpenmrsSerializer>();
+			setSerializerMap(new LinkedHashMap<Class<? extends OpenmrsSerializer>, OpenmrsSerializer>());
 		}
 		if (serializers != null) {
 			for (OpenmrsSerializer s : serializers) {

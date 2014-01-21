@@ -463,14 +463,14 @@ public class UpdateFilter extends StartupFilter {
 				// this pings the DatabaseUpdater.updatesRequired which also
 				// considers a db lock to be a 'required update'
 				if (model.updateRequired)
-					updatesRequired = true;
+					setUpdatesRequired(true);
 				else if (model.changes == null)
-					updatesRequired = false;
+					setUpdatesRequired(false);
 				else {
 					if (log.isDebugEnabled())
 						log.debug("Setting updates required to " + (model.changes.size() > 0)
 						        + " because of the size of unrun changes");
-					updatesRequired = model.changes.size() > 0;
+					setUpdatesRequired(model.changes.size() > 0);
 				}
 			}
 			catch (Exception e) {

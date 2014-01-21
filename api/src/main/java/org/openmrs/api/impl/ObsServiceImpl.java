@@ -86,7 +86,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Override
 	public void onShutdown() {
-		handlers = null;
+		setHandlers(null);
 	}
 	
 	/**
