@@ -116,14 +116,14 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#retireVisitType(org.openmrs.VisitType, java.lang.String)
 	 */
 	public VisitType retireVisitType(VisitType visitType, String reason) {
-		return saveVisitType(visitType);
+		return Context.getVisitService().saveVisitType(visitType);
 	}
 	
 	/**
 	 * @see org.openmrs.api.VisitService#unretireVisitType(org.openmrs.VisitType)
 	 */
 	public VisitType unretireVisitType(VisitType visitType) {
-		return saveVisitType(visitType);
+		return Context.getVisitService().saveVisitType(visitType);
 	}
 	
 	/**
@@ -244,7 +244,8 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		if (patient == null || patient.getId() == null)
 			return Collections.EMPTY_LIST;
 		
-		return getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null, true, false);
+		return Context.getVisitService().getVisits(null, Collections.singletonList(patient), null, null, null, null, null,
+		    null, null, true, false);
 	}
 	
 	/**
@@ -253,7 +254,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException {
-		return getVisitsByPatient(patient, false, false);
+		return Context.getVisitService().getVisitsByPatient(patient, false, false);
 	}
 	
 	/**

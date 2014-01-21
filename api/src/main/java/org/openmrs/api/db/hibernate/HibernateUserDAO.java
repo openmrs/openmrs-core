@@ -119,7 +119,7 @@ public class HibernateUserDAO implements UserDAO {
 			systemId = "-";
 		
 		if (userId == null)
-			userId = new Integer(-1);
+			userId = Integer.valueOf(-1);
 		
 		String usernameWithCheckDigit = username;
 		try {

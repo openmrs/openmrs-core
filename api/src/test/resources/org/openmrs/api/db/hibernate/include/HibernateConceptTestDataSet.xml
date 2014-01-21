@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept concept_id="3" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" version="" uuid="0cbe2ed3-cd5f-4f46-9459-26127c9265ab"/>
+  <concept concept_id="4" retired="false" datatype_id="2" class_id="10" is_set="false" creator="1" date_created="2008-08-15 15:51:39.0" version="" changed_by="1" date_changed="2008-08-15 15:52:38.0" uuid="89ca642a-dab6-4f20-b712-e12ca4fc6d36"/>
+  <concept concept_id="5" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-15 15:51:57.0" version="" uuid="32d3611a-6699-4d52-823f-b4b788bac3e3"/>
+  <concept concept_id="6" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-15 15:52:17.0" version="" uuid="92afda7c-78c9-47bd-a841-0de0817027d4"/>
+  <concept concept_id="7" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-15 13:52:53.0" version="" uuid="b055abd8-a420-4a11-8b98-02ee170a7b54"/>
+  <concept concept_id="8" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-15 13:53:31.0" version="" uuid="934d8ef1-ea43-4f98-906e-dd03d5faaeb4"/>
+  <concept concept_id="9" retired="false" datatype_id="4" class_id="16" is_set="false" creator="1" date_created="2008-08-15 13:57:57.0" version="" uuid="0a9afe04-088b-44ca-9291-0a8c3b5c96fa"/>
+  <concept concept_id="10" retired="false" datatype_id="4" class_id="16" is_set="false" creator="1" date_created="2008-08-15 13:58:36.0" version="" uuid="0abca361-f6bf-49cc-97de-b2f37f099dde"/>
+  <concept concept_id="14" retired="false" datatype_id="4" class_id="16" is_set="false" creator="1" date_created="2008-08-15 13:58:36.0" version="" uuid="0abca361-f6bf-49cc-97de-b2f37f09912e"/>
+  <concept_name concept_id="3" name="COUGH SYRUP" locale="en" creator="1" date_created="2008-08-15 15:27:51.0" concept_name_id="2456" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="b8159118-c97b-4d5a-a63e-d4aa4be0c4d3"/>
+  <concept_name concept_id="4" name="FAVORITE FOOD, NON-CODED FOOD" locale="en" creator="1" date_created="2008-08-15 15:51:39.0" concept_name_id="2457" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="44369443-9a24-438e-861c-d338c5d75d60"/>  
+  <concept_name concept_id="7" name="YES" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2449" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="ef7ac747-7980-443c-b11f-4617aa587703"/>
+  <concept_name concept_id="8" name="NO" locale="en" creator="1" date_created="2008-08-15 13:53:31.0" concept_name_id="2450" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="b98a6ed4-77e7-4cee-aae2-81957fcd7f48"/>
+  <concept_name concept_id="9" name="HIV PROGRAM" locale="en" creator="1" date_created="2008-08-15 13:57:57.0" concept_name_id="2451" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="dcf41b94-f1af-45fd-8cb9-5ef8c15bab37"/>
+  <concept_name concept_id="10" name="MDR-TB PROGRAM" locale="en" creator="1" date_created="2008-08-15 13:58:36.0" concept_name_id="2452" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="01d9f62c-c96d-46f0-a7ba-75337fd149bf"/>
+  <concept_name concept_id="5" name="SINGLE" locale="en" creator="1" date_created="2008-08-15 15:51:57.0" concept_name_id="2458" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="85b47f49-7f3e-4910-b18b-097f94d66a10"/>
+  <concept_name concept_id="6" name="MARRIED" locale="en" creator="1" date_created="2008-08-15 15:52:17.0" concept_name_id="2459" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="f74e3673-983b-41e3-b872-56f0e6f7696e"/>
+  <concept_name concept_id="8" name="N" locale="en" creator="1" date_created="2008-08-15 13:53:31.0" concept_name_id="2479" concept_name_type="" locale_preferred="0" voided="false" uuid="0ae52990-0c41-4591-8caa-31ed6a3dffa8"/>
+  <concept_name concept_id="7" name="Y" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2481" concept_name_type="" locale_preferred="0" voided="false" uuid="0631be3b-e338-4505-a876-ef3310f65896"/>
+  <concept_name concept_id="7" name="VOIDED" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2482" locale_preferred="0" voided="true" uuid="d84fb534-9f57-11e1-815b-00248140a5eb"/>
+  <concept_name concept_id="14" name="NEW FOOD" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2489" locale_preferred="0" voided="true" uuid="d84fb534-9f57-11e1-815b-00248111a5aa"/>
+  <concept_name concept_id="14" name="TEST_DRUG CONCEPT1" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2434" locale_preferred="0" voided="true" uuid="d84fa534-9f57-11e1-815b-00248140a5eb"/>
+  <concept_name concept_id="14" name="TEST_DRUG CONCEPT2" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2489" locale_preferred="0" voided="true" uuid="d84fb534-9f57-11e1-815b-00248111a5aa"/>
+  <drug drug_id="2" concept_id="3" name="Triomune-30" combination="true" dose_strength="1.0" units="tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="3cfcf118-931c-46f7-8ff6-7b876f0d4202"/>
+  <drug drug_id="3" concept_id="5" name="COUGH Aspirin" combination="false" dose_strength="325.0" units="mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="05ec820a-d297-44e3-be6e-698531d9dd3f"/>
+  <drug drug_id="11" concept_id="4" name="NYQUIL" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="7e2323fa-0fa0-461f-9b59-6765997d849e"/>
+  <drug drug_id="12" concept_id="7" name="NYQUIL HIV" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="8e2323fa-0fa0-461f-9b59-6765997d849e"/> 
+  <drug drug_id="5" concept_id="12" name="Pirition" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="8e2323fa-0fa0-461f-9b59-6765997d367e"/>
+  <drug drug_id="14" concept_id="14" name="TEST_DRUG_NAME" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="8e2323fa-0fa0-461f-9b59-9765997d849e"/>  
+  </dataset>

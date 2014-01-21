@@ -14,6 +14,7 @@
 package org.openmrs.reporting.export;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.Concept;
@@ -55,7 +56,11 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		catch (NumberFormatException e) {
 			this.conceptName = conceptId; // for backwards compatibility to pre 1.0.43
 		}
-		this.extras = extras;
+		if (extras == null) {
+			this.extras = new String[0];
+		} else {
+			this.extras = Arrays.copyOf(extras, extras.length);
+		}
 	}
 	
 	private String toSingleTemplateString(int conceptId) {
@@ -280,7 +285,11 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	}
 	
 	public void setExtras(String[] extras) {
-		this.extras = extras;
+		if (extras == null) {
+			this.extras = new String[0];
+		} else {
+			this.extras = Arrays.copyOf(extras, extras.length);
+		}
 	}
 	
 	public Integer getModifierNum() {

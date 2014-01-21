@@ -102,7 +102,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void purgeOrder(Order order) throws APIException {
-		purgeOrder(order, false);
+		Context.getOrderService().purgeOrder(order, false);
 	}
 	
 	/**
@@ -137,7 +137,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public Order getOrder(Integer orderId) throws APIException {
-		return getOrder(orderId, Order.class);
+		return Context.getOrderService().getOrder(orderId, Order.class);
 	}
 	
 	/**
@@ -178,7 +178,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException {
-		return getOrdersByPatient(patient, false);
+		return Context.getOrderService().getOrdersByPatient(patient, false);
 	}
 	
 	/**
@@ -196,7 +196,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		// TODO: could use this call to get only ACTIVE.  Getting complete is done with asOfDate.
 		// with those two calls you can get rid of all this extra logic
-		List<DrugOrder> drugOrders = getOrders(DrugOrder.class, patients, null, null, null, null, null, null);
+		List<DrugOrder> drugOrders = Context.getOrderService().getOrders(DrugOrder.class, patients, null, null, null, null,
+		    null, null);
 		
 		// loop over the drug orders and add them if they are within the current desired order
 		if (drugOrders != null) {
@@ -228,7 +229,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(DrugOrder.class, patients, null, null, null, null, null, null);
+		return Context.getOrderService().getOrders(DrugOrder.class, patients, null, null, null, null, null, null);
 	}
 	
 	/**
@@ -290,7 +291,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, concepts, null, null, null, null, null);
+		return Context.getOrderService().getOrders(Order.class, patients, concepts, null, null, null, null, null);
 	}
 	
 	/**
@@ -310,7 +311,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(p);
 		
-		return getOrders(Order.class, patients, null, null, null, date, null, Arrays.asList(OrderAction.DISCONTINUE));
+		return Context.getOrderService().getOrders(Order.class, patients, null, null, null, date, null,
+		    Arrays.asList(OrderAction.DISCONTINUE));
 		
 	}
 	
@@ -331,7 +333,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		patients.add(p);
 		
 		// TODO: add "NOT discontinued" action to this call
-		return getOrders(DrugOrder.class, patients, null, null, null, date, null, Arrays.asList(OrderAction.DISCONTINUE));
+		return Context.getOrderService().getOrders(DrugOrder.class, patients, null, null, null, date, null,
+		    Arrays.asList(OrderAction.DISCONTINUE));
 	}
 	
 	/**
@@ -382,7 +385,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order order, String reason) throws APIException {
-		return discontinueOrder(order, reason, null, null);
+		return Context.getOrderService().discontinueOrder(order, reason, null, null);
 	}
 	
 	/**
@@ -538,7 +541,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Encounter> encounters = new ArrayList<Encounter>();
 		encounters.add(encounter);
 		
-		return getOrders(Order.class, null, null, null, encounters, null, null, null);
+		return Context.getOrderService().getOrders(Order.class, null, null, null, encounters, null, null, null);
 	}
 	
 	/**
@@ -552,7 +555,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<User> orderers = new ArrayList<User>();
 		orderers.add(orderer);
 		
-		return getOrders(Order.class, null, null, orderers, null, null, null, null);
+		return Context.getOrderService().getOrders(Order.class, null, null, orderers, null, null, null, null);
 	}
 	
 	/**

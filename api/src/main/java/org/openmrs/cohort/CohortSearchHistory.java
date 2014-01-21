@@ -366,7 +366,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 			Stack<List<Object>> stack = new Stack<List<Object>>();
 			while (st.nextToken() != StreamTokenizer.TT_EOF) {
 				if (st.ttype == StreamTokenizer.TT_NUMBER) {
-					Integer thisInt = new Integer((int) st.nval);
+					Integer thisInt = Integer.valueOf((int) st.nval);
 					if (thisInt < 1 || thisInt > searchHistory.size()) {
 						log.error("number < 1 or > search history size");
 						return null;

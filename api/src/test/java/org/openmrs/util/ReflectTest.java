@@ -44,8 +44,8 @@ public class ReflectTest {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
-		Assert.assertEquals("genericCollectionField", allFields.get(0).getName());
-		Assert.assertTrue(reflect.hasField(allFields.get(0)));
+		Field genericCollectionField = findFieldByName(allFields, "genericCollectionField");
+		Assert.assertTrue(reflect.hasField(genericCollectionField));
 	}
 	
 	/**
@@ -57,8 +57,18 @@ public class ReflectTest {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
-		Assert.assertEquals("normalClassField", allFields.get(3).getName());
-		Assert.assertFalse(reflect.hasField(allFields.get(3)));
+		Field normalClassField = findFieldByName(allFields, "normalClassField");
+		
+		Assert.assertFalse(reflect.hasField(normalClassField));
+	}
+	
+	private Field findFieldByName(List<Field> fields, String name) {
+		for (Field field : fields) {
+			if (name.equals(field.getName())) {
+				return field;
+			}
+		}
+		throw new IllegalArgumentException("Field not found!");
 	}
 	
 	/**
@@ -69,9 +79,10 @@ public class ReflectTest {
 	public void getAllFields_shouldReturnAllFieldsIncludePrivateAndSuperClasses() throws Exception {
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
-		Assert.assertEquals(4, allFields.size());
-		Assert.assertEquals("subClassField", allFields.get(1).getName());
-		Assert.assertEquals("normalClassField", allFields.get(3).getName());
+		findFieldByName(allFields, "subClassField");
+		findFieldByName(allFields, "normalClassField");
+		findFieldByName(allFields, "nonCollectionField");
+		findFieldByName(allFields, "genericCollectionField");
 	}
 	
 	/**
@@ -83,8 +94,8 @@ public class ReflectTest {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
-		Assert.assertEquals("nonCollectionField", allFields.get(2).getName());
-		Assert.assertFalse(reflect.isCollectionField(allFields.get(2)));
+		Field nonCollectionField = findFieldByName(allFields, "nonCollectionField");
+		Assert.assertFalse(reflect.isCollectionField(nonCollectionField));
 	}
 	
 	/**
@@ -134,9 +145,12 @@ public class ReflectTest {
 		
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
-		Assert.assertEquals(3, fields.size());
-		Assert.assertEquals("normalClassField", allFields.get(3).getName());
-		Assert.assertFalse(fields.contains(allFields.get(3)));
+		findFieldByName(fields, "subClassField");
+		findFieldByName(fields, "nonCollectionField");
+		findFieldByName(fields, "genericCollectionField");
+		
+		Field normalClassField = findFieldByName(allFields, "normalClassField");
+		Assert.assertFalse(fields.contains(normalClassField));
 	}
 	
 	/**
@@ -171,8 +185,8 @@ public class ReflectTest {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		
-		Assert.assertEquals("genericCollectionField", allFields.get(0).getName());
-		Assert.assertFalse(reflect.isCollectionField(allFields.get(0)));
+		Field genericCollectionField = findFieldByName(allFields, "genericCollectionField");
+		Assert.assertFalse(reflect.isCollectionField(genericCollectionField));
 	}
 	
 	/**

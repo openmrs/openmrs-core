@@ -480,6 +480,7 @@ public class ConceptFormController extends SimpleFormController {
 				this.lowNormal = cn.getLowNormal();
 				this.hiNormal = cn.getHiNormal();
 				this.precise = cn.getPrecise();
+				this.displayPrecision = cn.getDisplayPrecision();
 				this.units = cn.getUnits();
 			} else if (concept.isComplex()) {
 				ConceptComplex complex = (ConceptComplex) concept;
@@ -615,6 +616,7 @@ public class ConceptFormController extends SimpleFormController {
 				cn.setHiNormal(hiNormal);
 				cn.setLowNormal(lowNormal);
 				cn.setPrecise(precise);
+				cn.setDisplayPrecision(displayPrecision);
 				cn.setUnits(units);
 				
 				concept = cn;

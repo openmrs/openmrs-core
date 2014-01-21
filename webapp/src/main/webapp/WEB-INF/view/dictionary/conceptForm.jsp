@@ -653,12 +653,20 @@
 					<c:when test="${mapping.conceptMapId != null}">
 					<td>
 						<spring:bind path="conceptMapType">
+						<c:set var="groupOpen" value="false" />
 						<select name="${status.expression}">
 							<openmrs:forEachRecord name="conceptMapType">
-							<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> >
-                                <c:out value="${record.name}" />
-							</option>
-						</openmrs:forEachRecord>
+								<c:if test="${record.retired && !groupOpen}">
+									<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
+									<c:set var="groupOpen" value="true" />
+								</c:if>
+								<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> >
+									<c:out value="${record.name}" />
+								</option>
+							</openmrs:forEachRecord>
+							<c:if test="${groupOpen}">
+								</optgroup>
+							</c:if>
 						</select>
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
@@ -674,12 +682,20 @@
 					<c:otherwise>
 					<td>
 						<spring:bind path="conceptMapType">
+						<c:set var="groupOpen" value="false" />
 						<select name="${status.expression}">
 							<openmrs:forEachRecord name="conceptMapType">
-							<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> >
-                                <c:out value="${record.name}" />
-							</option>
-						</openmrs:forEachRecord>
+								<c:if test="${record.retired && !groupOpen}">
+									<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
+									<c:set var="groupOpen" value="true" />
+								</c:if>
+								<option value="${record.conceptMapTypeId}" <c:if test="${record.conceptMapTypeId == status.value}">selected="selected"</c:if> >
+									<c:out value="${record.name}" />
+								</option>
+							</openmrs:forEachRecord>
+							<c:if test="${groupOpen}">
+								</optgroup>
+							</c:if>
 						</select>
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
@@ -719,12 +735,20 @@
 				</c:forEach>
 				<tr id="newConceptMapping" style="display: none">
 					<td valign="top">
+						<c:set var="groupOpen" value="false" />
 						<select name="type.name">
-							<openmrs:forEachRecord  name="conceptMapType">
-								<option value="${record.conceptMapTypeId}">
-                                    <c:out value="${record.name}" />
+							<openmrs:forEachRecord name="conceptMapType">
+								<c:if test="${record.retired && !groupOpen}">
+									<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
+									<c:set var="groupOpen" value="true" />
+								</c:if>
+								<option value="${record.conceptMapTypeId}" >
+									<c:out value="${record.name}" />
 								</option>
 							</openmrs:forEachRecord>
+							<c:if test="${groupOpen}">
+								</optgroup>
+							</c:if>
 						</select>
 					</td>
 					<td valign="top">
@@ -732,7 +756,7 @@
 							<option value=""><openmrs:message code="ConceptReferenceTerm.searchAllSources" /></option>
 							<openmrs:forEachRecord  name="conceptSource">
 							<option value="${record.conceptSourceId}">
-                                <c:out value="${record.name}" />
+								<c:out value="${record.name}" />
 							</option>
 							</openmrs:forEachRecord>
 						</select>
@@ -867,7 +891,7 @@
 					<option value=""></option>
 					<openmrs:forEachRecord name="conceptSource">
 					<option value="${record.conceptSourceId}">
-                        <c:out value="${record.name}" />
+						<c:out value="${record.name}" />
 					</option>
 					</openmrs:forEachRecord>
 				</select>

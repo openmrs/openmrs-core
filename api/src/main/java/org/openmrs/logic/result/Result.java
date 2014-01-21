@@ -593,7 +593,7 @@ public class Result extends ArrayList<Result> {
 				case CODED:
 					return 0D;
 				case DATETIME:
-					return (valueDatetime == null ? 0 : new Long(valueDatetime.getTime()).doubleValue());
+					return (valueDatetime == null ? 0 : Long.valueOf(valueDatetime.getTime()).doubleValue());
 				case NUMERIC:
 					return (valueNumeric == null ? 0D : valueNumeric);
 				case TEXT:
@@ -740,7 +740,7 @@ public class Result extends ArrayList<Result> {
 	public Result unique() {
 		if (isSingleResult())
 			return this;
-		Integer something = new Integer(1);
+		Integer something = Integer.valueOf(1);
 		HashMap<Result, Integer> map = new HashMap<Result, Integer>();
 		for (Result r : this)
 			map.put(r, something);

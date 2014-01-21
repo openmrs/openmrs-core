@@ -342,7 +342,7 @@ public class DWRFormService {
 				ConceptListItem c2 = (ConceptListItem) o2;
 				int length1 = c1.getName().length();
 				int length2 = c2.getName().length();
-				return new Integer(length1).compareTo(new Integer(length2));
+				return Integer.valueOf(length1).compareTo(Integer.valueOf(length2));
 			} else
 				return 0;
 		}

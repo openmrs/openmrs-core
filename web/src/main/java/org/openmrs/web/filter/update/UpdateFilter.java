@@ -351,11 +351,11 @@ public class UpdateFilter extends StartupFilter {
 				}
 			}
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			log
 			        .error(
 			            "Error while trying to authenticate as super user. Ignore this if you are upgrading from OpenMRS 1.5 to 1.6",
-			            t);
+			            e);
 			
 			// we may not have upgraded User to have retired instead of voided yet, so if the query above fails, we try
 			// again the old way
@@ -378,7 +378,7 @@ public class UpdateFilter extends StartupFilter {
 				}
 			}
 			catch (Throwable t2) {
-				log.error("Error while trying to authenticate as super user (voided version)", t);
+				log.error("Error while trying to authenticate as super user (voided version)", e);
 			}
 		}
 		finally {
@@ -709,9 +709,9 @@ public class UpdateFilter extends StartupFilter {
 						try {
 							startOpenmrs(filterConfig.getServletContext());
 						}
-						catch (Throwable t) {
-							log.error("Unable to complete the startup.", t);
-							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, t.getMessage());
+						catch (Exception e) {
+							log.error("Unable to complete the startup.", e);
+							reportError(ErrorMessageConstants.UPDATE_ERROR_COMPLETE_STARTUP, e.getMessage());
 							return;
 						}
 						

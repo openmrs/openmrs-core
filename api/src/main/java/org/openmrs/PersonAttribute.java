@@ -262,14 +262,14 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 				return o;
 			}
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			
 			// No need to warn if the input was blank
 			if (StringUtils.isBlank(getValue())) {
 				return null;
 			}
 			
-			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
+			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), e);
 		}
 		
 		log.debug("Returning value: '" + getValue() + "'");

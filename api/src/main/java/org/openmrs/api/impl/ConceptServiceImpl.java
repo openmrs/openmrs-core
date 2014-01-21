@@ -178,7 +178,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		for (ConceptMap map : concept.getConceptMappings()) {
 			if (map.getConceptMapType() == null) {
 				if (defaultConceptMapType == null) {
-					defaultConceptMapType = getDefaultConceptMapType();
+					defaultConceptMapType = Context.getConceptService().getDefaultConceptMapType();
 				}
 				map.setConceptMapType(defaultConceptMapType);
 			}
@@ -414,7 +414,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Transactional(readOnly = true)
 	public List<Concept> getAllConcepts() throws APIException {
-		return getAllConcepts(null, true, true);
+		return Context.getConceptService().getAllConcepts(null, true, true);
 	}
 	
 	/**
@@ -435,7 +435,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<Concept> getConcepts(String sortBy, String dir) throws APIException {
 		boolean asc = true ? dir.equals("asc") : !dir.equals("asc");
-		return getAllConcepts(sortBy, asc, true);
+		return Context.getConceptService().getAllConcepts(sortBy, asc, true);
 	}
 	
 	/**
@@ -480,7 +480,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Concept getConceptByIdOrName(String idOrName) {
-		return getConcept(idOrName);
+		return Context.getConceptService().getConcept(idOrName);
 	}
 	
 	/**
@@ -498,9 +498,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		if (conceptId != null) {
-			c = getConcept(conceptId);
+			c = Context.getConceptService().getConcept(conceptId);
 		} else {
-			c = getConceptByName(conceptIdOrName);
+			c = Context.getConceptService().getConceptByName(conceptIdOrName);
 		}
 		return c;
 	}
@@ -539,7 +539,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<Locale> locales = new Vector<Locale>();
 		locales.add(locale);
 		
-		return getConceptWords(phrase, locales, false, null, null, null, null, null, null, null);
+		return Context.getConceptService().getConceptWords(phrase, locales, false, null, null, null, null, null, null, null);
 	}
 	
 	/**
@@ -552,8 +552,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		locales.add(locale);
 		
 		// delegate to the non-deprecated method
-		List<ConceptWord> conceptWords = getConceptWords(phrase, locales, includeRetired, null, null, null, null, null,
-		    start, size);
+		List<ConceptWord> conceptWords = Context.getConceptService().getConceptWords(phrase, locales, includeRetired, null,
+		    null, null, null, null, start, size);
 		
 		List<ConceptWord> subList = conceptWords.subList(start, start + size);
 		
@@ -570,7 +570,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<Locale> locales = new Vector<Locale>();
 		locales.add(locale);
 		
-		return getConceptWords(phrase, locales, includeRetired, null, null, null, null, null, null, null);
+		return Context.getConceptService().getConceptWords(phrase, locales, includeRetired, null, null, null, null, null,
+		    null, null);
 	}
 	
 	/**
@@ -585,8 +586,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<Locale> locales = new Vector<Locale>();
 		locales.add(locale);
 		
-		return getConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
-		    excludeDatatypes, null, null, null);
+		return Context.getConceptService().getConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses,
+		    requireDatatypes, excludeDatatypes, null, null, null);
 	}
 	
 	/**
@@ -598,8 +599,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes) {
 		
-		return getConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
-		    excludeDatatypes, null, null, null);
+		return Context.getConceptService().getConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses,
+		    requireDatatypes, excludeDatatypes, null, null, null);
 	}
 	
 	/**
@@ -635,7 +636,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		if (drugId != null) {
-			return getDrug(drugId);
+			return Context.getConceptService().getDrug(drugId);
 		} else {
 			List<Drug> drugs = new ArrayList<Drug>();
 			drugs = dao.getDrugs(drugNameOrId, null, false);
@@ -654,7 +655,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Drug getDrugByNameOrId(String drugNameOrId) {
-		return getDrug(drugNameOrId);
+		return Context.getConceptService().getDrug(drugNameOrId);
 	}
 	
 	/**
@@ -663,7 +664,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> getDrugs() {
-		return getAllDrugs();
+		return Context.getConceptService().getAllDrugs();
 	}
 	
 	/**
@@ -671,7 +672,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Transactional(readOnly = true)
 	public List<Drug> getAllDrugs() {
-		return getAllDrugs(true);
+		return Context.getConceptService().getAllDrugs(true);
 	}
 	
 	/**
@@ -689,7 +690,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> getDrugs(Concept concept) {
-		return getDrugsByConcept(concept);
+		return Context.getConceptService().getDrugsByConcept(concept);
 	}
 	
 	/**
@@ -710,7 +711,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (includeRetired == true)
 			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
 		
-		return getDrugsByConcept(concept);
+		return Context.getConceptService().getDrugsByConcept(concept);
 	}
 	
 	/**
@@ -720,7 +721,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> getDrugs(boolean includeVoided) {
-		return getAllDrugs(includeVoided);
+		return Context.getConceptService().getAllDrugs(includeVoided);
 	}
 	
 	/**
@@ -733,7 +734,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (includeRetired == true)
 			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
 		
-		return getDrugs(phrase);
+		return Context.getConceptService().getDrugs(phrase);
 	}
 	
 	/**
@@ -745,7 +746,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		// trying to treat search phrase as drug id
 		try {
 			Integer drugId = Integer.parseInt(phrase);
-			Drug targetDrug = getDrug(drugId);
+			Drug targetDrug = Context.getConceptService().getDrug(drugId);
 			// if drug was found add it to result
 			if (targetDrug != null) {
 				drugs.add(targetDrug);
@@ -789,7 +790,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<ConceptClass> getConceptClasses() {
-		return getAllConceptClasses(true);
+		return Context.getConceptService().getAllConceptClasses(true);
 	}
 	
 	/**
@@ -826,7 +827,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Transactional(readOnly = true)
 	public List<ConceptClass> getAllConceptClasses() throws APIException {
-		return getAllConceptClasses(true);
+		return Context.getConceptService().getAllConceptClasses(true);
 	}
 	
 	/**
@@ -877,7 +878,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<ConceptDatatype> getConceptDatatypes() {
-		return getAllConceptDatatypes();
+		return Context.getConceptService().getAllConceptDatatypes();
 	}
 	
 	/**
@@ -885,7 +886,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Transactional(readOnly = true)
 	public List<ConceptDatatype> getAllConceptDatatypes() {
-		return getAllConceptDatatypes(true);
+		return Context.getConceptService().getAllConceptDatatypes(true);
 	}
 	
 	/**
@@ -927,7 +928,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<ConceptSet> getConceptSets(Concept c) {
-		return getConceptSetsByConcept(c);
+		return Context.getConceptService().getConceptSetsByConcept(c);
 	}
 	
 	/**
@@ -945,7 +946,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Concept> getConceptsInSet(Concept c) {
-		return getConceptsByConceptSet(c);
+		return Context.getConceptService().getConceptsByConceptSet(c);
 	}
 	
 	/**
@@ -985,7 +986,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<ConceptProposal> getConceptProposals(boolean includeCompleted) {
-		return getAllConceptProposals(includeCompleted);
+		return Context.getConceptService().getAllConceptProposals(includeCompleted);
 	}
 	
 	/**
@@ -1011,7 +1012,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Concept> findProposedConcepts(String text) {
-		return getProposedConcepts(text);
+		return Context.getConceptService().getProposedConcepts(text);
 	}
 	
 	/**
@@ -1028,7 +1029,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public void proposeConcept(ConceptProposal conceptProposal) {
-		saveConceptProposal(conceptProposal);
+		Context.getConceptService().saveConceptProposal(conceptProposal);
 	}
 	
 	/**
@@ -1053,7 +1054,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		
 		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
 			cp.rejectConceptProposal();
-			saveConceptProposal(cp);
+			Context.getConceptService().saveConceptProposal(cp);
 			return null;
 		}
 		
@@ -1111,7 +1112,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *      org.openmrs.Concept)
 	 */
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
-		return mapConceptProposalToConcept(cp, mappedConcept, null);
+		return Context.getConceptService().mapConceptProposalToConcept(cp, mappedConcept, null);
 	}
 	
 	/**
@@ -1121,7 +1122,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	public void rejectConceptProposal(ConceptProposal cp) {
 		cp.rejectConceptProposal();
-		saveConceptProposal(cp);
+		Context.getConceptService().saveConceptProposal(cp);
 	}
 	
 	/**
@@ -1131,7 +1132,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<ConceptProposal> findMatchingConceptProposals(String text) {
-		return getConceptProposals(text);
+		return Context.getConceptService().getConceptProposals(text);
 	}
 	
 	/**
@@ -1141,7 +1142,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired) {
 		
-		return getConceptAnswers(phrase, locale, concept);
+		return Context.getConceptService().getConceptAnswers(phrase, locale, concept);
 	}
 	
 	/**
@@ -1154,7 +1155,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<Locale> locales = new Vector<Locale>();
 		locales.add(locale);
 		
-		List<ConceptWord> conceptWords = getConceptWords(phrase, locales, false, null, null, null, null, concept, null, null);
+		List<ConceptWord> conceptWords = Context.getConceptService().getConceptWords(phrase, locales, false, null, null,
+		    null, null, concept, null, null);
 		
 		return weightWords(phrase, locales, conceptWords);
 	}
@@ -1166,7 +1168,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Concept> getQuestionsForAnswer(Concept concept) {
-		return getConceptsByAnswer(concept);
+		return Context.getConceptService().getConceptsByAnswer(concept);
 	}
 	
 	/**
@@ -1270,7 +1272,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public void updateConceptWords() throws APIException {
-		updateConceptIndexes();
+		Context.getConceptService().updateConceptIndexes();
 	}
 	
 	/**
@@ -1278,7 +1280,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public void updateConceptWord(Concept concept) throws APIException {
-		updateConceptIndex(concept);
+		Context.getConceptService().updateConceptIndex(concept);
 	}
 	
 	/**
@@ -1286,7 +1288,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
-		updateConceptIndexes(conceptIdStart, conceptIdEnd);
+		Context.getConceptService().updateConceptIndexes(conceptIdStart, conceptIdEnd);
 	}
 	
 	/**
@@ -1434,7 +1436,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<ConceptSource> getAllConceptSources() {
 		// backwards compatible
-		return getAllConceptSources(true);
+		return Context.getConceptService().getAllConceptSources(true);
 	}
 	
 	/**
@@ -1601,7 +1603,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Transactional(readOnly = true)
 	public Concept getConceptByMapping(String code, String sourceName) throws APIException {
-		return getConceptByMapping(code, sourceName, true);
+		return Context.getConceptService().getConceptByMapping(code, sourceName, true);
 	}
 	
 	/**
@@ -1610,7 +1612,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Transactional(readOnly = true)
 	public Concept getConceptByMapping(String code, String sourceName, Boolean includeRetired) throws APIException {
-		List<Concept> concepts = getConceptsByMapping(code, sourceName, includeRetired);
+		List<Concept> concepts = Context.getConceptService().getConceptsByMapping(code, sourceName, includeRetired);
 		
 		if (concepts.size() == 0) {
 			return null;
@@ -1632,7 +1634,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Transactional(readOnly = true)
 	public List<Concept> getConceptsByMapping(String code, String sourceName) throws APIException {
-		return getConceptsByMapping(code, sourceName, true);
+		return Context.getConceptService().getConceptsByMapping(code, sourceName, true);
 	}
 	
 	/**
@@ -1692,7 +1694,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Transactional(readOnly = true)
 	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException {
-		return getConceptMappingsToSource(conceptSource);
+		return Context.getConceptService().getConceptMappingsToSource(conceptSource);
 	}
 	
 	/**
@@ -2019,7 +2021,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (locale != null)
 			locales.add(locale);
 		
-		return getConcepts(phrase, locales, includeRetired, null, null, null, null, null, null, null);
+		return Context.getConceptService().getConcepts(phrase, locales, includeRetired, null, null, null, null, null, null,
+		    null);
 	}
 	
 	/**
@@ -2049,7 +2052,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<ConceptMapType> getActiveConceptMapTypes() throws APIException {
-		return getConceptMapTypes(true, false);
+		return Context.getConceptService().getConceptMapTypes(true, false);
 	}
 	
 	/**
@@ -2132,7 +2135,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	@Transactional(readOnly = true)
 	public List<ConceptReferenceTerm> getAllConceptReferenceTerms() throws APIException {
-		return getConceptReferenceTerms(true);
+		return Context.getConceptService().getConceptReferenceTerms(true);
 	}
 	
 	/**

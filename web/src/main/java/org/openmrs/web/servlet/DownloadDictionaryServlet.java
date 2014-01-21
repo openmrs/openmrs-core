@@ -143,8 +143,8 @@ public class DownloadDictionaryServlet extends HttpServlet {
 				
 			}
 		}
-		catch (Throwable t) {
-			log.error("Error while downloading concepts.", t);
+		catch (Exception e) {
+			log.error("Error while downloading concepts.", e);
 		}
 	}
 	

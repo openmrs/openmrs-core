@@ -96,8 +96,8 @@ public class GZIPFilter extends OncePerRequestFilter {
 			cachedGZipEnabledFlag = isEnabled;
 			return cachedGZipEnabledFlag;
 		}
-		catch (Throwable t) {
-			log.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, t);
+		catch (Exception e) {
+			log.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, e);
 			// not caching the enabled flag here in case it becomes available 
 			// before the next request
 			
