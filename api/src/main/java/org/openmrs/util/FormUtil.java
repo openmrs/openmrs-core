@@ -92,27 +92,28 @@ public class FormUtil {
 		
 		// ensure that invalid characters and consecutive underscores are
 		// removed
-		String token = "";
+		StringBuilder token = new StringBuilder("");
 		boolean underscoreFlag = false;
 		for (int i = 0; i < s.length(); i++) {
 			if (nameChars.indexOf(s.charAt(i)) != -1) {
 				if (s.charAt(i) != '_' || !underscoreFlag) {
-					token += s.charAt(i);
+					token.append(s.charAt(i));
 					underscoreFlag = (s.charAt(i) == '_');
 				}
 			}
 		}
 		
 		// remove extraneous underscores before returning token
-		token = token.replaceAll("_+", "_");
-		token = token.replaceAll("_+$", "");
+		String tokenStr = token.toString();
+		tokenStr = tokenStr.replaceAll("_+", "_");
+		tokenStr = tokenStr.replaceAll("_+$", "");
 		
 		// make sure token starts with valid letter
-		if (letters.indexOf(token.charAt(0)) == -1 || token.startsWith("xml"))
-			token = "_" + token;
+		if (letters.indexOf(tokenStr.charAt(0)) == -1 || tokenStr.startsWith("xml"))
+			tokenStr = "_" + tokenStr;
 		
 		// return token
-		return token;
+		return tokenStr;
 	}
 	
 	/**

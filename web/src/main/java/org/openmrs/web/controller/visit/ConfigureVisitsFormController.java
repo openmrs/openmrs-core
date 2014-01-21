@@ -139,22 +139,22 @@ public class ConfigureVisitsFormController {
 			        .getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER));
 		}
 		
-		String visitTypeNames = "";
+		StringBuilder visitTypeNames = new StringBuilder();
 		boolean isFirst = true;
 		for (VisitType vt : form.getVisitTypesToClose()) {
 			if (isFirst) {
-				visitTypeNames += vt.getName();
+				visitTypeNames.append(vt.getName());
 				isFirst = false;
 				continue;
 			}
-			visitTypeNames += "," + vt.getName();
+			visitTypeNames.append(",").append(vt.getName());
 		}
 		//save the GP for visit types to close
 		GlobalProperty gpVisitTypesToClose = administrationService
 		        .getGlobalPropertyObject(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
 		if (gpVisitTypesToClose == null)
 			gpVisitTypesToClose = new GlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
-		gpVisitTypesToClose.setPropertyValue(visitTypeNames);
+		gpVisitTypesToClose.setPropertyValue(visitTypeNames.toString());
 		administrationService.saveGlobalProperty(gpVisitTypesToClose);
 		
 		TaskDefinition closeVisitsTask = Context.getSchedulerService().getTaskByName(

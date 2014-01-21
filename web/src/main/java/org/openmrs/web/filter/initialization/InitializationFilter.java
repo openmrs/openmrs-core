@@ -1367,9 +1367,11 @@ public class InitializationFilter extends StartupFilter {
 							// intentionally left out these characters: ufsb$() to prevent certain words forming randomly
 							String chars = "acdeghijklmnopqrtvwxyzACDEGHIJKLMNOPQRTVWXYZ0123456789.|~@#^&";
 							Random r = new Random();
+							StringBuilder randomStr = new StringBuilder("");
 							for (int x = 0; x < 12; x++) {
-								connectionPassword += chars.charAt(r.nextInt(chars.length()));
+								randomStr.append(chars.charAt(r.nextInt(chars.length())));
 							}
+							connectionPassword += randomStr;
 							
 							// connect via jdbc with root user and create an openmrs user
 							String host = "'%'";

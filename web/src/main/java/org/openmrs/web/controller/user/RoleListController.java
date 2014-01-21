@@ -72,7 +72,7 @@ public class RoleListController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String success = "";
+			StringBuilder success = new StringBuilder();
 			String error = "";
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -88,8 +88,8 @@ public class RoleListController extends SimpleFormController {
 					try {
 						us.purgeRole(us.getRole(p));
 						if (!success.equals(""))
-							success += "<br/>";
-						success += p + " " + deleted;
+							success.append("<br/>");
+						success.append(p).append(" ").append(deleted);
 					}
 					catch (DataIntegrityViolationException e) {
 						error = handleRoleIntegrityException(e, error, notDeleted);
@@ -103,7 +103,7 @@ public class RoleListController extends SimpleFormController {
 			
 			view = getSuccessView();
 			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}

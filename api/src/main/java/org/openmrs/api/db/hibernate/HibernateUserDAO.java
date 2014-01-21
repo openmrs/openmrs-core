@@ -550,31 +550,31 @@ public class HibernateUserDAO implements UserDAO {
 			criteria.add("user.retired = false");
 		
 		// build the hql query
-		String hql = hqlSelectStart;
+		StringBuilder hql = new StringBuilder(hqlSelectStart);
 		boolean searchOnRoles = false;
 		
 		if (CollectionUtils.isNotEmpty(roles)) {
-			hql += "inner join user.roles as role ";
+			hql.append("inner join user.roles as role ");
 			searchOnRoles = true;
 		}
 		
 		if (criteria.size() > 0 || searchOnRoles)
-			hql += "where ";
+			hql.append("where ");
 		for (Iterator<String> i = criteria.iterator(); i.hasNext();) {
-			hql += i.next() + " ";
+			hql.append(i.next()).append(" ");
 			if (i.hasNext())
-				hql += "and ";
+				hql.append("and ");
 		}
 		
 		//Match against the specified roles
 		if (searchOnRoles) {
 			if (criteria.size() > 0) {
-				hql += " and ";
+				hql.append(" and ");
 			}
-			hql += " role in (:roleList)";
+			hql.append(" role in (:roleList)");
 		}
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		Query query = sessionFactory.getCurrentSession().createQuery(hql.toString());
 		
 		for (Map.Entry<String, String> e : namesMap.entrySet())
 			query.setString(e.getKey(), e.getValue());

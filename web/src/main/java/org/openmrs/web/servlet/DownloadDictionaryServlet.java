@@ -94,29 +94,29 @@ public class DownloadDictionaryServlet extends HttpServlet {
 						description = "";
 					line = line + '"' + description.replace("\"", "\"\"") + "\",";
 					
-					String tmp = "";
+					StringBuilder tmp = new StringBuilder("");
 					for (ConceptName syn : c.getNames()) {
-						tmp += syn + "\n";
+						tmp.append(syn).append("\n");
 					}
-					line += '"' + tmp.trim() + "\",";
+					line += '"' + tmp.toString().trim() + "\",";
 					
-					tmp = "";
+					tmp = new StringBuilder("");
 					for (ConceptAnswer answer : c.getAnswers(false)) {
 						if (answer.getAnswerConcept() != null)
-							tmp += answer.getAnswerConcept().getName() + "\n";
+							tmp.append(answer.getAnswerConcept().getName()).append("\n");
 						else if (answer.getAnswerDrug() != null)
-							tmp += answer.getAnswerDrug().getFullName(Context.getLocale()) + "\n";
+							tmp.append(answer.getAnswerDrug().getFullName(Context.getLocale())).append("\n");
 					}
-					line += '"' + tmp.trim() + "\",";
+					line += '"' + tmp.toString().trim() + "\",";
 					
-					tmp = "";
+					tmp = new StringBuilder("");
 					for (ConceptSet set : c.getConceptSets()) {
 						if (set.getConcept() != null) {
 							name = set.getConcept().getName().toString();
-							tmp += name.replace("\"", "\"\"") + "\n";
+							tmp.append(name.replace("\"", "\"\"")).append("\n");
 						}
 					}
-					line += '"' + tmp.trim() + "\",";
+					line += '"' + tmp.toString().trim() + "\",";
 					
 					line += '"';
 					if (c.getConceptClass() != null)
