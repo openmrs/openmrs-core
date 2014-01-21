@@ -2040,12 +2040,12 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
 
 	/**
-	 * gets all matching drugs
+	 * Fetches all drugs with reference mappings to the specified concept source that match the specified code and concept map types
 	 * @param code  the code
 	 * @param conceptSource
 	 * @param withAnyOfTheseTypes
 	 * @param includeRetired
-	 * @since 1.10.x
+	 * @since 1.10
 	 * @return the list of {@link Drug}
 	 * @throws APIException
 	 */
@@ -2054,14 +2054,14 @@ public interface ConceptService extends OpenmrsService {
 	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException;
 
 	/**
-	 * gets the "best" matching drug, i.e. matching the earliest ConceptMapType passed in
+	 * Gets the "best" matching drug, i.e. matching the earliest ConceptMapType passed in
 	 * e.g. getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan))
 	 * If there are multiple matches for the highest-priority ConceptMapType, throw an exception
 	 * @param code
 	 * @param conceptSource
 	 * @param withAnyOfTheseTypesOrOrderOfPreference
 	 * @param includeRetired
-	 * @since 1.10.x
+	 * @since 1.10
 	 * @return the {@link Drug}
 	 * @throws APIException
 	 */
