@@ -2050,12 +2050,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 		// join to concept source and match to the h17Code or concept source
 		searchCriteria.createAlias("term.conceptSource", "source");
 		searchCriteria.add(Restrictions.or(Restrictions.eq("source.name", conceptSource.getName()), Restrictions.eq("source.hl7Code", conceptSource.getHl7Code())));
-		//get only the ones with these types
-		searchCriteria.add(Restrictions.eq("conceptMapType", withAnyOfTheseTypes));
-
+		//get only the ones with these types by looping through the collection
+		for(ConceptMapType conceptMapType : withAnyOfTheseTypes) {
+			//find any of the values with non null values on the conceptMapType and if you get any stop
+			if(conceptMapType != null) {
+				searchCriteria.add(Restrictions.eq("conceptMapType", conceptMapType));
+				break;
+			}
+		}
 		searchCriteria.createAlias("drug", "drug");
 
-		if (includeRetired == false) {
+		if (!includeRetired) {
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		}
 		return (List<Drug>) searchCriteria.list();
@@ -2077,7 +2082,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 		searchCriteria.createAlias("term.conceptSource", "source");
 		searchCriteria.add(Restrictions.or(Restrictions.eq("source.name", conceptSource.getName()), Restrictions.eq("source.hl7Code", conceptSource.getHl7Code())));
 		//get only the ones with these types
-		searchCriteria.add(Restrictions.eq("conceptMapType", withAnyOfTheseTypesOrOrderOfPreference));
+		for(ConceptMapType conceptMapType : withAnyOfTheseTypesOrOrderOfPreference) {
+			if(conceptMapType != null) {
+				searchCriteria.add(Restrictions.eq("conceptMapType", conceptMapType));
+			}
+		}
 
 		searchCriteria.createAlias("drug", "drug");
 
