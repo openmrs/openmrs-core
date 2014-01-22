@@ -638,8 +638,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (drugId != null) {
 			return Context.getConceptService().getDrug(drugId);
 		} else {
-			List<Drug> drugs = new ArrayList<Drug>();
-			drugs = dao.getDrugs(drugNameOrId, null, false);
+			List<Drug> drugs = dao.getDrugs(drugNameOrId, null, false);
 			if (drugs.size() > 1)
 				log.warn("more than one drug name returned with name:" + drugNameOrId);
 			if (drugs.size() == 0)

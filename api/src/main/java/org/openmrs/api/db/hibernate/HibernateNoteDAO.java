@@ -51,11 +51,7 @@ public class HibernateNoteDAO implements NoteDAO {
 	@SuppressWarnings("unchecked")
 	public List<Note> getNotes() {
 		log.info("Getting all notes from the database");
-		List<Note> notes = new ArrayList<Note>();
-		
-		notes = sessionFactory.getCurrentSession().createQuery("from Note").list();
-		
-		return notes;
+		return sessionFactory.getCurrentSession().createQuery("from Note").list();
 	}
 	
 	/**

@@ -84,14 +84,14 @@ public class DWRFormService {
 	}
 	
 	public Field getField(Integer fieldId) {
-		Field f = new Field();
+		Field f;
 		FormService fs = Context.getFormService();
 		f = fs.getField(fieldId);
 		return f;
 	}
 	
 	public FormFieldListItem getFormField(Integer formFieldId) {
-		FormField f = new FormField();
+		FormField f;
 		FormService fs = Context.getFormService();
 		f = fs.getFormField(formFieldId);
 		return new FormFieldListItem(f, Context.getLocale());
