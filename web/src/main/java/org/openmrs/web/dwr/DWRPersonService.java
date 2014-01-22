@@ -58,7 +58,7 @@ public class DWRPersonService {
 	 * @return
 	 */
 	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender) {
-		Vector<Object> personList = new Vector<Object>();
+		Vector<Object> personList;
 		
 		Integer userId = Context.getAuthenticatedUser().getUserId();
 		log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);

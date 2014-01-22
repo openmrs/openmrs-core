@@ -236,9 +236,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws DAOException {
-		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
-		wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,
-		    reportObjectId);
+		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(
+		    ReportObjectWrapper.class, reportObjectId);
 		
 		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}

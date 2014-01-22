@@ -529,9 +529,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getRelationshipType(java.lang.Integer)
 	 */
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
-		RelationshipType relationshipType = new RelationshipType();
-		relationshipType = (RelationshipType) sessionFactory.getCurrentSession().get(RelationshipType.class,
-		    relationshipTypeId);
+		RelationshipType relationshipType = (RelationshipType) sessionFactory.getCurrentSession().get(
+		    RelationshipType.class, relationshipTypeId);
 		
 		return relationshipType;
 	}

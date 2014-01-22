@@ -444,8 +444,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = user.getAllRoles();
-		User authUser = Context.getAuthenticatedUser();
-		
 		List<String> requiredPrivs = new Vector<String>();
 		
 		for (Role r : roles) {

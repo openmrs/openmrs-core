@@ -1204,7 +1204,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			URI uri = writeHL7InArchiveToFileSystem(archive);
 			archive.setHL7Data(uri.toString());
 			archive.setMessageState(HL7Constants.HL7_STATUS_MIGRATED);
-			archive = saveHL7InArchive(archive);
+			saveHL7InArchive(archive);
 		}
 		catch (APIException e) {
 			throw new APIException("could not migrate HL7 archive", e);

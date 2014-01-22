@@ -71,8 +71,7 @@ public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 		hit.setPageContext(this.fieldGenTag.getPageContext());
 		hit.setFile(fileToInclude);
 		try {
-			@SuppressWarnings("unused")
-			int i = hit.doStartTag();
+			hit.doStartTag();
 		}
 		catch (JspException e) {
 			log.error("Unable to execute doStartTag() method of HtmlIncludeTag from FieldGenHandler");

@@ -102,7 +102,6 @@ public class QuickReportServlet extends HttpServlet {
 	        throws ServletException {
 		ObsService os = Context.getObsService();
 		EncounterService es = Context.getEncounterService();
-		LocationService ls = Context.getLocationService();
 		ConceptService cs = Context.getConceptService();
 		
 		DateFormat dateFormat = Context.getDateFormat();
@@ -111,8 +110,8 @@ public class QuickReportServlet extends HttpServlet {
 		Concept c = cs.getConcept(new Integer("5096")); // RETURN VISIT DATE
 		Calendar cal = Calendar.getInstance();
 		
-		Date start = new Date();
-		Date end = new Date();
+		Date start;
+		Date end;
 		
 		String startDate = request.getParameter("startDate");
 		String endDate = request.getParameter("endDate");
@@ -184,8 +183,8 @@ public class QuickReportServlet extends HttpServlet {
 		
 		Calendar cal = Calendar.getInstance();
 		
-		Date start = new Date();
-		Date end = new Date();
+		Date start;
+		Date end;
 		
 		String startDate = request.getParameter("startDate");
 		String endDate = request.getParameter("endDate");
@@ -246,8 +245,8 @@ public class QuickReportServlet extends HttpServlet {
 		
 		Calendar cal = Calendar.getInstance();
 		
-		Date start = new Date();
-		Date end = new Date();
+		Date start;
+		Date end;
 		
 		String startDate = request.getParameter("startDate");
 		String endDate = request.getParameter("endDate");
