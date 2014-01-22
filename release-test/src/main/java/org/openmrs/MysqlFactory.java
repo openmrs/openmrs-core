@@ -52,21 +52,16 @@ public class MysqlFactory {
         try {
             String jdbcUrl = prepareJdbcConnectionUrl(port, databaseName);
             connection = DriverManager.getConnection(jdbcUrl, userName, password);
-            if (connection == null) {
-                return;
-            } else {
-                String sql = "DROP DATABASE IF EXISTS " + databaseName+"";
-                int status = new QueryUtil(connection).executeUpdate(sql);
+            String sql = "DROP DATABASE IF EXISTS " + databaseName+"";
+            int status = new QueryUtil(connection).executeUpdate(sql);
 
-                System.out.println("------------------------");
-                System.out.println(sql);
-                System.out.println("------------------------");
-                System.out.println("status of drop database "+status);
-                System.out.println("------------------------");
-                System.out.flush();
-                Thread.sleep(100); // wait for System.out to finish flush
-
-            }
+            System.out.println("------------------------");
+            System.out.println(sql);
+            System.out.println("------------------------");
+            System.out.println("status of drop database "+status);
+            System.out.println("------------------------");
+            System.out.flush();
+            Thread.sleep(100); // wait for System.out to finish flush
         } finally {
             try {
                 if (connection != null) {

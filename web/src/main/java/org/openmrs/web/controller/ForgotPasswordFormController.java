@@ -136,7 +136,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					forgotPasswordAttempts = 0;
 				}
 				
-			} else if (secretAnswer != null) {
+			} else {
 				// if they've filled in the username and entered their secret answer
 				
 				User user = null;
