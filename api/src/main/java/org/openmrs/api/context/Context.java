@@ -889,9 +889,6 @@ public class Context {
 		properties.put("connection.password", password);
 		setRuntimeProperties(properties);
 		
-		@SuppressWarnings("unused")
-		AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext-service.xml");
-		
 		openSession(); // so that the startup method can use proxyPrivileges
 		
 		startup(properties);

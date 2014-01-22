@@ -118,8 +118,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			}
 		}
 		
-		Errors errors = new BindException(encounter, "encounter");
-		
 		boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
 		Date originalDate = null;

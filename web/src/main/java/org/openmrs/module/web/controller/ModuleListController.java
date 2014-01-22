@@ -318,8 +318,6 @@ public class ModuleListController extends SimpleFormController {
 	
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		
 		Map<String, Object> map = new HashMap<String, Object>();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		

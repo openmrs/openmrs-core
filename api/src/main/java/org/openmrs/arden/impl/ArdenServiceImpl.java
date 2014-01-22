@@ -326,8 +326,6 @@ public class ArdenServiceImpl implements ArdenService {
 			
 			t = (BaseAST) t.getNextSibling(); // Move to Knowledge
 			log.debug(t.toStringTree()); // prints knowledge
-			@SuppressWarnings("unused")
-			String knowledge_text = treeParser.knowledge_text(t, ardObj);
 			
 			/**************************************************Write Knowledge dependent section**********************************************/
 			Integer p = ardObj.getPriority();
@@ -458,8 +456,6 @@ public class ArdenServiceImpl implements ArdenService {
 			t = (BaseAST) t.getNextSibling().getNextSibling(); // Move to
 			// Knowledge
 			log.debug(t.toStringTree()); // prints knowledge
-			@SuppressWarnings("unused")
-			String knowledge = treeParser.knowledge(t, ardObj);
 			
 			/** *********************************************************************************** */
 			
