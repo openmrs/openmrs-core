@@ -228,7 +228,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			if (lastModifiedDate != null && lastModifiedDate.equals(workflow.getDateChanged())) {
 				workflow.setRetired(false);
 				for (ProgramWorkflowState state : workflow.getStates()) {
-					if (lastModifiedDate != null && lastModifiedDate.equals(state.getDateChanged())) {
+					if (lastModifiedDate.equals(state.getDateChanged())) {
 						state.setRetired(false);
 					}
 				}
@@ -247,7 +247,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			if (lastModifiedDate != null && lastModifiedDate.equals(workflow.getDateChanged())) {
 				workflow.setRetired(false);
 				for (ProgramWorkflowState state : workflow.getStates()) {
-					if (lastModifiedDate != null && lastModifiedDate.equals(state.getDateChanged())) {
+					if (lastModifiedDate.equals(state.getDateChanged())) {
 						state.setRetired(false);
 					}
 				}

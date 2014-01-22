@@ -143,17 +143,16 @@ public class ObsPatientFilter extends CachingPatientFilter {
 		} else {
 			ret.append("Patients with ");
 			ret.append(timeModifier + " ");
-			ConceptName questionName = null;
-			if (question == null)
-				ret.append("CONCEPT");
+			ConceptName questionName = question.getName(locale, false);
+			if (questionName != null)
+				ret.append(questionName);
 			else {
-				questionName = question.getName(locale, false);
-				if (questionName != null)
-					ret.append(questionName);
-				else {
-					question = Context.getConceptService().getConcept(question.getConceptId());
+				question = Context.getConceptService().getConcept(question.getConceptId());
+				if (question != null) {
 					questionName = question.getName(locale, false);
 					ret.append(questionName);
+				} else {
+					ret.append("CONCEPT");
 				}
 			}
 			if (value != null && modifier != null) {

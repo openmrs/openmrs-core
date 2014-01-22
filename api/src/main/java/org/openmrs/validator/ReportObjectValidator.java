@@ -55,14 +55,9 @@ public class ReportObjectValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		
 		if (obj instanceof AbstractReportObject) {
-			AbstractReportObject reportObject = (AbstractReportObject) obj;
-			if (reportObject == null) {
-				errors.rejectValue("report object", "error.general");
-			} else {
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "error.reportObject.type.required");
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "subType", "error.reportObject.subType.required");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "error.reportObject.type.required");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "subType", "error.reportObject.subType.required");
 		} else {
 			errors.rejectValue("report object", "error.general");
 		}

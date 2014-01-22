@@ -14,6 +14,7 @@
 package org.openmrs;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -173,8 +174,6 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @should not add identifier that is in list already
 	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
-		if (getIdentifiers() == null)
-			identifiers = new LinkedHashSet<PatientIdentifier>();
 		if (patientIdentifier != null) {
 			patientIdentifier.setPatient(this);
 			// make sure the set doesn't already contain an identifier with the same
@@ -184,6 +183,10 @@ public class Patient extends Person implements java.io.Serializable {
 					return; // fail silently if someone tries to add a duplicate
 				}
 			}
+		}
+
+		if (identifiers == null) {
+			identifiers = new HashSet<PatientIdentifier>();
 		}
 		identifiers.add(patientIdentifier);
 	}
