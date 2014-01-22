@@ -241,7 +241,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class, org.openmrs.CareSetting, java.lang.Boolean)
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class,
+	 *      org.openmrs.CareSetting, java.lang.Boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)

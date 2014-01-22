@@ -180,10 +180,9 @@ public interface OrderService extends OpenmrsService {
 	public Long getNextOrderNumberSeedSequenceValue();
 	
 	/**
-	 * Gets the order matching the specified order number and its previous orders in the
-	 * ordering they occurred, i.e if this order has a previous order, 
-	 * fetch it and if it also has a previous order then fetch it until 
-	 * the original one with no previous order is reached 
+	 * Gets the order matching the specified order number and its previous orders in the ordering
+	 * they occurred, i.e if this order has a previous order, fetch it and if it also has a previous
+	 * order then fetch it until the original one with no previous order is reached
 	 * 
 	 * @param orderNumber the order number whose history to get
 	 * @return a list of orders for given order number
@@ -192,8 +191,8 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 	
 	/**
-	 * Gets orders with a null stoppedDate or and are not auto expired. 
-	 * Note this does not return DC orders i.e orders where Order.action == DISCONTINUE
+	 * Gets orders with a null stoppedDate or and are not auto expired. Note this does not return DC
+	 * orders i.e orders where Order.action == DISCONTINUE
 	 * 
 	 * @param patient the patient
 	 * @param orderClass the order class
@@ -205,8 +204,9 @@ public interface OrderService extends OpenmrsService {
 	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
 	        Boolean includeVoided);
 	
-	/** Retrieve care setting by type
-	 *
+	/**
+	 * Retrieve care setting by type
+	 * 
 	 * @param careSettingId
 	 * @return the care setting
 	 * @since 1.10
@@ -215,7 +215,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets OrderFrequenecy that matches the specified orderFrequencyId
-	 *
+	 * 
 	 * @param orderFrequencyId the id to match against
 	 * @return OrderFrequency
 	 * @since 1.10
