@@ -117,7 +117,11 @@ public class EncounterDisplayController implements Controller {
 			// this is not the object we will give to the jsp view, the jsp
 			// view only sees the rows on a per page basis
 			List<FieldHolder> rows = new ArrayList<FieldHolder>();
-			rows.addAll(rowMapping.values());
+			 for (ArrayList<FieldHolder> list : rowMapping.values()) {
+				         for (FieldHolder y : list) {
+				           rows.add(y);
+				        }
+				 }
 			Collections.sort(rows);
 			
 			String usePages = Context.getAdministrationService().getGlobalProperty("dashboard.encounters.usePages", "true")
