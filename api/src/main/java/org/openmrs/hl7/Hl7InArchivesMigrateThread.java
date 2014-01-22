@@ -67,12 +67,16 @@ public class Hl7InArchivesMigrateThread extends Thread {
 		RUNNING, STOPPED, COMPLETED, ERROR, NONE
 	}
 	
+	public static void setProgressStatusMap(Map<String, Integer> progressStatusMap) {
+		Hl7InArchivesMigrateThread.progressStatusMap = progressStatusMap;
+	}
+	
 	/**
 	 * Constructor to initialize variables
 	 */
 	public Hl7InArchivesMigrateThread() {
 		this.userContext = Context.getUserContext();
-		progressStatusMap = new HashMap<String, Integer>();
+		setProgressStatusMap(new HashMap<String, Integer>());
 		progressStatusMap.put(HL7Constants.NUMBER_TRANSFERRED_KEY, 0);
 		progressStatusMap.put(HL7Constants.NUMBER_OF_FAILED_TRANSFERS_KEY, 0);
 	}
@@ -105,6 +109,10 @@ public class Hl7InArchivesMigrateThread extends Thread {
 		Hl7InArchivesMigrateThread.active = active;
 	}
 	
+	public static void setTransferStatus(Status transferStatus) {
+		Hl7InArchivesMigrateThread.transferStatus = transferStatus;
+	}
+	
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
@@ -113,7 +121,7 @@ public class Hl7InArchivesMigrateThread extends Thread {
 		
 		Context.openSession();
 		Context.setUserContext(userContext);
-		transferStatus = Status.RUNNING;
+		setTransferStatus(Status.RUNNING);
 		
 		while (isActive() && transferStatus == Status.RUNNING) {
 			try {
@@ -123,7 +131,7 @@ public class Hl7InArchivesMigrateThread extends Thread {
 				
 				//if transfer is done when user didn't just stop it
 				if (transferStatus != Status.STOPPED)
-					transferStatus = Status.COMPLETED;
+					setTransferStatus(Status.COMPLETED);
 				
 			}
 			catch (APIException api) {
@@ -139,7 +147,7 @@ public class Hl7InArchivesMigrateThread extends Thread {
 				
 			}
 			catch (Exception e) {
-				transferStatus = Status.ERROR;
+				setTransferStatus(Status.ERROR);
 				log.warn("Some error occurred while migrating hl7 archives", e);
 			}
 		}

@@ -110,7 +110,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Override
 	public void onShutdown() {
-		identifierValidators = null;
+		setIdentifierValidators(null);
 	}
 	
 	/**

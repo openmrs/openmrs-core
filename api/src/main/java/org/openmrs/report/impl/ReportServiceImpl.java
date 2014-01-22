@@ -92,7 +92,7 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
-		renderers = null;
+		setRenderers(null);
 	}
 	
 	/**
