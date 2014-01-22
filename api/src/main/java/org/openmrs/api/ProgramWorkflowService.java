@@ -181,7 +181,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should retire workflows associated with given program
 	 * @should retire states associated with given program
 	 */
-	@Deprecated  
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program retireProgram(Program program) throws APIException;
 	
