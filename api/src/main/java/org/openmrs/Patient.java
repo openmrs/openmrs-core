@@ -57,10 +57,11 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	public Patient(Person person) {
 		super(person);
-		if (person != null)
+		if (person != null) {
 			this.patientId = person.getPersonId();
-		if (person.getUuid() != null)
-			this.setUuid(person.getUuid());
+			if (person.getUuid() != null)
+				this.setUuid(person.getUuid());
+		}
 	}
 	
 	/**

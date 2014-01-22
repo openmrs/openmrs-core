@@ -341,6 +341,7 @@ public class DataExportFunctions {
 			ps = pf.filter(getPatientSet(), context);
 		} else {
 			log.error("key = " + key);
+			return false;
 		}
 		Set<Integer> set = new HashSet<Integer>(ps.getMemberIds());
 		cohortMap.put(key, set);
