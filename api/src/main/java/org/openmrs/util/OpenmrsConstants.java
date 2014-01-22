@@ -146,7 +146,7 @@ public final class OpenmrsConstants {
 	}
 	
 	/**
-	 * Somewhat hacky method to fetch the version from the maven pom.properties file. <br/>
+	 * Somewhat hacky method to fetch the version from the openmrs.properties file. <br/>
 	 * This method should not be used unless in a dev environment. The preferred way to get the
 	 * version is from the manifest in the api jar file. More detail is included in the properties
 	 * there.
@@ -161,17 +161,16 @@ public final class OpenmrsConstants {
 		
 		// Get hold of the path to the properties file
 		// (Maven will make sure it's on the class path)
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource(
-		    "META-INF/maven/org.openmrs.api/openmrs-api/pom.properties");
+		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("openmrs.properties");
 		if (url == null) {
-			log.error("Unable to find pom.properties file built by maven");
+			log.error("Unable to find openmrs.properties file built by maven");
 			return null;
 		}
 		
 		// Load the file
 		try {
 			props.load(url.openStream());
-			return props.getProperty("version"); // this will return something like "1.9.0-SNAPSHOT" in dev environments
+			return props.getProperty("openmrs.version.short"); // this will return something like "1.9.0.423f6f-SNAPSHOT" in dev environments
 		}
 		catch (IOException e) {
 			log.error("Unable to get pom.properties file into Properties object");
