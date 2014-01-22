@@ -80,7 +80,7 @@ public class EncounterDisplayController implements Controller {
 			// these are the rows that will be returned and displayed
 			// the values of this map will be returned and displayed as the rows
 			// in the jsp view
-			Map<Concept, FieldHolder> rowMapping = new HashMap<Concept, FieldHolder>();
+			Map<Concept, ArrayList<FieldHolder>> rowMapping = new HashMap<Concept, ArrayList<FieldHolder>>();
 			
 			// loop over all obs in this encounter
 			for (Obs obs : encounter.getObsAtTopLevel(false)) {
@@ -91,25 +91,24 @@ public class EncounterDisplayController implements Controller {
 				// remove that formfield from the list of formfields
 				FormField formField = popFormFieldForConcept(formFields, conceptForThisObs);
 				
-				// try to get a previously added row 
+				// try to get a previously added list 
 				ArrayList<FieldHolder> fieldHolders = rowMapping.get(conceptForThisObs);
 				if (fieldHolders == null) {
+					
 					fieldHolders = new ArrayList<FieldHolder>();
 					
-				} 
-					if (formField == null) {
-						formField = new FormField();
-						formField.setPageNumber(DEFAULT_PAGE_NUMBER);
-						formField.setFieldNumber(null);
-					}
-					
-					FieldHolder fieldHolder = new FieldHolder(formField, obs);
-					fieldHolders.add(fieldHolder);
-					
-					rowMapping.put(conceptForThisObs, fieldHolders);
-					
+				}
+				if (formField == null) {
+					formField = new FormField();
+					formField.setPageNumber(DEFAULT_PAGE_NUMBER);
+					formField.setFieldNumber(null);
+				}
 				
-			 }	
+				FieldHolder fieldHolder = new FieldHolder(formField, obs);
+				fieldHolders.add(fieldHolder);
+				
+				rowMapping.put(conceptForThisObs, fieldHolders);
+				
 			}
 			
 			// now that we're done processing all of the obs, get all of the
@@ -117,11 +116,11 @@ public class EncounterDisplayController implements Controller {
 			// this is not the object we will give to the jsp view, the jsp
 			// view only sees the rows on a per page basis
 			List<FieldHolder> rows = new ArrayList<FieldHolder>();
-			 for (ArrayList<FieldHolder> list : rowMapping.values()) {
-				         for (FieldHolder y : list) {
-				           rows.add(y);
-				        }
-				 }
+			for (ArrayList<FieldHolder> list : rowMapping.values()) {
+				for (FieldHolder y : list) {
+					rows.add(y);
+				}
+			}
 			Collections.sort(rows);
 			
 			String usePages = Context.getAdministrationService().getGlobalProperty("dashboard.encounters.usePages", "true")
