@@ -92,29 +92,24 @@ public class EncounterDisplayController implements Controller {
 				FormField formField = popFormFieldForConcept(formFields, conceptForThisObs);
 				
 				// try to get a previously added row 
-				FieldHolder fieldHolder = rowMapping.get(conceptForThisObs);
-				if (fieldHolder != null) {
-					// there is already a row that uses the same concept as its
-					// question.  lets put this obs in that same row
-					fieldHolder.addObservation(obs);
-				} else {
-					// if we don't have a row for this concept yet, create one
+				ArrayList<FieldHolder> fieldHolders = rowMapping.get(conceptForThisObs);
+				if (fieldHolders == null) {
+					fieldHolders = new ArrayList<FieldHolder>();
 					
-					// if this observation was added to the encounter magically
-					// (meaning there isn't a formfield for it) create a generic
-					// formfield to use with this obs
+				} 
 					if (formField == null) {
 						formField = new FormField();
 						formField.setPageNumber(DEFAULT_PAGE_NUMBER);
 						formField.setFieldNumber(null);
 					}
 					
-					fieldHolder = new FieldHolder(formField, obs);
+					FieldHolder fieldHolder = new FieldHolder(formField, obs);
+					fieldHolders.add(fieldHolder);
 					
-					// add this row to the list of all possible rows
-					rowMapping.put(conceptForThisObs, fieldHolder);
-				}
+					rowMapping.put(conceptForThisObs, fieldHolders);
+					
 				
+			 }	
 			}
 			
 			// now that we're done processing all of the obs, get all of the
