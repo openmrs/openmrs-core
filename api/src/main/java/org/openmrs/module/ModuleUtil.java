@@ -38,6 +38,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -275,12 +277,16 @@ public class ModuleUtil {
 	 * @should throw ModuleException if required version with wild card on one end beyond openmrs
 	 *         version
 	 * @should throw ModuleException if single entry required version beyond openmrs version
+	 * @should throw ModuleException if SNAPSHOT not handled correctly
+	 * @should handle SNAPSHOT versions
+	 * @should handle ALPHA versions
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
+		// need to externalize this string
+		String separator = "-";
+		
 		if (value != null && !value.equals("")) {
-			// need to externalize this string
-			String separator = "-";
-			if (value.indexOf("*") > 0 || value.indexOf(separator) > 0) {
+			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (!isVersionWithQualifier(value))) {
 				// if it contains "*" or "-" then we must separate those two
 				// assume it's always going to be two part
 				// assign the upper and lower bound
@@ -334,10 +340,10 @@ public class ModuleUtil {
 	
 	/**
 	 * Compares <code>version</code> to <code>value</code> version and value are strings like
-	 * w.x.y.z Returns <code>0</code> if either <code>version</code> or <code>value</code> is null.
+	 * 1.9.2.0 Returns <code>0</code> if either <code>version</code> or <code>value</code> is null.
 	 * 
-	 * @param version String like w.x.y.z
-	 * @param value String like w.x.y.z
+	 * @param version String like 1.9.2.0
+	 * @param value String like 1.9.2.0
 	 * @return the value <code>0</code> if <code>version</code> is equal to the argument
 	 *         <code>value</code>; a value less than <code>0</code> if <code>version</code> is
 	 *         numerically less than the argument <code>value</code>; and a value greater than
@@ -347,17 +353,30 @@ public class ModuleUtil {
 	 * @should treat SNAPSHOT as earliest version
 	 */
 	public static int compareVersion(String version, String value) {
+		String qualifierVersion = "";
+		String qualifierValue = "";
+		
 		try {
 			if (version == null || value == null)
 				return 0;
 			
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
+			String separator = "-";
+			String snapshotValue = ".0";
 			
-			// treat "-SNAPSHOT" as the lowest possible version
+			// treat qualifier version (i.e. "-SNAPSHOT") as the lowest possible version
 			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
-			version = version.replace("-SNAPSHOT", ".0");
-			value = value.replace("-SNAPSHOT", ".0");
+			if (isVersionWithQualifier(version)) {
+				qualifierVersion = version.substring(version.indexOf(separator));
+				version = version.replace(qualifierVersion, snapshotValue);
+			}
+			// replace the qualifier with .0
+			// e.g 1.9.2-SNAPSHOT becomes 1.9.2.0
+			if (isVersionWithQualifier(value)) {
+				qualifierValue = value.substring(value.indexOf(separator));
+				value = value.replace(qualifierValue, snapshotValue);
+			}
 			
 			Collections.addAll(versions, version.split("\\."));
 			Collections.addAll(values, value.split("\\."));
@@ -387,6 +406,17 @@ public class ModuleUtil {
 		
 		// default return value if an error occurs or elements are equal
 		return 0;
+	}
+	
+	/**
+	 * Checks for qualifier version (i.e "-SNAPSHOT", "-ALPHA" etc. after maven version conventions)
+	 *
+	 * @param version String like 1.9.2-SNAPSHOT
+	 * @return true if version contains qualifier
+	 */
+	public static boolean isVersionWithQualifier(String version) {
+		Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.(\\d+))?(\\-([A-Za-z]+))").matcher(version);
+		return matcher.matches();
 	}
 	
 	/**
