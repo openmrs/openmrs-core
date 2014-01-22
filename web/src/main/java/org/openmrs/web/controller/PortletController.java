@@ -328,10 +328,8 @@ public class PortletController implements Controller {
 						}
 						
 						model.put("patientId", patientId);
-						if (p != null) {
-							personId = p.getPatientId();
-							model.put("personId", personId);
-						}
+						personId = p.getPatientId();
+						model.put("personId", personId);
 						
 						model.put("patientVariation", patientVariation);
 					}
