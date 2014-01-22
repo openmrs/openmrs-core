@@ -27,9 +27,9 @@ import org.openmrs.util.DatabaseUtil;
 
 /**
  * This changesets finds all free text drug order dose units and frequencies and checks that they
- * were all mapped to concepts ids via the
- * OpenmrsConstants#GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS global property prior to upgrading to
- * version 1.10. It MUST be the first 1.10.x changeset to be executed
+ * are all mapped to concepts ids via the OpenmrsConstants#GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
+ * global property prior to upgrading to version 1.10. It MUST be the first 1.10.x changeset to be
+ * executed
  */
 public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements CustomPrecondition {
 	
