@@ -518,8 +518,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		ret += this.getLocation() == null ? "(no Location) " : this.getLocation().getName() + " ";
 		ret += this.getPatient() == null ? "(no Patient) " : this.getPatient().getPatientId().toString() + " ";
 		ret += this.getForm() == null ? "(no Form) " : this.getForm().getName() + " ";
-		ret += this.getObsAtTopLevel(false) == null ? "(no Obss) " : "num Obs: " + this.getObsAtTopLevel(false) + " ";
-		ret += this.getOrders() == null ? "(no Orders) " : "num Orders: " + this.getOrders().size() + " ";
+		ret += "num Obs: " + this.getObsAtTopLevel(false) + " ";
+		ret += "num Orders: " + this.getOrders().size() + " ";
 		return "Encounter: [" + ret + "]";
 	}
 	

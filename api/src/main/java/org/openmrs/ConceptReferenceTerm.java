@@ -166,7 +166,7 @@ public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io
 				conceptReferenceTermMap.setTermA(this);
 				if (conceptReferenceTermMaps == null)
 					conceptReferenceTermMaps = new LinkedHashSet<ConceptReferenceTermMap>();
-				if (conceptReferenceTermMap != null && !conceptReferenceTermMaps.contains(conceptReferenceTermMap))
+				if (!conceptReferenceTermMaps.contains(conceptReferenceTermMap))
 					conceptReferenceTermMaps.add(conceptReferenceTermMap);
 			}
 		}

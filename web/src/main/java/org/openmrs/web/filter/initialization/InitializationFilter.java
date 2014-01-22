@@ -897,7 +897,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			// if user has changed locale parameter to new one
 			// or chooses it parameter at first page loading
-			if ((storedLocale == null) || (storedLocale != null && !storedLocale.equals(localeParameter))) {
+			if (storedLocale == null || !storedLocale.equals(localeParameter)) {
 				log.info("Stored locale parameter to session " + localeParameter);
 				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
 			}

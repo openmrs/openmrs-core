@@ -527,10 +527,8 @@ public class DrugOrderListItem {
 		
 		if (other instanceof DrugOrderListItem) {
 			DrugOrderListItem otherItem = (DrugOrderListItem) other;
-			if (otherItem != null) {
-				if (otherItem.getOrderId().equals(this.orderId))
-					isSame = true;
-			}
+			if (otherItem.getOrderId().equals(this.orderId))
+				isSame = true;
 		}
 		
 		return isSame;

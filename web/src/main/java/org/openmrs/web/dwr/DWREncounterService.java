@@ -106,7 +106,7 @@ public class DWREncounterService {
 				}
 			}
 			
-			if (phrase == null || phrase.equals("")) {
+			if (phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
 			} else {
 				encs.addAll(es.getEncounters(phrase, patientId, start, length, includeVoided));

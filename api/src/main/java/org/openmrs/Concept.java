@@ -259,10 +259,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should not fail if given answer does not exist in list
 	 */
 	public boolean removeAnswer(ConceptAnswer conceptAnswer) {
-		if (getAnswers() != null)
-			return answers.remove(conceptAnswer);
-		else
-			return false;
+		return getAnswers().remove(conceptAnswer);
 	}
 	
 	/**
@@ -417,10 +414,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should fail if the preferred name to set to is an index term
 	 */
 	public void setPreferredName(ConceptName preferredName) {
-		if (preferredName == null || preferredName.getLocale() == null) {
-			throw new APIException("The locale for a concept name cannot be null");
-		} else if (preferredName.isVoided() || preferredName.isIndexTerm()) {
+
+		if (preferredName == null || preferredName.isVoided() || preferredName.isIndexTerm()) {
 			throw new APIException("Preferred name cannot be null, voided or an index term");
+		} else if (preferredName.getLocale() == null) {
+			throw new APIException("The locale for a concept name cannot be null");
 		}
 		
 		//first revert the current preferred name(if any) from being preferred
@@ -1478,9 +1476,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param newConceptMap
 	 */
 	public void addConceptMapping(ConceptMap newConceptMap) {
-		if (getConceptMappings() == null) {
+		if (conceptMappings == null) {
 			conceptMappings = new HashSet<ConceptMap>();
 		}
+
 		if (newConceptMap != null) {
 			newConceptMap.setConcept(this);
 		}
@@ -1491,29 +1490,26 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			conceptMappings.add(newConceptMap);
 		}
 	}
-	
+
 	/**
 	 * Child Class ConceptComplex overrides this method and returns true. See
 	 * {@link org.openmrs.ConceptComplex#isComplex()}. Otherwise this method returns false.
-	 * 
+	 *
 	 * @return false
 	 * @since 1.5
 	 */
 	public boolean isComplex() {
 		return false;
 	}
-	
+
 	/**
 	 * Remove the given ConceptMap from the list of mappings for this Concept
-	 * 
+	 *
 	 * @param conceptMap
 	 * @return true if the entity was removed, false otherwise
 	 */
 	public boolean removeConceptMapping(ConceptMap conceptMap) {
-		if (getConceptMappings() != null)
-			return conceptMappings.remove(conceptMap);
-		else
-			return false;
+		return getConceptMappings().remove(conceptMap);
 	}
 	
 	/**

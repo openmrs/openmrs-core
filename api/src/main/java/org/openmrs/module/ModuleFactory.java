@@ -1014,9 +1014,6 @@ public class ModuleFactory {
 						String extId = ext.getExtensionId();
 						try {
 							List<Extension> tmpExtensions = getExtensions(extId);
-							if (tmpExtensions == null)
-								tmpExtensions = new Vector<Extension>();
-							
 							tmpExtensions.remove(ext);
 							getExtensionMap().put(extId, tmpExtensions);
 						}
@@ -1153,12 +1150,8 @@ public class ModuleFactory {
 			}
 		}
 		
-		if (extensions != null) {
-			log.debug("Getting extensions defined by : " + pointId);
-			return extensions;
-		} else {
-			return new Vector<Extension>();
-		}
+		log.debug("Getting extensions defined by : " + pointId);
+		return extensions;
 	}
 	
 	/**

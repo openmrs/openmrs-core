@@ -113,10 +113,7 @@ public class DWRProgramWorkflowService {
 			log.debug("Workflow was null, cannot get states");
 		}
 		
-		if (ret != null)
-			log.debug("Returning ret of size " + ret.size());
-		else
-			log.debug("Returning null ret");
+		log.debug("Returning ret of size " + ret.size());
 		return ret;
 	}
 	
