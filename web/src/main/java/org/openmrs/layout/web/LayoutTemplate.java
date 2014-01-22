@@ -167,7 +167,7 @@ public abstract class LayoutTemplate {
 			}
 		}
 		
-		if (this.maxTokens < ret.size()) {
+		if (ret != null && this.maxTokens < ret.size()) {
 			this.maxTokens = ret.size();
 		}
 		

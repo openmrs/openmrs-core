@@ -222,19 +222,19 @@ public class DWRFormService {
 		
 		if (field == null) {
 			log.error("Field is null. Field Id: " + fieldId);
+		} else {
+			field.setName(name);
+			field.setDescription(fieldDesc);
+			field.setFieldType(fs.getFieldType(fieldTypeId));
+			if (conceptId != null && conceptId != 0)
+				field.setConcept(cs.getConcept(conceptId));
+			else
+				field.setConcept(null);
+			field.setTableName(table);
+			field.setAttributeName(attr);
+			field.setDefaultValue(defaultValue);
+			field.setSelectMultiple(multiple);
 		}
-		
-		field.setName(name);
-		field.setDescription(fieldDesc);
-		field.setFieldType(fs.getFieldType(fieldTypeId));
-		if (conceptId != null && conceptId != 0)
-			field.setConcept(cs.getConcept(conceptId));
-		else
-			field.setConcept(null);
-		field.setTableName(table);
-		field.setAttributeName(attr);
-		field.setDefaultValue(defaultValue);
-		field.setSelectMultiple(multiple);
 		
 		ff.setField(field);
 		fs.saveFormField(ff);

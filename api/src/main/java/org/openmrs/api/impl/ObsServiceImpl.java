@@ -106,7 +106,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			}
 		}
 		
-		if (obs.getObsId() == null) {
+		if (obs != null && obs.getObsId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_OBS);
 			return dao.saveObs(obs);
 		} else {
