@@ -2200,6 +2200,18 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws APIException {
-		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference, includeRetired);
+		List<Drug> drugList = dao.getDrugsByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference, includeRetired);
+		if(drugList.size() == 0) {
+			return null;
+		}
+		//we want to get the best matching i.e. matching the earliest ConceptMapType passed in
+		//e.g. getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan));
+		//If there are multiple matches for the highest-priority ConceptMapType, throw an exception
+		else if (drugList.size() > 1 && !drugList.get(1).isRetired()) {
+			throw new APIException("There are multiple matches for the highest-priority ConceptMapType "+code+" From source "+conceptSource.getName());
+		}
+		else{
+			return drugList.get(0);
+		}
 	}
 }
