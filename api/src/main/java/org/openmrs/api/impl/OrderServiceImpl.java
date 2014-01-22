@@ -242,13 +242,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class,
-	 *      org.openmrs.CareSetting, java.lang.Boolean)
+	 *      org.openmrs.CareSetting)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
-	        Boolean includeVoided) {
-		return dao.getActiveOrders(patient, orderClass, careSetting, includeVoided);
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting) {
+		return dao.getActiveOrders(patient, orderClass, careSetting);
 	}
 	
 	/**

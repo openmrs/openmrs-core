@@ -43,7 +43,7 @@ public class OrderEntryTest extends BaseContextSensitiveTest {
 		executeDataSet(ORDER_ENTRY_DATASET_XML);
 		Patient patient = patientService.getPatient(2);
 		CareSetting careSetting = orderService.getCareSetting(1);
-		assertEquals(0, orderService.getActiveOrders(patient, TestOrder.class, careSetting, false).size());
+		assertEquals(0, orderService.getActiveOrders(patient, TestOrder.class, careSetting).size());
 		
 		//place test order, should call OrderService.placeOrder
 		TestOrder order = new TestOrder();
@@ -58,6 +58,6 @@ public class OrderEntryTest extends BaseContextSensitiveTest {
 		
 		orderService.saveOrder(order);
 		
-		assertEquals(1, orderService.getActiveOrders(patient, TestOrder.class, careSetting, false).size());
+		assertEquals(1, orderService.getActiveOrders(patient, TestOrder.class, careSetting).size());
 	}
 }

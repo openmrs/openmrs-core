@@ -85,14 +85,14 @@ public interface OrderDAO {
 	public Long getNextOrderNumberSeedSequenceValue();
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class, org.openmrs.CareSetting, java.lang.Boolean)
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class,
+	 *      org.openmrs.CareSetting)
 	 */
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
-	        Boolean includeVoided);
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting);
 	
 	/**
 	 * Get care setting by type
-	 *
+	 * 
 	 * @param careSettingId
 	 * @return the care setting type
 	 */

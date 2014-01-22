@@ -192,11 +192,11 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, java.lang.Class, org.openmrs.CareSetting, java.lang.Boolean)
+	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, Class,
+	 *      org.openmrs.CareSetting)
 	 */
 	@SuppressWarnings("unchecked")
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
-	        Boolean includeVoided) {
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClass);
 		
@@ -205,9 +205,6 @@ public class HibernateOrderDAO implements OrderDAO {
 		crit.add(Restrictions.ne("action", Action.DISCONTINUE));
 		crit.add(Restrictions.isNull("dateStopped"));
 		crit.add(Restrictions.isNull("autoExpireDate"));
-		
-		if (!includeVoided)
-			crit.add(Restrictions.eq("voided", includeVoided));
 		
 		return crit.list();
 	}

@@ -191,18 +191,16 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 	
 	/**
-	 * Gets orders with a null stoppedDate or and are not auto expired. Note this does not return DC
-	 * orders i.e orders where Order.action == DISCONTINUE
+	 * Gets all unvoided orders with a null stoppedDate or and are not auto expired. Note this does
+	 * not return discontinuation orders i.e orders where Order.action == DISCONTINUE
 	 * 
 	 * @param patient the patient
 	 * @param orderClass the order class
 	 * @param careSetting the care setting
-	 * @param includeVoided a flag for whether to return voided orders or not
 	 * @return all active orders for given patient parameters
 	 * @should return all active orders for given patient parameters
 	 */
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
-	        Boolean includeVoided);
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting);
 	
 	/**
 	 * Retrieve care setting by type
