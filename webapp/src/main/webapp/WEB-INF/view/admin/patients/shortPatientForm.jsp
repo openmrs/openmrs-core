@@ -112,7 +112,7 @@
                       {
                      document.getElementById("message").style.display = 'inline';                          
 					  document.getElementById("message").innerHTML='<openmrs:message code="error.date.wrong"/>';
-					  input.value='';
+					  input.select();
                       }
                           }
 
