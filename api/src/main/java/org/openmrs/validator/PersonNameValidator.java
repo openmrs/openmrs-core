@@ -120,8 +120,10 @@ public class PersonNameValidator implements Validator {
 	 */
 	public void validatePersonName(PersonName personName, Errors errors, boolean arrayInd, boolean testInd) {
 		
-		if (personName == null)
+		if (personName == null) {
 			errors.reject("error.name");
+			return;
+		}
 		// Make sure they assign a name
 		if (StringUtils.isBlank(personName.getGivenName())
 		        || StringUtils.isBlank(personName.getGivenName().replaceAll("\"", "")))

@@ -2141,7 +2141,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					ret.addMember((Integer) o[0]);
 					ret.addMember((Integer) o[1]);
 				}
-				ret.removeMember(target.getPersonId());
+				if (target != null)
+					ret.removeMember(target.getPersonId());
 				return Cohort.intersect(allPatients, ret);
 			} else if (includeAtoB) {
 				String hql = "select personA.id from Relationship where relationshipType = :relType";

@@ -116,16 +116,18 @@ public class ForEachRecordTag extends BodyTagSupport {
 			Concept civilStatus = cs.getConcept(OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID);
 			if (civilStatus == null)
 				log.error("OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID is defined incorrectly.");
-			
-			records = civilStatus.getAnswers(false).iterator();
-			
-			Map<String, String> opts = new HashMap<String, String>();
-			for (ConceptAnswer a : civilStatus.getAnswers(false)) {
-				opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getBestName(locale).getName());
+			else {
+				records = civilStatus.getAnswers(false).iterator();
+				
+				Map<String, String> opts = new HashMap<String, String>();
+				for (ConceptAnswer a : civilStatus.getAnswers(false)) {
+					opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getBestName(locale)
+					        .getName());
+				}
+				records = opts.entrySet().iterator();
+				if (select != null)
+					select = select.toString() + "=" + opts.get(select);
 			}
-			records = opts.entrySet().iterator();
-			if (select != null)
-				select = select.toString() + "=" + opts.get(select);
 		} else if (name.equals("gender")) {
 			Map<String, String> opts = OpenmrsConstants.GENDER();
 			records = opts.entrySet().iterator();

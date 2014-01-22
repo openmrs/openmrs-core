@@ -271,7 +271,10 @@ public class ShowGraphServlet extends HttpServlet {
 			timeScale = Day.class;
 			timeAxisTitle = "Date";
 		}
-		series1 = new TimeSeries(concept1.getName().getName(), timeScale);
+		if (concept1 == null)
+			series1 = new TimeSeries("NULL", Hour.class);
+		else
+			series1 = new TimeSeries(concept1.getName().getName(), timeScale);
 		if (concept2 == null)
 			series2 = new TimeSeries("NULL", Hour.class);
 		else
