@@ -45,6 +45,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -715,12 +716,8 @@ public class PersonFormController extends SimpleFormController {
 				log.debug("Error getting date from birthdate", e);
 			}
 		} else if (age != null && !age.equals("")) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(new Date());
-			Integer d = c.get(Calendar.YEAR);
-			d = d - Integer.parseInt(age);
 			try {
-				birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
+				birthdate = OpenmrsUtil.getBirthDateFromAge(age);
 				birthdateEstimated = true;
 			}
 			catch (ParseException e) {

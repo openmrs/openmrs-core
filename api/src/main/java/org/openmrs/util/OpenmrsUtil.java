@@ -42,6 +42,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2631,5 +2632,21 @@ public class OpenmrsUtil {
 		
 		return (c1.get(Calendar.ERA) == c2.get(Calendar.ERA) && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1
 		        .get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR));
+	}
+	
+	/**
+	 * Gets a date of birth from age.
+	 * 
+	 * @param age the age in string format.
+	 * @return the birth date.
+	 * @throws ParseException
+	 * @since 1.10
+	 */
+	public static Date getBirthDateFromAge(String age) throws ParseException {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		Integer d = c.get(Calendar.YEAR);
+		d = d - Integer.parseInt(age);
+		return DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
 	}
 }
