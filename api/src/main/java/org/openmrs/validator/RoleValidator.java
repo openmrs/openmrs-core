@@ -64,6 +64,7 @@ public class RoleValidator implements Validator {
 			if (!role.getRole().equals(role.getRole().trim())) {
 				errors.rejectValue("role", "error.trailingSpaces");
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "role");
 		}
 	}
 	

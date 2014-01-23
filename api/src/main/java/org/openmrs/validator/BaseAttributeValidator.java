@@ -49,7 +49,7 @@ public class BaseAttributeValidator implements Validator {
 		} else if (!CustomDatatypeUtil.validate(attribute)) {
 			errors.rejectValue("value", "error.invalid");
 		}
-		
+		ValidateUtil.validateFieldLengths(errors, target.getClass(), "valueReference");
 	}
 	
 }

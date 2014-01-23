@@ -126,5 +126,7 @@ public class OrderValidator implements Validator {
 					errors.rejectValue("discontinuedReason", "Order.error.notDiscontinuedShouldHaveNoReason");
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "orderNumber", "previousOrderNumber", "instructions",
+		    "discontinuedReason", "accessionNumber");
 	}
 }

@@ -58,5 +58,6 @@ public class VisitTypeValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 		}
+		
 	}
 }

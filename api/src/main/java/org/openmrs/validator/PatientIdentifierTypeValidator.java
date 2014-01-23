@@ -62,5 +62,7 @@ public class PatientIdentifierTypeValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidateUtil.validateFieldLengths(errors, identifierType.getClass(), "name", "description", "format");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "format", "formatDescription", "validator");
 	}
+	
 }

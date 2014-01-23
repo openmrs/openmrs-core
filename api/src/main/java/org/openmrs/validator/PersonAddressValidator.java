@@ -81,5 +81,9 @@ public class PersonAddressValidator implements Validator {
 			errors.rejectValue("endDate", "PersonAddress.error.endDateBeforeStartDate", new Object[] { "'" + addressString
 			        + "'" }, "The End Date for address '" + addressString + "' shouldn't be earlier than the Start Date");
 		
+		ValidateUtil.validateFieldLengths(errors, object.getClass(), "address1", "address2", "cityVillage", "address3",
+		    "countyDistrict", "address4", "address6", "address5", "stateProvince", "country", "postalCode", "latitude",
+		    "longitude");
+		
 	}
 }

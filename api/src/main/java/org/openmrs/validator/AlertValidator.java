@@ -52,5 +52,6 @@ public class AlertValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "text", "Alert.text.required");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "text");
 	}
 }
