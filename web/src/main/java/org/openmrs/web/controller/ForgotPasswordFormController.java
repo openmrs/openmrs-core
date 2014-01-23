@@ -13,10 +13,6 @@
  */
 package org.openmrs.web.controller;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +28,13 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Date;
+import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Controls the forgotten password form Initially a form with just a username box is shown Then a
@@ -125,8 +128,16 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 				
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (username.equals("") || username.equals(null)) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
+					
+				} else if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+					// Fake user attempt: so passing a fake secret question as per: TRUNK-3933 security leakage
+					String fakeQuestion = getRandomFakeSecretQuestion();
+					
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
+					request.setAttribute("secretQuestion", fakeQuestion);
+					
 				} else {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
 					request.setAttribute("secretQuestion", user.getSecretQuestion());
@@ -185,4 +196,27 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		return showForm(request, response, errors);
 	}
 	
+	/**
+	 * This method will return a random 'fake secret question'
+	 * @return
+	 */
+	private String getRandomFakeSecretQuestion() {
+		
+		Random randomGenerator = new Random();
+		List<String> questions = new ArrayList<String>();
+		
+		questions.add("What's your best friend's last name?");
+		questions.add("What's your grand father's home town?");
+		questions.add("What's your mother's name?");
+		questions.add("What's your father's name?");
+		questions.add("What's your first pet's name?");
+		questions.add("What's your brother's middle name?");
+		questions.add("What's your sister's last name?");
+		
+		int listSize = questions.size();
+		int randIndex = randomGenerator.nextInt(listSize);
+		String randomQ = questions.get(randIndex);
+		
+		return randomQ;
+	}
 }
