@@ -38,6 +38,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.PersonAttributeTypeLockedException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PersonDAO;
@@ -190,6 +191,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#purgePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
 	public void purgePersonAttributeType(PersonAttributeType type) throws APIException {
+		checkIfPersonAttributeTypesAreLocked();
 		dao.deletePersonAttributeType(type);
 	}
 	
@@ -197,6 +199,9 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#savePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
+		//check if person attribute types are not locked
+		checkIfPersonAttributeTypesAreLocked();
+		
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
 			if (allTypes.size() > 0)
@@ -237,6 +242,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#retirePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
+		checkIfPersonAttributeTypesAreLocked();
 		if (retiredReason == null || retiredReason.length() < 1) {
 			throw new APIException("A reason is required when retiring a person attribute type");
 		}
@@ -288,6 +294,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException {
+		checkIfPersonAttributeTypesAreLocked();
 		type.setRetired(false);
 		type.setDateRetired(null);
 		type.setRetiredBy(null);
@@ -1196,5 +1203,17 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	public PersonAddress savePersonAddress(PersonAddress personAddress) {
 		return dao.savePersonAddress(personAddress);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#checkIfPersonAttributeTypesAreLocked()
+	 */
+	@Transactional(readOnly = true)
+	public void checkIfPersonAttributeTypesAreLocked() throws PersonAttributeTypeLockedException {
+		String gp = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES_LOCKED, "false");
+		if (gp.toLowerCase().equals("true")) {
+			throw new PersonAttributeTypeLockedException();
+		}
 	}
 }

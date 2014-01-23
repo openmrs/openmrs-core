@@ -123,7 +123,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		// send the parameters to the controller
 		ModelAndView mav = controller.handleRequest(request, response);
 		
-		Assert.assertNotSame("The purge attempt should have failed!", "index.htm", mav.getViewName());
+		Assert.assertNotSame("index.htm", mav.getViewName());
 		Assert.assertNotNull(cs.getConcept(3));
 		
 	}
@@ -479,7 +479,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
 	 * Test removing short name by adding a blank short name
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	@Test

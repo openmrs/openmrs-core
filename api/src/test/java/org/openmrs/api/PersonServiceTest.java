@@ -30,6 +30,7 @@ import java.util.Vector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -2120,4 +2121,106 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(address.isPreferred());
 	}
 	
+	/**
+	 * Creates a global property and with it locks person attribute types
+	 */
+	public void createGPAndLockPersonAttributeTypesWithIt() {
+		
+		//creating a gp for (and) locking the person attribute types
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+	}
+	
+	/**
+	 * @see {@link PersonService#savePersonAttributeType(PersonAttributeType)}
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(value = "should throw an error when trying to save an edited existing person attribute type while person attribute types are locked", method = "savePersonAttributeType(PersonAttributeType)")
+	public void savePersonAttributeType_shouldThrowAnErrorWhenTryingToSaveAnEditedExistingPersonAttributeTypeWhilePersonAttributeTypesAreLocked()
+	        throws Exception {
+		
+		Assert.assertNotNull(personService);
+		
+		createGPAndLockPersonAttributeTypesWithIt();
+		
+		//editing and saving an existing person attribute type after locking person attribute types
+		PersonAttributeType existingPersonAttributeType = Context.getPersonService().getPersonAttributeType(1);
+		existingPersonAttributeType.setDescription("new description");
+		
+		//trying to save after editing existing throws PersonAttributeTypeLockedException
+		personService.savePersonAttributeType(existingPersonAttributeType);
+	}
+	
+	/**
+	 * @see {@link PersonService#savePersonAttributeType(PersonAttributeType)}
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(value = "should throw an error when trying to save a new person attribute type while person attribute types are locked", method = "savePersonAttributeType(PersonAttributeType)")
+	public void savePersonAttributeType_shouldThrowAnErrorWhenTryingToSaveANewPersonANewAttributeTypeWhilePersonAttributeTypesAreLocked()
+	        throws Exception {
+		
+		createGPAndLockPersonAttributeTypesWithIt();
+		
+		//creating a new person attribute type and trying to save it
+		PersonAttributeType newPersonAttributeType = new PersonAttributeType(21);
+		
+		newPersonAttributeType.setCreator(Context.getAuthenticatedUser());
+		newPersonAttributeType.setDateCreated(new Date());
+		newPersonAttributeType.setName("test name");
+		
+		//trying to save a new person attribute type throws PersonAttributeTypeLockedException
+		personService.savePersonAttributeType(newPersonAttributeType);
+	}
+	
+	/**
+	 * @see {@link PersonService#retirePersonAttributeType(PersonAttributeType, String)}
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(value = "should throw an error when trying to retire person attribute type while person attribute types are locked", method = "retirePersonAttributeType(PersonAttributeType, String)")
+	public void retirePersonAttributeType_shouldThrowAnErrorWhenTryingToRetirePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
+	        throws Exception {
+		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(2);
+		
+		assert (!personAttributeType.isRetired());
+		
+		createGPAndLockPersonAttributeTypesWithIt();
+		
+		//trying to retire a person attribute type after locking person attribute types throws PersonAttributeTypeLockedException
+		personService.retirePersonAttributeType(personAttributeType, "reason");
+	}
+	
+	/**
+	 * @see {@link PersonService#unretirePersonAttributeType(PersonAttributeType)}
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(value = "should throw an error when trying to unretire person attribute type while person attribute types are locked", method = "retirePersonAttributeType(PersonAttributeType, String)")
+	public void unretirePersonAttributeType_shouldThrowAnErrorWhenTryingToUnretirePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
+	        throws Exception {
+		
+		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(1);
+		
+		assert (personAttributeType.isRetired());
+		
+		createGPAndLockPersonAttributeTypesWithIt();
+		
+		//trying to unretire a person attribute type after locking person attribute types throws PersonAttributeTypeLockedException
+		personService.unretirePersonAttributeType(personAttributeType);
+	}
+	
+	/**
+	 * @see {@link PersonService#purgePersonAttributeType(PersonAttributeType)}
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(value = "should throw an error when trying to delete person attribute type while person attribute types are locked", method = "retirePersonAttributeType(PersonAttributeType, String)")
+	public void purgePersonAttributeType_shouldThrowAnErrorWhileTryingToDeletePersonAttributeTypeWhenPersonAttributeTypesAreLocked()
+	        throws Exception {
+		
+		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(1);
+		
+		createGPAndLockPersonAttributeTypesWithIt();
+		
+		//trying to purge or delete a person attribute type after locking person attribute types throws PersonAttributeTypeLockedException
+		personService.purgePersonAttributeType(personAttributeType);
+	}
 }
