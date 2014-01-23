@@ -4,7 +4,11 @@
 
 <openmrs:message var="pageTitle" code="findPatient.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
-
+<c:if test="${param.error_message != null}">
+	<div class="error" style="text-align: center;">
+		<p>${param.error_message}</p>
+	</div>
+</c:if>
 <h2><openmrs:message code="Patient.search"/></h2>	
 
 <br />
