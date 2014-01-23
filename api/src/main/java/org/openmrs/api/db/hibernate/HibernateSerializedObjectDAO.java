@@ -197,18 +197,6 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			serializer = getSerializer(serializedObject);
 		}
 		String data = null;
-		try {
-			data = serializer.serialize(object);
-		}
-		catch (SerializationException e) {
-			throw new DAOException("Unable to save object <" + object + "> because serialization failed.", e);
-		}
-		
-		serializedObject.setUuid(object.getUuid());
-		serializedObject.setType(baseType.getName());
-		serializedObject.setSubtype(object.getClass().getName());
-		serializedObject.setSerializationClass(serializer.getClass());
-		serializedObject.setSerializedData(data);
 		
 		if (object instanceof Auditable) {
 			Auditable auditableObj = (Auditable) object;
@@ -223,6 +211,18 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			serializedObject.setChangedBy(auditableObj.getChangedBy());
 			serializedObject.setDateChanged(auditableObj.getDateChanged());
 		}
+		try {
+			data = serializer.serialize(object);
+		}
+		catch (SerializationException e) {
+			throw new DAOException("Unable to save object <" + object + "> because serialization failed.", e);
+		}
+		
+		serializedObject.setUuid(object.getUuid());
+		serializedObject.setType(baseType.getName());
+		serializedObject.setSubtype(object.getClass().getName());
+		serializedObject.setSerializationClass(serializer.getClass());
+		serializedObject.setSerializedData(data);
 		
 		if (object instanceof OpenmrsMetadata) {
 			OpenmrsMetadata metaObj = (OpenmrsMetadata) object;
