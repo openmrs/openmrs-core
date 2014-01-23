@@ -19,9 +19,7 @@ import java.util.Date;
 import org.hibernate.type.Type;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.Auditable;
-import org.openmrs.ConceptNumeric;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.scheduler.Task;
@@ -231,6 +229,45 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertSame(Context.getAuthenticatedUser(), u.getCreator());
 		Assert.assertNotNull(u.getDateCreated());
+	}
+	
+	@Test
+	public void onSave_shouldBeCalledForPersonSave() {
+		Person person = new Person();
+		person.setGender("M");
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		person.addName(name);
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		person.addAddress(address);
+		Context.getPersonService().savePerson(person);
+		Assert.assertNotNull(person.getId());
+	}
+	
+	@Test
+	public void onSave_shouldPopulateDateCreatedForPersonIfNull() {
+		Person person = new Person();
+		person.setGender("M");
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		person.addName(name);
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		person.addAddress(address);
+		Context.getPersonService().savePerson(person);
+		Assert.assertNotNull(person.getDateCreated());
+	}
+	
+	@Test
+	public void onSave_shouldPopulatePersonCreatorForPersonIfNull() {
+		Person person = new Person();
+		person.setGender("M");
+		PersonName name = new PersonName("givenName", "middleName", "familyName");
+		person.addName(name);
+		PersonAddress address = new PersonAddress();
+		address.setAddress1("some address");
+		person.addAddress(address);
+		Context.getPersonService().savePerson(person);
+		Assert.assertNotNull(person.getCreator());
 	}
 	
 }

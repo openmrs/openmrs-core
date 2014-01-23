@@ -43,28 +43,6 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 	 */
 	public void handle(Person person, User creator, Date dateCreated, String other) {
 		
-		// only set the creator and date created if they weren't set by the developer already
-		if (person.getPersonCreator() == null) {
-			person.setPersonCreator(creator);
-		}
-		
-		if (person.getPersonDateCreated() == null) {
-			person.setPersonDateCreated(dateCreated);
-		}
-		
-		// if there is an id already, we assume its been saved before and so set personChanged*
-		boolean hasId;
-		try {
-			hasId = person.getId() != null;
-		}
-		catch (UnsupportedOperationException e) {
-			hasId = true; // if no "id" to check, just go ahead and set them
-		}
-		if (hasId) {
-			person.setPersonChangedBy(creator);
-			person.setPersonDateChanged(dateCreated);
-		}
-		
 		// address collection
 		if (person.getAddresses() != null && person.getAddresses().size() > 0) {
 			for (PersonAddress pAddress : person.getAddresses()) {
