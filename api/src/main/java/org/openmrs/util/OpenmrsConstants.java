@@ -170,7 +170,7 @@ public final class OpenmrsConstants {
 		// Load the file
 		try {
 			props.load(url.openStream());
-			return props.getProperty("openmrs.version.short"); // this will return something like "1.9.0.423f6f-SNAPSHOT" in dev environments
+			return props.getProperty("openmrs.version"); // this will return something like "1.9.0-SNAPSHOT" in dev environments
 		}
 		catch (IOException e) {
 			log.error("Unable to get pom.properties file into Properties object");
