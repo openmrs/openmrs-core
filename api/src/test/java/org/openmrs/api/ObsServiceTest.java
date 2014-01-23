@@ -14,13 +14,12 @@
 package org.openmrs.api;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.CharArrayReader;
@@ -40,8 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.imageio.ImageIO;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -299,11 +296,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000));
 		//os.saveObs(childLeafObs, "saving child leaf obs");
-		os.unvoidObs(oGGGPThatWasUpdated);
-		
+		os.unvoidObs(oGGGPThatWasUpdated);	
 		// commenting this out because junit4 doesn't seem to care
 		//commitTransaction(false);
-		
+
 		childLeafObs = os.getObs(childOneId);
 		Obs childLeafObsTwo = os.getObs(childTwoId);
 		
@@ -1278,10 +1274,113 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
 	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw APIException if given true cascade", method = "purgeObs(Obs,boolean)")
-	public void purgeObs_shouldThrowAPIExceptionIfGivenTrueCascade() throws Exception {
-		Context.getObsService().purgeObs(new Obs(1), true);
+	@Test
+	@Verifies(value = "should delete an Obs plus all associated Obs", method = "purgeObs(Obs,boolean)")
+	public void purgeObs_shouldPurgeObsAndAllRelatedDataGivenTrueCascade() throws Exception {
+		
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		
+		//create an obs
+		Obs o = new Obs();
+		o.setConcept(cs.getConcept(3));
+		o.setDateCreated(new Date());
+		o.setCreator(Context.getAuthenticatedUser());
+		o.setLocation(new Location(1));
+		o.setObsDatetime(new Date());
+		o.setPerson(new Patient(2));
+		o.setValueText("original obs value text");
+		
+		//create a second obs
+		Obs o2 = new Obs();
+		o2.setConcept(cs.getConcept(3));
+		o2.setDateCreated(new Date());
+		o2.setCreator(Context.getAuthenticatedUser());
+		o2.setLocation(new Location(1));
+		o2.setObsDatetime(new Date());
+		o2.setValueText("second obs value text");
+		o2.setPerson(new Patient(2));
+		
+		//create a parent obs
+		Obs oParent = new Obs();
+		oParent.setConcept(cs.getConcept(23)); //in the concept set table as a set
+		oParent.setDateCreated(new Date());
+		oParent.setCreator(Context.getAuthenticatedUser());
+		oParent.setLocation(new Location(1));
+		oParent.setObsDatetime(new Date());
+		oParent.setPerson(new Patient(2));
+		
+		//add o and o2 to the parent obs
+		oParent.addGroupMember(o2);
+		oParent.addGroupMember(o);
+		
+		//create a grandparent obs
+		Obs oGP = new Obs();
+		oGP.setConcept(cs.getConcept(3));
+		oGP.setDateCreated(new Date());
+		oGP.setCreator(Context.getAuthenticatedUser());
+		oGP.setLocation(new Location(1));
+		oGP.setObsDatetime(new Date());
+		oGP.setPerson(new Patient(2));
+		//oGP.setValueText("grandparent obs value text");
+		
+		oGP.addGroupMember(oParent);
+		
+		//create a leaf observation
+		Obs o3 = new Obs();
+		o3.setConcept(cs.getConcept(3));
+		o3.setDateCreated(new Date());
+		o3.setCreator(Context.getAuthenticatedUser());
+		o3.setLocation(new Location(1));
+		o3.setObsDatetime(new Date());
+		o3.setValueText("leaf obs value text");
+		o3.setPerson(new Patient(2));
+		
+		//and add it to the grandparent
+		oGP.addGroupMember(o3);
+		
+		//create a great-grandparent
+		Obs oGGP = new Obs();
+		oGGP.setConcept(cs.getConcept(3));
+		oGGP.setDateCreated(new Date());
+		oGGP.setCreator(Context.getAuthenticatedUser());
+		oGGP.setLocation(new Location(1));
+		oGGP.setObsDatetime(new Date());
+		//oGGP.setValueText("great grandparent value text");
+		oGGP.setPerson(new Patient(2));
+		
+		oGGP.addGroupMember(oGP);
+		
+		//create a great-great grandparent
+		Obs oGGGP = new Obs();
+		oGGGP.setConcept(cs.getConcept(3));
+		oGGGP.setDateCreated(new Date());
+		oGGGP.setCreator(Context.getAuthenticatedUser());
+		oGGGP.setLocation(new Location(1));
+		oGGGP.setObsDatetime(new Date());
+		//oGGGP.setValueText("great great grandparent value text");
+		oGGGP.setPerson(new Patient(2));
+		
+		oGGGP.addGroupMember(oGGP);
+		
+		//Create the great great grandparent
+		Obs savedObs = os.saveObs(oGGGP, null);
+		
+		Assert.assertNotNull("Obs has not been saved", savedObs);
+		int oGGGPId = savedObs.getObsId();
+		
+		Assert.assertNotNull("Parent Obs not saved", oGGGPId);
+		
+		Context.getObsService().purgeObs(oGGGP, true);
+		
+		Assert.assertNull(oGGGP);
+		Assert.assertNull(oGGP);
+		Assert.assertNull(oGP);
+		Assert.assertNull(oParent);
+		Assert.assertNull(o3);
+		
 	}
 	
 	/**

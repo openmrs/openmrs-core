@@ -211,21 +211,66 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs, boolean)
 	 */
-	public void purgeObs(Obs obs, boolean cascade) throws APIException {
-		if (purgeComplexData(obs) == false) {
-			throw new APIException("Unable to purge complex data for obs: " + obs);
-		}
-		
-		if (cascade) {
-			throw new APIException("Cascading purge of obs not yet implemented");
-			// TODO delete any related objects here before deleting the obs
-			// obsGroups objects?
-			// orders?
-		}
-		
-		dao.deleteObs(obs);
-	}
 	
+
+    public void purgeObs(Obs obs, boolean cascade) throws APIException {
+                    if (purgeComplexData(obs) == false) {
+                            throw new APIException("Unable to purge complex data for obs: " + obs);
+                    }
+                   
+                    if (cascade) {
+                //check for related Obs
+               
+                            //check for parent Obs
+                            if (obs.isObsGrouping()) {
+                                    //check for child Obs
+                                    Set<Obs> checkObsGroupMembers = obs.getGroupMembers(true);
+                                   
+                                    if (!checkObsGroupMembers.isEmpty()) {
+                                            for (Obs gMember : checkObsGroupMembers) {
+                                                   
+                                                    //check to see if Obs is a parent
+                                                    if (gMember.isObsGrouping()) {
+                                                            Set<Obs> obset = gMember.getGroupMembers();
+                                                            for (Obs obsMember : obset) {
+                                                                    dao.deleteObs(obsMember);
+                                                            }
+                                                           
+                                                            if (gMember != null)
+                                                                    dao.deleteObs(gMember);
+                                                           
+                                                    } else { //if it has no child
+                               
+                                for(Obs gMemberRelObs:gMember.getRelatedObservations()){
+                                    if(gMemberRelObs !=null){
+                                        dao.deleteObs(gMemberRelObs);
+                                    }
+     
+                                }
+                               
+                                                    }
+                                                   
+                                            }
+                                           
+                                    } else {
+                                            if (obs != null)
+                                                    dao.deleteObs(obs);
+                                    }
+                            } else { //if Obs is not obsGroup
+                   
+                   for(Obs relObs:obs.getRelatedObservations()){
+                       if(relObs !=null){
+                           dao.deleteObs(obs);  
+                       }
+                     
+                   }        
+                            }
+                           
+                    }     
+                    dao.deleteObs(obs);
+            }
+
+
 	/**
 	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs)
 	 */
