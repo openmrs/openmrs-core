@@ -24,6 +24,8 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
+import com.google.common.collect.Lists;
+
 /**
  * Utility class that provides useful methods for working with classes that are annotated with the
  * {@link Handler} annotation
@@ -102,6 +104,7 @@ public class HandlerUtil {
 	 * @should return the preferred handler for the passed handlerType and type
 	 * @should throw a APIException if no handler is found
 	 * @should throw a APIException if multiple preferred handlers are found
+	 * @should should return the preferred handler with the most specific class in supports list
 	 */
 	public static <H, T> H getPreferredHandler(Class<H> handlerType, Class<T> type) {
 		
@@ -114,15 +117,89 @@ public class HandlerUtil {
 		}
 		
 		if (handlers.size() > 1) {
-			int order1 = getOrderOfHandler(handlers.get(0).getClass());
-			int order2 = getOrderOfHandler(handlers.get(1).getClass());
-			if (order1 == order2) {
-				throw new APIException("There are at least 2 handlers of type " + handlerType + " for " + type
-				        + " and neither is more preferred than the other");
+			
+			int firstHandlerOrder = getOrderOfHandler(handlers.get(0).getClass());
+			int secondHandlerOrder = getOrderOfHandler(handlers.get(1).getClass());
+			
+			if (firstHandlerOrder == secondHandlerOrder) {
+				
+				return chooseHandlerWithTheMoreSpecificSupportClass(type, handlers.get(0), handlers.get(1));
 			}
 		}
 		
 		return handlers.get(0);
+	}
+	
+	/**
+	 * Choose handler with more specific support class ( choose if supports Patient not Person).
+	 * @param type
+	 * 
+	 * @param firstHandler
+	 * @param secondHandler
+	 * @return handler
+	 */
+	private static <H, T> H chooseHandlerWithTheMoreSpecificSupportClass(Class<T> type, H firstHandler, H secondHandler) {
+		
+		Class<?> firstHandlerClass = firstHandler.getClass();
+		Class<?> secondHandlerClass = secondHandler.getClass();
+		
+		//choose handler with more specific supported class
+		List<Class<?>> firstHandlerSupports = getSupportsAttributeOfHandler(firstHandlerClass);
+		List<Class<?>> secondHandlerSupports = getSupportsAttributeOfHandler(secondHandlerClass);
+		
+		Class<?> mostSpecificSupportsInFirstHandler = getMostSpecificClassInSupportsList(firstHandlerSupports, type);
+		
+		Class<?> mostSpecificSupportsInSecondHandler = getMostSpecificClassInSupportsList(secondHandlerSupports, type);
+		
+		if (mostSpecificSupportsInFirstHandler.isAssignableFrom(mostSpecificSupportsInSecondHandler)) {
+			return secondHandler;
+		} else {
+			return firstHandler;
+		}
+	}
+	
+	/**
+	 * Get most specific class in supports list which is assingable from {filterType}
+	 * @param classList 
+	 * @param filterType - support classes must be assignable from this type 
+	 * @return class
+	 */
+	private static Class<?> getMostSpecificClassInSupportsList(List<Class<?>> classList, Class<?> filterType) {
+		
+		//filter
+		List<Class<?>> filteredByType = Lists.newArrayList();
+		for (Class<?> supportClass : classList) {
+			if (supportClass.isAssignableFrom(filterType)) {
+				filteredByType.add(supportClass);
+			}
+		}
+		//sort- from the most specific to the least
+		Collections.sort(filteredByType, new Comparator<Class<?>>() {
+			
+			@Override
+			public int compare(Class<?> class1, Class<?> class2) {
+				
+				return class2.isAssignableFrom(class2) ? 1 : -1;
+			}
+		});
+		//choose best
+		return filteredByType.get(0);
+	}
+	
+	/**
+	 * Utility method to return the supports attribute if the {@link Handler} annotation on the passed
+	 * class.  If the passed class does not have a {@link Handler} annotation, a RuntimeException is
+	 * thrown
+	 * 
+	 * @param handlerClass
+	 * @return the supports value
+	 */
+	public static List<Class<?>> getSupportsAttributeOfHandler(Class<?> handlerClass) {
+		Handler annotation = handlerClass.getAnnotation(Handler.class);
+		if (annotation == null) {
+			throw new APIException("Class " + handlerClass + " is not annotated as a Handler.");
+		}
+		return Lists.newArrayList(annotation.supports());
 	}
 	
 	/**

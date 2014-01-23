@@ -18,9 +18,11 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
-import org.openmrs.api.APIException;
+import org.openmrs.Person;
+import org.openmrs.annotation.Handler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.validator.DrugOrderValidator;
@@ -67,12 +69,12 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(DrugOrderValidator.class, v.getClass());
 	}
 	
-	/**
-	 * @see {@link HandlerUtil#getPreferredHandler(Class, Class)}
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw a APIException if no handler is found", method = "getPreferredHandler(Class, Class)")
-	public void getPreferredHandler_shouldThrowAAPIExceptionExceptionIfNoHandlerIsFound() throws Exception {
-		HandlerUtil.getPreferredHandler(Validator.class, Patient.class);
+	@Test
+	@Verifies(value = "should return the preferred handler with the most specific class in supports list", method = "getPreferredHandler(Class, Class)")
+	public void getPrefferedHandler_shouldReturnThePreferredHandlerWithMoreSpecificClassInSupportsList() {
+		
+		Validator preferredHandler = HandlerUtil.getPreferredHandler(Validator.class, Patient.class);
+		
+		Assert.assertTrue(preferredHandler instanceof PatientValidator);
 	}
 }
