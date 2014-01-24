@@ -16,18 +16,24 @@ package org.openmrs.api.db.hibernate;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Auditable;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.User;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.test.annotation.NotTransactional;
 
 public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	
@@ -61,10 +67,11 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(u instanceof Auditable);
 		
 		String[] propertyNames = new String[] { "changedBy", "dateChanged" };
+		Type[] types = new Type[] { StandardBasicTypes.LONG, StandardBasicTypes.DATE };
 		Object[] currentState = new Object[] { "", null };
 		Object[] previousState = new Object[] { "", null };
 		
-		interceptor.onFlushDirty(u, null, currentState, previousState, propertyNames, null);
+		interceptor.onFlushDirty(u, null, currentState, previousState, propertyNames, types);
 		
 		Assert.assertNotNull(currentState[0]);
 	}
@@ -83,10 +90,11 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(u instanceof Auditable);
 		
 		String[] propertyNames = new String[] { "changedBy", "dateChanged" };
+		Type[] types = new Type[] { StandardBasicTypes.LONG, StandardBasicTypes.DATE };
 		Object[] currentState = new Object[] { "", null };
 		Object[] previousState = new Object[] { "", null };
 		
-		interceptor.onFlushDirty(u, null, currentState, previousState, propertyNames, null);
+		interceptor.onFlushDirty(u, null, currentState, previousState, propertyNames, types);
 		
 		Assert.assertNotNull(currentState[1]);
 	}
@@ -105,9 +113,10 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(u instanceof Auditable);
 		
 		String[] propertyNames = new String[] { "changedBy", "dateChanged" };
+		Type[] types = new Type[] { StandardBasicTypes.LONG, StandardBasicTypes.DATE };
 		Object[] currentState = new Object[] { "", null };
 		
-		interceptor.onFlushDirty(u, null, currentState, null, propertyNames, null);
+		interceptor.onFlushDirty(u, null, currentState, null, propertyNames, types);
 	}
 	
 	/**
@@ -233,4 +242,97 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(u.getDateCreated());
 	}
 	
+	@Test
+	@NotTransactional
+	public void onCollectionUpdate_shouldSetTheAuditInfoOnAParentWhenAnElementIsAddedToAChildCollection() throws Exception {
+		try {
+			//This will avoid a LazyInitializationException when accessing the collection
+			//in case it is the first None Transactional test method to be run
+			Context.openSessionWithCurrentUser();
+			ConceptService cs = Context.getConceptService();
+			ConceptReferenceTerm term = cs.getConceptReferenceTerm(1);
+			
+			cs.saveConceptReferenceTerm(term);
+			//no audit info set since there were no changes
+			Assert.assertNull(term.getDateChanged());
+			Assert.assertNull(term.getChangedBy());
+			
+			ConceptReferenceTermMap map = new ConceptReferenceTermMap(cs.getConceptReferenceTerm(3), cs.getConceptMapType(1));
+			term.addConceptReferenceTermMap(map);
+			
+			cs.saveConceptReferenceTerm(term);
+			
+			Assert.assertNotNull(term.getDateChanged());
+			Assert.assertNotNull(term.getChangedBy());
+		}
+		finally {
+			Context.clearSession();
+			Context.closeSessionWithCurrentUser();
+		}
+	}
+	
+	@Test
+	@NotTransactional
+	public void onFlushDirty_shouldSetTheAuditInfoOnAParentWhenAnElementInAChildCollectionIsUpdated() throws Exception {
+		try {
+			Context.openSessionWithCurrentUser();
+			ConceptService cs = Context.getConceptService();
+			ConceptReferenceTerm term = cs.getConceptReferenceTerm(1);
+			ConceptReferenceTermMap map = term.getConceptReferenceTermMaps().iterator().next();
+			//sanity checks
+			Assert.assertTrue(term.getConceptReferenceTermMaps().size() > 0);
+			Assert.assertNull(map.getDateChanged());
+			Assert.assertNull(map.getChangedBy());
+			Assert.assertNull(term.getDateChanged());
+			Assert.assertNull(term.getChangedBy());
+			
+			cs.saveConceptReferenceTerm(term);
+			//since there were no updates, the auditable fields should still be null
+			Assert.assertNull(map.getDateChanged());
+			Assert.assertNull(map.getChangedBy());
+			Assert.assertNull(term.getDateChanged());
+			Assert.assertNull(term.getChangedBy());
+			
+			ConceptMapType newType = cs.getConceptMapType(3);
+			Assert.assertFalse(newType.equals(map.getConceptMapType()));
+			map.setConceptMapType(newType);
+			cs.saveConceptReferenceTerm(term);
+			
+			Assert.assertNotNull(map.getDateChanged());
+			Assert.assertNotNull(map.getChangedBy());
+			
+			Assert.assertNotNull(term.getChangedBy());
+			Assert.assertNotNull(term.getDateChanged());
+		}
+		finally {
+			Context.clearSession();
+			Context.closeSessionWithCurrentUser();
+		}
+	}
+	
+	@Test
+	@NotTransactional
+	public void onCollectionUpdate_shouldSetTheAuditInfoOnAParentWhenAnElementIsRemovedFromAChildCollection()
+	        throws Exception {
+		try {
+			Context.openSessionWithCurrentUser();
+			
+			ConceptService cs = Context.getConceptService();
+			ConceptReferenceTerm term = cs.getConceptReferenceTerm(1);
+			ConceptReferenceTermMap map = term.getConceptReferenceTermMaps().iterator().next();
+			//sanity checks
+			Assert.assertTrue(term.getConceptReferenceTermMaps().size() > 0);
+			Assert.assertNull(term.getDateChanged());
+			Assert.assertNull(term.getChangedBy());
+			term.removeConceptReferenceTermMap(map);
+			cs.saveConceptReferenceTerm(term);
+			
+			Assert.assertNotNull(term.getDateChanged());
+			Assert.assertNotNull(term.getChangedBy());
+		}
+		finally {
+			Context.clearSession();
+			Context.closeSessionWithCurrentUser();
+		}
+	}
 }
