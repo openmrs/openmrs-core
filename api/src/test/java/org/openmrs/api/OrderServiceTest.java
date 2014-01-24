@@ -13,12 +13,20 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -27,6 +35,7 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.Patient;
+import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -37,7 +46,25 @@ import org.openmrs.util.PrivilegeConstants;
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
-	protected static final String DRUG_ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-drugOrdersList.xml";
+	private OrderService orderService;
+	
+	private PatientService patientService;
+	
+	@Before
+	public void setup() {
+		if (orderService == null) {
+			orderService = Context.getOrderService();
+		}
+		if (patientService == null) {
+			patientService = Context.getPatientService();
+		}
+	}
+	
+	//protected static final String OTHER_ORDERS_DATASET = "org/openmrs/api/include/OrderServiceTest-otherOrders.xml";
+	
+	private boolean isOrderActive(Order order, Date asOfDate) {
+		return order.isCurrent(asOfDate) && order.getAction() != Action.DISCONTINUE;
+	}
 	
 	/**
 	 * @see {@link OrderService#saveOrder(Order)}
@@ -127,7 +154,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should always return unique orderNumbers when called multiple times without saving orders", method = "getNewOrderNumber()")
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
-	        throws Exception {
+	    throws Exception {
 		
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		
@@ -164,7 +191,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#getOrderByOrderNumber(String)}
 	 */
-	//@Test
+	@Test
 	@Verifies(value = "should find object given valid order number", method = "getOrderByOrderNumber(String)")
 	public void getOrderByOrderNumber_shouldFindObjectGivenValidOrderNumber() throws Exception {
 		Order order = Context.getOrderService().getOrderByOrderNumber("1");
@@ -192,21 +219,22 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		
-		//They must be two orders and sorted by dateCreated starting with the latest
-		Assert.assertEquals(3, orders.size());
-		Assert.assertTrue(orders.get(0).getOrderId() == 5);
-		Assert.assertTrue(orders.get(1).getOrderId() == 4);
-		Assert.assertTrue(orders.get(2).getOrderId() == 444);
+		//They must be sorted by startDate starting with the latest
+		Assert.assertEquals(4, orders.size());
+		Assert.assertEquals(5, orders.get(0).getOrderId().intValue());
+		Assert.assertEquals(444, orders.get(1).getOrderId().intValue());
+		Assert.assertEquals(44, orders.get(2).getOrderId().intValue());
+		Assert.assertEquals(4, orders.get(3).getOrderId().intValue());
 		
-		//We should have two different orders with this concept
 		concept = Context.getConceptService().getConcept(792);
 		orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		
-		//They must be two orders and sorted by dateCreated starting with the latest
-		Assert.assertEquals(3, orders.size());
-		Assert.assertTrue(orders.get(0).getOrderId() == 3);
-		Assert.assertTrue(orders.get(1).getOrderId() == 2);
-		Assert.assertTrue(orders.get(2).getOrderId() == 222);
+		//They must be sorted by startDate starting with the latest
+		Assert.assertEquals(4, orders.size());
+		Assert.assertEquals(3, orders.get(0).getOrderId().intValue());
+		Assert.assertEquals(222, orders.get(1).getOrderId().intValue());
+		Assert.assertEquals(22, orders.get(2).getOrderId().intValue());
+		Assert.assertEquals(2, orders.get(3).getOrderId().intValue());
 	}
 	
 	/**
@@ -234,40 +262,156 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getActiveOrders(Patient, Class, CareSetting)}
-	 */
-	@Test
-	@Verifies(value = "should return all active orders for given patient parameters", method = "getActiveOrders(Patient, Class, CareSetting, Boolean)")
-	public void getActiveOrders_shouldReturnAllOrderHistoryForGivenPatientParameters() throws Exception {
-		executeDataSet(DRUG_ORDERS_DATASET_XML);
-		Patient patient = Context.getPatientService().getPatient(2);
-		OrderService os = Context.getOrderService();
-		List<DrugOrder> orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, os.getCareSetting(1));
-		Assert.assertEquals(4, orders.size());
-		
-		Assert.assertTrue(isOrderActive(orders.get(0)));
-		Assert.assertTrue(isOrderActive(orders.get(1)));
-		Assert.assertTrue(isOrderActive(orders.get(2)));
-		Assert.assertTrue(isOrderActive(orders.get(3)));
-		
-		//we should not have any in patients;
-		orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, os.getCareSetting(2));
-		Assert.assertEquals(0, orders.size());
-	}
-	
-	private boolean isOrderActive(Order order) {
-		return order.getDateStopped() == null && order.getAutoExpireDate() == null
-		        && order.getAction() != Action.DISCONTINUE;
-	}
-	
-	/**
 	 * @verifies return the order frequency that matched the specified id
 	 * @see OrderService#getOrderFrequency(Integer)
 	 */
 	@Test
 	public void getOrderFrequency_shouldReturnTheOrderFrequencyThatMatchedTheSpecifiedId() throws Exception {
-		Assert
-		        .assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", Context.getOrderService().getOrderFrequency(1)
-		                .getUuid());
+		Assert.assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", Context.getOrderService().getOrderFrequency(1).getUuid());
+	}
+	
+	/**
+	 * @verifies return all active orders for the specified patient
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
+	 *      java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldReturnAllActiveOrdersForTheSpecifiedPatient() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(2);
+		List<Order> orders = orderService.getActiveOrders(patient, Order.class, null, null);
+		assertEquals(5, orders.size());
+		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5), orderService.getOrder(7) };
+		assertThat(orders, hasItems(expectedOrders));
+		
+		assertTrue(isOrderActive(orders.get(0), null));
+		assertTrue(isOrderActive(orders.get(1), null));
+		assertTrue(isOrderActive(orders.get(2), null));
+		assertTrue(isOrderActive(orders.get(3), null));
+		assertTrue(isOrderActive(orders.get(4), null));
+	}
+	
+	/**
+	 * @verifies return all active orders for the specified patient and care setting
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
+	 *      java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldReturnAllActiveOrdersForTheSpecifiedPatientAndCareSetting() throws Exception {
+		Patient patient = patientService.getPatient(2);
+		CareSetting careSetting = orderService.getCareSetting(1);
+		List<Order> orders = orderService.getActiveOrders(patient, Order.class, careSetting, null);
+		assertEquals(4, orders.size());
+		Order[] expectedOrders = { orderService.getOrder(3), orderService.getOrder(444), orderService.getOrder(5),
+		        orderService.getOrder(7) };
+		assertThat(orders, hasItems(expectedOrders));
+	}
+	
+	/**
+	 * @verifies return all active drug orders for the specified patient
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
+	 *      java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldReturnAllActiveDrugOrdersForTheSpecifiedPatient() throws Exception {
+		Patient patient = patientService.getPatient(2);
+		List<DrugOrder> orders = orderService.getActiveOrders(patient, DrugOrder.class, null, null);
+		assertEquals(2, orders.size());
+		DrugOrder[] expectedOrders = { (DrugOrder) orderService.getOrder(3), (DrugOrder) orderService.getOrder(5) };
+		assertThat(orders, hasItems(expectedOrders));
+	}
+	
+	/**
+	 * @verifies return all active test orders for the specified patient
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
+	 *      java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldReturnAllActiveTestOrdersForTheSpecifiedPatient() throws Exception {
+		Patient patient = patientService.getPatient(2);
+		List<TestOrder> orders = orderService.getActiveOrders(patient, TestOrder.class, null, null);
+		assertEquals(1, orders.size());
+		assertEquals(orders.get(0), orderService.getOrder(7));
+	}
+	
+	/**
+	 * @verifies fail if patient is null
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
+	 *      java.util.Date)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void getActiveOrders_shouldFailIfPatientIsNull() throws Exception {
+		orderService.getActiveOrders(null, Order.class, orderService.getCareSetting(1), null);
+	}
+	
+	/**
+	 * @verifies return active orders as of the specified date
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
+	 *      java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldReturnActiveOrdersAsOfTheSpecifiedDate() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(2);
+		Date asOfDate = Context.getDateTimeFormat().parse("02/12/2007 23:59:59");
+		List<Order> orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(0, orders.size());
+		
+		asOfDate = Context.getDateFormat().parse("03/12/2007");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(1, orders.size());
+		assertEquals(orderService.getOrder(2), orders.get(0));
+		
+		asOfDate = Context.getDateFormat().parse("10/12/2007");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(1, orders.size());
+		assertEquals(orderService.getOrder(2), orders.get(0));
+		
+		asOfDate = Context.getDateTimeFormat().parse("10/12/2007 00:01:00");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(0, orders.size());
+		
+		asOfDate = Context.getDateFormat().parse("09/04/2008");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(3, orders.size());
+		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(4) };
+		assertThat(orders, hasItems(expectedOrders));
+		
+		asOfDate = Context.getDateFormat().parse("25/09/2008");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(5, orders.size());
+		Order[] expectedOrders1 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5), orderService.getOrder(6) };
+		assertThat(orders, hasItems(expectedOrders1));
+		
+		asOfDate = Context.getDateTimeFormat().parse("26/09/2008 10:24:10");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(4, orders.size());
+		Order[] expectedOrders2 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5) };
+		assertThat(orders, hasItems(expectedOrders2));
+		
+		asOfDate = Context.getDateFormat().parse("20/11/2008");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(5, orders.size());
+		Order[] expectedOrders3 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5), orderService.getOrder(7) };
+		assertThat(orders, hasItems(expectedOrders3));
+		
+		asOfDate = Context.getDateFormat().parse("02/12/2008");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		assertEquals(6, orders.size());
+		Order[] expectedOrders4 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5), orderService.getOrder(7), orderService.getOrder(9) };
+		assertThat(orders, hasItems(expectedOrders4));
+		
+		asOfDate = Context.getDateFormat().parse("04/12/2008");
+		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		for (Order o : orders) {
+			System.out.println(o.getOrderId());
+		}
+		assertEquals(5, orders.size());
+		Order[] expectedOrders5 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5), orderService.getOrder(7) };
+		assertThat(orders, hasItems(expectedOrders5));
 	}
 }

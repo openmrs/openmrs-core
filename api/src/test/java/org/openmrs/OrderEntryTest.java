@@ -22,6 +22,8 @@ import org.openmrs.api.PatientService;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
+
 /**
  * Contains end to end tests for order entry operations i.g placing, discontinuing revising an order
  */
@@ -41,15 +43,16 @@ public class OrderEntryTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldPlaceATestOrder() throws Exception {
 		executeDataSet(ORDER_ENTRY_DATASET_XML);
-		Patient patient = patientService.getPatient(2);
+		Patient patient = patientService.getPatient(7);
 		CareSetting careSetting = orderService.getCareSetting(1);
-		assertEquals(0, orderService.getActiveOrders(patient, TestOrder.class, careSetting).size());
+		assertEquals(0, orderService.getActiveOrders(patient, TestOrder.class, careSetting, null).size());
 		
 		//place test order, should call OrderService.placeOrder
 		TestOrder order = new TestOrder();
 		order.setPatient(patient);
 		order.setConcept(conceptService.getConcept(5497));
 		order.setCareSetting(careSetting);
+		order.setStartDate(new Date());
 		order.setClinicalHistory("Patient had a negative reaction to the test in the past");
 		order.setLaterality(TestOrder.Laterality.BILATERAL);
 		order.setFrequency(orderService.getOrderFrequency(1));
@@ -58,6 +61,6 @@ public class OrderEntryTest extends BaseContextSensitiveTest {
 		
 		orderService.saveOrder(order);
 		
-		assertEquals(1, orderService.getActiveOrders(patient, TestOrder.class, careSetting).size());
+		assertEquals(1, orderService.getActiveOrders(patient, TestOrder.class, careSetting, null).size());
 	}
 }

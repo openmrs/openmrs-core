@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.CareSetting;
@@ -85,10 +86,11 @@ public interface OrderDAO {
 	public Long getNextOrderNumberSeedSequenceValue();
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class,
-	 *      org.openmrs.CareSetting)
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, Class,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting);
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
+	        Date asOfDate);
 	
 	/**
 	 * Get care setting by type

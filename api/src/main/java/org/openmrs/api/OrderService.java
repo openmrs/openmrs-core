@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.CareSetting;
@@ -126,7 +127,8 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
-	 * multiple arguments are given, the returned orders will match on all arguments.
+	 * multiple arguments are given, the returned orders will match on all arguments. The orders are
+	 * sorted by startDate with the latest coming first
 	 * 
 	 * @param orderClassType The type of Order to get (currently only options are Order and
 	 *            DrugOrder)
@@ -161,7 +163,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets all Order objects that use this Concept for a given patient. Orders will be returned in
-	 * the order in which they occurred, i.e. sorted by dateCreated starting with the latest
+	 * the order in which they occurred, i.e. sorted by startDate starting with the latest
 	 * 
 	 * @param patient the patient.
 	 * @param concept the concept.
@@ -191,16 +193,35 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 	
 	/**
-	 * Gets all unvoided orders with a null stoppedDate or and are not auto expired. Note this does
-	 * not return discontinuation orders i.e orders where Order.action == DISCONTINUE
+	 * Gets all active orders for the specified patient matching the specified CareSetting, Order
+	 * class as of the specified date. Below is the criteria for determining an active order:
+	 * 
+	 * <pre>
+	 * <p>
+	 * - Not voided
+	 * - Not a discontinuation Order i.e one where action != Action#DISCONTINUE
+	 * - startDate is before or equal to asOfDate
+	 * - dateStopped and autoExpireDate are both null OR if it has dateStopped, then it should be
+	 * after asOfDate OR if it has autoExpireDate, then it should be after asOfDate. NOTE: If both
+	 * dateStopped and autoExpireDate are set then dateStopped wins because an order can never
+	 * expire and then stopped later i.e. you stop an order that hasn't yet expired
+	 * <p/>
+	 * <pre/>
 	 * 
 	 * @param patient the patient
-	 * @param orderClass the order class
-	 * @param careSetting the care setting
+	 * @param orderClass the order class to match against, this is required
+	 * @param careSetting the care setting, returns all ignoring care setting if value is null
+	 * @param asOfDate defaults to current time
 	 * @return all active orders for given patient parameters
-	 * @should return all active orders for given patient parameters
+	 * @should return all active orders for the specified patient
+	 * @should return all active orders for the specified patient and care setting
+	 * @should return all active drug orders for the specified patient
+	 * @should return all active test orders for the specified patient
+	 * @should fail if patient is null
+	 * @should return active orders as of the specified date
 	 */
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting);
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
+	        Date asOfDate);
 	
 	/**
 	 * Retrieve care setting by type

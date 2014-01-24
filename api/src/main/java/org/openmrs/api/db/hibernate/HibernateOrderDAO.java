@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +22,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -122,7 +125,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (encounters.size() > 0)
 			crit.add(Restrictions.in("encounter", encounters));
 		
-		crit.addOrder(org.hibernate.criterion.Order.desc("dateCreated"));
+		crit.addOrder(org.hibernate.criterion.Order.desc("startDate"));
 		
 		return crit.list();
 	}
@@ -193,18 +196,38 @@ public class HibernateOrderDAO implements OrderDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, Class,
-	 *      org.openmrs.CareSetting)
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@SuppressWarnings("unchecked")
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting) {
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
+	        Date asOfDate) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClass);
 		
 		crit.add(Restrictions.eq("patient", patient));
-		crit.add(Restrictions.eq("careSetting", careSetting));
+		if (careSetting != null) {
+			crit.add(Restrictions.eq("careSetting", careSetting));
+		}
+		
+		//See javadocs on OrderService#getActiveOrders for the description of an active Order
 		crit.add(Restrictions.ne("action", Action.DISCONTINUE));
-		crit.add(Restrictions.isNull("dateStopped"));
-		crit.add(Restrictions.isNull("autoExpireDate"));
+		crit.add(Restrictions.eq("voided", false));
+		
+		Criterion startDateEqualToOrBeforeAsOfDate = Restrictions.le("startDate", asOfDate);
+		crit.add(startDateEqualToOrBeforeAsOfDate);
+		
+		Disjunction dateStoppedAndAutoExpDateDisjunction = Restrictions.disjunction();
+		Criterion stopAndAutoExpDateAreBothNull = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions
+		        .isNull("autoExpireDate"));
+		dateStoppedAndAutoExpDateDisjunction.add(stopAndAutoExpDateAreBothNull);
+
+		Criterion dateStoppedEqualToOrAfterAsOfDate = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions.ge(
+		    "autoExpireDate", asOfDate));
+		dateStoppedAndAutoExpDateDisjunction.add(dateStoppedEqualToOrAfterAsOfDate);
+
+		dateStoppedAndAutoExpDateDisjunction.add(Restrictions.ge("dateStopped", asOfDate));
+		
+		crit.add(dateStoppedAndAutoExpDateDisjunction);
 		
 		return crit.list();
 	}

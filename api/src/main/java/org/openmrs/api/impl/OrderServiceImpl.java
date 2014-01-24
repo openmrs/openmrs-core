@@ -241,13 +241,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, java.lang.Class,
-	 *      org.openmrs.CareSetting)
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, Class,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting) {
-		return dao.getActiveOrders(patient, orderClass, careSetting);
+	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
+	        Date asOfDate) {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient is required when fetch active orders");
+		}
+		if (asOfDate == null) {
+			asOfDate = new Date();
+		}
+		return dao.getActiveOrders(patient, orderClass, careSetting, asOfDate);
 	}
 	
 	/**
