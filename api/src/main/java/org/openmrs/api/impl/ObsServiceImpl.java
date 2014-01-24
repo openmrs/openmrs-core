@@ -301,8 +301,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(java.util.List
-	 */
+     * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
+     *      java.util.List, java.util.List, List, List, java.util.List, java.lang.Integer,
+     *      java.lang.Integer, java.util.Date, java.util.Date, boolean,java.lang.String)
+     */
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
                                      List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
@@ -319,8 +321,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List
-	 */
+     * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
+     *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+     *      java.util.Date, java.util.Date, boolean,java.lang.String)
+     */
 	@Transactional(readOnly = true)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
                                        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,

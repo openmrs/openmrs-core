@@ -138,8 +138,9 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, Integer, java.util.Date, java.util.Date, java.util.List, boolean, String)
-	 */
+     * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List,
+     *      Integer, Integer, Date, Date, boolean, String)
+     */
 	@SuppressWarnings("unchecked")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
                                      List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
@@ -153,10 +154,10 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
-	 *      java.util.Date, java.util.Date, boolean,String)
-	 */
+     * @see org.openmrs.api.db.ObsDAO#getObservationCount(java.util.List, java.util.List,
+     *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+     *      java.util.Date, java.util.Date, boolean,String)
+     */
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
                                     List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
                                     Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs, String accessionNumber)

@@ -67,6 +67,7 @@ import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.ConceptValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.concept.ConceptReferenceTermWebValidator;
