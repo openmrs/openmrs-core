@@ -140,7 +140,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 					
 					List<Obs> numericAnswers = obsService.getObservations(null, null, Collections.singletonList(concept),
 					    null, Collections.singletonList(OpenmrsConstants.PERSON_TYPE.PERSON), null, Collections
-					            .singletonList("valueNumeric"), null, null, null, null, false);
+					            .singletonList("valueNumeric"), null, null, null, null, false, null);
 					
 					if (numericAnswers.size() > 0) {
 						Double min = numericAnswers.get(0).getValueNumeric();
@@ -266,7 +266,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 					
 					List<Obs> obs = obsService.getObservations(null, null, Collections.singletonList(concept), null,
 					    Collections.singletonList(OpenmrsConstants.PERSON_TYPE.PERSON), null, null, null, null, null, null,
-					    false);
+					    false, null);
 					
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
 					
@@ -295,7 +295,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 					
 					List<Obs> obs = obsService.getObservations(null, null, Collections.singletonList(concept), null,
 					    Collections.singletonList(OpenmrsConstants.PERSON_TYPE.PERSON), null, null, null, null, null, null,
-					    false);
+					    false, null);
 					
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
 					
