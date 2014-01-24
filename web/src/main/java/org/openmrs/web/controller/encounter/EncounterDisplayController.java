@@ -75,7 +75,7 @@ public class EncounterDisplayController implements Controller {
 			if (encounter.getForm() != null && encounter.getForm().getFormFields() != null)
 				formFields.addAll(encounter.getForm().getFormFields());
 			
-			// mapping from concept to FieldHolder. there should be only one
+			// mapping from concept to List of FieldHolder. there can be many
 			// fieldholder (aka one row) per unique concept in the obs for an encounter 
 			// these are the rows that will be returned and displayed
 			// the values of this map will be returned and displayed as the rows
@@ -110,9 +110,10 @@ public class EncounterDisplayController implements Controller {
 				rowMapping.put(conceptForThisObs, fieldHolders);
 				
 			}
-			
+			//rowMapping consists of group of fieldHolders for the same concept
 			// now that we're done processing all of the obs, get all of the
 			// rows that we will return
+			
 			// this is not the object we will give to the jsp view, the jsp
 			// view only sees the rows on a per page basis
 			List<FieldHolder> rows = new ArrayList<FieldHolder>();
