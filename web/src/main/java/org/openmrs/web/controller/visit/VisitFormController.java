@@ -363,7 +363,7 @@ public class VisitFormController {
 			
 			if (!encounters.isEmpty()) {
 				observationCount = Context.getObsService().getObservationCount(null, encounters, null, null, null, null,
-				    null, null, null, false);
+				    null, null, null, false, null);
 			}
 		}
 		

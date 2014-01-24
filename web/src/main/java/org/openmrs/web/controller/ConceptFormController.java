@@ -956,7 +956,7 @@ public class ConceptFormController extends SimpleFormController {
 		public int getNumberOfObsUsingThisConcept() {
 			List<Concept> searchConcepts = Arrays.asList(concept);
 			return Context.getObsService().getObservationCount(null, null, searchConcepts, null, null, null, null, null,
-			    null, true);
+			    null, true, null);
 		}
 		
 		/**

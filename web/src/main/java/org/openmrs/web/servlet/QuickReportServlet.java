@@ -276,7 +276,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		
 		List<Obs> allObs = null;
-		allObs = os.getObservations(null, null, null, null, null, null, null, null, null, start, end, true);
+		allObs = os.getObservations(null, null, null, null, null, null, null, null, null, start, end, true, null);
 		
 		List<Obs> obs = new Vector<Obs>();
 		for (Obs o : allObs) {
