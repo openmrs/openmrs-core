@@ -6,14 +6,14 @@
 	</li>
 	<openmrs:hasPrivilege privilege="<%= PrivilegeConstants.MANAGE_FORMS %>">
 		<li <c:if test='<%= request.getRequestURI().contains("forms/form") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/forms/form.list" class="retired">
+			<a href="${pageContext.request.contextPath}/admin/forms/form.list">
 				<openmrs:message code="Form.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Edit Forms">
 		<li <c:if test='<%= request.getRequestURI().contains("fieldForm") || request.getRequestURI().contains("fieldList") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/forms/field.list" class="retired">
+			<a href="${pageContext.request.contextPath}/admin/forms/field.list">
 				<openmrs:message code="Field.manage"/>
 			</a>
 		</li>
