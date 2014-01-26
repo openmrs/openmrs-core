@@ -52,8 +52,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the {@link EncounterService}
@@ -423,7 +421,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			justThisEncounter.add(encounter);
 			List<Obs> observations = new Vector<Obs>();
 			observations.addAll(obsService.getObservations(null, justThisEncounter, null, null, null, null, null, null,
-			    null, null, null, true));
+			    null, null, null, true, null));
 			for (Obs o : observations) {
 				obsService.purgeObs(o);
 			}
