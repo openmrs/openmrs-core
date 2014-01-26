@@ -1745,7 +1745,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<Concept> concepts = new Vector<Concept>();
 		concepts.add(concept);
 		Integer count = Context.getObsService().getObservationCount(null, null, concepts, null, null, null, null, null,
-		    null, true);
+		    null, true, null);
 		return count > 0;
 	}
 	

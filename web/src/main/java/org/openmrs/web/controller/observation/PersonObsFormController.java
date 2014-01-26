@@ -53,7 +53,7 @@ public class PersonObsFormController extends SimpleFormController {
 		
 		ObsService os = Context.getObsService();
 		List<Obs> ret = os.getObservations(Collections.singletonList(person), null, concepts, null, null, null, null, null,
-		    null, null, null, true);
+		    null, null, null, true, null);
 		Collections.sort(ret, new Comparator<Obs>() {
 			
 			public int compare(Obs left, Obs right) {

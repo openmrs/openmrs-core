@@ -77,24 +77,20 @@ public interface ObsDAO {
 	public void deleteMimeType(MimeType mimeType) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
-	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List
 	 */
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
-	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+                                     List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+                                     Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
 	        throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
-	 *      java.util.Date, java.util.Date, boolean)
+	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List
 	 * @see ObsService#getObservationCount(org.openmrs.ConceptName, boolean)
 	 */
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
-	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
+                                    List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+                                    Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs, String accessionNumber)
 	        throws DAOException;
 	
 	/**
