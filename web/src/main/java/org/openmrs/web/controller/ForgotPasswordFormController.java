@@ -154,14 +154,14 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 				} else if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
 					
-					String randomPassword = "";
+					StringBuilder randomPassword = new StringBuilder();
 					for (int i = 0; i < 8; i++) {
-						randomPassword += String.valueOf((Math.random() * (127 - 48) + 48));
+						randomPassword.append(String.valueOf((Math.random() * (127 - 48) + 48)));
 					}
 					
 					try {
 						Context.addProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
-						Context.getUserService().changePassword(user, randomPassword);
+						Context.getUserService().changePassword(user, randomPassword.toString());
 					}
 					finally {
 						Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
@@ -169,7 +169,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					
 					httpSession.setAttribute("resetPassword", randomPassword);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.password.reset");
-					Context.authenticate(username, randomPassword);
+					Context.authenticate(username, randomPassword.toString());
 					httpSession.setAttribute("loginAttempts", 0);
 					return new ModelAndView(new RedirectView(request.getContextPath() + "/options.form#Change Login Info"));
 				} else {

@@ -163,7 +163,7 @@ public class QuickReportServlet extends HttpServlet {
 				if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end))
 					obs.add(o);
 		}
-
+		
 		velocityContext.put("observations", obs);
 	}
 	

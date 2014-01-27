@@ -63,8 +63,8 @@ public class OrderListController extends SimpleFormController {
 			String[] orderList = ServletRequestUtils.getStringParameters(request, "orderId");
 			OrderService os = Context.getOrderService();
 			
-			String success = "";
-			String error = "";
+			StringBuilder success = new StringBuilder("");
+			StringBuilder error = new StringBuilder("");
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
@@ -79,22 +79,22 @@ public class OrderListController extends SimpleFormController {
 				try {
 					os.voidOrder(os.getOrder(Integer.valueOf(p)), voidReason);
 					if (!success.equals(""))
-						success += "<br/>";
-					success += ord + " " + p + " " + deleted;
+						success.append("<br/>");
+					success.append(ord).append(" ").append(p).append(" ").append(deleted);
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order", e);
 					if (!error.equals(""))
-						error += "<br/>";
-					error += ord + " " + p + " " + notDeleted;
+						error.append("<br/>");
+					error.append(ord).append(" ").append(p).append(" ").append(notDeleted);
 				}
 			}
 			
 			view = getSuccessView();
 			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
 		return new ModelAndView(new RedirectView(view));

@@ -1972,7 +1972,7 @@ public class OpenmrsUtil {
 	public static String postToUrl(String urlString, Map<String, String> dataToPost) {
 		OutputStreamWriter wr = null;
 		BufferedReader rd = null;
-		String response = "";
+		StringBuilder response = new StringBuilder("");
 		StringBuffer data = null;
 		
 		try {
@@ -2014,7 +2014,7 @@ public class OpenmrsUtil {
 			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String line;
 			while ((line = rd.readLine()) != null) {
-				response = response + line + "\n";
+				response.append(line).append("\n");
 			}
 			
 		}
@@ -2037,7 +2037,7 @@ public class OpenmrsUtil {
 				}
 		}
 		
-		return response;
+		return response.toString();
 	}
 	
 	/**
