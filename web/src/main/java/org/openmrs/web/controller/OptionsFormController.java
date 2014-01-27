@@ -370,18 +370,18 @@ public class OptionsFormController extends SimpleFormController {
 			addHint(hints, as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT), mss
 			        .getMessage("options.login.password.containNonNumber"));
 			
-			String passwordHint = "";
+			StringBuilder passwordHint = new StringBuilder("");
 			for (int i = 0; i < hints.size(); i++) {
 				if (i == 0) {
-					passwordHint += hints.get(i);
+					passwordHint.append(hints.get(i));
 				} else if (i < (hints.size() - 1)) {
-					passwordHint += ", " + hints.get(i);
+					passwordHint.append(", ").append(hints.get(i));
 				} else {
-					passwordHint += " and " + hints.get(i);
+					passwordHint.append(" and ").append(hints.get(i));
 				}
 			}
 			
-			map.put("passwordHint", passwordHint);
+			map.put("passwordHint", passwordHint.toString());
 			
 		}
 		

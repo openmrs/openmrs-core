@@ -74,8 +74,8 @@ public class OrderDrugListController extends SimpleFormController {
 			String[] orderList = request.getParameterValues("orderId");
 			OrderService os = Context.getOrderService();
 			
-			String success = "";
-			String error = "";
+			StringBuilder success = new StringBuilder();
+			StringBuilder error = new StringBuilder();
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
@@ -85,14 +85,14 @@ public class OrderDrugListController extends SimpleFormController {
 				try {
 					os.purgeOrder(os.getOrder(Integer.valueOf(p)));
 					if (!success.equals(""))
-						success += "<br/>";
-					success += ord + " " + p + " " + deleted;
+						success.append("<br/>");
+					success.append(ord).append(" ").append(p).append(" ").append(deleted);
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order", e);
 					if (!error.equals(""))
-						error += "<br/>";
-					error += ord + " " + p + " " + notDeleted;
+						error.append("<br/>");
+					error.append(ord).append(" ").append(p).append(" ").append(notDeleted);
 				}
 			}
 			

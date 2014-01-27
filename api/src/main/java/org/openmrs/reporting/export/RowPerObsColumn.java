@@ -107,16 +107,15 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 	}
 	
 	private String getExtrasTemplateColumnNames(boolean appendCount) {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		if (extras != null) {
 			for (String ext : extras) {
-				s += "$!{fn.getSeparator()}";
-				s += columnName + "_" + ext;
+				s.append("$!{fn.getSeparator()}").append(columnName).append("_").append(ext);
 				if (appendCount)
-					s += "_($velocityCount)";
+					s.append("_($velocityCount)");
 			}
 		}
-		return s;
+		return s.toString();
 	}
 	
 	//// left for backwards compatibility to pre 1.0.43

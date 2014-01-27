@@ -69,8 +69,8 @@ public class ProgramListController extends SimpleFormController {
 			String[] programList = request.getParameterValues("programId");
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			
-			String success = "";
-			String error = "";
+			StringBuilder success = new StringBuilder("");
+			StringBuilder error = new StringBuilder();
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
@@ -82,25 +82,25 @@ public class ProgramListController extends SimpleFormController {
 					
 					try {
 						ps.purgeProgram(ps.getProgram(Integer.valueOf(p)));
-						if (!success.equals(""))
-							success += "<br/>";
-						success += textProgram + " " + p + " " + deleted;
+						if (!success.toString().equals(""))
+							success.append("<br/>");
+						success.append(textProgram + " " + p + " " + deleted);
 					}
 					catch (APIException e) {
 						log.warn("Error deleting program", e);
 						if (!error.equals(""))
-							error += "<br/>";
-						error += textProgram + " " + p + " " + notDeleted;
+							error.append("<br/>");
+						error.append(textProgram).append(" ").append(p).append(" ").append(notDeleted);
 					}
 				}
 			} else {
-				success += noneDeleted;
+				success.append(noneDeleted);
 			}
 			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+			if (!success.toString().equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
 		return new ModelAndView(new RedirectView(view));

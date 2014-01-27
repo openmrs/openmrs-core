@@ -200,22 +200,21 @@ public class DWRPatientService implements GlobalPropertyListener {
 				//trim each word down to the first three characters and search again				
 				if (patientCount == 0 && start == 0 && !searchValue.matches(".*\\d+.*")) {
 					String[] names = searchValue.split(" ");
-					String newSearch = "";
+					StringBuilder newSearch = new StringBuilder("");
 					for (String name : names) {
 						if (name.length() > 3)
 							name = name.substring(0, 3);
-						newSearch += " " + name;
+						newSearch.append(name);
 					}
 					
-					newSearch = newSearch.trim();
-					if (!newSearch.equals(searchValue)) {
-						newSearch = newSearch.trim();
-						int newPatientCount = ps.getCountOfPatients(newSearch);
+					String newSearchStr = newSearch.toString().trim();
+					if (!newSearchStr.equals(searchValue)) {
+						int newPatientCount = ps.getCountOfPatients(newSearchStr);
 						if (newPatientCount > 0) {
 							// Send a signal to the core search widget to search again against newSearch
-							resultsMap.put("searchAgain", newSearch);
+							resultsMap.put("searchAgain", newSearchStr);
 							resultsMap.put("notification", Context.getMessageSourceService().getMessage(
-							    "searchWidget.noResultsFoundFor", new Object[] { searchValue, newSearch },
+							    "searchWidget.noResultsFoundFor", new Object[] { searchValue, newSearchStr },
 							    Context.getLocale()));
 						}
 					}

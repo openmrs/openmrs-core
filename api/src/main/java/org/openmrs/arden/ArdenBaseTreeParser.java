@@ -904,7 +904,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		AST n = null;
 		AST i = null;
 		String a, b;
-
+		
 		try { // for error handling
 			if (_t == null)
 				_t = ASTNULL;
@@ -1124,7 +1124,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		AST x = null;
 		AST y = null;
 		AST z = null;
-
+		
 		try { // for error handling
 			{
 				if (_t == null)
@@ -1812,9 +1812,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	}
 	
 	public final String logic_elseifAST(AST _t, MLMObject obj, Integer i) throws RecognitionException {
-		String s = "";
-		
-		String a, b;
+		StringBuilder s = new StringBuilder("");
+		String a = "";
 		
 		try { // for error handling
 			{
@@ -1829,8 +1828,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							a = "ELSEIF";
 							System.err.println("ELSEIF");
 							obj.AddToEvaluateList("logic", a);
-							
-							s = exprAST(_t, "logic", obj);
+							s.delete(0, s.length());
+							s.append(exprAST(_t, "logic", obj));
 							_t = _retTree;
 							match(_t, THEN);
 							_t = _t.getNextSibling();
@@ -1844,9 +1843,10 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							match(_t, ELSE);
 							_t = _t.getFirstChild();
 							a = "ELSE_";
-							s = a + Integer.toString(i);
+							s.delete(0, s.length());
+							s.append(a.toString() + Integer.toString(i));
 							System.err.println("ELSE");
-							obj.AddToEvaluateList("logic", s);
+							obj.AddToEvaluateList("logic", s.toString());
 							
 							_t = __t524;
 							_t = _t.getNextSibling();
@@ -1866,11 +1866,11 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	public final String callStringAST(AST _t, String section, MLMObject obj, String instr) throws RecognitionException {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		AST ift = null;
 		AST val = null;
@@ -1894,8 +1894,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 						_t = _t.getFirstChild();
 						a = ift.getText();
 						System.err.println("text = " + a);
-						s = a;
-						
+						s.delete(0, s.length());
+						s.append(a);
 						_t = __t478;
 						_t = _t.getNextSibling();
 						break;
@@ -2042,7 +2042,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	public final String exprStringAST(AST _t, String section, MLMObject obj, String instr) throws RecognitionException {
@@ -3006,7 +3006,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	}
 	
 	public final String writeAST(AST _t, MLMObject obj) throws RecognitionException {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		AST id = null;
 		AST i = null;
@@ -3033,7 +3033,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									a = id.getText();
 									//b= obj.getUserVarVal(a);
 									b = "||" + a + "||";
-									s += b;
+									s.append(b);
 									match(_t, ACTION_OP);
 									_t = _t.getNextSibling();
 								}
@@ -3044,7 +3044,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									i = (AST) _t;
 									match(_t, STRING_LITERAL);
 									_t = _t.getNextSibling();
-									s += i.getText();
+									s.append(i.getText());
 								}
 								break;
 							}
@@ -3054,7 +3054,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 						}
 					} while (true);
 				}
-				obj.addAction(s);
+				obj.addAction(s.toString());
 				{
 					switch (_t.getType()) {
 						case AT: {
@@ -3085,12 +3085,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	/***********************KNOWLEDGE*******************************************/
 	public final String knowledge(AST _t, MLMObject obj) throws RecognitionException {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		String a = "", b = "";
 		
@@ -3112,7 +3112,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									match(_t, COLON);
 									_t = _t.getNextSibling();
 									System.err.println("-----------Starting Data -------");
-									s = data(_t, obj);
+									s.delete(0, s.length());
+									s.append(data(_t, obj));
 									_t = _retTree;
 									System.err.println("\n");
 									System.err.println("-----------End Data -------");
@@ -3124,12 +3125,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Priority: ";
+									s.append(" Priority: ");
 									b = doubleAST(_t, obj);
 									_t = _retTree;
 									obj.setPriority(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t544;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == LOGIC)) {
@@ -3139,7 +3140,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									match(_t, COLON);
 									_t = _t.getNextSibling();
 									System.err.println("-----------Starting Logic -------");
-									s = logic(_t, obj);
+									s.delete(0, s.length());
+									s.append(logic(_t, obj));
 									_t = _retTree;
 									System.err.println("\n");
 									System.err.println("-----------End Logic -------");
@@ -3152,7 +3154,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									match(_t, COLON);
 									_t = _t.getNextSibling();
 									System.err.println("-----------Starting ACTION -------");
-									s = action(_t, obj);
+									s.delete(0, s.length());
+									s.append(action(_t, obj));
 									_t = _retTree;
 									System.err.println("\n");
 									System.err.println("-----------End Action -------");
@@ -3164,12 +3167,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Age_Min: ";
+									s.append(" Age_Min: ");
 									b = doubleAST(_t, obj);
 									_t = _retTree;
 									obj.setAgeMin(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t547;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == AGE_MAX)) {
@@ -3178,21 +3181,21 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Age_Max: ";
+									s.append(" Age_Max: ");
 									b = doubleAST(_t, obj);
 									_t = _retTree;
 									obj.setAgeMax(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t548;
 									_t = _t.getNextSibling();
 								} else if (((_t.getType() >= AND && _t.getType() <= TERM_LITERAL))) {
 									a = textAST(_t, obj);
 									_t = _retTree;
-									s += a;
+									s.append(a);
 									match(_t, ENDBLOCK);
 									_t = _t.getNextSibling();
-									s += "\n";
+									s.append("\n");
 								} else {
 									throw new NoViableAltException(_t);
 								}
@@ -3215,11 +3218,11 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	public final String doubleAST(AST _t, MLMObject obj) throws RecognitionException {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		AST str = null;
 		String a = "", b = "";
@@ -3238,7 +3241,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getNextSibling();
 								}
 								a = str.getText();
-								s += a; /*System.err.println(s);*/
+								s.append(a);
 							} else {
 								break _loop587;
 							}
@@ -3255,11 +3258,11 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	public final String textAST(AST _t, MLMObject obj) throws RecognitionException {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		AST str = null;
 		String a = "", b = "";
@@ -3278,7 +3281,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getNextSibling();
 								}
 								a = " " + str.getText();
-								s += a; /*System.err.println(s);*/
+								s.append(b); /*System.err.println(s);*/
 							} else {
 								break _loop581;
 							}
@@ -3295,12 +3298,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	/***********************KNOWLEDGE TEXT- To return data, logic and action text to populate the DB *******************************************/
 	public final String knowledge_text(AST _t, MLMObject obj) throws RecognitionException {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		String a = "", b = "";
 		
@@ -3325,8 +3328,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setData(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t555;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == PRIORITY)) {
@@ -3338,8 +3341,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									b = doubleAST(_t, obj);
 									_t = _retTree;
 									obj.setPriority(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t556;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == LOGIC)) {
@@ -3351,8 +3354,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setLogic(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t557;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == ACTION)) {
@@ -3364,8 +3367,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setAction(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t558;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == AGE_MIN)) {
@@ -3377,8 +3380,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									b = doubleAST(_t, obj);
 									_t = _retTree;
 									obj.setAgeMin(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t559;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == AGE_MAX)) {
@@ -3390,17 +3393,17 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									b = doubleAST(_t, obj);
 									_t = _retTree;
 									obj.setAgeMax(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t560;
 									_t = _t.getNextSibling();
 								} else if (((_t.getType() >= AND && _t.getType() <= TERM_LITERAL))) {
 									a = textAST(_t, obj);
 									_t = _retTree;
-									s += a;
+									s.append(a);
 									match(_t, ENDBLOCK);
 									_t = _t.getNextSibling();
-									s += "\n";
+									s.append("\n");
 								} else {
 									throw new NoViableAltException(_t);
 								}
@@ -3423,12 +3426,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	/***********************MAINTENANCE*******************************************/
 	public final String maintenance(AST _t, MLMObject obj) throws RecognitionException {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		String a = "", b = "";
 		
@@ -3447,12 +3450,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Filename: ";
+									s.append(" Filename: ");
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setClassName(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t567;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == MLMNAME)) {
@@ -3461,12 +3464,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Filename: ";
+									s.append(" Filename: ");
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setClassName(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t568;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == VERSION)) {
@@ -3475,12 +3478,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Version: ";
+									s.append(" Version: ");
 									b = doubleAST(_t, obj);
 									_t = _retTree;
 									obj.setVersion(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t569;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == TITLE)) {
@@ -3489,12 +3492,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Title: ";
+									s.append(" Title: ");
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setTitle(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t570;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == AUTHOR)) {
@@ -3503,12 +3506,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Author: ";
+									s.append(" Author: ");
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setAuthor(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t571;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == SPECIALIST)) {
@@ -3517,12 +3520,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Specialist: ";
+									s.append(" Specialist: ");
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setSpecialist(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t572;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == DATE)) {
@@ -3531,12 +3534,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Date: ";
+									s.append(" Date: ");
 									b = doubleAST(_t, obj);
 									_t = _retTree;
 									obj.setDate(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t573;
 									_t = _t.getNextSibling();
 								} else if ((_t.getType() == INSTITUTION)) {
@@ -3545,21 +3548,21 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _t.getFirstChild();
 									match(_t, COLON);
 									_t = _t.getNextSibling();
-									s += " Institution: ";
+									s.append(" Institution: ");
 									b = textAST(_t, obj);
 									_t = _retTree;
 									obj.setInstitution(b);
-									s += b;
-									s += "\n";
+									s.append(b);
+									s.append("\n");
 									_t = __t574;
 									_t = _t.getNextSibling();
 								} else if (((_t.getType() >= AND && _t.getType() <= TERM_LITERAL))) {
 									a = textAST(_t, obj);
 									_t = _retTree;
-									s += a;
+									s.append(a);
 									match(_t, ENDBLOCK);
 									_t = _t.getNextSibling();
-									s += "\n";
+									s.append("\n");
 								} else {
 									throw new NoViableAltException(_t);
 								}
@@ -3582,12 +3585,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	/***********************LIBRARY*******************************************/
 	public final String library(AST _t, MLMObject obj) throws RecognitionException {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		String a = "", b = "";
 		
@@ -3607,12 +3610,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								_t = _t.getFirstChild();
 								match(_t, COLON);
 								_t = _t.getNextSibling();
-								s += " Purpose: ";
+								s.append(" Purpose: ");
 								b = textAST(_t, obj);
 								_t = _retTree;
 								obj.setPurpose(b);
-								s += b;
-								s += "\n";
+								s.append(b);
+								s.append("\n");
 								_t = __t592;
 								_t = _t.getNextSibling();
 								break;
@@ -3623,12 +3626,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								_t = _t.getFirstChild();
 								match(_t, COLON);
 								_t = _t.getNextSibling();
-								s += " Explanation: ";
+								s.append(" Explanation: ");
 								b = textAST(_t, obj);
 								_t = _retTree;
 								obj.setExplanation(b);
-								s += b;
-								s += "\n";
+								s.append(b);
+								s.append("\n");
 								_t = __t593;
 								_t = _t.getNextSibling();
 								break;
@@ -3639,12 +3642,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								_t = _t.getFirstChild();
 								match(_t, COLON);
 								_t = _t.getNextSibling();
-								s += " Keywords: ";
+								s.append(" Keywords: ");
 								b = textAST(_t, obj);
 								_t = _retTree;
 								obj.setKeywords(b);
-								s += b;
-								s += "\n";
+								s.append(b);
+								s.append("\n");
 								_t = __t594;
 								_t = _t.getNextSibling();
 								break;
@@ -3655,12 +3658,12 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								_t = _t.getFirstChild();
 								match(_t, COLON);
 								_t = _t.getNextSibling();
-								s += " Citations: ";
+								s.append(" Citations: ");
 								b = textAST(_t, obj);
 								_t = _retTree;
 								obj.setCitations(b);
-								s += b;
-								s += "\n";
+								s.append(b);
+								s.append("\n");
 								_t = __t595;
 								_t = _t.getNextSibling();
 								break;
@@ -3671,7 +3674,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								_t = _t.getFirstChild();
 								match(_t, COLON);
 								_t = _t.getNextSibling();
-								s += " Links: ";
+								s.append(" Links: ");
 								{
 									if (_t == null)
 										_t = ASTNULL;
@@ -3679,14 +3682,14 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 										AST __t598 = _t;
 										match(_t, HTTP);
 										_t = _t.getFirstChild();
-										s += "http://";
+										s.append("http://");
 										_t = __t598;
 										_t = _t.getNextSibling();
 									} else if ((_tokenSet_11.member(_t.getType()))) {
 										a = textAST(_t, obj);
 										_t = _retTree;
-										s += a;
-										s += "\n";
+										s.append(a);
+										s.append("\n");
 									} else if ((_tokenSet_11.member(_t.getType()))) {} else {
 										throw new NoViableAltException(_t);
 									}
@@ -3695,8 +3698,8 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								b = textAST(_t, obj);
 								_t = _retTree;
 								obj.setLinks(b);
-								s += b;
-								s += "\n";
+								s.append(b);
+								s.append("\n");
 								_t = __t596;
 								_t = _t.getNextSibling();
 								break;
@@ -3718,7 +3721,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			}
 		}
 		_retTree = _t;
-		return s;
+		return s.toString();
 	}
 	
 	public final String dateAST(AST _t, GregorianCalendar calendar) throws RecognitionException {
