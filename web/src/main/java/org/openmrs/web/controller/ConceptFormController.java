@@ -640,11 +640,11 @@ public class ConceptFormController extends SimpleFormController {
 		 * @return
 		 */
 		public String getSetElements() {
-			String result = "";
+			StringBuilder result = new StringBuilder();
 			for (ConceptSet set : concept.getConceptSets()) {
-				result += set.getConcept().getConceptId() + " ";
+				result.append(set.getConcept().getConceptId()).append(" ");
 			}
-			return result;
+			return result.toString();
 		}
 		
 		/**

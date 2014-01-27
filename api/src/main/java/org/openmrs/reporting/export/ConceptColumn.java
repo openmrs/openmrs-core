@@ -64,7 +64,7 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	}
 	
 	private String toSingleTemplateString(int conceptId) {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		if (extras == null)
 			extras = new String[] {};
 		
@@ -72,29 +72,24 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		        || DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
 			Integer num = modifierNum == null ? 1 : modifierNum;
 			
-			s += "#set($arr = [";
+			s.append("#set($arr = [");
 			for (Integer x = 0; x < extras.length; x++) {
-				s += "'" + extras[x] + "'";
+				s.append("'" + extras[x] + "'");
 				if (!x.equals(extras.length - 1))
-					s += ",";
+					s.append(",");
 			}
-			s += "])";
+			s.append("])");
 			
 			if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier))
-				s += "#set($obsValues = $fn.getLastNObsWithValues(" + num + ", '" + conceptId + "', $arr))";
+				s.append("#set($obsValues = $fn.getLastNObsWithValues(").append(num).append(", '").append(conceptId).append(
+				    "', $arr))");
 			else if (DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier))
-				s += "#set($obsValues = $fn.getFirstNObsWithValues(" + num + ", '" + conceptId + "', $arr))";
-			s += "#foreach($vals in $obsValues)";
-			s += "#if($velocityCount > 1)";
-			s += "$!{fn.getSeparator()}";
-			s += "#end";
-			s += "#foreach($val in $vals)";
-			s += "#if($velocityCount > 1)";
-			s += "$!{fn.getSeparator()}";
-			s += "#end";
-			s += "$!{fn.getValueAsString($val)}";
-			s += "#end";
-			s += "#end\n";
+				s.append("#set($obsValues = $fn.getFirstNObsWithValues(").append(num).append(", '").append(conceptId)
+				        .append("', $arr))");
+			s.append("#foreach($vals in $obsValues)").append("#if($velocityCount > 1)").append("$!{fn.getSeparator()}")
+			        .append("#end").append("#foreach($val in $vals)").append("#if($velocityCount > 1)").append(
+			            "$!{fn.getSeparator()}").append("#end").append("$!{fn.getValueAsString($val)}").append("#end")
+			        .append("#end\n");
 		} else {
 			String function = " ";
 			if (DataExportReportObject.MODIFIER_ANY.equals(modifier))
@@ -109,55 +104,50 @@ public class ConceptColumn implements ExportColumn, Serializable {
 			if (extras.length < 1) {
 				function = "$!{fn.getValueAsString(" + function;
 				function += "('" + conceptId + "'))}";
-				s += function; // if we don't have extras, just call the normal function and print it
+				s.append(function); // if we don't have extras, just call the normal function and print it
 			} else {
 				
-				s += "#set($arr = [";
+				s.append("#set($arr = [");
 				for (Integer x = 0; x < extras.length; x++) {
-					s += "'" + extras[x] + "'";
+					s.append("'").append(extras[x]).append("'");
 					if (!x.equals(extras.length - 1))
-						s += ",";
+						s.append(",");
 				}
-				s += "])";
+				s.append("])");
 				
 				function += "WithValues('" + conceptId + "', $arr)";
 				
-				s += "#set($obsRow =" + function + ")";
-				s += "#foreach($val in $obsRow)";
-				s += "#if($velocityCount > 1)";
-				s += "$!{fn.getSeparator()}";
-				s += "#end";
-				s += "$!{fn.getValueAsString($val)}";
-				s += "#end\n";
+				s.append("#set($obsRow =" + function + ")").append("#foreach($val in $obsRow)").append(
+				    "#if($velocityCount > 1)").append("$!{fn.getSeparator()}").append("#end").append(
+				    "$!{fn.getValueAsString($val)}").append("#end\n");
 			}
 		}
 		
-		return s;
+		return s.toString();
 	}
 	
 	public String toTemplateString() {
 		Concept concept = Context.getConceptService().getConcept(conceptId);
-		String toReturn;
+		StringBuilder toReturn;
 		
 		if (!concept.isSet()) {
-			toReturn = toSingleTemplateString(concept.getConceptId());
+			toReturn = new StringBuilder(toSingleTemplateString(concept.getConceptId()));
 		} else {
 			List<Concept> setMembers = Context.getConceptService().getConceptsByConceptSet(concept);
-			toReturn = "";
+			toReturn = new StringBuilder("");
 			boolean firstMember = true;
 			for (Concept setMember : setMembers) {
 				if (firstMember) {
-					toReturn += toSingleTemplateString(setMember.getConceptId());
+					toReturn.append(toSingleTemplateString(setMember.getConceptId()));
 					firstMember = false;
 				} else {
-					toReturn += "$!{fn.getSeparator()}";
-					toReturn += toSingleTemplateString(setMember.getConceptId());
+					toReturn.append("$!{fn.getSeparator()}");
+					toReturn.append(toSingleTemplateString(setMember.getConceptId()));
 				}
 			}
 		}
 		
-		return toReturn;
-		
+		return toReturn.toString();
 	}
 	
 	public String getColumnType() {
@@ -206,25 +196,25 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	 */
 	public String getTemplateColumnName() {
 		Concept concept = Context.getConceptService().getConcept(conceptId);
-		String toReturn;
+		StringBuilder toReturn;
 		if (!concept.isSet()) {
-			toReturn = getTemplateSingleConceptColumnName(columnName);
+			toReturn = new StringBuilder(getTemplateSingleConceptColumnName(columnName));
 		} else {
 			List<Concept> setMembers = Context.getConceptService().getConceptsByConceptSet(concept);
-			toReturn = "";
+			toReturn = new StringBuilder("");
 			boolean firstMember = true;
 			for (Concept setMember : setMembers) {
 				if (firstMember) {
-					toReturn += getTemplateSingleConceptColumnName(setMember.getName().getName());
+					toReturn.append(getTemplateSingleConceptColumnName(setMember.getName().getName()));
 					firstMember = false;
 				} else {
-					toReturn += "$!{fn.getSeparator()}";
-					toReturn += getTemplateSingleConceptColumnName(setMember.getName().getName());
+					toReturn.append("$!{fn.getSeparator()}").append(
+					    getTemplateSingleConceptColumnName(setMember.getName().getName()));
 				}
 			}
 		}
 		
-		return toReturn;
+		return toReturn.toString();
 	}
 	
 	/**
@@ -235,18 +225,16 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	 * @return template column string for this concept
 	 */
 	private String getExtrasTemplateColumnNames(String columnName, boolean appendCount) {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		if (extras != null) {
 			for (String ext : extras) {
-				s += "$!{fn.getSeparator()}";
-				s += "\"";
-				s += columnName + "_" + ext;
+				s.append("$!{fn.getSeparator()}").append("\"").append(columnName).append("_").append(ext);
 				if (appendCount)
-					s += "_($velocityCount)";
-				s += "\"";
+					s.append("_($velocityCount)");
+				s.append("\"");
 			}
 		}
-		return s;
+		return s.toString();
 	}
 	
 	//// left for backwards compatibility to pre 1.0.43

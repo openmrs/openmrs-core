@@ -184,7 +184,7 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 	
 	public void writeComparisonList(Writer w) {
 		try {
-			String retStr = "";
+			StringBuilder retStr = new StringBuilder("");
 			if (this.operator != null && this.operator == org.openmrs.arden.ArdenBaseParserTokenTypes.IN) {
 				if (answerList == null) {
 					return;
@@ -194,27 +194,26 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 				// The first one in the list
 				if (itr.hasNext()) {
 					if (keyList != null) {
-						retStr = "\n\tprivate Result getResultList_" + this.keyList + "(){";
+						retStr.append("\n\tprivate Result getResultList_").append(this.keyList).append("(){");
 					} else {
-						retStr = "\n\tprivate Result getResultList_" + this.key + "(){";
+						retStr.append("\n\tprivate Result getResultList_").append(this.key).append("(){");
 					}
 					
 					while (itr.hasNext()) {
 						answer = itr.next();
 						if (answer instanceof Integer || answer instanceof Double || answer instanceof Float) {
-							retStr += "\n\t\tResult aList = new Result();";
-							retStr += "\n\t\taList.add(new Result(" + answer + "));";
+							retStr.append("\n\t\tResult aList = new Result();").append(
+							    "\n\t\taList.add(new Result(" + answer + "));");
 						} else {
-							retStr += "\n\t\tResult aList = new Result();";
-							retStr += "\n\t\tConcept concept = new Concept();";
-							retStr += "\n\t\tConceptName conceptName = new ConceptName(\"" + answer
-							        + "\", Context.getLocale());";
-							retStr += "concept.addName(conceptName);";
-							retStr += "\n\t\taList.add(new Result(concept));";
+							retStr.append("\n\t\tResult aList = new Result();").append(
+							    "\n\t\tConcept concept = new Concept();").append(
+							    "\n\t\tConceptName conceptName = new ConceptName(\"").append(answer).append(
+							    "\", Context.getLocale());").append("concept.addName(conceptName);").append(
+							    "\n\t\taList.add(new Result(concept));");
 						}
 					}
 					
-					retStr += "\n\t\treturn aList;\n\t}\n";
+					retStr.append("\n\t\treturn aList;\n\t}\n");
 				}
 			}
 			w.append(retStr);

@@ -1719,17 +1719,16 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			whereClauses.add("(o.discontinued_date is null or o.discontinued_date > :fromDate)");
 		}
 		
-		String sql = "select o.patient_id, d.drug_inventory_id " + "from orders o "
+		StringBuilder sql = new StringBuilder("select o.patient_id, d.drug_inventory_id " + "from orders o "
 		        + "    inner join patient p on o.patient_id = p.patient_id and p.voided = false "
-		        + "    inner join drug_order d on o.order_id = d.order_id ";
+		        + "    inner join drug_order d on o.order_id = d.order_id ");
 		for (ListIterator<String> i = whereClauses.listIterator(); i.hasNext();) {
-			sql += (i.nextIndex() == 0 ? " where " : " and ");
-			sql += i.next();
+			sql.append((i.nextIndex() == 0 ? " where " : " and ")).append(i.next());
 		}
 		
 		log.debug("sql= " + sql);
 		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setCacheMode(CacheMode.IGNORE);
 		
 		if (toDate != null)

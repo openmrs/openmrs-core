@@ -69,7 +69,7 @@ public class ConceptClassListController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String success = "";
+			StringBuilder success = new StringBuilder();
 			String error = "";
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -84,8 +84,8 @@ public class ConceptClassListController extends SimpleFormController {
 					try {
 						cs.purgeConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
 						if (!success.equals(""))
-							success += "<br/>";
-						success += cc + " " + deleted;
+							success.append("<br/>");
+						success.append(cc).append(" ").append(deleted);
 					}
 					catch (DataIntegrityViolationException e) {
 						error = handleConceptClassIntegrityException(e, error, notDeleted);
@@ -99,7 +99,7 @@ public class ConceptClassListController extends SimpleFormController {
 			
 			view = getSuccessView();
 			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}

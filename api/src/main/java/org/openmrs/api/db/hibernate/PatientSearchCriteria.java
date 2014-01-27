@@ -315,7 +315,7 @@ public class PatientSearchCriteria {
 		Conjunction conjunction = Restrictions.conjunction();
 		String[] nameParts = getQueryParts(name);
 		if (nameParts.length > 0) {
-			String multiName = nameParts[0];
+			StringBuilder multiName = new StringBuilder(nameParts[0]);
 			
 			for (int i = 0; i < nameParts.length; i++) {
 				String singleName = nameParts[i];
@@ -325,8 +325,8 @@ public class PatientSearchCriteria {
 					Criterion criterion = singleNameCriterion;
 					
 					if (i > 0) {
-						multiName += " " + singleName;
-						Criterion multiNameCriterion = getCriterionForName(multiName);
+						multiName.append(" " + singleName);
+						Criterion multiNameCriterion = getCriterionForName(multiName.toString());
 						criterion = Restrictions.or(singleNameCriterion, multiNameCriterion);
 					}
 					

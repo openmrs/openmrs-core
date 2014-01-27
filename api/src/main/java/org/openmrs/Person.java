@@ -584,13 +584,14 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return Returns a string with all the attributes
 	 */
 	public String printAttributes() {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		for (PersonAttribute attribute : getAttributes()) {
-			s += attribute.getAttributeType() + " : " + attribute.getValue() + " : voided? " + attribute.isVoided() + "\n";
+			s.append(attribute.getAttributeType()).append(" : ").append(attribute.getValue()).append(" : voided? ").append(
+			    attribute.isVoided()).append("\n");
 		}
 		
-		return s;
+		return s.toString();
 	}
 	
 	/**

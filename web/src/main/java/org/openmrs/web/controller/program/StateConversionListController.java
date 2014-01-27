@@ -57,8 +57,8 @@ public class StateConversionListController extends SimpleFormController {
 			String[] conversionIdList = request.getParameterValues("conceptStateConversionId");
 			ProgramWorkflowService pws = Context.getProgramWorkflowService();
 			
-			String success = "";
-			String error = "";
+			StringBuilder success = new StringBuilder("");
+			StringBuilder error = new StringBuilder("");
 			int numDeleted = 0;
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -71,28 +71,28 @@ public class StateConversionListController extends SimpleFormController {
 					try {
 						pws.purgeConceptStateConversion(pws.getConceptStateConversion(Integer.valueOf(id)));
 						if (!success.equals(""))
-							success += "<br/>";
-						success += textConversion + " " + id + " " + deleted;
+							success.append("<br/>");
+						success.append(textConversion).append(" ").append(id).append(" ").append(deleted);
 						numDeleted++;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting concept state conversion", e);
 						if (!error.equals(""))
-							error += "<br/>";
-						error += textConversion + " " + id + " " + notDeleted;
+							error.append("<br/>");
+						error.append(textConversion).append(" ").append(id).append(" ").append(notDeleted);
 					}
 				}
 				
 				if (numDeleted > 3)
-					success = numDeleted + " " + deleted;
+					success = new StringBuilder(numDeleted).append(" ").append(deleted);
 			} else {
-				success += noneDeleted;
+				success.append(noneDeleted);
 			}
 			view = getSuccessView();
 			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
 		return new ModelAndView(new RedirectView(view));
