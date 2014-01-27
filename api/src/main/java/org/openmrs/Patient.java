@@ -184,7 +184,7 @@ public class Patient extends Person implements java.io.Serializable {
 				}
 			}
 		}
-
+		
 		if (identifiers == null) {
 			identifiers = new HashSet<PatientIdentifier>();
 		}

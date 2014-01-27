@@ -414,7 +414,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should fail if the preferred name to set to is an index term
 	 */
 	public void setPreferredName(ConceptName preferredName) {
-
+		
 		if (preferredName == null || preferredName.isVoided() || preferredName.isIndexTerm()) {
 			throw new APIException("Preferred name cannot be null, voided or an index term");
 		} else if (preferredName.getLocale() == null) {
@@ -1479,7 +1479,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (conceptMappings == null) {
 			conceptMappings = new HashSet<ConceptMap>();
 		}
-
+		
 		if (newConceptMap != null) {
 			newConceptMap.setConcept(this);
 		}
@@ -1490,7 +1490,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			conceptMappings.add(newConceptMap);
 		}
 	}
-
+	
 	/**
 	 * Child Class ConceptComplex overrides this method and returns true. See
 	 * {@link org.openmrs.ConceptComplex#isComplex()}. Otherwise this method returns false.
@@ -1501,7 +1501,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public boolean isComplex() {
 		return false;
 	}
-
+	
 	/**
 	 * Remove the given ConceptMap from the list of mappings for this Concept
 	 *
