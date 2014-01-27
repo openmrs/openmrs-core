@@ -2053,8 +2053,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 			//join to the concept map types
 			searchCriteria.createAlias("drugReferenceMap.conceptMapType","conceptMapType");
 			//get only the ones with these types by looping through the collection of conceptMapTypes
-			if(withAnyOfTheseTypes != null || !(withAnyOfTheseTypes.isEmpty())) {
-					searchCriteria.add(Restrictions.eq("conceptMapType", Arrays.asList(withAnyOfTheseTypes)));
+			for(ConceptMapType conceptMapType : withAnyOfTheseTypes) {
+				if(conceptMapType != null) {
+					searchCriteria.add(Restrictions.eq("conceptMapType", conceptMapType));
+				}
 			}
 			searchCriteria.createAlias("drug", "drug");
 			if (!includeRetired) {
