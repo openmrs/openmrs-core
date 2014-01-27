@@ -201,6 +201,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
 		patientIdentifiers.add(patientIdentifier);
 		patient.setIdentifiers(patientIdentifiers);
+		
 		ps.savePatient(patient);
 		return patient;
 	}
