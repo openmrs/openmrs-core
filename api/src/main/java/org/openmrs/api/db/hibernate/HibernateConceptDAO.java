@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -2040,26 +2041,22 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException {
 
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(DrugReferenceMap.class);
-		// make this criteria return a list of drugs
-		searchCriteria.setProjection(Projections.property("drug"));
-		//join to the conceptReferenceTerm table
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class);
+		//join to the drugReferenceMap table
 		if (conceptSource == null) {
-			searchCriteria.createAlias("conceptReferenceTerm", "term");
+			searchCriteria.createAlias("DrugReferenceMap", "drugReferenceMap");
 			// match the source code to the passed code
-			searchCriteria.add(Restrictions.eq("term.code", code));
+			searchCriteria.add(Restrictions.eq("drugReferenceMap.conceptReferenceTerm.code", code));
 			// join to concept source and match to the h17Code or concept source
-			searchCriteria.createAlias("term.conceptSource", "source");
-			searchCriteria.add(Restrictions.or(Restrictions.eq("source.name", conceptSource.getName()), Restrictions.eq("source.hl7Code", conceptSource.getHl7Code())));
-			//get only the ones with these types by looping through the collection
-			for(ConceptMapType conceptMapType : withAnyOfTheseTypes) {
-				//find any of the values with non null values on the conceptMapType and if you get any stop
-				if(conceptMapType != null) {
-					searchCriteria.add(Restrictions.eq("conceptMapType", conceptMapType));
-				}
+			searchCriteria.createAlias("drugReferenceMap.conceptReferenceTerm.conceptSource", "source");
+			searchCriteria.add(Restrictions.eq("source", conceptSource));
+			//join to the concept map types
+			searchCriteria.createAlias("drugReferenceMap.conceptMapType","conceptMapType");
+			//get only the ones with these types by looping through the collection of conceptMapTypes
+			if(withAnyOfTheseTypes != null || !(withAnyOfTheseTypes.isEmpty())) {
+					searchCriteria.add(Restrictions.eq("conceptMapType", Arrays.asList(withAnyOfTheseTypes)));
 			}
 			searchCriteria.createAlias("drug", "drug");
-
 			if (!includeRetired) {
 				searchCriteria.add(Restrictions.eq("drug.retired", false));
 			}
