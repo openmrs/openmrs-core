@@ -204,7 +204,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 					for (String name : names) {
 						if (name.length() > 3)
 							name = name.substring(0, 3);
-						newSearch.append(name);
+						newSearch.append(" ").append(name);
 					}
 					
 					String newSearchStr = newSearch.toString().trim();
