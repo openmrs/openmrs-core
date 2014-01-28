@@ -241,7 +241,7 @@ public final class OpenmrsConstants {
 	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
 	 * @see OpenmrsUtil#getApplicationDataDirectory()
 	 */
-	public static String APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX = "/var/lib/";
+	public static String APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX = "/var/lib";
 	public static String APPLICATION_DATA_DIRECTORY_FALLBACK_WIN = System.getenv("%appdata%");
 	
 	/**
