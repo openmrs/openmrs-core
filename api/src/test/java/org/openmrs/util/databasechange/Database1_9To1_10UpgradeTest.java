@@ -17,12 +17,15 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.util.DatabaseUtil;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,7 +109,7 @@ public class Database1_9To1_10UpgradeTest {
 	}
 	
 	@Test(expected = Exception.class)
-	public void shouldFailIfAnyDrugOrderUnitsNotMappedToConceptsAreFound() throws IOException, Exception {
+	public void shouldFailIfAnyDrugOrderUnitsNotMappedToConceptsAreFound() throws Exception {
 		//sanity check that we have some unmapped drug order dose units
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
@@ -121,7 +124,7 @@ public class Database1_9To1_10UpgradeTest {
 	}
 	
 	@Test(expected = Exception.class)
-	public void shouldFailIfAnyDrugOrderFrequenciesNotMappedToConceptsAreFound() throws IOException, Exception {
+	public void shouldFailIfAnyDrugOrderFrequenciesNotMappedToConceptsAreFound() throws Exception {
 		//sanity check that we have some unmapped drug order frequencies
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
@@ -135,7 +138,7 @@ public class Database1_9To1_10UpgradeTest {
 	}
 	
 	@Test
-	public void shouldPassIfAllExistingDrugOrderUnitsAndFrequenciesAreMappedToConcepts() throws IOException, Exception {
+	public void shouldPassIfAllExistingDrugOrderUnitsAndFrequenciesAreMappedToConcepts() throws Exception {
 		//sanity check that we have some drug order dose units and frequencies in the test dataset
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
@@ -155,11 +158,125 @@ public class Database1_9To1_10UpgradeTest {
 		upgradeTestUtil.upgrade();
 	}
 	
+	@Test
+    @Ignore
+	public void shouldConvertOrderersToBeingProvidersInsteadOfUsers() throws Exception {
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-convertOrdererToProvider.xml");
+		
+		//Sanity check that we have 3 orders where orderer has no provider account
+		Set<Integer> personIdsWithNoProviderAccount = new HashSet<Integer>();
+		List<OrderAndPerson> ordersAndOrderersWithNoProviderAccount = new ArrayList<OrderAndPerson>();
+		List<List<Object>> rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "select o.order_id, u.person_id from orders o join users u on o.orderer = u.user_id "
+		            + "where u.person_id not in (select distinct person_id from provider)", true);
+		for (List<Object> row : rows) {
+			ordersAndOrderersWithNoProviderAccount.add(new OrderAndPerson((Integer) row.get(0), (Integer) row.get(1)));
+			personIdsWithNoProviderAccount.add((Integer) row.get(1));
+		}
+		Assert.assertEquals(3, ordersAndOrderersWithNoProviderAccount.size());
+		Assert.assertEquals(2, personIdsWithNoProviderAccount.size());
+		Assert.assertThat(personIdsWithNoProviderAccount, Matchers.hasItems(101, 102));
+		
+		//Sanity check that we have 1 order where orderer has a provider account
+		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "select o.order_id, o.orderer, u.person_id from orders o join users u on o.orderer = u.user_id "
+		            + "where u.person_id in (select distinct person_id from provider)", true);
+		List<OrderAndPerson> ordersAndOrderersWithAProviderAccount = new ArrayList<OrderAndPerson>();
+		for (List<Object> row : rows) {
+			ordersAndOrderersWithAProviderAccount.add(new OrderAndPerson((Integer) row.get(0), (Integer) row.get(1)));
+		}
+		Assert.assertEquals(7, ordersAndOrderersWithAProviderAccount.size());
+		
+		//Sanity check that we have 2 order with null orderer
+		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "select order_id from orders where orderer is null ", true);
+		List<Integer> ordersWithNullOrderer = new ArrayList<Integer>();
+		for (List<Object> row : rows) {
+			ordersWithNullOrderer.add((Integer) row.get(0));
+		}
+		Assert.assertEquals(2, ordersWithNullOrderer.size());
+		
+		Set<Integer> originalProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider",
+		    Integer.class, upgradeTestUtil.getConnection());
+		
+		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings",
+		    "mg:111,tab(s):112,1/day x 7 days/week:113,2/day x 7 days/week:114");
+		
+		upgradeTestUtil.upgrade();
+		
+		Set<Integer> newProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider", Integer.class,
+		    upgradeTestUtil.getConnection());
+		//A provider account should have been created for each user with none
+		Assert.assertEquals(originalProviderIds.size() + 2, newProviderIds.size());
+		
+		//Should still have the 2 orders with null orderer
+		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "select order_id from orders where orderer is null ", true);
+		List<Integer> newOrdersWithNullOrderer = new ArrayList<Integer>();
+		for (List<Object> row : rows) {
+			newOrdersWithNullOrderer.add((Integer) row.get(0));
+		}
+		Assert.assertEquals(2, newOrdersWithNullOrderer.size());
+		Assert.assertEquals(ordersWithNullOrderer, newOrdersWithNullOrderer);
+		
+		//That correct providers were set for each order, i.e the person record for the provider
+		//should match the that of the user account before upgrade
+		for (OrderAndPerson op : ordersAndOrderersWithAProviderAccount) {
+			rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where order_id = "
+			            + op.getOrderId(), true);
+			Assert.assertEquals(op.getPersonId(), rows.get(0).get(1));
+			//The provider account should be an existing one prior to upgrade
+			Assert.assertFalse(originalProviderIds.contains(rows.get(0).get(0)));
+		}
+		
+		//That correct providers were set for each order, i.e the person record for the created provider
+		//should match the that of the user account before upgrade
+		for (OrderAndPerson op : ordersAndOrderersWithNoProviderAccount) {
+			rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where order_id = "
+			            + op.getOrderId(), true);
+			Assert.assertEquals(op.getPersonId(), rows.get(0).get(1));
+			//The provider account should be new
+			Assert.assertFalse(newProviderIds.contains(rows.get(0).get(0)));
+		}
+	}
+	
 	private Map<String, String> row(String... values) {
 		Map<String, String> row = new HashMap<String, String>();
 		for (int i = 0; i < values.length; i += 2) {
 			row.put(values[i], values[i + 1]);
 		}
 		return row;
+	}
+	
+	private class OrderAndPerson {
+		
+		private Integer orderId;
+		
+		private Integer personId;
+		
+		OrderAndPerson(Integer orderId, Integer personId) {
+			this.orderId = orderId;
+			this.personId = personId;
+		}
+		
+		Integer getOrderId() {
+			return orderId;
+		}
+		
+		void setOrderId(Integer orderId) {
+			this.orderId = orderId;
+		}
+		
+		Integer getPersonId() {
+			return personId;
+		}
+		
+		void setPersonId(Integer personId) {
+			this.personId = personId;
+		}
 	}
 }
