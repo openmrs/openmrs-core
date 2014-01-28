@@ -151,6 +151,17 @@
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+    <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+     <td colspan="${fn:length(locales)}">
+       <font color="#D0D0D0"><sub>
+       <c:if test="${attributeType.locationAttributeTypeId != null}">
+       <spring:bind path="attributeType.uuid">
+           <c:out value="${status.value}"></c:out>
+       </spring:bind></c:if>
+       </sub></font>
+     </td>
+   </tr>
 </table>
 <br />
 

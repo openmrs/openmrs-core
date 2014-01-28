@@ -57,6 +57,12 @@
 			<td class="description"></td>
 		</tr>
 	</c:if>
+	<tr>
+ 		 <c:if test="${conceptSource.conceptSourceId != null}">
+           <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${conceptSource.uuid}</sub></font></td>
+         </c:if>
+   </tr>
 </table>
 </fieldset>
 

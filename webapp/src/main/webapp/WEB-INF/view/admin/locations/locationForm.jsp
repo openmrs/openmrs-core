@@ -105,6 +105,16 @@
 				</td>
 			</tr>
 		</c:if>
+		<tr>
+		 <c:if test="${location.locationId != null}">
+           <th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid" /></sub></font></th>
+           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+           <spring:bind path="location.uuid">
+               <c:out value="${status.value}"></c:out>
+           </spring:bind></sub></font>
+           </td>
+         </c:if>
+        </tr>
 	</table>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationForm.inForm" type="html" parameters="locationId=${location.locationId}" />
 	<br />
