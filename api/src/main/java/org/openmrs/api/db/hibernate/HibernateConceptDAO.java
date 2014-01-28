@@ -2032,16 +2032,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDrugsByMapping(String, ConceptSource, Collection, boolean)
 	 */
 	@Override
-	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException {
-
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException {
+		
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class);
 		//join to the drugReferenceMap table
-		if (conceptSource == null) {
+		if (conceptSource != null) {
 			searchCriteria.createAlias("drugReferenceMap", "drugReferenceMaps");
 			// match the source code to the passed code
 			searchCriteria.add(Restrictions.eq("drugReferenceMaps.conceptReferenceTerm.code", code));
@@ -2049,10 +2050,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 			searchCriteria.createAlias("drugReferenceMaps.conceptReferenceTerm.conceptSource", "source");
 			searchCriteria.add(Restrictions.eq("source", conceptSource));
 			//join to the concept map types
-			searchCriteria.createAlias("drugReferenceMaps.conceptMapType","conceptMapTypes");
+			searchCriteria.createAlias("drugReferenceMaps.conceptMapType", "conceptMapTypes");
 			//get only the ones with these types by looping through the collection of conceptMapTypes
-			for(ConceptMapType conceptMapType : withAnyOfTheseTypes) {
-				if(conceptMapType != null) {
+			for (ConceptMapType conceptMapType : withAnyOfTheseTypes) {
+				if (conceptMapType != null) {
 					searchCriteria.add(Restrictions.eq("conceptMapTypes", conceptMapType));
 				}
 			}
