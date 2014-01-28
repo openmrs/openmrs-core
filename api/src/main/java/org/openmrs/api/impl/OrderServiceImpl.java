@@ -249,7 +249,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
 	        Date asOfDate) {
 		if (patient == null) {
-			throw new IllegalArgumentException("Patient is required when fetch active orders");
+			throw new IllegalArgumentException("Patient is required when fetching active orders");
 		}
 		if (asOfDate == null) {
 			asOfDate = new Date();

@@ -221,9 +221,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		        .isNull("autoExpireDate"));
 		dateStoppedAndAutoExpDateDisjunction.add(stopAndAutoExpDateAreBothNull);
 		
-		Criterion dateStoppedEqualToOrAfterAsOfDate = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions.ge(
-		    "autoExpireDate", asOfDate));
-		dateStoppedAndAutoExpDateDisjunction.add(dateStoppedEqualToOrAfterAsOfDate);
+		Criterion autoExpireDateEqualToOrAfterAsOfDate = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions
+		        .ge("autoExpireDate", asOfDate));
+		dateStoppedAndAutoExpDateDisjunction.add(autoExpireDateEqualToOrAfterAsOfDate);
 		
 		dateStoppedAndAutoExpDateDisjunction.add(Restrictions.ge("dateStopped", asOfDate));
 		
