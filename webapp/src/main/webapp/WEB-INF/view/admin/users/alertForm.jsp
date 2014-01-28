@@ -230,6 +230,12 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<tr>
+         <c:if test="${alert.alertId != null}">
+           <th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
+           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${alert.uuid}</sub></font></td>
+         </c:if>
+ 	</tr>
 	<c:if test="${!(encounter.changedBy == null)}">
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
