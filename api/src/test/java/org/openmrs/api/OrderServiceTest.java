@@ -256,9 +256,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orders = Context.getOrderService().getActiveOrders(patient, DrugOrder.class, os.getCareSetting(2), false);
 		Assert.assertEquals(0, orders.size());
 	}
-	
-	@Test
-	@Verifies(value = "should populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, String, Date)")
+
+    /**
+     * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)}
+     */
+    @Test
+	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, String, Date)")
 	public void discontinueOrderWithNonCodedReason_shouldPopulateCorrectAttributesOnBothOrders() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		
@@ -274,10 +277,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(discontinueOrder.getId());
 		Assert.assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
 		Assert.assertEquals(discontinueOrder.getDiscontinuedReasonNonCoded(), discontinueReasonNonCoded);
+        Assert.assertEquals(discontinueOrder.getPreviousOrder(), order);
 	}
-	
-	@Test
-	@Verifies(value = "should populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, Concept, Date)")
+
+    /**
+     * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)}
+     */
+    @Test
+	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, Concept, Date)")
 	public void discontinueOrderWithConcept_shouldPopulateCorrectAttributesOnBothOrders() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
@@ -294,11 +301,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(discontinueOrder.getId());
 		Assert.assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
 		Assert.assertEquals(discontinueOrder.getDiscontinuedReason(), concept);
+        Assert.assertEquals(discontinueOrder.getPreviousOrder(), order);
 	}
-	
+
+    /**
+     * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)}
+     */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail when orderToDiscontinue is a DC order", method = "discontinueOrder(Order, String, Date)")
-	public void discontinueOrderWithNonCodedReason_shouldFailWhenItIsADiscontinueOrder() throws Exception {
+	@Verifies(value = "fail when for a discontinue order", method = "discontinueOrder(Order, String, Date)")
+	public void discontinueOrderWithNonCodedReason_shouldFailForADiscontinueOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
 		OrderService orderService = Context.getOrderService();
@@ -306,10 +317,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		orderService.discontinueOrder(discontinueOrder, "Test if I can discontinue this", null);
 	}
-	
+
+
+    /**
+     * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)}
+     */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail when orderToDiscontinue is a DC order", method = "discontinueOrder(Order, Concept, Date)")
-	public void discontinueOrderWithConcept_shouldFailWhenItIsADiscontinueOrder() throws Exception {
+	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, Concept, Date)")
+	public void discontinueOrderWithConcept_shouldFailForADiscontinueOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
@@ -318,36 +333,42 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		orderService.discontinueOrder(discontinueOrder, (Concept) null, null);
 	}
-	
+
+    /**
+     * @see {@link OrderService#saveOrder(org.openmrs.Order)}
+     */
 	@Test
-	@Verifies(value = "should discontinue existing active order if new order being saved with action to discontinue", method = "saveOrder(Order)")
-	public void saveOrder_shouldSaveADiscontinueOrder() throws Exception {
+	@Verifies(value = "discontinue existing active order if new order being saved with action to discontinue", method = "saveOrder(Order)")
+	public void saveOrder_shouldDiscontinueExistingActiveOrderIfNewOrderBeingSavedWithActionToDiscontinue() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		OrderService orderService = Context.getOrderService();
-		//We are trying to discontinue order id 111 in standardTestDataset.xml
-		Order order = new Order();
-		order.setAction(Order.Action.DISCONTINUE);
-		order.setDiscontinuedReasonNonCoded("Discontinue this");
-		order.setPatient(Context.getPatientService().getPatient(7));
-		order.setConcept(Context.getConceptService().getConcept(88));
-		order.setCareSetting(orderService.getCareSetting(1));
-		order.setStartDate(new Date());
-		
-		order = orderService.saveOrder(order);
-		
-		Order expectedPreviousOrder = orderService.getOrder(111);
+        Order order = new Order();
+        order.setAction(Order.Action.DISCONTINUE);
+        order.setDiscontinuedReasonNonCoded("Discontinue this");
+        order.setPatient(Context.getPatientService().getPatient(7));
+        order.setConcept(Context.getConceptService().getConcept(88));
+        order.setCareSetting(orderService.getCareSetting(1));
+        order.setStartDate(new Date());
+
+        //We are trying to discontinue order id 111 in standardTestDataset.xml
+        Order expectedPreviousOrder = orderService.getOrder(111);
+        Assert.assertNull(expectedPreviousOrder.getDateStopped());
+
+        order = orderService.saveOrder(order);
+
 		Assert.assertNotNull("should populate dateStopped in previous order", expectedPreviousOrder.getDateStopped());
 		Assert.assertNotNull("should save discontinue order", order.getId());
 		Assert.assertEquals(expectedPreviousOrder, order.getPreviousOrder());
-		Assert.assertNotNull(expectedPreviousOrder.getDateStopped());
+        Assert.assertNotNull(expectedPreviousOrder.getDateStopped());
 	}
-	
+
+    /**
+     * @see {@link OrderService#saveOrder(org.openmrs.Order)}
+     */
 	@Test
-	@Verifies(value = "should discontinue previousOrder if it is not already discontinued", method = "saveOrder(Order)")
-	public void saveOrder_shouldSaveADiscontinueOrderWhenPreviousOrderIsProvided() throws Exception {
+	@Verifies(value = "discontinue previousOrder if it is not already discontinued", method = "saveOrder(Order)")
+	public void saveOrder_shouldDiscontinuePreviousOrderIfItIsNotAlreadyDiscontinued() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		OrderService orderService = Context.getOrderService();
 		//We are trying to discontinue order id 111 in standardTestDataset.xml
 		Order order = new Order();
@@ -364,12 +385,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotNull("previous order should be discontinued", previousOrder.getDateStopped());
 	}
-	
+
+    /**
+     * @see {@link OrderService#saveOrder(org.openmrs.Order)}
+     */
 	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if concept in previous order does not match concept in DC order", method = "saveOrder(Order)")
+	@Verifies(value = "fail if concept in previous order does not match this concept", method = "saveOrder(Order)")
 	public void saveOrder_shouldFailIfConceptInPreviousOrderDoesNotMatchThisConcept() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		OrderService orderService = Context.getOrderService();
 		//We are trying to discontinue order id 111 in standardTestDataset.xml
 		Order order = new Order();

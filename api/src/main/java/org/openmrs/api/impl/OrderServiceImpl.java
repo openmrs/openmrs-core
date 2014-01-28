@@ -83,7 +83,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		return dao.saveOrder(order);
 	}
-	
+
+    /**
+     * If this is a discontinue order, ensure that the previous order is discontinued.
+     * If a previousOrder is present, then ensure this is discontinued.
+     * If no previousOrder is present, then try to find a previousOrder and discontinue it.
+     * If cannot find a previousOrder, throw exception
+     *
+     * @param order
+     */
 	private void discontinueExistingOrdersIfRequired(Order order) {
 		//Ignore and return if this is not an order to discontinue
 		if (!Order.Action.DISCONTINUE.equals(order.getAction()))
@@ -97,7 +105,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			
 			if (previousOrder.getDateStopped() == null) {
-				discontinueOrder(previousOrder, order.getStartDate());
+				discontinue(previousOrder, order.getStartDate());
 			}
 			return;
 		}
@@ -107,12 +115,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		for (Order activeOrder : orders) {
 			if (activeOrder.getConcept().equals(order.getConcept())) {
 				order.setPreviousOrder(activeOrder);
-				discontinueOrder(activeOrder, order.getStartDate());
+				discontinue(activeOrder, order.getStartDate());
 				return;
 			}
 		}
-		
-		throw new APIException("We could not find an active order with the concept " + order.getConcept()
+
+		throw new APIException("Could not find an active order with the concept " + order.getConcept()
 		        + " to discontinue. ");
 	}
 	
@@ -295,7 +303,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) {
-		discontinueOrder(orderToDiscontinue, discontinueDate);
+		discontinue(orderToDiscontinue, discontinueDate);
 		
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setDiscontinuedReason(reasonCoded);
@@ -308,7 +316,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) {
-		discontinueOrder(orderToDiscontinue, discontinueDate);
+		discontinue(orderToDiscontinue, discontinueDate);
 		
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setDiscontinuedReasonNonCoded(reasonNonCoded);
@@ -322,7 +330,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @param orderToDiscontinue
 	 * @param discontinueDate
 	 */
-	private void discontinueOrder(Order orderToDiscontinue, Date discontinueDate) {
+	private void discontinue(Order orderToDiscontinue, Date discontinueDate) {
 		if (orderToDiscontinue.getAction().equals(Order.Action.DISCONTINUE)) {
 			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued. ");
 		}
