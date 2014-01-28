@@ -13,22 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,7 +55,6 @@ import org.openmrs.ConceptStopWord;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
-import org.openmrs.DrugReferenceMap;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -79,6 +62,21 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.util.OpenmrsConstants;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
@@ -276,7 +274,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	public void purgeConcept(Concept concept) throws DAOException {
 		// must delete all the stored concept words first
-		sessionFactory.getCurrentSession().createQuery("delete ConceptWord where concept = :c").setInteger("c",
+		sessionFactory.getCurrentSession().createQuery("delete Concept+Word where concept = :c").setInteger("c",
 		    concept.getConceptId()).executeUpdate();
 		
 		// now we can safely delete the concept
@@ -2044,23 +2042,22 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class);
 		//join to the drugReferenceMap table
 		if (conceptSource == null) {
-			searchCriteria.createAlias("DrugReferenceMap", "drugReferenceMap");
+			searchCriteria.createAlias("drugReferenceMap", "drugReferenceMaps");
 			// match the source code to the passed code
-			searchCriteria.add(Restrictions.eq("drugReferenceMap.conceptReferenceTerm.code", code));
+			searchCriteria.add(Restrictions.eq("drugReferenceMaps.conceptReferenceTerm.code", code));
 			// join to concept source and match to the h17Code or concept source
-			searchCriteria.createAlias("drugReferenceMap.conceptReferenceTerm.conceptSource", "source");
+			searchCriteria.createAlias("drugReferenceMaps.conceptReferenceTerm.conceptSource", "source");
 			searchCriteria.add(Restrictions.eq("source", conceptSource));
 			//join to the concept map types
-			searchCriteria.createAlias("drugReferenceMap.conceptMapType","conceptMapType");
+			searchCriteria.createAlias("drugReferenceMaps.conceptMapType","conceptMapTypes");
 			//get only the ones with these types by looping through the collection of conceptMapTypes
 			for(ConceptMapType conceptMapType : withAnyOfTheseTypes) {
 				if(conceptMapType != null) {
-					searchCriteria.add(Restrictions.eq("conceptMapType", conceptMapType));
+					searchCriteria.add(Restrictions.eq("conceptMapTypes", conceptMapType));
 				}
 			}
-			searchCriteria.createAlias("drug", "drug");
 			if (!includeRetired) {
-				searchCriteria.add(Restrictions.eq("drug.retired", false));
+				searchCriteria.add(Restrictions.eq("retired", false));
 			}
 		}
 		return (List<Drug>) searchCriteria.list();

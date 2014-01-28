@@ -2048,6 +2048,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 * @return the list of {@link Drug}
 	 * @throws APIException
+	 * @should return a list of drugs by drug mappings
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
@@ -2065,6 +2066,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 * @return the {@link Drug}
 	 * @throws APIException
+	 * @should return the best Matched drug
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
