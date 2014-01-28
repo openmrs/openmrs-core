@@ -278,7 +278,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(person.getCreator());
 		Assert.assertNotNull(person.getPersonCreator());
 	}
-
+	
 	@Test
 	public void onSave_shouldPopulatePersonChangedByandPersonDateChangedIfPersonAlreadyExists() throws Exception {
 		Person person = Context.getPersonService().getPerson(1);
@@ -293,7 +293,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(person.getPersonChangedBy());
 		Assert.assertNotNull(person.getPersonDateChanged());
 	}
-
+	
 	private Person createPersonWithNameAndAddress() {
 		Person person = new Person();
 		person.setGender("M");
