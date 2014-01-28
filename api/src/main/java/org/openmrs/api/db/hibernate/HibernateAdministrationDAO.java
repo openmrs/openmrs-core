@@ -35,6 +35,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
+import org.hibernate.type.MaterializedClobType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
@@ -348,10 +349,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 		
 		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
-		if (persistentClass == null)
+		if (persistentClass == null) {
 			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
-		
-		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
+			return -1;
+		}
+		Column col = persistentClass.getTable().getColumn(new Column(fieldName));
+
+		return col == null || col.getValue().getType().getClass() == MaterializedClobType.class ? -1 : col.getLength();
 	}
 	
 	@Override
