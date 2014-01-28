@@ -14,8 +14,10 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Arrays;
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,7 +26,6 @@ import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 
 /**
@@ -58,14 +59,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	 */
 	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] entityCurrentState, String[] propertyNames, Type[] types) {
-		boolean objectWasChanged;
-		boolean personObjectWasChanged = false;
-		
-		if (entity instanceof Person) {
-			personObjectWasChanged = setPersonCreatorAndDateCreatedIfNull(entity, entityCurrentState, propertyNames);
-		}
-		objectWasChanged = setCreatorAndDateCreatedIfNull(entity, entityCurrentState, propertyNames);
-		return objectWasChanged || personObjectWasChanged;
+		return setCreatorAndDateCreatedIfNull(entity, entityCurrentState, propertyNames);
 	}
 	
 	/**
@@ -79,10 +73,11 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	 * @see org.hibernate.EmptyInterceptor#onFlushDirty(java.lang.Object, java.io.Serializable,
 	 *      java.lang.Object[], java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
 	 */
+	
 	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) throws CallbackException {
-		boolean objectWasChanged = false;
+		boolean objectWasChanged;
 		
 		objectWasChanged = setCreatorAndDateCreatedIfNull(entity, currentState, propertyNames);
 		
@@ -90,61 +85,18 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			if (log.isDebugEnabled())
 				log.debug("Setting changed by fields on " + entity.getClass());
 			
-			if (changePropertyValue(currentState, propertyNames, "changedBy", Context.getAuthenticatedUser(), false)) {
-				objectWasChanged = true;
-			}
-			
-			if (changePropertyValue(currentState, propertyNames, "dateChanged", new Date(), false)) {
-				objectWasChanged = true;
-			}
+			HashMap<String, Object> propertyValues = getPropertyValuesToUpdate();
+			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, false);
 		}
-		
-		if (entity instanceof Person && propertyNames != null) {
-			if (log.isDebugEnabled())
-				log.debug("Setting changed by fields on " + entity.getClass());
-			
-			if (changePropertyValue(currentState, propertyNames, "personChangedBy", Context.getAuthenticatedUser(), false)) {
-				objectWasChanged = true;
-			}
-			
-			if (changePropertyValue(currentState, propertyNames, "personDateChanged", new Date(), false)) {
-				objectWasChanged = true;
-			}
-		}
-		
-		return objectWasChanged;
-	}
-	
-	/**
-	 * Sets the personCreator and personDateCreated fields to the current user and the current time if they are
-	 * null.
-	 *
-	 * @return true if personCreator and personDateCreated were changed
-	 */
-	
-	private Boolean setPersonCreatorAndDateCreatedIfNull(Object entity, Object[] currentState, String[] propertyNames) {
-		boolean objectWasChanged = false;
-		
-		if (entity instanceof OpenmrsObject) {
-			if (log.isDebugEnabled())
-				log.debug("Setting personCreator and personDateCreated on " + entity);
-			
-			if (changePropertyValue(currentState, propertyNames, "personCreator", Context.getAuthenticatedUser(), true)) {
-				objectWasChanged = true;
-			}
-			
-			if (changePropertyValue(currentState, propertyNames, "personDateCreated", new Date(), true)) {
-				objectWasChanged = true;
-			}
-		}
-		
 		return objectWasChanged;
 	}
 	
 	/**
 	 * Sets the creator and dateCreated fields to the current user and the current time if they are
 	 * null.
-	 * 
+	 * if is a Person Object, sets the personCreator and personDateCreated fields to the current user and the current time
+	 * if they are null.
+	 *
 	 * @param entity
 	 * @param currentState
 	 * @param propertyNames
@@ -158,16 +110,39 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			if (log.isDebugEnabled())
 				log.debug("Setting creator and dateCreated on " + entity);
 			
-			if (changePropertyValue(currentState, propertyNames, "creator", Context.getAuthenticatedUser(), true)) {
-				objectWasChanged = true;
-			}
-			
-			if (changePropertyValue(currentState, propertyNames, "dateCreated", new Date(), true)) {
+			HashMap<String, Object> propertyValues = getPropertyValuesToSave();
+			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, true);
+		}
+		return objectWasChanged;
+	}
+	
+	private boolean changeProperties(Object[] currentState, String[] propertyNames, boolean objectWasChanged,
+	        HashMap<String, Object> propertyValues, Boolean setNullOnly) {
+		
+		for (String property : propertyValues.keySet()) {
+			if (changePropertyValue(currentState, propertyNames, property, propertyValues.get(property), setNullOnly)) {
 				objectWasChanged = true;
 			}
 		}
-		
 		return objectWasChanged;
+	}
+	
+	private HashMap<String, Object> getPropertyValuesToSave() {
+		HashMap<String, Object> propertyValues = new HashMap<String, Object>();
+		propertyValues.put("creator", Context.getAuthenticatedUser());
+		propertyValues.put("dateCreated", new Date());
+		propertyValues.put("personCreator", Context.getAuthenticatedUser());
+		propertyValues.put("personDateCreated", new Date());
+		return propertyValues;
+	}
+	
+	private HashMap<String, Object> getPropertyValuesToUpdate() {
+		HashMap<String, Object> propertyValues = new HashMap<String, Object>();
+		propertyValues.put("changedBy", Context.getAuthenticatedUser());
+		propertyValues.put("dateChanged", new Date());
+		propertyValues.put("personChangedBy", Context.getAuthenticatedUser());
+		propertyValues.put("personDateChanged", new Date());
+		return propertyValues;
 	}
 	
 	/**
@@ -185,54 +160,17 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		
 		int index = Arrays.asList(propertyNames).indexOf(propertyToSet);
 		
-		// HACK! When I apply the patch for TRUNK-2588, and then I try to start OpenMRS for the first time during the init wizard
-		// I get something like this:
-		/*
-		java.lang.NullPointerException
-		at org.openmrs.api.db.hibernate.AuditableInterceptor.changePropertyValue(AuditableInterceptor.java:140)
-		at org.openmrs.api.db.hibernate.AuditableInterceptor.onFlushDirty(AuditableInterceptor.java:83)
-		at org.openmrs.api.db.hibernate.ChainingInterceptor.onFlushDirty(ChainingInterceptor.java:77)
-		at org.hibernate.event.def.DefaultFlushEntityEventListener.invokeInterceptor(DefaultFlushEntityEventListener.java:331)
-		at org.hibernate.event.def.DefaultFlushEntityEventListener.handleInterception(DefaultFlushEntityEventListener.java:308)
-		at org.hibernate.event.def.DefaultFlushEntityEventListener.scheduleUpdate(DefaultFlushEntityEventListener.java:248)
-		at org.hibernate.event.def.DefaultFlushEntityEventListener.onFlushEntity(DefaultFlushEntityEventListener.java:128)
-		at org.hibernate.event.def.AbstractFlushingEventListener.flushEntities(AbstractFlushingEventListener.java:196)
-		at org.hibernate.event.def.AbstractFlushingEventListener.flushEverythingToExecutions(AbstractFlushingEventListener.java:76)
-		at org.hibernate.event.def.DefaultFlushEventListener.onFlush(DefaultFlushEventListener.java:26)
-		at org.hibernate.impl.SessionImpl.flush(SessionImpl.java:1000)
-		at org.hibernate.impl.SessionImpl.managedFlush(SessionImpl.java:338)
-		at org.hibernate.transaction.JDBCTransaction.commit(JDBCTransaction.java:106)
-		at org.springframework.orm.hibernate3.HibernateTransactionManager.doCommit(HibernateTransactionManager.java:656)
-		at org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(AbstractPlatformTransactionManager.java:754)
-		at org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(AbstractPlatformTransactionManager.java:723)
-		at org.springframework.transaction.interceptor.TransactionAspectSupport.commitTransactionAfterReturning(TransactionAspectSupport.java:393)
-		at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:120)
-		at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:172)
-		at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:202)
-		at $Proxy65.saveToMemento(Unknown Source)
-		at org.openmrs.util.OpenmrsClassLoader.saveState(OpenmrsClassLoader.java:444)
-		at org.openmrs.module.ModuleUtil.refreshApplicationContext(ModuleUtil.java:756)
-		at org.openmrs.module.web.WebModuleUtil.refreshWAC(WebModuleUtil.java:825)
-		at org.openmrs.web.Listener.performWebStartOfModules(Listener.java:565)
-		at org.openmrs.web.filter.initialization.InitializationFilter$InitializationCompletion$1.run(InitializationFilter.java:1575)
-		at java.lang.Thread.run(Thread.java:680)
-		 */
 		if (value == null)
 			return false;
-		// END HACK
 		
 		if (index >= 0) {
-			
 			if (currentState[index] == null || !setNullOnly) {
 				if (!value.equals(currentState[index])) {
-					
 					currentState[index] = value;
 					return true;
 				}
 			}
 		}
-		
 		return false;
 	}
-	
 }
