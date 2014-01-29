@@ -123,13 +123,23 @@ public abstract class StartupFilter implements Filter {
 				if (httpRequest.getPathInfo() != null)
 					file = new File(file, httpRequest.getPathInfo());
 				
+				InputStream imageFileInputStream = null;
 				try {
-					InputStream imageFileInputStream = new FileInputStream(file);
+					imageFileInputStream = new FileInputStream(file);
 					OpenmrsUtil.copyFile(imageFileInputStream, httpResponse.getOutputStream());
-					imageFileInputStream.close();
 				}
 				catch (FileNotFoundException e) {
 					log.error("Unable to find file: " + file.getAbsolutePath());
+				}
+				finally {
+					if (imageFileInputStream != null) {
+						try {
+							imageFileInputStream.close();
+						}
+						catch (IOException io) {
+							log.warn("Couldn't close imageFileInputStream: " + io);
+						}
+					}
 				}
 			} else if (servletPath.startsWith("/scripts")) {
 				log
