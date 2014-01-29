@@ -84,15 +84,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		return dao.saveOrder(order);
 	}
-
-    /**
-     * If this is a discontinue order, ensure that the previous order is discontinued.
-     * If a previousOrder is present, then ensure this is discontinued.
-     * If no previousOrder is present, then try to find a previousOrder and discontinue it.
-     * If cannot find a previousOrder, throw exception
-     *
-     * @param order
-     */
+	
+	/**
+	 * If this is a discontinue order, ensure that the previous order is discontinued.
+	 * If a previousOrder is present, then ensure this is discontinued.
+	 * If no previousOrder is present, then try to find a previousOrder and discontinue it.
+	 * If cannot find a previousOrder, throw exception
+	 *
+	 * @param order
+	 */
 	private void discontinueExistingOrdersIfRequired(Order order) {
 		//Ignore and return if this is not an order to discontinue
 		if (!Order.Action.DISCONTINUE.equals(order.getAction()))
@@ -120,9 +120,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				return;
 			}
 		}
-
-		throw new APIException("Could not find an active order with the concept " + order.getConcept()
-		        + " to discontinue. ");
+		
+		throw new APIException("Could not find an active order with the concept " + order.getConcept() + " to discontinue. ");
 	}
 	
 	/**
@@ -313,8 +312,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
 		return dao.getOrderFrequency(orderFrequencyId);
 	}
-
-    /**
+	
+	/**
 	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
 	 */
 	@Override
@@ -353,5 +352,5 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		orderToDiscontinue.setDateStopped(discontinueDate);
 		saveOrder(orderToDiscontinue);
-    }
+	}
 }

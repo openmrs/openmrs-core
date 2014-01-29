@@ -48,10 +48,10 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 * @should not save order if order doesnt validate
 	 * @should save discontinued reason non coded
-     * @should discontinue existing active order if new order being saved with action to discontinue
-     * @should discontinue previousOrder if it is not already discontinued
-     * @should fail if concept in previous order does not match this concept
-     */
+	 * @should discontinue existing active order if new order being saved with action to discontinue
+	 * @should discontinue previousOrder if it is not already discontinued
+	 * @should fail if concept in previous order does not match this concept
+	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
 	
@@ -244,8 +244,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should return the order frequency that matched the specified id
 	 */
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
-
-    /**
+	
+	/**
 	 * Discontinues an order.
 	 * Creates a new order that discontinues the orderToDiscontinue
 	 *
@@ -255,11 +255,11 @@ public interface OrderService extends OpenmrsService {
 	 * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is <code>Order.Action.DISCONTINUE</code>
 	 * @since 1.10
-     * @should populate correct attributes on the discontinue and discontinued orders
-     * @should fail for a discontinue order
+	 * @should populate correct attributes on the discontinue and discontinued orders
+	 * @should fail for a discontinue order
 	 */
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate);
-
+	
 	/**
 	 * Discontinues an order.
 	 * Creates a new order that discontinues the orderToDiscontinue.
@@ -270,8 +270,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is <code>Order.Action.DISCONTINUE</code>
 	 * @since 1.10
-     * @should populate correct attributes on the discontinue and discontinued orders
-     * @should fail for a discontinue order
+	 * @should populate correct attributes on the discontinue and discontinued orders
+	 * @should fail for a discontinue order
 	 */
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate);
 }

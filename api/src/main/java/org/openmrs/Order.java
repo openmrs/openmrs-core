@@ -532,13 +532,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Creates a discontinuation order for this order, sets the previousOrder and action fields,
-     * note that the discontinuation order needs to be saved for the discontinuation to take effect
+	 * note that the discontinuation order needs to be saved for the discontinuation to take effect
 	 *
 	 * @return the newly created order
 	 * @since 1.10
-     * @should set previousOrder on new order
-     * @should set action to discontinue on new order
-     * @should set this care setting to new order
+	 * @should set previousOrder on new order
+	 * @should set action to discontinue on new order
+	 * @should set this care setting to new order
 	 */
 	public Order cloneForDiscontinuing() {
 		Order newOrder = new Order();
