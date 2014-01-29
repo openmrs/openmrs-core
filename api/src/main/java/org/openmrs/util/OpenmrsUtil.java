@@ -1158,7 +1158,7 @@ public class OpenmrsUtil {
 	 *         the application (runtime properties, modules, etc)
 	 */
 	public static String getApplicationDataDirectory() {
-
+		
 		String filepath = null;
 		if (System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY") != null) {
 			filepath = System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
