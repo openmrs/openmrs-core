@@ -110,7 +110,7 @@
 		</td>
 	</tr>
 	<tr>
-     <c:if test="${role.roleId != null}">
+     <c:if test="${role.getRole() != null}">
        <th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
        <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${role.uuid}</sub></font></td>
      </c:if>
