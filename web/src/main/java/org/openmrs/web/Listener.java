@@ -337,17 +337,26 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
 			log.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
+			FileWriter writer = null;
 			try {
-				FileWriter writer = new FileWriter(dwrFile);
+				writer = new FileWriter(dwrFile);
 				writer
 				        .write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
-				writer.close();
 			}
 			catch (IOException io) {
 				log.error("Unable to clear out the " + dwrFile.getAbsolutePath()
 				        + " file.  Please redeploy the openmrs war file", io);
 			}
-			
+			finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					}
+					catch (IOException io) {
+						log.warn("Couldn't close Writer: " + io);
+					}
+				}
+			}
 		}
 	}
 	
