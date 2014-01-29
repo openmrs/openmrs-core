@@ -131,8 +131,6 @@ public class FormatDateTag extends TagSupport {
 				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Context.getLocale());
 			} else if (type.equals("medium")) {
 				dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, Context.getLocale());
-			} else if (type.equals("textbox")) {
-				dateFormat = Context.getDateFormat();
 			} else {
 				dateFormat = Context.getDateFormat();
 			}
