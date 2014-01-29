@@ -99,7 +99,11 @@ public class OrderListByPatientController extends SimpleFormController {
 					os.voidOrder(os.getOrder(Integer.valueOf(p)), voidReason);
 					if (!success.toString().equals(""))
 						success.append("<br/>");
-					success.append(ord + " " + p + " " + deleted);
+					success.append(ord);
+					success.append(" ");
+					success.append(p);
+					success.append(" ");
+					success.append(deleted);
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order", e);

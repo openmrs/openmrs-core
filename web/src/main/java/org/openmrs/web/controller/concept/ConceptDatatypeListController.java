@@ -83,7 +83,9 @@ public class ConceptDatatypeListController extends SimpleFormController {
 					cs.purgeConceptDatatype(cs.getConceptDatatype(Integer.valueOf(cd)));
 					if (!success.toString().equals(""))
 						success.append("<br/>");
-					success.append(cd + " " + deleted);
+					success.append(cd);
+					success.append(" ");
+					success.append(deleted);
 				}
 				catch (APIException e) {
 					log.warn("Error deleting concept datatype", e);

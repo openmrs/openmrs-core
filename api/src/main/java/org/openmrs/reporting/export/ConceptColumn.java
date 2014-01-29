@@ -74,7 +74,9 @@ public class ConceptColumn implements ExportColumn, Serializable {
 			
 			s.append("#set($arr = [");
 			for (Integer x = 0; x < extras.length; x++) {
-				s.append("'" + extras[x] + "'");
+				s.append("'");
+				s.append(extras[x]);
+				s.append("'");
 				if (!x.equals(extras.length - 1))
 					s.append(",");
 			}
