@@ -159,7 +159,6 @@ public class Database1_9To1_10UpgradeTest {
 	}
 	
 	@Test
-    @Ignore
 	public void shouldConvertOrderersToBeingProvidersInsteadOfUsers() throws Exception {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");

@@ -7043,7 +7043,7 @@
 		<sql>
 			INSERT INTO provider(person_id, identifier, creator, date_created, retired, uuid)
 			SELECT (SELECT orderer FROM orders WHERE orderer NOT IN (SELECT person_id FROM provider)),
-				CONCAT( "prov: ", SUBSTRING((SELECT uuid FROM person where person_id = (select orderer from orders)), 5)) , 1, NOW() , false, UUID()
+				CONCAT('prov', SUBSTRING((SELECT uuid FROM person), 5)) , 1, CURRENT_TIMESTAMP , false, UUID()
 			FROM orders
 			WHERE orderer NOT IN (SELECT person_id FROM provider)
 		</sql>
