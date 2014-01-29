@@ -84,7 +84,11 @@ public class ProgramListController extends SimpleFormController {
 						ps.purgeProgram(ps.getProgram(Integer.valueOf(p)));
 						if (!success.toString().equals(""))
 							success.append("<br/>");
-						success.append(textProgram + " " + p + " " + deleted);
+						success.append(textProgram);
+						success.append(" ");
+						success.append(p);
+						success.append(" ");
+						success.append(deleted);
 					}
 					catch (APIException e) {
 						log.warn("Error deleting program", e);
