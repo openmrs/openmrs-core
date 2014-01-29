@@ -205,7 +205,7 @@
 	</c:if>
 </c:if>
 
-<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" parameters="conceptId=${command.concept.conceptId}"/>
 <div id="conceptMainarea">
 <form method="post" action="">
 
@@ -962,7 +962,7 @@ function resetNewTermForm(){
 </script>
 </openmrs:hasPrivilege>
 
-<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormFooter" type="html" />
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormFooter" type="html" parameters="conceptId=${command.concept.conceptId}" />
 
 <div id="addAnswer" style="display: none">
 	<div id="addAnswerError"><openmrs:message code="Concept.noConceptSelected"/></div>
