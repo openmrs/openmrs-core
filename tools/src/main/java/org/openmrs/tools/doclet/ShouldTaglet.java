@@ -119,7 +119,7 @@ public class ShouldTaglet implements Taglet {
 	}
 	
 	/**
-	 * Given the <code>Tag<Hi/code> representation of this custom tag, return its string
+	 * Given the <code>Tag</code> representation of this custom tag, return its string
 	 * representation.
 	 * 
 	 * @param tag the <code>Tag</code> representation of this custom tag.

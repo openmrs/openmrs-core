@@ -325,7 +325,8 @@ public class PatientSearchCriteria {
 					Criterion criterion = singleNameCriterion;
 					
 					if (i > 0) {
-						multiName.append(" " + singleName);
+						multiName.append(" ");
+						multiName.append(singleName);
 						Criterion multiNameCriterion = getCriterionForName(multiName.toString());
 						criterion = Restrictions.or(singleNameCriterion, multiNameCriterion);
 					}

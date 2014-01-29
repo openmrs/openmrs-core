@@ -1320,7 +1320,7 @@ public class InitializationFilter extends StartupFilter {
 				public void run() {
 					try {
 						String connectionUsername;
-						String connectionPassword;
+						StringBuilder connectionPassword = new StringBuilder();
 						
 						if (!wizardModel.hasCurrentOpenmrsDatabase) {
 							setMessage("Create database");
@@ -1362,7 +1362,7 @@ public class InitializationFilter extends StartupFilter {
 							if (connectionUsername.length() > 16)
 								connectionUsername = wizardModel.databaseName.substring(0, 11) + "_user"; // trim off enough to leave space for _user at the end
 								
-							connectionPassword = "";
+							connectionPassword.append("");
 							// generate random password from this subset of alphabet
 							// intentionally left out these characters: ufsb$() to prevent certain words forming randomly
 							String chars = "acdeghijklmnopqrtvwxyzACDEGHIJKLMNOPQRTVWXYZ0123456789.|~@#^&";
@@ -1371,7 +1371,7 @@ public class InitializationFilter extends StartupFilter {
 							for (int x = 0; x < 12; x++) {
 								randomStr.append(chars.charAt(r.nextInt(chars.length())));
 							}
-							connectionPassword += randomStr;
+							connectionPassword.append(randomStr);
 							
 							// connect via jdbc with root user and create an openmrs user
 							String host = "'%'";
@@ -1383,7 +1383,7 @@ public class InitializationFilter extends StartupFilter {
 							    connectionUsername);
 							sql = "create user '?'@" + host + " identified by '?'";
 							if (-1 != executeStatement(false, wizardModel.createUserUsername,
-							    wizardModel.createUserPassword, sql, connectionUsername, connectionPassword)) {
+							    wizardModel.createUserPassword, sql, connectionUsername, connectionPassword.toString())) {
 								wizardModel.workLog.add("Created user " + connectionUsername);
 							} else {
 								// if error occurs stop
@@ -1407,7 +1407,8 @@ public class InitializationFilter extends StartupFilter {
 							addExecutedTask(WizardTask.CREATE_DB_USER);
 						} else {
 							connectionUsername = wizardModel.currentDatabaseUsername;
-							connectionPassword = wizardModel.currentDatabasePassword;
+							connectionPassword.setLength(0);
+							connectionPassword.append(wizardModel.currentDatabasePassword);
 						}
 						
 						String finalDatabaseConnectionString = wizardModel.databaseConnection.replace("@DBNAME@",
@@ -1417,7 +1418,8 @@ public class InitializationFilter extends StartupFilter {
 						    OpenmrsUtil.getApplicationDataDirectory().replace("\\", "/"));
 						
 						// verify that the database connection works
-						if (!verifyConnection(connectionUsername, connectionPassword, finalDatabaseConnectionString)) {
+						if (!verifyConnection(connectionUsername, connectionPassword.toString(),
+						    finalDatabaseConnectionString)) {
 							setMessage("Verify that the database connection works");
 							// redirect to setup page if we got an error
 							reportError("Unable to connect to database", DEFAULT_PAGE);
@@ -1520,7 +1522,7 @@ public class InitializationFilter extends StartupFilter {
 									setCompletedPercentage(40);
 									setMessage("Loading imported test data...");
 									importTestDataSet(inData, finalDatabaseConnectionString, connectionUsername,
-									    connectionPassword);
+									    connectionPassword.toString());
 									wizardModel.workLog.add("Imported test data");
 									addExecutedTask(WizardTask.IMPORT_TEST_DATA);
 									

@@ -65,8 +65,9 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			response.setHeader("Content-Type", "text/csv;charset=UTF-8");
 			response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 			
-			String line = "Concept Id,Name,Description,Synonyms,Answers,Set Members,Class,Datatype,Changed By,Creator\n";
-			response.getWriter().write(line);
+			StringBuilder line = new StringBuilder(
+			        "Concept Id,Name,Description,Synonyms,Answers,Set Members,Class,Datatype,Changed By,Creator\n");
+			response.getWriter().write(line.toString());
 			
 			int listIndex = 0;
 			Iterator<Concept> conceptIterator = cs.conceptIterator();
@@ -74,7 +75,8 @@ public class DownloadDictionaryServlet extends HttpServlet {
 				Concept c = conceptIterator.next();
 				if (!c.isRetired()) {
 					
-					line = c.getConceptId() + ",";
+					line.append(c.getConceptId());
+					line.append(",");
 					String name, description;
 					ConceptName cn = c.getName(locale);
 					if (cn == null)
@@ -88,17 +90,23 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					else
 						description = cd.getDescription();
 					
-					line += '"' + name.replace("\"", "\"\"") + "\",";
+					line.append('"');
+					line.append(name.replace("\"", "\"\""));
+					line.append("\",");
 					
 					if (description == null)
 						description = "";
-					line = line + '"' + description.replace("\"", "\"\"") + "\",";
+					line.append('"');
+					line.append(description.replace("\"", "\"\""));
+					line.append("\",");
 					
 					StringBuilder tmp = new StringBuilder("");
 					for (ConceptName syn : c.getNames()) {
 						tmp.append(syn).append("\n");
 					}
-					line += '"' + tmp.toString().trim() + "\",";
+					line.append('"');
+					line.append(tmp.toString().trim());
+					line.append("\",");
 					
 					tmp = new StringBuilder("");
 					for (ConceptAnswer answer : c.getAnswers(false)) {
@@ -107,7 +115,9 @@ public class DownloadDictionaryServlet extends HttpServlet {
 						else if (answer.getAnswerDrug() != null)
 							tmp.append(answer.getAnswerDrug().getFullName(Context.getLocale())).append("\n");
 					}
-					line += '"' + tmp.toString().trim() + "\",";
+					line.append('"');
+					line.append(tmp.toString().trim());
+					line.append("\",");
 					
 					tmp = new StringBuilder("");
 					for (ConceptSet set : c.getConceptSets()) {
@@ -116,29 +126,31 @@ public class DownloadDictionaryServlet extends HttpServlet {
 							tmp.append(name.replace("\"", "\"\"")).append("\n");
 						}
 					}
-					line += '"' + tmp.toString().trim() + "\",";
+					line.append('"');
+					line.append(tmp.toString().trim());
+					line.append("\",");
 					
-					line += '"';
+					line.append('"');
 					if (c.getConceptClass() != null)
-						line += c.getConceptClass().getName();
-					line += "\",";
+						line.append(c.getConceptClass().getName());
+					line.append("\",");
 					
-					line += '"';
+					line.append('"');
 					if (c.getDatatype() != null)
-						line += c.getDatatype().getName();
-					line += "\",";
+						line.append(c.getDatatype().getName());
+					line.append("\",");
 					
-					line += '"';
+					line.append('"');
 					if (c.getChangedBy() != null)
-						line += c.getChangedBy().getPersonName();
-					line += "\",";
+						line.append(c.getChangedBy().getPersonName());
+					line.append("\",");
 					
-					line += '"';
+					line.append('"');
 					if (c.getCreator() != null)
-						line += c.getCreator().getPersonName();
-					line += "\"\n";
+						line.append(c.getCreator().getPersonName());
+					line.append("\"\n");
 					
-					response.getWriter().write(line);
+					response.getWriter().write(line.toString());
 				}
 				
 			}

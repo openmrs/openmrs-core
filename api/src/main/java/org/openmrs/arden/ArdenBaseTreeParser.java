@@ -1828,7 +1828,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							a = "ELSEIF";
 							System.err.println("ELSEIF");
 							obj.AddToEvaluateList("logic", a);
-							s.delete(0, s.length());
+							s.setLength(0);
 							s.append(exprAST(_t, "logic", obj));
 							_t = _retTree;
 							match(_t, THEN);
@@ -1843,8 +1843,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							match(_t, ELSE);
 							_t = _t.getFirstChild();
 							a = "ELSE_";
-							s.delete(0, s.length());
-							s.append(a.toString() + Integer.toString(i));
+							s.setLength(0);
+							s.append(a.toString());
+							s.append(Integer.toString(i));
 							System.err.println("ELSE");
 							obj.AddToEvaluateList("logic", s.toString());
 							
@@ -1894,7 +1895,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 						_t = _t.getFirstChild();
 						a = ift.getText();
 						System.err.println("text = " + a);
-						s.delete(0, s.length());
+						s.setLength(0);
 						s.append(a);
 						_t = __t478;
 						_t = _t.getNextSibling();
@@ -3112,7 +3113,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									match(_t, COLON);
 									_t = _t.getNextSibling();
 									System.err.println("-----------Starting Data -------");
-									s.delete(0, s.length());
+									s.setLength(0);
 									s.append(data(_t, obj));
 									_t = _retTree;
 									System.err.println("\n");
