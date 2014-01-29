@@ -66,8 +66,6 @@ public class MysqlFactory {
             try {
                 if (connection != null) {
                     connection.close();
-                } else {
-                    return;
                 }
             } catch (Exception e) {
                 throw e;
