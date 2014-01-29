@@ -113,7 +113,6 @@ public class FieldGenTag extends TagSupport {
 					if (val != null) {
 						startVal = val.toString();
 					}
-					startVal = (startVal == null) ? "" : startVal;
 					String fieldLength = this.parameterMap != null ? (String) this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_INT_LENGTH : fieldLength;
 					output = "<input type=\"text\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "\" value=\""

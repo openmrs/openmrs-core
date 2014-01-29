@@ -755,12 +755,7 @@ public class ORUR01Handler implements Application {
 			DT value = (DT) obx5;
 			if (value != null) {
 				Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), 0, 0, 0);
-				if (valueDate != null) {
-					obs.setValueDatetime(valueDate);
-				} else {
-					log.warn("Not creating null valued obs for concept " + concept);
-					return null;
-				}
+				obs.setValueDatetime(valueDate);
 			} else {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
@@ -784,12 +779,7 @@ public class ORUR01Handler implements Application {
 			TM value = (TM) obx5;
 			if (value != null) {
 				Date valueTime = getDate(0, 0, 0, value.getHour(), value.getMinute(), value.getSecond());
-				if (valueTime != null) {
-					obs.setValueDatetime(valueTime);
-				} else {
-					log.warn("Not creating null valued obs for concept " + concept);
-					return null;
-				}
+				obs.setValueDatetime(valueTime);
 			} else {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
