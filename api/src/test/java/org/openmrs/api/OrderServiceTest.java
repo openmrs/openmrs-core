@@ -41,12 +41,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.PrivilegeConstants;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
  * TODO clean up and test all methods in OrderService
  */
