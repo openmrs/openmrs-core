@@ -201,14 +201,14 @@
             <directory>src/main/resources</directory>
             <filtering>true</filtering>
             <includes>
-               <include>openmrs.properties</include>
+               <include>org/openmrs/api/openmrs.properties</include>
             </includes>
          </resource>
          <resource>
             <directory>src/main/resources</directory>
             <filtering>false</filtering>
             <excludes>
-               <exclude>openmrs.properties</exclude>
+               <exclude>org/openmrs/api/openmrs.properties</exclude>
             </excludes>
          </resource>
       </resources>
