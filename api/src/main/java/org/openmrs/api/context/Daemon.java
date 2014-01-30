@@ -21,7 +21,9 @@ import org.openmrs.module.DaemonToken;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Task;
+import org.openmrs.scheduler.timer.TimerSchedulerServiceImpl;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.util.OpenmrsSecurityManager;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
@@ -111,7 +113,7 @@ public class Daemon {
 	 * @should not be called from other methods other than TimerSchedulerTask
 	 * @should not throw error if called from a TimerSchedulerTask class
 	 */
-	public static void executeScheduledTask(final Task task) throws Throwable {
+	public static void executeScheduledTask(final Integer id) throws Throwable {
 		
 		// quick check to make sure we're only being called by ourselves
 		//Class<?> callerClass = Reflection.getCallerClass(0);
@@ -129,7 +131,8 @@ public class Daemon {
 				
 				try {
 					Context.openSession();
-					TimerSchedulerTask.execute(task);
+					SchedulerService ss = new TimerSchedulerServiceImpl();
+					TimerSchedulerTask.execute(ss.getTask(id).getTaskInstance());
 				}
 				catch (Throwable t) {
 					exceptionThrown = t;
