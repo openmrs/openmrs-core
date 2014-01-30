@@ -25,6 +25,15 @@
 		</td>
 	</tr>
 	<tr>
+		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td valign="top">
+			<spring:bind path="privilege.description">
+				<textarea name="description" rows="3" cols="50">${status.value}</textarea>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
      <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
      <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
        <spring:bind path="privilege.uuid">
@@ -34,15 +43,6 @@
        </font>
      </td>
     </tr>
-	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
-		<td valign="top">
-			<spring:bind path="privilege.description">
-				<textarea name="description" rows="3" cols="50">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
 </table>
 
 <input type="submit" value="<openmrs:message code="Privilege.save"/>">
