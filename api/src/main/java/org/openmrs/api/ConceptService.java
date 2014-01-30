@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -2037,4 +2038,47 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
+	
+	/**
+	 * Fetches all drugs with reference mappings to the specified concept source that match the specified code and concept map types
+	 * @param code  the code
+	 * @param conceptSource
+	 * @param withAnyOfTheseTypes
+	 * @param includeRetired
+	 * @since 1.10
+	 * @return the list of {@link Drug}
+	 * @throws APIException
+	 * @should get a list of non retired drug mappings with given code and concept source and conceptmapTypes
+	 * @should only return non-retired drugs
+	 * @should return retired and non-retired drugs
+	 * @should return empty list if no code and source exist
+	 * @should match on the  code
+	 * @should match on the concept source
+	 * @should match on the map types
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException;
+	
+	/**
+	 * Gets the "best" matching drug, i.e. matching the earliest ConceptMapType passed in
+	 * e.g. getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan))
+	 * If there are multiple matches for the highest-priority ConceptMapType, throw an exception
+	 * @param code
+	 * @param conceptSource
+	 * @param withAnyOfTheseTypesOrOrderOfPreference
+	 * @param includeRetired
+	 * @since 1.10
+	 * @return the {@link Drug}
+	 * @throws APIException
+	 * @should return a drug that matches the specified source and best map type
+	 * @should fail if multiple drugs are found matching the best map type
+	 * @should return null if no match found
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws APIException;
+	
 }
