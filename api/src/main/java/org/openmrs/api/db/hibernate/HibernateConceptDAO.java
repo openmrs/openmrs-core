@@ -2039,28 +2039,50 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException {
-		
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class);
-		//join to the drugReferenceMap table
-		if (conceptSource != null) {
-			searchCriteria.createAlias("drugReferenceMap", "drugReferenceMaps");
-			// match the source code to the passed code
-			searchCriteria.add(Restrictions.eq("drugReferenceMaps.conceptReferenceTerm.code", code));
-			// join to concept source and match to the h17Code or concept source
-			searchCriteria.createAlias("drugReferenceMaps.conceptReferenceTerm.conceptSource", "source");
-			searchCriteria.add(Restrictions.eq("source", conceptSource));
-			//join to the concept map types
-			searchCriteria.createAlias("drugReferenceMaps.conceptMapType", "conceptMapTypes");
-			//get only the ones with these types by looping through the collection of conceptMapTypes
-			for (ConceptMapType conceptMapType : withAnyOfTheseTypes) {
-				if (conceptMapType != null) {
-					searchCriteria.add(Restrictions.eq("conceptMapTypes", conceptMapType));
-				}
+
+		Criteria criteria = createSearchDrugByMappingCriteria(code,conceptSource,withAnyOfTheseTypes,includeRetired);
+		// match with any of the supplied collection of conceptMapTypes
+		criteria.add(Restrictions.in("map.conceptMapType", withAnyOfTheseTypes));
+		//check whether retired on not retired drugs
+		return (List<Drug>) criteria.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugs
+	 */
+	@Override
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws DAOException {
+		Criteria criteria = createSearchDrugByMappingCriteria(code,conceptSource,withAnyOfTheseTypesOrOrderOfPreference,includeRetired);
+
+		// match with any of the supplied collection or order of preference of conceptMapTypes
+		for(ConceptMapType conceptMapType : withAnyOfTheseTypesOrOrderOfPreference) {
+			if(conceptMapType != null) {
+				criteria.add(Restrictions.eq("map.conceptMapType", conceptMapType));
 			}
-			if (!includeRetired) {
-				searchCriteria.add(Restrictions.eq("retired", false));
+			if(criteria.list().size() > 1) {
+				throw new APIException("There are multiple matches for the highest-priority ConceptMapType ");
+			}
+			else if(criteria.list().size() == 1) {
+				return (Drug)criteria.list().get(0);
 			}
 		}
-		return (List<Drug>) searchCriteria.list();
+		return null;
+	}
+
+	private Criteria createSearchDrugByMappingCriteria(String code, ConceptSource conceptSource, Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class);
+		//join to the drugReferenceMap table
+		searchCriteria.createAlias("drugReferenceMaps", "map");
+		// join to the conceptReferenceTerm table
+		searchCriteria.createAlias("map.conceptReferenceTerm", "term");
+		// match the source code to the passed code
+		searchCriteria.add(Restrictions.eq("term.code", code));
+		// match the conceptSource to the passed in concept source, null accepted
+		searchCriteria.add(Restrictions.eq("term.conceptSource", conceptSource));
+		//check whether retired on not retired drugs
+		if (!includeRetired) {
+			searchCriteria.add(Restrictions.eq("retired", false));
+		}
+		return searchCriteria;
 	}
 }

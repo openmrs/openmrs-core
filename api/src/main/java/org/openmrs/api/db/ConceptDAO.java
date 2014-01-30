@@ -664,4 +664,10 @@ public interface ConceptDAO {
 	 */
 	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	Drug getDrugByMapping(String code, ConceptSource conceptSource,
+						  Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws DAOException;
 }
