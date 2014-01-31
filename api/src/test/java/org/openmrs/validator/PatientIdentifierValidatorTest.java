@@ -103,7 +103,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	@Test(expected = InvalidIdentifierFormatException.class)
 	@Verifies(value = "should fail validation if identifier does not match the format", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierDoesNotMatchTheFormat() throws Exception {
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-222-333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}");
+		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-222-333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}", null);
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass validation if identifier matches the format", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldPassValidationIfIdentifierMatchesTheFormat() throws Exception {
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-22-3333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}");
+		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-22-3333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}", null);
 	}
 	
 	/**
@@ -121,7 +121,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass validation if the format is blank", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldPassValidationIfTheFormatIsBlank() throws Exception {
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("abcdefg", "");
+		PatientIdentifierValidator.checkIdentifierAgainstFormat("abcdefg", "", null);
 	}
 	
 	/**
