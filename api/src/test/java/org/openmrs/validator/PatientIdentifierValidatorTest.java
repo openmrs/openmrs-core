@@ -211,4 +211,38 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		idType.setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
 		PatientIdentifierValidator.validateIdentifier(pi);
 	}
+	
+	/**
+	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String,String)
+	 * @verifies include format in error message if no formatDescription is specified
+	 */
+	 @Test
+	 public void checkIdentifierAgainstFormat_shouldIncludeFormatInErrorMessageIfNoFormatDescriptionIsSpecified() throws Exception {
+	  	String pattern = "\\d+";
+	   	String patternDescription = null;
+	    	
+	    try {
+	    	PatientIdentifierValidator.checkIdentifierAgainstFormat("not digits", pattern, patternDescription);
+	    	Assert.fail();
+	    } catch (InvalidIdentifierFormatException ex) {
+	    	Assert.assertTrue(ex.getMessage().indexOf(pattern) > 0);
+	    }
+	 }
+	
+	/**
+	 * @see PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String,String)
+	 * @verifies include formatDescription in error message if specified
+	 */
+	 @Test
+	 public void checkIdentifierAgainstFormat_shouldIncludeFormatDescriptionInErrorMessageIfSpecified() throws Exception {
+	   	String pattern = "\\d+";
+	   	String patternDescription = "Should be digits";
+	   	try {
+	   		PatientIdentifierValidator.checkIdentifierAgainstFormat("not digits", pattern, patternDescription);
+	   		Assert.fail();
+	   	} catch (InvalidIdentifierFormatException ex) {
+	   		Assert.assertFalse(ex.getMessage().indexOf(pattern) > 0);
+	   		Assert.assertTrue(ex.getMessage().indexOf(patternDescription) > 0);
+	   	}
+	 }
 }
