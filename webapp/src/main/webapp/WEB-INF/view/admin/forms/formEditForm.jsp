@@ -150,7 +150,7 @@
 		</c:forEach>
 	</openmrs:extensionPoint>
 	 <tr>
-     <c:if test="${form.getFormId() != null}">
+     <c:if test="${form.formId != null}">
        <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
        <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${form.uuid}</sub></font></td>
      </c:if>
