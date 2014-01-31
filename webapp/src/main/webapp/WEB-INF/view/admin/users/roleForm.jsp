@@ -120,6 +120,12 @@
 			</c:if>
 		</td>
 	</tr>
+	<tr>
+     <c:if test="${role.role != null}">
+       <th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
+       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${role.uuid}</sub></font></td>
+     </c:if>
+   </tr>
 </table>
 
 <input type="submit" value="<openmrs:message code="Role.save"/>">
