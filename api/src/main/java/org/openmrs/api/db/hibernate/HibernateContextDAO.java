@@ -378,11 +378,11 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 		
 		// load in the default hibernate properties from hibernate.default.properties
-
+		
 		try {
 			Properties props = new Properties();
-			File file= new File(getClass().getClassLoader().getResource("/hibernate.default.properties").getFile());
-			OpenmrsUtil.loadProperties(props,file);
+			File file = new File(getClass().getClassLoader().getResource("/hibernate.default.properties").getFile());
+			OpenmrsUtil.loadProperties(props, file);
 			// add in all default properties that don't exist in the runtime
 			// properties yet
 			for (Map.Entry<Object, Object> entry : props.entrySet()) {
@@ -391,11 +391,9 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 		}
 		
-			
 		catch (Throwable t) {
-				// pass
-			}
-		
+			// pass
+		}
 		
 	}
 	

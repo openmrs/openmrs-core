@@ -13,6 +13,8 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Properties;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -351,4 +353,22 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		dao.authenticate("  ", "password");
 	}
 	
+	/**
+	 * @see {@link ContextDAO#mergeDefaultRuntimeProperties(Properties runtimeProperties)}
+	 */
+	
+	@Verifies(value = "should mergeDefaultRuntimeProperties", method = "mergeDefaultRuntimeProperties(Properties runtimeProperties)")
+	@Test
+	public void mergeDefaultRuntimePropertiesTest() {
+		
+		Properties propertiesForTest = new Properties();
+		propertiesForTest.setProperty("x", "y");
+		
+		dao.mergeDefaultRuntimeProperties(propertiesForTest);
+		System.out.println(propertiesForTest);
+		String actual = propertiesForTest.getProperty("x");
+		String expected = ("hibernate.x");
+		Assert.assertEquals(expected, actual);
+		
+	}
 }
