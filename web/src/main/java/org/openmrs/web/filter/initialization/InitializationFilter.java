@@ -897,7 +897,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			// if user has changed locale parameter to new one
 			// or chooses it parameter at first page loading
-			if ((storedLocale == null) || (storedLocale != null && !storedLocale.equals(localeParameter))) {
+			if (storedLocale == null || !storedLocale.equals(localeParameter)) {
 				log.info("Stored locale parameter to session " + localeParameter);
 				httpRequest.getSession().setAttribute(FilterUtil.LOCALE_ATTRIBUTE, localeParameter);
 			}
@@ -1150,8 +1150,8 @@ public class InitializationFilter extends StartupFilter {
 					connection.close();
 				}
 			}
-			catch (Throwable t) {
-				log.warn("Error while closing connection", t);
+			catch (Exception e) {
+				log.warn("Error while closing connection", e);
 			}
 		}
 		
@@ -1320,7 +1320,7 @@ public class InitializationFilter extends StartupFilter {
 				public void run() {
 					try {
 						String connectionUsername;
-						String connectionPassword;
+						StringBuilder connectionPassword = new StringBuilder();
 						
 						if (!wizardModel.hasCurrentOpenmrsDatabase) {
 							setMessage("Create database");
@@ -1362,14 +1362,16 @@ public class InitializationFilter extends StartupFilter {
 							if (connectionUsername.length() > 16)
 								connectionUsername = wizardModel.databaseName.substring(0, 11) + "_user"; // trim off enough to leave space for _user at the end
 								
-							connectionPassword = "";
+							connectionPassword.append("");
 							// generate random password from this subset of alphabet
 							// intentionally left out these characters: ufsb$() to prevent certain words forming randomly
 							String chars = "acdeghijklmnopqrtvwxyzACDEGHIJKLMNOPQRTVWXYZ0123456789.|~@#^&";
 							Random r = new Random();
+							StringBuilder randomStr = new StringBuilder("");
 							for (int x = 0; x < 12; x++) {
-								connectionPassword += chars.charAt(r.nextInt(chars.length()));
+								randomStr.append(chars.charAt(r.nextInt(chars.length())));
 							}
+							connectionPassword.append(randomStr);
 							
 							// connect via jdbc with root user and create an openmrs user
 							String host = "'%'";
@@ -1381,7 +1383,7 @@ public class InitializationFilter extends StartupFilter {
 							    connectionUsername);
 							sql = "create user '?'@" + host + " identified by '?'";
 							if (-1 != executeStatement(false, wizardModel.createUserUsername,
-							    wizardModel.createUserPassword, sql, connectionUsername, connectionPassword)) {
+							    wizardModel.createUserPassword, sql, connectionUsername, connectionPassword.toString())) {
 								wizardModel.workLog.add("Created user " + connectionUsername);
 							} else {
 								// if error occurs stop
@@ -1405,7 +1407,8 @@ public class InitializationFilter extends StartupFilter {
 							addExecutedTask(WizardTask.CREATE_DB_USER);
 						} else {
 							connectionUsername = wizardModel.currentDatabaseUsername;
-							connectionPassword = wizardModel.currentDatabasePassword;
+							connectionPassword.setLength(0);
+							connectionPassword.append(wizardModel.currentDatabasePassword);
 						}
 						
 						String finalDatabaseConnectionString = wizardModel.databaseConnection.replace("@DBNAME@",
@@ -1415,7 +1418,8 @@ public class InitializationFilter extends StartupFilter {
 						    OpenmrsUtil.getApplicationDataDirectory().replace("\\", "/"));
 						
 						// verify that the database connection works
-						if (!verifyConnection(connectionUsername, connectionPassword, finalDatabaseConnectionString)) {
+						if (!verifyConnection(connectionUsername, connectionPassword.toString(),
+						    finalDatabaseConnectionString)) {
 							setMessage("Verify that the database connection works");
 							// redirect to setup page if we got an error
 							reportError("Unable to connect to database", DEFAULT_PAGE);
@@ -1518,7 +1522,7 @@ public class InitializationFilter extends StartupFilter {
 									setCompletedPercentage(40);
 									setMessage("Loading imported test data...");
 									importTestDataSet(inData, finalDatabaseConnectionString, connectionUsername,
-									    connectionPassword);
+									    connectionPassword.toString());
 									wizardModel.workLog.add("Imported test data");
 									addExecutedTask(WizardTask.IMPORT_TEST_DATA);
 									
@@ -1686,9 +1690,9 @@ public class InitializationFilter extends StartupFilter {
 								
 								Context.getAdministrationService().setImplementationId(implId);
 							}
-							catch (Throwable t) {
-								reportError(ErrorMessageConstants.ERROR_SET_INPL_ID, DEFAULT_PAGE, t.getMessage());
-								log.warn("Implementation ID could not be set.", t);
+							catch (Exception e) {
+								reportError(ErrorMessageConstants.ERROR_SET_INPL_ID, DEFAULT_PAGE, e.getMessage());
+								log.warn("Implementation ID could not be set.", e);
 								Context.shutdown();
 								WebModuleUtil.shutdownModules(filterConfig.getServletContext());
 								contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
@@ -1711,12 +1715,12 @@ public class InitializationFilter extends StartupFilter {
 								Context.logout();
 							}
 						}
-						catch (Throwable t) {
+						catch (Exception e) {
 							Context.shutdown();
 							WebModuleUtil.shutdownModules(filterConfig.getServletContext());
 							contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
-							reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, t.getMessage());
-							log.warn("Unable to complete the startup.", t);
+							reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
+							log.warn("Unable to complete the startup.", e);
 							return;
 						}
 						
@@ -1793,7 +1797,7 @@ public class InitializationFilter extends StartupFilter {
 						connection.close();
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception e) {
 					//pass
 				}
 			}

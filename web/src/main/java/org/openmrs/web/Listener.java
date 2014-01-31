@@ -106,6 +106,14 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		return errorAtStartup;
 	}
 	
+	public static void setRuntimePropertiesFound(boolean runtimePropertiesFound) {
+		Listener.runtimePropertiesFound = runtimePropertiesFound;
+	}
+	
+	public static void setErrorAtStartup(Throwable errorAtStartup) {
+		Listener.errorAtStartup = errorAtStartup;
+	}
+	
 	/**
 	 * This method is called when the servlet context is initialized(when the Web Application is
 	 * deployed). You can initialize servlet context related data here.
@@ -134,7 +142,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			Properties props = getRuntimeProperties();
 			if (props != null) {
 				// the user has defined a runtime properties file
-				runtimePropertiesFound = true;
+				setRuntimePropertiesFound(true);
 				// set props to the context so that they can be
 				// used during sessionFactory creation
 				Context.setRuntimeProperties(props);
@@ -163,9 +171,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			}
 			
 		}
-		catch (Throwable t) {
-			errorAtStartup = t;
-			log.fatal("Got exception while starting up: ", t);
+		catch (Exception e) {
+			setErrorAtStartup(e);
+			log.fatal("Got exception while starting up: ", e);
 		}
 		
 	}
@@ -324,22 +332,31 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			elem.setTextContent("");
 			OpenmrsUtil.saveDocument(doc, dwrFile);
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			// got here because the dwr-modules.xml file is empty for some reason.  This might
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
-			log.debug("Error clearing dwr-modules.xml", t);
+			log.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
+			FileWriter writer = null;
 			try {
-				FileWriter writer = new FileWriter(dwrFile);
+				writer = new FileWriter(dwrFile);
 				writer
 				        .write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
-				writer.close();
 			}
 			catch (IOException io) {
 				log.error("Unable to clear out the " + dwrFile.getAbsolutePath()
 				        + " file.  Please redeploy the openmrs war file", io);
 			}
-			
+			finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					}
+					catch (IOException io) {
+						log.warn("Couldn't close Writer: " + io);
+					}
+				}
+			}
 		}
 	}
 	
@@ -365,8 +382,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		custom.put("custom.messages_es", "/WEB-INF/custom_messages_es.properties");
 		custom.put("custom.messages_de", "/WEB-INF/custom_messages_de.properties");
 		
-		for (String prop : custom.keySet()) {
-			String webappPath = custom.get(prop);
+		for (Map.Entry<String, String> entry : custom.entrySet()) {
+			String prop = entry.getKey();
+			String webappPath = entry.getValue();
 			String userOverridePath = props.getProperty(prop);
 			// if they defined the variable
 			if (userOverridePath != null) {
@@ -474,8 +492,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					Module mod = ModuleFactory.loadModule(f);
 					log.debug("Loaded bundled module: " + mod + " successfully");
 				}
-				catch (Throwable t) {
-					log.warn("Error while trying to load bundled module " + f.getName() + "", t);
+				catch (Exception e) {
+					log.warn("Error while trying to load bundled module " + f.getName() + "", e);
 				}
 			}
 		}
@@ -498,12 +516,12 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			WebModuleUtil.shutdownModules(event.getServletContext());
 			
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			// don't print the unhelpful "contextDAO is null" message
-			if (!"contextDAO is null".equals(t.getMessage())) {
+			if (!"contextDAO is null".equals(e.getMessage())) {
 				// not using log.error here so it can be garbage collected
 				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
-				t.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 		finally {
@@ -580,8 +598,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				/* delayContextRefresh */true);
 				someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
 			}
-			catch (Throwable t) {
-				mod.setStartupErrorMessage("Unable to start module", t);
+			catch (Exception e) {
+				mod.setStartupErrorMessage("Unable to start module", e);
 			}
 		}
 		
@@ -593,12 +611,12 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				// pass this up to the calling method so that openmrs loading stops
 				throw ex;
 			}
-			catch (Throwable t) {
-				Throwable rootCause = getActualRootCause(t, true);
+			catch (Exception e) {
+				Throwable rootCause = getActualRootCause(e, true);
 				if (rootCause != null)
 					log.fatal("Unable to refresh the spring application context.  Root Cause was:", rootCause);
 				else
-					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
+					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", e);
 				
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
@@ -619,7 +637,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				catch (MandatoryModuleException ex) {
 					// pass this up to the calling method so that openmrs loading stops
 					throw new MandatoryModuleException(ex.getModuleId(), "Got an error while starting a mandatory module: "
-					        + t.getMessage() + ". Check the server logs for more information");
+					        + e.getMessage() + ". Check the server logs for more information");
 				}
 				catch (Throwable t2) {
 					// a mandatory or core module is causing spring to fail to start up.  We don't want those

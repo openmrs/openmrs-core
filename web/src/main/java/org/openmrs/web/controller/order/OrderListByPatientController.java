@@ -82,8 +82,8 @@ public class OrderListByPatientController extends SimpleFormController {
 			String[] orderList = ServletRequestUtils.getStringParameters(request, "orderId");
 			OrderService os = Context.getOrderService();
 			
-			String success = "";
-			String error = "";
+			StringBuilder success = new StringBuilder("");
+			StringBuilder error = new StringBuilder("");
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
@@ -97,25 +97,29 @@ public class OrderListByPatientController extends SimpleFormController {
 			for (String p : orderList) {
 				try {
 					os.voidOrder(os.getOrder(Integer.valueOf(p)), voidReason);
-					if (!success.equals(""))
-						success += "<br/>";
-					success += ord + " " + p + " " + deleted;
+					if (!success.toString().equals(""))
+						success.append("<br/>");
+					success.append(ord);
+					success.append(" ");
+					success.append(p);
+					success.append(" ");
+					success.append(deleted);
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order", e);
 					if (!error.equals(""))
-						error += "<br/>";
-					error += ord + " " + p + " " + notDeleted;
+						error.append("<br/>");
+					error.append(ord).append(" ").append(p).append(" ").append(notDeleted);
 				}
 			}
 			
 			view = getSuccessView();
 			if (ServletRequestUtils.getIntParameter(request, "patientId") != null)
 				view += "?patientId=" + ServletRequestUtils.getIntParameter(request, "patientId");
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+			if (!success.toString().equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
 		return new ModelAndView(new RedirectView(view));

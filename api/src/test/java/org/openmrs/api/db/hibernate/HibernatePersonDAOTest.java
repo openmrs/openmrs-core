@@ -30,13 +30,11 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	
 	private final static String PEOPLE_FROM_THE_SHIRE_XML = "org/openmrs/api/db/hibernate/include/HibernatePersonDAOTest-people.xml";
 	
-	private final static String SEPARATOR = ", ";
+	private SessionFactory sessionFactory;
 	
-	private HibernatePersonDAO hibernatePersonDAO = null;
+	private HibernatePersonDAO hibernatePersonDAO;
 	
-	private SessionFactory sessionFactory = null;
-	
-	private HibernatePersonAttributeHelper helper = null;
+	private PersonAttributeHelper personAttributeHelper;
 	
 	@Before
 	public void getPersonDAO() throws Exception {
@@ -45,7 +43,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		hibernatePersonDAO = (HibernatePersonDAO) applicationContext.getBean("personDAO");
 		sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		
-		helper = new HibernatePersonAttributeHelper(sessionFactory);
+		personAttributeHelper = new PersonAttributeHelper(sessionFactory);
 	}
 	
 	private void logPeople(List<Person> people) {
@@ -113,7 +111,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetNoOneByNonexistingAttribute() throws Exception {
-		Assert.assertFalse(helper.personAttributeExists("Wizard"));
+		Assert.assertFalse(personAttributeHelper.personAttributeExists("Wizard"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Wizard", false);
 		logPeople(people);
@@ -127,7 +125,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetNoOneByNonsearchableAttribute() throws Exception {
-		Assert.assertTrue(helper.nonSearchablePersonAttributeExists("Porridge with honey"));
+		Assert.assertTrue(personAttributeHelper.nonSearchablePersonAttributeExists("Porridge with honey"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Porridge honey", false);
 		logPeople(people);
@@ -141,7 +139,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetNoOneByVoidedAttribute() throws Exception {
-		Assert.assertTrue(helper.voidedPersonAttributeExists("Master thief"));
+		Assert.assertTrue(personAttributeHelper.voidedPersonAttributeExists("Master thief"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Master thief", false);
 		logPeople(people);
@@ -155,11 +153,13 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetOnePersonByAttribute() throws Exception {
+		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
+		
 		List<Person> people = hibernatePersonDAO.getPeople("Story Teller", false);
 		logPeople(people);
 		
 		Assert.assertEquals(1, people.size());
-		Assert.assertEquals("Bilbo", people.get(0).getGivenName());
+		Assert.assertEquals("Bilbo Odilon", people.get(0).getGivenName());
 	}
 	
 	/**
@@ -168,11 +168,13 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetOnePersonByRandomCaseAttribute() throws Exception {
+		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
+		
 		List<Person> people = hibernatePersonDAO.getPeople("sToRy TeLlEr", false);
 		logPeople(people);
 		
 		Assert.assertEquals(1, people.size());
-		Assert.assertEquals("Bilbo", people.get(0).getGivenName());
+		Assert.assertEquals("Bilbo Odilon", people.get(0).getGivenName());
 	}
 	
 	/**
@@ -181,15 +183,15 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetOnePersonBySearchingForAMixOfAttributeAndVoidedAttribute() throws Exception {
-		Assert.assertTrue(helper.personAttributeExists("Story writer"));
-		Assert.assertFalse(helper.voidedPersonAttributeExists("Story writer"));
-		Assert.assertTrue(helper.voidedPersonAttributeExists("Master thief"));
+		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
+		Assert.assertFalse(personAttributeHelper.voidedPersonAttributeExists("Story teller"));
+		Assert.assertTrue(personAttributeHelper.voidedPersonAttributeExists("Master thief"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Story Thief", false);
 		logPeople(people);
 		
 		Assert.assertEquals(1, people.size());
-		Assert.assertEquals("Bilbo", people.get(0).getGivenName());
+		Assert.assertEquals("Bilbo Odilon", people.get(0).getGivenName());
 	}
 	
 	/**
@@ -198,7 +200,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetMultiplePeopleBySingleAttribute() throws Exception {
-		List<Person> people = hibernatePersonDAO.getPeople("Ring bearer", false);
+		Assert.assertTrue(personAttributeHelper.personAttributeExists("Senior ring bearer"));
+		List<Person> people = hibernatePersonDAO.getPeople("Senior ring bearer", false);
 		logPeople(people);
 		
 		Assert.assertEquals(2, people.size());
@@ -214,6 +217,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetMultiplePeopleByMultipleAttributes() throws Exception {
+		Assert.assertTrue(personAttributeHelper.personAttributeExists("Senior ring bearer"));
+		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		List<Person> people = hibernatePersonDAO.getPeople("Story Bearer", false);
 		logPeople(people);
 		
@@ -246,7 +251,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		logPeople(people);
 		
 		Assert.assertEquals(1, people.size());
-		Assert.assertEquals("Bilbo", people.get(0).getGivenName());
+		Assert.assertEquals("Bilbo Odilon", people.get(0).getGivenName());
 	}
 	
 	/**
@@ -259,7 +264,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		logPeople(people);
 		
 		Assert.assertEquals(1, people.size());
-		Assert.assertEquals("Frodo", people.get(0).getGivenName());
+		Assert.assertEquals("Frodo Ansilon", people.get(0).getGivenName());
 	}
 	
 	/**
@@ -300,7 +305,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetNoOneByNonexistingNameAndNonexistingAttribute() throws Exception {
-		Assert.assertFalse(helper.personAttributeExists("Wizard"));
+		Assert.assertFalse(personAttributeHelper.personAttributeExists("Wizard"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Gandalf Wizard", false);
 		logPeople(people);
@@ -314,6 +319,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetNoOneByNonexistingNameAndNonsearchableAttribute() throws Exception {
+		Assert.assertTrue(personAttributeHelper.nonSearchablePersonAttributeExists("Mushroom pie"));
 		List<Person> people = hibernatePersonDAO.getPeople("Gandalf Mushroom pie", false);
 		logPeople(people);
 		
@@ -326,6 +332,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetNoOneByNonexistingNameAndVoidedAttribute() throws Exception {
+		Assert.assertTrue(personAttributeHelper.voidedPersonAttributeExists("Master Thief"));
 		List<Person> people = hibernatePersonDAO.getPeople("Gandalf Master Thief", false);
 		logPeople(people);
 		
@@ -338,11 +345,12 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetOnePersonByNameAndAttribute() throws Exception {
+		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		List<Person> people = hibernatePersonDAO.getPeople("Bilbo Story Teller", false);
 		logPeople(people);
 		
 		Assert.assertEquals(1, people.size());
-		Assert.assertEquals("Bilbo", people.get(0).getGivenName());
+		Assert.assertEquals("Bilbo Odilon", people.get(0).getGivenName());
 	}
 	
 	/**
@@ -351,11 +359,12 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetOnePersonByNameAndVoidedAttribute() throws Exception {
+		Assert.assertTrue(personAttributeHelper.voidedPersonAttributeExists("Master Thief"));
 		List<Person> people = hibernatePersonDAO.getPeople("Frodo Master Thief", false);
 		logPeople(people);
 		
 		Assert.assertEquals(1, people.size());
-		Assert.assertEquals("Frodo", people.get(0).getGivenName());
+		Assert.assertEquals("Frodo Ansilon", people.get(0).getGivenName());
 	}
 	
 	/**

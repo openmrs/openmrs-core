@@ -63,6 +63,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
+		setCohortDefinitionProvidersToNull();
+	}
+	
+	public static void setCohortDefinitionProvidersToNull() {
 		cohortDefinitionProviders = null;
 	}
 	
@@ -111,7 +115,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Transactional(readOnly = true)
 	public List<Cohort> getCohorts() {
-		return getAllCohorts();
+		return Context.getCohortService().getAllCohorts();
 	}
 	
 	/**
@@ -119,7 +123,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	public Cohort voidCohort(Cohort cohort, String reason) {
 		// other setters done by the save handlers
-		return saveCohort(cohort);
+		return Context.getCohortService().saveCohort(cohort);
 	}
 	
 	/**
@@ -137,7 +141,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	public Cohort addPatientToCohort(Cohort cohort, Patient patient) {
 		if (!cohort.contains(patient)) {
 			cohort.getMemberIds().add(patient.getPatientId());
-			saveCohort(cohort);
+			Context.getCohortService().saveCohort(cohort);
 		}
 		return cohort;
 	}
@@ -149,7 +153,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	public Cohort removePatientFromCohort(Cohort cohort, Patient patient) {
 		if (cohort.contains(patient)) {
 			cohort.getMemberIds().remove(patient.getPatientId());
-			saveCohort(cohort);
+			Context.getCohortService().saveCohort(cohort);
 		}
 		return cohort;
 	}
@@ -188,7 +192,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Transactional(readOnly = true)
 	public List<Cohort> getAllCohorts() throws APIException {
-		return getAllCohorts(false);
+		return Context.getCohortService().getAllCohorts(false);
 	}
 	
 	/**
@@ -282,7 +286,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			Integer id = Integer.parseInt((keyValues[0] != null) ? keyValues[0] : "0");
 			String className = (keyValues[1] != null) ? keyValues[1] : "";
 			Class clazz = Class.forName(className);
-			return getCohortDefinition(clazz, id);
+			return Context.getCohortService().getCohortDefinition(clazz, id);
 		}
 		catch (ClassNotFoundException e) {
 			throw new APIException(e);

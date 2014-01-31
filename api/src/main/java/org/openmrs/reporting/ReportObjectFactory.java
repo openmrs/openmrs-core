@@ -225,7 +225,7 @@ public class ReportObjectFactory {
 				// attempt to populate setters with initialValues Map
 				
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				log.error("Could not create class: " + className + " when trying to get report object from the factory");
 			}
 		}
@@ -250,7 +250,7 @@ public class ReportObjectFactory {
 				reportObj = (AbstractReportObject) ct.newInstance();
 				reportObj = ReportObjectFactory.initInstance(reportObj, initialValues);
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				log.error("Could not instantiate class: " + reportObjectClass.getName()
 				        + " when trying to get report object from the factory");
 			}
@@ -269,9 +269,9 @@ public class ReportObjectFactory {
 	@SuppressWarnings("unchecked")
 	private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
 		if (reportObj != null && initialValues != null) {
-			for (Iterator<String> i = initialValues.keySet().iterator(); i.hasNext();) {
-				String key = i.next();
-				Object val = initialValues.get(key);
+			for (Map.Entry<String, Object> entry : initialValues.entrySet()) {
+				String key = entry.getKey();
+				Object val = entry.getValue();
 				Class valClass = val.getClass();
 				String methodName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
 				Class[] setterParamClasses = new Class[1];

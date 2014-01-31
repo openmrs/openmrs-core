@@ -123,7 +123,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public Program getProgram(String name) {
-		return getProgramByName(name);
+		return Context.getProgramWorkflowService().getProgramByName(name);
 	}
 	
 	/**
@@ -149,7 +149,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public List<Program> getAllPrograms() throws APIException {
-		return getAllPrograms(true);
+		return Context.getProgramWorkflowService().getAllPrograms(true);
 	}
 	
 	/**
@@ -172,7 +172,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#purgeProgram(org.openmrs.Program)
 	 */
 	public void purgeProgram(Program program) throws APIException {
-		purgeProgram(program, false);
+		Context.getProgramWorkflowService().purgeProgram(program, false);
 		
 	}
 	
@@ -187,10 +187,26 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
+	 * @deprecated use {@link #retireProgram(Program program,String reason)}
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
+	@Deprecated
 	public Program retireProgram(Program program) throws APIException {
 		program.setRetired(true);
+		for (ProgramWorkflow workflow : program.getWorkflows()) {
+			workflow.setRetired(true);
+			for (ProgramWorkflowState state : workflow.getStates()) {
+				state.setRetired(true);
+			}
+		}
+		return Context.getProgramWorkflowService().saveProgram(program);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
+	 */
+	public Program retireProgram(Program program, String reason) throws APIException {
+		//program.setRetired(true); - Note the BaseRetireHandler aspect is already setting the retired flag and reason
 		for (ProgramWorkflow workflow : program.getWorkflows()) {
 			workflow.setRetired(true);
 			for (ProgramWorkflowState state : workflow.getStates()) {
@@ -201,8 +217,10 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
+	 * @deprecated use{@link #unretireProgram(Program program)} 
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
+	@Deprecated
 	public Program unRetireProgram(Program program) throws APIException {
 		Date lastModifiedDate = program.getDateChanged();
 		program.setRetired(false);
@@ -210,7 +228,26 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			if (lastModifiedDate != null && lastModifiedDate.equals(workflow.getDateChanged())) {
 				workflow.setRetired(false);
 				for (ProgramWorkflowState state : workflow.getStates()) {
-					if (lastModifiedDate != null && lastModifiedDate.equals(state.getDateChanged())) {
+					if (lastModifiedDate.equals(state.getDateChanged())) {
+						state.setRetired(false);
+					}
+				}
+			}
+		}
+		return Context.getProgramWorkflowService().saveProgram(program);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
+	 */
+	public Program unretireProgram(Program program) throws APIException {
+		Date lastModifiedDate = program.getDateChanged();
+		program.setRetired(false);
+		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
+			if (lastModifiedDate != null && lastModifiedDate.equals(workflow.getDateChanged())) {
+				workflow.setRetired(false);
+				for (ProgramWorkflowState state : workflow.getStates()) {
+					if (lastModifiedDate.equals(state.getDateChanged())) {
 						state.setRetired(false);
 					}
 				}
@@ -290,7 +327,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#purgePatientProgram(org.openmrs.PatientProgram)
 	 */
 	public void purgePatientProgram(PatientProgram patientProgram) throws APIException {
-		purgePatientProgram(patientProgram, false);
+		Context.getProgramWorkflowService().purgePatientProgram(patientProgram, false);
 		
 	}
 	
@@ -312,7 +349,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public PatientProgram voidPatientProgram(PatientProgram patientProgram, String reason) {
 		patientProgram.setVoided(true);
 		patientProgram.setVoidReason(reason);
-		return savePatientProgram(patientProgram); // The savePatientProgram method handles all of the voiding defaults and cascades
+		return Context.getProgramWorkflowService().savePatientProgram(patientProgram); // The savePatientProgram method handles all of the voiding defaults and cascades
 	}
 	
 	/**
@@ -330,7 +367,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 				state.setVoidReason(null);
 			}
 		}
-		return savePatientProgram(patientProgram); // The savePatientProgram method handles all of the unvoiding defaults
+		return Context.getProgramWorkflowService().savePatientProgram(patientProgram); // The savePatientProgram method handles all of the unvoiding defaults
 	}
 	
 	/**
@@ -340,7 +377,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly = true)
 	public List<Concept> getPossibleOutcomes(Integer programId) {
 		List<Concept> possibleOutcomes = new ArrayList<Concept>();
-		Program program = getProgram(programId);
+		Program program = Context.getProgramWorkflowService().getProgram(programId);
 		if (program == null) {
 			return possibleOutcomes;
 		}
@@ -394,7 +431,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#purgeConceptStateConversion(org.openmrs.ConceptStateConversion)
 	 */
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException {
-		purgeConceptStateConversion(conceptStateConversion, false);
+		Context.getProgramWorkflowService().purgeConceptStateConversion(conceptStateConversion, false);
 	}
 	
 	/**
@@ -481,7 +518,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public List<Program> getPrograms() {
-		return getAllPrograms();
+		return Context.getProgramWorkflowService().getAllPrograms();
 	}
 	
 	// **************************
@@ -493,7 +530,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void createWorkflow(ProgramWorkflow w) {
-		updateWorkflow(w);
+		Context.getProgramWorkflowService().updateWorkflow(w);
 	}
 	
 	/**
@@ -513,7 +550,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflow(Integer id) {
-		for (Program p : getAllPrograms()) {
+		for (Program p : Context.getProgramWorkflowService().getAllPrograms()) {
 			for (ProgramWorkflow w : p.getAllWorkflows()) {
 				if (w.getProgramWorkflowId().equals(id)) {
 					return w;
@@ -553,7 +590,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getStates() {
-		return getStates(true);
+		return Context.getProgramWorkflowService().getStates(true);
 	}
 	
 	/**
@@ -563,7 +600,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getStates(boolean includeRetired) {
 		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
-		for (Program p : getAllPrograms()) {
+		for (Program p : Context.getProgramWorkflowService().getAllPrograms()) {
 			for (ProgramWorkflow w : p.getAllWorkflows()) {
 				for (ProgramWorkflowState s : w.getStates()) {
 					if (includeRetired || !s.isRetired()) {
@@ -581,7 +618,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public ProgramWorkflowState getState(Integer id) {
-		for (ProgramWorkflowState s : getStates()) {
+		for (ProgramWorkflowState s : Context.getProgramWorkflowService().getStates()) {
 			if (s.getProgramWorkflowStateId().equals(id)) {
 				return s;
 			}
@@ -661,7 +698,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public Collection<PatientProgram> getPatientPrograms(Patient patient) {
-		return getPatientPrograms(patient, null, null, null, null, null, false);
+		return Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, null, null, null, false);
 	}
 	
 	/**
@@ -672,7 +709,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly = true)
 	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) {
 		List<Integer> ret = new ArrayList<Integer>();
-		Collection<PatientProgram> programs = getPatientPrograms(null, program, null, toDate, fromDate, null, false);
+		Collection<PatientProgram> programs = Context.getProgramWorkflowService().getPatientPrograms(null, program, null,
+		    toDate, fromDate, null, false);
 		for (PatientProgram patProgram : programs) {
 			ret.add(patProgram.getPatient().getPatientId());
 		}
@@ -687,7 +725,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly = true)
 	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) {
 		List<PatientProgram> ret = new ArrayList<PatientProgram>();
-		for (PatientProgram pp : getPatientPrograms(patient)) {
+		for (PatientProgram pp : Context.getProgramWorkflowService().getPatientPrograms(patient)) {
 			if (pp.getActive(onDate == null ? new Date() : onDate)) {
 				ret.add(pp);
 			}
@@ -702,7 +740,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) {
-		return !getPatientPrograms(patient, program, null, toDate, fromDate, null, false).isEmpty();
+		return !Context.getProgramWorkflowService()
+		        .getPatientPrograms(patient, program, null, toDate, fromDate, null, false).isEmpty();
 	}
 	
 	// **************************
@@ -715,7 +754,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public PatientState getPatientState(Integer patientStateId) {
-		for (PatientProgram p : getPatientPrograms(null, null, null, null, null, null, false)) {
+		for (PatientProgram p : Context.getProgramWorkflowService().getPatientPrograms(null, null, null, null, null, null,
+		    false)) {
 			PatientState state = p.getPatientState(patientStateId);
 			if (state != null) {
 				return state;
@@ -741,8 +781,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly = true)
 	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
-		for (PatientProgram patientProgram : getPatientPrograms(patient)) {
-			ret.addAll(getCurrentWorkflowsByPatientProgram(patientProgram));
+		for (PatientProgram patientProgram : Context.getProgramWorkflowService().getPatientPrograms(patient)) {
+			ret.addAll(Context.getProgramWorkflowService().getCurrentWorkflowsByPatientProgram(patientProgram));
 		}
 		return ret;
 	}
@@ -788,7 +828,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void terminatePatientProgram(PatientProgram patientProgram, ProgramWorkflowState finalState, Date terminatedOn) {
-		changeToState(patientProgram, finalState.getProgramWorkflow(), finalState, terminatedOn);
+		Context.getProgramWorkflowService().changeToState(patientProgram, finalState.getProgramWorkflow(), finalState,
+		    terminatedOn);
 	}
 	
 	/**
@@ -844,7 +885,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public List<ConceptStateConversion> getAllConversions() {
-		return getAllConceptStateConversions();
+		return Context.getProgramWorkflowService().getAllConceptStateConversions();
 	}
 	
 	/**

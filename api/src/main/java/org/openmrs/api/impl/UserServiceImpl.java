@@ -137,7 +137,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		List<Role> roles = new Vector<Role>();
 		roles.add(role);
 		
-		return getUsers(null, roles, false);
+		return Context.getUserService().getUsers(null, roles, false);
 	}
 	
 	/**
@@ -216,7 +216,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Transactional(readOnly = true)
 	public List<User> getUsers() throws APIException {
-		return getAllUsers();
+		return Context.getUserService().getAllUsers();
 	}
 	
 	/**
@@ -233,7 +233,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Privilege> getPrivileges() throws APIException {
-		return getAllPrivileges();
+		return Context.getUserService().getAllPrivileges();
 	}
 	
 	/**
@@ -275,7 +275,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Role> getRoles() throws APIException {
-		return getAllRoles();
+		return Context.getUserService().getAllRoles();
 	}
 	
 	/**
@@ -392,7 +392,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			rolesToSearch.add(new Role(role));
 		}
 		
-		return getUsers(name, rolesToSearch, includeVoided);
+		return Context.getUserService().getUsers(name, rolesToSearch, includeVoided);
 	}
 	
 	/**
@@ -401,7 +401,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Transactional(readOnly = true)
 	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) {
-		return getUsersByName(givenName, familyName, includeVoided);
+		return Context.getUserService().getUsersByName(givenName, familyName, includeVoided);
 	}
 	
 	/**
@@ -426,7 +426,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Transactional(readOnly = true)
 	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) {
-		return getUsers(null, roles, includeVoided);
+		return Context.getUserService().getUsers(null, roles, includeVoided);
 	}
 	
 	/**
@@ -434,7 +434,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Transactional(readOnly = true)
 	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException {
-		return getUsers(nameSearch, roles, includeVoided, null, null);
+		return Context.getUserService().getUsers(nameSearch, roles, includeVoided, null, null);
 	}
 	
 	/**
@@ -444,8 +444,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = user.getAllRoles();
-		User authUser = Context.getAuthenticatedUser();
-		
 		List<String> requiredPrivs = new Vector<String>();
 		
 		for (Role r : roles) {
@@ -462,11 +460,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (requiredPrivs.size() == 1) {
 			throw new APIException("You must have privilege '" + requiredPrivs.get(0) + "' in order to assign it.");
 		} else if (requiredPrivs.size() > 1) {
-			String txt = "You must have the following privileges in order to assign them: ";
+			StringBuilder txt = new StringBuilder("You must have the following privileges in order to assign them: ");
 			for (String s : requiredPrivs)
-				txt += s + ", ";
-			txt = txt.substring(0, txt.length() - 2);
-			throw new APIException(txt);
+				txt.append(s).append(", ");
+			throw new APIException(txt.substring(0, txt.length() - 2));
 		}
 	}
 	
@@ -481,7 +478,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			user.setUserProperty(key, value);
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				saveUser(user, null);
+				Context.getUserService().saveUser(user, null);
 			}
 			finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
@@ -507,7 +504,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				saveUser(user, null);
+				Context.getUserService().saveUser(user, null);
 			}
 			finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
@@ -690,8 +687,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			throw new APIException("No Authenticated user found");
 		}
 		user.getUserProperties().clear();
-		for (String key : properties.keySet()) {
-			user.setUserProperty(key, properties.get(key));
+		for (Map.Entry<String, String> entry : properties.entrySet()) {
+			user.setUserProperty(entry.getKey(), entry.getValue());
 		}
 		return dao.saveUser(user, null);
 	}

@@ -72,8 +72,8 @@ public class ConceptDatatypeListController extends SimpleFormController {
 			String[] cdList = request.getParameterValues("conceptDatatypeId");
 			ConceptService cs = Context.getConceptService();
 			
-			String success = "";
-			String error = "";
+			StringBuilder success = new StringBuilder("");
+			StringBuilder error = new StringBuilder();
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
@@ -81,23 +81,25 @@ public class ConceptDatatypeListController extends SimpleFormController {
 			for (String cd : cdList) {
 				try {
 					cs.purgeConceptDatatype(cs.getConceptDatatype(Integer.valueOf(cd)));
-					if (!success.equals(""))
-						success += "<br/>";
-					success += cd + " " + deleted;
+					if (!success.toString().equals(""))
+						success.append("<br/>");
+					success.append(cd);
+					success.append(" ");
+					success.append(deleted);
 				}
 				catch (APIException e) {
 					log.warn("Error deleting concept datatype", e);
 					if (!error.equals(""))
-						error += "<br/>";
-					error += cd + " " + notDeleted;
+						error.append("<br/>");
+					error.append(cd).append(" ").append(notDeleted);
 				}
 			}
 			
 			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+			if (!success.toString().equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
 		return new ModelAndView(new RedirectView(view));

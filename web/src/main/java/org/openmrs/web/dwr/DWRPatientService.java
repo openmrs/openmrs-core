@@ -86,6 +86,10 @@ public class DWRPatientService implements GlobalPropertyListener {
 		return findBatchOfPatients(searchValue, includeVoided, null, null);
 	}
 	
+	public static void setMaximumResults(Integer maximumResults) {
+		DWRPatientService.maximumResults = maximumResults;
+	}
+	
 	/**
 	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
 	 * search. Else, do a name search
@@ -100,7 +104,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 */
 	public Collection<Object> findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length) {
 		if (maximumResults == null)
-			maximumResults = getMaximumSearchResults();
+			setMaximumResults(getMaximumSearchResults());
 		if (length != null && length > maximumResults)
 			length = maximumResults;
 		
@@ -196,22 +200,21 @@ public class DWRPatientService implements GlobalPropertyListener {
 				//trim each word down to the first three characters and search again				
 				if (patientCount == 0 && start == 0 && !searchValue.matches(".*\\d+.*")) {
 					String[] names = searchValue.split(" ");
-					String newSearch = "";
+					StringBuilder newSearch = new StringBuilder("");
 					for (String name : names) {
 						if (name.length() > 3)
 							name = name.substring(0, 3);
-						newSearch += " " + name;
+						newSearch.append(" ").append(name);
 					}
 					
-					newSearch = newSearch.trim();
-					if (!newSearch.equals(searchValue)) {
-						newSearch = newSearch.trim();
-						int newPatientCount = ps.getCountOfPatients(newSearch);
+					String newSearchStr = newSearch.toString().trim();
+					if (!newSearchStr.equals(searchValue)) {
+						int newPatientCount = ps.getCountOfPatients(newSearchStr);
 						if (newPatientCount > 0) {
 							// Send a signal to the core search widget to search again against newSearch
-							resultsMap.put("searchAgain", newSearch);
+							resultsMap.put("searchAgain", newSearchStr);
 							resultsMap.put("notification", Context.getMessageSourceService().getMessage(
-							    "searchWidget.noResultsFoundFor", new Object[] { searchValue, newSearch },
+							    "searchWidget.noResultsFoundFor", new Object[] { searchValue, newSearchStr },
 							    Context.getLocale()));
 						}
 					}
@@ -257,7 +260,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 					//ensure that count never exceeds this value because the API's service layer would never
 					//return more than it since it is limited in the DAO layer
 					if (maximumResults == null)
-						maximumResults = getMaximumSearchResults();
+						setMaximumResults(getMaximumSearchResults());
 					if (length != null && length > maximumResults)
 						length = maximumResults;
 					
@@ -740,16 +743,16 @@ public class DWRPatientService implements GlobalPropertyListener {
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		try {
-			maximumResults = Integer.valueOf(newValue.getPropertyValue());
+			setMaximumResults(Integer.valueOf(newValue.getPropertyValue()));
 		}
 		catch (NumberFormatException e) {
-			maximumResults = OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
+			setMaximumResults(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
 		}
 	}
 	
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		maximumResults = OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
+		setMaximumResults(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
 	}
 	
 	/**

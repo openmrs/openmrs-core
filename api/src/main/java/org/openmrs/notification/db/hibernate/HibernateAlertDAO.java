@@ -115,7 +115,7 @@ public class HibernateAlertDAO implements AlertDAO {
 			crit.add(Restrictions.or(Restrictions.isNull("dateToExpire"), Restrictions.gt("dateToExpire", new Date())));
 		
 		// exclude the read alerts unless requested
-		if (!includeRead && (user != null && user.getUserId() != null)) {
+		if (!includeRead && user.getUserId() != null) {
 			crit.add(Restrictions.eq("alertRead", false));
 			crit.add(Restrictions.eq("recipient.alertRead", false));
 		}

@@ -90,7 +90,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Transactional(readOnly = true)
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
 	        throws APIException {
-		return getSimilarPeople(nameSearch, birthyear, gender);
+		return Context.getPersonService().getSimilarPeople(nameSearch, birthyear, gender);
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		// convert the list to a set
 		Set<Person> matchingPersons = new LinkedHashSet<Person>();
-		matchingPersons.addAll(getPeople(searchPhrase, null));
+		matchingPersons.addAll(Context.getPersonService().getPeople(searchPhrase, null));
 		
 		return matchingPersons;
 	}
@@ -134,7 +134,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 				}
 			}
 		
-		return findPeople(searchPhrase, includeVoided, roleList);
+		return Context.getPersonService().findPeople(searchPhrase, includeVoided, roleList);
 	}
 	
 	/**
@@ -146,7 +146,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		// If no rules *are not* defined then find all matching persons (users and patients).
 		if (roles == null) {
-			people.addAll(getPeople(searchPhrase, includeVoided));
+			people.addAll(Context.getPersonService().getPeople(searchPhrase, includeVoided));
 		}
 		// If roles *are* defined then find matching users who have the given roles.
 		else {
@@ -162,7 +162,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public List<PersonAttributeType> getAllPersonAttributeTypes() throws APIException {
-		return getAllPersonAttributeTypes(true);
+		return Context.getPersonService().getAllPersonAttributeTypes(true);
 	}
 	
 	/**
@@ -178,7 +178,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public PersonAttributeType getPersonAttributeTypeByName(String typeName) throws APIException {
-		List<PersonAttributeType> types = getPersonAttributeTypes(typeName, null, null, null);
+		List<PersonAttributeType> types = Context.getPersonService().getPersonAttributeTypes(typeName, null, null, null);
 		
 		if (types.size() < 1)
 			return null;
@@ -301,7 +301,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public List<PersonAttributeType> getPersonAttributeTypes() {
-		return getAllPersonAttributeTypes();
+		return Context.getPersonService().getAllPersonAttributeTypes();
 	}
 	
 	/**
@@ -325,7 +325,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public PersonAttributeType getPersonAttributeType(String s) {
-		return getPersonAttributeTypeByName(s);
+		return Context.getPersonService().getPersonAttributeTypeByName(s);
 	}
 	
 	/**
@@ -341,7 +341,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public List<Relationship> getRelationships() throws APIException {
-		return getAllRelationships();
+		return Context.getPersonService().getAllRelationships();
 	}
 	
 	/**
@@ -353,7 +353,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			throw new APIException(
 			        "Voided relationships should be considered gone and unusable.  Don't search for or show them");
 		
-		return getRelationshipsByPerson(p);
+		return Context.getPersonService().getRelationshipsByPerson(p);
 	}
 	
 	/**
@@ -361,7 +361,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public List<Relationship> getRelationships(Person p) throws APIException {
-		return getRelationshipsByPerson(p);
+		return Context.getPersonService().getRelationshipsByPerson(p);
 	}
 	
 	/**
@@ -369,7 +369,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public List<Relationship> getRelationshipsTo(Person toPerson, RelationshipType relType) throws APIException {
-		return getRelationships(null, toPerson, relType);
+		return Context.getPersonService().getRelationships(null, toPerson, relType);
 	}
 	
 	/**
@@ -377,7 +377,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public List<RelationshipType> getRelationshipTypes() throws APIException {
-		return getAllRelationshipTypes();
+		return Context.getPersonService().getAllRelationshipTypes();
 	}
 	
 	/**
@@ -393,7 +393,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public RelationshipType findRelationshipType(String relationshipTypeName) throws APIException {
-		return getRelationshipTypeByName(relationshipTypeName);
+		return Context.getPersonService().getRelationshipTypeByName(relationshipTypeName);
 	}
 	
 	/**
@@ -516,7 +516,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public Person getPerson(Patient pat) throws APIException {
 		if (pat == null)
 			return null;
-		return getPerson(pat.getPatientId());
+		return Context.getPersonService().getPerson(pat.getPatientId());
 	}
 	
 	/**
@@ -526,7 +526,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public Person getPerson(User user) throws APIException {
 		if (user == null)
 			return null;
-		return getPerson(user.getUserId());
+		return Context.getPersonService().getPerson(user.getUserId());
 	}
 	
 	/**
@@ -534,7 +534,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public List<Relationship> getAllRelationships() throws APIException {
-		return getAllRelationships(false);
+		return Context.getPersonService().getAllRelationships(false);
 	}
 	
 	/**
@@ -583,8 +583,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		// search both the left side and the right side of the relationship
 		// for this person
-		List<Relationship> rels = getRelationships(p, null, null);
-		rels.addAll(getRelationships(null, p, null));
+		List<Relationship> rels = Context.getPersonService().getRelationships(p, null, null);
+		rels.addAll(Context.getPersonService().getRelationships(null, p, null));
 		
 		return rels;
 	}
@@ -598,8 +598,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		// search both the left side and the right side of the relationship
 		// for this person
-		List<Relationship> rels = getRelationships(p, null, null, effectiveDate);
-		rels.addAll(getRelationships(null, p, null, effectiveDate));
+		List<Relationship> rels = Context.getPersonService().getRelationships(p, null, null, effectiveDate);
+		rels.addAll(Context.getPersonService().getRelationships(null, p, null, effectiveDate));
 		
 		return rels;
 	}
@@ -657,7 +657,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			relationship.setVoidReason(voidReason);
 		relationship.setDateVoided(new Date());
 		
-		return saveRelationship(relationship);
+		return Context.getPersonService().saveRelationship(relationship);
 	}
 	
 	/**
@@ -669,7 +669,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		relationship.setDateVoided(null);
 		relationship.setVoidReason(null);
 		
-		return saveRelationship(relationship);
+		return Context.getPersonService().saveRelationship(relationship);
 	}
 	
 	/**
@@ -698,7 +698,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException {
-		return getAllRelationshipTypes(false);
+		return Context.getPersonService().getAllRelationshipTypes(false);
 	}
 	
 	/**
@@ -707,7 +707,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Transactional(readOnly = true)
 	public List<RelationshipType> getRelationshipTypes(String searchString) throws APIException {
 		
-		return getRelationshipTypes(searchString, null);
+		return Context.getPersonService().getRelationshipTypes(searchString, null);
 	}
 	
 	/**
@@ -753,7 +753,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		// TODO cache the global properties to speed this up??
 		// Is hibernate taking care of caching and not hitting the db every time? (hopefully it is)
 		if (viewType == null) {
-			return getAllPersonAttributeTypes();
+			return Context.getPersonService().getAllPersonAttributeTypes();
 		} else if (viewType == ATTR_VIEW_TYPE.LISTING) {
 			String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "");
 			String userListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "");
@@ -811,7 +811,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		if (attrNames.size() > 0) {
 			for (String nameOrId : attrNames) {
 				if (nameOrId.matches("\\d"))
-					attrObjects.add(getPersonAttributeType(Integer.valueOf(nameOrId)));
+					attrObjects.add(Context.getPersonService().getPersonAttributeType(Integer.valueOf(nameOrId)));
 				else
 					attrObjects.add(getPersonAttributeType(nameOrId));
 			}
@@ -850,7 +850,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		else
 			throw new APIException(displayTypeStr + " is an invalid value for 'displayType' attribute");
 		
-		return getPersonAttributeTypes(personType, attrDisplayType);
+		return Context.getPersonService().getPersonAttributeTypes(personType, attrDisplayType);
 	}
 	
 	/**
@@ -919,7 +919,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @deprecated see #parsePersonName(String)
 	 */
 	public PersonName splitPersonName(String name) {
-		return parsePersonName(name);
+		return Context.getPersonService().parsePersonName(name);
 	}
 	
 	/**
@@ -952,7 +952,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relType) throws APIException {
 		
 		// get all relationships with this type
-		List<Relationship> relationships = getRelationships(null, null, relType);
+		List<Relationship> relationships = Context.getPersonService().getRelationships(null, null, relType);
 		
 		// the map to return
 		Map<Person, List<Person>> ret = new HashMap<Person, List<Person>>();
@@ -979,7 +979,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Transactional(readOnly = true)
 	public Map<Person, List<Person>> getRelationships(RelationshipType relType) throws APIException {
-		return getRelationshipMap(relType);
+		return Context.getPersonService().getRelationshipMap(relType);
 	}
 	
 	/**
@@ -1163,7 +1163,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		type.setRetiredBy(Context.getAuthenticatedUser());
 		type.setDateRetired(new Date());
 		type.setRetireReason(retiredReason);
-		return saveRelationshipType(type);
+		return Context.getPersonService().saveRelationshipType(type);
 	}
 	
 	/**
@@ -1174,7 +1174,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		relationshipType.setRetiredBy(null);
 		relationshipType.setDateRetired(null);
 		relationshipType.setRetireReason(null);
-		return saveRelationshipType(relationshipType);
+		return Context.getPersonService().saveRelationshipType(relationshipType);
 	}
 	
 	/**

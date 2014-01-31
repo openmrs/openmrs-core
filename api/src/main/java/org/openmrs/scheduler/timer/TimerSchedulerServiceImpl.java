@@ -113,11 +113,15 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 					}
 					
 				}
-				catch (Throwable t) {
-					log.error("Failed to schedule task for class " + taskDefinition.getTaskClass(), t);
+				catch (Exception e) {
+					log.error("Failed to schedule task for class " + taskDefinition.getTaskClass(), e);
 				}
 			}
 		}
+	}
+	
+	public static void setScheduledTasks(Map<Integer, TimerSchedulerTask> scheduledTasks) {
+		TimerSchedulerServiceImpl.scheduledTasks = scheduledTasks;
 	}
 	
 	/**
@@ -134,7 +138,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			log.error("Failed to stop all tasks due to API exception", e);
 		}
 		finally {
-			scheduledTasks = null;
+			setScheduledTasks(null);
 		}
 		
 	}

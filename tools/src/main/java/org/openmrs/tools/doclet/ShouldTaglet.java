@@ -138,10 +138,10 @@ public class ShouldTaglet implements Taglet {
 		if (tags.length == 0) {
 			return null;
 		}
-		String result = "\n<DT><B>" + HEADER + "</B></DT>";
+		StringBuilder result = new StringBuilder("\n<DT><B>").append(HEADER).append("</B></DT>");
 		for (int i = 0; i < tags.length; i++) {
-			result += "\n  <DD>Should " + tags[i].text() + "</DD>";
+			result.append("\n  <DD>Should ").append(tags[i].text()).append("</DD>");
 		}
-		return result;
+		return result.toString();
 	}
 }

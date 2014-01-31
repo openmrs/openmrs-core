@@ -11,7 +11,7 @@
 
 </script>
 
-<h2><openmrs:message code="Scheduler.header" /></h2>	
+<h2><openmrs:message code="Scheduler.header" /></h2>
 
 <a href="scheduler.form"><openmrs:message code="Scheduler.taskList.add" /></a> |
 <a href="scheduler.list"><openmrs:message code="Scheduler.taskList.refresh" /></a>

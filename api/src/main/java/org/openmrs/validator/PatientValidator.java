@@ -93,7 +93,7 @@ public class PatientValidator extends PersonValidator {
 		
 		if (!errors.hasErrors()) {
 			// Validate PatientIdentifers
-			if (patient != null && patient.getIdentifiers() != null) {
+			if (patient.getIdentifiers() != null) {
 				for (PatientIdentifier identifier : patient.getIdentifiers()) {
 					patientIdentifierValidator.validate(identifier, errors);
 				}

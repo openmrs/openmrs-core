@@ -45,8 +45,8 @@ public class WebDaemon extends Daemon {
 				try {
 					Listener.startOpenmrs(servletContext);
 				}
-				catch (Throwable t) {
-					exceptionThrown = t;
+				catch (Exception e) {
+					exceptionThrown = e;
 				}
 				finally {
 					Context.closeSession();

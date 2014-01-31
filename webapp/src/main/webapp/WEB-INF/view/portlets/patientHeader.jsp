@@ -223,7 +223,10 @@
 	</div>
 </c:if>
 
+
 <c:if test="${visitsEnabled }">
+<c:choose>
+<c:when test="${model.patient.dead==false}">
 	<openmrs:hasPrivilege privilege="Add Visits">
 		<c:if test="${empty model.activeVisits}">
 			<div id="patientVisitsSubheader" class="box" style="margin-top: 2px">
@@ -232,6 +235,8 @@
 			</div>
 		</c:if>
 	</openmrs:hasPrivilege>
+	</c:when>
+	</c:choose>
 	<openmrs:hasPrivilege privilege="View Visits, View Encounters">	
 		<openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 		

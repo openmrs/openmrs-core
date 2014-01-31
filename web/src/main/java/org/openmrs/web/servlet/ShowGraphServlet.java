@@ -158,8 +158,6 @@ public class ShowGraphServlet extends HttpServlet {
 		String conceptId1 = request.getParameter("conceptId"); // required
 		String conceptId2 = request.getParameter("conceptId2");
 		String chartTitle = request.getParameter("chartTitle");
-		String seriesTitle1 = request.getParameter("seriesTitle1");
-		String seriesTitle2 = request.getParameter("seriesTitle2");
 		String units = request.getParameter("units");
 		
 		String minRangeString = request.getParameter("minRange");
@@ -250,10 +248,6 @@ public class ShowGraphServlet extends HttpServlet {
 			chartTitle = "";
 		if (rangeAxisTitle == null)
 			rangeAxisTitle = "";
-		if (seriesTitle1 == null)
-			seriesTitle1 = chartTitle;
-		if (seriesTitle2 == null)
-			seriesTitle2 = chartTitle;
 		if (minRange == null)
 			minRange = 0.0;
 		if (maxRange == null)
@@ -277,7 +271,10 @@ public class ShowGraphServlet extends HttpServlet {
 			timeScale = Day.class;
 			timeAxisTitle = "Date";
 		}
-		series1 = new TimeSeries(concept1.getName().getName(), timeScale);
+		if (concept1 == null)
+			series1 = new TimeSeries("NULL", Hour.class);
+		else
+			series1 = new TimeSeries(concept1.getName().getName(), timeScale);
 		if (concept2 == null)
 			series2 = new TimeSeries("NULL", Hour.class);
 		else

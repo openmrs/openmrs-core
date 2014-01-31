@@ -43,7 +43,7 @@ public class ReflectTest {
 	public void xhasField_shouldReturnTrueIfGivenFieldIsDeclaredInParameterizedClassOrSubClass() throws Exception {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
-
+		
 		Field genericCollectionField = findFieldByName(allFields, "genericCollectionField");
 		Assert.assertTrue(reflect.hasField(genericCollectionField));
 	}
@@ -56,14 +56,14 @@ public class ReflectTest {
 	public void xhasField_shouldReturnFalseIfGivenFieldIsNotDeclaredInParameterizedClassOrItsSubClass() throws Exception {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
-
+		
 		Field normalClassField = findFieldByName(allFields, "normalClassField");
-
+		
 		Assert.assertFalse(reflect.hasField(normalClassField));
 	}
-
+	
 	private Field findFieldByName(List<Field> fields, String name) {
-		for (Field field: fields) {
+		for (Field field : fields) {
 			if (name.equals(field.getName())) {
 				return field;
 			}
@@ -78,7 +78,7 @@ public class ReflectTest {
 	@Verifies(value = "should return all fields include private and super classes", method = "getAllFields(Class<*>)")
 	public void getAllFields_shouldReturnAllFieldsIncludePrivateAndSuperClasses() throws Exception {
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
-
+		
 		findFieldByName(allFields, "subClassField");
 		findFieldByName(allFields, "normalClassField");
 		findFieldByName(allFields, "nonCollectionField");
@@ -93,7 +93,7 @@ public class ReflectTest {
 	public void isCollection_shouldReturnFalseIfGivenFieldClassIsNotACollectionClass() throws Exception {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
-
+		
 		Field nonCollectionField = findFieldByName(allFields, "nonCollectionField");
 		Assert.assertFalse(reflect.isCollectionField(nonCollectionField));
 	}
@@ -144,11 +144,11 @@ public class ReflectTest {
 		List<Field> fields = reflect.getInheritedFields(OpenmrsObjectImp.class);
 		
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
-
+		
 		findFieldByName(fields, "subClassField");
 		findFieldByName(fields, "nonCollectionField");
 		findFieldByName(fields, "genericCollectionField");
-
+		
 		Field normalClassField = findFieldByName(allFields, "normalClassField");
 		Assert.assertFalse(fields.contains(normalClassField));
 	}

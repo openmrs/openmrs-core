@@ -181,6 +181,10 @@ public class Context {
 	 * @param dao ContextDAO to set
 	 */
 	public void setContextDAO(ContextDAO dao) {
+		setDAO(dao);
+	}
+	
+	public static void setDAO(ContextDAO dao) {
 		contextDAO = dao;
 	}
 	
@@ -268,6 +272,10 @@ public class Context {
 	 * @param ctx
 	 */
 	public void setServiceContext(ServiceContext ctx) {
+		setContext(ctx);
+	}
+	
+	public static void setContext(ServiceContext ctx) {
 		serviceContext = ctx;
 	}
 	
@@ -889,9 +897,6 @@ public class Context {
 		properties.put("connection.password", password);
 		setRuntimeProperties(properties);
 		
-		@SuppressWarnings("unused")
-		AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext-service.xml");
-		
 		openSession(); // so that the startup method can use proxyPrivileges
 		
 		startup(properties);
@@ -1013,11 +1018,12 @@ public class Context {
 				currentRoleNames.add(role.getRole().toUpperCase());
 			}
 			Map<String, String> map = OpenmrsUtil.getCoreRoles();
-			for (String roleName : map.keySet()) {
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				String roleName = entry.getKey();
 				if (!currentRoleNames.contains(roleName.toUpperCase())) {
 					Role role = new Role();
 					role.setRole(roleName);
-					role.setDescription(map.get(roleName));
+					role.setDescription(entry.getValue());
 					Context.getUserService().saveRole(role);
 				}
 			}
@@ -1037,11 +1043,12 @@ public class Context {
 				currentPrivilegeNames.add(privilege.getPrivilege().toUpperCase());
 			}
 			Map<String, String> map = OpenmrsUtil.getCorePrivileges();
-			for (String privilegeName : map.keySet()) {
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				String privilegeName = entry.getKey();
 				if (!currentPrivilegeNames.contains(privilegeName.toUpperCase())) {
 					Privilege p = new Privilege();
 					p.setPrivilege(privilegeName);
-					p.setDescription(map.get(privilegeName));
+					p.setDescription(entry.getValue());
 					Context.getUserService().savePrivilege(p);
 				}
 			}

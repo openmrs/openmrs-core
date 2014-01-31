@@ -368,9 +368,10 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		// loop over runtime properties and precede each with "hibernate" if
 		// it isn't already
-		for (Object key : runtimeProperties.keySet()) {
+		for (Map.Entry<Object, Object> entry : runtimeProperties.entrySet()) {
+			Object key = entry.getKey();
 			String prop = (String) key;
-			String value = (String) runtimeProperties.get(key);
+			String value = (String) entry.getValue();
 			log.trace("Setting property: " + prop + ":" + value);
 			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop))
 				runtimeProperties.setProperty("hibernate." + prop, value);
@@ -394,7 +395,7 @@ public class HibernateContextDAO implements ContextDAO {
 			try {
 				propertyStream.close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}

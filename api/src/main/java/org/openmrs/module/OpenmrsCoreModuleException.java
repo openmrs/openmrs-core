@@ -60,12 +60,16 @@ public class OpenmrsCoreModuleException extends ModuleMustStartException {
 	 * @return the string to display to the user
 	 */
 	private static String createMessage(Map<String, String> modules) {
-		String msg = "The following modules are marked as 'core' by OpenMRS but were unable to start: ";
+		StringBuilder msg = new StringBuilder(
+		        "The following modules are marked as 'core' by OpenMRS but were unable to start: ");
 		for (Map.Entry<String, String> entry : modules.entrySet()) {
-			msg += entry.getKey() + " v" + entry.getValue() + ", ";
+			msg.append(entry.getKey());
+			msg.append(" v");
+			msg.append(entry.getValue());
+			msg.append(", ");
 		}
 		
-		return msg;
+		return msg.toString();
 	}
 	
 	/**

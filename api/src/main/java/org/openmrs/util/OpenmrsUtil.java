@@ -329,15 +329,25 @@ public class OpenmrsUtil {
 	 * @throws IOException
 	 */
 	public static byte[] getFileAsBytes(File file) throws IOException {
+		FileInputStream fileInputStream = null;
 		try {
-			FileInputStream fileInputStream = new FileInputStream(file);
+			fileInputStream = new FileInputStream(file);
 			byte[] b = new byte[fileInputStream.available()];
 			fileInputStream.read(b);
-			fileInputStream.close();
 			return b;
 		}
 		catch (Exception e) {
 			log.error("Unable to get file as byte array", e);
+		}
+		finally {
+			if (fileInputStream != null) {
+				try {
+					fileInputStream.close();
+				}
+				catch (IOException io) {
+					log.warn("Couldn't close fileInputStream: " + io);
+				}
+			}
 		}
 		
 		return null;
@@ -1167,11 +1177,22 @@ public class OpenmrsUtil {
 			if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
 				filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
 			} else {
-				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
+				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
 					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-				else
+					if (!(new File(filepath)).canWrite()) {
+						log.warn("Unable to write to users home dir, fallback to: "
+						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
+						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
+					}
+				} else {
 					filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
 					        + "OpenMRS";
+					if (!(new File(filepath)).canWrite()) {
+						log.warn("Unable to write to users home dir, fallback to: "
+						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
+						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + "OpenMRS";
+					}
+				}
 				
 				filepath = filepath + File.separator;
 			}
@@ -1961,7 +1982,7 @@ public class OpenmrsUtil {
 	public static String postToUrl(String urlString, Map<String, String> dataToPost) {
 		OutputStreamWriter wr = null;
 		BufferedReader rd = null;
-		String response = "";
+		StringBuilder response = new StringBuilder("");
 		StringBuffer data = null;
 		
 		try {
@@ -2003,7 +2024,7 @@ public class OpenmrsUtil {
 			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String line;
 			while ((line = rd.readLine()) != null) {
-				response = response + line + "\n";
+				response.append(line).append("\n");
 			}
 			
 		}
@@ -2026,7 +2047,7 @@ public class OpenmrsUtil {
 				}
 		}
 		
-		return response;
+		return response.toString();
 	}
 	
 	/**

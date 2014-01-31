@@ -70,7 +70,7 @@ public class PrivilegeListController extends SimpleFormController {
 		//Locale locale = request.getLocale();
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String success = "";
+			StringBuilder success = new StringBuilder();
 			String error = "";
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -85,8 +85,8 @@ public class PrivilegeListController extends SimpleFormController {
 					try {
 						us.purgePrivilege(us.getPrivilege(p));
 						if (!success.equals(""))
-							success += "<br/>";
-						success += p + " " + deleted;
+							success.append("<br/>");
+						success.append(p).append(" ").append(deleted);
 					}
 					catch (DataIntegrityViolationException e) {
 						error = handlePrivilegeIntegrityException(e, error, notDeleted);
@@ -100,7 +100,7 @@ public class PrivilegeListController extends SimpleFormController {
 			
 			view = getSuccessView();
 			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}

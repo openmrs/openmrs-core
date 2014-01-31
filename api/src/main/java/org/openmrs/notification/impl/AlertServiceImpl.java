@@ -155,7 +155,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(User user) throws APIException {
 		log.debug("Getting all alerts for user " + user);
-		return getAlerts(user, true, true);
+		return Context.getAlertService().getAlerts(user, true, true);
 	}
 	
 	/**
@@ -164,7 +164,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAllActiveAlerts(User user) throws APIException {
 		log.debug("Getting all active alerts for user " + user);
-		return getAlerts(user, true, false);
+		return Context.getAlertService().getAlerts(user, true, false);
 	}
 	
 	/**
@@ -175,7 +175,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user) throws APIException {
 		log.debug("Getting unread alerts for user " + user);
-		return getAlertsByUser(user);
+		return Context.getAlertService().getAlertsByUser(user);
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 				user = new User();
 		}
 		
-		return getAlerts(user, false, false);
+		return Context.getAlertService().getAlerts(user, false, false);
 	}
 	
 	/**
@@ -202,7 +202,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Alert> getAlerts() throws APIException {
-		return getAlertsByUser(null);
+		return Context.getAlertService().getAlertsByUser(null);
 	}
 	
 	/**
@@ -220,7 +220,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts() throws APIException {
 		log.debug("Getting alerts for all users");
-		return getAllAlerts(false);
+		return Context.getAlertService().getAllAlerts(false);
 	}
 	
 	/**

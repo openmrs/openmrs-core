@@ -132,6 +132,8 @@ public class WebModuleUtil {
 			// copy the html files into the webapp (from /web/module/ in the module)
 			// also looks for a spring context file. If found, schedules spring to be restarted
 			JarFile jarFile = null;
+			OutputStream outStream = null;
+			InputStream inStream = null;
 			try {
 				File modFile = mod.getFile();
 				jarFile = new JarFile(modFile);
@@ -180,11 +182,9 @@ public class WebModuleUtil {
 							//	outFile = new File(absPath.replace("/", File.separator) + MODULE_NON_JSP_EXTENSION);
 							
 							// copy the contents over to the webapp for non directories
-							OutputStream outStream = new FileOutputStream(outFile, false);
-							InputStream inStream = jarFile.getInputStream(entry);
+							outStream = new FileOutputStream(outFile, false);
+							inStream = jarFile.getInputStream(entry);
 							OpenmrsUtil.copyFile(inStream, outStream);
-							inStream.close();
-							outStream.close();
 						}
 					} else if (name.equals("moduleApplicationContext.xml") || name.equals("webModuleApplicationContext.xml")) {
 						moduleNeedsContextRefresh = true;
@@ -205,6 +205,22 @@ public class WebModuleUtil {
 					}
 					catch (IOException io) {
 						log.warn("Couldn't close jar file: " + jarFile.getName(), io);
+					}
+				}
+				if (inStream != null) {
+					try {
+						inStream.close();
+					}
+					catch (IOException io) {
+						log.warn("Couldn't close InputStream: " + io);
+					}
+				}
+				if (outStream != null) {
+					try {
+						outStream.close();
+					}
+					catch (IOException io) {
+						log.warn("Couldn't close OutputStream: " + io);
 					}
 				}
 			}
@@ -481,9 +497,9 @@ public class WebModuleUtil {
 				ServletConfig servletConfig = new ModuleServlet.SimpleServletConfig(name, servletContext);
 				httpServlet.init(servletConfig);
 			}
-			catch (Throwable t) {
-				log.warn("Unable to initialize servlet: ", t);
-				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), t);
+			catch (Exception e) {
+				log.warn("Unable to initialize servlet: ", e);
+				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), e);
 			}
 			
 			// don't allow modules to overwrite servlets of other modules.

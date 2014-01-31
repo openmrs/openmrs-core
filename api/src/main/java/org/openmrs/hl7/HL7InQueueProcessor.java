@@ -46,6 +46,10 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	public HL7InQueueProcessor() {
 	}
 	
+	public static void setCount(Integer count) {
+		HL7InQueueProcessor.count = count;
+	}
+	
 	/**
 	 * Process a single queue entry from the inbound HL7 queue
 	 * 
@@ -63,8 +67,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 		catch (HL7Exception e) {
 			log.error("Unable to process hl7 in queue", e);
 		}
-		
-		if (++count > 25) {
+		setCount(count + 1);
+		if (count > 25) {
 			// clean up memory after processing each queue entry (otherwise, the
 			// memory-intensive process may crash or eat up all our memory)
 			try {

@@ -875,6 +875,10 @@ public class ServiceContext implements ApplicationContextAware {
 		return useSystemClassLoader;
 	}
 	
+	public static void setRefreshingContext(boolean refreshingContext) {
+		ServiceContext.refreshingContext = refreshingContext;
+	}
+	
 	/**
 	 * Should be called <b>right before</b> any spring context refresh This forces all calls to
 	 * getService to wait until <code>doneRefreshingContext</code> is called
@@ -882,7 +886,7 @@ public class ServiceContext implements ApplicationContextAware {
 	public void startRefreshingContext() {
 		synchronized (refreshingContextLock) {
 			log.info("Refreshing Context");
-			refreshingContext = true;
+			setRefreshingContext(true);
 		}
 	}
 	
@@ -893,7 +897,7 @@ public class ServiceContext implements ApplicationContextAware {
 	public void doneRefreshingContext() {
 		synchronized (refreshingContextLock) {
 			log.info("Done refreshing Context");
-			refreshingContext = false;
+			setRefreshingContext(false);
 			refreshingContextLock.notifyAll();
 		}
 	}

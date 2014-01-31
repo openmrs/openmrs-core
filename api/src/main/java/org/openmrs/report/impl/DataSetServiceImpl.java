@@ -56,7 +56,7 @@ public class DataSetServiceImpl implements DataSetService {
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
-		providers = null;
+		setProviders(null);
 	}
 	
 	/**

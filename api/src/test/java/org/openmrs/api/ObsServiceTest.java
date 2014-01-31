@@ -73,6 +73,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_OBS_XML = "org/openmrs/api/include/ObsServiceTest-initial.xml";
 	
+	protected static final String ENCOUNTER_OBS_XML = "org/openmrs/api/include/ObsServiceTest-EncounterOverwrite.xml";
+	
 	protected static final String COMPLEX_OBS_XML = "org/openmrs/api/include/ObsServiceTest-complex.xml";
 	
 	/**
@@ -709,7 +711,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			try {
 				previouslyCreatedFile.delete();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}
@@ -1646,6 +1648,20 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		// check
 		assertEquals(changeMessage, obs.getVoidReason());
+	}
+	
+	@Test
+	@Verifies(value = "should overwrite ObsPerson Value With EncounterPatient", method = "saveObs(Obs,String)")
+	public void saveObs_shouldOverwriteObsPersonValueWithEncounterPatient() throws Exception {
+		String changeMessage = "Testing TRUNK-3283";
+		
+		executeDataSet(ENCOUNTER_OBS_XML);
+		ObsService obsService = Context.getObsService();
+		Obs obs = obsService.getObs(13);
+		//overwrite ObsPerson with EncounterPatient
+		Obs obsSaved = obsService.saveObs(obs, changeMessage);
+		
+		assertEquals(obs.getPerson(), obsSaved.getEncounter().getPatient());
 	}
 	
 }
