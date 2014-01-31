@@ -568,8 +568,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(order);
 	}
 	
-	private boolean isOrderActive(Order order) {
-		return order.getDateStopped() == null && order.getAutoExpireDate() == null
-		        && order.getAction() != Action.DISCONTINUE;
+	/**
+	 * @verifies default to Order class if no orderClass is specified
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
+	 *      java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldDefaultToOrderClassIfNoOrderClassIsSpecified() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(2);
+		List<Order> orders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(5, orders.size());
+		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5), orderService.getOrder(7) };
+		assertThat(orders, hasItems(expectedOrders));
 	}
 }

@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
@@ -86,11 +87,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * If this is a discontinue order, ensure that the previous order is discontinued.
-	 * If a previousOrder is present, then ensure this is discontinued.
-	 * If no previousOrder is present, then try to find a previousOrder and discontinue it.
-	 * If cannot find a previousOrder, throw exception
-	 *
+	 * If this is a discontinue order, ensure that the previous order is discontinued. If a
+	 * previousOrder is present, then ensure this is discontinued. If no previousOrder is present,
+	 * then try to find a previousOrder and discontinue it. If cannot find a previousOrder, throw
+	 * exception
+	 * 
 	 * @param order
 	 */
 	private void discontinueExistingOrdersIfRequired(Order order) {
@@ -294,6 +295,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (asOfDate == null) {
 			asOfDate = new Date();
 		}
+		if (orderClass == null) {
+			orderClass = (Class<Ord>) Order.class;
+		}
 		return dao.getActiveOrders(patient, orderClass, careSetting, asOfDate);
 	}
 	
@@ -314,7 +318,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
+	 *      java.util.Date)
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) {
@@ -340,8 +345,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * Make necessary checks, set necessary fields for discontinuing <code>orderToDiscontinue</code> and save.
-	 *
+	 * Make necessary checks, set necessary fields for discontinuing <code>orderToDiscontinue</code>
+	 * and save.
+	 * 
 	 * @param orderToDiscontinue
 	 * @param discontinueDate
 	 */
