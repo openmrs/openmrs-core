@@ -4,7 +4,7 @@
 	</li>
 	<openmrs:hasPrivilege privilege="Manage Scheduler">
 		<li <c:if test='<%= request.getRequestURI().contains("schedulerList") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/scheduler/scheduler.list" class="retired">
+			<a href="${pageContext.request.contextPath}/admin/scheduler/scheduler.list">
 				<openmrs:message code="Scheduler.title"/>
 			</a>
 		</li>
