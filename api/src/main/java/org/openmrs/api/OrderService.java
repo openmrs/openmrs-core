@@ -261,6 +261,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should populate correct attributes on the discontinue and discontinued orders
 	 * @should fail for a discontinue order
+	 * @should reject a future discontinueDate
 	 */
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate);
 	
@@ -276,6 +277,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should populate correct attributes on the discontinue and discontinued orders
 	 * @should fail for a discontinue order
+	 * @should fail if discontinueDate is in the future
 	 */
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate);
 }

@@ -19,6 +19,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -427,9 +428,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		asOfDate = Context.getDateFormat().parse("04/12/2008");
 		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
-		for (Order o : orders) {
-			System.out.println(o.getOrderId());
-		}
 		assertEquals(5, orders.size());
 		Order[] expectedOrders5 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
 		        orderService.getOrder(5), orderService.getOrder(7) };
@@ -599,5 +597,34 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setPreviousOrder(previousOrder);
 		
 		orderService.saveOrder(order);
+	}
+	
+	/**
+	 * @verifies reject a future discontinueDate
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void discontinueOrder_shouldRejectAFutureDiscontinueDate() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.HOUR_OF_DAY, 1);
+		Patient patient = Context.getPatientService().getPatient(2);
+		CareSetting careSetting = orderService.getCareSetting(1);
+		Order orderToDiscontinue = orderService.getActiveOrders(patient, Order.class, careSetting, null).get(0);
+		orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime());
+	}
+	
+	/**
+	 * @verifies fail if discontinueDate is in the future
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void discontinueOrder_shouldFailIfDiscontinueDateIsInTheFuture() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.HOUR_OF_DAY, 1);
+		Order orderToDiscontinue = orderService.getActiveOrders(Context.getPatientService().getPatient(2), Order.class,
+		    orderService.getCareSetting(1), null).get(0);
+		orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime());
 	}
 }

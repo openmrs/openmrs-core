@@ -352,6 +352,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @param discontinueDate
 	 */
 	private void discontinue(Order orderToDiscontinue, Date discontinueDate) {
+		if (discontinueDate != null && discontinueDate.after(new Date())) {
+			throw new IllegalArgumentException("Future discontinue date is not allowed");
+		}
 		if (orderToDiscontinue.getAction().equals(Order.Action.DISCONTINUE)) {
 			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued. ");
 		}
