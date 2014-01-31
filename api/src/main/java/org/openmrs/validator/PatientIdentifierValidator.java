@@ -155,7 +155,8 @@ public class PatientIdentifierValidator implements Validator {
 	 * @should include format in error message if no formatDescription is specified
 	 * @should include formatDescription in error message if specified
 	 */
-	public static void checkIdentifierAgainstFormat(String identifier, String format, String formatDescription) throws PatientIdentifierException {
+	public static void checkIdentifierAgainstFormat(String identifier, String format, String formatDescription)
+	        throws PatientIdentifierException {
 		
 		log.debug("Checking identifier: " + identifier + " against format: " + format);
 		
@@ -172,7 +173,7 @@ public class PatientIdentifierValidator implements Validator {
 		if (!identifier.matches(format)) {
 			log.debug("The two DO NOT match");
 			throw new InvalidIdentifierFormatException(getMessage("PatientIdentifier.error.invalidFormat", identifier,
-					StringUtils.isNotBlank(formatDescription) ? formatDescription : format));
+			    StringUtils.isNotBlank(formatDescription) ? formatDescription : format));
 		}
 		log.debug("The two match!!");
 	}
