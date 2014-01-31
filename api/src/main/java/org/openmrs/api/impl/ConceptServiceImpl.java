@@ -2192,7 +2192,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired)
 	        throws APIException {
 		if (searchPhrase == null) {
-			return Collections.EMPTY_LIST;
+			throw new IllegalArgumentException("searchPhrase is required");
 		}
 		return dao.getDrugs(searchPhrase, locale, exactLocale, includeRetired);
 	}

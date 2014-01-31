@@ -2058,6 +2058,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should get drugs that have mappings with reference term codes that match the phrase
 	 * @should return unique drugs
 	 * @should return all drugs with a matching term code or drug name or concept name
+	 * @should reject a null search phrase
 	 */
 	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired);
 }

@@ -2687,4 +2687,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Drug[] expectedDrugs = { conceptService.getDrug(3), conceptService.getDrug(11), conceptService.getDrug(444) };
 		assertThat(drugs, hasItems(expectedDrugs));
 	}
+	
+	/**
+	 * @verifies reject a null search phrase
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void getDrugs_shouldRejectANullSearchPhrase() throws Exception {
+		conceptService.getDrugs(null, null, false, false);
+	}
 }

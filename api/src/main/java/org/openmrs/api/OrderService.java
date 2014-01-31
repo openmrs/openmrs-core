@@ -216,7 +216,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param careSetting the care setting, returns all ignoring care setting if value is null
 	 * @param asOfDate defaults to current time
 	 * @return all active orders for given patient parameters
-     * @since 1.10
+	 * @since 1.10
 	 * @should return all active orders for the specified patient
 	 * @should return all active orders for the specified patient and care setting
 	 * @should return all active drug orders for the specified patient
