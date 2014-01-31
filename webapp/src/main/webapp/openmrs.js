@@ -629,5 +629,6 @@ function hideError(errorName) {
 function forceMaxLength(object, maxLength) {
     if( object.value.length >= maxLength) {
        object.value = object.value.substring(0, maxLength); 
+       alert("The maximum limit has been reached");
     }
 }
