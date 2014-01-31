@@ -2051,7 +2051,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should get a list of non retired drug mappings with given code and concept source and conceptmapTypes
 	 * @should only return non-retired drugs
 	 * @should return retired and non-retired drugs
-	 * @should return empty list if no code and source exist
+	 * @should return empty list if no matches are found
 	 * @should match on the  code
 	 * @should match on the concept source
 	 * @should match on the map types
@@ -2072,7 +2072,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 * @return the {@link Drug}
 	 * @throws APIException
-	 * @should return a drug that matches the specified source and best map type
+	 * @should return a drug that matches the best map type
 	 * @should fail if multiple drugs are found matching the best map type
 	 * @should return null if no match found
 	 */

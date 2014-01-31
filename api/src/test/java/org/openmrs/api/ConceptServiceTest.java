@@ -88,6 +88,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/api/include/ConceptServiceTest-initialConcepts.xml";
 	
 	protected static final String GET_CONCEPTS_BY_SET_XML = "org/openmrs/api/include/ConceptServiceTest-getConceptsBySet.xml";
+
+	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -2546,11 +2548,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugsByMapping_shouldGetAListOfNonRetiredDrugMappingsWithGivenCodeAndConceptSourceAndConceptmapTypes() throws Exception {
-
-		ConceptReferenceTerm conceptReferenceTerm = conceptService.getConceptReferenceTermByCode("2332523", new ConceptSource(2));
+		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
-		List<Drug> drugs = conceptService.getDrugsByMapping(conceptReferenceTerm.getCode(), conceptReferenceTerm.getConceptSource(), conceptMapTypeList, false);
-		assertEquals(0, drugs.size());
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", conceptService.getConceptSource(1), conceptMapTypeList, false);
+		assertEquals(2, drugs.size());
+		assertTrue(containsId(drugs,2));
+		assertTrue(containsId(drugs,3));
 	}
 
 	/**
@@ -2559,10 +2562,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugsByMapping_shouldOnlyReturnNonretiredDrugs() throws Exception {
-		ConceptReferenceTerm conceptReferenceTerm = conceptService.getConceptReferenceTermByCode("7345693", new ConceptSource(1));
-		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
-		List<Drug> drugs = conceptService.getDrugsByMapping(conceptReferenceTerm.getCode(), conceptReferenceTerm.getConceptSource(), conceptMapTypeList, false);
-		assertEquals(0, drugs.size());
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", conceptService.getConceptSource(1), conceptMapTypeList, false);
+		assertEquals(2, drugs.size());
+		assertTrue(containsId(drugs,2));
+		assertTrue(containsId(drugs,3));
 	}
 
 	/**
@@ -2571,21 +2576,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugsByMapping_shouldReturnRetiredAndNonretiredDrugs() throws Exception {
-		ConceptReferenceTerm conceptReferenceTerm = conceptService.getConceptReferenceTermByCode("2332523", new ConceptSource(2));
+		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
-		List<Drug> drugs = conceptService.getDrugsByMapping(conceptReferenceTerm.getCode(), conceptReferenceTerm.getConceptSource(), conceptMapTypeList, true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("2332523", conceptService.getConceptSource(2), conceptMapTypeList, true);
 		assertEquals(0, drugs.size());
 	}
 
 	/**
-	 * @verifies return empty list if no code and source exist
+	 * @verifies return empty list if no matches are found
 	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
 	 */
 	@Test
 	public void testGetDrugsByMapping_shouldReturnEmptyListIfNoCodeAndSourceExist() throws Exception {
-		ConceptReferenceTerm conceptReferenceTerm = conceptService.getConceptReferenceTermByCode("CD41003", new ConceptSource(1));
+		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
-		List<Drug> drugs = conceptService.getDrugsByMapping(conceptReferenceTerm.getCode(), conceptReferenceTerm.getConceptSource(), conceptMapTypeList, false);
+		List<Drug> drugs = conceptService.getDrugsByMapping("CD41003", conceptService.getConceptSource(2), conceptMapTypeList, false);
 		assertTrue(drugs.isEmpty());
 	}
 
@@ -2595,9 +2600,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugsByMapping_shouldMatchOnTheCode() throws Exception {
-		ConceptReferenceTerm conceptReferenceTerm = conceptService.getConceptReferenceTermByCode("CD41003", new ConceptSource(1));
+		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
-		List<Drug> drugs = conceptService.getDrugsByMapping(conceptReferenceTerm.getCode(), conceptReferenceTerm.getConceptSource(), conceptMapTypeList, true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("CD41003", conceptService.getConceptSource(2), conceptMapTypeList, true);
 		assertEquals(0, drugs.size());
 	}
 
@@ -2607,9 +2612,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugsByMapping_shouldMatchOnTheConceptSource() throws Exception {
-		ConceptReferenceTerm conceptReferenceTerm = conceptService.getConceptReferenceTermByCode("CD41003", new ConceptSource(1));
+		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
-		List<Drug> drugs = conceptService.getDrugsByMapping("Random code", conceptReferenceTerm.getConceptSource(), conceptMapTypeList, false);
+		List<Drug> drugs = conceptService.getDrugsByMapping("Random code", conceptService.getConceptSource(2), conceptMapTypeList, false);
 		assertEquals(0, drugs.size());
 	}
 
@@ -2619,9 +2624,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugsByMapping_shouldMatchOnTheMapTypes() throws Exception {
-		ConceptReferenceTerm conceptReferenceTerm = conceptService.getConceptReferenceTermByCode("CD41003", new ConceptSource(1));
+		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
-		List<Drug> drugs = conceptService.getDrugsByMapping("Random code", conceptReferenceTerm.getConceptSource(), conceptMapTypeList, false);
+		List<Drug> drugs = conceptService.getDrugsByMapping("Random code", conceptService.getConceptSource(2), conceptMapTypeList, false);
 		assertEquals(0, drugs.size());
 	}
 
@@ -2631,6 +2636,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugByMapping_shouldReturnADrugThatMatchesTheSpecifiedSourceAndBestMapType() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
 		Drug drugs = conceptService.getDrugByMapping("WGT234", conceptService.getConceptSource(1), Arrays.asList(conceptService.getConceptMapType(2)), false);
 		assertNull(drugs);
 
@@ -2643,6 +2649,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugByMapping_shouldFailIfMultipleDrugsAreFoundMatchingTheBestMapType() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
 		Drug drugs = conceptService.getDrugByMapping("WGT234", conceptService.getConceptSource(1), Arrays.asList(conceptService.getConceptMapType(2),conceptService.getConceptMapType(6)), false);
 		assertNull(drugs);
 	}
@@ -2653,9 +2660,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void testGetDrugByMapping_shouldReturnNullIfNoMatchFound() throws Exception {
-		ConceptReferenceTerm conceptReferenceTerm = conceptService.getConceptReferenceTermByCode("CD41003", new ConceptSource(1));
+		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false,true);
-		Drug drugs = conceptService.getDrugByMapping(conceptReferenceTerm.getCode(), conceptReferenceTerm.getConceptSource(), conceptMapTypeList, false);
+		Drug drugs = conceptService.getDrugByMapping("CD41003", conceptService.getConceptSource(1), conceptMapTypeList, false);
 		assertNull(drugs);
 	}
 }
