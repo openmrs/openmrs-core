@@ -2045,9 +2045,9 @@ public interface ConceptService extends OpenmrsService {
 	 *
 	 * @param searchPhrase The string to match against
 	 * @param locale The locale to match against when searching in drug concept names
-	 * @param exactLocale If true then concepts with names in a broader locale will be matched e.g
+	 * @param exactLocale If false then concepts with names in a broader locale will be matched e.g
 	 *            in case en_GB is passed in then en will be matched
-	 * @param includeRetired Specifies if retired drugs that match should be include or not
+	 * @param includeRetired Specifies if retired drugs that match should be included or not
 	 * @return A list of matching drugs
 	 * @since 1.10
 	 * @should get drugs with names matching the search phrase
