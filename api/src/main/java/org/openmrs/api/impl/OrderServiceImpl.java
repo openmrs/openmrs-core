@@ -245,9 +245,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
-		if (patient == null)
-			throw new IllegalArgumentException("patient is required");
-		
+		if (patient == null || concept == null) {
+			throw new IllegalArgumentException("patient and concept are required");
+		}
 		List<Concept> concepts = new Vector<Concept>();
 		concepts.add(concept);
 		

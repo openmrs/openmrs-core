@@ -173,6 +173,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return the list of orders.
 	 * @should return orders with the given concept
 	 * @should return empty list for concept without orders
+	 * @should reject a null patient
+	 * @should reject a null concept
 	 */
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 	

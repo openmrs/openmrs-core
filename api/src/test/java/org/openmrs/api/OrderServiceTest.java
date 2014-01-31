@@ -251,6 +251,24 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies reject a null concept
+	 * @see OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void getOrderHistoryByConcept_shouldRejectANullConcept() throws Exception {
+		orderService.getOrderHistoryByConcept(new Patient(), null);
+	}
+	
+	/**
+	 * @verifies reject a null patient
+	 * @see OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void getOrderHistoryByConcept_shouldRejectANullPatient() throws Exception {
+		orderService.getOrderHistoryByConcept(null, new Concept());
+	}
+	
+	/**
 	 * @see {@link OrderService#getOrderHistoryByOrderNumber(String)}
 	 */
 	@Test
@@ -419,6 +437,21 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies default to Order class if no orderClass is specified
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
+	 *      java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldDefaultToOrderClassIfNoOrderClassIsSpecified() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(2);
+		List<Order> orders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(5, orders.size());
+		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5), orderService.getOrder(7) };
+		assertThat(orders, hasItems(expectedOrders));
+	}
+	
+	/**
 	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)}
 	 */
 	@Test
@@ -566,20 +599,5 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setPreviousOrder(previousOrder);
 		
 		orderService.saveOrder(order);
-	}
-	
-	/**
-	 * @verifies default to Order class if no orderClass is specified
-	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
-	 *      java.util.Date)
-	 */
-	@Test
-	public void getActiveOrders_shouldDefaultToOrderClassIfNoOrderClassIsSpecified() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(2);
-		List<Order> orders = orderService.getActiveOrders(patient, null, null, null);
-		assertEquals(5, orders.size());
-		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
-		        orderService.getOrder(5), orderService.getOrder(7) };
-		assertThat(orders, hasItems(expectedOrders));
 	}
 }
