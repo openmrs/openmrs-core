@@ -129,7 +129,7 @@ function toggleProviderDetails(){
 				</c:forEach>
 			</c:if>
 			<tr>
-         	<c:if test="${provider.getProviderId() != null}">
+         	<c:if test="${provider.providerId != null}">
            		<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
            		<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
            	<spring:bind path="provider.uuid">
