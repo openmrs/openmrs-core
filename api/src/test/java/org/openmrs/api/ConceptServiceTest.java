@@ -13,9 +13,9 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -35,10 +35,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -2157,7 +2156,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-
 	 * @see ConceptService#getConceptsByName(String,Locale)
 	 * @verifies return concepts for all countries and global language given language only locale
 	 */
@@ -2465,7 +2463,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * 
 	 * @see {@link ConceptService#getAllConcepts(String,null,null)}
 	 */
 	@Test
@@ -2557,5 +2554,137 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
 		
 		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
+	}
+	
+	/**
+	 * @verifies get drugs with names matching the search phrase
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsWithNamesMatchingTheSearchPhrase() throws Exception {
+		//Should be case insensitive
+		List<Drug> drugs = conceptService.getDrugs("tri", null, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(2, drugs.get(0).getDrugId().intValue());
+		
+		//Should match any where in the drug name
+		drugs = conceptService.getDrugs("ri", null, false, false);
+		assertEquals(2, drugs.size());
+		assertThat(drugs, hasItems(conceptService.getDrug(2), conceptService.getDrug(3)));
+	}
+	
+	/**
+	 * @verifies include retired drugs if includeRetired is set to true
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldIncludeRetiredDrugsIfIncludeRetiredIsSetToTrue() throws Exception {
+		//Should be case insensitive
+		final String searchPhrase = "Nyq";
+		List<Drug> drugs = conceptService.getDrugs(searchPhrase, null, false, false);
+		assertEquals(0, drugs.size());
+		
+		drugs = conceptService.getDrugs(searchPhrase, null, false, true);
+		assertEquals(1, drugs.size());
+		assertEquals(11, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * @verifies get drugs linked to concepts with names that match the phrase
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhrase() throws Exception {
+		final Integer expectedDrugId = 2;
+		List<Drug> drugs = conceptService.getDrugs("stav", null, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(expectedDrugId, drugs.get(0).getDrugId());
+		
+		//should match anywhere in the concept name
+		drugs = conceptService.getDrugs("amiv", null, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(expectedDrugId, drugs.get(0).getDrugId());
+	}
+	
+	/**
+	 * @verifies get drugs linked to concepts with names that match the phrase and locale
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhraseAndLocale() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		final String searchPhrase = "some";
+		List<Drug> drugs = conceptService.getDrugs(searchPhrase, Locale.FRENCH, true, false);
+		assertEquals(0, drugs.size());
+		
+		drugs = conceptService.getDrugs(searchPhrase, Locale.CANADA_FRENCH, true, false);
+		assertEquals(1, drugs.size());
+		assertEquals(3, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * @verifies get drugs linked to concepts with names that match the phrase and related locales
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhraseAndRelatedLocales() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		final String searchPhrase = "another";
+		//Should look only in the exact locale if exactLocale is set to true
+		List<Drug> drugs = conceptService.getDrugs(searchPhrase, Locale.CANADA_FRENCH, true, false);
+		assertEquals(0, drugs.size());
+		
+		//Should look in broader locale if exactLocale is set to false
+		drugs = conceptService.getDrugs(searchPhrase, Locale.CANADA_FRENCH, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(3, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * @verifies get drugs that have mappings with reference term codes that match the phrase
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsThatHaveMappingsWithReferenceTermCodesThatMatchThePhrase() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		List<Drug> drugs = conceptService.getDrugs("XXXZZ", null, true, true);
+		assertEquals(1, drugs.size());
+		assertEquals(11, drugs.get(0).getDrugId().intValue());
+		
+		//should match the code anywhere
+		drugs = conceptService.getDrugs("XZZZ", null, true, true);
+		assertEquals(1, drugs.size());
+		assertEquals(11, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * Ensures that unique drugs are returned in situations where more than one searched fields
+	 * match e.g drug name and linked concept name match the search phrase
+	 * 
+	 * @verifies return unique drugs
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldReturnUniqueDrugs() throws Exception {
+		//sanity check that drug.name and drug.concept.name will both match the search phrase
+		Drug drug = conceptService.getDrugByNameOrId("Aspirin");
+		assertEquals(drug.getName().toLowerCase(), drug.getConcept().getName().getName().toLowerCase());
+		
+		List<Drug> drugs = conceptService.getDrugs("Asp", null, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(3, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * @verifies return all drugs with a matching term code or drug name or concept name
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldReturnAllDrugsWithAMatchingTermCodeOrDrugNameOrConceptName() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		List<Drug> drugs = conceptService.getDrugs("ZZZ", null, false, true);
+		assertEquals(3, drugs.size());
+		Drug[] expectedDrugs = { conceptService.getDrug(3), conceptService.getDrug(11), conceptService.getDrug(444) };
+		assertThat(drugs, hasItems(expectedDrugs));
 	}
 }

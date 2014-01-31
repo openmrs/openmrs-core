@@ -2184,4 +2184,16 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		//We need to fetch it in DAO since it must be done in the MANUAL fush mode to prevent pre-mature flushes.
 		return dao.getDefaultConceptMapType();
 	}
+	
+	/**
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Override
+	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired)
+	        throws APIException {
+		if (searchPhrase == null) {
+			return Collections.EMPTY_LIST;
+		}
+		return dao.getDrugs(searchPhrase, locale, exactLocale, includeRetired);
+	}
 }

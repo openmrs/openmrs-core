@@ -1305,7 +1305,7 @@ public interface ConceptService extends OpenmrsService {
 	 * returns retired concepts, this method will simply return the first concept in the list returns by
 	 * the dao method; retired concepts can be excluded by setting the includeRetired parameter to false,
 	 * but the above logic still applies
-	 * 
+	 *
 	 * @param code the code associated with a concept within a given {@link ConceptSource}
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
 	 * @param includeRetired whether or not to include retired concepts
@@ -2037,4 +2037,27 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
+	
+	/**
+	 * Fetches un retired drugs that match the specified search phrase. The logic matches on drug
+	 * names, concept names of the associated concepts or the concept reference term codes of the
+	 * drug reference term mappings
+	 *
+	 * @param searchPhrase The string to match against
+	 * @param locale The locale to match against when searching in drug concept names
+	 * @param exactLocale If true then concepts with names in a broader locale will be matched e.g
+	 *            in case en_GB is passed in then en will be matched
+	 * @param includeRetired Specifies if retired drugs that match should be include or not
+	 * @return A list of matching drugs
+	 * @since 1.10
+	 * @should get drugs with names matching the search phrase
+	 * @should include retired drugs if includeRetired is set to true
+	 * @should get drugs linked to concepts with names that match the phrase
+	 * @should get drugs linked to concepts with names that match the phrase and locale
+	 * @should get drugs linked to concepts with names that match the phrase and related locales
+	 * @should get drugs that have mappings with reference term codes that match the phrase
+	 * @should return unique drugs
+	 * @should return all drugs with a matching term code or drug name or concept name
+	 */
+	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired);
 }

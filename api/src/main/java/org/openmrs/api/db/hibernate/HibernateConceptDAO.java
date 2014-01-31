@@ -39,6 +39,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
@@ -2036,5 +2037,45 @@ public class HibernateConceptDAO implements ConceptDAO {
 		finally {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
+	}
+	
+	/**
+	 * @see ConceptDAO#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Override
+	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
+		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
+		Disjunction searchPhraseDisjunction = Restrictions.disjunction();
+		searchPhraseDisjunction.add(Restrictions.ilike("drug.name", searchPhrase, MatchMode.ANYWHERE));
+		
+		//match on the concept names of the drug concepts
+		criteria.createAlias("drug.concept", "drugConcept", Criteria.LEFT_JOIN);
+		criteria.createAlias("drugConcept.names", "conceptName", Criteria.LEFT_JOIN);
+		Conjunction conceptNameConjunction = Restrictions.conjunction();
+		conceptNameConjunction.add(Restrictions.ilike("conceptName.name", searchPhrase, MatchMode.ANYWHERE));
+		if (locale != null) {
+			List<Locale> locales = new ArrayList<Locale>(2);
+			locales.add(locale);
+			//look in the broader locale too if exactLocale is false e.g en for en_GB
+			if (!exactLocale && StringUtils.isNotBlank(locale.getCountry())) {
+				locales.add(new Locale(locale.getLanguage()));
+			}
+			conceptNameConjunction.add(Restrictions.in("conceptName.locale", locales));
+		}
+		searchPhraseDisjunction.add(conceptNameConjunction);
+		
+		//match on the codes of the reference terms associated to the drug mappings
+		criteria.createAlias("drug.drugReferenceMaps", "map", Criteria.LEFT_JOIN);
+		criteria.createAlias("map.conceptReferenceTerm", "term", Criteria.LEFT_JOIN);
+		searchPhraseDisjunction.add(Restrictions.ilike("term.code", searchPhrase, MatchMode.ANYWHERE));
+		
+		criteria.add(searchPhraseDisjunction);
+		
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("drug.retired", false));
+		}
+		
+		return criteria.list();
 	}
 }
