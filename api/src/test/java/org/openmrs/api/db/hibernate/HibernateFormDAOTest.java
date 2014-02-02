@@ -41,8 +41,7 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 	 * Run this before each unit test in this class.
 	 * 
 	 * @throws Exception
-	 */
-	
+	 */	
 	@Before
 	public  void runBeforeTest() throws Exception {
 		    formService = Context.getFormService();
