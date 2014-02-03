@@ -21,13 +21,13 @@ import java.util.Date;
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
  * "since the beginning of time" Otherwise the order starts on startDate If discontinued is non-null
- * and true, then the following fields should be ignored: autoExpireDate if dateStopped is null
- * then the order was discontinued "the instant after it began" otherwise it was given from its
- * starting date until dateStopped Otherwise (discontinued is null or false) if autoExpireDate
- * is null, the order is set to go forever otherwise the order goes until autoExpireDate the
- * following fields should be ignored: discontinuedBy dateStopped discontinuedReason It is an
- * error to have discontinued be true and have dateStopped be after autoExpireDate. However
- * this is not checked for in the database or the application.
+ * and true, then the following fields should be ignored: autoExpireDate if dateStopped is null then
+ * the order was discontinued "the instant after it began" otherwise it was given from its starting
+ * date until dateStopped Otherwise (discontinued is null or false) if autoExpireDate is null, the
+ * order is set to go forever otherwise the order goes until autoExpireDate the following fields
+ * should be ignored: discontinuedBy dateStopped discontinuedReason It is an error to have
+ * discontinued be true and have dateStopped be after autoExpireDate. However this is not checked
+ * for in the database or the application.
  * 
  * @version 1.0
  */
@@ -71,11 +71,11 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Date dateStopped;
 	
-	private Concept discontinuedReason;
+	private Concept orderReason;
 	
 	private String accessionNumber;
 	
-	private String discontinuedReasonNonCoded;
+	private String orderReasonNonCoded;
 	
 	private Urgency urgency = Urgency.ROUTINE;
 	
@@ -136,7 +136,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setCreator(getCreator());
 		target.setDateCreated(getDateCreated());
 		target.setDateStopped(getDateStopped());
-		target.setDiscontinuedReason(getDiscontinuedReason());
+		target.setOrderReason(getOrderReason());
 		target.setAccessionNumber(getAccessionNumber());
 		target.setVoided(isVoided());
 		target.setVoidedBy(getVoidedBy());
@@ -204,17 +204,17 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the discontinuedReason.
+	 * @return Returns the orderReason.
 	 */
-	public Concept getDiscontinuedReason() {
-		return discontinuedReason;
+	public Concept getOrderReason() {
+		return orderReason;
 	}
 	
 	/**
-	 * @param discontinuedReason The discontinuedReason to set.
+	 * @param orderReason The orderReason to set.
 	 */
-	public void setDiscontinuedReason(Concept discontinuedReason) {
-		this.discontinuedReason = discontinuedReason;
+	public void setOrderReason(Concept orderReason) {
+		this.orderReason = orderReason;
 	}
 	
 	/**
@@ -302,17 +302,17 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the discontinuedReasonNonCoded
+	 * @return Returns the orderReasonNonCoded.
 	 */
-	public String getDiscontinuedReasonNonCoded() {
-		return discontinuedReasonNonCoded;
+	public String getOrderReasonNonCoded() {
+		return orderReasonNonCoded;
 	}
 	
 	/**
-	 * @param discontinuedReasonNonCoded the discontinuedReasonNonCoded to set
+	 * @param orderReasonNonCoded The orderReasonNonCoded to set.
 	 */
-	public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
-		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
+	public void setOrderReasonNonCoded(String orderReasonNonCoded) {
+		this.orderReasonNonCoded = orderReasonNonCoded;
 	}
 	
 	/**
@@ -514,6 +514,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Gets the careSetting
+	 * 
 	 * @return the action
 	 * @since 1.10
 	 */
@@ -523,6 +524,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Sets the careSetting
+	 * 
 	 * @param careSetting the action to set
 	 * @since 1.10
 	 */
@@ -533,7 +535,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Creates a discontinuation order for this order, sets the previousOrder and action fields,
 	 * note that the discontinuation order needs to be saved for the discontinuation to take effect
-	 *
+	 * 
 	 * @return the newly created order
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException

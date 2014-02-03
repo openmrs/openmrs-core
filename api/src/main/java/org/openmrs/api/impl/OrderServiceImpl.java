@@ -355,7 +355,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		markAsDiscontinued(orderToDiscontinue, discontinueDate);
 		
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
-		newOrder.setDiscontinuedReason(reasonCoded);
+		newOrder.setOrderReason(reasonCoded);
 		
 		return saveOrderInternal(newOrder);
 	}
@@ -368,7 +368,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		markAsDiscontinued(orderToDiscontinue, discontinueDate);
 		
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
-		newOrder.setDiscontinuedReasonNonCoded(reasonNonCoded);
+		newOrder.setOrderReasonNonCoded(reasonNonCoded);
 		
 		return saveOrderInternal(newOrder);
 	}

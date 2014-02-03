@@ -112,13 +112,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = Context.getOrderService().getOrderByUuid(uuid);
 		String discontinuedReasonNonCoded = "Non coded discontinued reason";
 		
-		order.setDiscontinuedReasonNonCoded(discontinuedReasonNonCoded);
+		order.setOrderReasonNonCoded(discontinuedReasonNonCoded);
 		OrderService orderService = Context.getOrderService();
 		orderService.saveOrder(order);
 		
 		order = Context.getOrderService().getOrderByUuid(uuid);
 		
-		Assert.assertEquals(discontinuedReasonNonCoded, order.getDiscontinuedReasonNonCoded());
+		Assert.assertEquals(discontinuedReasonNonCoded, order.getOrderReasonNonCoded());
 	}
 	
 	@Test
@@ -471,7 +471,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(discontinueOrder);
 		Assert.assertNotNull(discontinueOrder.getId());
 		Assert.assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
-		Assert.assertEquals(discontinueOrder.getDiscontinuedReasonNonCoded(), discontinueReasonNonCoded);
+		Assert.assertEquals(discontinueOrder.getOrderReasonNonCoded(), discontinueReasonNonCoded);
 		Assert.assertEquals(discontinueOrder.getPreviousOrder(), order);
 	}
 	
@@ -495,7 +495,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(discontinueOrder);
 		Assert.assertNotNull(discontinueOrder.getId());
 		Assert.assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
-		Assert.assertEquals(discontinueOrder.getDiscontinuedReason(), concept);
+		Assert.assertEquals(discontinueOrder.getOrderReason(), concept);
 		Assert.assertEquals(discontinueOrder.getPreviousOrder(), order);
 	}
 	
@@ -538,7 +538,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderService orderService = Context.getOrderService();
 		Order order = new Order();
 		order.setAction(Order.Action.DISCONTINUE);
-		order.setDiscontinuedReasonNonCoded("Discontinue this");
+		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(Context.getPatientService().getPatient(7));
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
@@ -567,7 +567,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//We are trying to discontinue order id 111 in standardTestDataset.xml
 		Order order = new Order();
 		order.setAction(Order.Action.DISCONTINUE);
-		order.setDiscontinuedReasonNonCoded("Discontinue this");
+		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(Context.getPatientService().getPatient(7));
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
@@ -591,7 +591,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//We are trying to discontinue order id 111 in standardTestDataset.xml
 		Order order = new Order();
 		order.setAction(Order.Action.DISCONTINUE);
-		order.setDiscontinuedReasonNonCoded("Discontinue this");
+		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(Context.getPatientService().getPatient(7));
 		order.setConcept(Context.getConceptService().getConcept(3));
 		order.setCareSetting(orderService.getCareSetting(1));
@@ -645,7 +645,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setDrug(orderToDiscontinue.getDrug());
 		order.setAction(Order.Action.DISCONTINUE);
-		order.setDiscontinuedReasonNonCoded("Discontinue this");
+		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(orderToDiscontinue.getPatient());
 		order.setConcept(orderToDiscontinue.getConcept());
 		order.setCareSetting(orderToDiscontinue.getCareSetting());
@@ -677,7 +677,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setDrug(discontinuationOrderDrug);
 		order.setAction(Order.Action.DISCONTINUE);
-		order.setDiscontinuedReasonNonCoded("Discontinue this");
+		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(orderToDiscontinue.getPatient());
 		order.setConcept(orderToDiscontinue.getConcept());
 		order.setCareSetting(orderToDiscontinue.getCareSetting());
