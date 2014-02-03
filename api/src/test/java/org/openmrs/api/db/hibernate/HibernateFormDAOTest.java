@@ -92,7 +92,7 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 			if (containingAnyFormField.isEmpty()) {
 				Assert.assertEquals(1, formsReturned.size());
 			} else {
-		// put formfield IDs in containingAnyFormField to a Arraylist
+		//  put formfield IDs in containingAnyFormField to a Arraylist
 				Assert.assertEquals(1, formsReturned.size());
 				for (FormField formField : containingAnyFormField) {
 					formFieldIds.add(formField.getId());
