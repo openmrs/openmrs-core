@@ -53,6 +53,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if the existing drug order matches the concept and not drug of the DC order
 	 * @should discontinue previousOrder if it is not already discontinued
 	 * @should fail if concept in previous order does not match this concept
+	 * @should not allow editing an existing order
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
