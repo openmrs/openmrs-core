@@ -102,7 +102,20 @@
 		else
 			input.parentNode.className = "listItemChecked";
 	}
-	
+
+	function checkDate(input){
+        var dayfield=input.value.split(/[.,\/ -]/)[0]
+        var monthfield=input.value.split(/[.,\/ -]/)[1]
+        var yearfield=input.value.split(/[.,\/ -]/)[2]
+         var dayobj = new Date(yearfield, monthfield-1, dayfield)
+              if ((dayobj.getMonth()+1!=monthfield)||(dayobj.getDate()!=dayfield)||(dayobj.getFullYear()!=yearfield))
+                      {
+                     document.getElementById("message").style.display = 'inline';                          
+					  document.getElementById("message").innerHTML='<openmrs:message code="error.date.wrong"/>';
+					  input.select();
+                      }
+                          }
+
 	// age function borrowed from http://anotherdan.com/2006/02/simple-javascript-age-function/
 	function getAge(d, now) {
 		var age = -1;
@@ -216,6 +229,15 @@
 	.lastCell {
 		border-bottom: 1px lightgray solid;
 	}
+	.msg{
+       border: 1px dashed darkred;
+       background-color: lightpink;
+       padding: 1px 6px 1px 6px;
+       margin-left: 4px;
+       margin-right: 4px;
+       vertical-align: middle;
+	}
+	
 </style>
 
 <openmrs:globalProperty key="use_patient_attribute.mothersName" defaultValue="false" var="showMothersName"/>
@@ -407,11 +429,11 @@
 							<input type="text" 
 									name="${status.expression}" size="10" id="birthdate"
 									value="${status.value}"
-									onChange="updateAge(); updateEstimated(this);"
+									onChange="updateAge(); updateEstimated(this);checkDate(this);"
 									onfocus="showCalendar(this,60)" />
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 						</spring:bind>
-						
+						<span class="msg" id="message" style="display:none" ></span>
 						<span id="birthdateEstimatedCheckbox" class="listItemChecked" style="padding: 5px;">
 							<spring:bind path="patient.birthdateEstimated">
 								<label for="birthdateEstimatedInput"><openmrs:message code="Person.birthdateEstimated"/></label>
