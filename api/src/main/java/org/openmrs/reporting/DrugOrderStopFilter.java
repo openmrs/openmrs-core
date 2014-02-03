@@ -68,17 +68,23 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 		sb.append(
 		    OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
 		        untilDate)).append(".");
-		if (drugList != null)
-			for (Drug d : drugList)
+		if (drugList != null) {
+			for (Drug d : drugList) {
 				sb.append(d.getDrugId()).append(",");
+			}
+		}
 		sb.append(".");
-		if (genericDrugList != null)
-			for (Concept c : genericDrugList)
+		if (genericDrugList != null) {
+			for (Concept c : genericDrugList) {
 				sb.append(c.getConceptId()).append(",");
+			}
+		}
 		sb.append(".");
-		if (discontinuedReasonList != null)
-			for (Concept c : discontinuedReasonList)
+		if (discontinuedReasonList != null) {
+			for (Concept c : discontinuedReasonList) {
 				sb.append(c.getConceptId()).append(",");
+			}
+		}
 		return sb.toString();
 	}
 	
@@ -88,62 +94,71 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 		if ((getDrugList() != null && getDrugList().size() > 0)
 		        || (getGenericDrugList() != null && getGenericDrugList().size() > 0)) {
 			if (getDrugList() != null && getDrugList().size() > 0) {
-				if (getDrugList().size() == 1)
+				if (getDrugList().size() == 1) {
 					sb.append(getDrugList().get(0).getName());
-				else {
+				} else {
 					sb.append("any of [");
 					for (Iterator<Drug> i = getDrugList().iterator(); i.hasNext();) {
 						sb.append(" " + i.next().getName() + " ");
-						if (i.hasNext())
+						if (i.hasNext()) {
 							sb.append(",");
+						}
 					}
 					sb.append("]");
 				}
 			}
 			if (getGenericDrugList() != null && getGenericDrugList().size() > 0) {
-				if (getGenericDrugList().size() == 1)
+				if (getGenericDrugList().size() == 1) {
 					sb.append("any form of " + getGenericDrugList().get(0).getName().getName());
-				else {
+				} else {
 					sb.append("any form of [");
 					for (Iterator<Concept> i = getGenericDrugList().iterator(); i.hasNext();) {
 						sb.append(" " + i.next().getName().getName() + " ");
-						if (i.hasNext())
+						if (i.hasNext()) {
 							sb.append(",");
+						}
 					}
 					sb.append(" ]");
 				}
 			}
-		} else
+		} else {
 			sb.append("any drug");
+		}
 		if (getDiscontinuedReasonList() != null && getDiscontinuedReasonList().size() > 0) {
 			if (getDiscontinuedReasonList().size() == 1) {
 				String reason = "[name not defined]";
 				ConceptName cn = getDiscontinuedReasonList().get(0).getName();
-				if (cn != null)
+				if (cn != null) {
 					reason = cn.getName();
+				}
 				sb.append(" because of " + reason);
 			} else {
 				sb.append(" because of any of [");
 				for (Iterator<Concept> i = getDiscontinuedReasonList().iterator(); i.hasNext();) {
 					sb.append(" " + i.next().getName().getName() + " ");
-					if (i.hasNext())
+					if (i.hasNext()) {
 						sb.append(",");
+					}
 				}
 				sb.append("]");
 			}
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
 			sb.append(" within the last ");
-			if (withinLastMonths != null)
+			if (withinLastMonths != null) {
 				sb.append(withinLastMonths + " month(s) ");
-			if (withinLastDays != null)
+			}
+			if (withinLastDays != null) {
 				sb.append(withinLastDays + " day(s) ");
+			}
 		}
 		// TODO untilDaysAgo untilMonthsAgo
-		if (sinceDate != null)
+		if (sinceDate != null) {
 			sb.append(" on or after " + sinceDate + " ");
-		if (untilDate != null)
+		}
+		if (untilDate != null) {
 			sb.append(" on or before " + untilDate + " ");
+		}
 		return sb.toString();
 	}
 	

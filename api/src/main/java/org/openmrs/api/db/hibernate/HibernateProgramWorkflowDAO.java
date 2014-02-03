@@ -42,7 +42,7 @@ import org.openmrs.api.db.ProgramWorkflowDAO;
  * <br/>
  * This class should not be used directly. All calls should go through the
  * {@link org.openmrs.api.ProgramWorkflowService} methods.
- * 
+ *
  * @see org.openmrs.api.db.ProgramWorkflowDAO
  * @see org.openmrs.api.ProgramWorkflowService
  */
@@ -57,7 +57,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	
 	/**
 	 * Hibernate Session Factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -193,21 +193,26 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@SuppressWarnings("unchecked")
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
 		String hql = "from PatientProgram ";
-		if (cohort != null || programs != null)
+		if (cohort != null || programs != null) {
 			hql += "where ";
-		if (cohort != null)
+		}
+		if (cohort != null) {
 			hql += "patient.patientId in (:patientIds) ";
+		}
 		if (programs != null) {
-			if (cohort != null)
+			if (cohort != null) {
 				hql += "and ";
+			}
 			hql += " program in (:programs)";
 		}
 		hql += " order by patient.patientId, dateEnrolled";
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-		if (cohort != null)
+		if (cohort != null) {
 			query.setParameterList("patientIds", cohort.getMemberIds());
-		if (programs != null)
+		}
+		if (programs != null) {
 			query.setParameterList("programs", programs);
+		}
 		return query.list();
 	}
 	

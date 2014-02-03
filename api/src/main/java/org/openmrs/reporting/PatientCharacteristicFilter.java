@@ -81,23 +81,29 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 	
 	private Integer compareHelper() {
 		int ret = 0;
-		if (deadOnly != null)
+		if (deadOnly != null) {
 			ret += deadOnly ? 2 : 1;
-		if (aliveOnly != null)
+		}
+		if (aliveOnly != null) {
 			ret += aliveOnly ? 20 : 10;
-		if (minAge != null)
+		}
+		if (minAge != null) {
 			ret += minAge * 100;
-		if (maxAge != null)
+		}
+		if (maxAge != null) {
 			ret += maxAge * 1000;
-		if (gender != null)
+		}
+		if (gender != null) {
 			ret += gender.equals("M") ? 1000000 : 2000000;
+		}
 		return ret;
 	}
 	
 	public String getDescription() {
 		if (gender == null && minBirthdate == null && maxBirthdate == null && minAge == null && maxAge == null
-		        && aliveOnly == null && deadOnly == null)
+		        && aliveOnly == null && deadOnly == null) {
 			return "All Patients";
+		}
 		
 		StringBuffer ret = new StringBuffer();
 		if (gender != null) {

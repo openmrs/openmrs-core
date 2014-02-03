@@ -78,8 +78,9 @@ public class ConfigureVisitsForm {
 	 * @return the visitTypesToClose
 	 */
 	public List<VisitType> getVisitTypesToClose() {
-		if (visitTypesToClose == null)
+		if (visitTypesToClose == null) {
 			visitTypesToClose = new ArrayList<VisitType>();
+		}
 		return visitTypesToClose;
 	}
 	

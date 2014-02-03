@@ -57,7 +57,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Set the message preparator.
-	 * 
+	 *
 	 * @param messagePreparator
 	 */
 	public void setMessagePreparator(MessagePreparator messagePreparator) {
@@ -70,7 +70,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Set the message sender.
-	 * 
+	 *
 	 * @param messageSender
 	 */
 	public void setMessageSender(MessageSender messageSender) {
@@ -83,7 +83,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Send the message. All send calls go through this method.
-	 * 
+	 *
 	 * @param message the Message to be sent
 	 * @see org.openmrs.notification.MessageService#sendMessage(org.openmrs.notification.Message)
 	 */
@@ -99,7 +99,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Create a message object with the given parts.
-	 * 
+	 *
 	 * @param recipients the recipients of the message
 	 * @param sender the send of the message
 	 * @param subject the subject of the message
@@ -111,7 +111,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Create a message object with the given parts.
-	 * 
+	 *
 	 * @param sender the send of the message
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
@@ -122,7 +122,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Create a message object with the given parts.
-	 * 
+	 *
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
 	 */
@@ -159,7 +159,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Send a message to a user that is identified by the given identifier.
-	 * 
+	 *
 	 * @param message <code>Message</code> to be sent
 	 * @param recipientId Integer identifier of user (recipient)
 	 */
@@ -173,15 +173,16 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Send message to a single user.
-	 * 
+	 *
 	 * @param message the <code>Message</code> to be sent
 	 * @param user the recipient of the message
 	 */
 	public void sendMessage(Message message, User user) throws MessageException {
 		log.debug("Sending message to user " + user);
 		String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
-		if (address != null)
+		if (address != null) {
 			message.addRecipient(address);
+		}
 		// message.setFormat( user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
 		Context.getMessageService().sendMessage(message);
 	}
@@ -193,8 +194,9 @@ public class MessageServiceImpl implements MessageService {
 		log.debug("Sending message to users " + users);
 		for (User user : users) {
 			String address = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS);
-			if (address != null)
+			if (address != null) {
 				message.addRecipient(address);
+			}
 		}
 		Context.getMessageService().sendMessage(message);
 	}
@@ -227,7 +229,7 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Prepare a message given the template. The template should be populated with all necessary
 	 * data including the variable name-value pairs
-	 * 
+	 *
 	 * @param template the given <code>Template</code>
 	 * @return the prepared <code>Message</code>
 	 */
@@ -237,7 +239,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Prepare a message based on a template and data used for variable subsitution within template.
-	 * 
+	 *
 	 * @param templateName name of the template to be used
 	 * @param data data mapping used for variable substitution within template
 	 * @return the prepared Message
@@ -257,7 +259,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Get all templates in the database.
-	 * 
+	 *
 	 * @return list of Templates
 	 */
 	@SuppressWarnings("unchecked")
@@ -268,7 +270,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Get template by identifier.
-	 * 
+	 *
 	 * @param id template identifier
 	 * @return Template
 	 */
@@ -279,7 +281,7 @@ public class MessageServiceImpl implements MessageService {
 	
 	/**
 	 * Get templates by name.
-	 * 
+	 *
 	 * @param name the name of the template
 	 * @return list of Templates
 	 */

@@ -92,18 +92,20 @@ public class GenerateUuid implements CustomTaskChange {
 	
 	/**
 	 * Does the work of adding UUIDs to all rows.
-	 * 
+	 *
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		
 		// if we're in a "generate sql file" mode, quit early
-		if (Context.getRuntimeProperties().size() == 0)
+		if (Context.getRuntimeProperties().size() == 0) {
 			return;
+		}
 		
-		if (tableNamesArray == null || tableNamesArray.length == 0)
+		if (tableNamesArray == null || tableNamesArray.length == 0) {
 			throw new CustomChangeException("At least one table name in the 'tableNames' parameter is required", null);
+		}
 		
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		
@@ -134,10 +136,12 @@ public class GenerateUuid implements CustomTaskChange {
 					}
 				}
 				finally {
-					if (idStatement != null)
+					if (idStatement != null) {
 						idStatement.close();
-					if (updateStatement != null)
+					}
+					if (updateStatement != null) {
 						updateStatement.close();
+					}
 				}
 				
 			}
@@ -168,7 +172,7 @@ public class GenerateUuid implements CustomTaskChange {
 	
 	/**
 	 * Get the values of the parameters passed in and set them to the local variables on this class.
-	 * 
+	 *
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	@Override
@@ -195,7 +199,7 @@ public class GenerateUuid implements CustomTaskChange {
 	
 	/**
 	 * This is called by liquibase to set the parameter "tableNames" onto this change.
-	 * 
+	 *
 	 * @param tableNames the tableNames to set
 	 */
 	public void setTableNames(String tableNames) {
@@ -204,7 +208,7 @@ public class GenerateUuid implements CustomTaskChange {
 	
 	/**
 	 * This is called by liquibase to set the parameter "columnName" onto this change.
-	 * 
+	 *
 	 * @param columnName the columnName to set
 	 */
 	public void setColumnName(String columnName) {
@@ -213,7 +217,7 @@ public class GenerateUuid implements CustomTaskChange {
 	
 	/**
 	 * Way to specify the table id columns that don't follow the table_name.table_name_id pattern
-	 * 
+	 *
 	 * @param idExceptions
 	 */
 	public void setIdExceptions(String idExceptions) {

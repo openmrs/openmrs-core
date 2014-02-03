@@ -35,10 +35,12 @@ public class TableGroupAndAggregate {
 		this.aggregator = aggregator;
 		this.labelColumnName = labelColumnName;
 		this.valueColumnName = valueColumnName;
-		if (labelColumnName == null)
+		if (labelColumnName == null) {
 			labelColumnName = "label";
-		if (valueColumnName == null)
+		}
+		if (valueColumnName == null) {
 			valueColumnName = "value";
+		}
 	}
 	
 	public DataTable run(DataTable input) {

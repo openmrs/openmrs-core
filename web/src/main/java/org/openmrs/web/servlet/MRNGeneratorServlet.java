@@ -42,8 +42,9 @@ public class MRNGeneratorServlet extends HttpServlet {
 		String count = request.getParameter("mrn_count");
 		HttpSession session = request.getSession();
 		
-		if (prefix == null)
+		if (prefix == null) {
 			prefix = "";
+		}
 		
 		if (site == null || first == null || count == null || site.length() == 0 || first.length() == 0
 		        || count.length() == 0) {

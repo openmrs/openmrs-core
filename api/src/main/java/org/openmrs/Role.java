@@ -26,7 +26,7 @@ import org.openmrs.util.RoleConstants;
  * (Users DO NOT contain any privileges directly) Roles can be grouped by inheriting other roles. If
  * a user is given Role A that inherits from Role B, the user has all rights/abilities for both Role
  * A's privileges and for Role B's privileges.
- * 
+ *
  * @see Privilege
  */
 public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
@@ -82,14 +82,16 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Adds the given Privilege to the list of privileges
-	 * 
+	 *
 	 * @param privilege Privilege to add
 	 */
 	public void addPrivilege(Privilege privilege) {
-		if (privileges == null)
+		if (privileges == null) {
 			privileges = new HashSet<Privilege>();
-		if (privilege != null && !containsPrivilege(privileges, privilege.getPrivilege()))
+		}
+		if (privilege != null && !containsPrivilege(privileges, privilege.getPrivilege())) {
 			privileges.add(privilege);
+		}
 	}
 	
 	private boolean containsPrivilege(Collection<Privilege> privileges, String privilegeName) {
@@ -103,12 +105,13 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Removes the given Privilege from the list of privileges
-	 * 
+	 *
 	 * @param privilege Privilege to remove
 	 */
 	public void removePrivilege(Privilege privilege) {
-		if (privileges != null)
+		if (privileges != null) {
 			privileges.remove(privilege);
+		}
 	}
 	
 	/**
@@ -135,7 +138,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * Looks for the given <code>privilegeName</code> privilege name in this roles privileges. This
 	 * method does not recurse through the inherited roles
-	 * 
+	 *
 	 * @param privilegeName String name of a privilege
 	 * @return true/false whether this role has the given privilege
 	 * @should return false if not found
@@ -145,13 +148,15 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 */
 	public boolean hasPrivilege(String privilegeName) {
 		
-		if (RoleConstants.SUPERUSER.equals(this.role))
+		if (RoleConstants.SUPERUSER.equals(this.role)) {
 			return true;
+		}
 		
 		if (privileges != null) {
 			for (Privilege p : privileges) {
-				if (p.getPrivilege().equals(privilegeName))
+				if (p.getPrivilege().equals(privilegeName)) {
 					return true;
+				}
 			}
 		}
 		
@@ -162,8 +167,9 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return Returns the inheritedRoles.
 	 */
 	public Set<Role> getInheritedRoles() {
-		if (inheritedRoles == null)
+		if (inheritedRoles == null) {
 			inheritedRoles = new HashSet<Role>();
+		}
 		return inheritedRoles;
 	}
 	
@@ -176,7 +182,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to test whether or not this role extends/ inherits from any other roles
-	 * 
+	 *
 	 * @return true/false whether this role inherits from other roles
 	 */
 	public boolean inheritsRoles() {
@@ -185,7 +191,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Recursive (if need be) method to return all parent roles of this role
-	 * 
+	 *
 	 * @should only return parent roles
 	 * @return Return this role's parents
 	 */
@@ -199,13 +205,14 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Returns the full set of roles be looping over inherited roles. Duplicate roles are dropped.
-	 * 
+	 *
 	 * @param total Roles already looped over
 	 * @return Set<Role> Current and inherited roles
 	 */
 	public Set<Role> recurseOverParents(final Set<Role> total) {
-		if (!this.inheritsRoles())
+		if (!this.inheritsRoles()) {
 			return total;
+		}
 		
 		Set<Role> allRoles = new HashSet<Role>(); // total roles (parents + children)
 		Set<Role> myRoles = new HashSet<Role>(); // new roles
@@ -217,12 +224,14 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 		allRoles.addAll(myRoles);
 		
 		for (Role r : myRoles) {
-			if (r.inheritsRoles())
+			if (r.inheritsRoles()) {
 				allRoles.addAll(r.recurseOverParents(allRoles));
+			}
 		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Total roles: " + allRoles);
+		}
 		
 		return allRoles;
 	}
@@ -264,7 +273,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to test whether or not this role is a parent of another role
-	 * 
+	 *
 	 * @return true/false whether this role is a parent of another role
 	 * @since 1.9
 	 */
@@ -274,7 +283,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Recursive (if need be) method to return all child roles of this role
-	 * 
+	 *
 	 * @should only return child roles
 	 * @return this role's children
 	 * @since 1.9
@@ -289,7 +298,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Returns the full set of child roles be looping over children. Duplicate roles are dropped.
-	 * 
+	 *
 	 * @param total Roles already looped over
 	 * @return Set<Role> Current and child roles
 	 * @since 1.9

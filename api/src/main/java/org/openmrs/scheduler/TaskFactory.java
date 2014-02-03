@@ -43,7 +43,7 @@ public class TaskFactory {
 	 * Creates a new instance of Schedulable used to run tasks. By default the returned task will be
 	 * the given task wrapped with the {@link TaskThreadedInitializationWrapper} class so that the
 	 * {@link Task#initialize(TaskDefinition)} method runs in a new thread.
-	 * 
+	 *
 	 * @param taskDefinition
 	 * @return the created Task
 	 * @throws SchedulerException
@@ -69,8 +69,9 @@ public class TaskFactory {
 			log.error("OpenmrsClassLoader could not load class: " + taskDefinition.getTaskClass()
 			        + ".  Probably due to a module not being loaded");
 			
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Full error trace of ClassNotFoundException", cnfe);
+			}
 			
 			throw new SchedulerException("could not load class", cnfe);
 		}

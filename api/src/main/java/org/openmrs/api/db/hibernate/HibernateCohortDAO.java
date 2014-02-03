@@ -29,7 +29,7 @@ import org.openmrs.api.db.DAOException;
 
 /**
  * Hibernate implementation of the CohortDAO
- * 
+ *
  * @see CohortDAO
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.CohortService
@@ -42,7 +42,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -103,8 +103,9 @@ public class HibernateCohortDAO implements CohortDAO {
 		
 		criteria.addOrder(Order.asc("name"));
 		
-		if (!includeVoided)
+		if (!includeVoided) {
 			criteria.add(Restrictions.eq("voided", false));
+		}
 		
 		return (List<Cohort>) criteria.list();
 	}

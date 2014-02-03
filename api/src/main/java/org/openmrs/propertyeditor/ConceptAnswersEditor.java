@@ -40,20 +40,21 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	/**
 	 * Default constructor taking in the original answers. This should be the actual list on the
 	 * pojo object to prevent hibernate errors later on.
-	 * 
+	 *
 	 * @param originalAnswers the list on the pojo
 	 */
 	public ConceptAnswersEditor(Collection<ConceptAnswer> originalAnswers) {
-		if (originalAnswers == null)
+		if (originalAnswers == null) {
 			originalConceptAnswers = new HashSet<ConceptAnswer>();
-		else
+		} else {
 			originalConceptAnswers = originalAnswers;
+		}
 	}
 	
 	/**
 	 * loops over the textbox assigned to this property. The textbox is assumed to be a string of
 	 * conceptIds^drugIds separated by spaces.
-	 * 
+	 *
 	 * @param text list of conceptIds (not conceptAnswerIds)
 	 * @should set the sort weights with the least possible changes
 	 */
@@ -66,7 +67,9 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			for (String id : conceptIds) {
 				id = id.trim();
 				if (!id.equals("") && !requestConceptIds.contains(id)) //remove whitespace, blank lines, and duplicates
+				{
 					requestConceptIds.add(id);
+				}
 			}
 			
 			Collection<ConceptAnswer> deletedConceptAnswers = new HashSet<ConceptAnswer>();
@@ -79,15 +82,17 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					Integer drugId = getDrugId(conceptId);
 					Drug answerDrug = origConceptAnswer.getAnswerDrug();
 					if (id.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
-						if (drugId == null && answerDrug == null)
+						if (drugId == null && answerDrug == null) {
 							answerDeleted = false;
-						else if ((drugId != null && answerDrug != null)
-						        && drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
+						} else if ((drugId != null && answerDrug != null)
+						        && drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId())) {
 							answerDeleted = false;
+						}
 					}
 				}
-				if (answerDeleted)
+				if (answerDeleted) {
 					deletedConceptAnswers.add(origConceptAnswer);
+				}
 			}
 			
 			// loop over those deleted answers to delete them
@@ -103,18 +108,20 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				for (ConceptAnswer origConceptAnswer : originalConceptAnswers) {
 					Drug answerDrug = origConceptAnswer.getAnswerDrug();
 					if (id.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
-						if (drugId == null && answerDrug == null)
+						if (drugId == null && answerDrug == null) {
 							newAnswerConcept = false;
-						else if ((drugId != null && answerDrug != null) && drugId.equals(answerDrug.getDrugId()))
+						} else if ((drugId != null && answerDrug != null) && drugId.equals(answerDrug.getDrugId())) {
 							newAnswerConcept = false;
+						}
 					}
 				}
 				// if the current request answer is new, add it to the originals
 				if (newAnswerConcept) {
 					Concept answer = cs.getConcept(id);
 					Drug drug = null;
-					if (drugId != null)
+					if (drugId != null) {
 						drug = cs.getDrug(drugId);
+					}
 					ConceptAnswer ac = new ConceptAnswer(answer, drug);
 					originalConceptAnswers.add(ac);
 				}
@@ -166,12 +173,14 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			}
 			
 			log.debug("originalConceptAnswers.getConceptId(): ");
-			for (ConceptAnswer a : originalConceptAnswers)
+			for (ConceptAnswer a : originalConceptAnswers) {
 				log.debug("id: " + a.getAnswerConcept().getConceptId());
+			}
 			
 			log.debug("requestConceptIds: ");
-			for (String i : requestConceptIds)
+			for (String i : requestConceptIds) {
 				log.debug("id: " + i);
+			}
 		} else {
 			originalConceptAnswers.clear();
 		}
@@ -194,27 +203,29 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	/**
 	 * Parses the string and returns the Integer concept id Expected string: "123" or "123^34"
 	 * ("conceptId^drugId")
-	 * 
+	 *
 	 * @param conceptId
 	 * @return
 	 */
 	private Integer getConceptId(String conceptId) {
-		if (conceptId.contains("^"))
+		if (conceptId.contains("^")) {
 			return Integer.valueOf(conceptId.substring(0, conceptId.indexOf("^")));
-		else
+		} else {
 			return Integer.valueOf(conceptId);
+		}
 	}
 	
 	/**
 	 * Parses the string and returns the Integer drug id or null if none Expected string: "123" or
 	 * "123^34" ("conceptId^drugId")
-	 * 
+	 *
 	 * @param conceptId
 	 * @return
 	 */
 	private Integer getDrugId(String conceptId) {
-		if (conceptId.contains("^"))
+		if (conceptId.contains("^")) {
 			return Integer.valueOf(conceptId.substring(conceptId.indexOf("^") + 1, conceptId.length()));
+		}
 		
 		return null;
 	}

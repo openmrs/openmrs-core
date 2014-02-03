@@ -61,7 +61,7 @@ public class DWRConceptService {
 	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
-	 * 
+	 *
 	 * @param phrase the concept name string to match against
 	 * @param includeRetired boolean if false, will exclude retired concepts
 	 * @param includeClassNames List of ConceptClasses to restrict to
@@ -80,7 +80,7 @@ public class DWRConceptService {
 	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
-	 * 
+	 *
 	 * @param phrase the concept name string to match against
 	 * @param includeRetired boolean if false, will exclude retired concepts
 	 * @param includeClassNames List of ConceptClasses to restrict to
@@ -124,14 +124,18 @@ public class DWRConceptService {
 			log.debug("searching locales: " + searchLocalesString);
 		}
 		
-		if (includeClassNames == null)
+		if (includeClassNames == null) {
 			includeClassNames = new Vector<String>();
-		if (excludeClassNames == null)
+		}
+		if (excludeClassNames == null) {
 			excludeClassNames = new Vector<String>();
-		if (includeDatatypeNames == null)
+		}
+		if (includeDatatypeNames == null) {
 			includeDatatypeNames = new Vector<String>();
-		if (excludeDatatypeNames == null)
+		}
+		if (excludeDatatypeNames == null) {
 			excludeDatatypeNames = new Vector<String>();
+		}
 		
 		try {
 			ConceptService cs = Context.getConceptService();
@@ -164,27 +168,35 @@ public class DWRConceptService {
 			if (!StringUtils.isBlank(phrase)) {
 				// turn classnames into class objects
 				List<ConceptClass> includeClasses = new Vector<ConceptClass>();
-				for (String name : includeClassNames)
-					if (!"".equals(name))
+				for (String name : includeClassNames) {
+					if (!"".equals(name)) {
 						includeClasses.add(cs.getConceptClassByName(name));
+					}
+				}
 				
 				// turn classnames into class objects
 				List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
-				for (String name : excludeClassNames)
-					if (!"".equals(name))
+				for (String name : excludeClassNames) {
+					if (!"".equals(name)) {
 						excludeClasses.add(cs.getConceptClassByName(name));
+					}
+				}
 				
 				// turn classnames into class objects
 				List<ConceptDatatype> includeDatatypes = new Vector<ConceptDatatype>();
-				for (String name : includeDatatypeNames)
-					if (!"".equals(name))
+				for (String name : includeDatatypeNames) {
+					if (!"".equals(name)) {
 						includeDatatypes.add(cs.getConceptDatatypeByName(name));
+					}
+				}
 				
 				// turn classnames into class objects
 				List<ConceptDatatype> excludeDatatypes = new Vector<ConceptDatatype>();
-				for (String name : excludeDatatypeNames)
-					if (!"".equals(name))
+				for (String name : excludeDatatypeNames) {
+					if (!"".equals(name)) {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
+					}
+				}
 				
 				// perform the search
 				searchResults.addAll(cs.getConcepts(phrase, searchLocales, includeRetired, includeClasses, excludeClasses,
@@ -204,8 +216,9 @@ public class DWRConceptService {
 			} else {
 				// turn searchResults into concept list items
 				// if user wants drug concepts included, append those
-				for (ConceptSearchResult searchResult : searchResults)
+				for (ConceptSearchResult searchResult : searchResults) {
 					objectList.add(new ConceptListItem(searchResult));
+				}
 			}
 		}
 		catch (Exception e) {
@@ -213,16 +226,17 @@ public class DWRConceptService {
 			objectList.add(Context.getMessageSourceService().getMessage("Concept.search.error") + " - " + e.getMessage());
 		}
 		
-		if (objectList.size() == 0)
+		if (objectList.size() == 0) {
 			objectList.add(Context.getMessageSourceService().getMessage("general.noMatchesFoundInLocale",
 			    new Object[] { "<b>" + phrase + "</b>", defaultLocale }, Context.getLocale()));
+		}
 		
 		return objectList;
 	}
 	
 	/**
 	 * Get a {@link ConceptListItem} by its internal database id.
-	 * 
+	 *
 	 * @param conceptId the id to look for
 	 * @return a {@link ConceptListItem} or null if conceptId is not found
 	 */
@@ -230,8 +244,9 @@ public class DWRConceptService {
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
-		if (c == null)
+		if (c == null) {
 			return null;
+		}
 		
 		ConceptName cn = c.getName(locale);
 		
@@ -254,7 +269,7 @@ public class DWRConceptService {
 	/**
 	 * Find a list of {@link ConceptListItem} or {@link ConceptDrugListItem}s that are answers to
 	 * the given question. The given question is determined by the given <code>conceptId</code>
-	 * 
+	 *
 	 * @param text the text to search for within the answers
 	 * @param conceptId the conceptId of the question concept
 	 * @param includeVoided (this argument is ignored now. searching for voided answers is not
@@ -270,15 +285,17 @@ public class DWRConceptService {
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
 	        throws Exception {
 		
-		if (includeVoided == true)
+		if (includeVoided == true) {
 			throw new APIException("You should not include voideds in the search.");
+		}
 		
 		ConceptService cs = Context.getConceptService();
 		
 		Concept concept = cs.getConcept(conceptId);
 		
-		if (concept == null)
+		if (concept == null) {
 			throw new Exception("Unable to find a concept with id: " + conceptId);
+		}
 		
 		List<ConceptSearchResult> searchResults = new ArrayList<ConceptSearchResult>();
 		List<Locale> locales = Context.getAdministrationService().getSearchLocales();
@@ -292,8 +309,9 @@ public class DWRConceptService {
 		
 		List<Drug> drugAnswers = new Vector<Drug>();
 		for (ConceptAnswer conceptAnswer : concept.getAnswers(false)) {
-			if (conceptAnswer.getAnswerDrug() != null)
+			if (conceptAnswer.getAnswerDrug() != null) {
 				drugAnswers.add(conceptAnswer.getAnswerDrug());
+			}
 		}
 		
 		List<Object> items = new Vector<Object>();
@@ -307,11 +325,13 @@ public class DWRConceptService {
 			// add drugs for concept if desired
 			if (includeDrugConcepts) {
 				Integer classId = searchResult.getConcept().getConceptClass().getConceptClassId();
-				if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
+				if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG)) {
 					for (Drug d : cs.getDrugsByConcept(searchResult.getConcept())) {
-						if (drugAnswers.contains(d))
+						if (drugAnswers.contains(d)) {
 							items.add(new ConceptDrugListItem(d, Context.getLocale()));
+						}
 					}
+				}
 			}
 		}
 		
@@ -342,10 +362,11 @@ public class DWRConceptService {
 					}
 				}
 				
-				if (field == null)
+				if (field == null) {
 					returnList.add(new ConceptListItem(set.getConcept(), cn, locale));
-				else
+				} else {
 					returnList.add(new FieldListItem(field, locale));
+				}
 			}
 		}
 		
@@ -398,8 +419,9 @@ public class DWRConceptService {
 		List<Drug> drugs = cs.getDrugsByConcept(concept);
 		
 		// if there are drugs to choose from, add some instructions
-		if (drugs.size() > 0 && showConcept == true)
+		if (drugs.size() > 0 && showConcept == true) {
 			items.add("Or choose a form of " + concept.getName(locale, false).getName());
+		}
 		
 		// miniaturize our drug objects
 		for (Drug drug : drugs) {
@@ -410,8 +432,9 @@ public class DWRConceptService {
 	}
 	
 	public List<Object> findDrugs(String phrase, boolean includeRetired) throws APIException {
-		if (includeRetired == true)
+		if (includeRetired == true) {
 			throw new APIException("You should not include voideds in the search.");
+		}
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		
@@ -450,18 +473,19 @@ public class DWRConceptService {
 		Collection<ConceptAnswer> answers = c.getAnswers(false);
 		// TODO: deal with concept answers (e.g. drug) whose answer concept is null. (Not sure if this actually ever happens)
 		Locale locale = Context.getLocale();
-		for (ConceptAnswer ca : answers)
+		for (ConceptAnswer ca : answers) {
 			if (ca.getAnswerConcept() != null) {
 				ConceptName cn = ca.getAnswerConcept().getName(locale);
 				ret.add(new ConceptListItem(ca.getAnswerConcept(), cn, locale));
 			}
+		}
 		return ret;
 	}
 	
 	/**
 	 * Converts the datatype of a concept that already has Obs referencing it from boolean to coded
 	 * to support addition of more coded answers
-	 * 
+	 *
 	 * @param conceptId the conceptId of the concept to be converted
 	 * @return String to act as a signal if successfully converted or an error message
 	 */
@@ -488,7 +512,7 @@ public class DWRConceptService {
 	 * matching concepts (depending on values of start and length parameters) while the keys are are
 	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
 	 * matches will be returned from the start index if specified.
-	 * 
+	 *
 	 * @param phrase concept name or conceptId
 	 * @param includeRetired boolean if false, will exclude retired concepts
 	 * @param includeClassNames List of ConceptClasses to restrict to
@@ -521,14 +545,18 @@ public class DWRConceptService {
 			log.debug("searching locales: " + searchLocalesString);
 		}
 		
-		if (includeClassNames == null)
+		if (includeClassNames == null) {
 			includeClassNames = new Vector<String>();
-		if (excludeClassNames == null)
+		}
+		if (excludeClassNames == null) {
 			excludeClassNames = new Vector<String>();
-		if (includeDatatypeNames == null)
+		}
+		if (includeDatatypeNames == null) {
 			includeDatatypeNames = new Vector<String>();
-		if (excludeDatatypeNames == null)
+		}
+		if (excludeDatatypeNames == null) {
 			excludeDatatypeNames = new Vector<String>();
+		}
 		
 		try {
 			ConceptService cs = Context.getConceptService();
@@ -536,27 +564,35 @@ public class DWRConceptService {
 			if (!StringUtils.isBlank(phrase)) {
 				// turn classnames into class objects
 				List<ConceptClass> includeClasses = new Vector<ConceptClass>();
-				for (String name : includeClassNames)
-					if (!"".equals(name))
+				for (String name : includeClassNames) {
+					if (!"".equals(name)) {
 						includeClasses.add(cs.getConceptClassByName(name));
+					}
+				}
 				
 				// turn classnames into class objects
 				List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
-				for (String name : excludeClassNames)
-					if (!"".equals(name))
+				for (String name : excludeClassNames) {
+					if (!"".equals(name)) {
 						excludeClasses.add(cs.getConceptClassByName(name));
+					}
+				}
 				
 				// turn classnames into class objects
 				List<ConceptDatatype> includeDatatypes = new Vector<ConceptDatatype>();
-				for (String name : includeDatatypeNames)
-					if (!"".equals(name))
+				for (String name : includeDatatypeNames) {
+					if (!"".equals(name)) {
 						includeDatatypes.add(cs.getConceptDatatypeByName(name));
+					}
+				}
 				
 				// turn classnames into class objects
 				List<ConceptDatatype> excludeDatatypes = new Vector<ConceptDatatype>();
-				for (String name : excludeDatatypeNames)
-					if (!"".equals(name))
+				for (String name : excludeDatatypeNames) {
+					if (!"".equals(name)) {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
+					}
+				}
 				
 				int matchCount = 0;
 				if (getMatchCount) {
@@ -567,8 +603,9 @@ public class DWRConceptService {
 						// user searched on a number. Insert concept with
 						// corresponding conceptId
 						Concept c = cs.getConcept(Integer.valueOf(phrase));
-						if (c != null && (!c.isRetired() || includeRetired))
+						if (c != null && (!c.isRetired() || includeRetired)) {
 							matchCount++;
+						}
 						
 					}
 					
@@ -604,21 +641,22 @@ public class DWRConceptService {
 	
 	/**
 	 * Get a {@link ConceptReferenceTerm} by its internal database id.
-	 * 
+	 *
 	 * @param conceptReferenceTermId the id to look for
 	 * @return a {@link ConceptReferenceTermListItem} or null if conceptReferenceTermId is not found
 	 */
 	public ConceptReferenceTermListItem getConceptReferenceTerm(Integer conceptReferenceTermId) {
 		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTerm(conceptReferenceTermId);
-		if (term == null)
+		if (term == null) {
 			return null;
+		}
 		
 		return new ConceptReferenceTermListItem(term);
 	}
 	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
-	 * 
+	 *
 	 * @param phrase the string to search against
 	 * @param sourceId the id of concept source where to look up reference terms
 	 * @param start the beginning index
@@ -639,8 +677,9 @@ public class DWRConceptService {
 				return objectList;
 			}
 			ConceptSource source = null;
-			if (sourceId != null)
+			if (sourceId != null) {
 				source = cs.getConceptSource(sourceId);
+			}
 			terms.addAll(cs.getConceptReferenceTerms(phrase, source, start, length, includeRetired));
 			
 			if (terms.size() == 0) {
@@ -681,14 +720,16 @@ public class DWRConceptService {
 			int conceptReferenceTermCount = 0;
 			if (getMatchCount) {
 				ConceptSource source = null;
-				if (sourceId != null)
+				if (sourceId != null) {
 					source = cs.getConceptSource(sourceId);
+				}
 				conceptReferenceTermCount += cs.getCountOfConceptReferenceTerms(phrase, source, includeRetired);
 			}
 			//If we have any matches, load them or if this is not the first ajax call
 			//for displaying the results on the first page, the getMatchCount is expected to be zero
-			if (conceptReferenceTermCount > 0 || !getMatchCount)
+			if (conceptReferenceTermCount > 0 || !getMatchCount) {
 				objectList = findBatchOfConceptReferenceTerms(phrase, sourceId, start, length, includeRetired);
+			}
 			
 			resultsMap.put("count", conceptReferenceTermCount);
 			resultsMap.put("objectList", objectList);
@@ -706,7 +747,7 @@ public class DWRConceptService {
 	
 	/**
 	 * Process calls to create new reference terms
-	 * 
+	 *
 	 * @param code the unique code for the reference term
 	 * @param conceptSourceId the concept source for the term
 	 * @param name the unique name for the reference term
@@ -718,8 +759,9 @@ public class DWRConceptService {
 		ConceptService cs = Context.getConceptService();
 		
 		ConceptSource source = null;
-		if (conceptSourceId != null)
+		if (conceptSourceId != null) {
 			source = cs.getConceptSource(conceptSourceId);
+		}
 		
 		ConceptReferenceTerm term = new ConceptReferenceTerm();
 		term.setCode(code);
@@ -729,8 +771,9 @@ public class DWRConceptService {
 		Errors bindErrors = new BindException(term, "term");
 		new ConceptReferenceTermValidator().validate(term, bindErrors);
 		if (bindErrors.hasErrors()) {
-			for (ObjectError objectError : bindErrors.getAllErrors())
+			for (ObjectError objectError : bindErrors.getAllErrors()) {
 				errors.add(mss.getMessage(objectError.getCode()));
+			}
 		} else {
 			try {
 				cs.saveConceptReferenceTerm(term);

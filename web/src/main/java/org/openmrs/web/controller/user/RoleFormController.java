@@ -53,7 +53,7 @@ public class RoleFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -77,12 +77,14 @@ public class RoleFormController extends SimpleFormController {
 		Role role = (Role) obj;
 		
 		String[] inheritiedRoles = request.getParameterValues("inheritedRoles");
-		if (inheritiedRoles == null)
+		if (inheritiedRoles == null) {
 			role.setInheritedRoles(Collections.EMPTY_SET);
+		}
 		
 		String[] privileges = request.getParameterValues("privileges");
-		if (privileges == null)
+		if (privileges == null) {
 			role.setPrivileges(Collections.EMPTY_SET);
+		}
 		
 		return super.processFormSubmission(request, response, role, errors);
 	}
@@ -90,7 +92,7 @@ public class RoleFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -134,8 +136,9 @@ public class RoleFormController extends SimpleFormController {
 			Set<Privilege> inheritedPrivileges = new HashSet<Privilege>();
 			allRoles.remove(role);
 			for (Role r : allRoles) {
-				if (r.getInheritedRoles().contains(role))
+				if (r.getInheritedRoles().contains(role)) {
 					inheritingRoles.add(r);
+				}
 			}
 			addInheritedPrivileges(role, inheritedPrivileges);
 			
@@ -157,7 +160,7 @@ public class RoleFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -167,19 +170,21 @@ public class RoleFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
 			String r = request.getParameter("roleName");
-			if (r != null)
+			if (r != null) {
 				role = us.getRole(r);
+			}
 		}
 		
-		if (role == null)
+		if (role == null) {
 			role = new Role();
+		}
 		
 		return role;
 	}
 	
 	/**
 	 * Fills the inherited privilege set recursively from the entire hierarchy of inheriting roles.
-	 * 
+	 *
 	 * @param role The root role
 	 * @param inheritedPrivileges The set to fill
 	 */
@@ -188,8 +193,9 @@ public class RoleFormController extends SimpleFormController {
 			for (Role r : role.getInheritedRoles()) {
 				if (r.getPrivileges() != null) {
 					for (Privilege p : r.getPrivileges()) {
-						if (!inheritedPrivileges.contains(p))
+						if (!inheritedPrivileges.contains(p)) {
 							inheritedPrivileges.add(p);
+						}
 					}
 				}
 				addInheritedPrivileges(r, inheritedPrivileges);

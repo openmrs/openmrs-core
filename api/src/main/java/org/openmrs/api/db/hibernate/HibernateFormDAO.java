@@ -45,7 +45,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Hibernate-specific Form-related functions. This class should not be used directly. All calls
  * should go through the {@link org.openmrs.api.FormService} methods.
- * 
+ *
  * @see org.openmrs.api.db.FormDAO
  * @see org.openmrs.api.FormService
  */
@@ -60,7 +60,7 @@ public class HibernateFormDAO implements FormDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -69,7 +69,7 @@ public class HibernateFormDAO implements FormDAO {
 	
 	/**
 	 * Returns the form object originally passed in, which will have been persisted.
-	 * 
+	 *
 	 * @see org.openmrs.api.FormService#createForm(org.openmrs.Form)
 	 */
 	public Form saveForm(Form form) throws DAOException {
@@ -145,8 +145,9 @@ public class HibernateFormDAO implements FormDAO {
 	public List<Field> getAllFields(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Field.class);
 		
-		if (!includeRetired)
+		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
+		}
 		
 		return crit.list();
 	}
@@ -167,8 +168,9 @@ public class HibernateFormDAO implements FormDAO {
 	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FieldType.class);
 		
-		if (!includeRetired)
+		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
+		}
 		
 		return crit.list();
 	}
@@ -216,9 +218,9 @@ public class HibernateFormDAO implements FormDAO {
 		// if we ended up removing all of the formfields, check to see if we're
 		// in a "force" situation
 		if (formFields.size() < 1) {
-			if (force == false)
+			if (force == false) {
 				return backupPlan;
-			else {
+			} else {
 				log.debug(err);
 				return null;
 			}
@@ -235,8 +237,9 @@ public class HibernateFormDAO implements FormDAO {
 	public List<Form> getAllForms(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
-		if (!includeRetired)
+		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
+		}
 		
 		crit.addOrder(Order.asc("name"));
 		crit.addOrder(Order.asc("formId"));
@@ -311,32 +314,41 @@ public class HibernateFormDAO implements FormDAO {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Field.class);
 		
-		if (!forms.isEmpty())
+		if (!forms.isEmpty()) {
 			crit.add(Restrictions.in("form", forms));
+		}
 		
-		if (!fieldTypes.isEmpty())
+		if (!fieldTypes.isEmpty()) {
 			crit.add(Restrictions.in("fieldType", fieldTypes));
+		}
 		
-		if (!concepts.isEmpty())
+		if (!concepts.isEmpty()) {
 			crit.add(Restrictions.in("concept", concepts));
+		}
 		
-		if (!tableNames.isEmpty())
+		if (!tableNames.isEmpty()) {
 			crit.add(Restrictions.in("tableName", tableNames));
+		}
 		
-		if (!attributeNames.isEmpty())
+		if (!attributeNames.isEmpty()) {
 			crit.add(Restrictions.in("attributeName", attributeNames));
+		}
 		
-		if (selectMultiple != null)
+		if (selectMultiple != null) {
 			crit.add(Restrictions.eq("selectMultiple", selectMultiple));
+		}
 		
-		if (!containsAllAnswers.isEmpty())
+		if (!containsAllAnswers.isEmpty()) {
 			throw new APIException("containsAllAnswers must be empty because this is not yet implemented");
+		}
 		
-		if (!containsAnyAnswer.isEmpty())
+		if (!containsAnyAnswer.isEmpty()) {
 			throw new APIException("containsAnyAnswer must be empty because this is not yet implemented");
+		}
 		
-		if (retired != null)
+		if (retired != null) {
 			crit.add(Restrictions.eq("retired", retired));
+		}
 		
 		return crit.list();
 	}
@@ -389,7 +401,7 @@ public class HibernateFormDAO implements FormDAO {
 	/**
 	 * Convenience method to create the same hibernate criteria object for both getForms and
 	 * getFormCount
-	 * 
+	 *
 	 * @param partialName
 	 * @param published
 	 * @param encounterTypes
@@ -409,14 +421,17 @@ public class HibernateFormDAO implements FormDAO {
 			crit.add(Restrictions.or(Restrictions.like("name", partialName, MatchMode.START), Restrictions.like("name", " "
 			        + partialName, MatchMode.ANYWHERE)));
 		}
-		if (published != null)
+		if (published != null) {
 			crit.add(Restrictions.eq("published", published));
+		}
 		
-		if (!encounterTypes.isEmpty())
+		if (!encounterTypes.isEmpty()) {
 			crit.add(Restrictions.in("encounterType", encounterTypes));
+		}
 		
-		if (retired != null)
+		if (retired != null) {
 			crit.add(Restrictions.eq("retired", retired));
+		}
 		
 		// TODO junit test
 		if (!containingAnyFormField.isEmpty()) {
@@ -537,7 +552,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormResource(java.lang.Integer) 
+	 * @see org.openmrs.api.db.FormDAO#getFormResource(java.lang.Integer)
 	 */
 	@Override
 	public FormResource getFormResource(Integer formResourceId) {
@@ -545,7 +560,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormResourceByUuid(java.lang.String) 
+	 * @see org.openmrs.api.db.FormDAO#getFormResourceByUuid(java.lang.String)
 	 */
 	@Override
 	public FormResource getFormResourceByUuid(String uuid) {
@@ -555,7 +570,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormResource(org.openmrs.Form, java.lang.String) 
+	 * @see org.openmrs.api.db.FormDAO#getFormResource(org.openmrs.Form, java.lang.String)
 	 */
 	@Override
 	public FormResource getFormResource(Form form, String name) {
@@ -566,7 +581,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormDAO#saveFormResource(org.openmrs.FormResource) 
+	 * @see org.openmrs.api.db.FormDAO#saveFormResource(org.openmrs.FormResource)
 	 */
 	@Override
 	public FormResource saveFormResource(FormResource formResource) {
@@ -575,7 +590,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormDAO#deleteFormResource(org.openmrs.FormResource) 
+	 * @see org.openmrs.api.db.FormDAO#deleteFormResource(org.openmrs.FormResource)
 	 */
 	@Override
 	public void deleteFormResource(FormResource formResource) {
@@ -583,7 +598,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormResourcesForForm(org.openmrs.Form) 
+	 * @see org.openmrs.api.db.FormDAO#getFormResourcesForForm(org.openmrs.Form)
 	 */
 	@Override
 	public Collection<FormResource> getFormResourcesForForm(Form form) {

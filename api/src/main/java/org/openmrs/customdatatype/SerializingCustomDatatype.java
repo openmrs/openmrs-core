@@ -34,9 +34,9 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 	 * Most implementations should override this method to return plain-text summary of the typed value, as defined
 	 * by {@link CustomDatatype#getTextSummary(String)}. If {@link #deserialize(String)} is expensive, then the
 	 * implementation should override {@link #getTextSummary(String)} instead.
-	 * 
+	 *
 	 * The default implementation returns typedValue.toString(), and indicates it is complete.
-	 * 
+	 *
 	 * @param typedValue
 	 * @return a plain-text summary of the typed value
 	 */
@@ -58,8 +58,9 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 	 * @see org.openmrs.customdatatype.CustomDatatype#validate(java.lang.Object)
 	 */
 	public void validate(T typedValue) throws InvalidCustomValueException {
-		if (typedValue == null)
+		if (typedValue == null) {
 			throw new InvalidCustomValueException("cannot be null");
+		}
 	}
 	
 	/**
@@ -92,10 +93,11 @@ public abstract class SerializingCustomDatatype<T> implements CustomDatatype<T> 
 	 */
 	@Override
 	public CustomDatatype.Summary getTextSummary(String referenceString) {
-		if (referenceString == null)
+		if (referenceString == null) {
 			return new CustomDatatype.Summary("", true);
-		else
+		} else {
 			return doGetTextSummary(deserialize(referenceString));
+		}
 	}
 	
 }

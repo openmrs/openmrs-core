@@ -37,12 +37,13 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 	
 	/**
 	 * Default constructor taking in the current sets on a concept
-	 * 
+	 *
 	 * @param conceptSets the current object on the concept
 	 */
 	public ConceptSetsEditor(Collection<ConceptSet> conceptSets) {
-		if (conceptSets == null)
+		if (conceptSets == null) {
 			originalConceptSets = new Vector<ConceptSet>();
+		}
 		
 		this.originalConceptSets = conceptSets;
 	}
@@ -62,7 +63,9 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 			for (String id : conceptIds) {
 				id = id.trim();
 				if (!id.equals("") && !requestConceptIds.contains(Integer.valueOf(id))) //remove whitespace, blank lines, and duplicate entries
+				{
 					requestConceptIds.add(Integer.valueOf(id));
+				}
 			}
 			
 			// used when adding in concept sets
@@ -71,8 +74,9 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 			// remove all sets that aren't in the request (aka, that have been deleted by the user)
 			Collection<ConceptSet> copyOfOriginalConceptSets = new ArrayList<ConceptSet>(originalConceptSets);
 			for (ConceptSet origConceptSet : copyOfOriginalConceptSets) {
-				if (!requestConceptIds.contains(origConceptSet.getConcept().getConceptId()))
+				if (!requestConceptIds.contains(origConceptSet.getConcept().getConceptId())) {
 					originalConceptSets.remove(origConceptSet);
+				}
 				
 				// add to quick list used when adding later
 				originalConceptSetIds.add(origConceptSet.getConcept().getConceptId());

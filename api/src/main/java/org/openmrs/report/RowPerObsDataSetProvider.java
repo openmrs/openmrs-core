@@ -50,11 +50,12 @@ public class RowPerObsDataSetProvider implements DataSetProvider {
 		RowPerObsDataSetDefinition definition = (RowPerObsDataSetDefinition) dataSetDefinition;
 		Cohort patients = inputCohort;
 		if (definition.getFilter() != null) {
-			if (patients != null)
+			if (patients != null) {
 				patients = Cohort.intersect(patients, Context.getCohortService().evaluate(definition.getFilter(),
 				    evalContext));
-			else
+			} else {
 				patients = Context.getCohortService().evaluate(definition.getFilter(), evalContext);
+			}
 		}
 		
 		RowPerObsDataSet ret = new RowPerObsDataSet();

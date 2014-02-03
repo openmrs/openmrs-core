@@ -60,7 +60,7 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 	/**
 	 * Override to disallow numeric check digits and identifiers that are not exactly
 	 * VERHOEFF_ID_LENGTH long.
-	 * 
+	 *
 	 * @see org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator#isValid(java.lang.String)
 	 */
 	@Override
@@ -68,17 +68,19 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 		
 		boolean result = super.isValid(identifier);
 		
-		if (Character.isDigit(identifier.charAt(identifier.length() - 1)))
+		if (Character.isDigit(identifier.charAt(identifier.length() - 1))) {
 			throw new UnallowedIdentifierException("Check digit can not be numeric.");
-		if (identifier.length() != VERHOEFF_ID_LENGTH)
+		}
+		if (identifier.length() != VERHOEFF_ID_LENGTH) {
 			throw new UnallowedIdentifierException("Identifier must be " + VERHOEFF_ID_LENGTH + " digits long.");
+		}
 		
 		return result;
 	}
 	
 	/**
 	 * Override to disallow identifiers that are not exactly VERHOEFF_UNDECORATED_ID_LENGTH long.
-	 * 
+	 *
 	 * @see org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator#getValidIdentifier(java.lang.String)
 	 * @should get valid identifier
 	 */
@@ -87,9 +89,10 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 		
 		String result = super.getValidIdentifier(undecoratedIdentifier);
 		
-		if (undecoratedIdentifier.length() != VERHOEFF_UNDECORATED_ID_LENGTH)
+		if (undecoratedIdentifier.length() != VERHOEFF_UNDECORATED_ID_LENGTH) {
 			throw new UnallowedIdentifierException("Undecorated identifier must be " + VERHOEFF_UNDECORATED_ID_LENGTH
 			        + " digits long.");
+		}
 		
 		return result;
 	}
@@ -107,8 +110,9 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 	
 	private int insertCheck(int[] a) {
 		int check = 0;
-		for (int i = 1; i < a.length; i++)
+		for (int i = 1; i < a.length; i++) {
 			check = op[check][F[i % 8][a[i]]];
+		}
 		a[0] = inv[check];
 		return a[0];
 	}
@@ -118,8 +122,9 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 		F[1] = F1;
 		for (int i = 2; i < 8; i++) {
 			F[i] = new int[10];
-			for (int j = 0; j < 10; j++)
+			for (int j = 0; j < 10; j++) {
 				F[i][j] = F[i - 1][F[1][j]];
+			}
 		}
 	}
 	

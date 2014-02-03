@@ -79,23 +79,26 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					line.append(",");
 					String name, description;
 					ConceptName cn = c.getName(locale);
-					if (cn == null)
+					if (cn == null) {
 						name = "";
-					else
+					} else {
 						name = cn.getName();
+					}
 					
 					ConceptDescription cd = c.getDescription(locale);
-					if (cd == null)
+					if (cd == null) {
 						description = "";
-					else
+					} else {
 						description = cd.getDescription();
+					}
 					
 					line.append('"');
 					line.append(name.replace("\"", "\"\""));
 					line.append("\",");
 					
-					if (description == null)
+					if (description == null) {
 						description = "";
+					}
 					line.append('"');
 					line.append(description.replace("\"", "\"\""));
 					line.append("\",");
@@ -110,10 +113,11 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					
 					tmp = new StringBuilder("");
 					for (ConceptAnswer answer : c.getAnswers(false)) {
-						if (answer.getAnswerConcept() != null)
+						if (answer.getAnswerConcept() != null) {
 							tmp.append(answer.getAnswerConcept().getName()).append("\n");
-						else if (answer.getAnswerDrug() != null)
+						} else if (answer.getAnswerDrug() != null) {
 							tmp.append(answer.getAnswerDrug().getFullName(Context.getLocale())).append("\n");
+						}
 					}
 					line.append('"');
 					line.append(tmp.toString().trim());
@@ -131,23 +135,27 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					line.append("\",");
 					
 					line.append('"');
-					if (c.getConceptClass() != null)
+					if (c.getConceptClass() != null) {
 						line.append(c.getConceptClass().getName());
+					}
 					line.append("\",");
 					
 					line.append('"');
-					if (c.getDatatype() != null)
+					if (c.getDatatype() != null) {
 						line.append(c.getDatatype().getName());
+					}
 					line.append("\",");
 					
 					line.append('"');
-					if (c.getChangedBy() != null)
+					if (c.getChangedBy() != null) {
 						line.append(c.getChangedBy().getPersonName());
+					}
 					line.append("\",");
 					
 					line.append('"');
-					if (c.getCreator() != null)
+					if (c.getCreator() != null) {
 						line.append(c.getCreator().getPersonName());
+					}
 					line.append("\"\n");
 					
 					response.getWriter().write(line.toString());

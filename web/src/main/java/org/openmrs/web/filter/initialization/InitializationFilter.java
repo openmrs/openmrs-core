@@ -165,7 +165,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
@@ -216,8 +216,9 @@ public class InitializationFilter extends StartupFilter {
 					MemoryAppender memoryAppender = (MemoryAppender) appender;
 					List<String> logLines = memoryAppender.getLogLines();
 					// truncate the list to the last 5 so we don't overwhelm jquery
-					if (logLines.size() > 5)
+					if (logLines.size() > 5) {
 						logLines = logLines.subList(logLines.size() - 5, logLines.size());
+					}
 					result.put("logLines", logLines);
 				} else {
 					result.put("logLines", new ArrayList<String>());
@@ -335,7 +336,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
@@ -640,10 +641,11 @@ public class InitializationFilter extends StartupFilter {
 		else if (IMPLEMENTATION_ID_SETUP.equals(page)) {
 			
 			if (goBack(httpRequest)) {
-				if (wizardModel.createTables)
+				if (wizardModel.createTables) {
 					renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
-				else
+				} else {
 					renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, httpResponse);
+				}
 				return;
 			}
 			
@@ -740,8 +742,9 @@ public class InitializationFilter extends StartupFilter {
 								        + "verifycredentials.htm", wizardModel.remoteUsername, wizardModel.remotePassword);
 							}
 							catch (APIAuthenticationException e) {
-								if (log.isDebugEnabled())
+								if (log.isDebugEnabled()) {
 									log.debug("Error generated: ", e);
+								}
 								page = TESTING_REMOTE_DETAILS_SETUP;
 								errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
 								renderTemplate(page, referenceMap, httpResponse);
@@ -794,8 +797,9 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	private void createDemoDataTask() {
-		if (wizardModel.addDemoData)
+		if (wizardModel.addDemoData) {
 			wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
+		}
 	}
 	
 	private void createTablesTask() {
@@ -806,10 +810,12 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	private void createDatabaseTask() {
-		if (!wizardModel.hasCurrentOpenmrsDatabase)
+		if (!wizardModel.hasCurrentOpenmrsDatabase) {
 			wizardModel.tasksToExecute.add(WizardTask.CREATE_SCHEMA);
-		if (wizardModel.createDatabaseUser)
+		}
+		if (wizardModel.createDatabaseUser) {
 			wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
+		}
 	}
 	
 	private void createSimpleSetup(String databaseRootPassword, String addDemoData) {
@@ -854,8 +860,9 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
 		
 		if (!InitializationWizardModel.INSTALL_METHOD_AUTO.equals(wizardModel.installMethod)) {
-			if (httpRequest.getParameter("database_user_name") != null)
+			if (httpRequest.getParameter("database_user_name") != null) {
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("database_user_name");
+			}
 			
 			createSimpleSetup(httpRequest.getParameter("database_root_password"), "yes");
 		}
@@ -881,15 +888,16 @@ public class InitializationFilter extends StartupFilter {
 	 * language). It checks if user has changed any of locale related parameters and makes
 	 * appropriate corrections with filter's model or/and with locale attribute inside user's
 	 * session.
-	 * 
+	 *
 	 * @param httpRequest the http request object
 	 */
 	private void checkLocaleAttributes(HttpServletRequest httpRequest) {
 		String localeParameter = httpRequest.getParameter(FilterUtil.LOCALE_ATTRIBUTE);
 		Boolean rememberLocale = false;
 		// we need to check if user wants that system will remember his selection of language
-		if (httpRequest.getParameter(FilterUtil.REMEMBER_ATTRIBUTE) != null)
+		if (httpRequest.getParameter(FilterUtil.REMEMBER_ATTRIBUTE) != null) {
 			rememberLocale = true;
+		}
 		if (localeParameter != null) {
 			String storedLocale = null;
 			if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
@@ -917,7 +925,7 @@ public class InitializationFilter extends StartupFilter {
 	 * It sets locale parameter for current session when user is making first GET http request to
 	 * application. It retrieves user locale from request object and checks if this locale is
 	 * supported by application. If not, it uses {@link Locale#ENGLISH} by default
-	 * 
+	 *
 	 * @param httpRequest the http request object
 	 */
 	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
@@ -931,7 +939,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Verify the database connection works.
-	 * 
+	 *
 	 * @param connectionUsername
 	 * @param connectionPassword
 	 * @param databaseConnectionFinalUrl
@@ -956,7 +964,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Convenience method to load the runtime properties file.
-	 * 
+	 *
 	 * @return the runtime properties file.
 	 */
 	private File getRuntimePropertiesFile() {
@@ -1011,7 +1019,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Public method that returns true if database+runtime properties initialization is required
-	 * 
+	 *
 	 * @return true if this initialization wizard needs to run
 	 */
 	public static boolean initializationRequired() {
@@ -1161,7 +1169,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Convenience variable to know if this wizard has completed successfully and that this wizard
 	 * does not need to be executed again
-	 * 
+	 *
 	 * @return true if this has been run already
 	 */
 	synchronized private static boolean isInitializationComplete() {
@@ -1170,7 +1178,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Check if the given value is null or a zero-length String
-	 * 
+	 *
 	 * @param value the string to check
 	 * @param errors the list of errors to append the errorMessage to if value is empty
 	 * @param errorMessageCode the string with code of error message translation to append if value
@@ -1285,7 +1293,7 @@ public class InitializationFilter extends StartupFilter {
 		
 		/**
 		 * Adds a task that has been completed to the list of executed tasks
-		 * 
+		 *
 		 * @param task
 		 */
 		synchronized protected void addExecutedTask(WizardTask task) {
@@ -1314,7 +1322,7 @@ public class InitializationFilter extends StartupFilter {
 				
 				/**
 				 * TODO split this up into multiple testable methods
-				 * 
+				 *
 				 * @see java.lang.Runnable#run()
 				 */
 				public void run() {
@@ -1359,9 +1367,10 @@ public class InitializationFilter extends StartupFilter {
 							setMessage("Create database user");
 							setExecutingTask(WizardTask.CREATE_DB_USER);
 							connectionUsername = wizardModel.databaseName + "_user";
-							if (connectionUsername.length() > 16)
+							if (connectionUsername.length() > 16) {
 								connectionUsername = wizardModel.databaseName.substring(0, 11) + "_user"; // trim off enough to leave space for _user at the end
-								
+							}
+							
 							connectionPassword.append("");
 							// generate random password from this subset of alphabet
 							// intentionally left out these characters: ufsb$() to prevent certain words forming randomly
@@ -1432,14 +1441,18 @@ public class InitializationFilter extends StartupFilter {
 						runtimeProperties.put("connection.url", finalDatabaseConnectionString);
 						runtimeProperties.put("connection.username", connectionUsername);
 						runtimeProperties.put("connection.password", connectionPassword);
-						if (StringUtils.hasText(wizardModel.databaseDriver))
+						if (StringUtils.hasText(wizardModel.databaseDriver)) {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
-						if (finalDatabaseConnectionString.contains("postgres"))
+						}
+						if (finalDatabaseConnectionString.contains("postgres")) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-						if (finalDatabaseConnectionString.contains("sqlserver"))
+						}
+						if (finalDatabaseConnectionString.contains("sqlserver")) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
-						if (finalDatabaseConnectionString.contains("h2"))
+						}
+						if (finalDatabaseConnectionString.contains("h2")) {
 							runtimeProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+						}
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
 						runtimeProperties.put(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, Base64.encode(Security
@@ -1622,12 +1635,13 @@ public class InitializationFilter extends StartupFilter {
 							 */
 							wizardModel.workLog.add("Adjusting file posix properties to user readonly");
 							if (getRuntimePropertiesFile().setReadable(false, false)
-							        && getRuntimePropertiesFile().setReadable(true))
+							        && getRuntimePropertiesFile().setReadable(true)) {
 								wizardModel.workLog
 								        .add("Successfully adjusted RuntimePropertiesFile to disallow world to read it");
-							else
+							} else {
 								wizardModel.workLog
 								        .add("Unable to adjust RuntimePropertiesFile to disallow world to read it");
+							}
 							// don't need to catch errors here because we tested it at the beginning of the wizard
 						}
 						finally {
@@ -1750,23 +1764,26 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Check whether openmrs database is empty. Having just one non-liquibase table in the given
 	 * database qualifies this as a non-empty database.
-	 * 
+	 *
 	 * @param props the runtime properties
 	 * @return true/false whether openmrs database is empty or doesn't exist yet
 	 */
 	private static boolean isDatabaseEmpty(Properties props) {
 		if (props != null) {
 			String databaseConnectionFinalUrl = props.getProperty("connection.url");
-			if (databaseConnectionFinalUrl == null)
+			if (databaseConnectionFinalUrl == null) {
 				return true;
+			}
 			
 			String connectionUsername = props.getProperty("connection.username");
-			if (connectionUsername == null)
+			if (connectionUsername == null) {
 				return true;
+			}
 			
 			String connectionPassword = props.getProperty("connection.password");
-			if (connectionPassword == null)
+			if (connectionPassword == null) {
 				return true;
+			}
 			
 			Connection connection = null;
 			try {
@@ -1783,8 +1800,9 @@ public class InitializationFilter extends StartupFilter {
 				while (tbls.next()) {
 					String tableName = tbls.getString("TABLE_NAME");
 					//if any table exist besides "liquibasechangelog" or "liquibasechangeloglock", return false
-					if (!("liquibasechangelog".equals(tableName)) && !("liquibasechangeloglock".equals(tableName)))
+					if (!("liquibasechangelog".equals(tableName)) && !("liquibasechangeloglock".equals(tableName))) {
 						return false;
+					}
 				}
 				return true;
 			}
@@ -1803,13 +1821,14 @@ public class InitializationFilter extends StartupFilter {
 			}
 			//if catch an exception while query database, then consider as database is empty.
 			return true;
-		} else
+		} else {
 			return true;
+		}
 	}
 	
 	/**
 	 * Convenience method that loads the database driver
-	 * 
+	 *
 	 * @param connection the database connection string
 	 * @param databaseDriver the database driver class name to load
 	 * @return the loaded driver string
@@ -1832,7 +1851,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Utility method that checks if there is a runtime properties file containing database
 	 * connection credentials
-	 * 
+	 *
 	 * @return
 	 */
 	private static boolean skipDatabaseSetupPage() {
@@ -1844,7 +1863,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Utility methods that checks if the user clicked the back image
-	 * 
+	 *
 	 * @param httpRequest
 	 * @return
 	 */
@@ -1855,7 +1874,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Convenience method to get custom installation script
-	 * 
+	 *
 	 * @return Properties from custom installation script or empty if none specified
 	 * @throws RuntimeException if path to installation script is invalid
 	 */

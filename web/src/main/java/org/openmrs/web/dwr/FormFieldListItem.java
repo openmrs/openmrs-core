@@ -52,8 +52,9 @@ public class FormFieldListItem {
 		
 		if (ff != null) {
 			formFieldId = ff.getFormFieldId();
-			if (ff.getParent() != null)
+			if (ff.getParent() != null) {
 				parent = ff.getParent().getFormFieldId();
+			}
 			field = new FieldListItem(ff.getField(), locale);
 			fieldNumber = ff.getFieldNumber();
 			fieldPart = ff.getFieldPart();
@@ -61,10 +62,12 @@ public class FormFieldListItem {
 			minOccurs = ff.getMinOccurs();
 			maxOccurs = ff.getMaxOccurs();
 			required = ff.isRequired() == true ? "yes" : "no";
-			if (ff.getCreator() != null)
+			if (ff.getCreator() != null) {
 				creator = ff.getCreator().getPersonName().getFullName();
-			if (ff.getChangedBy() != null)
+			}
+			if (ff.getChangedBy() != null) {
 				changedBy = ff.getChangedBy().getPersonName().getFullName();
+			}
 		}
 	}
 	

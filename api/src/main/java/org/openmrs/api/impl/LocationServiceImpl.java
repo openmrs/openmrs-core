@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  * <p>
  * This class should not be instantiated alone, get a service class from the Context:
  * Context.getLocationService();
- * 
+ *
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.LocationService
  * @see org.openmrs.Location
@@ -69,16 +69,18 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 				
 				// only check transient (aka non-precreated) location tags
 				if (tag.getLocationTagId() == null) {
-					if (!StringUtils.hasLength(tag.getName()))
+					if (!StringUtils.hasLength(tag.getName())) {
 						throw new APIException("A tag name is required");
+					}
 					
 					LocationTag existing = Context.getLocationService().getLocationTagByName(tag.getName());
 					if (existing != null) {
 						location.removeTag(tag);
 						location.addTag(existing);
-					} else
+					} else {
 						throw new APIException("Cannot add transient tags! "
 						        + "Save all location tags to the database before saving this location");
+					}
 				}
 			}
 		}
@@ -114,12 +116,14 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		String locationGP = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME);
 		
-		if (StringUtils.hasText(locationGP))
+		if (StringUtils.hasText(locationGP)) {
 			location = Context.getLocationService().getLocation(locationGP);
+		}
 		
 		//Try to look up 'Unknown Location' in case the global property is something else
-		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown Location")))
+		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown Location"))) {
 			location = Context.getLocationService().getLocation("Unknown Location");
+		}
 		
 		// If Unknown Location does not exist, try Unknown if the global property was different
 		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown"))) {
@@ -187,9 +191,11 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public List<Location> getLocationsByTag(LocationTag tag) throws APIException {
 		List<Location> locations = new ArrayList<Location>();
 		
-		for (Location l : dao.getAllLocations(false))
-			if (l.getTags().contains(tag))
+		for (Location l : dao.getAllLocations(false)) {
+			if (l.getTags().contains(tag)) {
 				locations.add(l);
+			}
+		}
 		
 		return locations;
 	}
@@ -201,9 +207,11 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException {
 		List<Location> locations = new ArrayList<Location>();
 		
-		for (Location loc : dao.getAllLocations(false))
-			if (loc.getTags().containsAll(tags))
+		for (Location loc : dao.getAllLocations(false)) {
+			if (loc.getTags().containsAll(tags)) {
 				locations.add(loc);
+			}
+		}
 		
 		return locations;
 	}
@@ -217,8 +225,9 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		
 		for (Location loc : dao.getAllLocations(false)) {
 			for (LocationTag t : tags) {
-				if (loc.getTags().contains(t) && !locations.contains(loc))
+				if (loc.getTags().contains(t) && !locations.contains(loc)) {
 					locations.add(loc);
+				}
 			}
 		}
 		
@@ -293,8 +302,9 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Transactional(readOnly = true)
 	public List<LocationTag> getLocationTags(String search) throws APIException {
-		if (search == null || search.equals(""))
+		if (search == null || search.equals("")) {
 			return Context.getLocationService().getAllLocationTags(true);
+		}
 		
 		return dao.getLocationTags(search);
 	}
@@ -306,8 +316,9 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		if (tag.isRetired()) {
 			return tag;
 		} else {
-			if (reason == null)
+			if (reason == null) {
 				throw new APIException("Reason is required");
+			}
 			tag.setRetired(true);
 			tag.setRetireReason(reason);
 			tag.setRetiredBy(Context.getAuthenticatedUser());
@@ -463,8 +474,9 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public String getAddressTemplate() throws APIException {
 		String addressTemplate = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
-		if (!StringUtils.hasLength(addressTemplate))
+		if (!StringUtils.hasLength(addressTemplate)) {
 			addressTemplate = OpenmrsConstants.DEFAULT_ADDRESS_TEMPLATE;
+		}
 		
 		return addressTemplate;
 	}

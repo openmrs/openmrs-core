@@ -17,7 +17,7 @@ import org.openmrs.api.APIException;
 
 /**
  * Represents a error in processing an hl7 message.
- * 
+ *
  * @see HL7InQueue
  * @see HL7Service
  */
@@ -86,9 +86,10 @@ public class HL7InError extends HL7QueueItem {
 	 * @param errorDetails The errorDetails to set.
 	 */
 	public void setErrorDetails(String errorDetails) {
-		if (errorDetails != null && errorDetails.length() > MAX_ERROR_DETAILS_LENGTH)
+		if (errorDetails != null && errorDetails.length() > MAX_ERROR_DETAILS_LENGTH) {
 			throw new APIException("error details length of " + errorDetails.length() + " exceeds maximum length of "
 			        + MAX_ERROR_DETAILS_LENGTH);
+		}
 		this.errorDetails = errorDetails;
 	}
 	

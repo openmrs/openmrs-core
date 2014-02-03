@@ -21,7 +21,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		super();
 		this.mappedClass = mappedClass;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean)
 	 */
@@ -34,7 +34,7 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		
 		return crit.list();
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAll(boolean, java.lang.Integer, java.lang.Integer)
 	 */
@@ -48,24 +48,24 @@ public class HibernateOpenmrsDataDAO<T extends BaseOpenmrsData> extends Hibernat
 		crit.setMaxResults(maxResults);
 		
 		return crit.list();
-
+		
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.OpenmrsDataDAO#getAllCount(boolean)
 	 */
 	public int getAllCount(boolean includeVoided) {
-
+		
 		String hql = "select count(*)" + " from " + mappedClass;
-
+		
 		if (!includeVoided) {
 			hql += " where voided = false";
 		}
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-
+		
 		Number count = (Number) query.uniqueResult();
-
+		
 		return count == null ? 0 : count.intValue();
 	}
-
+	
 }

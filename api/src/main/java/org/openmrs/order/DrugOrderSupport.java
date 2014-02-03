@@ -125,8 +125,9 @@ public class DrugOrderSupport implements GlobalPropertyListener {
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
 	 */
 	public void globalPropertyDeleted(String propertyName) {
-		if (!OpenmrsConstants.GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS.equals(propertyName))
+		if (!OpenmrsConstants.GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS.equals(propertyName)) {
 			return;
+		}
 		setStandardRegimens(new Vector<RegimenSuggestion>());
 	}
 }

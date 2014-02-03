@@ -25,7 +25,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * This class deals with {@link Patient} objects when they are saved via a save* method in an
  * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
  * class. <br/>
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @see Patient
@@ -43,8 +43,9 @@ public class PatientSaveHandler implements SaveHandler<Patient> {
 			for (PatientIdentifier pIdentifier : patient.getIdentifiers()) {
 				
 				// make sure the identifier is associated with the current patient
-				if (pIdentifier.getPatient() == null)
+				if (pIdentifier.getPatient() == null) {
 					pIdentifier.setPatient(patient);
+				}
 			}
 		}
 	}

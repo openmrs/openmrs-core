@@ -18,7 +18,7 @@ import java.util.Set;
 
 /**
  * Field
- * 
+ *
  * @version 1.0
  */
 public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
@@ -175,19 +175,21 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Adds a field answer to the list of field answers
-	 * 
+	 *
 	 * @param fieldAnswer FieldAnswer to be added
 	 */
 	public void addAnswer(FieldAnswer fieldAnswer) {
-		if (answers == null)
+		if (answers == null) {
 			answers = new HashSet<FieldAnswer>();
-		if (!answers.contains(fieldAnswer) && fieldAnswer != null)
+		}
+		if (!answers.contains(fieldAnswer) && fieldAnswer != null) {
 			answers.add(fieldAnswer);
+		}
 	}
 	
 	/**
 	 * Removes a field answer from the list of field answers
-	 * 
+	 *
 	 * @param fieldAnswer FieldAnswer to be removed
 	 */
 	public void removeAnswer(FieldAnswer fieldAnswer) {

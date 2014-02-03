@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
 
 /**
  * This class will parse an xml sql diff file
- * 
+ *
  * @version 1.0
  */
 public class SqlDiffFileParser {
@@ -46,13 +46,14 @@ public class SqlDiffFileParser {
 	
 	/**
 	 * Get the diff map. Return a sorted map<version, sql statements>
-	 * 
+	 *
 	 * @return SortedMap<String, String>
 	 * @throws ModuleException
 	 */
 	public static SortedMap<String, String> getSqlDiffs(Module module) throws ModuleException {
-		if (module == null)
+		if (module == null) {
 			throw new ModuleException("Module cannot be null");
+		}
 		
 		SortedMap<String, String> map = new TreeMap<String, String>(new VersionComparator());
 		
@@ -107,8 +108,9 @@ public class SqlDiffFileParser {
 				
 				String diffVersion = rootNode.getAttribute("version");
 				
-				if (!validConfigVersions().contains(diffVersion))
+				if (!validConfigVersions().contains(diffVersion)) {
 					throw new ModuleException("Invalid config version: " + diffVersion, module.getModuleId());
+				}
 				
 				NodeList diffNodes = getDiffNodes(rootNode, diffVersion);
 				
@@ -139,8 +141,9 @@ public class SqlDiffFileParser {
 		}
 		finally {
 			try {
-				if (jarfile != null)
+				if (jarfile != null) {
 					jarfile.close();
+				}
 			}
 			catch (IOException e) {
 				log.warn("Unable to close jarfile: " + jarfile.getName());
@@ -151,21 +154,22 @@ public class SqlDiffFileParser {
 	
 	/**
 	 * Generic method to get a module tag
-	 * 
+	 *
 	 * @param element
 	 * @param version
 	 * @param tag
 	 * @return
 	 */
 	private static String getElement(Element element, String version, String tag) {
-		if (element.getElementsByTagName(tag).getLength() > 0)
+		if (element.getElementsByTagName(tag).getLength() > 0) {
 			return element.getElementsByTagName(tag).item(0).getTextContent();
+		}
 		return "";
 	}
 	
 	/**
 	 * List of the valid sqldiff versions
-	 * 
+	 *
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
@@ -176,7 +180,7 @@ public class SqlDiffFileParser {
 	
 	/**
 	 * Finds the nodes that contain diff information
-	 * 
+	 *
 	 * @param element
 	 * @param version
 	 * @return
@@ -184,8 +188,9 @@ public class SqlDiffFileParser {
 	private static NodeList getDiffNodes(Element element, String version) {
 		NodeList diffNodes = null;
 		
-		if ("1.0".equals(version))
+		if ("1.0".equals(version)) {
 			diffNodes = element.getElementsByTagName("diff");
+		}
 		
 		return diffNodes;
 	}

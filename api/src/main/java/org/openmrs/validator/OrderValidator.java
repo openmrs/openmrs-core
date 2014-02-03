@@ -26,7 +26,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link Order} class.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { Order.class })
@@ -37,7 +37,7 @@ public class OrderValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	public boolean supports(Class<?> c) {
@@ -46,7 +46,7 @@ public class OrderValidator implements Validator {
 	
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if order is null
@@ -73,8 +73,9 @@ public class OrderValidator implements Validator {
 			errors.reject("error.general");
 		} else {
 			if (order.getEncounter() != null && order.getPatient() != null) {
-				if (!order.getEncounter().getPatient().equals(order.getPatient()))
+				if (!order.getEncounter().getPatient().equals(order.getPatient())) {
 					errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
+				}
 			}
 			
 			// for the following elements Order.hbm.xml says: not-null="true"
@@ -107,8 +108,9 @@ public class OrderValidator implements Validator {
 				        .rejectIfEmptyOrWhitespace(errors, "discontinuedReason", "Order.error.discontinueNeedsReason");
 				if (order.getDiscontinuedDate() != null) {
 					// must be <= now(), and <= autoExpireDate
-					if (OpenmrsUtil.compare(order.getDiscontinuedDate(), new Date()) > 0)
+					if (OpenmrsUtil.compare(order.getDiscontinuedDate(), new Date()) > 0) {
 						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateInFuture");
+					}
 					if (order.getAutoExpireDate() != null
 					        && OpenmrsUtil.compare(order.getDiscontinuedDate(), order.getAutoExpireDate()) > 0) {
 						errors.rejectValue("autoExpireDate", "Order.error.discontinuedAfterAutoExpireDate");
@@ -116,14 +118,17 @@ public class OrderValidator implements Validator {
 					}
 				}
 			} else if (!order.getDiscontinued()) {
-				if (order.getDiscontinuedDate() != null)
+				if (order.getDiscontinuedDate() != null) {
 					errors.rejectValue("discontinuedDate", "Order.error.notDiscontinuedShouldHaveNoDate");
+				}
 				
-				if (order.getDiscontinuedBy() != null)
+				if (order.getDiscontinuedBy() != null) {
 					errors.rejectValue("discontinuedBy", "Order.error.notDiscontinuedShouldHaveNoBy");
+				}
 				
-				if (order.getDiscontinuedReason() != null)
+				if (order.getDiscontinuedReason() != null) {
 					errors.rejectValue("discontinuedReason", "Order.error.notDiscontinuedShouldHaveNoReason");
+				}
 			}
 		}
 	}

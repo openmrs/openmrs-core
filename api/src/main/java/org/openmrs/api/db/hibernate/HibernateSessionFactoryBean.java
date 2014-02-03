@@ -73,8 +73,9 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 			String value = (String) entry.getValue();
 			log.trace("Setting module property: " + prop + ":" + value);
 			config.setProperty(prop, value);
-			if (!prop.startsWith("hibernate"))
+			if (!prop.startsWith("hibernate")) {
 				config.setProperty("hibernate." + prop, value);
+			}
 		}
 		
 		Properties properties = Context.getRuntimeProperties();
@@ -86,8 +87,9 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 			String value = (String) entry.getValue();
 			log.trace("Setting property: " + prop + ":" + value);
 			config.setProperty(prop, value);
-			if (!prop.startsWith("hibernate"))
+			if (!prop.startsWith("hibernate")) {
 				config.setProperty("hibernate." + prop, value);
+			}
 		}
 		
 		// load in the default hibernate properties
@@ -122,7 +124,7 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	/**
 	 * Collect the mapping resources for future use because the mappingResources object is defined
 	 * as 'private' instead of 'protected'
-	 * 
+	 *
 	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingResources(java.lang.String[])
 	 */
 	@Override
@@ -138,7 +140,7 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	 * Collect packages to scan that are set in core and for tests in modules.
 	 * <p>
 	 * It adds to the set instead of overwriting it with each call.
-	 * 
+	 *
 	 * @see org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean#setPackagesToScan(java.lang.String[])
 	 */
 	@Override
@@ -159,7 +161,7 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	
 	/**
 	 * Gets packages with mapped classes from all modules.
-	 * 
+	 *
 	 * @return the set of packages with mapped classes
 	 * @since 1.9.2, 1.10
 	 */
@@ -175,7 +177,7 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	
 	/**
 	 * Overridden to populate mappings from modules.
-	 * 
+	 *
 	 * @see org.springframework.orm.hibernate3.AbstractSessionFactoryBean#afterPropertiesSet()
 	 */
 	@Override
@@ -206,7 +208,7 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	/**
 	 * Used by the module testing framework to set the dependent modules in the hibernate session
 	 * factory
-	 * 
+	 *
 	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingJarLocations(org.springframework.core.io.Resource[])
 	 */
 	@Override

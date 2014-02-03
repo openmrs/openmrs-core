@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls
  * should go through the {@link org.openmrs.api.ProviderService} methods.
- * 
+ *
  * @since 1.9
  */
 public class HibernateProviderDAO implements ProviderDAO {
@@ -138,10 +138,12 @@ public class HibernateProviderDAO implements ProviderDAO {
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
 	        Integer start, Integer length, boolean includeRetired) {
 		Criteria criteria = prepareProviderCriteria(name, includeRetired);
-		if (start != null)
+		if (start != null) {
 			criteria.setFirstResult(start);
-		if (length != null)
+		}
+		if (length != null) {
 			criteria.setMaxResults(length);
+		}
 		
 		if (includeRetired) {
 			//push retired Provider to the end of the returned list
@@ -158,7 +160,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	
 	/**
 	 * Creates a Provider Criteria based on name
-	 * 
+	 *
 	 * @param name represents provider name
 	 * @param includeRetired
 	 * @return Criteria represents the hibernate criteria to search
@@ -170,8 +172,9 @@ public class HibernateProviderDAO implements ProviderDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
 		    Criteria.LEFT_JOIN);
-		if (!includeRetired)
+		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
+		}
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
@@ -196,7 +199,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	
 	/**
 	 * Creates or that matches the input name with Provider-Person-Names (not voided)
-	 * 
+	 *
 	 * @param name
 	 * @return Junction
 	 */
@@ -294,8 +297,9 @@ public class HibernateProviderDAO implements ProviderDAO {
 		
 		Criteria criteria = getSession().createCriteria(Provider.class);
 		criteria.add(Restrictions.eq("identifier", provider.getIdentifier()));
-		if (provider.getProviderId() != null)
+		if (provider.getProviderId() != null) {
 			criteria.add(Restrictions.not(Restrictions.eq("providerId", provider.getProviderId())));
+		}
 		criteria.setProjection(Projections.countDistinct("providerId"));
 		
 		return (Long) criteria.uniqueResult() == 0L;

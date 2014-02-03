@@ -47,11 +47,13 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 			ConceptService cs = Context.getConceptService();
 			GlobalProperty gp = as
 			        .getGlobalPropertyObject(OpenmrsConstants.GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT);
-			if (gp == null)
+			if (gp == null) {
 				gp = new GlobalProperty(OpenmrsConstants.GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT);
+			}
 			
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Updating concept words ... ");
+			}
 			try {
 				Concept currentConcept = null; // assumes that all conceptIds are positive
 				//check if we have a saved last updated concept id
@@ -62,14 +64,16 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 					//do nothing, most likely there was none
 				}
 				
-				if (currentConcept == null)
+				if (currentConcept == null) {
 					currentConcept = new Concept(0);
+				}
 				
 				currentConcept = cs.getNextConcept(currentConcept);
 				int counter = 0;
 				while (currentConcept != null && shouldExecute) {
-					if (log.isDebugEnabled())
+					if (log.isDebugEnabled()) {
 						log.debug("updateConceptWords() : current concept: " + currentConcept);
+					}
 					cs.updateConceptIndex(currentConcept);
 					
 					// keep memory consumption low
@@ -87,8 +91,9 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 				}
 				
 				//we have reached the end, get rid of the GP
-				if (currentConcept == null)
+				if (currentConcept == null) {
 					as.purgeGlobalProperty(gp);
+				}
 			}
 			catch (APIException e) {
 				log.error("ConceptWordUpdateTask failed, because:", e);
@@ -102,8 +107,9 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 				conceptWordUpdateTaskDef.setStarted(false);
 				//This was need when upgrading to version1.8
 				//Otherwise it will always return false
-				if (conceptWordUpdateTaskDef.getStartOnStartup())
+				if (conceptWordUpdateTaskDef.getStartOnStartup()) {
 					conceptWordUpdateTaskDef.setStartOnStartup(false);
+				}
 				ss.saveTask(conceptWordUpdateTaskDef);
 				log.debug("Task set to stopped.");
 			}

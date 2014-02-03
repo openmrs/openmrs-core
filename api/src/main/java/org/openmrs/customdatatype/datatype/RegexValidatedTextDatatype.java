@@ -60,8 +60,9 @@ public class RegexValidatedTextDatatype extends SerializingCustomDatatype<String
 	 */
 	@Override
 	public void validate(String typedValue) throws InvalidCustomValueException {
-		if (!pattern.matcher(typedValue).matches())
+		if (!pattern.matcher(typedValue).matches()) {
 			throw new InvalidCustomValueException("Doesn't match regex");
+		}
 	}
 	
 }

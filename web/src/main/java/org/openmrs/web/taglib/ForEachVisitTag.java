@@ -159,10 +159,11 @@ public class ForEachVisitTag extends BodyTagSupport {
 	 * @param num the num to set
 	 */
 	public void setNum(Integer num) {
-		if (num != 0)
+		if (num != 0) {
 			this.num = num;
-		else
+		} else {
 			num = null;
+		}
 	}
 	
 	/**

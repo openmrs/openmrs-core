@@ -111,8 +111,9 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
 		if (allMatchingObjects != null) {
 			for (AbstractReportObject aro : allMatchingObjects) {
-				if (aro.getName().equals(name))
+				if (aro.getName().equals(name)) {
 					return ((PatientSearchReportObject) aro).getPatientSearch();
+				}
 			}
 		}
 		return null;
@@ -311,8 +312,9 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	public List<CohortSearchHistory> getAllSearchHistories() {
 		List<AbstractReportObject> temp = getReportObjectsByType("Search History"); // TODO make this a constant
 		List<CohortSearchHistory> ret = new ArrayList<CohortSearchHistory>();
-		for (AbstractReportObject o : temp)
+		for (AbstractReportObject o : temp) {
 			ret.add((CohortSearchHistory) o);
+		}
 		return ret;
 	}
 }

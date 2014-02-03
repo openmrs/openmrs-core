@@ -61,7 +61,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 	
 	/**
 	 * Convenience method to test for GZIP capabilities
-	 * 
+	 *
 	 * @param req The current user request
 	 * @return boolean indicating GZIP support
 	 */
@@ -85,8 +85,9 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 * Returns global property gzip.enabled as boolean
 	 */
 	private boolean isGZIPEnabled() {
-		if (cachedGZipEnabledFlag != null)
+		if (cachedGZipEnabledFlag != null) {
 			return cachedGZipEnabledFlag;
+		}
 		
 		try {
 			String gzipEnabled = Context.getAdministrationService().getGlobalProperty(

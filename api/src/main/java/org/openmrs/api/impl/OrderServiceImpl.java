@@ -49,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
  * itself. Spring injection is used to inject this implementation into the ServiceContext. Which
  * implementation is injected is determined by the spring application context file:
  * /metadata/api/spring/applicationContext.xml
- * 
+ *
  * @see org.openmrs.api.OrderService
  */
 @Transactional
@@ -93,8 +93,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			newOrder.setUuid(UUID.randomUUID().toString());
 			
 			return saveOrderWithLesserValidation(newOrder);
-		} else
+		} else {
 			return saveOrderWithLesserValidation(order);
+		}
 	}
 	
 	/**
@@ -165,8 +166,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	private <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude, boolean includeVoided) {
-		if (orderClassType == null)
+		if (orderClassType == null) {
 			throw new APIException("orderClassType cannot be null.  An order type of Order.class or a subclass is required");
+		}
 		
 		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate, actionsToInclude,
 		    actionsToExclude, includeVoided);
@@ -188,8 +190,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided) {
-		if (patient == null)
+		if (patient == null) {
 			throw new APIException("Unable to get drug orders if not given a patient");
+		}
 		
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
@@ -201,16 +204,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		// loop over the drug orders and add them if they are within the current desired order
 		if (drugOrders != null) {
-			if (includeVoided)
+			if (includeVoided) {
 				return drugOrders;
+			}
 			
 			//TODO should be done with a query
 			//remove voided ones
 			List<DrugOrder> ret = new ArrayList<DrugOrder>();
 			
 			for (DrugOrder drugOrder : drugOrders) {
-				if (!drugOrder.getVoided())
+				if (!drugOrder.getVoided()) {
 					ret.add(drugOrder);
+				}
 			}
 			
 			return ret;
@@ -282,8 +287,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
-		if (patient == null)
+		if (patient == null) {
 			throw new IllegalArgumentException("patient is required");
+		}
 		
 		List<Concept> concepts = new Vector<Concept>();
 		concepts.add(concept);
@@ -302,11 +308,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Transactional(readOnly = true)
 	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException {
 		
-		if (p == null)
+		if (p == null) {
 			throw new IllegalArgumentException("patient is required");
+		}
 		
-		if (date == null)
+		if (date == null) {
 			date = new Date();
+		}
 		
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(p);
@@ -323,11 +331,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) {
-		if (p == null)
+		if (p == null) {
 			throw new IllegalArgumentException("patient is required");
+		}
 		
-		if (date == null)
+		if (date == null) {
 			date = new Date();
+		}
 		
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(p);
@@ -344,8 +354,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Transactional(readOnly = true)
 	public List<Orderable<?>> getOrderables(String query) throws APIException {
 		
-		if (query == null)
+		if (query == null) {
 			throw new IllegalArgumentException("Orderable concept name is required");
+		}
 		
 		List<Orderable<?>> result = new ArrayList<Orderable<?>>();
 		
@@ -353,8 +364,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Concept> concepts = Context.getConceptService().getConceptsByName(query);
 		if (concepts != null) {
 			for (Concept concept : concepts) {
-				if (concept.getConceptClass().getUuid().equals(ConceptClass.DRUG_UUID))
+				if (concept.getConceptClass().getUuid().equals(ConceptClass.DRUG_UUID)) {
 					result.add(new GenericDrug(concept));
+				}
 			}
 		}
 		
@@ -362,8 +374,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Drug> drugs = Context.getConceptService().getDrugs(query);
 		if (drugs != null) {
 			for (Drug drug : drugs) {
-				if (!drug.isRetired())
+				if (!drug.isRetired()) {
 					result.add(drug);
+				}
 			}
 		}
 		
@@ -390,7 +403,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * Utility method that discontinues an order
-	 * 
+	 *
 	 * @param oldOrder the order to discontinue
 	 * @param user the user discontinuing the order, default to authenticated user
 	 * @param discontinueDate the date when to discontinue the order, default to now. Note that this
@@ -400,16 +413,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @throws APIException
 	 */
 	private Order doDiscontinueOrder(Order oldOrder, User user, Date discontinueDate) throws APIException {
-		if (user == null)
+		if (user == null) {
 			user = Context.getAuthenticatedUser();
-		if (discontinueDate == null)
+		}
+		if (discontinueDate == null) {
 			discontinueDate = new Date();
-		else if (discontinueDate.after(new Date()))
+		} else if (discontinueDate.after(new Date())) {
 			throw new APIException("Cannot discontinue an order in the future");
-		if (oldOrder.getDiscontinued())
+		}
+		if (oldOrder.getDiscontinued()) {
 			throw new APIException("Cannot discontinue an order that is already discontinued");
-		if (oldOrder.getAutoExpireDate() != null && OpenmrsUtil.compare(discontinueDate, oldOrder.getAutoExpireDate()) > 0)
+		}
+		if (oldOrder.getAutoExpireDate() != null && OpenmrsUtil.compare(discontinueDate, oldOrder.getAutoExpireDate()) > 0) {
 			throw new APIException("Cannot discontinue an order after its autoexpire date");
+		}
 		
 		oldOrder.setDiscontinued(Boolean.TRUE);
 		oldOrder.setDiscontinuedBy(user);
@@ -434,7 +451,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * Convenience method to be called within the API to enable persisting changes in an existing
 	 * order while surpassing certain validation constraints e.g when discontinuing an order
-	 * 
+	 *
 	 * @param order
 	 * @return
 	 * @throws APIException
@@ -446,8 +463,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private void checkIfModifyingSavedOrderNumber(Order order) {
 		String orderNumberInDatabase = dao.getOrderNumberInDatabase(order);
-		if (orderNumberInDatabase != null && !orderNumberInDatabase.equals(order.getOrderNumber()))
+		if (orderNumberInDatabase != null && !orderNumberInDatabase.equals(order.getOrderNumber())) {
 			throw new APIException("Cannot modify the orderNumber of a saved order");
+		}
 	}
 	
 	/**
@@ -455,8 +473,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Transactional(readOnly = true)
 	public Orderable<?> getOrderable(String identifier) throws APIException {
-		if (identifier == null)
+		if (identifier == null) {
 			throw new IllegalArgumentException("Orderable identifier is required");
+		}
 		
 		Integer numericIdentifier = GenericDrug.getNumericIdentifier(identifier);
 		if (numericIdentifier != null) {
@@ -507,11 +526,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Transactional(readOnly = true)
 	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient) throws APIException {
-		if (patient == null)
+		if (patient == null) {
 			throw new IllegalArgumentException("patient is required");
+		}
 		
-		if (ingredient == null)
+		if (ingredient == null) {
 			throw new IllegalArgumentException("ingredient is required");
+		}
 		
 		return dao.getDrugOrdersByPatientAndIngredient(patient, ingredient);
 	}
@@ -521,8 +542,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Transactional(readOnly = true)
 	public List<Order> getOrdersByPatient(Patient patient, boolean includeVoided) throws APIException {
-		if (patient == null)
+		if (patient == null) {
 			throw new APIException("Unable to get orders if I am not given a patient");
+		}
 		
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
@@ -535,8 +557,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Transactional(readOnly = true)
 	public List<Order> getOrdersByEncounter(Encounter encounter) throws APIException {
-		if (encounter == null)
+		if (encounter == null) {
 			throw new APIException("Unable to get orders if I am not given an encounter");
+		}
 		
 		List<Encounter> encounters = new ArrayList<Encounter>();
 		encounters.add(encounter);
@@ -549,8 +572,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Transactional(readOnly = true)
 	public List<Order> getOrdersByOrderer(User orderer) throws APIException {
-		if (orderer == null)
+		if (orderer == null) {
 			throw new APIException("Unable to get orders if I am not given an orderer");
+		}
 		
 		List<User> orderers = new ArrayList<User>();
 		orderers.add(orderer);

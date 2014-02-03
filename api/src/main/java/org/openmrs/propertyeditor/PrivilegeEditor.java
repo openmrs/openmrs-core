@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  * an object back and forth through an html form or other medium. <br/>
  * <br/>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see Privilege
  */
 public class PrivilegeEditor extends PropertyEditorSupport {
@@ -48,8 +48,9 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 				Privilege p = es.getPrivilege(text);
 				setValue(p);
 				//when a privilege is not found, no exception is generated. throw one to execute the catch block
-				if (p == null)
+				if (p == null) {
 					throw new Exception();
+				}
 			}
 			catch (Exception ex) {
 				Privilege p = es.getPrivilegeByUuid(text);
@@ -66,10 +67,11 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 	
 	public String getAsText() {
 		Privilege p = (Privilege) getValue();
-		if (p == null)
+		if (p == null) {
 			return "";
-		else
+		} else {
 			return p.getPrivilege();
+		}
 	}
 	
 }

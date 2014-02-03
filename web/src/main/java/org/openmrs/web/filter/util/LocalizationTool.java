@@ -35,7 +35,7 @@ public class LocalizationTool extends ResourceTool {
 	/**
 	 * Its need to override base class method to be able to change its locale property outside the
 	 * class hierarchy
-	 * 
+	 *
 	 * @see org.apache.velocity.tools.generic.ResourceTool#setLocale(Locale locale)
 	 */
 	@Override
@@ -47,14 +47,15 @@ public class LocalizationTool extends ResourceTool {
 	 * @return the defaultResourceBundle
 	 */
 	public static ResourceBundle getDefaultResourceBundle() {
-		if (defaultResourceBundle == null)
+		if (defaultResourceBundle == null) {
 			defaultResourceBundle = CustomResourceLoader.getInstance(null).getResourceBundle(Locale.ENGLISH);
+		}
 		return defaultResourceBundle;
 	}
 	
 	/**
 	 * To be able to load resource bundles outside the class path we need to override this method
-	 * 
+	 *
 	 * @see org.apache.velocity.tools.generic.ResourceTool#getBundle(java.lang.String,
 	 *      java.lang.Object)
 	 */
@@ -66,8 +67,9 @@ public class LocalizationTool extends ResourceTool {
 		}
 		//This messages_XX.properties file doesn't exist, default to messages.properties
 		ResourceBundle rb = CustomResourceLoader.getInstance(null).getResourceBundle(locale);
-		if (rb == null)
+		if (rb == null) {
 			rb = getDefaultResourceBundle();
+		}
 		
 		return rb;
 	}

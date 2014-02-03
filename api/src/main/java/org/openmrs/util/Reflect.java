@@ -69,7 +69,7 @@ public class Reflect {
 	/**
 	 * This method return all the fields (including private) from the given class and its super
 	 * classes.
-	 * 
+	 *
 	 * @param fieldClass Class
 	 * @return List<Field>
 	 * @should return all fields include private and super classes
@@ -99,11 +99,14 @@ public class Reflect {
 	public boolean isSuperClass(Type t) {
 		if (t instanceof TypeVariable<?>) {
 			TypeVariable<?> typeVar = (TypeVariable<?>) t;
-			if (typeVar.getBounds() == null || typeVar.getBounds().length == 0)
+			if (typeVar.getBounds() == null || typeVar.getBounds().length == 0) {
 				return parametrizedClass.equals(Object.class);
-			for (Type typeBound : typeVar.getBounds())
-				if (isSuperClass(typeBound))
+			}
+			for (Type typeBound : typeVar.getBounds()) {
+				if (isSuperClass(typeBound)) {
 					return true;
+				}
+			}
 			return false;
 		} else if (t instanceof Class<?>) {
 			return isSuperClass((Class<?>) t);
@@ -125,7 +128,7 @@ public class Reflect {
 	/**
 	 * This method validate the given field is Collection and the elements should be of
 	 * parameterized type
-	 * 
+	 *
 	 * @param field Field
 	 * @return boolean
 	 * @should return true if given field is Collection and its element type is given parameterized
@@ -154,7 +157,7 @@ public class Reflect {
 	
 	/**
 	 * This method return all the fields (including private) until the given parameterized class
-	 * 
+	 *
 	 * @param subClass Class
 	 * @return List<Field>
 	 * @should return only the sub class fields of given parameterized class

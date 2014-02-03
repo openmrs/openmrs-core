@@ -33,7 +33,7 @@ import org.openmrs.hl7.HL7Constants;
 
 /**
  * OpenMRS utilities related to forms.
- * 
+ *
  * @see org.openmrs.Form
  * @see org.openmrs.FormField
  * @see org.openmrs.Field
@@ -44,7 +44,7 @@ public class FormUtil {
 	
 	/**
 	 * Converts a string into a valid XML token (tag name)
-	 * 
+	 *
 	 * @param s string to convert into XML token
 	 * @return valid XML token based on s
 	 */
@@ -53,8 +53,9 @@ public class FormUtil {
 		// No spaces, start with a letter or underscore, not 'xml*'
 		
 		// if len(s) < 1, return '_blank'
-		if (s == null || s.length() < 1)
+		if (s == null || s.length() < 1) {
 			return "_blank";
+		}
 		
 		// xml tokens must start with a letter
 		String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
@@ -84,10 +85,11 @@ public class FormUtil {
 		// swap characters
 		Set<Entry<String, String>> swaps = swapChars.entrySet();
 		for (Entry<String, String> entry : swaps) {
-			if (entry.getValue() != null)
+			if (entry.getValue() != null) {
 				s = s.replaceAll(entry.getKey(), "_" + entry.getValue() + "_");
-			else
+			} else {
 				s = s.replaceAll(String.valueOf(entry.getKey()), "");
+			}
 		}
 		
 		// ensure that invalid characters and consecutive underscores are
@@ -109,8 +111,9 @@ public class FormUtil {
 		tokenStr = tokenStr.replaceAll("_+$", "");
 		
 		// make sure token starts with valid letter
-		if (letters.indexOf(tokenStr.charAt(0)) == -1 || tokenStr.startsWith("xml"))
+		if (letters.indexOf(tokenStr.charAt(0)) == -1 || tokenStr.startsWith("xml")) {
 			tokenStr = "_" + tokenStr;
+		}
 		
 		// return token
 		return tokenStr;
@@ -118,7 +121,7 @@ public class FormUtil {
 	
 	/**
 	 * Generates a new, unique tag name for any given string
-	 * 
+	 *
 	 * @param s string to convert into a unique XML tag
 	 * @param tagList java.util.Vector containing all previously created tags. If the tagList is
 	 *            null, it will be initialized automatically
@@ -129,8 +132,9 @@ public class FormUtil {
 		String token = getXmlToken(s);
 		if (tagList.contains(token)) {
 			int i = 1;
-			while (tagList.contains(token + "_" + i))
+			while (tagList.contains(token + "_" + i)) {
 				i++;
+			}
 			String tagName = token + "_" + i;
 			tagList.add(tagName);
 			return tagName;
@@ -148,7 +152,7 @@ public class FormUtil {
 	 * their parent FormField. The form structure is sorted by the natural sorting order of the
 	 * <code>FormField</code>s (as defined by the <em>.equals()</em> and <em>.compareTo()</em>
 	 * methods).
-	 * 
+	 *
 	 * @param form form for which structure is requested
 	 * @return sorted map of <code>FormField</code>s, where the top-level fields are under the key
 	 *         zero and all other leaves are stored under their parent <code>FormField</code>'s id.
@@ -165,8 +169,9 @@ public class FormUtil {
 				formStructure.get(base).add(formField);
 			} else {
 				// child branches/leaves are added to their parent's branch
-				if (!formStructure.containsKey(parent.getFormFieldId()))
+				if (!formStructure.containsKey(parent.getFormFieldId())) {
 					formStructure.put(parent.getFormFieldId(), new TreeSet<FormField>());
+				}
 				formStructure.get(parent.getFormFieldId()).add(formField);
 			}
 		}
@@ -189,7 +194,7 @@ public class FormUtil {
 	
 	/**
 	 * Get a string somewhat unique to this form. Combines the form's id and version and build
-	 * 
+	 *
 	 * @param form Form to get the uri for
 	 * @return String representing this form
 	 */
@@ -199,7 +204,7 @@ public class FormUtil {
 	
 	/**
 	 * Turn the given concept into a string acceptable to for hl7 and forms
-	 * 
+	 *
 	 * @param concept Concept to convert to a string
 	 * @param locale Locale to use for the concept name
 	 * @return String representation of the given concept
@@ -211,7 +216,7 @@ public class FormUtil {
 	
 	/**
 	 * Turn the given concept/concept-name pair into a string acceptable for hl7 and forms
-	 * 
+	 *
 	 * @param concept Concept to convert to a string
 	 * @param localizedName specific localized concept-name
 	 * @return String representation of the given concept
@@ -223,7 +228,7 @@ public class FormUtil {
 	
 	/**
 	 * Turn the given drug into a string acceptable for hl7 and forms
-	 * 
+	 *
 	 * @param drug Drug to convert to a string
 	 * @return String representation of the given drug
 	 */

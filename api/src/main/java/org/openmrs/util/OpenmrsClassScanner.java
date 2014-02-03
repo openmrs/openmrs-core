@@ -33,7 +33,7 @@ import org.springframework.core.type.filter.TypeFilter;
 /**
  * Reflection utilities to search the classpath for classes that have a given annotation, implement
  * a given interface, etc
- * 
+ *
  * @since 1.10
  */
 public class OpenmrsClassScanner {
@@ -55,8 +55,9 @@ public class OpenmrsClassScanner {
 	 * @return the instance
 	 */
 	public static OpenmrsClassScanner getInstance() {
-		if (OpenmrsClassScannerHolder.INSTANCE == null)
+		if (OpenmrsClassScannerHolder.INSTANCE == null) {
 			OpenmrsClassScannerHolder.INSTANCE = new OpenmrsClassScanner();
+		}
 		
 		return OpenmrsClassScannerHolder.INSTANCE;
 	}
@@ -67,7 +68,7 @@ public class OpenmrsClassScanner {
 	
 	/**
 	 * Searches for classes with a given annotation.
-	 * 
+	 *
 	 * @param annotation the annotation
 	 * @return the list of found classes
 	 */

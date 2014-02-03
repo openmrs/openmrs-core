@@ -63,11 +63,12 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 	}
 	
 	private Integer compareHelper() {
-		if (groupMethod == GroupMethod.NONE)
+		if (groupMethod == GroupMethod.NONE) {
 			return -1;
-		else
+		} else {
 			return (drugId == null ? 0 : drugId)
 			        + (onDate == null ? 0 : (int) (System.currentTimeMillis() - onDate.getTime()));
+		}
 	}
 	
 	public GroupMethod getGroupMethod() {
@@ -107,13 +108,16 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
 			drugIds = null;
 		} else {
-			if (drugId != null)
+			if (drugId != null) {
 				drugIds.add(drugId);
+			}
 			if (drugConcept != null) {
 				List<Drug> drugs = Context.getConceptService().getDrugs();
-				for (Drug drug : drugs)
-					if (drug.getConcept().equals(drugConcept))
+				for (Drug drug : drugs) {
+					if (drug.getConcept().equals(drugConcept)) {
 						drugIds.add(drug.getDrugId());
+					}
+				}
 			}
 		}
 		PatientSetService service = Context.getPatientSetService();
@@ -123,9 +127,9 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 	public String getDescription() {
 		// TODO: internationalize this
 		StringBuilder sb = new StringBuilder();
-		if (groupMethod != null && groupMethod == GroupMethod.NONE)
+		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
 			sb.append("No drug orders");
-		else if (drugId != null || drugConcept != null) {
+		} else if (drugId != null || drugConcept != null) {
 			sb.append("Taking ");
 			SortedSet<String> names = new TreeSet<String>();
 			if (drugId != null) {
@@ -133,16 +137,20 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 				if (drug == null) {
 					log.error("Can't find drug with id " + drugId);
 					names.add("MISSING DRUG " + drugId);
-				} else
+				} else {
 					names.add(drug.getName());
+				}
 			}
-			if (drugConcept != null)
+			if (drugConcept != null) {
 				names.add(drugConcept.getName(Context.getLocale(), false).getName());
+			}
 			sb.append(OpenmrsUtil.join(names, " or "));
-		} else
+		} else {
 			sb.append("Any Drug Order");
-		if (getOnDate() != null)
+		}
+		if (getOnDate() != null) {
 			sb.append(" on " + getOnDate());
+		}
 		return sb.toString();
 	}
 	

@@ -51,8 +51,9 @@ public class PrivilegeTag extends TagSupport {
 		
 		// allow inversing
 		boolean isInverted = false;
-		if (inverse != null)
+		if (inverse != null) {
 			isInverted = "true".equals(inverse.toLowerCase());
+		}
 		
 		if ((hasPrivilege && !isInverted) || (!hasPrivilege && isInverted)) {
 			pageContext.setAttribute("authenticatedUser", userContext.getAuthenticatedUser());

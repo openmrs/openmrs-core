@@ -27,7 +27,7 @@ import org.openmrs.report.EvaluationContext;
 /**
  * Currently can only determine whether a patient was in a given program ever, or on a specific
  * date, or relative to dates
- * 
+ *
  * @deprecated Use @see org.openmrs.reporting.ProgramStatePatientFilter instead
  */
 @Deprecated
@@ -47,32 +47,37 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 	}
 	
 	public Cohort filter(Cohort input, EvaluationContext context) {
-		if (!isReadyToRun())
+		if (!isReadyToRun()) {
 			return null;
+		}
 		PatientSetService service = Context.getPatientSetService();
 		Cohort matches = null;
-		if (onDate != null)
+		if (onDate != null) {
 			matches = service.getPatientsInProgram(program, onDate, onDate);
-		else
+		} else {
 			matches = service.getPatientsInProgram(program, fromDate, toDate);
+		}
 		return input == null ? matches : Cohort.intersect(input, matches);
 	}
 	
 	public String getDescription() {
-		if (!isReadyToRun())
+		if (!isReadyToRun()) {
 			return "";
+		}
 		Locale locale = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		StringBuffer ret = new StringBuffer();
 		ret.append("Patients in ");
 		ret.append(getConceptName(program.getConcept()));
-		if (onDate != null)
+		if (onDate != null) {
 			ret.append(" on " + df.format(onDate));
-		else {
-			if (fromDate != null)
+		} else {
+			if (fromDate != null) {
 				ret.append(" anytime after " + df.format(fromDate));
-			if (toDate != null)
+			}
+			if (toDate != null) {
 				ret.append(" anytime before " + df.format(toDate));
+			}
 		}
 		return ret.toString();
 	}
