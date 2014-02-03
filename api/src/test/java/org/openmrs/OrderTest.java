@@ -99,7 +99,7 @@ public class OrderTest {
 	 */
 	@Test
 	@Verifies(value = "set previousOrder on new order", method = "cloneForDiscontinuing(Order)")
-	public void cloneForDiscontinuing_shouldSetPreviousOrderOnNewOrder() {
+	public void cloneForDiscontinuing_shouldSetPreviousOrderOnNewOrder() throws Exception {
 		Order anOrder = new Order();
 		anOrder.setUuid(UUID.randomUUID().toString());
 		
@@ -113,7 +113,7 @@ public class OrderTest {
 	 */
 	@Test
 	@Verifies(value = "set action to discontinue on new order", method = "cloneForDiscontinuing(Order)")
-	public void cloneForDiscontinuing_shouldSetActionToDiscontinueOnNewOrder() {
+	public void cloneForDiscontinuing_shouldSetActionToDiscontinueOnNewOrder() throws Exception {
 		Order anOrder = new Order();
 		anOrder.setUuid(UUID.randomUUID().toString());
 		
@@ -128,7 +128,7 @@ public class OrderTest {
 	 */
 	@Test
 	@Verifies(value = "set this care setting to new order", method = "cloneForDiscontinuing(Order)")
-	public void cloneForDiscontinuing_shouldSetThisCareSettingToNewOrder() {
+	public void cloneForDiscontinuing_shouldSetThisCareSettingToNewOrder() throws Exception {
 		Order anOrder = new Order();
 		CareSetting careSetting = new CareSetting();
 		anOrder.setCareSetting(careSetting);
@@ -136,5 +136,15 @@ public class OrderTest {
 		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
 		
 		assertEquals(anOrder.getCareSetting(), orderThatCanDiscontinueTheOrder.getCareSetting());
+	}
+	
+	/**
+	 * @verifies return an instance of the same type
+	 * @see Order#cloneForDiscontinuing()
+	 */
+	@Test
+	public void cloneForDiscontinuing_shouldReturnAnInstanceOfTheSameType() throws Exception {
+		Order order = new TestOrder();
+		assertEquals(order.getClass(), order.cloneForDiscontinuing().getClass());
 	}
 }

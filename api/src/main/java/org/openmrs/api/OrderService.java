@@ -49,6 +49,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should not save order if order doesnt validate
 	 * @should save discontinued reason non coded
 	 * @should discontinue existing active order if new order being saved with action to discontinue
+	 * @should pass if the existing drug order matches the concept and drug of the DC order
+	 * @should fail if the existing drug order matches the concept and not drug of the DC order
 	 * @should discontinue previousOrder if it is not already discontinued
 	 * @should fail if concept in previous order does not match this concept
 	 */
@@ -261,9 +263,12 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should populate correct attributes on the discontinue and discontinued orders
 	 * @should fail for a discontinue order
+	 * @should fail for a stopped order
+	 * @should fail for an expired order
 	 * @should reject a future discontinueDate
+	 * @should fail for a discontinuation order
 	 */
-	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate);
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) throws Exception;
 	
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue.
@@ -278,6 +283,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should populate correct attributes on the discontinue and discontinued orders
 	 * @should fail for a discontinue order
 	 * @should fail if discontinueDate is in the future
+	 * @should fail for a voided order
 	 */
-	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate);
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) throws Exception;
 }

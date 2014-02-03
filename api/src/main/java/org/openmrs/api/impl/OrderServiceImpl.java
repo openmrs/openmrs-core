@@ -34,6 +34,7 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -65,14 +66,24 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		this.dao = dao;
 	}
 	
+	private boolean isValidActiveOrder(Order order) {
+		return order.isCurrent() && order.getAction() != Order.Action.DISCONTINUE;
+	}
+	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
+		//TODO reject existing orders
+		discontinueExistingOrdersIfNecessary(order);
+		
+		return saveOrderInternal(order);
+	}
+	
+	private Order saveOrderInternal(Order order) {
+		//TODO call module registered order number generators
+		//and if there is none, use the default below
 		if (order.getOrderId() == null) {
-			discontinueExistingOrdersIfRequired(order);
-			//TODO call module registered order number generators 
-			//and if there is none, use the default below
 			try {
 				Field field = Order.class.getDeclaredField("orderNumber");
 				field.setAccessible(true);
@@ -94,35 +105,53 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * 
 	 * @param order
 	 */
-	private void discontinueExistingOrdersIfRequired(Order order) {
+	private void discontinueExistingOrdersIfNecessary(Order order) {
 		//Ignore and return if this is not an order to discontinue
-		if (!Order.Action.DISCONTINUE.equals(order.getAction()))
+		if (!Order.Action.DISCONTINUE.equals(order.getAction())) {
 			return;
+		}
 		
-		//Discontinue previousOrder if it is not already
+		//Mark previousOrder as discontinued if it is not already
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null) {
 			if (!previousOrder.getConcept().equals(order.getConcept())) {
 				throw new APIException("Concept of previous order and this order should be the same");
 			}
-			
-			if (previousOrder.getDateStopped() == null) {
-				discontinue(previousOrder, order.getStartDate());
+			if (isValidActiveOrder(previousOrder)) {
+				markAsDiscontinued(previousOrder, order.getStartDate());
+				saveOrderInternal(previousOrder);
 			}
 			return;
 		}
 		
-		//Discontinue the first found order corresponding to this DC order.
+		//Mark first order found corresponding to this DC order as discontinued.
 		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getClass(), order.getCareSetting(), null);
+		boolean isDrugOrderAndHasADrug = order.isDrugOrder() && ((DrugOrder) order).getDrug() != null;
 		for (Order activeOrder : orders) {
-			if (activeOrder.getConcept().equals(order.getConcept())) {
+			//For drug orders, the drug must match if order has a drug
+			if (isDrugOrderAndHasADrug) {
+				DrugOrder drugOrder1 = (DrugOrder) order;
+				DrugOrder drugOrder2 = (DrugOrder) activeOrder;
+				if (!OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
+					continue;
+				}
+			}
+			if (isDrugOrderAndHasADrug || activeOrder.getConcept().equals(order.getConcept())) {
 				order.setPreviousOrder(activeOrder);
-				discontinue(activeOrder, order.getStartDate());
+				markAsDiscontinued(activeOrder, order.getStartDate());
+				saveOrderInternal(activeOrder);
 				return;
 			}
 		}
 		
-		throw new APIException("Could not find an active order with the concept " + order.getConcept() + " to discontinue. ");
+		String errorMessage = "Could not find an active order with the concept \"" + order.getConcept().getDisplayString()
+		        + "\" to discontinue.";
+		if (isDrugOrderAndHasADrug) {
+			errorMessage = "Could not find an active drug order with the drug \"" + ((DrugOrder) order).getDrug().getName()
+			        + "\" to discontinue.";
+		}
+		
+		throw new APIException(errorMessage);
 	}
 	
 	/**
@@ -160,7 +189,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getDateVoided() == null)
 			order.setDateVoided(new Date());
 		
-		return saveOrder(order);
+		return saveOrderInternal(order);
 	}
 	
 	/**
@@ -168,7 +197,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Order unvoidOrder(Order order) throws APIException {
 		order.setVoided(false);
-		return saveOrder(order);
+		return saveOrderInternal(order);
 	}
 	
 	/**
@@ -322,26 +351,26 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.Date)
 	 */
 	@Override
-	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) {
-		discontinue(orderToDiscontinue, discontinueDate);
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) throws Exception {
+		markAsDiscontinued(orderToDiscontinue, discontinueDate);
 		
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setDiscontinuedReason(reasonCoded);
 		
-		return saveOrder(newOrder);
+		return saveOrderInternal(newOrder);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
 	 */
 	@Override
-	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) {
-		discontinue(orderToDiscontinue, discontinueDate);
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) throws Exception {
+		markAsDiscontinued(orderToDiscontinue, discontinueDate);
 		
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setDiscontinuedReasonNonCoded(reasonNonCoded);
 		
-		return saveOrder(newOrder);
+		return saveOrderInternal(newOrder);
 	}
 	
 	/**
@@ -351,15 +380,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @param orderToDiscontinue
 	 * @param discontinueDate
 	 */
-	private void discontinue(Order orderToDiscontinue, Date discontinueDate) {
-		if (discontinueDate != null && discontinueDate.after(new Date())) {
-			throw new IllegalArgumentException("Future discontinue date is not allowed");
+	private void markAsDiscontinued(Order orderToDiscontinue, Date discontinueDate) {
+		if (discontinueDate == null) {
+			discontinueDate = new Date();
+		}
+		if (discontinueDate.after(new Date())) {
+			throw new IllegalArgumentException("Discontinue date cannot be in the future");
+		}
+		if (!orderToDiscontinue.isCurrent()) {
+			throw new APIException("Cannot discontinue an order that is already stopped, expired or voided");
 		}
 		if (orderToDiscontinue.getAction().equals(Order.Action.DISCONTINUE)) {
-			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued. ");
+			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued.");
 		}
 		
 		orderToDiscontinue.setDateStopped(discontinueDate);
-		saveOrder(orderToDiscontinue);
 	}
 }

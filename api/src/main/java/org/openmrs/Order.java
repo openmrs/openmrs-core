@@ -535,13 +535,16 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * note that the discontinuation order needs to be saved for the discontinuation to take effect
 	 *
 	 * @return the newly created order
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 * @since 1.10
 	 * @should set previousOrder on new order
 	 * @should set action to discontinue on new order
 	 * @should set this care setting to new order
+	 * @should return an instance of the same type
 	 */
-	public Order cloneForDiscontinuing() {
-		Order newOrder = new Order();
+	public Order cloneForDiscontinuing() throws IllegalAccessException, InstantiationException {
+		Order newOrder = this.getClass().newInstance();
 		newOrder.setCareSetting(this.getCareSetting());
 		newOrder.setConcept(this.getConcept());
 		newOrder.setAction(Action.DISCONTINUE);
