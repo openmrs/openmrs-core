@@ -62,8 +62,9 @@ public class PatientDashboardController {
 			log.warn("There is no patient with id: '" + patientId + "'", noPatientEx);
 		}
 		
-		if (patient == null)
+		if (patient == null) {
 			throw new ServletException("There is no patient with id: '" + patientId + "'");
+		}
 		
 		log.debug("patient: '" + patient + "'");
 		map.put("patient", patient);
@@ -98,8 +99,9 @@ public class PatientDashboardController {
 		// determine patient variation
 		
 		String patientVariation = "";
-		if (patient.isDead())
+		if (patient.isDead()) {
 			patientVariation = "Dead";
+		}
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConcept(
 		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));

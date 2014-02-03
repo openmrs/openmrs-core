@@ -65,7 +65,7 @@ import org.openmrs.api.context.Context;
  * See /metadata/model/liquibase-update-to-latest.xml for the changes. This class will also run
  * arbitrary liquibase xml files on the associated database as well. Details for the database are
  * taken from the openmrs runtime properties.
- * 
+ *
  * @since 1.5
  */
 public class DatabaseUpdater {
@@ -88,7 +88,7 @@ public class DatabaseUpdater {
 	/**
 	 * Convenience method to run the changesets using Liquibase to bring the database up to a
 	 * version compatible with the code
-	 * 
+	 *
 	 * @throws InputRequiredException if the changelog file requirest some sort of user input. The
 	 *             error object will list of the user prompts and type of data for each prompt
 	 * @see #update(Map)
@@ -100,7 +100,7 @@ public class DatabaseUpdater {
 	
 	/**
 	 * Run changesets on database using Liquibase to get the database up to the most recent version
-	 * 
+	 *
 	 * @param changelog the liquibase changelog file to use (or null to use the default file)
 	 * @param userInput nullable map from question to user answer. Used if a call to update(null)
 	 *            threw an {@link InputRequiredException}
@@ -123,7 +123,7 @@ public class DatabaseUpdater {
 		
 		/**
 		 * This method is called after each changeset is executed.
-		 * 
+		 *
 		 * @param changeSet the liquibase changeset that was just run
 		 * @param numChangeSetsToRun the total number of changesets in the current file
 		 */
@@ -133,7 +133,7 @@ public class DatabaseUpdater {
 	/**
 	 * Executes the given changelog file. This file is assumed to be on the classpath. If no file is
 	 * given, the default {@link #CHANGE_LOG_FILE} is ran.
-	 * 
+	 *
 	 * @param changelog The string filename of a liquibase changelog xml file to run
 	 * @param userInput nullable map from question to user answer. Used if a call to
 	 *            executeChangelog(<String>, null) threw an {@link InputRequiredException}
@@ -145,8 +145,9 @@ public class DatabaseUpdater {
 	        ChangeSetExecutorCallback callback) throws DatabaseUpdateException, InputRequiredException {
 		log.debug("installing the tables into the database");
 		
-		if (changelog == null)
+		if (changelog == null) {
 			changelog = CHANGE_LOG_FILE;
+		}
 		
 		try {
 			return executeChangelog(changelog, CONTEXT, userInput, callback);
@@ -170,7 +171,7 @@ public class DatabaseUpdater {
 	/**
 	 * This code was borrowed from the liquibase jar so that we can call the given callback
 	 * function.
-	 * 
+	 *
 	 * @param changeLogFile the file to execute
 	 * @param contexts the liquibase changeset context
 	 * @param userInput answers given by the user
@@ -197,14 +198,16 @@ public class DatabaseUpdater {
 			@Override
 			public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database)
 			        throws LiquibaseException {
-				if (callback != null)
+				if (callback != null) {
 					callback.executing(changeSet, numChangeSetsToRun);
+				}
 				super.visit(changeSet, databaseChangeLog, database);
 			}
 		}
 		
-		if (cl == null)
+		if (cl == null) {
 			cl = OpenmrsClassLoader.getInstance();
+		}
 		
 		log.debug("Setting up liquibase object to run changelog: " + changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
@@ -252,7 +255,7 @@ public class DatabaseUpdater {
 	
 	/**
 	 * Ask Liquibase if it needs to do any updates. Only looks at the {@link #CHANGE_LOG_FILE}
-	 * 
+	 *
 	 * @return true/false whether database updates are required
 	 * @should always have a valid update to latest file
 	 */
@@ -277,7 +280,7 @@ public class DatabaseUpdater {
 	
 	/**
 	 * Ask Liquibase if it needs to do any updates
-	 * 
+	 *
 	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
 	 * @return true/false whether database updates are required
 	 * @should always have a valid update to latest file
@@ -293,7 +296,7 @@ public class DatabaseUpdater {
 	 * Indicates whether automatic database updates are allowed by this server. Automatic updates
 	 * are disabled by default. In order to enable automatic updates, the admin needs to add
 	 * 'auto_update_database=true' to the runtime properties file.
-	 * 
+	 *
 	 * @return true/false whether the 'auto_update_database' has been enabled.
 	 */
 	public static Boolean allowAutoUpdate() {
@@ -307,7 +310,7 @@ public class DatabaseUpdater {
 	/**
 	 * Takes the default properties defined in /metadata/api/hibernate/hibernate.default.properties
 	 * and merges it into the user-defined runtime properties
-	 * 
+	 *
 	 * @see org.openmrs.api.db.ContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
 	 */
 	private static void mergeDefaultRuntimeProperties(Properties runtimeProperties) {
@@ -320,8 +323,9 @@ public class DatabaseUpdater {
 			String prop = (String) key;
 			String value = (String) runtimeProperties.get(key);
 			log.trace("Setting property: " + prop + ":" + value);
-			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop))
+			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop)) {
 				runtimeProperties.setProperty("hibernate." + prop, value);
+			}
 		}
 		
 		// load in the default hibernate properties from hibernate.default.properties
@@ -334,8 +338,9 @@ public class DatabaseUpdater {
 			// add in all default properties that don't exist in the runtime
 			// properties yet
 			for (Map.Entry<Object, Object> entry : props.entrySet()) {
-				if (!runtimeProperties.containsKey(entry.getKey()))
+				if (!runtimeProperties.containsKey(entry.getKey())) {
 					runtimeProperties.put(entry.getKey(), entry.getValue());
+				}
 			}
 		}
 		finally {
@@ -352,7 +357,7 @@ public class DatabaseUpdater {
 	 * Get a connection to the database through Liquibase. The calling method /must/ close the
 	 * database connection when finished with this Liquibase object.
 	 * liquibase.getDatabase().getConnection().close()
-	 * 
+	 *
 	 * @param changeLogFile the name of the file to look for the on classpath or filesystem
 	 * @param cl the {@link ClassLoader} to use to find the file (or null to use
 	 *            {@link OpenmrsClassLoader})
@@ -370,8 +375,9 @@ public class DatabaseUpdater {
 			        e);
 		}
 		
-		if (cl == null)
+		if (cl == null) {
 			cl = OpenmrsClassLoader.getInstance();
+		}
 		
 		try {
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
@@ -389,8 +395,9 @@ public class DatabaseUpdater {
 			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
 			ResourceAccessor fsFO = new FileSystemResourceAccessor();
 			
-			if (changeLogFile == null)
+			if (changeLogFile == null) {
 				changeLogFile = CHANGE_LOG_FILE;
+			}
 			
 			database.checkDatabaseChangeLogTable(false, null, null);
 			
@@ -398,15 +405,16 @@ public class DatabaseUpdater {
 		}
 		catch (Exception e) {
 			// if an error occurs, close the connection
-			if (connection != null)
+			if (connection != null) {
 				connection.close();
+			}
 			throw e;
 		}
 	}
 	
 	/**
 	 * Gets a database connection for liquibase to do the updates
-	 * 
+	 *
 	 * @return a java.sql.connection based on the current runtime properties
 	 */
 	public static Connection getConnection() throws Exception {
@@ -446,7 +454,7 @@ public class DatabaseUpdater {
 		
 		/**
 		 * Create an OpenmrsChangeSet from the given changeset
-		 * 
+		 *
 		 * @param changeSet
 		 * @param database
 		 */
@@ -548,7 +556,7 @@ public class DatabaseUpdater {
 	/**
 	 * Looks at the current liquibase-update-to-latest.xml file and then checks the database to see
 	 * if they have been run.
-	 * 
+	 *
 	 * @return list of changesets that both have and haven't been run
 	 */
 	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
@@ -594,7 +602,7 @@ public class DatabaseUpdater {
 	 * Looks at the specified liquibase change log files and returns all changesets in the files
 	 * that have not been run on the database yet. If no argument is specified, then it looks at the
 	 * current liquibase-update-to-latest.xml file
-	 * 
+	 *
 	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
 	 * @return
 	 * @throws Exception
@@ -605,12 +613,14 @@ public class DatabaseUpdater {
 		
 		Database database = null;
 		try {
-			if (changeLogFilenames == null)
+			if (changeLogFilenames == null) {
 				throw new IllegalArgumentException("changeLogFilenames cannot be null");
+			}
 			
 			//if no argument, look ONLY in liquibase-update-to-latest.xml
-			if (changeLogFilenames.length == 0)
+			if (changeLogFilenames.length == 0) {
 				changeLogFilenames = new String[] { CHANGE_LOG_FILE };
+			}
 			
 			List<OpenMRSChangeSet> results = new ArrayList<OpenMRSChangeSet>();
 			for (String changelogFile : changeLogFilenames) {
@@ -657,19 +667,20 @@ public class DatabaseUpdater {
 	
 	/**
 	 * This method is called by an executing custom changeset to register warning messages.
-	 * 
+	 *
 	 * @param warnings list of warnings to append to the end of the current list
 	 */
 	public static void reportUpdateWarnings(List<String> warnings) {
-		if (updateWarnings == null)
+		if (updateWarnings == null) {
 			updateWarnings = new LinkedList<String>();
+		}
 		updateWarnings.addAll(warnings);
 	}
 	
 	/**
 	 * This method writes the given text to the database updates log file located in the application
 	 * data directory.
-	 * 
+	 *
 	 * @param the text to be written to the file
 	 */
 	public static void writeUpdateMessagesToFile(String text) {
@@ -691,8 +702,9 @@ public class DatabaseUpdater {
 			writer.write(lineSeparator);
 			
 			//check if there was an error while writing to the file
-			if (writer.checkError())
+			if (writer.checkError()) {
 				log.warn("An Error occured while writing warnings to the database update log file'");
+			}
 			
 			writer.close();
 		}
@@ -716,7 +728,7 @@ public class DatabaseUpdater {
 	 * This should only be called if the user is sure that no one else is currently running
 	 * database updates. This method should be used if there was a db crash while updates
 	 * were being written and the lock table was never cleaned up.
-	 * 
+	 *
 	 * @throws LockException
 	 */
 	public static synchronized void releaseDatabaseLock() throws LockException {
@@ -747,7 +759,7 @@ public class DatabaseUpdater {
 	/**
 	 * This method currently checks the liquibasechangeloglock table to see if there is a row
 	 * with a lock in it.  This uses the liquibase API to do this
-	 * 
+	 *
 	 * @return true if database is currently locked
 	 */
 	public static boolean isLocked() {

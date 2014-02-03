@@ -26,7 +26,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * in an Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
  * class. <br/>
  * It sets the termA field for all {@link ConceptReferenceTermMap}s</li>
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @see ConceptReferenceTerm
@@ -38,14 +38,15 @@ public class ConceptReferenceTermSaveHandler implements SaveHandler<ConceptRefer
 	/**
 	 * Sets the concept reference term as the term A for all the {@link ConceptReferenceTermMap}s
 	 * added to it.
-	 * 
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */
 	public void handle(ConceptReferenceTerm conceptReferenceTerm, User currentUser, Date currentDate, String other) {
 		if (conceptReferenceTerm.getConceptReferenceTermMaps() != null) {
-			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps())
+			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps()) {
 				map.setTermA(conceptReferenceTerm);
+			}
 		}
 	}
 }

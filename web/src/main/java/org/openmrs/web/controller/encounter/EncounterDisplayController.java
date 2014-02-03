@@ -53,7 +53,7 @@ public class EncounterDisplayController implements Controller {
 	
 	/**
 	 * This is the method called to produce the data and objects for the jsp page
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.Controller#handleRequest(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
@@ -63,8 +63,9 @@ public class EncounterDisplayController implements Controller {
 		if (Context.isAuthenticated()) {
 			
 			String encounterId = request.getParameter("encounterId");
-			if (encounterId == null || encounterId.length() == 0)
+			if (encounterId == null || encounterId.length() == 0) {
 				throw new IllegalArgumentException("encounterId is a required parameter");
+			}
 			
 			model.put("encounterId", Integer.valueOf(encounterId));
 			
@@ -72,8 +73,9 @@ public class EncounterDisplayController implements Controller {
 			model.put("encounter", encounter);
 			
 			List<FormField> formFields = new ArrayList<FormField>();
-			if (encounter.getForm() != null && encounter.getForm().getFormFields() != null)
+			if (encounter.getForm() != null && encounter.getForm().getFormFields() != null) {
 				formFields.addAll(encounter.getForm().getFormFields());
+			}
 			
 			// mapping from concept to FieldHolder. there should be only one
 			// fieldholder (aka one row) per unique concept in the obs for an encounter 
@@ -132,10 +134,11 @@ public class EncounterDisplayController implements Controller {
 				int with = 0;
 				int without = 0;
 				for (FieldHolder holder : rows) {
-					if (holder.getPageNumber() == DEFAULT_PAGE_NUMBER)
+					if (holder.getPageNumber() == DEFAULT_PAGE_NUMBER) {
 						++without;
-					else
+					} else {
 						++with;
+					}
 				}
 				usePages = "" + (with > without);
 			}
@@ -183,15 +186,16 @@ public class EncounterDisplayController implements Controller {
 	 * This will look through all form fields and find the one that has a concept that matches the
 	 * given concept If one is found, that formfield is removed from the given list
 	 * <code>formFields</code> If there are none found, null is returned.
-	 * 
+	 *
 	 * @param formFields list of FormFields to rifle through
 	 * @param conceptToSearchFor concept to look for in <code>formFields</code>
 	 * @return FormField object from <code>formFields</code> or null
 	 */
 	private FormField popFormFieldForConcept(List<FormField> formFields, Concept conceptToSearchFor) {
 		//drop out if a null concept was passed in
-		if (conceptToSearchFor == null)
+		if (conceptToSearchFor == null) {
 			return null;
+		}
 		
 		Integer conceptId = conceptToSearchFor.getConceptId();
 		
@@ -240,7 +244,7 @@ public class EncounterDisplayController implements Controller {
 		/**
 		 * A row must be created with both a FormField to act as its label and an obs that is the
 		 * first of possibly several rows to display
-		 * 
+		 *
 		 * @throws Exception if the obsToAdd is an invalid type (meaning its contained in another
 		 *             obs group)
 		 */
@@ -258,7 +262,7 @@ public class EncounterDisplayController implements Controller {
 		
 		/**
 		 * public getter method for the formfield that is the label for this row
-		 * 
+		 *
 		 * @return FormField for this row
 		 */
 		public FormField getFormField() {
@@ -268,7 +272,7 @@ public class EncounterDisplayController implements Controller {
 		/**
 		 * public getter for the columns (that are unique concepts across all obs in this
 		 * FieldHolder)
-		 * 
+		 *
 		 * @return unique concepts across these obs
 		 */
 		public Set<Concept> getGroupMemberConcepts() {
@@ -279,7 +283,7 @@ public class EncounterDisplayController implements Controller {
 		 * public getter for the obs that are the different rows for this FieldHolder. If this isn't
 		 * a grouping type of row, the set could still have multiple obs in it because there are
 		 * multiple questions (obs) in this encounter that are asking the same thing (same concept)
-		 * 
+		 *
 		 * @return List of obs for this row
 		 */
 		public List<Obs> getObs() {
@@ -289,12 +293,13 @@ public class EncounterDisplayController implements Controller {
 		/**
 		 * Convenience method to know whether this row is an obs grouping and should be displayed
 		 * with a table or if its a single one-and-done obs and should just be shown as one value
-		 * 
+		 *
 		 * @return true/false whether this holder is for an obs grouping
 		 */
 		public boolean isObsGrouping() {
-			if (obs == null || groupMemberConcepts == null)
+			if (obs == null || groupMemberConcepts == null) {
 				return false;
+			}
 			
 			return groupMemberConcepts.size() > 1 || obs.get(0).isObsGrouping();
 		}
@@ -303,7 +308,7 @@ public class EncounterDisplayController implements Controller {
 		 * List of columns for each obs grouper in this fieldholder. Not every grouper will have
 		 * every column (concept), so some cells will be null. The columns are determined by
 		 * getObsGroupConcepts()
-		 * 
+		 *
 		 * @return a matrix of columns
 		 */
 		public Map<Obs, List<List<Obs>>> getObsGroupMatrix() {
@@ -315,8 +320,9 @@ public class EncounterDisplayController implements Controller {
 				Map<Concept, List<Obs>> conceptToObsMap = new HashMap<Concept, List<Obs>>();
 				for (Obs groupedObs : obsGrouper.getGroupMembers()) {
 					List<Obs> obsMatchingThisConcept = conceptToObsMap.get(groupedObs.getConcept());
-					if (obsMatchingThisConcept == null)
+					if (obsMatchingThisConcept == null) {
 						obsMatchingThisConcept = new LinkedList<Obs>();
+					}
 					obsMatchingThisConcept.add(groupedObs);
 					conceptToObsMap.put(groupedObs.getConcept(), obsMatchingThisConcept);
 				}
@@ -337,7 +343,7 @@ public class EncounterDisplayController implements Controller {
 		/**
 		 * Add another obs grouper to this row This method shouldn't be called with obs that are
 		 * within another grouped obs. This should only be called with the parent obs grouper.
-		 * 
+		 *
 		 * @param obsToAdd Obs that should be an obs grouper
 		 */
 		public void addObservation(Obs obsToAdd) {
@@ -363,54 +369,61 @@ public class EncounterDisplayController implements Controller {
 		/**
 		 * Use this row's FormField to make comparisons about where to put it in relation to the
 		 * FieldHolder's
-		 * 
+		 *
 		 * @see org.openmrs.FormField#compareTo(org.openmrs.FormField)
 		 */
 		public int compareTo(FieldHolder other) {
 			int temp = OpenmrsUtil
 			        .compareWithNullAsGreatest(formField.getPageNumber(), other.getFormField().getPageNumber());
-			if (temp == 0)
+			if (temp == 0) {
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFieldNumber(), other.getFormField()
 				        .getFieldNumber());
-			if (temp == 0)
+			}
+			if (temp == 0) {
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFieldPart(), other.getFormField().getFieldPart());
+			}
 			if (temp == 0 && formField.getPageNumber() == null && formField.getFieldNumber() == null
-			        && formField.getFieldPart() == null)
+			        && formField.getFieldPart() == null) {
 				temp = OpenmrsUtil
 				        .compareWithNullAsGreatest(formField.getSortWeight(), other.getFormField().getSortWeight());
+			}
 			return temp;
 		}
 		
 		/**
 		 * Convenience method to get the label that this field should have. This is produced from
 		 * the formfield associated with this row
-		 * 
+		 *
 		 * @return String representing the label to be displayed for this row
 		 */
 		public String getLabel() {
 			String label = "";
-			if (formField.getFieldNumber() != null)
+			if (formField.getFieldNumber() != null) {
 				label = formField.getFieldNumber() + ".";
+			}
 			
-			if (formField.getFieldPart() != null)
+			if (formField.getFieldPart() != null) {
 				label += formField.getFieldPart();
+			}
 			
-			if (label.equals(""))
+			if (label.equals("")) {
 				return "--";
-			else
+			} else {
 				return label;
+			}
 		}
 		
 		/**
 		 * Convenience method to get the page number for this row. This just checks the associated
 		 * form field for its assigned page number. If the formfield doesn't have a page, this row
 		 * is thrown on the DEFAULT_PAGE_NUMBERth page.
-		 * 
+		 *
 		 * @return page number for this row
 		 */
 		public Integer getPageNumber() {
-			if (formField == null || formField.getPageNumber() == null)
+			if (formField == null || formField.getPageNumber() == null) {
 				return DEFAULT_PAGE_NUMBER;
+			}
 			
 			return formField.getPageNumber();
 		}

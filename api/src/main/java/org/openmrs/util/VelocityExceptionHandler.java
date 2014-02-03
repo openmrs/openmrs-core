@@ -29,7 +29,7 @@ public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 	 * with the Class, method name and thrown Exception. The handler can either return a valid
 	 * Object to be used as the return value of the method call, or throw the passed-in or new
 	 * Exception, which will be wrapped and propagated to the user as a MethodInvocationException
-	 * 
+	 *
 	 * @see org.apache.velocity.app.event.MethodExceptionEventHandler#methodException(java.lang.Class,
 	 *      java.lang.String, java.lang.Exception)
 	 */
@@ -39,8 +39,9 @@ public class VelocityExceptionHandler implements MethodExceptionEventHandler {
 		log.debug("Claz: " + claz.getName() + " method: " + method, e);
 		
 		// if formatting a date (and probably getting an "IllegalArgumentException")
-		if ("format".equals(method))
+		if ("format".equals(method)) {
 			return null;
+		}
 		
 		// keep the default behavior
 		throw e;

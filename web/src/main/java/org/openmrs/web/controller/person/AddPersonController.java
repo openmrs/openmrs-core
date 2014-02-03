@@ -74,10 +74,11 @@ public class AddPersonController extends SimpleFormController {
 		
 		if ("".equals(personId)) {
 			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
-			if ("view".equals(viewType) || "shortEdit".equals(viewType))
+			if ("view".equals(viewType) || "shortEdit".equals(viewType)) {
 				viewType = "shortEdit";
-			else
+			} else {
 				viewType = "edit";
+			}
 			
 			return new ModelAndView(new RedirectView(getPersonURL("", personType, viewType, request)));
 		} else {
@@ -89,8 +90,9 @@ public class AddPersonController extends SimpleFormController {
 				// dashboard or jumping them to the short edit screen to make (potential) adjustments
 				if ("patient".equals(personType)) {
 					try {
-						if (Context.getPatientService().getPatient(Integer.valueOf(personId)) == null)
+						if (Context.getPatientService().getPatient(Integer.valueOf(personId)) == null) {
 							viewType = "shortEdit";
+						}
 					}
 					catch (Exception noPatientEx) {
 						// if there is no patient yet, they must go through those motions
@@ -107,7 +109,7 @@ public class AddPersonController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 * @should catch an invalid birthdate
 	 * @should catch pass for a valid birthdate
@@ -155,15 +157,16 @@ public class AddPersonController extends SimpleFormController {
 				catch (ParseException e) {
 					// In theory, this should never happen -- the date selector should never allowed the
 					// user set an invalid date, but never know the scripts could be broken
-					if (log.isDebugEnabled())
+					if (log.isDebugEnabled()) {
 						log.debug("Parse exception occurred : " + e);
+					}
 					invalidAgeFormat = true;
 				}
 				
 				// -1 means the birth-year has not defined.
-				if (birthyear != -1)
+				if (birthyear != -1) {
 					d = Integer.valueOf(birthyear);
-				else if (age.length() > 0) {
+				} else if (age.length() > 0) {
 					Calendar c = Calendar.getInstance();
 					c.setTime(new Date());
 					d = c.get(Calendar.YEAR);
@@ -176,8 +179,9 @@ public class AddPersonController extends SimpleFormController {
 					}
 				}
 				
-				if (gender.length() < 1)
+				if (gender.length() < 1) {
 					person.put("gender", null);
+				}
 				
 				personList = new Vector<PersonListItem>();
 				for (Person p : ps.getSimilarPeople(name, d, gender)) {
@@ -226,8 +230,9 @@ public class AddPersonController extends SimpleFormController {
 			String viewType = person.get("viewType");
 			String personType = person.get("personType");
 			
-			if (viewType == null)
+			if (viewType == null) {
 				viewType = "edit";
+			}
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
@@ -242,7 +247,7 @@ public class AddPersonController extends SimpleFormController {
 	
 	/**
 	 * Returns the url string for the given personType and viewType
-	 * 
+	 *
 	 * @param personId
 	 * @param personType
 	 * @param viewType
@@ -257,12 +262,14 @@ public class AddPersonController extends SimpleFormController {
 		HashMap<String, String> person = getParametersFromRequest(request);
 		
 		if ("patient".equals(personType)) {
-			if ("edit".equals(viewType))
+			if ("edit".equals(viewType)) {
 				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(person);
-			if ("shortEdit".equals(viewType))
+			}
+			if ("shortEdit".equals(viewType)) {
 				return request.getContextPath() + PATIENT_SHORT_EDIT_URL + getParametersForURL(person);
-			else if ("view".equals(viewType))
+			} else if ("view".equals(viewType)) {
 				return request.getContextPath() + PATIENT_VIEW_URL + getParametersForURL(person);
+			}
 		} else if ("user".equals(personType)) {
 			return request.getContextPath() + USER_EDIT_URL + getParametersForURL(person);
 		} else {
@@ -281,23 +288,24 @@ public class AddPersonController extends SimpleFormController {
 	
 	/**
 	 * Returns the appropriate ?patientId/?userId/?name&age&birthyear etc
-	 * 
+	 *
 	 *
 	 * @param person@return
 	 * @throws UnsupportedEncodingException
 	 */
 	private String getParametersForURL(HashMap<String, String> person) throws UnsupportedEncodingException {
 		
-		if ("".equals(person.get("personId")))
+		if ("".equals(person.get("personId"))) {
 			return "?addName=" + URLEncoder.encode(person.get("name"), "UTF-8") + "&addBirthdate=" + person.get("birthdate")
 			        + "&addAge=" + person.get("age") + "&addGender=" + person.get("gender");
-		else {
-			if ("patient".equals(person.get("personType")))
+		} else {
+			if ("patient".equals(person.get("personType"))) {
 				return "?patientId=" + person.get("personId");
-			else if ("user".equals(person.get("personType")))
+			} else if ("user".equals(person.get("personType"))) {
 				return "?userId=" + person.get("personId");
-			else
+			} else {
 				return "?personId=" + person.get("personId");
+			}
 		}
 	}
 	

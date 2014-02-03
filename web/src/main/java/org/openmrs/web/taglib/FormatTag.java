@@ -150,71 +150,86 @@ public class FormatTag extends TagSupport {
 			printObject(sb, object);
 		}
 		
-		if (conceptId != null)
+		if (conceptId != null) {
 			concept = Context.getConceptService().getConcept(conceptId);
+		}
 		if (concept != null) {
 			printConcept(sb, concept);
 		}
 		
-		if (obsValue != null)
+		if (obsValue != null) {
 			sb.append(obsValue.getValueAsString(Context.getLocale()));
+		}
 		
-		if (userId != null)
+		if (userId != null) {
 			user = Context.getUserService().getUser(userId);
-		if (user != null)
+		}
+		if (user != null) {
 			printUser(sb, user);
+		}
 		
-		if (personId != null)
+		if (personId != null) {
 			person = Context.getPersonService().getPerson(personId);
-		if (person != null)
+		}
+		if (person != null) {
 			printPerson(sb, person);
+		}
 		
-		if (encounterId != null)
+		if (encounterId != null) {
 			encounter = Context.getEncounterService().getEncounter(encounterId);
+		}
 		if (encounter != null) {
 			printEncounter(sb, encounter);
 		}
 		
-		if (encounterTypeId != null)
+		if (encounterTypeId != null) {
 			encounterType = Context.getEncounterService().getEncounterType(encounterTypeId);
+		}
 		if (encounterType != null) {
 			printMetadata(sb, encounterType);
 		}
 		
-		if (visitTypeId != null)
+		if (visitTypeId != null) {
 			visitType = Context.getVisitService().getVisitType(visitTypeId);
+		}
 		if (visitType != null) {
 			printMetadata(sb, visitType);
 		}
 		
-		if (visitId != null)
+		if (visitId != null) {
 			visit = Context.getVisitService().getVisit(visitId);
+		}
 		if (visit != null) {
 			printVisit(sb, visit);
 		}
 		
-		if (locationId != null)
+		if (locationId != null) {
 			location = Context.getLocationService().getLocation(locationId);
+		}
 		if (location != null) {
 			printMetadata(sb, location);
 		}
 		
-		if (locationTagId != null)
+		if (locationTagId != null) {
 			locationTag = Context.getLocationService().getLocationTag(locationTagId);
+		}
 		if (locationTag != null) {
 			printMetadata(sb, locationTag);
 		}
 		
-		if (programId != null)
+		if (programId != null) {
 			program = Context.getProgramWorkflowService().getProgram(programId);
+		}
 		if (program != null) {
 			printProgram(sb, program);
 		}
 		
-		if (providerId != null)
+		if (providerId != null) {
 			provider = Context.getProviderService().getProvider(providerId);
-		if (provider != null)
+		}
+		if (provider != null) {
 			printProvider(sb, provider);
+		}
 		
 		if (encounterProviders != null) {
 			printEncounterProviders(sb, encounterProviders);
@@ -229,16 +244,18 @@ public class FormatTag extends TagSupport {
 		}
 		
 		if (StringUtils.isNotEmpty(var)) {
-			if (javaScriptEscape)
+			if (javaScriptEscape) {
 				pageContext.setAttribute(var, JavaScriptUtils.javaScriptEscape(sb.toString()));
-			else
+			} else {
 				pageContext.setAttribute(var, sb.toString());
+			}
 		} else {
 			try {
-				if (javaScriptEscape)
+				if (javaScriptEscape) {
 					pageContext.getOut().write(JavaScriptUtils.javaScriptEscape(sb.toString()));
-				else
+				} else {
 					pageContext.getOut().write(sb.toString());
+				}
 			}
 			catch (IOException e) {
 				log.error("Failed to write to pageContext.getOut()", e);
@@ -256,8 +273,9 @@ public class FormatTag extends TagSupport {
 		if (o instanceof Collection<?>) {
 			for (Iterator<?> i = ((Collection<?>) o).iterator(); i.hasNext();) {
 				printObject(sb, i.next());
-				if (i.hasNext())
+				if (i.hasNext()) {
 					sb.append(", ");
+				}
 			}
 		} else if (o instanceof Date) {
 			printDate(sb, (Date) o);
@@ -288,7 +306,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Prints encounter into via given string builder
-	 * 
+	 *
 	 * @param sb the string builder object to print encounter value with
 	 * @param encounter the encounter to print
 	 */
@@ -304,7 +322,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Prints visit via given string builder
-	 * 
+	 *
 	 * @param sb the string builder to print visit with
 	 * @param visit the visit object to print
 	 */
@@ -318,7 +336,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Prints program via given string builder
-	 * 
+	 *
 	 * @param sb the string builder to print program with
 	 * @param program the program object to print
 	 */
@@ -332,7 +350,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Formats a {@link Form} and prints it to sb
-	 * 
+	 *
 	 * @param sb
 	 * @param form
 	 */
@@ -343,7 +361,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Formats a {@link SingleCustomValue} and prints it to sb
-	 * 
+	 *
 	 * @param sb
 	 * @param val
 	 */
@@ -389,7 +407,7 @@ public class FormatTag extends TagSupport {
 	/**
 	 * Formats a Concept and prints it to sb, respecting conceptNameType and conceptNameTag if they are
 	 * specified and a match is found. (This will always prints something.)
-	 * 
+	 *
 	 * @param sb
 	 * @param concept
 	 * @should print the name with the correct name and type
@@ -406,8 +424,9 @@ public class FormatTag extends TagSupport {
 			}
 			
 			ConceptNameTag lookForNameTag = null;
-			if (withConceptNameTag != null)
+			if (withConceptNameTag != null) {
 				lookForNameTag = Context.getConceptService().getConceptNameTagByName(withConceptNameTag);
+			}
 			
 			ConceptName name = concept.getName(loc, lookForNameType, lookForNameTag);
 			if (name != null) {
@@ -426,7 +445,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * formats a date and prints it to sb
-	 * 
+	 *
 	 * @param sb
 	 * @param date
 	 */
@@ -462,7 +481,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * formats any OpenmrsMetadata and prints it to sb
-	 * 
+	 *
 	 * @param sb
 	 * @param metadata
 	 */
@@ -474,7 +493,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * formats a user and prints it to sb
-	 * 
+	 *
 	 * @param sb
 	 * @param u
 	 */
@@ -493,29 +512,31 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * formats a person and prints it to sb
-	 * 
+	 *
 	 * @param sb
 	 * @param p
 	 */
 	private void printPerson(StringBuilder sb, Person p) {
-		if (p != null)
+		if (p != null) {
 			sb.append(p.getPersonName().getFullName());
+		}
 	}
 	
 	/**
 	 * formats a provider and prints him or her to a string builder
-	 * 
+	 *
 	 * @param sb the string builder
 	 * @param p the provider
 	 */
 	private void printProvider(StringBuilder sb, Provider p) {
-		if (p != null)
+		if (p != null) {
 			sb.append(getProviderName(p));
+		}
 	}
 	
 	/**
 	 * formats encounter providers and prints them to a string builder
-	 * 
+	 *
 	 * @param sb the string builder
 	 * @param eps the encounter providers.
 	 */
@@ -543,21 +564,22 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Gets the name of a provider.
-	 * 
+	 *
 	 * @param provider the provider.
 	 * @return the provider name.
 	 */
 	private String getProviderName(Provider provider) {
-		if (provider.getPerson() != null)
+		if (provider.getPerson() != null) {
 			return provider.getPerson().getPersonName().getFullName();
-		else
+		} else {
 			return provider.getName();
+		}
 	}
 	
 	/**
 	 * Filters a list of encounter providers according to the global property 
 	 * which determines providers in which encounter roles to display.
-	 * 
+	 *
 	 * @param eps the encounter providers to filter.
 	 * @return the filtered encounter providers.
 	 */
@@ -583,7 +605,7 @@ public class FormatTag extends TagSupport {
 	/**
 	 * Filters and returns a list of providers from an encounter role provider map.
 	 * The filtering is based on a given array of encounter roles names or ids.
-	 * 
+	 *
 	 * @param encounterProviders map of encounter role providers to filter.
 	 * @param rolesArray the roles string array.
 	 * @return a filtered list of providers.
@@ -603,7 +625,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Checks if an encounter role has its name or id in a string array.
-	 * 
+	 *
 	 * @param encounterRole the encounter role.
 	 * @param rolesArray the roles string array.
 	 * @return true if yes, else false.
@@ -621,7 +643,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Trims elements of a string array.
-	 * 
+	 *
 	 * @param unTrimmedArray the un trimmed array.
 	 * @return the trimmed array.
 	 */

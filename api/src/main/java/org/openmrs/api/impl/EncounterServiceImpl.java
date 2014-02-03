@@ -60,7 +60,7 @@ import org.springframework.validation.Errors;
  * <p>
  * This class should not be instantiated alone, get a service class from the Context:
  * Context.getEncounterService();
- * 
+ *
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.EncounterService
  */
@@ -84,8 +84,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatient(String query, boolean includeVoided) throws APIException {
-		if (query == null)
+		if (query == null) {
 			throw new IllegalArgumentException("The 'query' parameter is required and cannot be null");
+		}
 		
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(query, null, null, null, includeVoided), null);
@@ -141,8 +142,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// encounter
 			// to see if it has changed and change all obs after saving if so
 			originalDate = dao.getSavedEncounterDatetime(encounter);
-			if (encounter.getLocation() != null)
+			if (encounter.getLocation() != null) {
 				originalLocation = dao.getSavedEncounterLocation(encounter);
+			}
 			// Our data model duplicates the patient column to allow for
 			// observations to
 			// not have to look up the parent Encounter to find the patient
@@ -215,8 +217,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatient(Patient patient) throws APIException {
-		if (patient == null)
+		if (patient == null) {
 			throw new IllegalArgumentException("The 'patient' parameter is requred and cannot be null");
+		}
 		return Context.getEncounterService().getEncounters(patient, null, null, null, null, null, null, false);
 	}
 	
@@ -234,8 +237,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException {
-		if (patientId == null)
+		if (patientId == null) {
 			throw new IllegalArgumentException("The 'patientId' parameter is requred and cannot be null");
+		}
 		return Context.getEncounterService()
 		        .filterEncountersByViewPermissions(dao.getEncountersByPatientId(patientId), null);
 	}
@@ -245,8 +249,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException {
-		if (identifier == null)
+		if (identifier == null) {
 			throw new IllegalArgumentException("The 'identifier' parameter is required and cannot be null");
+		}
 		
 		List<Encounter> encs = new Vector<Encounter>();
 		for (Patient p : Context.getPatientService().getPatients(null, identifier, null, false)) {
@@ -289,13 +294,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	
 	/**
 	 * Helper method that finds the corresponding providers for a collection of users
-	 * 
+	 *
 	 * @param users
 	 * @return a collection of providers, with 0-n for each item in users
 	 */
 	private Collection<Provider> usersToProviders(Collection<User> users) {
-		if (users == null)
+		if (users == null) {
 			return null;
+		}
 		ProviderService providerService = Context.getProviderService();
 		Collection<Provider> ret = new HashSet<Provider>();
 		for (User u : users) {
@@ -330,8 +336,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			        .getEncounterType().getEditPrivilege()));
 		}
 		
-		if (reason == null)
+		if (reason == null) {
 			throw new IllegalArgumentException("The argument 'reason' is required and so cannot be null");
+		}
 		
 		ObsService os = Context.getObsService();
 		for (Obs o : encounter.getObsAtTopLevel(false)) {
@@ -352,8 +359,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		//we expect the dateVoided to be already set by AOP logic at this point unless this method was called within the API, 
 		//this ensures that original ParentVoidedDate and the dateVoided of associated objects will always match for the 
 		//unvoid handler to work
-		if (encounter.getDateVoided() == null)
+		if (encounter.getDateVoided() == null) {
 			encounter.setDateVoided(new Date());
+		}
 		encounter.setVoidReason(reason);
 		Context.getEncounterService().saveEncounter(encounter);
 		return encounter;
@@ -371,19 +379,22 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		
 		String voidReason = encounter.getVoidReason();
-		if (voidReason == null)
+		if (voidReason == null) {
 			voidReason = "";
+		}
 		
 		ObsService os = Context.getObsService();
 		for (Obs o : encounter.getObsAtTopLevel(true)) {
-			if (voidReason.equals(o.getVoidReason()))
+			if (voidReason.equals(o.getVoidReason())) {
 				os.unvoidObs(o);
+			}
 		}
 		
 		OrderService orderService = Context.getOrderService();
 		for (Order o : encounter.getOrders()) {
-			if (voidReason.equals(o.getVoidReason()))
+			if (voidReason.equals(o.getVoidReason())) {
 				orderService.unvoidOrder(o);
+			}
 		}
 		
 		encounter.setVoided(false);
@@ -486,8 +497,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#retireEncounterType(EncounterType, String)
 	 */
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException {
-		if (reason == null)
+		if (reason == null) {
 			throw new IllegalArgumentException("The 'reason' for retiring is required");
+		}
 		
 		//make sure the user has not turned off encounter types editing
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
@@ -769,8 +781,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		String handlerGlobalValue = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER, null);
 		
-		if (StringUtils.isBlank(handlerGlobalValue))
+		if (StringUtils.isBlank(handlerGlobalValue)) {
 			return null;
+		}
 		
 		EncounterVisitHandler handler = null;
 		
@@ -860,8 +873,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public EncounterRole retireEncounterRole(EncounterRole encounterRole, String reason) throws APIException {
-		if (reason == null)
+		if (reason == null) {
 			throw new IllegalArgumentException("The 'reason' for retiring is required");
+		}
 		return Context.getEncounterService().saveEncounterRole(encounterRole);
 	}
 	
@@ -1010,7 +1024,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	
 	/**
 	 * Convenient method that safely checks if user has given encounter privilege
-	 * 
+	 *
 	 * @param privilege the privilege to test
 	 * @param user the user instance to check if it has given privilege
 	 * @return true if given user has specified privilege

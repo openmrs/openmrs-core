@@ -46,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
  * OpenMRS implementation should be fetched from the Context
- * 
+ *
  * @see org.openmrs.api.UserService
  * @see org.openmrs.api.context.Context
  */
@@ -89,12 +89,14 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		// if we're creating a user and a password wasn't supplied, throw an
 		// error
-		if (user.getUserId() == null && (password == null || password.length() < 1))
+		if (user.getUserId() == null && (password == null || password.length() < 1)) {
 			throw new APIException("A password is required when creating a user");
+		}
 		
-		if (hasDuplicateUsername(user))
+		if (hasDuplicateUsername(user)) {
 			throw new DAOException("Username " + user.getUsername() + " or system id " + user.getSystemId()
 			        + " is already in use.");
+		}
 		
 		// TODO Check required fields for user!!
 		
@@ -256,8 +258,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
 	 */
 	public void purgePrivilege(Privilege privilege) throws APIException {
-		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege()))
+		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege())) {
 			throw new APIException("Cannot delete a core privilege");
+		}
 		
 		dao.deletePrivilege(privilege);
 	}
@@ -311,11 +314,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#purgeRole(org.openmrs.Role)
 	 */
 	public void purgeRole(Role role) throws APIException {
-		if (role == null || role.getRole() == null)
+		if (role == null || role.getRole() == null) {
 			return;
+		}
 		
-		if (OpenmrsUtil.getCoreRoles().keySet().contains(role.getRole()))
+		if (OpenmrsUtil.getCoreRoles().keySet().contains(role.getRole())) {
 			throw new APIException("Cannot delete a core role");
+		}
 		
 		dao.deleteRole(role);
 	}
@@ -327,8 +332,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		// make sure one of the parents of this role isn't itself...this would
 		// cause an infinite loop
-		if (role.getAllParentRoles().contains(role))
+		if (role.getAllParentRoles().contains(role)) {
 			throw new APIAuthenticationException("Invalid Role or parent Role.  A role cannot inherit itself.");
+		}
 		
 		checkPrivileges(role);
 		
@@ -439,7 +445,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	/**
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
-	 * 
+	 *
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(User user) {
@@ -448,12 +454,15 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		for (Role r : roles) {
 			if (r.getRole().equals(RoleConstants.SUPERUSER)
-			        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE))
+			        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE)) {
 				throw new APIException("You must have the role '" + RoleConstants.SUPERUSER + "' in order to assign it.");
+			}
 			if (r.getPrivileges() != null) {
-				for (Privilege p : r.getPrivileges())
-					if (!Context.hasPrivilege(p.getPrivilege()))
+				for (Privilege p : r.getPrivileges()) {
+					if (!Context.hasPrivilege(p.getPrivilege())) {
 						requiredPrivs.add(p.getPrivilege());
+					}
+				}
 			}
 		}
 		
@@ -461,8 +470,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			throw new APIException("You must have privilege '" + requiredPrivs.get(0) + "' in order to assign it.");
 		} else if (requiredPrivs.size() > 1) {
 			StringBuilder txt = new StringBuilder("You must have the following privileges in order to assign them: ");
-			for (String s : requiredPrivs)
+			for (String s : requiredPrivs) {
 				txt.append(s).append(", ");
+			}
 			throw new APIException(txt.substring(0, txt.length() - 2));
 		}
 	}
@@ -472,8 +482,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public User setUserProperty(User user, String key, String value) {
 		if (user != null) {
-			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
+			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser())) {
 				throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
+			}
 			
 			user.setUserProperty(key, value);
 			try {
@@ -497,8 +508,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			// if the current user isn't allowed to edit users and
 			// the user being edited is not the current user, throw an
 			// exception
-			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
+			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser())) {
 				throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
+			}
 			
 			user.removeUserProperty(key);
 			
@@ -516,7 +528,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	/**
 	 * Generates system ids based on the following algorithm scheme: user_id-check digit
-	 * 
+	 *
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	@Transactional(readOnly = true)
@@ -568,17 +580,19 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
 	 * to the new role
-	 * 
+	 *
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(Role role) {
 		Collection<Privilege> privileges = role.getPrivileges();
 		
-		if (privileges != null)
+		if (privileges != null) {
 			for (Privilege p : privileges) {
-				if (!Context.hasPrivilege(p.getPrivilege()))
+				if (!Context.hasPrivilege(p.getPrivilege())) {
 					throw new APIAuthenticationException("Privilege required: " + p);
+				}
 			}
+		}
 	}
 	
 	/**
@@ -611,14 +625,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired) {
-		if (name != null)
+		if (name != null) {
 			name = name.replace(", ", " ");
+		}
 		
 		// if the authenticated role is in the list of searched roles, then all
 		// persons should be searched
 		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
-		if (roles.contains(auth_role))
+		if (roles.contains(auth_role)) {
 			return dao.getCountOfUsers(name, new Vector<Role>(), includeRetired);
+		}
 		
 		return dao.getCountOfUsers(name, roles, includeRetired);
 	}
@@ -630,11 +646,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Transactional(readOnly = true)
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
 	        throws APIException {
-		if (name != null)
+		if (name != null) {
 			name = name.replace(", ", " ");
+		}
 		
-		if (roles == null)
+		if (roles == null) {
 			roles = new Vector<Role>();
+		}
 		
 		// add the requested roles and all child roles for consideration
 		Set<Role> allRoles = new HashSet<Role>();
@@ -646,8 +664,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		// if the authenticated role is in the list of searched roles, then all
 		// persons should be searched
 		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
-		if (roles.contains(auth_role))
+		if (roles.contains(auth_role)) {
 			return dao.getUsers(name, new Vector<Role>(), includeRetired, start, length);
+		}
 		
 		return dao.getUsers(name, new ArrayList<Role>(allRoles), includeRetired, start, length);
 	}

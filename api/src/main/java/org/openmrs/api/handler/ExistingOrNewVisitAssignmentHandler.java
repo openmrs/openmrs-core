@@ -35,7 +35,7 @@ import com.google.common.cache.LoadingCache;
 
 /**
  * This handler assigns an encounter to an existing visit, where appropriate, or creates a new one.
- * 
+ *
  * @see EncounterVisitHandler
  */
 public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignmentHandler implements GlobalPropertyListener {
@@ -68,8 +68,9 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		super.beforeCreateEncounter(encounter);
 		
 		//Do nothing if the encounter already belongs to a visit.
-		if (encounter.getVisit() != null)
+		if (encounter.getVisit() != null) {
 			return;
+		}
 		
 		Visit visit = new Visit();
 		visit.setStartDatetime(encounter.getEncounterDatetime());

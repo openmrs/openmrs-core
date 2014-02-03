@@ -25,7 +25,7 @@ import ca.uhn.hl7v2.HL7Exception;
  * table depending on success or failure of the processing. You may, however, set a global property
  * that causes the processor to ignore messages regarding unknown patients from a non-local HL7
  * source. (i.e. those messages neither go to the archive or the error table.)
- * 
+ *
  * @version 1.0
  */
 @Transactional
@@ -52,14 +52,15 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	
 	/**
 	 * Process a single queue entry from the inbound HL7 queue
-	 * 
+	 *
 	 * @param hl7InQueue queue entry to be processed
 	 */
 	public void processHL7InQueue(HL7InQueue hl7InQueue) {
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
 			        + hl7InQueue.getHL7SourceKey() + ")");
+		}
 		
 		try {
 			Context.getHL7Service().processHL7InQueue(hl7InQueue);
@@ -84,7 +85,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	/**
 	 * Transform the next pending HL7 inbound queue entry. If there are no pending items in the
 	 * queue, this method simply returns quietly.
-	 * 
+	 *
 	 * @return true if a queue entry was processed, false if queue was empty
 	 */
 	public boolean processNextHL7InQueue() {

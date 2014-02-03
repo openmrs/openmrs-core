@@ -62,20 +62,22 @@ public class PortletTag extends ImportSupport {
 			log.warn("URL came through as NULL to PortletTag - this is a big problem");
 			url = "";
 		}
-		if (id == null)
+		if (id == null) {
 			id = "";
+		}
 		
 		try {
-			if (url.equals(""))
+			if (url.equals("")) {
 				pageContext.getOut().print("Every portlet must be defined with a URI");
-			else {
+			} else {
 				url = generatePortletUrl(url, moduleId);
 				
 				// opening portlet tag
-				if (moduleId != null && moduleId.length() > 0)
+				if (moduleId != null && moduleId.length() > 0) {
 					pageContext.getOut().print("<div class='portlet' id='" + moduleId + "." + id + "'>");
-				else
+				} else {
 					pageContext.getOut().print("<div class='portlet' id='" + id + "'>");
+				}
 				
 				// add attrs to request so that the controller (and portlet) can see/use them
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.id", id);

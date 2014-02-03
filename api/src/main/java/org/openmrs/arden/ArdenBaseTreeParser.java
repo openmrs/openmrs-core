@@ -3,14 +3,18 @@
 package org.openmrs.arden;
 
 import java.io.*;
+
 import antlr.CommonAST;
 import antlr.collections.AST;
 import antlr.*;
 import org.openmrs.arden.MLMObject;
 import org.openmrs.arden.MLMObjectElement;
+
 import java.lang.Integer;
+
 import org.openmrs.logic.*;
 import org.openmrs.logic.op.*;
+
 import java.util.GregorianCalendar;
 
 import antlr.TreeParser;
@@ -40,8 +44,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		try { // for error handling
 			{
 				_loop342: do {
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					switch (_t.getType()) {
 						case IF: {
 							System.err.println("----------------Starting Data If-------");
@@ -130,8 +135,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				switch (_t.getType()) {
 					case READ: {
 						AST __t365 = _t;
@@ -262,8 +268,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									}
 									{
 										{
-											if (_t == null)
+											if (_t == null) {
 												_t = ASTNULL;
+											}
 											if ((_t.getType() == INTLIT)) {
 												y = (AST) _t;
 												match(_t, INTLIT);
@@ -330,8 +337,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								}
 							}
 							{
-								if (_t == null)
+								if (_t == null) {
 									_t = ASTNULL;
+								}
 								if ((_t.getType() == INTLIT)) {
 									z = (AST) _t;
 									match(_t, INTLIT);
@@ -459,13 +467,15 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 										match(_t, ARDEN_CURLY_BRACKETS);
 										_t = _t.getNextSibling();
 									}
-									/*s=b;*/System.err.println("Fetch this data - " + j.getText());
+									/*s=b;*/
+									System.err.println("Fetch this data - " + j.getText());
 									s = j.getText();
 									obj.AddConcept(s);
 									
 									{
-										if (_t == null)
+										if (_t == null) {
 											_t = ASTNULL;
+										}
 										switch (_t.getType()) {
 											case WHERE: {
 												match(_t, WHERE);
@@ -570,8 +580,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				switch (_t.getType()) {
 					case EVENT: {
 						AST __t420 = _t;
@@ -625,8 +636,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				obj.AddToEvaluateList("data", "THEN");
 				{
 					_loop348: do {
-						if (_t == null)
+						if (_t == null) {
 							_t = ASTNULL;
+						}
 						if ((_tokenSet_0.member(_t.getType()))) {
 							System.err.println("-----------Starting Read -------");
 							s = readAST(_t, obj, s);
@@ -675,8 +687,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		try { // for error handling
 			{
 				{
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					switch (_t.getType()) {
 						case ELSEIF: {
 							AST __t352 = _t;
@@ -689,8 +702,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							_t = _t.getNextSibling();
 							obj.AddToEvaluateList("data", "THEN");
 							{
-								if (_t == null)
+								if (_t == null) {
 									_t = ASTNULL;
+								}
 								if ((_tokenSet_0.member(_t.getType()))) {
 									System.err.println("-----------Starting Read -------");
 									s = readAST(_t, obj, s);
@@ -726,8 +740,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							_t = _t.getFirstChild();
 							obj.AddToEvaluateList("data", "ELSE");
 							{
-								if (_t == null)
+								if (_t == null) {
 									_t = ASTNULL;
+								}
 								if ((_tokenSet_0.member(_t.getType()))) {
 									System.err.println("-----------Starting Read -------");
 									s = readAST(_t, obj, s);
@@ -798,8 +813,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 					_t = _retTree;
 				}
 				{
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					switch (_t.getType()) {
 						case TRUE:
 						case FALSE:
@@ -831,8 +847,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				obj.addCall(section, a, b);
 				
 				{
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					switch (_t.getType()) {
 						case WITH: {
 							{
@@ -843,8 +860,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							}
 							{
 								_loop444: do {
-									if (_t == null)
+									if (_t == null) {
 										_t = ASTNULL;
+									}
 									if ((_tokenSet_1.member(_t.getType()))) {
 										a = callStringAST(_t, section, obj, a);
 										_t = _retTree;
@@ -906,8 +924,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		String a, b;
 		
 		try { // for error handling
-			if (_t == null)
+			if (_t == null) {
 				_t = ASTNULL;
+			}
 			switch (_t.getType()) {
 				case COUNT:
 				case NOT:
@@ -1030,8 +1049,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 	public final void duration_op(AST _t) throws RecognitionException {
 		
 		try { // for error handling
-			if (_t == null)
+			if (_t == null) {
 				_t = ASTNULL;
+			}
 			switch (_t.getType()) {
 				case YEAR: {
 					match(_t, YEAR);
@@ -1127,8 +1147,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				switch (_t.getType()) {
 					case TRUE:
 					case FALSE:
@@ -1203,8 +1224,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								}
 							}
 							{
-								if (_t == null)
+								if (_t == null) {
 									_t = ASTNULL;
+								}
 								if ((_t.getType() == INTLIT)) {
 									x = (AST) _t;
 									match(_t, INTLIT);
@@ -1328,8 +1350,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				switch (_t.getType()) {
 					case TRUE:
 					case FALSE:
@@ -1440,8 +1463,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				switch (_t.getType()) {
 					case TRUE:
 					case FALSE:
@@ -1489,16 +1513,18 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		try { // for error handling
 			{
 				_loop434: do {
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					switch (_t.getType()) {
 						case IF: {
 							System.err.println("-----------Starting IF -------");
 							a = ifAST(_t, obj, "logic");
 							_t = _retTree;
 							{
-								if (_t == null)
+								if (_t == null) {
 									_t = ASTNULL;
+								}
 								switch (_t.getType()) {
 									case TRUE:
 									case FALSE:
@@ -1577,8 +1603,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							a = logic_elseifAST(_t, obj, i);
 							_t = _retTree;
 							{
-								if (_t == null)
+								if (_t == null) {
 									_t = ASTNULL;
+								}
 								switch (_t.getType()) {
 									case TRUE:
 									case FALSE:
@@ -1775,8 +1802,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				}
 				
 				{
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					switch (_t.getType()) {
 						case FALSE: {
 							match(_t, FALSE);
@@ -1818,8 +1846,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		try { // for error handling
 			{
 				{
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					switch (_t.getType()) {
 						case ELSEIF: {
 							AST __t523 = _t;
@@ -1885,8 +1914,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				switch (_t.getType()) {
 					case ID: {
 						AST __t478 = _t;
@@ -1939,8 +1969,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							
 							{
 								{
-									if (_t == null)
+									if (_t == null) {
 										_t = ASTNULL;
+									}
 									switch (_t.getType()) {
 										case DOT: {
 											match(_t, DOT);
@@ -2061,8 +2092,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				switch (_t.getType()) {
 					case ID: {
 						AST __t491 = _t;
@@ -2141,8 +2173,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							
 							{
 								{
-									if (_t == null)
+									if (_t == null) {
 										_t = ASTNULL;
+									}
 									switch (_t.getType()) {
 										case DOT: {
 											match(_t, DOT);
@@ -2312,8 +2345,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				if ((_tokenSet_1.member(_t.getType()))) {
 					{
 						a = exprStringAST(_t, section, obj, "");
@@ -2404,8 +2438,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 						_t = _retTree;
 						s = a;
 						{
-							if (_t == null)
+							if (_t == null) {
 								_t = ASTNULL;
+							}
 							switch (_t.getType()) {
 								case IN:
 								case LESS:
@@ -2419,8 +2454,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 									_t = _retTree;
 									{
 										_loop460: do {
-											if (_t == null)
+											if (_t == null) {
 												_t = ASTNULL;
+											}
 											if ((_t.getType() == COMMA)) {
 												match(_t, COMMA);
 												_t = _t.getNextSibling();
@@ -2496,8 +2532,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		String s = "";
 		
 		try { // for error handling
-			if (_t == null)
+			if (_t == null) {
 				_t = ASTNULL;
+			}
 			switch (_t.getType()) {
 				case EQUALS: {
 					AST __t503 = _t;
@@ -2590,8 +2627,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		String s = "";
 		
 		try { // for error handling
-			if (_t == null)
+			if (_t == null) {
 				_t = ASTNULL;
+			}
 			switch (_t.getType()) {
 				case EQUALS: {
 					AST __t510 = _t;
@@ -2616,8 +2654,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 					obj.addCompOperator(section, GT, key);
 					
 					{
-						if (_t == null)
+						if (_t == null) {
 							_t = ASTNULL;
+						}
 						switch (_t.getType()) {
 							case OR: {
 								match(_t, OR);
@@ -2703,14 +2742,16 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				if ((_tokenSet_7.member(_t.getType()))) {
 					from_of_func_opAST(_t, obj);
 					_t = _retTree;
 					{
-						if (_t == null)
+						if (_t == null) {
 							_t = ASTNULL;
+						}
 						switch (_t.getType()) {
 							case OF: {
 								match(_t, OF);
@@ -2736,8 +2777,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 					of_read_func_opAST(_t, obj);
 					_t = _retTree;
 					{
-						if (_t == null)
+						if (_t == null) {
 							_t = ASTNULL;
+						}
 						switch (_t.getType()) {
 							case OF: {
 								match(_t, OF);
@@ -2763,8 +2805,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 					of_noread_func_opAST(_t, obj);
 					_t = _retTree;
 					{
-						if (_t == null)
+						if (_t == null) {
 							_t = ASTNULL;
+						}
 						switch (_t.getType()) {
 							case OF: {
 								match(_t, OF);
@@ -2806,8 +2849,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		String s = "";
 		
 		try { // for error handling
-			if (_t == null)
+			if (_t == null) {
 				_t = ASTNULL;
+			}
 			switch (_t.getType()) {
 				case COUNT:
 				case MINIMUM:
@@ -2871,8 +2915,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			_t = _retTree;
 			{
 				_loop465: do {
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					if ((_t.getType() == AND)) {
 						match(_t, AND);
 						_t = _t.getNextSibling();
@@ -2904,8 +2949,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			_t = _retTree;
 			{
 				_loop468: do {
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					if ((_t.getType() == OR)) {
 						match(_t, OR);
 						_t = _t.getNextSibling();
@@ -2938,8 +2984,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		try { // for error handling
 			{
 				_loop528: do {
-					if (_t == null)
+					if (_t == null) {
 						_t = ASTNULL;
+					}
 					switch (_t.getType()) {
 						case IF: {
 							System.err.println("-----------Starting Action IF -------");
@@ -3021,8 +3068,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				_t = _t.getFirstChild();
 				{
 					_loop536: do {
-						if (_t == null)
+						if (_t == null) {
 							_t = ASTNULL;
+						}
 						switch (_t.getType()) {
 							case ACTION_OP: {
 								{
@@ -3102,8 +3150,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				_t = _t.getFirstChild();
 				{
 					_loop549: do {
-						if (_t == null)
+						if (_t == null) {
 							_t = ASTNULL;
+						}
 						if (((_t.getType() >= AND && _t.getType() <= TERM_LITERAL))) {
 							{
 								if ((_t.getType() == DATA)) {
@@ -3233,8 +3282,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				{
 					{
 						_loop587: do {
-							if (_t == null)
+							if (_t == null) {
 								_t = ASTNULL;
+							}
 							if ((_tokenSet_10.member(_t.getType()))) {
 								{
 									str = (AST) _t;
@@ -3273,8 +3323,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				{
 					{
 						_loop581: do {
-							if (_t == null)
+							if (_t == null) {
 								_t = ASTNULL;
+							}
 							if ((_tokenSet_10.member(_t.getType()))) {
 								{
 									str = (AST) _t;
@@ -3310,8 +3361,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 		
 		try { // for error handling
 			{
-				if (_t == null)
+				if (_t == null) {
 					_t = ASTNULL;
+				}
 				AST __t552 = _t;
 				match(_t, KNOWLEDGE);
 				_t = _t.getFirstChild();
@@ -3602,8 +3654,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				_t = _t.getFirstChild();
 				{
 					_loop599: do {
-						if (_t == null)
+						if (_t == null) {
 							_t = ASTNULL;
+						}
 						switch (_t.getType()) {
 							case PURPOSE: {
 								AST __t592 = _t;
@@ -3677,8 +3730,9 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 								_t = _t.getNextSibling();
 								s.append(" Links: ");
 								{
-									if (_t == null)
+									if (_t == null) {
 										_t = ASTNULL;
+									}
 									if ((_t.getType() == HTTP)) {
 										AST __t598 = _t;
 										match(_t, HTTP);

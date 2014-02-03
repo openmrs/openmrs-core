@@ -212,8 +212,9 @@ public class ConceptProposal extends BaseOpenmrsObject implements java.io.Serial
 	}
 	
 	public String toString() {
-		if (conceptProposalId == null)
+		if (conceptProposalId == null) {
 			return "";
+		}
 		return conceptProposalId.toString();
 	}
 	

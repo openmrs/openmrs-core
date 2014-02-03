@@ -30,9 +30,10 @@ public class PersonDashboardController extends SimpleFormController {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		if (!Context.isAuthenticated())
+		if (!Context.isAuthenticated()) {
 			return new Person();
-		else
+		} else {
 			return Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));
+		}
 	}
 }

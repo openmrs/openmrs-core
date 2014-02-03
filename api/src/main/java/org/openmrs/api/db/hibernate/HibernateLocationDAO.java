@@ -52,9 +52,11 @@ public class HibernateLocationDAO implements LocationDAO {
 			// hibernate has a problem updating child collections
 			// if the parent object was already saved so we do it 
 			// explicitly here
-			for (Location child : location.getChildLocations())
-				if (child.getLocationId() == null)
+			for (Location child : location.getChildLocations()) {
+				if (child.getLocationId() == null) {
 					saveLocation(child);
+				}
+			}
 		}
 		
 		sessionFactory.getCurrentSession().saveOrUpdate(location);
@@ -189,11 +191,13 @@ public class HibernateLocationDAO implements LocationDAO {
 	@Override
 	public Long getCountOfLocations(String nameFragment, Boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
-		if (!includeRetired)
+		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
+		}
 		
-		if (StringUtils.isNotBlank(nameFragment))
+		if (StringUtils.isNotBlank(nameFragment)) {
 			criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.START));
+		}
 		
 		criteria.setProjection(Projections.rowCount());
 		
@@ -222,14 +226,17 @@ public class HibernateLocationDAO implements LocationDAO {
 			HibernateUtil.addAttributeCriteria(criteria, serializedAttributeValues);
 		}
 		
-		if (!includeRetired)
+		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
+		}
 		
 		criteria.addOrder(Order.asc("name"));
-		if (start != null)
+		if (start != null) {
 			criteria.setFirstResult(start);
-		if (length != null && length > 0)
+		}
+		if (length != null && length > 0) {
 			criteria.setMaxResults(length);
+		}
 		
 		return criteria.list();
 	}
@@ -242,8 +249,9 @@ public class HibernateLocationDAO implements LocationDAO {
 	public List<Location> getRootLocations(boolean includeRetired) throws DAOException {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
-		if (!includeRetired)
+		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
+		}
 		
 		criteria.add(Restrictions.isNull("parentLocation"));
 		

@@ -54,8 +54,9 @@ public class PatientListItem extends PersonListItem {
 					identifierCheckDigit = pi.getIdentifierType().hasCheckDigit();
 					first = false;
 				} else {
-					if (!"".equals(otherIdentifiers))
+					if (!"".equals(otherIdentifiers)) {
 						otherIdentifiers += ",";
+					}
 					otherIdentifiers += " " + pi.getIdentifier();
 				}
 			}
@@ -66,16 +67,18 @@ public class PatientListItem extends PersonListItem {
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientListItem) {
 			PatientListItem pi = (PatientListItem) obj;
-			if (pi.getPatientId() == null || patientId == null)
+			if (pi.getPatientId() == null || patientId == null) {
 				return false;
+			}
 			return pi.getPatientId().equals(patientId);
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (patientId == null)
+		if (patientId == null) {
 			return super.hashCode();
+		}
 		return patientId.hashCode();
 	}
 	

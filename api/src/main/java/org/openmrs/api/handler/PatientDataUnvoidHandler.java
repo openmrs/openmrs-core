@@ -34,7 +34,7 @@ import org.openmrs.api.context.Context;
  * class. <br/>
  * The handler unvoids all the encounters(including their associated observations) and orders
  * associated to the specified patient object that got voided because the patient was getting voided
- * 
+ *
  * @see RequiredDataHandler
  * @see UnvoidHandler
  * @see Patient
@@ -69,8 +69,9 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			if (CollectionUtils.isNotEmpty(orders)) {
 				for (Order order : orders) {
 					if (order.isVoided() && order.getDateVoided().equals(origParentVoidedDate)
-					        && order.getVoidedBy().equals(originalVoidingUser))
+					        && order.getVoidedBy().equals(originalVoidingUser)) {
 						os.unvoidOrder(order);
+					}
 				}
 			}
 		}

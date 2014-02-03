@@ -38,7 +38,7 @@ import org.openmrs.util.RoleConstants;
  * UserContext should not be accessed directly, but rather used through the <code>Context</code>.
  * This class should be kept light-weight. There is one instance of this class per user that is
  * logged into the system.
- * 
+ *
  * @see org.openmrs.api.context.Context
  */
 public class UserContext implements Serializable {
@@ -88,8 +88,8 @@ public class UserContext implements Serializable {
 	
 	/**
 	 * Authenticate the user to this UserContext.
-	 * 
-	 * @see org.openmrs.api.context.Context#authenticate(String,String)
+	 *
+	 * @see org.openmrs.api.context.Context#authenticate(String, String)
 	 * @param username String login name
 	 * @param password String login password
 	 * @param contextDAO ContextDAO implementation to use for authentication
@@ -97,13 +97,15 @@ public class UserContext implements Serializable {
 	 * @throws ContextAuthenticationException
 	 */
 	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Authenticating with username: " + username);
+		}
 		
 		this.user = contextDAO.authenticate(username, password);
 		setUserLocation();
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Authenticated as: " + this.user);
+		}
 		
 		return this.user;
 	}
@@ -112,12 +114,13 @@ public class UserContext implements Serializable {
 	 * Refresh the authenticated user object in this UserContext. This should be used when updating
 	 * information in the database about the current user and it needs to be reflecting in the
 	 * (cached) {@link #getAuthenticatedUser()} User object.
-	 * 
+	 *
 	 * @since 1.5
 	 */
 	public void refreshAuthenticatedUser() {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Refreshing authenticated user");
+		}
 		
 		if (user != null) {
 			user = Context.getUserService().getUser(user.getUserId());
@@ -129,37 +132,44 @@ public class UserContext implements Serializable {
 	/**
 	 * Change current authentication to become another user. (You can only do this if you're already
 	 * authenticated as a superuser.)
-	 * 
+	 *
 	 * @param systemId
 	 * @return The new user that this context has been set to. (null means no change was made)
 	 * @throws ContextAuthenticationException
 	 */
 	public User becomeUser(String systemId) throws ContextAuthenticationException {
-		if (!Context.getAuthenticatedUser().isSuperUser())
+		if (!Context.getAuthenticatedUser().isSuperUser()) {
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
+		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Turning the authenticated user into user with systemId: " + systemId);
+		}
 		
 		User userToBecome = Context.getUserService().getUserByUsername(systemId);
 		
-		if (userToBecome == null)
+		if (userToBecome == null) {
 			throw new ContextAuthenticationException("User not found with systemId: " + systemId);
+		}
 		
 		// hydrate the user object
-		if (userToBecome.getAllRoles() != null)
+		if (userToBecome.getAllRoles() != null) {
 			userToBecome.getAllRoles().size();
-		if (userToBecome.getUserProperties() != null)
+		}
+		if (userToBecome.getUserProperties() != null) {
 			userToBecome.getUserProperties().size();
-		if (userToBecome.getPrivileges() != null)
+		}
+		if (userToBecome.getPrivileges() != null) {
 			userToBecome.getPrivileges().size();
+		}
 		
 		this.user = userToBecome;
 		//update the user's location
 		setUserLocation();
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Becoming user: " + user);
+		}
 		
 		return userToBecome;
 	}
@@ -180,7 +190,7 @@ public class UserContext implements Serializable {
 	
 	/**
 	 * logs out the "active" (authenticated) user within this UserContext
-	 * 
+	 *
 	 * @see #authenticate
 	 */
 	public void logout() {
@@ -191,7 +201,7 @@ public class UserContext implements Serializable {
 	/**
 	 * Gives the given privilege to all calls to hasPrivilege. This method was visualized as being
 	 * used as follows (try/finally is important):
-	 * 
+	 *
 	 * <pre>
 	 * try {
 	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
@@ -201,27 +211,30 @@ public class UserContext implements Serializable {
 	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Adding proxy privilege: " + privilege);
+		}
 		
 		proxies.add(privilege);
 	}
 	
 	/**
 	 * Will remove one instance of privilege from the privileges that are currently proxied
-	 * 
+	 *
 	 * @param privilege Privilege to remove in string form
 	 */
 	public void removeProxyPrivilege(String privilege) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Removing proxy privilege: " + privilege);
+		}
 		
-		if (proxies.contains(privilege))
+		if (proxies.contains(privilege)) {
 			proxies.remove(privilege);
+		}
 	}
 	
 	/**
@@ -236,8 +249,10 @@ public class UserContext implements Serializable {
 	 */
 	public Locale getLocale() {
 		if (locale == null)
-			// don't cache default locale - allows recognition of changed default at login page
+		// don't cache default locale - allows recognition of changed default at login page
+		{
 			return LocaleUtility.getDefaultLocale();
+		}
 		
 		return locale;
 	}
@@ -245,7 +260,7 @@ public class UserContext implements Serializable {
 	/**
 	 * Gets all the roles for the (un)authenticated user. Anonymous and Authenticated roles are
 	 * appended if necessary
-	 * 
+	 *
 	 * @return all expanded roles for a user
 	 * @throws Exception
 	 */
@@ -255,7 +270,7 @@ public class UserContext implements Serializable {
 	
 	/**
 	 * Gets all the roles for a user. Anonymous and Authenticated roles are appended if necessary
-	 * 
+	 *
 	 * @param user
 	 * @return all expanded roles for a user
 	 * @should not fail with null user
@@ -280,7 +295,7 @@ public class UserContext implements Serializable {
 	
 	/**
 	 * Tests whether or not currently authenticated user has a particular privilege
-	 * 
+	 *
 	 * @param privilege
 	 * @return true if authenticated user has given privilege
 	 * @should authorize if authenticated user has specified privilege
@@ -305,8 +320,9 @@ public class UserContext implements Serializable {
 			
 		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Checking '" + privilege + "' against proxies: " + proxies);
+		}
 		
 		// check proxied privileges
 		for (String s : proxies) {
@@ -328,13 +344,14 @@ public class UserContext implements Serializable {
 	
 	/**
 	 * Convenience method to get the Role in the system designed to be given to all users
-	 * 
+	 *
 	 * @return Role
 	 * @should fail if database doesn't contain anonymous role
 	 */
 	private Role getAnonymousRole() {
-		if (anonymousRole != null)
+		if (anonymousRole != null) {
 			return anonymousRole;
+		}
 		
 		anonymousRole = Context.getUserService().getRole(RoleConstants.ANONYMOUS);
 		if (anonymousRole == null) {
@@ -347,13 +364,14 @@ public class UserContext implements Serializable {
 	/**
 	 * Convenience method to get the Role in the system designed to be given to all users that have
 	 * authenticated in some manner
-	 * 
+	 *
 	 * @return Role
 	 * @should fail if database doesn't contain authenticated role
 	 */
 	private Role getAuthenticatedRole() {
-		if (authenticatedRole != null)
+		if (authenticatedRole != null) {
 			return authenticatedRole;
+		}
 		
 		authenticatedRole = Context.getUserService().getRole(RoleConstants.AUTHENTICATED);
 		if (authenticatedRole == null) {
@@ -385,8 +403,9 @@ public class UserContext implements Serializable {
 	 * @since 1.9
 	 */
 	public Location getLocation() {
-		if (locationId == null)
+		if (locationId == null) {
 			return null;
+		}
 		return Context.getLocationService().getLocation(locationId);
 	}
 	
@@ -395,8 +414,9 @@ public class UserContext implements Serializable {
 	 * @since 1.9
 	 */
 	public void setLocation(Location location) {
-		if (location != null)
+		if (location != null) {
 			this.locationId = location.getLocationId();
+		}
 	}
 	
 	/**
@@ -415,15 +435,17 @@ public class UserContext implements Serializable {
 					}
 					catch (NumberFormatException e) {
 						//Drop the stored value since we have no match for the set id
-						if (this.locationId != null)
+						if (this.locationId != null) {
 							this.locationId = null;
+						}
 						log.warn("The value of the default Location property of the user with id:" + this.user.getUserId()
 						        + " should be an integer", e);
 					}
 				}
 			} else {
-				if (this.locationId != null)
+				if (this.locationId != null) {
 					this.locationId = null;
+				}
 			}
 		}
 	}

@@ -53,7 +53,7 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * This is the controller for the "My Profile" page. This lets logged in users set personal
  * preferences, update their own information, etc.
- * 
+ *
  * @see OptionsForm
  */
 public class OptionsFormController extends SimpleFormController {
@@ -71,9 +71,9 @@ public class OptionsFormController extends SimpleFormController {
 		OptionsForm opts = (OptionsForm) object;
 		
 		if (!opts.getOldPassword().equals("")) {
-			if (opts.getNewPassword().equals(""))
+			if (opts.getNewPassword().equals("")) {
 				errors.rejectValue("newPassword", "error.password.weak");
-			else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
+			} else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
 				errors.rejectValue("newPassword", "error.password.match");
 				errors.rejectValue("confirmPassword", "error.password.match");
 			}
@@ -98,7 +98,7 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -133,8 +133,9 @@ public class OptionsFormController extends SimpleFormController {
 			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, opts.getDefaultLocation());
 			
 			Locale locale = WebUtil.normalizeLocale(opts.getDefaultLocale());
-			if (locale != null)
+			if (locale != null) {
 				properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, locale.toString());
+			}
 			
 			properties.put(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, WebUtil.sanitizeLocales(opts
 			        .getProficientLocales()));
@@ -157,11 +158,13 @@ public class OptionsFormController extends SimpleFormController {
 						catch (PasswordException e) {
 							errors.reject(e.getMessage());
 						}
-						if (password.equals(opts.getOldPassword()) && !errors.hasErrors())
+						if (password.equals(opts.getOldPassword()) && !errors.hasErrors()) {
 							errors.reject("error.password.different");
+						}
 						
-						if (!password.equals(opts.getConfirmPassword()))
+						if (!password.equals(opts.getConfirmPassword())) {
 							errors.reject("error.password.match");
+						}
 					}
 					
 					if (!errors.hasErrors()) {
@@ -279,7 +282,7 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -305,8 +308,10 @@ public class OptionsFormController extends SimpleFormController {
 				personName = PersonName.newInstance(user.getPersonName());
 				personName.setPersonNameId(null);
 			} else
-				// use blank person name
+			// use blank person name
+			{
 				personName = new PersonName();
+			}
 			opts.setPersonName(personName);
 			opts.setNotification(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION));
 			opts.setNotificationAddress(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
@@ -317,7 +322,7 @@ public class OptionsFormController extends SimpleFormController {
 	
 	/**
 	 * Called prior to form display. Allows for data to be put in the request to be used in the view
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
@@ -339,10 +344,11 @@ public class OptionsFormController extends SimpleFormController {
 			map.put("languages", as.getPresentationLocales());
 			
 			String resetPassword = (String) httpSession.getAttribute("resetPassword");
-			if (resetPassword == null)
+			if (resetPassword == null) {
 				resetPassword = "";
-			else
+			} else {
 				httpSession.removeAttribute("resetPassword");
+			}
 			map.put("resetPassword", resetPassword);
 			
 			//generate the password hint depending on the security GP settings
@@ -351,10 +357,12 @@ public class OptionsFormController extends SimpleFormController {
 			MessageSourceService mss = Context.getMessageSourceService();
 			try {
 				String minCharStr = as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH);
-				if (StringUtils.isNotBlank(minCharStr))
+				if (StringUtils.isNotBlank(minCharStr)) {
 					minChar = Integer.valueOf(minCharStr);
-				if (minChar < 1)
+				}
+				if (minChar < 1) {
 					minChar = 1;
+				}
 			}
 			catch (NumberFormatException e) {
 				//ignore
@@ -391,15 +399,16 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * Utility method that check if a security property with boolean values is enabled and adds hint
 	 * message for it if it is not blank
-	 * 
+	 *
 	 * @param hints
 	 * @param gpValue the value of the global property
 	 * @param message the localized message to add
 	 */
 	private void addHint(ArrayList<String> hints, String gpValue, String message) {
 		if (Boolean.valueOf(gpValue)) {
-			if (!StringUtils.isBlank(message))
+			if (!StringUtils.isBlank(message)) {
 				hints.add(message);
+			}
 		}
 	}
 }

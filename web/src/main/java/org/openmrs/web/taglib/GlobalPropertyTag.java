@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 public class GlobalPropertyTag extends TagSupport {
 	
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	
@@ -43,25 +43,29 @@ public class GlobalPropertyTag extends TagSupport {
 	public int doStartTag() {
 		
 		Object value;
-		if (StringUtils.hasText(listSeparator))
+		if (StringUtils.hasText(listSeparator)) {
 			value = Collections.singletonList(defaultValue);
-		else
+		} else {
 			value = defaultValue;
+		}
 		
 		if (StringUtils.hasText(listSeparator)) {
 			String stringVal = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
-			if (stringVal.trim().length() == 0)
+			if (stringVal.trim().length() == 0) {
 				value = Collections.emptyList();
-			else
+			} else {
 				value = Arrays.asList(stringVal.split(listSeparator));
-		} else
+			}
+		} else {
 			value = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
+		}
 		
 		try {
-			if (var != null)
+			if (var != null) {
 				pageContext.setAttribute(var, value);
-			else
+			} else {
 				pageContext.getOut().write(value.toString());
+			}
 			
 		}
 		catch (Exception e) {

@@ -37,8 +37,9 @@ public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 		if (this.fieldGenTag != null) {
 			//HashMap<String,Object> hmParams = (HashMap<String,Object>)getRequest().getAttribute("org.openmrs.fieldGen.parameterMap");
 			HashMap<String, Object> hmParams = (HashMap<String, Object>) this.fieldGenTag.getParameterMap();
-			if (hmParams == null)
+			if (hmParams == null) {
 				hmParams = new HashMap<String, Object>();
+			}
 			hmParams.put(s, o);
 			this.fieldGenTag.setParameterMap(hmParams);
 		}
@@ -83,7 +84,8 @@ public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 			//HttpSession session = this.fieldGenTag.getPageContext().getSession();
 			return (HttpServletRequest) this.fieldGenTag.getPageContext().getRequest();
 			//return (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		} else
+		} else {
 			return null;
+		}
 	}
 }

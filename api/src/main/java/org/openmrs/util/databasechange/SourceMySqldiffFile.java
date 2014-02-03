@@ -63,7 +63,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	
 	/**
 	 * Does the work of executing the file on mysql
-	 * 
+	 *
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
 	@Override
@@ -163,7 +163,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	/**
 	 * A hacky way to get rid of the spaces in the java exec call because mysql and java are not
 	 * communicating well
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -197,8 +197,9 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		// Needed to add support for working directory because of a linux
 		// file system permission issue.
 		
-		if (!OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
+		if (!OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
 			wd = null;
+		}
 		
 		Process p = (wd != null) ? Runtime.getRuntime().exec(cmdWithArguments, null, wd) : Runtime.getRuntime().exec(
 		    cmdWithArguments);
@@ -250,7 +251,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	
 	/**
 	 * Get the values of the parameters passed in and set them to the local variables on this class.
-	 * 
+	 *
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	@Override

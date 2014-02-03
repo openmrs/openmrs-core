@@ -59,7 +59,7 @@ public class ShowGraphTag extends BodyTagSupport {
 	
 	/**
 	 * Render graph.
-	 * 
+	 *
 	 * @return return result code
 	 */
 	public int doStartTag() throws JspException {
@@ -96,8 +96,9 @@ public class ShowGraphTag extends BodyTagSupport {
 	 */
 	public int doEndTag() throws JspException {
 		try {
-			if (bodyContent != null)
+			if (bodyContent != null) {
 				bodyContent.writeOut(bodyContent.getEnclosingWriter());
+			}
 		}
 		catch (java.io.IOException e) {
 			throw new JspTagException("IO Error: " + e.getMessage());

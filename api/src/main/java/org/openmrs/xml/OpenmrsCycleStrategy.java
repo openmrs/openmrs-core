@@ -25,12 +25,12 @@ import org.simpleframework.xml.stream.NodeMap;
  * This is a specific serialization strategy developed so that the OpenMRS objects that happen to be
  * proxied by Hibernate will be serialized correctly.<br/>
  * Use:
- * 
+ *
  * <pre>
  * 		Serializer serializer = new Persister(new OpenmrsCycleStrategy());
  * 		serializer.write(someObject, outputStream);
  * </pre>
- * 
+ *
  * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
  */
 @Deprecated
@@ -56,7 +56,7 @@ public class OpenmrsCycleStrategy extends CycleStrategy {
 	
 	/**
 	 * Custom constructor to set whether this serialization will be a short one or not. The
-	 * 
+	 *
 	 * @param isShortSerialization
 	 */
 	public OpenmrsCycleStrategy(boolean isShortSerialization) {
@@ -75,8 +75,9 @@ public class OpenmrsCycleStrategy extends CycleStrategy {
 		// if the constructor was called to mark this as a short serialization,
 		// put that property into the session map so that the @Replace methods
 		// have access and know about it.
-		if (shortSerialization)
+		if (shortSerialization) {
 			map.put(OpenmrsConstants.SHORT_SERIALIZATION, Boolean.TRUE);
+		}
 		
 		log.debug("Setting root as class: " + field);
 		

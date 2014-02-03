@@ -54,8 +54,9 @@ public class RequireConfigurationByPrefixTag extends TagSupport {
 		if (ignoreList != null) {
 			for (String s : ignoreList.split(",")) {
 				s = s.trim();
-				if (s.length() != 0)
+				if (s.length() != 0) {
 					propsToIgnore.add(propertyPrefix + s);
+				}
 			}
 		}
 		

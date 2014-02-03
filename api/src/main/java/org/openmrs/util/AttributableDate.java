@@ -26,7 +26,7 @@ import org.openmrs.api.context.Context;
  * This class is a stand in for using "java.util.Date" as a PersonAttribute format. This will allow
  * the end user to store a date as YYYY-MM-DD instead of storing it as a string in the date format
  * of whatever user created the string
- * 
+ *
  * @see java.util.Date
  * @see org.openmrs.PersonAttribute
  * @see org.openmrs.Attributable
@@ -39,7 +39,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	
 	/**
 	 * Default empty constructor
-	 * 
+	 *
 	 * @see java.util.Date#Date()
 	 */
 	public AttributableDate() {
@@ -48,7 +48,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	
 	/**
 	 * Convenience constructor allowing creation of an AttributableDate with the given time
-	 * 
+	 *
 	 * @param time
 	 * @see java.util.Date#Date(long)
 	 */
@@ -84,8 +84,9 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	 */
 	public AttributableDate hydrate(String s) {
 		// don't do anything to empty dates
-		if (s == null || s.equals(""))
+		if (s == null || s.equals("")) {
 			return null;
+		}
 		
 		try {
 			// try to parse as the current user (

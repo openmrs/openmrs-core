@@ -77,7 +77,7 @@ import org.springframework.validation.Errors;
 /**
  * Default implementation of the administration services. This class should not be used on its own.
  * The current OpenMRS implementation should be fetched from the Context
- * 
+ *
  * @see org.openmrs.api.AdministrationService
  * @see org.openmrs.api.context.Context
  */
@@ -173,7 +173,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Create a new Tribe
-	 * 
+	 *
 	 * @param tribe Tribe to create
 	 * @throws APIException
 	 * @deprecated
@@ -185,7 +185,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Update Tribe
-	 * 
+	 *
 	 * @param tribe Tribe to update
 	 * @throws APIException
 	 * @deprecated
@@ -197,7 +197,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Delete Tribe
-	 * 
+	 *
 	 * @param tribe Tribe to delete
 	 * @throws APIException
 	 * @deprecated
@@ -209,7 +209,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Retire Tribe
-	 * 
+	 *
 	 * @param tribe Tribe to retire
 	 * @throws APIException
 	 * @deprecated
@@ -221,7 +221,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Unretire Tribe
-	 * 
+	 *
 	 * @param tribe Tribe to unretire
 	 * @throws APIException
 	 * @deprecated
@@ -410,90 +410,96 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Create a new Report
-	 * 
+	 *
 	 * @param report Report to create
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
 	@Deprecated
 	public void createReport(Report report) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORTS))
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORTS)) {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORTS);
+		}
 		
 		dao.createReport(report);
 	}
 	
 	/**
 	 * Update Report
-	 * 
+	 *
 	 * @param report Report to update
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
 	@Deprecated
 	public void updateReport(Report report) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORTS))
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORTS)) {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORTS);
+		}
 		
 		dao.updateReport(report);
 	}
 	
 	/**
 	 * Delete Report
-	 * 
+	 *
 	 * @param report Report to delete
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
 	@Deprecated
 	public void deleteReport(Report report) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORTS))
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORTS)) {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORTS);
+		}
 		
 		dao.deleteReport(report);
 	}
 	
 	/**
 	 * Create a new Report Object
-	 * 
+	 *
 	 * @param reportObject Report Object to create
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
 	@Deprecated
 	public void createReportObject(AbstractReportObject reportObject) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS))
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS)) {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS);
+		}
 		
 		dao.createReportObject(reportObject);
 	}
 	
 	/**
 	 * Update Report Object
-	 * 
+	 *
 	 * @param reportObject Report Object to update
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
 	@Deprecated
 	public void updateReportObject(AbstractReportObject reportObject) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS))
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS)) {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS);
+		}
 		
 		dao.updateReportObject(reportObject);
 	}
 	
 	/**
 	 * Delete Report Object
-	 * 
+	 *
 	 * @param reportObjectId Internal Integer identifier of Report Object to delete
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
 	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS))
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS)) {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS);
+		}
 		
 		dao.deleteReportObject(reportObjectId);
 	}
@@ -562,8 +568,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void mrnGeneratorLog(String site, Integer start, Integer count) throws APIException {
-		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS))
+		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS)) {
 			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.EDIT_PATIENTS);
+		}
 		
 		dao.mrnGeneratorLog(site, start, count);
 	}
@@ -575,8 +582,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Collection<?> getMRNGeneratorLog() throws APIException {
-		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS))
+		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS)) {
 			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.EDIT_PATIENTS);
+		}
 		
 		return dao.getMRNGeneratorLog();
 	}
@@ -631,8 +639,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException {
 		// This method should not have any authorization check
-		if (propertyName == null)
+		if (propertyName == null) {
 			return null;
+		}
 		
 		return dao.getGlobalProperty(propertyName);
 	}
@@ -644,8 +653,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
 		String s = Context.getAdministrationService().getGlobalProperty(propertyName);
-		if (s == null)
+		if (s == null) {
 			return defaultValue;
+		}
 		return s;
 	}
 	
@@ -808,8 +818,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#executeSQL(java.lang.String, boolean)
 	 */
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
-		if (sql == null || sql.trim().equals(""))
+		if (sql == null || sql.trim().equals("")) {
 			return null;
+		}
 		
 		return dao.executeSQL(sql, selectOnly);
 	}
@@ -830,24 +841,28 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Calls global property listeners registered for this create/change
-	 * 
+	 *
 	 * @param gp
 	 */
 	private void notifyGlobalPropertyChange(GlobalProperty gp) {
-		for (GlobalPropertyListener listener : eventListeners.getGlobalPropertyListeners())
-			if (listener.supportsPropertyName(gp.getProperty()))
+		for (GlobalPropertyListener listener : eventListeners.getGlobalPropertyListeners()) {
+			if (listener.supportsPropertyName(gp.getProperty())) {
 				listener.globalPropertyChanged(gp);
+			}
+		}
 	}
 	
 	/**
 	 * Calls global property listeners registered for this delete
-	 * 
+	 *
 	 * @param propertyName
 	 */
 	private void notifyGlobalPropertyDelete(String propertyName) {
-		for (GlobalPropertyListener listener : eventListeners.getGlobalPropertyListeners())
-			if (listener.supportsPropertyName(propertyName))
+		for (GlobalPropertyListener listener : eventListeners.getGlobalPropertyListeners()) {
+			if (listener.supportsPropertyName(propertyName)) {
 				listener.globalPropertyDeleted(propertyName);
+			}
+		}
 	}
 	
 	/**
@@ -859,8 +874,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		    OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
 		
 		// fail early if no gp has been defined yet
-		if (property == null)
+		if (property == null) {
 			return null;
+		}
 		
 		try {
 			ImplementationId implId = OpenmrsUtil.getSerializer().read(ImplementationId.class, property);
@@ -879,8 +895,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	public void setImplementationId(ImplementationId implementationId) throws APIException {
 		
-		if (implementationId == null)
+		if (implementationId == null) {
 			return;
+		}
 		
 		// check the validity of this implementation id with the server
 		String description = implementationId.getDescription();
@@ -911,7 +928,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 				newConceptSource.setDescription(implementationId.getDescription());
 				newConceptSource.setHl7Code(implementationId.getImplementationId());
 				if (Context.getAuthenticatedUser() == null) // (hackish)
+				{
 					newConceptSource.setCreator(new User(1)); // fake the user because no one is logged in
+				}
 				Context.getConceptService().saveConceptSource(newConceptSource);
 			}
 			
@@ -938,7 +957,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * there is no implementation id or 2) there is a implementation id and this passphrase matches
 	 * it. In the case of 1), this implementation id and passphrase are saved to the remote server's
 	 * database
-	 * 
+	 *
 	 * @param implementationId
 	 * @param description
 	 * @param passphrase
@@ -949,12 +968,15 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	private String checkImplementationIdValidity(String implementationId, String description, String passphrase)
 	        throws APIException {
 		
-		if (!StringUtils.hasLength(implementationId))
+		if (!StringUtils.hasLength(implementationId)) {
 			throw new APIException("The implementationid cannot be empty");
-		if (!StringUtils.hasLength(description))
+		}
+		if (!StringUtils.hasLength(description)) {
 			throw new APIException("The description cannot be empty");
-		if (!StringUtils.hasLength(passphrase))
+		}
+		if (!StringUtils.hasLength(passphrase)) {
 			throw new APIException("The passphrase cannot be empty");
+		}
 		
 		// set up the data map to post to the openmrs server
 		Map<String, String> data = new HashMap<String, String>();
@@ -971,8 +993,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			throw new APIException(ms);
 		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Response: " + response);
+		}
 		
 		if (response.startsWith("Success")) {
 			response = response.replace("Success", "");
@@ -1014,7 +1037,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Used by spring to set the GlobalLocaleList on this implementation
-	 * 
+	 *
 	 * @param gll the GlobalLocaleList object that is registered to the GlobalPropertyListeners as
 	 *            well
 	 */
@@ -1088,12 +1111,14 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException {
-		if (defaultValue == null)
+		if (defaultValue == null) {
 			throw new IllegalArgumentException("The defaultValue argument cannot be null");
+		}
 		
 		String propVal = Context.getAdministrationService().getGlobalProperty(propertyName);
-		if (!StringUtils.hasLength(propVal))
+		if (!StringUtils.hasLength(propVal)) {
 			return defaultValue;
+		}
 		
 		try {
 			return (T) defaultValue.getClass().getDeclaredConstructor(String.class).newInstance(propVal);
@@ -1244,8 +1269,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object object, Errors errors) throws APIException {
-		if (object == null)
+		if (object == null) {
 			throw new APIException(Context.getMessageSourceService().getMessage("error.null"));
+		}
 		
 		dao.validate(object, errors);
 	}

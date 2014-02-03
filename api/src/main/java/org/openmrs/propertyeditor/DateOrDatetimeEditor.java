@@ -63,8 +63,9 @@ public class DateOrDatetimeEditor extends PropertyEditorSupport {
 	@Override
 	public String getAsText() {
 		Date date = (Date) getValue();
-		if (date == null)
+		if (date == null) {
 			return "";
+		}
 		if ("0000".equals(new SimpleDateFormat("HmsS").format(date))) {
 			return Context.getDateFormat().format(date);
 		} else {

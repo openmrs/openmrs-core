@@ -22,16 +22,17 @@ public class CollectionContains {
 	
 	/**
 	 * Returns true if collection is not null and contains obj
-	 * 
+	 *
 	 * @param collection
 	 * @param obj
 	 * @return whether collection contains obj
 	 */
 	public static Boolean collectionContains(Collection<?> collection, Object obj) {
-		if (collection == null)
+		if (collection == null) {
 			return false;
-		else
+		} else {
 			return collection.contains(obj);
+		}
 	}
 	
 }

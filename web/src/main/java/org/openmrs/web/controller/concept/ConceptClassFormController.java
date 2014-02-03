@@ -39,7 +39,7 @@ public class ConceptClassFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -52,7 +52,7 @@ public class ConceptClassFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -77,7 +77,7 @@ public class ConceptClassFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -87,12 +87,14 @@ public class ConceptClassFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			String conceptClassId = request.getParameter("conceptClassId");
-			if (conceptClassId != null)
+			if (conceptClassId != null) {
 				conceptClass = cs.getConceptClass(Integer.valueOf(conceptClassId));
+			}
 		}
 		
-		if (conceptClass == null)
+		if (conceptClass == null) {
 			conceptClass = new ConceptClass();
+		}
 		
 		return conceptClass;
 	}

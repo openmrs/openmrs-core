@@ -40,17 +40,19 @@ public abstract class BaseCustomizableValidator implements Validator {
 			if (at.getMinOccurs() > 0 || at.getMaxOccurs() != null) {
 				int numFound = 0;
 				for (A attr : customizable.getActiveAttributes()) {
-					if (attr.getAttributeType().equals(at))
+					if (attr.getAttributeType().equals(at)) {
 						++numFound;
+					}
 				}
 				if (at.getMinOccurs() > 0) {
 					if (numFound < at.getMinOccurs()) {
 						// report an error
-						if (at.getMinOccurs() == 1)
+						if (at.getMinOccurs() == 1) {
 							errors.rejectValue("activeAttributes", "error.required", new Object[] { at.getName() }, null);
-						else
+						} else {
 							errors.rejectValue("activeAttributes", "attribute.error.minOccurs", new Object[] { at.getName(),
 							        at.getMinOccurs() }, null);
+						}
 					}
 				}
 				if (at.getMaxOccurs() != null) {

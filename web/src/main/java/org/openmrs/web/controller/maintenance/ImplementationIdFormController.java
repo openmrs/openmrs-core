@@ -38,7 +38,7 @@ public class ImplementationIdFormController extends SimpleFormController {
 	
 	/**
 	 * Actions taken when the form is submitted
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -65,7 +65,7 @@ public class ImplementationIdFormController extends SimpleFormController {
 	/**
 	 * The object that backs the form. The class of this object (String) is set in the servlet
 	 * descriptor file
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -74,10 +74,11 @@ public class ImplementationIdFormController extends SimpleFormController {
 		// get the impl id from the database that is the implementation id
 		ImplementationId implId = Context.getAdministrationService().getImplementationId();
 		
-		if (implId != null)
+		if (implId != null) {
 			return implId;
-		else
+		} else {
 			return new ImplementationId();
+		}
 	}
 	
 }

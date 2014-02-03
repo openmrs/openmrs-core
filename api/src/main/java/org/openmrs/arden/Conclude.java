@@ -28,10 +28,11 @@ public class Conclude {
 	
 	public String getConcludeVal() {
 		String retVal;
-		if (concludeVal == true)
+		if (concludeVal == true) {
 			retVal = "true";
-		else
+		} else {
 			retVal = "false";
+		}
 		
 		return retVal;
 	}

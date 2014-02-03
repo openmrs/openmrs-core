@@ -34,14 +34,14 @@ import org.springframework.validation.Validator;
  * The validators are added to this class in the spring applicationContext-service.xml file. <br/>
  * <br/>
  * Example usage:
- * 
+ *
  * <pre>
  *  public Order saveOrder(order) {
  *  	ValidateUtil.validate(order);
  *  	dao.saveOrder(order);
  *  }
  * </pre>
- * 
+ *
  * @since 1.5
  */
 public class ValidateUtil {
@@ -58,7 +58,7 @@ public class ValidateUtil {
 	/**
 	 * Test the given object against all validators that are registered as compatible with the
 	 * object class
-	 * 
+	 *
 	 * @param obj the object to validate
 	 * @throws ValidationException thrown if a binding exception occurs
 	 * @should throw APIException if errors occur during validation
@@ -88,7 +88,7 @@ public class ValidateUtil {
 	/**
 	 * Test the given object against all validators that are registered as compatible with the
 	 * object class
-	 * 
+	 *
 	 * @param obj the object to validate
 	 * @param errors the validation errors found
 	 * @since 1.9
@@ -100,7 +100,7 @@ public class ValidateUtil {
 	
 	/**
 	 * Test the field lengths are valid
-	 * 
+	 *
 	 * @param errors
 	 * @param aClass the class of the object being tested
 	 * @param fields a var args that contains all of the fields from the model
@@ -113,8 +113,9 @@ public class ValidateUtil {
 		Assert.notNull(errors, "Errors object must not be null");
 		for (String field : fields) {
 			Object value = errors.getFieldValue(field);
-			if (value == null || !(value instanceof String))
+			if (value == null || !(value instanceof String)) {
 				return;
+			}
 			int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, field);
 			if (((String) value).length() > length) {
 				errors.rejectValue(field, "error.exceededMaxLengthOfField", new Object[] { length }, null);

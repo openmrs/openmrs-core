@@ -3,25 +3,32 @@
 package org.openmrs.arden;
 
 import java.io.*;
+
 import antlr.CommonAST;
 import antlr.collections.AST;
 import antlr.*;
 import org.openmrs.arden.MLMObject;
 import org.openmrs.arden.MLMObjectElement;
+
 import java.lang.Integer;
+
 import org.openmrs.logic.*;
 import org.openmrs.logic.op.*;
+
 import java.util.GregorianCalendar;
 
 import java.io.InputStream;
+
 import antlr.TokenStreamException;
 import antlr.TokenStreamIOException;
 import antlr.TokenStreamRecognitionException;
 import antlr.CharStreamException;
 import antlr.CharStreamIOException;
 import antlr.ANTLRException;
+
 import java.io.Reader;
 import java.util.Hashtable;
+
 import antlr.CharScanner;
 import antlr.InputBuffer;
 import antlr.ByteBuffer;
@@ -433,8 +440,9 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 								theRetToken = _returnToken;
 							}
 					}
-					if (_returnToken == null)
+					if (_returnToken == null) {
 						continue tryAgain; // found SKIP token
+					}
 					_ttype = _returnToken.getType();
 					_returnToken.setType(_ttype);
 					return _returnToken;
@@ -465,8 +473,9 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 		{
 			_loop606: do {
 				// nongreedy exit test
-				if ((LA(1) == '}') && (true))
+				if ((LA(1) == '}') && (true)) {
 					break _loop606;
+				}
 				if (((LA(1) >= '\u0000' && LA(1) <= '\u00ff')) && ((LA(2) >= '\u0000' && LA(2) <= '\u00ff'))) {
 					matchNot(EOF_CHAR);
 				} else {

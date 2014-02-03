@@ -20,7 +20,7 @@ import org.openmrs.User;
 /**
  * A simple user comparator for sorting users by personName. Sorts names based on the following
  * precedence: FamilyName, FamilyName2, GivenName, MiddleName, FamilyNamePrefix, FamilyNameSuffix
- * 
+ *
  * @since 1.8
  */
 public class UserByNameComparator implements Comparator<User> {
@@ -32,10 +32,11 @@ public class UserByNameComparator implements Comparator<User> {
 	public int compare(User user1, User user2) {
 		
 		// test for null cases (sorting them to be last in a list)
-		if (user1 == null)
+		if (user1 == null) {
 			return 1;
-		else if (user2 == null)
+		} else if (user2 == null) {
 			return -1;
+		}
 		
 		// delegate to the personByNameComparator to sort by person names
 		return PersonByNameComparator.comparePersonsByName(user1.getPerson(), user2.getPerson());

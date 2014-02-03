@@ -56,7 +56,7 @@ import org.springframework.validation.BindException;
  * <p>
  * This class should not be instantiated alone, get a service class from the Context:
  * Context.getFormService();
- * 
+ *
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.FormService
  */
@@ -78,7 +78,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * Method used to inject the data access object.
-	 * 
+	 *
 	 * @param dao
 	 */
 	public void setFormDAO(FormDAO dao) {
@@ -109,10 +109,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Form> getForms(boolean publishedOnly) throws APIException {
-		if (publishedOnly)
+		if (publishedOnly) {
 			return Context.getFormService().getPublishedForms();
-		else
+		} else {
 			return Context.getFormService().getAllForms();
+		}
 	}
 	
 	/**
@@ -129,10 +130,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			ret.addAll(Context.getFormService().getForms(null, true, null, true, null, null, null));
 			return ret;
 		} else {
-			if (publishedOnly)
+			if (publishedOnly) {
 				return Context.getFormService().getPublishedForms();
-			else
+			} else {
 				return Context.getFormService().getAllForms(includeRetired);
+			}
 		}
 	}
 	
@@ -147,7 +149,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * Duplicate this form and form_fields associated with this form
-	 * 
+	 *
 	 * @param form
 	 * @return New duplicated form
 	 * @throws APIException
@@ -277,8 +279,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public List<FormField> getFormFields(Form form) throws APIException {
 		List<FormField> formFields = new Vector<FormField>();
 		
-		if (form != null && form.getFormFields() != null)
+		if (form != null && form.getFormFields() != null) {
 			formFields.addAll(form.getFormFields());
+		}
 		
 		return formFields;
 	}
@@ -375,8 +378,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
 	        throws APIException {
 		// create an empty ignoreFormFields list if none was passed in
-		if (ignoreFormFields == null)
+		if (ignoreFormFields == null) {
 			ignoreFormFields = Collections.emptyList();
+		}
 		
 		return dao.getFormField(form, concept, ignoreFormFields, force);
 	}
@@ -452,10 +456,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
-		if (includeUnpublished)
+		if (includeUnpublished) {
 			return Context.getFormService().getForms(text, null, null, includeRetired, null, null, null);
-		else
+		} else {
 			return Context.getFormService().getForms(text, true, null, includeRetired, null, null, null);
+		}
 	}
 	
 	/**
@@ -509,26 +514,33 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	        Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
 	        throws APIException {
 		
-		if (forms == null)
+		if (forms == null) {
 			forms = Collections.emptyList();
+		}
 		
-		if (fieldTypes == null)
+		if (fieldTypes == null) {
 			fieldTypes = Collections.emptyList();
+		}
 		
-		if (concepts == null)
+		if (concepts == null) {
 			concepts = Collections.emptyList();
+		}
 		
-		if (tableNames == null)
+		if (tableNames == null) {
 			tableNames = Collections.emptyList();
+		}
 		
-		if (attributeNames == null)
+		if (attributeNames == null) {
 			attributeNames = Collections.emptyList();
+		}
 		
-		if (containsAllAnswers == null)
+		if (containsAllAnswers == null) {
 			containsAllAnswers = Collections.emptyList();
+		}
 		
-		if (containsAnyAnswer == null)
+		if (containsAnyAnswer == null) {
 			containsAnyAnswer = Collections.emptyList();
+		}
 		
 		return dao.getFields(forms, fieldTypes, concepts, tableNames, attributeNames, selectMultiple, containsAllAnswers,
 		    containsAnyAnswer, retired);
@@ -542,10 +554,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	@Transactional(readOnly = true)
 	public Form getForm(String name) throws APIException {
 		List<Form> forms = dao.getFormsByName(name);
-		if (forms == null || forms.size() == 0)
+		if (forms == null || forms.size() == 0) {
 			return null;
-		else
+		} else {
 			return forms.get(0);
+		}
 	}
 	
 	/**
@@ -567,10 +580,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		Set<String> namesAlreadySeen = new HashSet<String>();
 		for (Iterator<Form> i = forms.iterator(); i.hasNext();) {
 			Form form = i.next();
-			if (namesAlreadySeen.contains(form.getName()))
+			if (namesAlreadySeen.contains(form.getName())) {
 				i.remove();
-			else
+			} else {
 				namesAlreadySeen.add(form.getName());
+			}
 		}
 		return forms;
 	}
@@ -598,17 +612,21 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
 	        Collection<Field> fields) {
 		
-		if (encounterTypes == null)
+		if (encounterTypes == null) {
 			encounterTypes = Collections.emptyList();
+		}
 		
-		if (containingAllFormFields == null)
+		if (containingAllFormFields == null) {
 			containingAllFormFields = Collections.emptyList();
+		}
 		
-		if (containingAnyFormField == null)
+		if (containingAnyFormField == null) {
 			containingAnyFormField = Collections.emptyList();
+		}
 		
-		if (fields == null)
+		if (fields == null) {
 			fields = Collections.emptyList();
+		}
 		
 		return dao.getForms(partialName, published, encounterTypes, retired, containingAnyFormField,
 		    containingAllFormFields, fields);
@@ -624,17 +642,21 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
 	        Collection<Field> fields) {
 		
-		if (encounterTypes == null)
+		if (encounterTypes == null) {
 			encounterTypes = Collections.emptyList();
+		}
 		
-		if (containingAllFormFields == null)
+		if (containingAllFormFields == null) {
 			containingAllFormFields = Collections.emptyList();
+		}
 		
-		if (containingAnyFormField == null)
+		if (containingAnyFormField == null) {
 			containingAnyFormField = Collections.emptyList();
+		}
 		
-		if (fields == null)
+		if (fields == null) {
 			fields = Collections.emptyList();
+		}
 		
 		return dao.getFormCount(partialName, published, encounterTypes, retired, containingAnyFormField,
 		    containingAllFormFields, fields);
@@ -659,10 +681,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field, boolean)
 	 */
 	public void purgeField(Field field, boolean cascade) throws APIException {
-		if (cascade == true)
+		if (cascade == true) {
 			throw new APIException("Not Yet Implemented");
-		else
+		} else {
 			dao.deleteField(field);
+		}
 	}
 	
 	/**
@@ -676,12 +699,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form, boolean)
 	 */
 	public void purgeForm(Form form, boolean cascade) throws APIException {
-		if (cascade == true)
+		if (cascade == true) {
 			throw new APIException("Not Yet Implemented");
+		}
 		
 		// remove resources
-		for (FormResource resource : Context.getFormService().getFormResourcesForForm(form))
+		for (FormResource resource : Context.getFormService().getFormResourcesForForm(form)) {
 			Context.getFormService().purgeFormResource(resource);
+		}
 		
 		dao.deleteForm(form);
 	}
@@ -724,10 +749,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		if (form.getFormFields() != null) {
 			for (FormField ff : form.getFormFields()) {
-				if (ff.getForm() == null)
+				if (ff.getForm() == null) {
 					ff.setForm(form);
-				else if (!ff.getForm().equals(form))
+				} else if (!ff.getForm().equals(form)) {
 					throw new APIException("Form contains FormField " + ff + " that already belongs to a different form");
+				}
 			}
 		}
 		
@@ -739,17 +765,20 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	public FormField saveFormField(FormField formField) throws APIException {
 		Field field = formField.getField();
-		if (field.getCreator() == null)
+		if (field.getCreator() == null) {
 			field.setCreator(Context.getAuthenticatedUser());
-		if (field.getDateCreated() == null)
+		}
+		if (field.getDateCreated() == null) {
 			field.setDateCreated(new Date());
+		}
 		
 		// don't change the changed by and date changed on field for
 		// form field updates
 		
 		// set the uuid here because the RequiredDataAdvice only looks at child lists
-		if (field.getUuid() == null)
+		if (field.getUuid() == null) {
 			field.setUuid(UUID.randomUUID().toString());
+		}
 		
 		formField = dao.saveFormField(formField);
 		
@@ -807,8 +836,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Form> getFormsContainingConcept(Concept concept) throws APIException {
-		if (concept.getConceptId() == null)
+		if (concept.getConceptId() == null) {
 			return Collections.emptyList();
+		}
 		
 		return dao.getFormsContainingConcept(concept);
 	}
@@ -914,8 +944,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Override
 	public FormResource saveFormResource(FormResource formResource) throws APIException {
-		if (formResource == null)
+		if (formResource == null) {
 			return null;
+		}
 		
 		// If a form resource with same name exists, replace it with current value
 		FormResource toPersist = formResource;
@@ -951,7 +982,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * duplicates form resources from one form to another
-	 * 
+	 *
 	 * @param source the form to copy resources from
 	 * @param destination the form to copy resources to
 	 */

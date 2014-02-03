@@ -35,7 +35,7 @@ public class LoginSteps extends Steps {
 	public LoginSteps(WebDriver driver) {
 		super(driver);
 	}
-	
+
 	private boolean userAlreadyLoggedIn() {
 		Finder<WebElement, WebDriver> f = finderByXpath("//span[@id='userLoggedInAs']").with(text(containsString("Currently logged in")));
 		return f.findFrom(getWebDriver()).size() > 0;
@@ -43,28 +43,29 @@ public class LoginSteps extends Steps {
 
 	@Given("I am on the login page of OpenMRS")
 	public void onLoginPage() {
-        String port = System.getProperty("jetty.port","8080");
-        String url = "http://localhost:"+port+"/openmrs/initialsetup";
+		String port = System.getProperty("jetty.port", "8080");
+		String url = "http://localhost:" + port + "/openmrs/initialsetup";
 		goTo(url);
-		
+
 		// the login button will only be there if the user hasn't logged in yet.
 		// this check is just in case a scenario has two dependencies and both of them 
 		// depend on the login_to_website story
-		if (!userAlreadyLoggedIn())
+		if (! userAlreadyLoggedIn()) {
 			waitAndAssertFor(button().with(attribute("value", equalTo("Log In"))));
+		}
 	}
 
 	//@When("I enter $username as the username and $password as the password and click the 'Log In' button")
 	@When("I enter username and password as stored in system properties as $usernameProp and $passwordProp and click the 'Log In' button")
 	public void logIn(String usernameProp, String passwordProp) {
-		
+
 		String username = System.getProperty(usernameProp, "admin");
 		String password = System.getProperty(passwordProp, "Admin123");
-		
+
 		// (same as above resoning)
 		// this check is just in case a scenario has two dependencies and both of them 
 		// depend on the login_to_website story
-		if (!userAlreadyLoggedIn()) {
+		if (! userAlreadyLoggedIn()) {
 			type(username, into(textbox()
 					.with(attribute("id", equalTo("username")))));
 			type(password,

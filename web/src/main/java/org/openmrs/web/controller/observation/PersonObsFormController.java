@@ -40,8 +40,9 @@ public class PersonObsFormController extends SimpleFormController {
 	
 	@Override
 	protected CommandObject formBackingObject(HttpServletRequest request) throws Exception {
-		if (!Context.isAuthenticated())
+		if (!Context.isAuthenticated()) {
 			return new CommandObject();
+		}
 		
 		Person person = Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));
 		List<Concept> concepts = null;
@@ -58,10 +59,12 @@ public class PersonObsFormController extends SimpleFormController {
 			
 			public int compare(Obs left, Obs right) {
 				int temp = left.getConcept().getName().getName().compareTo(right.getConcept().getName().getName());
-				if (temp == 0)
+				if (temp == 0) {
 					temp = OpenmrsUtil.compareWithNullAsGreatest(left.getVoided(), right.getVoided());
-				if (temp == 0)
+				}
+				if (temp == 0) {
 					temp = OpenmrsUtil.compareWithNullAsLatest(left.getObsDatetime(), right.getObsDatetime());
+				}
 				return temp;
 			}
 			

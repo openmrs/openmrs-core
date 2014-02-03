@@ -47,36 +47,40 @@ public class HibernateUtil {
 	/**
 	 * Check and cache whether the currect dialect is HSQL or not. This is needed because some
 	 * queries are different if in the hsql world as opposed to the mysql/postgres world
-	 * 
+	 *
 	 * @param sessionFactory
 	 * @return true/false whether we're in hsql right now or not
 	 */
 	public static boolean isHSQLDialect(SessionFactory sessionFactory) {
 		
 		if (isHSQLDialect == null)
-			// check and cache the dialect
+		// check and cache the dialect
+		{
 			isHSQLDialect = HSQLDialect.class.getName().equals(getDialect(sessionFactory).getClass().getName());
+		}
 		
 		return isHSQLDialect;
 	}
 	
 	/**
 	 * Fetch the current Dialect of the given SessionFactory
-	 * 
+	 *
 	 * @param sessionFactory SessionFactory to pull the dialect from
 	 * @return Dialect of sql that this connection/session is using
 	 */
 	public static Dialect getDialect(SessionFactory sessionFactory) {
 		
 		// return cached dialect
-		if (dialect != null)
+		if (dialect != null) {
 			return dialect;
+		}
 		
 		SessionFactoryImplementor implementor = (SessionFactoryImplementor) sessionFactory;
 		dialect = implementor.getDialect();
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Getting dialect for session: " + dialect);
+		}
 		
 		return dialect;
 	}
@@ -91,7 +95,7 @@ public class HibernateUtil {
 	/**
 	 * Escapes all sql wildcards in the given string, returns the same string if it doesn't contain
 	 * any sql wildcards
-	 * 
+	 *
 	 * @param oldString the string in which to escape the sql wildcards
 	 * @param connection The underlying database connection
 	 * @return the string with sql wildcards escaped if any found otherwise the original string is
@@ -113,8 +117,9 @@ public class HibernateUtil {
 			//insert an escape character before each sql wildcard in the search phrase
 			return StringUtils.replaceEach(oldString, new String[] { "%", "_", "*", "'" }, new String[] {
 			        escapeCharacter + "%", escapeCharacter + "_", escapeCharacter + "*", "''" });
-		} else
+		} else {
 			return oldString;
+		}
 	}
 	
 	/**

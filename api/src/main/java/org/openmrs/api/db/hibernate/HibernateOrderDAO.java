@@ -42,7 +42,7 @@ import org.openmrs.api.db.OrderDAO;
  * context: /metadata/api/spring/applicationContext.xml.<br/>
  * <br/>
  * The OrderService should be used for all Order related database manipulation.
- * 
+ *
  * @see org.openmrs.api.OrderService
  * @see org.openmrs.api.db.OrderDAO
  */
@@ -60,7 +60,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -90,8 +90,9 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws DAOException {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("getting order #" + orderId + " with class: " + orderClassType);
+		}
 		
 		return (Ord) sessionFactory.getCurrentSession().get(orderClassType, orderId);
 	}
@@ -110,11 +111,13 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
-		if (patients != null && patients.size() > 0)
+		if (patients != null && patients.size() > 0) {
 			crit.add(Restrictions.in("patient", patients));
+		}
 		
-		if (concepts != null && concepts.size() > 0)
+		if (concepts != null && concepts.size() > 0) {
 			crit.add(Restrictions.in("concept", concepts));
+		}
 		
 		// if an asOfDate is passed in, then we need to restrict to just active type of orders
 		if (asOfDate != null) {
@@ -129,20 +132,25 @@ public class HibernateOrderDAO implements OrderDAO {
 		// we are not checking the other status's here because they are 
 		// algorithm dependent
 		
-		if (orderers != null && orderers.size() > 0)
+		if (orderers != null && orderers.size() > 0) {
 			crit.add(Restrictions.in("orderer", orderers));
+		}
 		
-		if (encounters != null && encounters.size() > 0)
+		if (encounters != null && encounters.size() > 0) {
 			crit.add(Restrictions.in("encounter", encounters));
+		}
 		
-		if (actionsToInclude != null && actionsToInclude.size() > 0)
+		if (actionsToInclude != null && actionsToInclude.size() > 0) {
 			crit.add(Restrictions.in("action", actionsToInclude));
+		}
 		
-		if (actionsToExclude != null && actionsToExclude.size() > 0)
+		if (actionsToExclude != null && actionsToExclude.size() > 0) {
 			crit.add(Restrictions.not(Restrictions.in("action", actionsToExclude)));
+		}
 		
-		if (!includeVoided)
+		if (!includeVoided) {
 			crit.add(Restrictions.eq("voided", false));
+		}
 		
 		return crit.list();
 	}
@@ -169,8 +177,9 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public String getOrderNumberInDatabase(Order order) {
-		if (order.getOrderId() == null)
+		if (order.getOrderId() == null) {
 			return null;
+		}
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
 		    "select order_number from orders where order_id = :orderId");
 		query.setInteger("orderId", order.getOrderId());

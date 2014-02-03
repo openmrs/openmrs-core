@@ -47,7 +47,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	
 	/**
 	 * Convenience constructor that takes the term to be mapped to and the type of the map
-	 * 
+	 *
 	 * @param conceptReferenceTerm the concept reference term to map to
 	 * @param conceptMapType the concept map type for this concept reference term map
 	 */
@@ -61,8 +61,9 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	 */
 	@Override
 	public String toString() {
-		if (conceptMapId == null)
+		if (conceptMapId == null) {
 			return "";
+		}
 		return conceptMapId.toString();
 	}
 	
@@ -85,7 +86,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	/**
 	 * Comments on concept maps are no longer supported since version 1.9, therefore a call to this
 	 * methods is useless
-	 * 
+	 *
 	 * @return Returns the comment.
 	 * @deprecated
 	 */
@@ -97,7 +98,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	/**
 	 * Comments on concept maps are no longer supported since version 1.9, therefore a call to this
 	 * results in setting the description of the associated reference term to the specified value
-	 * 
+	 *
 	 * @param comment The comment to set.
 	 * @deprecated
 	 */
@@ -125,7 +126,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	/**
 	 * The conceptSource should be accessed from the associated ConceptReferenceTerm since version
 	 * 1.9
-	 * 
+	 *
 	 * @return Returns the source.
 	 * @deprecated
 	 * @see ConceptReferenceTerm#getConceptSource()
@@ -137,7 +138,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	
 	/**
 	 * The conceptSource should be set on the associated ConceptReferenceTerm since version 1.9
-	 * 
+	 *
 	 * @param source The source to set.
 	 * @deprecated
 	 * @see ConceptReferenceTerm#setConceptSource(ConceptSource)
@@ -149,7 +150,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	
 	/**
 	 * The sourceCode should be accessed from the associated ConceptReferenceTerm since version 1.9
-	 * 
+	 *
 	 * @return Returns the sourceCode.
 	 * @deprecated
 	 * @see ConceptReferenceTerm#getCode()
@@ -161,7 +162,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	
 	/**
 	 * The sourceCode should be set on the associated ConceptReferenceTerm since version 1.9
-	 * 
+	 *
 	 * @param sourceCode The sourceCode to set.
 	 * @deprecated
 	 * @see ConceptReferenceTerm#setCode(String)
@@ -176,8 +177,9 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	 * @since 1.9
 	 */
 	public ConceptReferenceTerm getConceptReferenceTerm() {
-		if (conceptReferenceTerm == null)
+		if (conceptReferenceTerm == null) {
 			conceptReferenceTerm = new ConceptReferenceTerm();
+		}
 		return conceptReferenceTerm;
 	}
 	

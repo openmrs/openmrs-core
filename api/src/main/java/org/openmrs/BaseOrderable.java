@@ -16,7 +16,7 @@ package org.openmrs;
 /**
  * Base implementation of the {@link Orderable} interface, with concept, name, and description properties.
  * The name and description will be inherited from the concept if they're not explicitly specified.
- * 
+ *
  * @param <T> the specific type of {@link Order} that will ultimately be created from this Orderable.
  */
 public abstract class BaseOrderable<T extends Order> implements Orderable<T> {
@@ -38,33 +38,35 @@ public abstract class BaseOrderable<T extends Order> implements Orderable<T> {
 	/**
 	 * Returns the name property, if explicitly specified. Otherwise returns the preferred name of the concept
 	 * in the authenticated user's locale. 
-	 * 
+	 *
 	 * @see org.openmrs.Orderable#getName()
 	 */
 	@Override
 	public String getName() {
-		if (name != null)
+		if (name != null) {
 			return name;
-		else if (concept != null)
+		} else if (concept != null) {
 			return concept.getName().getName();
-		else
+		} else {
 			return null;
+		}
 	}
 	
 	/**
 	 * Returns the description property, if explicitly specified. Otherwise returns the description of the concept
 	 * in the authenticated user's locale.
-	 * 
+	 *
 	 * @see org.openmrs.Orderable#getDescription()
 	 */
 	@Override
 	public String getDescription() {
-		if (name != null)
+		if (name != null) {
 			return name;
-		else if (concept != null)
+		} else if (concept != null) {
 			return concept.getDescription().getDescription();
-		else
+		} else {
 			return null;
+		}
 	}
 	
 	/**

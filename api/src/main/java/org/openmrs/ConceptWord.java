@@ -52,7 +52,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Get the unique internal database identifier for this concept word
-	 * 
+	 *
 	 * @since 1.5
 	 */
 	public Integer getConceptWordId() {
@@ -61,7 +61,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Set the unique identifier for this concept word
-	 * 
+	 *
 	 * @since 1.5
 	 */
 	public void setConceptWordId(Integer conceptWordId) {
@@ -76,7 +76,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Convenience constructor
-	 * 
+	 *
 	 * @param word the single word that will be matched to search terms
 	 * @param concept the concept that is being matched to
 	 * @param conceptName the specific name that will be matched
@@ -170,7 +170,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Sets the concept name associated with this word.
-	 * 
+	 *
 	 * @param conceptName
 	 */
 	public void setConceptName(ConceptName conceptName) {
@@ -200,7 +200,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Increment the weight by i
-	 * 
+	 *
 	 * @param i
 	 */
 	public void increaseWeight(Double i) {
@@ -230,7 +230,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Split the given phrase on words and remove unique and stop words
-	 * 
+	 *
 	 * @param phrase
 	 * @return Returns a list of the unique parts of the phrase, in all upper case.
 	 */
@@ -240,7 +240,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Split the given phrase on words and remove unique and stop words for the given locale
-	 * 
+	 *
 	 * @param phrase
 	 * @param locale
 	 * @return Returns a list of the unique parts of the phrase, in all upper case.
@@ -255,8 +255,9 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 			for (String part : parts) {
 				if (!StringUtils.isBlank(part)) {
 					String upper = part.trim().toUpperCase();
-					if (!conceptStopWords.contains(upper) && !uniqueParts.contains(upper))
+					if (!conceptStopWords.contains(upper) && !uniqueParts.contains(upper)) {
 						uniqueParts.add(upper);
+					}
 				}
 			}
 		}
@@ -266,7 +267,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Split words according to OpenmrsConstants.REGEXes, newlines, and spaces
-	 * 
+	 *
 	 * @param phrase
 	 * @return String[] array of words
 	 */
@@ -288,12 +289,15 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 */
 	public String toString() {
 		String s = "";
-		if (concept != null)
+		if (concept != null) {
 			s += concept.getConceptId() + "|";
-		if (word != null)
+		}
+		if (word != null) {
 			s += word + "|";
-		if (locale != null)
+		}
+		if (locale != null) {
 			s += locale;
+		}
 		return s;
 	}
 	

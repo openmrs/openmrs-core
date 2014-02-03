@@ -59,7 +59,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	/**
 	 * Create a copy of a provided FormResource, ignoring the uuid and id of the original
-	 * 
+	 *
 	 * @param old the original FormResource to be copied
 	 */
 	public FormResource(FormResource old) {
@@ -90,7 +90,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	/**
 	 * gets the form
-	 * 
+	 *
 	 * @return the form
 	 */
 	public Form getForm() {
@@ -99,7 +99,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	/**
 	 * sets the form
-	 * 
+	 *
 	 * @param form the form
 	 */
 	public void setForm(Form form) {
@@ -108,7 +108,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	/**
 	 * gets the form resource id
-	 * 
+	 *
 	 * @return the form resource's id
 	 */
 	public Integer getFormResourceId() {
@@ -117,7 +117,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	/**
 	 * sets the form resource id
-	 * 
+	 *
 	 * @param formResourceId the form resource's id
 	 */
 	public void setFormResourceId(Integer formResourceId) {
@@ -126,7 +126,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	/**
 	 * gets the name of the resource
-	 * 
+	 *
 	 * @return the name of the resource
 	 */
 	public String getName() {
@@ -135,7 +135,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	/**
 	 * sets the name of the resource
-	 * 
+	 *
 	 * @param name the name of the resource
 	 */
 	public void setName(String name) {
@@ -215,10 +215,11 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	 */
 	@Override
 	public String getValueReference() {
-		if (valueReference == null)
+		if (valueReference == null) {
 			throw new NotYetPersistedException();
-		else
+		} else {
 			return valueReference;
+		}
 	}
 	
 	/**
@@ -226,8 +227,9 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	 */
 	@Override
 	public Object getValue() throws InvalidCustomValueException {
-		if (typedValue == null)
+		if (typedValue == null) {
 			typedValue = CustomDatatypeUtil.getDatatype(this).fromReferenceString(getValueReference());
+		}
 		return typedValue;
 	}
 	
@@ -241,7 +243,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String) 
+	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String)
 	 */
 	@Override
 	public void setValueReferenceInternal(String valueToPersist) throws InvalidCustomValueException {
@@ -249,7 +251,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	}
 	
 	/**
-	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty() 
+	 * @see org.openmrs.customdatatype.SingleCustomValue#isDirty()
 	 */
 	@Override
 	public boolean isDirty() {

@@ -38,8 +38,9 @@ public class LocationPatientFilter extends CachingPatientFilter {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getName()).append(".");
 		sb.append(getCalculationMethod()).append(".");
-		if (getLocation() != null)
+		if (getLocation() != null) {
 			sb.append(getLocation().getLocationId());
+		}
 		return sb.toString();
 	}
 	

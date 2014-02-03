@@ -76,9 +76,11 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		sb.append(getAtLeastCount()).append(".");
 		sb.append(getAtMostCount()).append(".");
 		sb.append(getLocation() == null ? null : getLocation().getLocationId()).append(".");
-		if (getEncounterTypeList() != null)
-			for (EncounterType t : getEncounterTypeList())
+		if (getEncounterTypeList() != null) {
+			for (EncounterType t : getEncounterTypeList()) {
 				sb.append(t.getEncounterTypeId()).append(",");
+			}
+		}
 		return sb.toString();
 	}
 	
@@ -86,10 +88,12 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		StringBuffer ret = new StringBuffer();
 		ret.append("Patients with ");
 		if (atLeastCount != null || atMostCount != null) {
-			if (atLeastCount != null)
+			if (atLeastCount != null) {
 				ret.append("at least " + atLeastCount + " ");
-			if (atMostCount != null)
+			}
+			if (atMostCount != null) {
 				ret.append("at most " + atMostCount + " ");
+			}
 		} else {
 			ret.append("any ");
 		}
@@ -97,8 +101,9 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 			ret.append("[");
 			for (Iterator<EncounterType> i = encounterTypeList.iterator(); i.hasNext();) {
 				ret.append(" " + i.next().getName());
-				if (i.hasNext())
+				if (i.hasNext()) {
 					ret.append(" ,");
+				}
 			}
 			ret.append(" ] ");
 		}
@@ -108,18 +113,23 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
 			ret.append("within the last ");
-			if (withinLastMonths != null)
+			if (withinLastMonths != null) {
 				ret.append(withinLastMonths + " month(s) ");
-			if (withinLastDays != null)
+			}
+			if (withinLastDays != null) {
 				ret.append(withinLastDays + " day(s) ");
+			}
 		}
 		// TODO untilDaysAgo untilMonthsAgo
-		if (sinceDate != null)
+		if (sinceDate != null) {
 			ret.append("on or after " + sinceDate + " ");
-		if (untilDate != null)
+		}
+		if (untilDate != null) {
 			ret.append("on or before " + untilDate + " ");
-		if (form != null)
+		}
+		if (form != null) {
 			ret.append("from the " + form.getName() + " form ");
+		}
 		return ret.toString();
 	}
 	
@@ -145,8 +155,9 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 	@Deprecated
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
-		if (getEncounterTypeList() == null)
+		if (getEncounterTypeList() == null) {
 			setEncounterTypeList(new ArrayList<EncounterType>());
+		}
 		getEncounterTypeList().add(encounterType);
 	}
 	

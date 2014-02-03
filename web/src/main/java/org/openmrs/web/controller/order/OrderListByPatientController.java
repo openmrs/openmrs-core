@@ -55,7 +55,7 @@ public class OrderListByPatientController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -67,7 +67,7 @@ public class OrderListByPatientController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -97,8 +97,9 @@ public class OrderListByPatientController extends SimpleFormController {
 			for (String p : orderList) {
 				try {
 					os.voidOrder(os.getOrder(Integer.valueOf(p)), voidReason);
-					if (!success.toString().equals(""))
+					if (!success.toString().equals("")) {
 						success.append("<br/>");
+					}
 					success.append(ord);
 					success.append(" ");
 					success.append(p);
@@ -107,19 +108,23 @@ public class OrderListByPatientController extends SimpleFormController {
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order", e);
-					if (!error.equals(""))
+					if (!error.equals("")) {
 						error.append("<br/>");
+					}
 					error.append(ord).append(" ").append(p).append(" ").append(notDeleted);
 				}
 			}
 			
 			view = getSuccessView();
-			if (ServletRequestUtils.getIntParameter(request, "patientId") != null)
+			if (ServletRequestUtils.getIntParameter(request, "patientId") != null) {
 				view += "?patientId=" + ServletRequestUtils.getIntParameter(request, "patientId");
-			if (!success.toString().equals(""))
+			}
+			if (!success.toString().equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
-			if (!error.equals(""))
+			}
+			if (!error.equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -128,7 +133,7 @@ public class OrderListByPatientController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {

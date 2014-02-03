@@ -54,7 +54,7 @@ public class TestInstallUtil {
 	
 	/**
 	 * Adds data to the test database from a sql dump file
-	 * 
+	 *
 	 * @param host
 	 * @param port
 	 * @param databaseName
@@ -105,12 +105,14 @@ public class TestInstallUtil {
 			}
 			
 			//print out the error messages from the process
-			if (StringUtils.isNotBlank(errorMsg))
+			if (StringUtils.isNotBlank(errorMsg)) {
 				log.error(errorMsg);
+			}
 			
 			if (proc.waitFor() == 0) {
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("Added test data successfully");
+				}
 				return true;
 			}
 			
@@ -132,7 +134,7 @@ public class TestInstallUtil {
 	 * Extracts .omod files from the specified {@link InputStream} and copies them to the module
 	 * repository of the test application data directory, the method always closes the InputStream
 	 * before returning
-	 * 
+	 *
 	 * @param in the {@link InputStream} for the zip file
 	 */
 	@SuppressWarnings("rawtypes")
@@ -151,8 +153,9 @@ public class TestInstallUtil {
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 				if (entry.isDirectory()) {
-					if (log.isDebugEnabled())
+					if (log.isDebugEnabled()) {
 						log.debug("Skipping directory: " + entry.getName());
+					}
 					continue;
 				}
 				
@@ -160,25 +163,29 @@ public class TestInstallUtil {
 				if (fileName.endsWith(".omod")) {
 					//Convert the names of .omod files located in nested directories so that they get
 					//created under the module repo directory when being copied
-					if (fileName.contains(System.getProperty("file.separator")))
+					if (fileName.contains(System.getProperty("file.separator"))) {
 						fileName = new File(entry.getName()).getName();
+					}
 					
-					if (log.isDebugEnabled())
+					if (log.isDebugEnabled()) {
 						log.debug("Extracting module file: " + fileName);
+					}
 					
 					//use the module repository folder GP value if specified
 					String moduleRepositoryFolder = FilterUtil
 					        .getGlobalPropertyValue(ModuleConstants.REPOSITORY_FOLDER_PROPERTY);
-					if (StringUtils.isBlank(moduleRepositoryFolder))
+					if (StringUtils.isBlank(moduleRepositoryFolder)) {
 						moduleRepositoryFolder = ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT;
+					}
 					
 					//At this point 'OpenmrsConstants.APPLICATION_DATA_DIRECTORY' is still null so we need check
 					//for the app data directory defined in the runtime props file if any otherwise the logic in
 					//the OpenmrsUtil.getDirectoryInApplicationDataDirectory(String) will default to the other
 					String appDataDirectory = Context.getRuntimeProperties().getProperty(
 					    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
-					if (StringUtils.isNotBlank(appDataDirectory))
+					if (StringUtils.isNotBlank(appDataDirectory)) {
 						OpenmrsConstants.APPLICATION_DATA_DIRECTORY = appDataDirectory;
+					}
 					
 					File moduleRepository = OpenmrsUtil.getDirectoryInApplicationDataDirectory(moduleRepositoryFolder);
 					
@@ -188,8 +195,9 @@ public class TestInstallUtil {
 					OpenmrsUtil.copyFile(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(
 					        new File(moduleRepository, fileName))));
 				} else {
-					if (log.isDebugEnabled())
+					if (log.isDebugEnabled()) {
 						log.debug("Ignoring file that is not a .omod '" + fileName);
+					}
 				}
 			}
 		}
@@ -218,7 +226,7 @@ public class TestInstallUtil {
 	
 	/**
 	 * Tests the connection to the specified URL
-	 * 
+	 *
 	 * @param urlString the url to test
 	 * @return true if a connection a established otherwise false
 	 */
@@ -234,12 +242,14 @@ public class TestInstallUtil {
 			return true;
 		}
 		catch (UnknownHostException e) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Error generated:", e);
+			}
 		}
 		catch (IOException e) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Error generated:", e);
+			}
 		}
 		
 		return false;
@@ -270,14 +280,16 @@ public class TestInstallUtil {
 		out.flush();
 		out.close();
 		
-		if (log.isInfoEnabled())
+		if (log.isInfoEnabled()) {
 			log.info("Http response message:" + urlConnection.getResponseMessage() + ", Code:"
 			        + urlConnection.getResponseCode());
+		}
 		
-		if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED)
+		if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
 			throw new APIAuthenticationException("Invalid username or password");
-		else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR)
+		} else if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
 			throw new APIException("An error occurred on the remote server");
+		}
 		
 		return urlConnection.getInputStream();
 	}

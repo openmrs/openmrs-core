@@ -45,7 +45,7 @@ public class Hl7InArchiveListController {
 	
 	/**
 	 * Render the archived HL7 messages page
-	 * 
+	 *
 	 * @param modelMap
 	 * @return
 	 */
@@ -56,7 +56,7 @@ public class Hl7InArchiveListController {
 	
 	/**
 	 * method for returning a batch of HL7s from the queue based on datatable parameters
-	 * 
+	 *
 	 * @param iDisplayStart start index for search
 	 * @param iDisplayLength amount of terms to return
 	 * @param sSearch search term(s)
@@ -77,8 +77,9 @@ public class Hl7InArchiveListController {
 		
 		// form the results dataset
 		List<Object> results = new ArrayList<Object>();
-		for (HL7InArchive hl7 : hl7s)
+		for (HL7InArchive hl7 : hl7s) {
 			results.add(splitHL7InArchive(hl7));
+		}
 		
 		// build the response
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -94,7 +95,7 @@ public class Hl7InArchiveListController {
 	
 	/**
 	 * create an object array for a given HL7InArchive
-	 * 
+	 *
 	 * @param q HL7InArchive object
 	 * @return object array for use with datatables
 	 */

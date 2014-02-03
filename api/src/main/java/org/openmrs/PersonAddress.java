@@ -105,7 +105,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * {@link #equals(Object)} in that this method compares the inner fields of each address for
 	 * equality. Note: Null/empty fields on <code>otherAddress</code> /will not/ cause a false value
 	 * to be returned
-	 * 
+	 *
 	 * @param otherAddress PersonAddress with which to compare
 	 * @return boolean true/false whether or not they are the same addresses
 	 */
@@ -131,7 +131,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * bitwise copy of the personAddress object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
 	 * PersonAddress.person object in this object AND the cloned object will point at the same
 	 * person
-	 * 
+	 *
 	 * @return New PersonAddress object
 	 */
 	public Object clone() {
@@ -211,8 +211,9 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @return Returns the preferred.
 	 */
 	public Boolean isPreferred() {
-		if (preferred == null)
+		if (preferred == null) {
 			return new Boolean(false);
+		}
 		return preferred;
 	}
 	
@@ -363,7 +364,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * Convenience method to test whether any of the fields in this address are set
-	 * 
+	 *
 	 * @return whether any of the address fields (address1, address2, cityVillage, stateProvince,
 	 *         country, countyDistrict, neighborhoodCell, postalCode, latitude, longitude, etc) are
 	 *         whitespace, empty ("") or null.
@@ -447,18 +448,22 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 		int retValue = 0;
 		if (other != null) {
 			retValue = isVoided().compareTo(other.isVoided());
-			if (retValue == 0)
+			if (retValue == 0) {
 				retValue = other.isPreferred().compareTo(isPreferred());
-			if (retValue == 0 && getDateCreated() != null)
+			}
+			if (retValue == 0 && getDateCreated() != null) {
 				retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-			if (retValue == 0)
+			}
+			if (retValue == 0) {
 				retValue = OpenmrsUtil.compareWithNullAsGreatest(getPersonAddressId(), other.getPersonAddressId());
+			}
 			
 			// if we've gotten this far, just check all address values. If they are
 			// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 			// and return that (they are not equal).
-			if (retValue == 0 && !equalsContent(other))
+			if (retValue == 0 && !equalsContent(other)) {
 				retValue = 1;
+			}
 		}
 		return retValue;
 	}
@@ -579,7 +584,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * Returns true if the address' endDate is null
-	 * 
+	 *
 	 * @return true or false
 	 * @since 1.9
 	 */
@@ -589,7 +594,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * Makes an address inactive by setting its endDate to the current time
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	public void deactivate() {
@@ -598,7 +603,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * Makes an address active by setting its endDate to null
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	public void activate() {

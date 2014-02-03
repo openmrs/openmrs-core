@@ -87,8 +87,9 @@ public class UserFormController {
 	@ModelAttribute("allRoles")
 	public List<Role> getRoles(WebRequest request) {
 		List<Role> roles = Context.getUserService().getAllRoles();
-		if (roles == null)
+		if (roles == null) {
 			roles = new Vector<Role>();
+		}
 		
 		for (String s : OpenmrsConstants.AUTO_ROLES()) {
 			Role r = new Role(s);
@@ -105,14 +106,17 @@ public class UserFormController {
 		// the formBackingObject method above sets up user, depending on userId and personId parameters   
 		
 		model.addAttribute("isNewUser", isNewUser(user));
-		if (isNewUser(user) || Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS))
+		if (isNewUser(user) || Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
 			model.addAttribute("modifyPasswords", true);
+		}
 		
-		if (createNewPerson != null)
+		if (createNewPerson != null) {
 			model.addAttribute("createNewPerson", createNewPerson);
+		}
 		
-		if (!isNewUser(user))
+		if (!isNewUser(user)) {
 			model.addAttribute("changePassword", new UserProperties(user.getUserProperties()).isSupposedToChangePassword());
+		}
 		
 		// not using the default view name because I'm converting from an existing form
 		return "admin/users/userForm";
@@ -172,20 +176,25 @@ public class UserFormController {
 		} else {
 			
 			// check if username is already in the database
-			if (us.hasDuplicateUsername(user))
+			if (us.hasDuplicateUsername(user)) {
 				errors.rejectValue("username", "error.username.taken");
+			}
 			
 			// check if password and password confirm are identical
-			if (password == null || password.equals("XXXXXXXXXXXXXXX"))
+			if (password == null || password.equals("XXXXXXXXXXXXXXX")) {
 				password = "";
-			if (confirm == null || confirm.equals("XXXXXXXXXXXXXXX"))
+			}
+			if (confirm == null || confirm.equals("XXXXXXXXXXXXXXX")) {
 				confirm = "";
+			}
 			
-			if (!password.equals(confirm))
+			if (!password.equals(confirm)) {
 				errors.reject("error.password.match");
+			}
 			
-			if (password.length() == 0 && isNewUser(user))
+			if (password.length() == 0 && isNewUser(user)) {
 				errors.reject("error.password.weak");
+			}
 			
 			//check password strength
 			if (password.length() > 0) {
@@ -204,10 +213,13 @@ public class UserFormController {
 					// user's roles, that we don't fetch a second copy of that same role from
 					// the database, or else hibernate will throw a NonUniqueObjectException.
 					Role role = null;
-					if (user.getRoles() != null)
-						for (Role test : user.getRoles())
-							if (test.getRole().equals(r))
+					if (user.getRoles() != null) {
+						for (Role test : user.getRoles()) {
+							if (test.getRole().equals(r)) {
 								role = test;
+							}
+						}
+					}
 					if (role == null) {
 						role = us.getRole(r);
 						user.addRole(role);
@@ -216,10 +228,11 @@ public class UserFormController {
 				}
 			}
 			
-			if (user.getRoles() == null)
+			if (user.getRoles() == null) {
 				newRoles.clear();
-			else
+			} else {
 				user.getRoles().retainAll(newRoles);
+			}
 			
 			String[] keys = request.getParameterValues("property");
 			String[] values = request.getParameterValues("value");
@@ -247,8 +260,9 @@ public class UserFormController {
 				us.saveUser(user, null);
 				
 				if (!password.equals("") && Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
-					if (log.isDebugEnabled())
+					if (log.isDebugEnabled()) {
 						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
+					}
 					us.changePassword(user, password);
 				}
 			}
@@ -265,7 +279,7 @@ public class UserFormController {
 	/**
 	 * Superficially determines if this form is being filled out for a new user (basically just
 	 * looks for a primary key (user_id)
-	 * 
+	 *
 	 * @param user
 	 * @return true/false if this user is new
 	 */

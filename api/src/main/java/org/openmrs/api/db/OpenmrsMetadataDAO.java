@@ -26,7 +26,7 @@ public interface OpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends Openm
 	 * @param includeVoided
 	 * @return
 	 */
-	int getAllCount(boolean includeRetired); 
+	int getAllCount(boolean includeRetired);
 	
 	/**
 	 * Return a lists of metadata objects optionally retired, with paging
@@ -35,7 +35,6 @@ public interface OpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends Openm
 	 * @param maxResults
 	 * @return
 	 */
-	List< T > getAll(boolean includeRetired, Integer firstResult, Integer maxResults);
-
+	List<T> getAll(boolean includeRetired, Integer firstResult, Integer maxResults);
+	
 }
-
