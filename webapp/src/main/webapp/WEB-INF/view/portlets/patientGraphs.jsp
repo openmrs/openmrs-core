@@ -238,7 +238,18 @@ table#labTestTable th {
 			// ensure Hide Graph links are hooked
 			$j(".box${model.patientVariation}").bind("click", toggleGraphVisibility);
 
-			window.setTimeout(loadGraphs, 1000);
+			var interval = null;
+			var checkIfVisible = function() {
+				if ($j('#patientGraphs').css('display') == 'none') {
+					return;
+				}
+
+				loadGraphs();
+				if (interval !== null) {
+					window.clearInterval(interval);
+				}
+			};
+			interval = window.setInterval(checkIfVisible, 1000);
 		});
 		
 	</script>
