@@ -82,8 +82,8 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		Collection<FormField> containingAllFormFields = new ArrayList<FormField>();
 		Collection<Field> fields = new ArrayList<Field>();
 		
-		FormField d = Context.getFormService().getFormField(2);
-		containingAnyFormField.add(d);
+		FormField ffield = Context.getFormService().getFormField(2);
+		containingAnyFormField.add(ffield);
 
 		List<Form> formsReturned = formService.getForms(partialName, published, encounterTypes, retired, containingAnyFormField,
 			    containingAllFormFields, fields);
