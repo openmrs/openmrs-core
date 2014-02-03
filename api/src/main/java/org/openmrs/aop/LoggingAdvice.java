@@ -50,7 +50,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	 * ("setters"). If debugging is turned on, execution time for each method is printed as well.
 	 * This method is called for every method in the Class/Service that it is wrapped around. This
 	 * method should be fairly quick and light.
-	 * 
+	 *
 	 * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
 	 */
 	public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -90,8 +90,9 @@ public class LoggingAdvice implements MethodInterceptor {
 				// change the annotation array of indexes to a list of indexes to ignore
 				List<Integer> argsToIgnore = new ArrayList<Integer>();
 				if (loggingAnnotation != null && loggingAnnotation.ignoredArgumentIndexes().length > 0) {
-					for (int argIndexToIgnore : loggingAnnotation.ignoredArgumentIndexes())
+					for (int argIndexToIgnore : loggingAnnotation.ignoredArgumentIndexes()) {
 						argsToIgnore.add(argIndexToIgnore);
+					}
 				}
 				
 				// loop over and print out each argument value
@@ -100,10 +101,11 @@ public class LoggingAdvice implements MethodInterceptor {
 					output.append(types[x].getSimpleName()).append("=");
 					
 					// if there is an annotation to skip this, print out a bogus string.
-					if (argsToIgnore.contains(x))
+					if (argsToIgnore.contains(x)) {
 						output.append("<Arg value ignored>");
-					else
+					} else {
 						output.append(values[x]);
+					}
 					
 					output.append(", ");
 				}
@@ -111,10 +113,11 @@ public class LoggingAdvice implements MethodInterceptor {
 			}
 			
 			// print the string as either debug or info
-			if (logGetter)
+			if (logGetter) {
 				log.debug(output.toString());
-			else if (logSetter)
+			} else if (logSetter) {
 				log.info(output.toString());
+			}
 		}
 		
 		try {
@@ -129,8 +132,9 @@ public class LoggingAdvice implements MethodInterceptor {
 					username = "Guest (Not logged in)";
 				} else {
 					username = user.getUsername();
-					if (username == null || username.length() == 0)
+					if (username == null || username.length() == 0) {
 						username = user.getSystemId();
+					}
 				}
 				log.error(String.format(
 				    "An error occurred while executing this method.\nCurrent user: %s\nError message: %s", username, e
@@ -144,14 +148,16 @@ public class LoggingAdvice implements MethodInterceptor {
 				output.append("Exiting method ").append(name);
 				
 				// only append execution time info if we're in debug mode
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					output.append(". execution time: " + (System.currentTimeMillis() - startTime)).append(" ms");
+				}
 				
 				// print the string as either debug or info
-				if (logGetter)
+				if (logGetter) {
 					log.debug(output.toString());
-				else if (logSetter)
+				} else if (logSetter) {
 					log.info(output.toString());
+				}
 			}
 		}
 		

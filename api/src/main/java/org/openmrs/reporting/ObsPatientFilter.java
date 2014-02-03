@@ -63,8 +63,9 @@ public class ObsPatientFilter extends CachingPatientFilter {
 	public String getCacheKey() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getName()).append(".");
-		if (getQuestion() != null)
+		if (getQuestion() != null) {
 			sb.append(getQuestion().getConceptId());
+		}
 		sb.append(".");
 		sb.append(getModifier()).append(".");
 		sb.append(getTimeModifier()).append(".");
@@ -79,35 +80,41 @@ public class ObsPatientFilter extends CachingPatientFilter {
 	}
 	
 	public boolean isReadyToRun() {
-		if (question == null)
+		if (question == null) {
 			return value != null && (value instanceof Concept);
+		}
 		if (question.getDatatype().getHl7Abbreviation().equals("NM")
 		        || question.getDatatype().getHl7Abbreviation().equals("DT")
 		        || question.getDatatype().getHl7Abbreviation().equals("TS")) {
-			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO)
+			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO) {
 				return true;
-			else
+			} else {
 				return getValue() != null && getModifier() != null;
+			}
 		} else if (question.getDatatype().getHl7Abbreviation().equals("ST")) {
-			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO)
+			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO) {
 				return true;
-			else
+			} else {
 				return getValue() != null;
+			}
 		} else if (question.getDatatype().getHl7Abbreviation().equals("CWE")) {
-			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO)
+			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO) {
 				return true;
-			else
+			} else {
 				return getValue() != null;
+			}
 		} else {
 			return false;
 		}
 	}
 	
 	public boolean checkConsistancy() {
-		if (!isReadyToRun())
+		if (!isReadyToRun()) {
 			return false;
-		if (question == null)
+		}
+		if (question == null) {
 			return value != null && (value instanceof Concept);
+		}
 		if (question.getDatatype().getHl7Abbreviation().equals("NM")
 		        || question.getDatatype().getHl7Abbreviation().equals("DT")
 		        || question.getDatatype().getHl7Abbreviation().equals("TS")) {
@@ -136,17 +143,18 @@ public class ObsPatientFilter extends CachingPatientFilter {
 		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
 		if (question == null) {
-			if (getValue() != null)
+			if (getValue() != null) {
 				ret.append("Patients with " + timeModifier + " obs with value " + ((Concept) value).getName().getName());
-			else
+			} else {
 				ret.append("question and value are both null");
+			}
 		} else {
 			ret.append("Patients with ");
 			ret.append(timeModifier + " ");
 			ConceptName questionName = question.getName(locale, false);
-			if (questionName != null)
+			if (questionName != null) {
 				ret.append(questionName);
-			else {
+			} else {
 				question = Context.getConceptService().getConcept(question.getConceptId());
 				if (question != null) {
 					questionName = question.getName(locale, false);
@@ -157,34 +165,42 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			}
 			if (value != null && modifier != null) {
 				ret.append(" " + modifier.getSqlRepresentation() + " ");
-				if (value instanceof Concept)
+				if (value instanceof Concept) {
 					ret.append(((Concept) value).getName(locale));
-				else
+				} else {
 					ret.append(value);
+				}
 			}
 		}
 		if (withinLastDays != null || withinLastMonths != null) {
 			ret.append(" within last");
-			if (withinLastMonths != null)
+			if (withinLastMonths != null) {
 				ret.append(" " + withinLastMonths + " months");
-			if (withinLastDays != null)
+			}
+			if (withinLastDays != null) {
 				ret.append(" " + withinLastDays + " days");
+			}
 		}
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
 			ret.append(" until");
-			if (untilMonthsAgo != null)
+			if (untilMonthsAgo != null) {
 				ret.append(" " + untilMonthsAgo + " months");
-			if (untilDaysAgo != null)
+			}
+			if (untilDaysAgo != null) {
 				ret.append(" " + untilDaysAgo + " months");
+			}
 			ret.append(" ago");
 		}
 		DateFormat df = null;
-		if (sinceDate != null || untilDate != null)
+		if (sinceDate != null || untilDate != null) {
 			df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
-		if (sinceDate != null)
+		}
+		if (sinceDate != null) {
 			ret.append(" since " + df.format(sinceDate));
-		if (untilDate != null)
+		}
+		if (untilDate != null) {
 			ret.append(" until " + df.format(untilDate));
+		}
 		return ret.toString();
 	}
 	

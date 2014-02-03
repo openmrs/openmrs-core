@@ -45,7 +45,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -82,8 +82,9 @@ public class HibernateAlertDAO implements AlertDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Alert.class);
 		
 		// exclude the expired alerts unless requested
-		if (!includeExpired)
+		if (!includeExpired) {
 			crit.add(Restrictions.or(Restrictions.isNull("dateToExpire"), Restrictions.gt("dateToExpire", new Date())));
+		}
 		
 		return crit.list();
 	}
@@ -111,8 +112,9 @@ public class HibernateAlertDAO implements AlertDAO {
 		}
 		
 		// exclude the expired alerts unless requested
-		if (!includeExpired)
+		if (!includeExpired) {
 			crit.add(Restrictions.or(Restrictions.isNull("dateToExpire"), Restrictions.gt("dateToExpire", new Date())));
+		}
 		
 		// exclude the read alerts unless requested
 		if (!includeRead && user.getUserId() != null) {

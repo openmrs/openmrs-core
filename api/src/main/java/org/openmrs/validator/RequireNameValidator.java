@@ -22,7 +22,7 @@ import org.springframework.validation.Validator;
 /**
  * Validates objects and requires that "name" be filled in. Used by other validators so that they
  * don't have to check the name every time.
- * 
+ *
  * @since 1.5
  */
 public class RequireNameValidator implements Validator {
@@ -33,10 +33,12 @@ public class RequireNameValidator implements Validator {
 	public boolean supports(Class clz) {
 		try {
 			PropertyDescriptor pd = new PropertyDescriptor("name", clz);
-			if (pd.getReadMethod() == null)
+			if (pd.getReadMethod() == null) {
 				return false;
-			if (pd.getWriteMethod() == null)
+			}
+			if (pd.getWriteMethod() == null) {
 				return false;
+			}
 			return true;
 		}
 		catch (Exception ex) {}

@@ -16,7 +16,7 @@ package org.openmrs;
 /**
  * ConceptMapType are used to define relationships between concepts and concept reference terms e.g
  * IS_A or SAME_AS, BROADER_THAN
- * 
+ *
  * @since 1.9
  */
 public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Serializable {
@@ -82,15 +82,16 @@ public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Seria
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		if (getName() == null)
+		if (getName() == null) {
 			return "";
+		}
 		
 		return getName();
 	}
 	
 	/**
 	 * Returns true if this concept map type is hidden otherwise false
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isHidden() {

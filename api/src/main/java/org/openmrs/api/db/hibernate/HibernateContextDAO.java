@@ -43,7 +43,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
  * directly, instead, the methods on the static {@link Context} file should be used.
- * 
+ *
  * @see ContextDAO
  * @see Context
  */
@@ -59,7 +59,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -79,13 +79,15 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		if (login != null) {
 			//if username is blank or white space character(s)
-			if (StringUtils.isEmpty(login) || StringUtils.isWhitespace(login))
+			if (StringUtils.isEmpty(login) || StringUtils.isWhitespace(login)) {
 				throw new ContextAuthenticationException(errorMsg);
+			}
 			
 			// loginWithoutDash is used to compare to the system id
 			String loginWithDash = login;
-			if (login.matches("\\d{2,}"))
+			if (login.matches("\\d{2,}")) {
 				loginWithDash = login.substring(0, login.length() - 1) + "-" + login.charAt(login.length() - 1);
+			}
 			
 			try {
 				candidateUser = (User) session.createQuery(
@@ -102,8 +104,9 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		// only continue if this is a valid username and a nonempty password
 		if (candidateUser != null && password != null) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Candidate user id: " + candidateUser.getUserId());
+			}
 			
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
 			Long lockoutTime = null;
@@ -217,7 +220,7 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	/**
 	 * Call the UserService to save the given user while proxying the privileges needed to do so.
-	 * 
+	 *
 	 * @param user the User to save
 	 */
 	private void saveUserProperties(User user) {
@@ -226,7 +229,7 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	/**
 	 * Get the integer stored for the given user that is their number of login attempts
-	 * 
+	 *
 	 * @param user the user to check
 	 * @return the # of login attempts for this user defaulting to zero if none defined
 	 */
@@ -250,12 +253,14 @@ public class HibernateContextDAO implements ContextDAO {
 	public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Participating in existing session (" + sessionFactory.hashCode() + ")");
+			}
 			participate = true;
 		} else {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
+			}
 			Session session = SessionFactoryUtils.getSession(sessionFactory, true);
 			session.setFlushMode(FlushMode.MANUAL);
 			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
@@ -319,8 +324,9 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.context.Context#shutdown()
 	 */
 	public void shutdown() {
-		if (log.isInfoEnabled())
+		if (log.isInfoEnabled()) {
 			showUsageStatistics();
+		}
 		
 		if (sessionFactory != null) {
 			
@@ -328,13 +334,15 @@ public class HibernateContextDAO implements ContextDAO {
 			closeSession();
 			
 			log.debug("Shutting down threadLocalSession factory");
-			if (!sessionFactory.isClosed())
+			if (!sessionFactory.isClosed()) {
 				sessionFactory.close();
+			}
 			
 			log.debug("The threadLocalSession has been closed");
 			
-		} else
+		} else {
 			log.error("SessionFactory is null");
+		}
 		
 	}
 	
@@ -361,7 +369,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Takes the default properties defined in /metadata/api/hibernate/hibernate.default.properties
 	 * and merges it into the user-defined runtime properties
-	 * 
+	 *
 	 * @see org.openmrs.api.db.ContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
 	 */
 	public void mergeDefaultRuntimeProperties(Properties runtimeProperties) {
@@ -373,8 +381,9 @@ public class HibernateContextDAO implements ContextDAO {
 			String prop = (String) key;
 			String value = (String) entry.getValue();
 			log.trace("Setting property: " + prop + ":" + value);
-			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop))
+			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop)) {
 				runtimeProperties.setProperty("hibernate." + prop, value);
+			}
 		}
 		
 		// load in the default hibernate properties from hibernate.default.properties
@@ -387,8 +396,9 @@ public class HibernateContextDAO implements ContextDAO {
 			// add in all default properties that don't exist in the runtime
 			// properties yet
 			for (Map.Entry<Object, Object> entry : props.entrySet()) {
-				if (!runtimeProperties.containsKey(entry.getKey()))
+				if (!runtimeProperties.containsKey(entry.getKey())) {
 					runtimeProperties.put(entry.getKey(), entry.getValue());
+				}
 			}
 		}
 		finally {

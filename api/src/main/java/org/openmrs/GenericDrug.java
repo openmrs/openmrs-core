@@ -43,7 +43,7 @@ public class GenericDrug extends BaseOrderable<DrugOrder> implements Orderable<D
 	
 	/**
 	 * Gets a numeric identifier from a string identifier.
-	 * 
+	 *
 	 * @param identifier
 	 *            the string identifier.
 	 * @return the numeric identifier if it is a valid one, else null
@@ -53,11 +53,13 @@ public class GenericDrug extends BaseOrderable<DrugOrder> implements Orderable<D
 	 * @since 1.10
 	 */
 	public static Integer getNumericIdentifier(String identifier) {
-		if (StringUtils.isBlank(identifier))
+		if (StringUtils.isBlank(identifier)) {
 			throw new IllegalArgumentException("identifier cannot be null");
+		}
 		
-		if (!identifier.startsWith(IDENTIFIER_PREFIX))
+		if (!identifier.startsWith(IDENTIFIER_PREFIX)) {
 			return null;
+		}
 		
 		try {
 			return Integer.valueOf(identifier.substring(IDENTIFIER_PREFIX.length()));

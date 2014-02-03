@@ -66,10 +66,12 @@ public class ObsListItem {
 			}
 			personName = obs.getPerson().getPersonName().getFullName();
 			conceptName = obs.getConcept().getName(locale).getName();
-			if (obs.getOrder() != null)
+			if (obs.getOrder() != null) {
 				order = obs.getOrder().getOrderId().toString();
-			if (obs.getLocation() != null)
+			}
+			if (obs.getLocation() != null) {
 				location = obs.getLocation().getName();
+			}
 			datetime = obs.getObsDatetime();
 			obsDate = datetime == null ? "" : Format.format(datetime, locale, FORMAT_TYPE.DATE);
 			voided = obs.isVoided();

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -125,10 +126,11 @@ public class HibernatePatientDAO implements PatientDAO {
 				ps.setInt(1, patient.getPatientId());
 				ps.execute();
 				
-				if (ps.getResultSet().next())
+				if (ps.getResultSet().next()) {
 					stubInsertNeeded = false;
-				else
+				} else {
 					stubInsertNeeded = true;
+				}
 				
 			}
 			catch (SQLException e) {
@@ -251,8 +253,9 @@ public class HibernatePatientDAO implements PatientDAO {
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		
-		if (!includeVoided)
+		if (!includeVoided) {
 			criteria.add(Restrictions.eq("voided", false));
+		}
 		
 		return criteria.list();
 	}
@@ -282,22 +285,27 @@ public class HibernatePatientDAO implements PatientDAO {
 		// make sure the patient object isn't voided
 		criteria.add(Restrictions.eq("voided", false));
 		
-		if (identifier != null)
+		if (identifier != null) {
 			criteria.add(Restrictions.eq("identifier", identifier));
+		}
 		
 		// TODO add junit test for getting by identifier type
-		if (patientIdentifierTypes.size() > 0)
+		if (patientIdentifierTypes.size() > 0) {
 			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
+		}
 		
-		if (locations.size() > 0)
+		if (locations.size() > 0) {
 			criteria.add(Restrictions.in("location", locations));
+		}
 		
 		// TODO add junit test for getting by patients
-		if (patients.size() > 0)
+		if (patients.size() > 0) {
 			criteria.add(Restrictions.in("patient", patients));
+		}
 		
-		if (isPreferred != null)
+		if (isPreferred != null) {
 			criteria.add(Restrictions.eq("preferred", isPreferred));
+		}
 		
 		return criteria.list();
 	}
@@ -372,17 +380,21 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		
-		if (name != null)
+		if (name != null) {
 			criteria.add(Restrictions.eq("name", name));
+		}
 		
-		if (format != null)
+		if (format != null) {
 			criteria.add(Restrictions.eq("format", format));
+		}
 		
-		if (required != null)
+		if (required != null) {
 			criteria.add(Restrictions.eq("required", required));
+		}
 		
-		if (hasCheckDigit != null)
+		if (hasCheckDigit != null) {
 			criteria.add(Restrictions.eq("checkDigit", hasCheckDigit));
+		}
 		
 		criteria.add(Restrictions.eq("retired", false));
 		
@@ -433,8 +445,9 @@ public class HibernatePatientDAO implements PatientDAO {
 				log.debug(f.getName());
 			}
 			
-			if (!attributes.contains("includeVoided"))
+			if (!attributes.contains("includeVoided")) {
 				where += "and p1.voided = false and p2.voided = false ";
+			}
 			
 			for (String s : attributes) {
 				if (patientFieldNames.contains(s)) {
@@ -461,8 +474,9 @@ public class HibernatePatientDAO implements PatientDAO {
 					}
 					where += " and pi1." + s + " = pi2." + s;
 					orderBy += "pi1." + s + ", ";
-				} else
+				} else {
 					log.warn("Unidentified attribute: " + s);
+				}
 			}
 			
 			int index = orderBy.lastIndexOf(", ");

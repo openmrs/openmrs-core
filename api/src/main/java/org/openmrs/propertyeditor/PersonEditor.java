@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  * a Person back and forth through an html form or other medium. <br/>
  * <br/>
  * In version 1.9, added ability for this to also retrieve Person objects by uuid
- * 
+ *
  * @see Person
  */
 public class PersonEditor extends PropertyEditorSupport {
@@ -37,7 +37,7 @@ public class PersonEditor extends PropertyEditorSupport {
 	/**
 	 * @should set using id
 	 * @should set using uuid
-	 * 
+	 *
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	@Override
@@ -52,8 +52,9 @@ public class PersonEditor extends PropertyEditorSupport {
 				// assume text entered is a uuid
 				Person person = ps.getPersonByUuid(text);
 				setValue(person);
-				if (person == null)
+				if (person == null) {
 					log.trace("Unable to get Person by primary key or uuid using input: " + text);
+				}
 			}
 		} else {
 			setValue(null);

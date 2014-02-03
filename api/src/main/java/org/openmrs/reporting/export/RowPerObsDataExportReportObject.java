@@ -31,7 +31,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Facilitates printing a data export so that a patient is listed out on multiple lines to allow for
  * all obs values selected to be included.
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
@@ -70,7 +70,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Append a simple column
-	 * 
+	 *
 	 * @param columnName
 	 * @param columnValue
 	 */
@@ -80,7 +80,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Set the concept based column
-	 * 
+	 *
 	 * @param columnName the string to identify this row (the header)
 	 * @param conceptId the conceptid for this column
 	 * @param extras String[] data from the obs to add (obsDatetime, encounterType, etc)
@@ -91,7 +91,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Append a calculated column
-	 * 
+	 *
 	 * @param columnName
 	 * @param columnValue
 	 */
@@ -101,7 +101,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Append a cohort column
-	 * 
+	 *
 	 * @param columnName
 	 * @param cohortId only one of this or filterId should be non-null
 	 * @param filterId only one of this or cohortId should be non-null
@@ -113,7 +113,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Add a patient to the list to be run on
-	 * 
+	 *
 	 * @param p
 	 */
 	public void addPatientId(Integer p) {
@@ -123,7 +123,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	/**
 	 * Generate a template according to this reports columns Assumes there is a patientSet object
 	 * available
-	 * 
+	 *
 	 * @return template string to be evaluated
 	 */
 	public String generateTemplate() {
@@ -153,8 +153,9 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 		if (extras != null) {
 			for (Integer x = 0; x < extras.length; x++) {
 				sb.append("'" + extras[x] + "'");
-				if (!x.equals(extras.length - 1))
+				if (!x.equals(extras.length - 1)) {
 					sb.append(",");
+				}
 			}
 		}
 		sb.append("])");
@@ -195,7 +196,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Generate the patientSet according to this report's characteristics
-	 * 
+	 *
 	 * @return patientSet to be used with report template
 	 */
 	public Cohort generatePatientSet(EvaluationContext context) {
@@ -210,14 +211,16 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 			patientIdSet.addAll(patientIds);
 		}
 		
-		if (location != null && !location.equals(""))
+		if (location != null && !location.equals("")) {
 			patientIdSet.retainAll(pss.getPatientsHavingLocation(getLocation()).getMemberIds());
+		}
 		
 		if (cohortId != null) {
 			// hack to hydrate this
 			Cohort cohort = Context.getCohortService().getCohort(cohortId);
-			if (cohort != null)
+			if (cohort != null) {
 				patientIdSet.retainAll(cohort.getMemberIds());
+			}
 		}
 		
 		if (cohortDefinitionId != null) {

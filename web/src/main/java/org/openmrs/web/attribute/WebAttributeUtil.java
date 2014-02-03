@@ -52,7 +52,7 @@ public class WebAttributeUtil {
 	
 	/**
 	 * Gets the value of an attribute out of an HTTP request, treating it according to the appropriate handler type.
-	 * 
+	 *
 	 * @param request
 	 * @param handler
 	 * @param paramName
@@ -70,9 +70,11 @@ public class WebAttributeUtil {
 		
 		String submittedValue = request.getParameter(paramName);
 		if (StringUtils.isNotEmpty(submittedValue)) // check empty instead of blank, because " " is meaningful
+		{
 			return dt.fromReferenceString(submittedValue);
-		else
+		} else {
 			return null;
+		}
 	}
 	
 	/**
@@ -82,7 +84,7 @@ public class WebAttributeUtil {
 	
 	/**
 	 * something[3] -> 3
-	 * 
+	 *
 	 * @param input
 	 * @return
 	 */
@@ -94,21 +96,23 @@ public class WebAttributeUtil {
 	
 	/**
 	 * Finds an existing attribute in a Customizable parent with the given id
-	 * 
+	 *
 	 * @param owner
 	 * @param existingAttributeId
 	 * @return
 	 */
 	private static <T extends Attribute<?, ?>> T findAttributeById(Customizable<T> owner, Integer existingAttributeId) {
-		for (T candidate : owner.getActiveAttributes())
-			if (candidate.getId().equals(existingAttributeId))
+		for (T candidate : owner.getActiveAttributes()) {
+			if (candidate.getId().equals(existingAttributeId)) {
 				return candidate;
+			}
+		}
 		return null;
 	}
 	
 	/**
 	 * Helper method to void an attribute
-	 * 
+	 *
 	 * @param existing
 	 */
 	private static void voidAttribute(Attribute<?, ?> existing) {
@@ -119,7 +123,7 @@ public class WebAttributeUtil {
 	
 	/**
 	 * Handles attributes submitted on a form that uses the "attributesForType" tag
-	 * 
+	 *
 	 * @param owner the object that the attributes will be applied to
 	 * @param errors Spring binding object for owner
 	 * @param attributeClass the actual class of the attribute we need to instantiate, e.g. LocationAttribute
@@ -170,8 +174,9 @@ public class WebAttributeUtil {
 						// if it has changed, we edit the existing one
 						Integer existingAttributeId = getFromSquareBrackets(afterPrefix);
 						AttributeClass existing = findAttributeById(owner, existingAttributeId);
-						if (existing == null)
+						if (existing == null) {
 							throw new RuntimeException("Visit was modified between page load and submit. Try again.");
+						}
 						if (valueAsObject == null) {
 							// they changed an existing value to "", so we void that attribute
 							toVoid.add(existing);
@@ -194,8 +199,9 @@ public class WebAttributeUtil {
 			}
 		}
 		
-		for (Attribute<?, ?> attr : toVoid)
+		for (Attribute<?, ?> attr : toVoid) {
 			voidAttribute(attr);
+		}
 	}
 	
 }

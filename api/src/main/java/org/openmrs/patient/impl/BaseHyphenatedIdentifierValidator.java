@@ -66,29 +66,40 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 		
 		String checkDigit = identifier.substring(identifier.indexOf("-") + 1, identifier.length());
 		
-		if (checkDigit.length() != 1)
+		if (checkDigit.length() != 1) {
 			throw new UnallowedIdentifierException("Identifier must have a check digit of length 1.");
+		}
 		
-		if (checkDigit.equalsIgnoreCase("A"))
+		if (checkDigit.equalsIgnoreCase("A")) {
 			checkDigit = "0";
-		if (checkDigit.equalsIgnoreCase("B"))
+		}
+		if (checkDigit.equalsIgnoreCase("B")) {
 			checkDigit = "1";
-		if (checkDigit.equalsIgnoreCase("C"))
+		}
+		if (checkDigit.equalsIgnoreCase("C")) {
 			checkDigit = "2";
-		if (checkDigit.equalsIgnoreCase("D"))
+		}
+		if (checkDigit.equalsIgnoreCase("D")) {
 			checkDigit = "3";
-		if (checkDigit.equalsIgnoreCase("E"))
+		}
+		if (checkDigit.equalsIgnoreCase("E")) {
 			checkDigit = "4";
-		if (checkDigit.equalsIgnoreCase("F"))
+		}
+		if (checkDigit.equalsIgnoreCase("F")) {
 			checkDigit = "5";
-		if (checkDigit.equalsIgnoreCase("G"))
+		}
+		if (checkDigit.equalsIgnoreCase("G")) {
 			checkDigit = "6";
-		if (checkDigit.equalsIgnoreCase("H"))
+		}
+		if (checkDigit.equalsIgnoreCase("H")) {
 			checkDigit = "7";
-		if (checkDigit.equalsIgnoreCase("I"))
+		}
+		if (checkDigit.equalsIgnoreCase("I")) {
 			checkDigit = "8";
-		if (checkDigit.equalsIgnoreCase("J"))
+		}
+		if (checkDigit.equalsIgnoreCase("J")) {
 			checkDigit = "9";
+		}
 		
 		int givenCheckDigit = 10;
 		
@@ -109,22 +120,26 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 	 *             otherwise invalid.
 	 */
 	protected void checkAllowedIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException {
-		if (undecoratedIdentifier == null)
+		if (undecoratedIdentifier == null) {
 			throw new UnallowedIdentifierException("Identifier can not be null.");
-		if (undecoratedIdentifier.length() == 0)
+		}
+		if (undecoratedIdentifier.length() == 0) {
 			throw new UnallowedIdentifierException("Identifier must contain at least one character.");
-		if (undecoratedIdentifier.contains(" "))
+		}
+		if (undecoratedIdentifier.contains(" ")) {
 			throw new UnallowedIdentifierException("Identifier may not contain white space.");
+		}
 		for (int i = 0; i < undecoratedIdentifier.length(); i++) {
-			if (getAllowedCharacters().indexOf(undecoratedIdentifier.charAt(i)) == -1)
+			if (getAllowedCharacters().indexOf(undecoratedIdentifier.charAt(i)) == -1) {
 				throw new UnallowedIdentifierException("\"" + undecoratedIdentifier.charAt(i)
 				        + "\" is an invalid character.");
+			}
 		}
 	}
 	
 	/**
 	 * Not doing this with ASCII math to be extra careful.
-	 * 
+	 *
 	 * @param checkDigit
 	 * @return
 	 */

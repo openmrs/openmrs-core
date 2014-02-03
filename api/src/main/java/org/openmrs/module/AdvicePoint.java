@@ -55,8 +55,9 @@ public class AdvicePoint {
 	 * @return the classInstance
 	 */
 	public Object getClassInstance() {
-		if (classInstance != null)
+		if (classInstance != null) {
 			return classInstance;
+		}
 		
 		Object o = null;
 		try {

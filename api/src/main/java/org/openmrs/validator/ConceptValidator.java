@@ -48,7 +48,7 @@ public class ConceptValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -58,7 +58,7 @@ public class ConceptValidator implements Validator {
 	
 	/**
 	 * Checks that a given concept object is valid.
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should pass if the concept has atleast one fully specified name added to it
@@ -88,8 +88,9 @@ public class ConceptValidator implements Validator {
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
-		if (obj == null || !(obj instanceof Concept))
+		if (obj == null || !(obj instanceof Concept)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Concept.class);
+		}
 		
 		Concept conceptToValidate = (Concept) obj;
 		//no name to validate, but why is this the case?
@@ -137,11 +138,12 @@ public class ConceptValidator implements Validator {
 				}
 				
 				if (nameInLocale.isFullySpecifiedName()) {
-					if (!hasFullySpecifiedName)
+					if (!hasFullySpecifiedName) {
 						hasFullySpecifiedName = true;
-					if (!fullySpecifiedNameForLocaleFound)
+					}
+					if (!fullySpecifiedNameForLocaleFound) {
 						fullySpecifiedNameForLocaleFound = true;
-					else {
+					} else {
 						log.warn("Found multiple fully specified names in locale '" + conceptNameLocale.toString() + "'");
 						errors.reject("Concept.error.multipleFullySpecifiedNames");
 					}
@@ -153,8 +155,9 @@ public class ConceptValidator implements Validator {
 				}
 				
 				if (nameInLocale.isShort()) {
-					if (!shortNameForLocaleFound)
+					if (!shortNameForLocaleFound) {
 						shortNameForLocaleFound = true;
+					}
 					//should have one short name per locale
 					else {
 						log.warn("Found multiple short names in locale '" + conceptNameLocale.toString() + "'");
@@ -173,14 +176,16 @@ public class ConceptValidator implements Validator {
 						if (conceptsWithPossibleDuplicateNames.size() > 0) {
 							for (Concept concept : conceptsWithPossibleDuplicateNames) {
 								//skip retired
-								if (concept.isRetired())
+								if (concept.isRetired()) {
 									continue;
+								}
 								
 								//skip same
 								String uuid = conceptToValidate.getUuid();
 								if (conceptToValidate.getConceptId() != null && uuid != null
-								        && uuid.equals(concept.getUuid()))
+								        && uuid.equals(concept.getUuid())) {
 									continue;
+								}
 								
 								//should be a unique name amongst all preferred and fully specified names in its locale system wide
 								if ((concept.getFullySpecifiedName(conceptNameLocale) != null && concept
@@ -209,14 +214,16 @@ public class ConceptValidator implements Validator {
 				//No duplicate names allowed for the same locale and concept, keep the case the same
 				//except for short names
 				if (!nameInLocale.isShort()) {
-					if (!validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase()))
+					if (!validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase())) {
 						throw new DuplicateConceptNameException("'" + nameInLocale.getName()
 						        + "' is a duplicate name in locale '" + conceptNameLocale.toString()
 						        + "' for the same concept");
+					}
 				}
 				
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("Valid name found: " + nameInLocale.getName());
+				}
 			}
 		}
 		
@@ -250,11 +257,13 @@ public class ConceptValidator implements Validator {
 				}*/
 
 				//don't proceed to the next maps since the current one already has errors
-				if (errors.hasErrors())
+				if (errors.hasErrors()) {
 					return;
+				}
 				
-				if (mappedTermIds == null)
+				if (mappedTermIds == null) {
 					mappedTermIds = new HashSet<Integer>();
+				}
 				
 				//if we already have a mapping to this term, reject it this map
 				if (map.getConceptReferenceTerm().getId() != null) {

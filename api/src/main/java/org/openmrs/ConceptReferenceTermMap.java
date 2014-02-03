@@ -19,7 +19,7 @@ import java.io.Serializable;
  * The concept Reference Term map object represents a mapping between two Concept Reference Terms. A
  * concept reference term can have 0 to N concept reference term mappings to any or all Concept
  * Reference Terms
- * 
+ *
  * @since 1.9
  */
 public class ConceptReferenceTermMap extends BaseConceptMap implements Serializable {
@@ -45,7 +45,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap implements Serializa
 	
 	/**
 	 * Convenience constructor that takes the term to be mapped to and the type of the map
-	 * 
+	 *
 	 * @param termB the other concept reference term to map to
 	 * @param conceptMapType the concept map type for this concept reference term map
 	 */
@@ -118,8 +118,9 @@ public class ConceptReferenceTermMap extends BaseConceptMap implements Serializa
 			return false;
 		}
 		ConceptReferenceTermMap rhs = (ConceptReferenceTermMap) obj;
-		if (this.conceptReferenceTermMapId != null && rhs.conceptReferenceTermMapId != null)
+		if (this.conceptReferenceTermMapId != null && rhs.conceptReferenceTermMapId != null) {
 			return (this.conceptReferenceTermMapId.equals(rhs.conceptReferenceTermMapId));
+		}
 		
 		return this == obj;
 	}
@@ -128,8 +129,9 @@ public class ConceptReferenceTermMap extends BaseConceptMap implements Serializa
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.conceptReferenceTermMapId == null)
+		if (this.conceptReferenceTermMapId == null) {
 			return super.hashCode();
+		}
 		int hash = 3;
 		hash = hash + 31 * this.conceptReferenceTermMapId;
 		return hash;
@@ -139,8 +141,9 @@ public class ConceptReferenceTermMap extends BaseConceptMap implements Serializa
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		if (conceptReferenceTermMapId == null)
+		if (conceptReferenceTermMapId == null) {
 			return "";
+		}
 		return conceptReferenceTermMapId.toString();
 	}
 	

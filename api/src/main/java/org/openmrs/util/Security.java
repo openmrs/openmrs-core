@@ -55,7 +55,7 @@ public class Security {
 	 * <br/>
 	 * This should be used so that this class can compare against the new correct hashing algorithm
 	 * and the old incorrect hashin algorithm.
-	 * 
+	 *
 	 * @param hashedPassword a stored password that has been hashed previously
 	 * @param passwordToHash a string to encode/hash and compare to hashedPassword
 	 * @return true/false whether the two are equal
@@ -65,8 +65,9 @@ public class Security {
 	 * @should match strings hashed with sha512 algorithm and 128 characters salt
 	 */
 	public static boolean hashMatches(String hashedPassword, String passwordToHash) {
-		if (hashedPassword == null || passwordToHash == null)
+		if (hashedPassword == null || passwordToHash == null) {
 			throw new APIException("Neither the hashed password or the password to hash cannot be null");
+		}
 		
 		return hashedPassword.equals(encodeString(passwordToHash))
 		        || hashedPassword.equals(encodeStringSHA1(passwordToHash))
@@ -76,7 +77,7 @@ public class Security {
 	/**
 	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
 	 * OpenMRS's preferred algorithm is hard coded to be SHA-512.
-	 * 
+	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-512 encryption of a given string
 	 * @should encode strings to 128 characters
@@ -102,7 +103,7 @@ public class Security {
 	
 	/**
 	 * This method will hash <code>strToEncode</code> using the old SHA-1 algorithm.
-	 * 
+	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-1 encryption of a given string
 	 */
@@ -127,7 +128,7 @@ public class Security {
 	
 	/**
 	 * Convenience method to convert a byte array to a string
-	 * 
+	 *
 	 * @param b Byte array to convert to HexString
 	 * @return Hexidecimal based string
 	 */
@@ -150,7 +151,7 @@ public class Security {
 	/**
 	 * This method will hash <code>strToEncode</code> using SHA-1 and the incorrect hashing method
 	 * that sometimes dropped out leading zeros.
-	 * 
+	 *
 	 * @param strToEncode string to encode
 	 * @return the SHA-1 encryption of a given string
 	 */
@@ -179,13 +180,14 @@ public class Security {
 	 * to occur against both this method and the correct hex string, so this wrong implementation
 	 * will remain until we either force users to change their passwords, or we just decide to
 	 * invalidate them.
-	 * 
+	 *
 	 * @param b
 	 * @return the old possibly less than 40 characters hashed string
 	 */
 	private static String incorrectHexString(byte[] b) {
-		if (b == null || b.length < 1)
+		if (b == null || b.length < 1) {
 			return "";
+		}
 		StringBuffer s = new StringBuffer();
 		for (int i = 0; i < b.length; i++) {
 			s.append(Integer.toHexString(b[i] & 0xFF));
@@ -195,7 +197,7 @@ public class Security {
 	
 	/**
 	 * This method will generate a random string
-	 * 
+	 *
 	 * @return a secure random token.
 	 */
 	public static String getRandomToken() throws APIException {
@@ -206,9 +208,9 @@ public class Security {
 	/**
 	 * encrypt text to a string with specific initVector and secretKey; rarely used except in
 	 * testing and where specifically necessary
-	 * 
+	 *
 	 * @see #encrypt(String)
-	 * 
+	 *
 	 * @param text string to be encrypted
 	 * @param initVector custom init vector byte array
 	 * @param secretKey custom secret key byte array
@@ -237,7 +239,7 @@ public class Security {
 	
 	/**
 	 * encrypt text using stored initVector and securityKey
-	 * 
+	 *
 	 * @param text
 	 * @return encrypted text
 	 * @since 1.9
@@ -250,9 +252,9 @@ public class Security {
 	/**
 	 * decrypt text to a string with specific initVector and secretKey; rarely used except in
 	 * testing and where specifically necessary
-	 * 
+	 *
 	 * @see #decrypt(String)
-	 * 
+	 *
 	 * @param text text to be decrypted
 	 * @param initVector custom init vector byte array
 	 * @param secretKey custom secret key byte array
@@ -282,7 +284,7 @@ public class Security {
 	
 	/**
 	 * decrypt text using stored initVector and securityKey
-	 * 
+	 *
 	 * @param text text to be decrypted
 	 * @return decrypted text
 	 * @since 1.9
@@ -294,7 +296,7 @@ public class Security {
 	
 	/**
 	 * retrieve the stored init vector from runtime properties
-	 * 
+	 *
 	 * @return stored init vector byte array
 	 * @since 1.9
 	 */
@@ -302,8 +304,9 @@ public class Security {
 		String initVectorText = Context.getRuntimeProperties().getProperty(
 		    OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, OpenmrsConstants.ENCRYPTION_VECTOR_DEFAULT);
 		
-		if (StringUtils.hasText(initVectorText))
+		if (StringUtils.hasText(initVectorText)) {
 			return Base64.decode(initVectorText);
+		}
 		
 		throw new APIException("no encryption initialization vector found");
 	}
@@ -311,7 +314,7 @@ public class Security {
 	/**
 	 * generate a new cipher initialization vector; should only be called once in order to not
 	 * invalidate all encrypted data
-	 * 
+	 *
 	 * @return a random array of 16 bytes
 	 * @since 1.9
 	 */
@@ -330,7 +333,7 @@ public class Security {
 	
 	/**
 	 * retrieve the secret key from runtime properties
-	 * 
+	 *
 	 * @return stored secret key byte array
 	 * @since 1.9
 	 */
@@ -338,8 +341,9 @@ public class Security {
 		String keyText = Context.getRuntimeProperties().getProperty(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
 		    OpenmrsConstants.ENCRYPTION_KEY_DEFAULT);
 		
-		if (StringUtils.hasText(keyText))
+		if (StringUtils.hasText(keyText)) {
 			return Base64.decode(keyText);
+		}
 		
 		throw new APIException("no encryption secret key found");
 	}
@@ -347,7 +351,7 @@ public class Security {
 	/**
 	 * generate a new secret key; should only be called once in order to not invalidate all
 	 * encrypted data
-	 * 
+	 *
 	 * @return generated secret key byte array
 	 * @since 1.9
 	 */

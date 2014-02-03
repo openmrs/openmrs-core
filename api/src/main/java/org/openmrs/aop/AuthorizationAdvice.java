@@ -38,7 +38,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
-	 * 
+	 *
 	 * @param method
 	 * @param args
 	 * @param target
@@ -48,15 +48,17 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	@SuppressWarnings( { "unchecked" })
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Calling authorization advice before " + method.getName());
+		}
 		
 		User user = Context.getAuthenticatedUser();
 		
 		if (log.isDebugEnabled()) {
 			log.debug("User " + user);
-			if (user != null)
+			if (user != null) {
 				log.debug("has roles " + user.getAllRoles());
+			}
 		}
 		
 		AuthorizedAnnotationAttributes attributes = new AuthorizedAnnotationAttributes();
@@ -70,11 +72,13 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			for (String privilege : privileges) {
 				
 				// skip null privileges
-				if (privilege == null || privilege.isEmpty())
+				if (privilege == null || privilege.isEmpty()) {
 					return;
+				}
 				
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("User has privilege " + privilege + "? " + Context.hasPrivilege(privilege));
+				}
 				
 				if (Context.hasPrivilege(privilege)) {
 					if (!requireAll) {
@@ -101,48 +105,52 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 		} else if (attributes.hasAuthorizedAnnotation(method)) {
 			// if there are no privileges defined, just require that 
 			// the user be authenticated
-			if (Context.isAuthenticated() == false)
+			if (Context.isAuthenticated() == false) {
 				throwUnauthorized(user, method);
+			}
 		}
 	}
 	
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 * 
+	 *
 	 * @param user authenticated user
 	 * @param method acting method
 	 * @param attrs Collection of String privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("User " + user + " is not authorized to access " + method.getName());
+		}
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { StringUtils.join(attrs, ",") }, null));
 	}
 	
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 * 
+	 *
 	 * @param user authenticated user
 	 * @param method acting method
 	 * @param attrs privilege names that the user must have
 	 */
 	private void throwUnauthorized(User user, Method method, String attr) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("User " + user + " is not authorized to access " + method.getName());
+		}
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.privilegesRequired",
 		    new Object[] { attr }, null));
 	}
 	
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 * 
+	 *
 	 * @param user authenticated user
 	 * @param method acting method
 	 */
 	private void throwUnauthorized(User user, Method method) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("User " + user + " is not authorized to access " + method.getName());
+		}
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));
 	}
 }

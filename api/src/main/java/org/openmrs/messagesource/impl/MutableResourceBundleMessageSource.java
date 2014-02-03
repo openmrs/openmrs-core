@@ -84,7 +84,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * This method looks at the current property files and deduces what locales are available from
 	 * those
-	 * 
+	 *
 	 * @see #getLocales()
 	 * @see #findPropertiesFiles()
 	 */
@@ -110,7 +110,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * Utility method for deriving a locale from a filename, presumed to have an embedded locale
 	 * specification near the end. For instance messages_it.properties if the filename is
 	 * messages.properties, the Locale is presumed to be the default set for Java
-	 * 
+	 *
 	 * @param filename the name to parse
 	 * @return Locale derived from the given string
 	 */
@@ -123,8 +123,9 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			basename = basefilename.getPath();
 			
 			int indexOfLastPart = basename.lastIndexOf(File.separatorChar) + 1;
-			if (indexOfLastPart > 0)
+			if (indexOfLastPart > 0) {
 				basename = basename.substring(indexOfLastPart);
+			}
 			
 			if (filename.startsWith(basename)) {
 				filename = filename.substring(basename.length());
@@ -146,7 +147,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * Presumes to append the messages to a message.properties file which is already being monitored
 	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
-	 * 
+	 *
 	 * @see org.openmrs.messagesource.MutableMessageSource#publishProperties(java.util.Properties,
 	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
@@ -161,8 +162,9 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		try {
 			File propertiesFile = propertiesResource.getFile();
 			
-			if (!propertiesFile.exists())
+			if (!propertiesFile.exists()) {
 				propertiesFile.createNewFile();
+			}
 			// append the properties to the appropriate messages file
 			OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
 			
@@ -182,7 +184,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	
 	/**
 	 * Returns all available messages.
-	 * 
+	 *
 	 * @see org.openmrs.messagesource.MessageSourceService#getPresentations()
 	 */
 	public Collection<PresentationMessage> getPresentations() {
@@ -208,7 +210,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	
 	/**
 	 * Override to obtain a local reference to the basenames.
-	 * 
+	 *
 	 * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasename(java.lang.String)
 	 */
 	@Override
@@ -219,7 +221,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	
 	/**
 	 * Override to obtain a local reference to the basenames.
-	 * 
+	 *
 	 * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasenames(java.lang.String[])
 	 */
 	@Override
@@ -271,7 +273,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * Convenience method to scan the available properties files, looking for the one that has a
 	 * definition for the given code.
-	 * 
+	 *
 	 * @param code
 	 * @return the file which defines the code, or null if not found
 	 */
@@ -298,7 +300,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * Searches the filesystem for message properties files. ABKTODO: consider caching this, rather
 	 * than searching every time
-	 * 
+	 *
 	 * @return collection of property file names
 	 */
 	private Collection<File> findPropertiesFiles() {
@@ -385,8 +387,9 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 						propertyDestination = possibleDestination;
 						propExists = true;
 						break;
-					} else if (propertyDestination == null)
+					} else if (propertyDestination == null) {
 						propertyDestination = possibleDestination;
+					}
 				}
 				if ((propExists && overwrite) || !propExists) {
 					propertyDestination.put(message.getCode(), message.getMessage());

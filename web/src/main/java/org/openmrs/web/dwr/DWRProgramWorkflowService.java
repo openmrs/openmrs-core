@@ -61,8 +61,9 @@ public class DWRProgramWorkflowService {
 		ProgramWorkflowService s = Context.getProgramWorkflowService();
 		PatientProgram p = s.getPatientProgram(patientProgramId);
 		ProgramWorkflow wf = p.getProgram().getWorkflow(programWorkflowId);
-		for (PatientState st : p.statesInWorkflow(wf, false))
+		for (PatientState st : p.statesInWorkflow(wf, false)) {
 			ret.add(new PatientStateItem(st));
+		}
 		return ret;
 	}
 	
@@ -70,7 +71,7 @@ public class DWRProgramWorkflowService {
 		Vector<ListItem> ret = new Vector<ListItem>();
 		Program program = Context.getProgramWorkflowService().getProgram(programId);
 		Set<ProgramWorkflow> workflows = program.getWorkflows();
-		if (workflows != null)
+		if (workflows != null) {
 			for (ProgramWorkflow wf : workflows) {
 				ListItem li = new ListItem();
 				li.setId(wf.getProgramWorkflowId());
@@ -84,6 +85,7 @@ public class DWRProgramWorkflowService {
 				catch (NullPointerException ex) {}
 				ret.add(li);
 			}
+		}
 		return ret;
 	}
 	
@@ -154,20 +156,24 @@ public class DWRProgramWorkflowService {
 		// If persisted date enrolled is not null then parse to ymdDf format.
 		if (null != pp.getDateEnrolled()) {
 			String enrolled = ymdDf.format(pp.getDateEnrolled());
-			if (null != enrolled && enrolled.length() > 0)
+			if (null != enrolled && enrolled.length() > 0) {
 				ppDateEnrolled = ymdDf.parse(enrolled);
+			}
 		}
 		// If persisted date enrolled is not null then parse to ymdDf format.
 		if (null != pp.getDateCompleted()) {
 			String completed = ymdDf.format(pp.getDateCompleted());
-			if (null != completed && completed.length() > 0)
+			if (null != completed && completed.length() > 0) {
 				ppDateCompleted = ymdDf.parse(completed);
+			}
 		}
 		// Parse parameter dates to ymdDf format.
-		if (enrollmentDateYmd != null && enrollmentDateYmd.length() > 0)
+		if (enrollmentDateYmd != null && enrollmentDateYmd.length() > 0) {
 			dateEnrolled = ymdDf.parse(enrollmentDateYmd);
-		if (completionDateYmd != null && completionDateYmd.length() > 0)
+		}
+		if (completionDateYmd != null && completionDateYmd.length() > 0) {
 			dateCompleted = ymdDf.parse(completionDateYmd);
+		}
 		// If either either parameter and persisted instances 
 		// of enrollment and completion dates are equal, then anyChange is true.
 		boolean anyChange = OpenmrsUtil.nullSafeEquals(dateEnrolled, ppDateEnrolled);
@@ -219,8 +225,9 @@ public class DWRProgramWorkflowService {
 		PatientProgram pp = s.getPatientProgram(patientProgramId);
 		ProgramWorkflowState st = pp.getProgram().getWorkflow(programWorkflowId).getState(programWorkflowStateId);
 		Date onDate = null;
-		if (onDateDMY != null && onDateDMY.length() > 0)
+		if (onDateDMY != null && onDateDMY.length() > 0) {
 			onDate = ymdDf.parse(onDateDMY);
+		}
 		pp.transitionToState(st, onDate);
 		s.savePatientProgram(pp);
 	}

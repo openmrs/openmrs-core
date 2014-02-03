@@ -47,7 +47,7 @@ public class LocationTagController {
 	
 	/**
 	 * Set up automatic primitive-to-class mappings
-	 * 
+	 *
 	 * @param wdb
 	 */
 	@InitBinder
@@ -94,8 +94,9 @@ public class LocationTagController {
 	public void showEdit(@RequestParam("locationTagId") LocationTag locationTag, ModelMap model) {
 		model.addAttribute("locationTag", locationTag); // this will go in the session
 		List<Location> locations = Context.getLocationService().getLocationsByTag(locationTag);
-		if (locations != null && locations.size() > 0)
+		if (locations != null && locations.size() > 0) {
 			model.addAttribute("locations", locations);
+		}
 	}
 	
 	/**

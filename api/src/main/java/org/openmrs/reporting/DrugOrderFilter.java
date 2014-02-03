@@ -77,9 +77,11 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		sb.append(
 		    OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
 		        untilDate)).append(".");
-		if (getDrugListToUse() != null)
-			for (Drug d : getDrugListToUse())
+		if (getDrugListToUse() != null) {
+			for (Drug d : getDrugListToUse()) {
 				sb.append(d.getDrugId()).append(",");
+			}
+		}
 		return sb.toString();
 	}
 	
@@ -88,53 +90,64 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		StringBuffer ret = new StringBuffer();
 		boolean currentlyCase = getWithinLastDays() != null && getWithinLastDays() == 0
 		        && (getWithinLastMonths() == null || getWithinLastMonths() == 0);
-		if (currentlyCase)
+		if (currentlyCase) {
 			ret.append("Patients currently ");
-		else
+		} else {
 			ret.append("Patients ");
+		}
 		if (getDrugListToUse() == null || getDrugListToUse().size() == 0) {
-			if (getAnyOrAll() == GroupMethod.NONE)
+			if (getAnyOrAll() == GroupMethod.NONE) {
 				ret.append(currentlyCase ? "taking no drugs" : "who never took any drugs");
-			else
+			} else {
 				ret.append(currentlyCase ? "taking any drugs" : "ever taking any drugs");
+			}
 		} else {
 			if (getDrugListToUse().size() == 1) {
-				if (getAnyOrAll() == GroupMethod.NONE)
+				if (getAnyOrAll() == GroupMethod.NONE) {
 					ret.append("not taking ");
-				else
+				} else {
 					ret.append("taking ");
+				}
 				ret.append(getDrugListToUse().get(0).getName());
 			} else {
 				ret.append("taking " + getAnyOrAll() + " of [");
 				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext();) {
 					ret.append(i.next().getName());
-					if (i.hasNext())
+					if (i.hasNext()) {
 						ret.append(" , ");
+					}
 				}
 				ret.append("]");
 			}
 		}
-		if (!currentlyCase)
+		if (!currentlyCase) {
 			if (getWithinLastDays() != null || getWithinLastMonths() != null) {
 				ret.append(" withing the last");
-				if (getWithinLastMonths() != null)
+				if (getWithinLastMonths() != null) {
 					ret.append(" " + getWithinLastMonths() + " months");
-				if (getWithinLastDays() != null)
+				}
+				if (getWithinLastDays() != null) {
 					ret.append(" " + getWithinLastDays() + " days");
+				}
 			}
-		if (getSinceDate() != null)
+		}
+		if (getSinceDate() != null) {
 			ret.append(" since " + df.format(getSinceDate()));
-		if (getUntilDate() != null)
+		}
+		if (getUntilDate() != null) {
 			ret.append(" until " + df.format(getUntilDate()));
+		}
 		return ret.toString();
 	}
 	
 	@Override
 	public Cohort filterImpl(EvaluationContext context) {
 		List<Integer> drugIds = new ArrayList<Integer>();
-		if (getDrugListToUse() != null)
-			for (Drug d : getDrugListToUse())
+		if (getDrugListToUse() != null) {
+			for (Drug d : getDrugListToUse()) {
 				drugIds.add(d.getDrugId());
+			}
+		}
 		log.debug("filtering with these ids " + drugIds);
 		Collection<Integer> patientIds = context == null ? null : context.getBaseCohort().getMemberIds();
 		return Context.getPatientSetService().getPatientsHavingDrugOrder(
@@ -154,11 +167,13 @@ public class DrugOrderFilter extends CachingPatientFilter {
 	public List<Drug> getDrugListToUse() {
 		List<Drug> drugList = getDrugList();
 		List<Concept> drugSets = getDrugSets();
-		if (drugList == null && drugSets == null)
+		if (drugList == null && drugSets == null) {
 			return null;
+		}
 		List<Drug> ret = new ArrayList<Drug>();
-		if (drugList != null)
+		if (drugList != null) {
 			ret.addAll(drugList);
+		}
 		if (drugSets != null) {
 			Set<Concept> generics = new HashSet<Concept>();
 			for (Concept drugSet : drugSets) {

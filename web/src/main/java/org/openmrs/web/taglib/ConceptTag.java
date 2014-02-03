@@ -61,10 +61,12 @@ public class ConceptTag extends BodyTagSupport {
 			c = cs.getConceptByName(conceptName);
 		}
 		if (c == null) {
-			if (conceptId != null && conceptId > 0)
+			if (conceptId != null && conceptId > 0) {
 				log.warn("ConceptTag is unable to find a concept with conceptId '" + conceptId + "'");
-			if (conceptName != null)
+			}
+			if (conceptName != null) {
 				log.warn("ConceptTag is unable to find a concept with conceptName '" + conceptName + "'");
+			}
 			return SKIP_BODY;
 		}
 		pageContext.setAttribute(var, c);
@@ -113,8 +115,9 @@ public class ConceptTag extends BodyTagSupport {
 	 */
 	public int doEndTag() throws JspException {
 		try {
-			if (bodyContent != null)
+			if (bodyContent != null) {
 				bodyContent.writeOut(bodyContent.getEnclosingWriter());
+			}
 		}
 		catch (java.io.IOException e) {
 			throw new JspTagException("IO Error: " + e.getMessage());

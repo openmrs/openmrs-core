@@ -51,10 +51,11 @@ public class UpdateFilterModel {
 		updateChanges();
 		
 		try {
-			if (changes != null && changes.size() > 0)
+			if (changes != null && changes.size() > 0) {
 				updateRequired = true;
-			else
+			} else {
 				updateRequired = DatabaseUpdater.updatesRequired();
+			}
 		}
 		catch (Exception e) {
 			// do nothing

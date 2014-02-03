@@ -54,7 +54,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -84,11 +84,13 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		Map<String, String> properties = new HashMap<String, String>();
 		
-		if (names != null)
+		if (names != null) {
 			for (int x = 0; x < names.length; x++) {
-				if (names[x].length() > 0)
+				if (names[x].length() > 0) {
 					properties.put(names[x], values[x]);
+				}
 			}
+		}
 		
 		task.setProperties(properties);
 		
@@ -112,7 +114,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -155,7 +157,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -169,8 +171,9 @@ public class SchedulerFormController extends SimpleFormController {
 		}
 		
 		// Date format pattern for new and existing (currently disabled, but visible)
-		if (task.getStartTimePattern() == null)
+		if (task.getStartTimePattern() == null) {
 			task.setStartTimePattern(DEFAULT_DATE_PATTERN);
+		}
 		
 		return task;
 	}

@@ -59,8 +59,9 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 	public String getCacheKey() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getName()).append(".");
-		if (getProgram() != null)
+		if (getProgram() != null) {
 			sb.append(getProgram().getProgramId());
+		}
 		sb.append(".");
 		sb.append(
 		    OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
@@ -68,9 +69,11 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		sb.append(
 		    OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
 		        untilDate)).append(".");
-		if (getStateList() != null)
-			for (ProgramWorkflowState s : getStateList())
+		if (getStateList() != null) {
+			for (ProgramWorkflowState s : getStateList()) {
 				sb.append(s.getProgramWorkflowStateId()).append(",");
+			}
+		}
 		return sb.toString();
 	}
 	
@@ -83,9 +86,9 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		ret.append("Patients in program ");
 		
 		if (getProgram() != null) {
-			if (getProgram().getConcept() == null)
+			if (getProgram().getConcept() == null) {
 				ret.append(" <CONCEPT> ");
-			else {
+			} else {
 				ret.append(getConceptName(program.getConcept()) + " ");
 			}
 		}
@@ -106,14 +109,15 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 				catch (NullPointerException ex) {
 					ret.append("CONCEPT?");
 				}
-				if (e.getValue().size() == 1)
+				if (e.getValue().size() == 1) {
 					ret.append(" of " + e.getValue().iterator().next().getConcept().getName().getName());
-				else {
+				} else {
 					ret.append(" in [ ");
 					for (Iterator<ProgramWorkflowState> i = e.getValue().iterator(); i.hasNext();) {
 						ret.append(i.next().getConcept().getName().getName());
-						if (i.hasNext())
+						if (i.hasNext()) {
 							ret.append(" , ");
+						}
 					}
 					ret.append(" ]");
 				}
@@ -121,16 +125,20 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
 			ret.append("within the last ");
-			if (withinLastMonths != null)
+			if (withinLastMonths != null) {
 				ret.append(withinLastMonths + " month(s) ");
-			if (withinLastDays != null)
+			}
+			if (withinLastDays != null) {
 				ret.append(withinLastDays + " day(s) ");
+			}
 		}
 		// TODO untilDaysAgo untilMonthsAgo
-		if (sinceDate != null)
+		if (sinceDate != null) {
 			ret.append("on or after " + Context.getDateFormat().format(sinceDate) + " ");
-		if (untilDate != null)
+		}
+		if (untilDate != null) {
 			ret.append("on or before " + Context.getDateFormat().format(untilDate) + " ");
+		}
 		
 		return ret.toString();
 	}
@@ -149,14 +157,17 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		Date ret = null;
 		if (withinLastDays != null || withinLastMonths != null) {
 			Calendar gc = Calendar.getInstance();
-			if (withinLastDays != null)
+			if (withinLastDays != null) {
 				gc.add(Calendar.DAY_OF_MONTH, -withinLastDays);
-			if (withinLastMonths != null)
+			}
+			if (withinLastMonths != null) {
 				gc.add(Calendar.MONTH, -withinLastMonths);
+			}
 			ret = gc.getTime();
 		}
-		if (sinceDate != null && (ret == null || sinceDate.after(ret)))
+		if (sinceDate != null && (ret == null || sinceDate.after(ret))) {
 			ret = sinceDate;
+		}
 		return ret;
 	}
 	
@@ -164,14 +175,17 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		Date ret = null;
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
 			Calendar gc = Calendar.getInstance();
-			if (untilDaysAgo != null)
+			if (untilDaysAgo != null) {
 				gc.add(Calendar.DAY_OF_MONTH, -untilDaysAgo);
-			if (untilMonthsAgo != null)
+			}
+			if (untilMonthsAgo != null) {
 				gc.add(Calendar.MONTH, -untilMonthsAgo);
+			}
 			ret = gc.getTime();
 		}
-		if (untilDate != null && (ret == null || untilDate.before(ret)))
+		if (untilDate != null && (ret == null || untilDate.before(ret))) {
 			ret = untilDate;
+		}
 		return ret;
 	}
 	

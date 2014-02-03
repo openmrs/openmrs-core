@@ -68,10 +68,11 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	 * @see org.openmrs.report.ReportRenderer#getRenderingModes(org.openmrs.report.ReportSchema)
 	 */
 	public Collection<RenderingMode> getRenderingModes(ReportSchema schema) {
-		if (schema.getDataSetDefinitions() == null || schema.getDataSetDefinitions().size() != 1)
+		if (schema.getDataSetDefinitions() == null || schema.getDataSetDefinitions().size() != 1) {
 			return null;
-		else
+		} else {
 			return Collections.singleton(new RenderingMode(this, this.getLabel(), null, Integer.MIN_VALUE));
+		}
 	}
 	
 	/**
@@ -106,12 +107,13 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 			for (String colKey : colKeys) {
 				Object colValue = map.get(colKey);
 				writer.write(getBeforeColumnDelimiter());
-				if (colValue != null)
+				if (colValue != null) {
 					if (dataset instanceof CohortDataSet) {
 						writer.write(escape(Integer.toString(((Cohort) colValue).size())));
 					} else {
 						writer.write(escape(colValue.toString()));
 					}
+				}
 				writer.write(getAfterColumnDelimiter());
 			}
 			writer.write(getAfterRowDelimiter());

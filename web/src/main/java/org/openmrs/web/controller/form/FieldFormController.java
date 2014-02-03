@@ -63,7 +63,7 @@ public class FieldFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -104,7 +104,7 @@ public class FieldFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -115,12 +115,14 @@ public class FieldFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			String fieldId = request.getParameter("fieldId");
-			if (fieldId != null)
+			if (fieldId != null) {
 				field = fs.getField(Integer.valueOf(fieldId));
+			}
 		}
 		
-		if (field == null)
+		if (field == null) {
 			field = new Field();
+		}
 		
 		return field;
 	}
@@ -138,10 +140,11 @@ public class FieldFormController extends SimpleFormController {
 			FormService fs = Context.getFormService();
 			//map.put("fieldTypes", es.getFieldTypes());
 			map.put("fieldTypes", fs.getAllFieldTypes());
-			if (field.getConcept() != null)
+			if (field.getConcept() != null) {
 				map.put("conceptName", field.getConcept().getName(locale));
-			else
+			} else {
 				map.put("conceptName", "");
+			}
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		
@@ -154,10 +157,11 @@ public class FieldFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			String conceptId = request.getParameter("conceptId");
-			if (conceptId != null && conceptId.length() > 0)
+			if (conceptId != null && conceptId.length() > 0) {
 				field.setConcept(Context.getConceptService().getConcept(Integer.valueOf(conceptId)));
-			else
+			} else {
 				field.setConcept(null);
+			}
 			
 			field.setFieldType(Context.getFormService().getFieldType(Integer.valueOf(request.getParameter("fieldTypeId"))));
 		}

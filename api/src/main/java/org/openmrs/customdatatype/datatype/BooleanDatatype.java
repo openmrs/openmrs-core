@@ -29,8 +29,9 @@ public class BooleanDatatype extends SerializingCustomDatatype<Boolean> {
 	 */
 	@Override
 	public String serialize(Boolean typedValue) {
-		if (typedValue == null)
+		if (typedValue == null) {
 			return null;
+		}
 		return typedValue.toString();
 	}
 	
@@ -39,8 +40,9 @@ public class BooleanDatatype extends SerializingCustomDatatype<Boolean> {
 	 */
 	@Override
 	public Boolean deserialize(String serializedValue) {
-		if (StringUtils.isEmpty(serializedValue))
+		if (StringUtils.isEmpty(serializedValue)) {
 			return null;
+		}
 		return Boolean.valueOf(serializedValue);
 	}
 	

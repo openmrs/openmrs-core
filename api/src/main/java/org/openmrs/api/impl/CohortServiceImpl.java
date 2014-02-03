@@ -59,7 +59,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
-	 * 
+	 *
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
@@ -87,8 +87,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			throw new APIException(Context.getMessageSourceService().getMessage("Cohort.save.descriptionRequired", null,
 			    "Cohort description is required", Context.getLocale()));
 		}
-		if (log.isInfoEnabled())
+		if (log.isInfoEnabled()) {
 			log.info("Saving cohort " + cohort);
+		}
 		
 		return dao.saveCohort(cohort);
 	}
@@ -220,7 +221,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param definitionClass
 	 * @return
 	 * @deprecated see reportingcompatibility module
@@ -231,10 +232,11 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass)
 	        throws APIException {
 		CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
-		if (ret == null)
+		if (ret == null) {
 			throw new APIException("No CohortDefinitionProvider registered for " + definitionClass);
-		else
+		} else {
 			return ret;
+		}
 	}
 	
 	/**
@@ -339,8 +341,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders() {
-		if (cohortDefinitionProviders == null)
+		if (cohortDefinitionProviders == null) {
 			cohortDefinitionProviders = new LinkedHashMap<Class<? extends CohortDefinition>, CohortDefinitionProvider>();
+		}
 		
 		return cohortDefinitionProviders;
 	}
@@ -367,8 +370,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		
 		// TODO: should this be looking through the values or the keys?
 		for (Iterator<CohortDefinitionProvider> i = cohortDefinitionProviders.values().iterator(); i.hasNext();) {
-			if (i.next().getClass().equals(providerClass))
+			if (i.next().getClass().equals(providerClass)) {
 				i.remove();
+			}
 		}
 	}
 	

@@ -45,7 +45,7 @@ public class Hl7InQueueListController {
 	
 	/**
 	 * Render the pending HL7 queue messages page
-	 * 
+	 *
 	 * @param modelMap
 	 * @return
 	 */
@@ -57,7 +57,7 @@ public class Hl7InQueueListController {
 	
 	/**
 	 * Render the suspended HL7 queue messages page
-	 * 
+	 *
 	 * @param modelMap
 	 * @return
 	 */
@@ -69,7 +69,7 @@ public class Hl7InQueueListController {
 	
 	/**
 	 * suspends or restores a HL7InQueue based on current status
-	 * 
+	 *
 	 * @param id HL7InQueueId for identifying the HL7 message
 	 * @return formatted success or failure message for display
 	 * @throws Exception
@@ -88,17 +88,19 @@ public class Hl7InQueueListController {
 		try {
 			//Update the hl7 message's status based on existing status
 			HL7InQueue hl7InQueue = hL7Service.getHL7InQueue(id);
-			if (hl7InQueue.getMessageState().equals(HL7Constants.HL7_STATUS_PENDING))
+			if (hl7InQueue.getMessageState().equals(HL7Constants.HL7_STATUS_PENDING)) {
 				hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_DELETED);
-			else
+			} else {
 				hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_PENDING);
+			}
 			hL7Service.saveHL7InQueue(hl7InQueue);
 			
 			//Display a message for the operation
-			if (hl7InQueue.getMessageState().equals(HL7Constants.HL7_STATUS_PENDING))
+			if (hl7InQueue.getMessageState().equals(HL7Constants.HL7_STATUS_PENDING)) {
 				success.append(mss.getMessage("Hl7inQueue.queueList.restored", args, Context.getLocale()) + "<br/>");
-			else
+			} else {
 				success.append(mss.getMessage("Hl7inQueue.queueList.held", args, Context.getLocale()) + "<br/>");
+			}
 		}
 		catch (APIException e) {
 			log.warn("Error updating a queue entry", e);
@@ -119,7 +121,7 @@ public class Hl7InQueueListController {
 	
 	/**
 	 * method for returning a batch of HL7s from the queue based on datatable parameters
-	 * 
+	 *
 	 * @param iDisplayStart start index for search
 	 * @param iDisplayLength amount of terms to return
 	 * @param sSearch search term(s)
@@ -140,8 +142,9 @@ public class Hl7InQueueListController {
 		
 		// form the results dataset
 		List<Object> results = new ArrayList<Object>();
-		for (HL7InQueue hl7 : hl7s)
+		for (HL7InQueue hl7 : hl7s) {
 			results.add(splitHL7InQueue(hl7));
+		}
 		
 		// build the response
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -156,7 +159,7 @@ public class Hl7InQueueListController {
 	
 	/**
 	 * create an object array for a given HL7InQueue
-	 * 
+	 *
 	 * @param q HL7InQueue object
 	 * @return object array for use with datatables
 	 */

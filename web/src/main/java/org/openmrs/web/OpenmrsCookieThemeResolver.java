@@ -47,13 +47,15 @@ public class OpenmrsCookieThemeResolver extends CookieThemeResolver {
 		}
 		finally {
 			// only close the session if we opened it
-			if (openedSession)
+			if (openedSession) {
 				Context.closeSession();
+			}
 		}
 		
 		if (StringUtils.hasText(themeName)) {
 			return themeName;
-		} else
+		} else {
 			return super.getDefaultThemeName();
+		}
 	}
 }

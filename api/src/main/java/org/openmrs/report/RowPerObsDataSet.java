@@ -24,7 +24,7 @@ import org.openmrs.api.context.Context;
 
 /**
  * A dataset with one-row-per-obs.
- * 
+ *
  * @see RowPerObsDataSetDefinition
  * @deprecated see reportingcompatibility module
  */
@@ -70,13 +70,16 @@ public class RowPerObsDataSet implements DataSet<Object> {
 			ret.put("question", obs.getConcept().getName(locale, false));
 			ret.put("questionConceptId", obs.getConcept().getConceptId());
 			ret.put("answer", obs.getValueAsString(locale));
-			if (obs.getValueCoded() != null)
+			if (obs.getValueCoded() != null) {
 				ret.put("answerConceptId", obs.getValueCoded());
+			}
 			ret.put("obsDatetime", obs.getObsDatetime());
-			if (obs.getEncounter() != null)
+			if (obs.getEncounter() != null) {
 				ret.put("encounterId", obs.getEncounter().getEncounterId());
-			if (obs.getObsGroup() != null)
+			}
+			if (obs.getObsGroup() != null) {
 				ret.put("obsGroupId", obs.getObsGroup().getObsId());
+			}
 			return ret;
 		}
 		

@@ -31,7 +31,7 @@ import org.xml.sax.InputSource;
 
 /**
  * This class will parse an xml update.rdf file
- * 
+ *
  * @version 1.0
  */
 public class UpdateFileParser {
@@ -49,7 +49,7 @@ public class UpdateFileParser {
 	
 	/**
 	 * Default constructor
-	 * 
+	 *
 	 * @param s String to parse (Contents of update.rdf file)
 	 */
 	public UpdateFileParser(String s) {
@@ -58,7 +58,7 @@ public class UpdateFileParser {
 	
 	/**
 	 * Parse the contents of the update.rdf file.
-	 * 
+	 *
 	 * @throws ModuleException
 	 */
 	public void parse() throws ModuleException {
@@ -92,8 +92,9 @@ public class UpdateFileParser {
 			
 			String configVersion = rootNode.getAttribute("configVersion");
 			
-			if (!validConfigVersions().contains(configVersion))
+			if (!validConfigVersions().contains(configVersion)) {
 				throw new ModuleException("Invalid configVersion: '" + configVersion + "' found In content: " + content);
+			}
 			
 			if ("1.0".equals(configVersion)) {
 				// the only update in the xml file is the 'best fit'
@@ -130,29 +131,31 @@ public class UpdateFileParser {
 			throw e;
 		}
 		finally {
-			if (stringReader != null)
+			if (stringReader != null) {
 				stringReader.close();
+			}
 		}
 		
 	}
 	
 	/**
 	 * Generic method to get a module tag
-	 * 
+	 *
 	 * @param element
 	 * @param version
 	 * @param tag
 	 * @return
 	 */
 	private static String getElement(Element element, String version, String tag) {
-		if (element.getElementsByTagName(tag).getLength() > 0)
+		if (element.getElementsByTagName(tag).getLength() > 0) {
 			return element.getElementsByTagName(tag).item(0).getTextContent();
+		}
 		return "";
 	}
 	
 	/**
 	 * List of the valid sqldiff versions
-	 * 
+	 *
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {

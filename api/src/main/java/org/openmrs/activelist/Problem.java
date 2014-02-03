@@ -85,7 +85,7 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 	
 	/**
 	 * is actually "concept" in ActiveList
-	 * 
+	 *
 	 * @return the problem
 	 */
 	public Concept getProblem() {
@@ -94,7 +94,7 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 	
 	/**
 	 * Set the problem concept
-	 * 
+	 *
 	 * @param problem
 	 */
 	public void setProblem(Concept problem) {
@@ -108,12 +108,15 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 		Double mySW = this.sortWeight;
 		Double theirSW = item.getSortWeight();
 		
-		if ((mySW == null) && (theirSW == null))
+		if ((mySW == null) && (theirSW == null)) {
 			return 0;
-		if ((mySW == null) && (theirSW != null))
+		}
+		if ((mySW == null) && (theirSW != null)) {
 			return -1;
-		if ((mySW != null) && (theirSW == null))
+		}
+		if ((mySW != null) && (theirSW == null)) {
 			return 1;
+		}
 		
 		return mySW.compareTo(theirSW);
 	}

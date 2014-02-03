@@ -42,7 +42,7 @@ public class DWRObsService {
 	
 	/**
 	 * Void the given observation
-	 * 
+	 *
 	 * @param obsId
 	 * @param reason
 	 */
@@ -51,15 +51,16 @@ public class DWRObsService {
 		if (obs == null) {
 			throw new IllegalArgumentException("Cannot find obs with id=" + obsId);
 		}
-		if (reason == null || reason.length() == 0)
+		if (reason == null || reason.length() == 0) {
 			throw new IllegalArgumentException("reason is required");
+		}
 		log.info("Voiding observation " + obs + " for reason " + reason);
 		Context.getObsService().voidObs(obs, reason);
 	}
 	
 	/**
 	 * Get all observations for the given encounter TODO: rename to getObservationsByEncounter
-	 * 
+	 *
 	 * @param encounterId
 	 * @return
 	 */
@@ -74,10 +75,11 @@ public class DWRObsService {
 			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
 			
 			Set<Obs> observations = encounter.getAllObs();
-			if (observations != null)
+			if (observations != null) {
 				for (Obs obs : observations) {
 					obsList.add(new ObsListItem(obs, request.getLocale()));
 				}
+			}
 			
 		}
 		catch (Exception e) {
@@ -90,7 +92,7 @@ public class DWRObsService {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param personId
 	 * @param encounterId
 	 * @param conceptId
@@ -104,7 +106,7 @@ public class DWRObsService {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param personId
 	 * @param encounterId
 	 * @param locationId
@@ -144,8 +146,9 @@ public class DWRObsService {
 			obs.setLocation(encounter.getLocation());
 		} else {
 			Location location = null;
-			if (locationId != null)
+			if (locationId != null) {
 				Context.getLocationService().getLocation(locationId);
+			}
 			if (location == null) {
 				location = Context.getLocationService().getDefaultLocation();
 				
@@ -230,7 +233,7 @@ public class DWRObsService {
 
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param personId
 	 * @param conceptId
 	 * @param encounterId
@@ -261,12 +264,15 @@ public class DWRObsService {
 		Concept c = null;
 		Encounter e = null;
 		
-		if (pId != null)
+		if (pId != null) {
 			p = Context.getPersonService().getPerson(pId);
-		if (conceptId != null)
+		}
+		if (conceptId != null) {
 			c = OpenmrsUtil.getConceptByIdOrName(conceptId);
-		if (eId != null)
+		}
+		if (eId != null) {
 			e = Context.getEncounterService().getEncounter(eId);
+		}
 		
 		Collection<Obs> obss = null;
 		
@@ -294,7 +300,7 @@ public class DWRObsService {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param obsId
 	 * @return
 	 */

@@ -44,8 +44,9 @@ public class FormListItem {
 			formId = form.getFormId();
 			name = form.getName();
 			description = form.getDescription();
-			if (form.getEncounterType() != null)
+			if (form.getEncounterType() != null) {
 				encounterType = form.getEncounterType().getName();
+			}
 			
 			version = form.getVersion();
 			build = form.getBuild();

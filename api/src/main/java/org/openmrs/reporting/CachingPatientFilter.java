@@ -29,7 +29,7 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	
 	/**
 	 * Subclasses should implement PatientFilter.filter("all patients", evalContext) in this method
-	 * 
+	 *
 	 * @param context
 	 * @return TODO
 	 */
@@ -44,7 +44,7 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	
 	/**
 	 * TODO Auto generated method comment
-	 * 
+	 *
 	 * @param context
 	 * @return
 	 */
@@ -69,10 +69,11 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		Cohort cached = getAndMaybeCache(context);
 		if (input == null) {
-			if (context != null)
+			if (context != null) {
 				input = context.getBaseCohort();
-			else
+			} else {
 				input = Context.getPatientSetService().getAllPatients();
+			}
 		}
 		return Cohort.intersect(input, cached);
 	}
@@ -84,10 +85,11 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		Cohort cached = getAndMaybeCache(context);
 		if (input == null) {
-			if (context != null)
+			if (context != null) {
 				input = context.getBaseCohort();
-			else
+			} else {
 				input = Context.getPatientSetService().getAllPatients();
+			}
 		}
 		return Cohort.subtract(input, cached);
 	}

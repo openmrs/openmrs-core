@@ -35,8 +35,9 @@ public class LocationHandler extends AbstractFieldGenHandler implements FieldGen
 			checkEmptyVal((Location) null);
 			Location l = (Location) this.fieldGenTag.getVal(); // get the initial value
 			if (l != null) {
-				if (l.getLocationId() != null)
+				if (l.getLocationId() != null) {
 					initialValue = l.getLocationId().toString();
+				}
 			} else if (fieldGenTag.getAllowUserDefault()) {
 				// if there is no default value and the tag at this point wants
 				// to allow the user's chosen default value, set it here.
@@ -53,8 +54,9 @@ public class LocationHandler extends AbstractFieldGenHandler implements FieldGen
 			if (this.fieldGenTag.getParameterMap() != null) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
 			}
-			if (optionHeader == null)
+			if (optionHeader == null) {
 				optionHeader = "";
+			}
 			
 			setParameter("initialValue", initialValue);
 			setParameter("optionHeader", optionHeader);
