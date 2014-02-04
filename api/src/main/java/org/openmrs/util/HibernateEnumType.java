@@ -31,7 +31,7 @@ import org.openmrs.api.context.Context;
  * This is intended to be a temporary utility class until enums are handled properly in Hibernate:
  * http://community.jboss.org/wiki/Java5EnumUserType
  * http://docs.jboss.org/hibernate/stable/core/reference/en/html_single/#inheritance
- * 
+ *
  * @since 1.7
  */
 public class HibernateEnumType implements UserType, ParameterizedType {
@@ -106,10 +106,12 @@ public class HibernateEnumType implements UserType, ParameterizedType {
 	}
 	
 	public boolean equals(Object x, Object y) throws HibernateException {
-		if (x == y)
+		if (x == y) {
 			return true;
-		if (null == x || null == y)
+		}
+		if (null == x || null == y) {
 			return false;
+		}
 		return x.equals(y);
 	}
 }

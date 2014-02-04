@@ -54,7 +54,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 	 * This method is called for every request for a page/image/javascript file/etc The main point
 	 * of this is to make sure the user's current userContext is on the session and on the current
 	 * thread
-	 * 
+	 *
 	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
 	 */
@@ -87,14 +87,16 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 			userContext = new UserContext();
 			httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 			
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Just set user context " + userContext + " as attribute on session");
+			}
 		} else {
 			// set username as attribute on session so parent servlet container 
 			// can identify sessions easier
 			User user = userContext.getAuthenticatedUser();
-			if (user != null)
+			if (user != null) {
 				httpSession.setAttribute("username", user.getUsername());
+			}
 		}
 		
 		// set the locale on the session (for the servlet container as well)

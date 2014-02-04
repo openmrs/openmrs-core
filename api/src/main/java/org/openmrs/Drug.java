@@ -70,7 +70,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Gets the internal identification number for this drug
-	 * 
+	 *
 	 * @return Integer
 	 */
 	public Integer getDrugId() {
@@ -79,7 +79,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Sets the internal identification number for this drug
-	 * 
+	 *
 	 * @param drugId
 	 */
 	public void setDrugId(Integer drugId) {
@@ -89,20 +89,21 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	/**
 	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug:
 	 * DRUGNAME)
-	 * 
+	 *
 	 * @param locale
 	 * @return full drug name (with concept name appended)
 	 */
 	public String getFullName(Locale locale) {
-		if (concept == null)
+		if (concept == null) {
 			return getName();
-		else
+		} else {
 			return getName() + " (" + concept.getName(locale).getName() + ")";
+		}
 	}
 	
 	/**
 	 * Gets whether or not this is a combination drug
-	 * 
+	 *
 	 * @return Boolean
 	 */
 	public Boolean isCombination() {
@@ -115,7 +116,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Sets whether or not this is a combination drug
-	 * 
+	 *
 	 * @param combination
 	 */
 	public void setCombination(Boolean combination) {
@@ -124,7 +125,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Gets the dose strength of this drug
-	 * 
+	 *
 	 * @return Double
 	 */
 	public Double getDoseStrength() {
@@ -133,7 +134,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Sets the dose strength
-	 * 
+	 *
 	 * @param doseStrength
 	 */
 	public void setDoseStrength(Double doseStrength) {
@@ -142,7 +143,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Gets the units
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getUnits() {
@@ -151,7 +152,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Sets the units
-	 * 
+	 *
 	 * @param units
 	 */
 	public void setUnits(String units) {
@@ -160,7 +161,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Gets the concept this drug is tied to
-	 * 
+	 *
 	 * @return Concept
 	 */
 	public Concept getConcept() {
@@ -169,7 +170,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Sets the concept this drug is tied to
-	 * 
+	 *
 	 * @param concept
 	 */
 	public void setConcept(Concept concept) {
@@ -260,7 +261,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Gets a numeric identifier from a string identifier.
-	 * 
+	 *
 	 * @param identifier
 	 *            the string identifier.
 	 * @return the numeric identifier if it is a valid one, else null
@@ -270,11 +271,13 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 * @since 1.10
 	 */
 	public static Integer getNumericIdentifier(String identifier) {
-		if (StringUtils.isBlank(identifier))
+		if (StringUtils.isBlank(identifier)) {
 			throw new IllegalArgumentException("identifier cannot be null");
+		}
 		
-		if (!identifier.startsWith(IDENTIFIER_PREFIX))
+		if (!identifier.startsWith(IDENTIFIER_PREFIX)) {
 			return null;
+		}
 		
 		try {
 			return Integer.valueOf(identifier.substring(IDENTIFIER_PREFIX.length()));
@@ -288,15 +291,17 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	/**
 	 * Convenience method that returns a display name for the drug, defaults to drug.name
-	 * 
+	 *
 	 * @return the display name
 	 * @since 1.8.5, 1.9.4, 1.10
 	 */
 	public String getDisplayName() {
-		if (StringUtils.isNotBlank(getName()))
+		if (StringUtils.isNotBlank(getName())) {
 			return getName();
-		if (getConcept() != null)
+		}
+		if (getConcept() != null) {
 			return getConcept().getName().getName();
+		}
 		return "";
 	}
 }

@@ -44,8 +44,9 @@ public class ConceptMapTypeEditor extends PropertyEditorSupport {
 	
 	public String getAsText() {
 		ConceptMapType mapType = (ConceptMapType) getValue();
-		if (mapType == null || mapType.getConceptMapTypeId() == null)
+		if (mapType == null || mapType.getConceptMapTypeId() == null) {
 			return "";
+		}
 		
 		return mapType.getConceptMapTypeId().toString();
 	}

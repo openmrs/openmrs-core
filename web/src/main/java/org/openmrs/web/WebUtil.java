@@ -38,8 +38,9 @@ public class WebUtil implements GlobalPropertyListener {
 	
 	public static String escapeHTML(String s) {
 		
-		if (s == null)
+		if (s == null) {
 			return "";
+		}
 		
 		s = s.replace("<", "&lt;");
 		s = s.replace(">", "&gt;");
@@ -50,8 +51,9 @@ public class WebUtil implements GlobalPropertyListener {
 	
 	public static String escapeQuotes(String s) {
 		
-		if (s == null)
+		if (s == null) {
 			return "";
+		}
 		
 		s = s.replace("\"", "\\\"");
 		
@@ -59,8 +61,9 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 	
 	public static String escapeNewlines(String s) {
-		if (s == null)
+		if (s == null) {
 			return "";
+		}
 		
 		s = s.replace("\n", "\\n");
 		
@@ -68,8 +71,9 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 	
 	public static String escapeQuotesAndNewlines(String s) {
-		if (s == null)
+		if (s == null) {
 			return "";
+		}
 		
 		s = s.replace("\"", "\\\"");
 		s = s.replace("\r\n", "\\r\\n");
@@ -81,26 +85,30 @@ public class WebUtil implements GlobalPropertyListener {
 	/**
 	 * Strips out the path from a string if "C:\documents\file.doc", will return "file.doc" if
 	 * "file.doc", will return "file.doc" if "/home/file.doc" will return "file.doc"
-	 * 
+	 *
 	 * @param filename
 	 * @return filename stripped down
 	 */
 	public static String stripFilename(String filename) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Stripping filename from: " + filename);
+		}
 		
 		// for unix based filesystems
 		int index = filename.lastIndexOf("/");
-		if (index != -1)
+		if (index != -1) {
 			filename = filename.substring(index + 1);
+		}
 		
 		// for windows based filesystems
 		index = filename.lastIndexOf("\\");
-		if (index != -1)
+		if (index != -1) {
 			filename = filename.substring(index + 1);
+		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Returning stripped down filename: " + filename);
+		}
 		
 		return filename;
 	}
@@ -109,7 +117,7 @@ public class WebUtil implements GlobalPropertyListener {
 	 * This method checks if input locale string contains control characters and tries to clean up
 	 * actually contained ones. Also it parses locale object from string representation and
 	 * validates it object.
-	 * 
+	 *
 	 * @param localeString input string with locale parameter
 	 * @return locale object for input string if CTLs were cleaned up or weren't exist or null if
 	 *         could not to clean up CTLs from input string
@@ -120,35 +128,39 @@ public class WebUtil implements GlobalPropertyListener {
 	 * @should not fail with whitespace only
 	 */
 	public static Locale normalizeLocale(String localeString) {
-		if (localeString == null)
+		if (localeString == null) {
 			return null;
+		}
 		localeString = localeString.trim();
-		if (localeString.isEmpty())
+		if (localeString.isEmpty()) {
 			return null;
+		}
 		int len = localeString.length();
 		for (int i = 0; i < len; i++) {
 			char c = localeString.charAt(i);
 			// allow only ASCII letters and "_" character
 			if ((c <= 0x20 || c >= 0x7f) || ((c >= 0x20 || c <= 0x7f) && (!Character.isLetter(c) && c != 0x5f))) {
-				if (c == 0x09)
+				if (c == 0x09) {
 					continue; // allow horizontal tabs
+				}
 				localeString = localeString.replaceFirst(((Character) c).toString(), "");
 				len--;
 				i--;
 			}
 		}
 		Locale locale = LocaleUtility.fromSpecification(localeString);
-		if (LocaleUtility.isValid(locale))
+		if (LocaleUtility.isValid(locale)) {
 			return locale;
-		else
+		} else {
 			return null;
+		}
 	}
 	
 	/**
 	 * Convenient method that parses the given string object, that contains locale parameters which
 	 * are separated by comma. Tries to clean up CTLs and other unsupported chars within input
 	 * string. If invalid locales are included, they are not returned in the resultant list
-	 * 
+	 *
 	 * @param localesString input string with locale parameters separeted by comma (e.g.
 	 *            "en, fr_RW, gh")
 	 * @return cleaned up string (or same string) if success or null otherwise
@@ -158,8 +170,9 @@ public class WebUtil implements GlobalPropertyListener {
 	 */
 	public static String sanitizeLocales(String localesString) {
 		// quick npe check
-		if (localesString == null)
+		if (localesString == null) {
 			return null;
+		}
 		
 		StringBuffer outputString = new StringBuffer();
 		
@@ -168,23 +181,25 @@ public class WebUtil implements GlobalPropertyListener {
 		for (String locale : Arrays.asList(localesString.split(","))) {
 			Locale loc = normalizeLocale(locale);
 			if (loc != null) {
-				if (!first)
+				if (!first) {
 					outputString.append(", ");
-				else
+				} else {
 					first = false; // so commas are inserted from now on
+				}
 				outputString.append(loc.toString());
 			}
 		}
-		if (outputString.length() > 0)
+		if (outputString.length() > 0) {
 			return outputString.toString();
-		else
+		} else {
 			return null;
+		}
 	}
 	
 	/**
 	 * Method that returns WebConstants.WEBAPP_NAME or an empty string if WebConstants.WEBAPP_NAME
 	 * is empty.
-	 * 
+	 *
 	 * @return return WebConstants.WEBAPP_NAME or empty string if WebConstants.WEBAPP_NAME is null
 	 * @should return empty string if WebConstants.WEBAPP_NAME is null
 	 */
@@ -204,24 +219,27 @@ public class WebUtil implements GlobalPropertyListener {
 		if (type == FORMAT_TYPE.TIMESTAMP) {
 			String dateTimeFormat = Context.getAdministrationService().getGlobalPropertyValue(
 			    OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT, null);
-			if (StringUtils.isEmpty(dateTimeFormat))
+			if (StringUtils.isEmpty(dateTimeFormat)) {
 				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-			else
+			} else {
 				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(dateTimeFormat), locale);
+			}
 		} else if (type == FORMAT_TYPE.TIME) {
 			String timeFormat = Context.getAdministrationService().getGlobalPropertyValue(
 			    OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT, null);
-			if (StringUtils.isEmpty(timeFormat))
+			if (StringUtils.isEmpty(timeFormat)) {
 				dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
-			else
+			} else {
 				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(timeFormat), locale);
+			}
 		} else if (type == FORMAT_TYPE.DATE) {
 			String formatValue = Context.getAdministrationService().getGlobalPropertyValue(
 			    OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT, "");
-			if (StringUtils.isEmpty(formatValue))
+			if (StringUtils.isEmpty(formatValue)) {
 				dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-			else
+			} else {
 				dateFormat = new OpenmrsDateFormat(new SimpleDateFormat(formatValue), locale);
+			}
 		}
 		return date == null ? "" : dateFormat.format(date);
 	}

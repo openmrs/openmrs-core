@@ -22,7 +22,7 @@ import org.springframework.validation.ValidationUtils;
 
 /**
  * Validates the {@link DrugOrder} class.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { DrugOrder.class }, order = 50)
@@ -33,7 +33,7 @@ public class DrugOrderValidator extends OrderValidator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	public boolean supports(Class<?> c) {
@@ -42,7 +42,7 @@ public class DrugOrderValidator extends OrderValidator {
 	
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if order concept is null
@@ -60,22 +60,27 @@ public class DrugOrderValidator extends OrderValidator {
 			errors.rejectValue("order", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
-			if (order.getDuration() != null)
+			if (order.getDuration() != null) {
 				ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.add.error.missingDurationUnits");
+			}
 			
-			if (order.getQuantity() != null)
+			if (order.getQuantity() != null) {
 				ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "DrugOrder.add.error.missingQuantityUnits");
+			}
 			
-			if (order.getStrength() != null)
+			if (order.getStrength() != null) {
 				ValidationUtils.rejectIfEmpty(errors, "strengthUnits", "DrugOrder.add.error.missingStrengthUnits");
+			}
 			
-			if (order.getDose() != null)
+			if (order.getDose() != null) {
 				ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.add.error.missingDoseUnits");
+			}
 			
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
-			if (order.getDrug() != null)
+			if (order.getDrug() != null) {
 				ValidationUtils.rejectIfEmpty(errors, "drug.concept", "error.null");
+			}
 			
 			if (!(order.getConcept() == null)) {
 				if (!(order.getDrug() == null) && !(order.getDrug().getConcept().equals(order.getConcept()))) {

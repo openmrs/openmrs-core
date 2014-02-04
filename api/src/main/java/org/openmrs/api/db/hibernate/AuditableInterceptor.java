@@ -36,7 +36,7 @@ import org.openmrs.api.context.Context;
  * This class replaces the logic that was in the AuditableSaveHandler. It is here so that the
  * cascading does NOT happen for dateChanged/changedBy to child OpenmrsObjects (because all handlers
  * recurse on lists of OpenmrsObjects.
- * 
+ *
  * @since 1.9
  */
 
@@ -81,8 +81,9 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		objectWasChanged = setCreatorAndDateCreatedIfNull(entity, currentState, propertyNames);
 		
 		if (entity instanceof Auditable && propertyNames != null) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Setting changed by fields on " + entity.getClass());
+			}
 			
 			HashMap<String, Object> propertyValues = getPropertyValuesToUpdate();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, false);
@@ -106,8 +107,9 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		boolean objectWasChanged = false;
 		
 		if (entity instanceof OpenmrsObject) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Setting creator and dateCreated on " + entity);
+			}
 			
 			HashMap<String, Object> propertyValues = getPropertyValuesToSave();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, true);
@@ -146,7 +148,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	
 	/**
 	 * Sets the property to the given value.
-	 * 
+	 *
 	 * @param currentState
 	 * @param propertyNames
 	 * @param propertyToSet
@@ -159,8 +161,9 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		
 		int index = Arrays.asList(propertyNames).indexOf(propertyToSet);
 		
-		if (value == null)
+		if (value == null) {
 			return false;
+		}
 		
 		if (index >= 0) {
 			if (currentState[index] == null || !setNullOnly) {

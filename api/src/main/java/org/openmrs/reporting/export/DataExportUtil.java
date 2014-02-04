@@ -36,7 +36,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Utility methods for use by Data Exports
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
@@ -47,7 +47,7 @@ public class DataExportUtil {
 	/**
 	 * Allows a module or some other service to add things to the available keys in the velocity
 	 * context
-	 * 
+	 *
 	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
 	 */
 	public static void putDataExportKey(String key, Object obj) {
@@ -57,7 +57,7 @@ public class DataExportUtil {
 	/**
 	 * Remove the given key from the available data export keys If the key doesn't exist, this will
 	 * fail silently
-	 * 
+	 *
 	 * @param key key to remove
 	 * @see #putDataExportKey(String, Object)
 	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
@@ -68,7 +68,7 @@ public class DataExportUtil {
 	
 	/**
 	 * Find the data export key previously added or null if not found
-	 * 
+	 *
 	 * @param key
 	 * @return Object the Data Export Key with the key identifier. Returns null if not found
 	 * @see #putDataExportKey(String, Object)
@@ -98,7 +98,7 @@ public class DataExportUtil {
 	
 	/**
 	 * Generates a data export file given a data export (columns) and patient set (rows).
-	 * 
+	 *
 	 * @param dataExport
 	 * @param patientSet
 	 * @param separator
@@ -126,7 +126,7 @@ public class DataExportUtil {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param dataExport
 	 * @param patientSet
 	 * @param functions
@@ -196,8 +196,9 @@ public class DataExportUtil {
 			                + " because it contains a reference to an outdated 'tribe' column.  You must install the 'Tribe Module' into OpenMRS to continue to reference tribes in OpenMRS.");
 		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");
+		}
 		
 		try {
 			velocityEngine.evaluate(velocityContext, report, DataExportUtil.class.getName(), template);
@@ -237,7 +238,7 @@ public class DataExportUtil {
 	
 	/**
 	 * Returns the path and name of the generated file
-	 * 
+	 *
 	 * @param dataExport
 	 */
 	public static File getGeneratedFile(DataExportReportObject dataExport) {
@@ -265,7 +266,7 @@ public class DataExportUtil {
 		 * valid Object to be used as the return value of the method call, or throw the passed-in or
 		 * new Exception, which will be wrapped and propogated to the user as a
 		 * MethodInvocationException
-		 * 
+		 *
 		 * @see org.apache.velocity.app.event.MethodExceptionEventHandler#methodException(java.lang.Class,
 		 *      java.lang.String, java.lang.Exception)
 		 */
@@ -275,8 +276,9 @@ public class DataExportUtil {
 			log.debug("Claz: " + claz.getName() + " method: " + method, e);
 			
 			// if formatting a date (and probably getting an "IllegalArguementException")
-			if ("format".equals(method))
+			if ("format".equals(method)) {
 				return null;
+			}
 			
 			// keep the default behaviour
 			throw e;

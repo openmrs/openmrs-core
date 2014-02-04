@@ -105,7 +105,7 @@ public class WebModuleUtil {
 	 * <br/>
 	 * If delayContextRefresh is true and this module should have caused a context refresh, a true
 	 * value is returned. Otherwise, false is returned
-	 * 
+	 *
 	 * @param mod Module to start
 	 * @param servletContext the current ServletContext
 	 * @param delayContextRefresh true/false whether or not to do the context refresh
@@ -113,8 +113,9 @@ public class WebModuleUtil {
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("trying to start module " + mod);
+		}
 		
 		// only try and start this module if the api started it without a
 		// problem.
@@ -162,8 +163,9 @@ public class WebModuleUtil {
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
 						absPath.append(mod.getModuleIdAsPath() + "/" + filepath);
-						if (log.isDebugEnabled())
+						if (log.isDebugEnabled()) {
 							log.debug("Moving file from: " + name + " to " + absPath);
+						}
 						
 						// get the output file
 						File outFile = new File(absPath.toString().replace("/", File.separator));
@@ -292,8 +294,9 @@ public class WebModuleUtil {
 			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && delayContextRefresh == false) {
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("Refreshing context for module" + mod);
+				}
 				
 				try {
 					refreshWAC(servletContext, false, mod);
@@ -303,8 +306,9 @@ public class WebModuleUtil {
 					String msg = "Unable to refresh the WebApplicationContext";
 					mod.setStartupErrorMessage(msg, e);
 					
-					if (log.isWarnEnabled())
+					if (log.isWarnEnabled()) {
 						log.warn(msg + " for module: " + mod.getModuleId(), e);
+					}
 					
 					try {
 						stopModule(mod, servletContext, true);
@@ -312,8 +316,9 @@ public class WebModuleUtil {
 					}
 					catch (Exception e2) {
 						// exception expected with most modules here
-						if (log.isWarnEnabled())
+						if (log.isWarnEnabled()) {
 							log.warn("Error while stopping a module that had an error on refreshWAC", e2);
+						}
 					}
 					
 					// try starting the application context again
@@ -350,7 +355,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Method visibility is package-private for testing
-	 * 
+	 *
 	 * @param mod
 	 * @param realPath
 	 * @should prefix messages with module id
@@ -358,8 +363,9 @@ public class WebModuleUtil {
 	 */
 	static void copyModuleMessagesIntoWebapp(Module mod, String realPath) {
 		for (Entry<String, Properties> localeEntry : mod.getMessages().entrySet()) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Copying message property file: " + localeEntry.getKey());
+			}
 			
 			Properties props = localeEntry.getValue();
 			
@@ -378,8 +384,9 @@ public class WebModuleUtil {
 			}
 			
 			String lang = "_" + localeEntry.getKey();
-			if (lang.equals("_en") || lang.equals("_"))
+			if (lang.equals("_en") || lang.equals("_")) {
 				lang = "";
+			}
 			
 			insertIntoModuleMessagePropertiesFile(realPath, props, lang);
 		}
@@ -387,7 +394,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Copies a module's messages into the shared module_messages(lang).properties file
-	 * 
+	 *
 	 * @param realPath actual file path of the servlet context
 	 * @param props messages to copy into the shared message properties file (replacing any existing
 	 *            ones)
@@ -402,8 +409,9 @@ public class WebModuleUtil {
 		String absolutePath = realPath + currentPath;
 		File file = new File(absolutePath);
 		try {
-			if (!file.exists())
+			if (!file.exists()) {
 				file.createNewFile();
+			}
 		}
 		catch (IOException ioe) {
 			log.error("Unable to create new file " + file.getAbsolutePath() + " " + ioe);
@@ -424,7 +432,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Send an Alert to all super users that the given module did not start successfully.
-	 * 
+	 *
 	 * @param mod The Module that failed
 	 */
 	private static void notifySuperUsersAboutModuleFailure(Module mod) {
@@ -446,7 +454,7 @@ public class WebModuleUtil {
 	/**
 	 * This method will find and cache this module's servlets (so that it doesn't have to look them
 	 * up every time)
-	 * 
+	 *
 	 * @param mod
 	 * @param servletContext the servlet context
 	 * @return this module's servlet map
@@ -462,11 +470,13 @@ public class WebModuleUtil {
 			for (int j = 0; j < childNodes.getLength(); j++) {
 				Node childNode = childNodes.item(j);
 				if ("servlet-name".equals(childNode.getNodeName())) {
-					if (childNode.getTextContent() != null)
+					if (childNode.getTextContent() != null) {
 						name = childNode.getTextContent().trim();
+					}
 				} else if ("servlet-class".equals(childNode.getNodeName())) {
-					if (childNode.getTextContent() != null)
+					if (childNode.getTextContent() != null) {
 						className = childNode.getTextContent().trim();
+					}
 				}
 			}
 			if (name.length() == 0 || className.length() == 0) {
@@ -522,7 +532,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Remove all of the servlets defined for this module
-	 * 
+	 *
 	 * @param mod the module that is being stopped that needs its servlets removed
 	 */
 	public static void unloadServlets(Module mod) {
@@ -551,7 +561,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * This method will initialize and store this module's filters
-	 * 
+	 *
 	 * @param module - The Module to load and register Filters
 	 * @param servletContext - The servletContext within which this method is called
 	 */
@@ -590,7 +600,7 @@ public class WebModuleUtil {
 	/**
 	 * This method will destroy and remove all filters that were registered by the passed
 	 * {@link Module}
-	 * 
+	 *
 	 * @param module - The Module for which you want to remove and destroy filters.
 	 */
 	public static void unloadFilters(Module module) {
@@ -630,7 +640,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * This method will return all Filters that have been registered a module
-	 * 
+	 *
 	 * @return A Collection of {@link Filter}s that have been registered by a module
 	 */
 	public static Collection<Filter> getFilters() {
@@ -639,7 +649,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * This method will return all Filter Mappings that have been registered by a module
-	 * 
+	 *
 	 * @return A Collection of all {@link ModuleFilterMapping}s that have been registered by a
 	 *         Module
 	 */
@@ -650,7 +660,7 @@ public class WebModuleUtil {
 	/**
 	 * Return List of Filters that have been loaded through Modules that have mappings that pass for
 	 * the passed request
-	 * 
+	 *
 	 * @param request - The request to check for matching {@link Filter}s
 	 * @return List of all {@link Filter}s that have filter mappings that match the passed request
 	 */
@@ -662,8 +672,9 @@ public class WebModuleUtil {
 			String requestPath = httpRequest.getRequestURI();
 			
 			if (requestPath != null) {
-				if (requestPath.startsWith(httpRequest.getContextPath()))
+				if (requestPath.startsWith(httpRequest.getContextPath())) {
 					requestPath = requestPath.substring(httpRequest.getContextPath().length());
+				}
 				for (ModuleFilterMapping filterMapping : WebModuleUtil.getFilterMappings()) {
 					if (ModuleFilterMapping.filterMappingPasses(filterMapping, requestPath)) {
 						Filter passedFilter = moduleFiltersByName.get(filterMapping.getFilterName());
@@ -739,7 +750,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Reverses all visible activities done by startModule(org.openmrs.module.Module)
-	 * 
+	 *
 	 * @param mod
 	 * @param servletContext
 	 */
@@ -749,7 +760,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Reverses all visible activities done by startModule(org.openmrs.module.Module)
-	 * 
+	 *
 	 * @param mod
 	 * @param servletContext
 	 * @param skipRefresh
@@ -761,8 +772,9 @@ public class WebModuleUtil {
 		
 		// stop all dependent modules
 		for (Module dependentModule : ModuleFactory.getStartedModules()) {
-			if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage))
+			if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage)) {
 				stopModule(dependentModule, servletContext, skipRefresh);
+			}
 		}
 		
 		String realPath = servletContext.getRealPath("");
@@ -813,10 +825,12 @@ public class WebModuleUtil {
 						Node attr = attrs.getNamedItem("moduleId");
 						if (attr != null && moduleId.equals(attr.getNodeValue())) {
 							outputRoot.removeChild(current);
-						} else
+						} else {
 							i++;
-					} else
+						}
+					} else {
 						i++;
+					}
 				}
 				
 				// save the dwr-modules.xml file.
@@ -855,7 +869,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Stops, closes, and refreshes the Spring context for the given <code>servletContext</code>
-	 * 
+	 *
 	 * @param servletContext
 	 * @param isOpenmrsStartup if this refresh is being done at application startup
 	 * @param startedModule the module that was just started and waiting on the context refresh
@@ -865,8 +879,9 @@ public class WebModuleUtil {
 	        Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Refreshing web applciation Context of class: " + wac.getClass().getName());
+		}
 		
 		if (dispatcherServlet != null) {
 			dispatcherServlet.stopAndCloseApplicationContext();
@@ -890,8 +905,9 @@ public class WebModuleUtil {
 		try {
 			// must "refresh" the spring dispatcherservlet as well to add in
 			//the new handlerMappings
-			if (dispatcherServlet != null)
+			if (dispatcherServlet != null) {
 				dispatcherServlet.reInitFrameworkServlet();
+			}
 			
 			if (staticDispatcherServlet != null) {
 				staticDispatcherServlet.refreshApplicationContext();
@@ -902,8 +918,9 @@ public class WebModuleUtil {
 		}
 		
 		try {
-			if (dwrServlet != null)
+			if (dwrServlet != null) {
 				dwrServlet.reInitServlet();
+			}
 		}
 		catch (ServletException se) {
 			log.warn("Cause a servlet exception while refreshing the dwr servlet", se);
@@ -914,7 +931,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Save the dispatcher servlet for use later (reinitializing things)
-	 * 
+	 *
 	 * @param ds
 	 */
 	public static void setDispatcherServlet(DispatcherServlet ds) {
@@ -924,7 +941,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Save the static content dispatcher servlet for use later when refreshing spring
-	 * 
+	 *
 	 * @param ds
 	 */
 	public static void setStaticDispatcherServlet(StaticDispatcherServlet ds) {
@@ -934,7 +951,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Save the dwr servlet for use later (reinitializing things)
-	 * 
+	 *
 	 * @param ds
 	 */
 	public static void setDWRServlet(OpenmrsDWRServlet ds) {
@@ -946,7 +963,7 @@ public class WebModuleUtil {
 	
 	/**
 	 * Finds the servlet defined by the servlet name
-	 * 
+	 *
 	 * @param servletName the name of the servlet out of the path
 	 * @return the current servlet or null if none defined
 	 */
@@ -957,7 +974,7 @@ public class WebModuleUtil {
 	/**
 	 * Retrieves a path to a folder that stores web files of a module. <br/>
 	 * (path-to-openmrs/WEB-INF/view/module/moduleid)
-	 * 
+	 *
 	 * @param moduleId module id (e.g., "basicmodule")
 	 * @return a path to a folder that stores web files or null if not in a web environment
 	 * @should return the correct module folder

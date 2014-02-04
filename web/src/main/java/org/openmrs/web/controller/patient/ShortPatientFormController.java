@@ -109,17 +109,19 @@ public class ShortPatientFormController {
 		// can use it to
 		// track changes in givenName, middleName, familyName, will also use
 		// it to restore the original values
-		if (patient.getPersonName() != null && patient.getPersonName().getId() != null)
+		if (patient.getPersonName() != null && patient.getPersonName().getId() != null) {
 			model.addAttribute("personNameCache", PersonName.newInstance(patient.getPersonName()));
-		else
+		} else {
 			model.addAttribute("personNameCache", new PersonName());
+		}
 		
 		// cache a copy of the person address for comparison in case the name is
 		// edited
-		if (patient.getPersonAddress() != null && patient.getPersonAddress().getId() != null)
+		if (patient.getPersonAddress() != null && patient.getPersonAddress().getId() != null) {
 			model.addAttribute("personAddressCache", patient.getPersonAddress().clone());
-		else
+		} else {
 			model.addAttribute("personAddressCache", new PersonAddress());
+		}
 		
 		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 		Concept conceptCause = Context.getConceptService().getConcept(propCause);
@@ -213,8 +215,9 @@ public class ShortPatientFormController {
 			// First do form validation so that we can easily bind errors to
 			// fields
 			new ShortPatientFormValidator().validate(patientModel, result);
-			if (result.hasErrors())
+			if (result.hasErrors()) {
 				return SHORT_PATIENT_FORM_URL;
+			}
 			
 			Patient patient = null;
 			patient = getPatientFromFormData(patientModel);
@@ -226,8 +229,9 @@ public class ShortPatientFormController {
 				// result since this is not a patient object
 				// so that spring doesn't try to look for getters/setters for
 				// Patient in ShortPatientModel
-				for (ObjectError error : patientErrors.getAllErrors())
+				for (ObjectError error : patientErrors.getAllErrors()) {
 					result.reject(error.getCode(), error.getArguments(), "Validation errors found");
+				}
 				
 				return SHORT_PATIENT_FORM_URL;
 			}
@@ -251,8 +255,9 @@ public class ShortPatientFormController {
 					for (Relationship relationship : relationships.values()) {
 						// if the user added a person to this relationship, save
 						// it
-						if (relationship.getPersonA() != null && relationship.getPersonB() != null)
+						if (relationship.getPersonA() != null && relationship.getPersonB() != null) {
 							Context.getPersonService().saveRelationship(relationship);
+						}
 					}
 				}
 			}
@@ -265,8 +270,9 @@ public class ShortPatientFormController {
 				// don't send the user back to the form because the created
 				// person name/addresses
 				// will be recreated over again if the user attempts to resubmit
-				if (!foundChanges)
+				if (!foundChanges) {
 					return SHORT_PATIENT_FORM_URL;
+				}
 			}
 			
 			return "redirect:" + PATIENT_DASHBOARD_URL + "?patientId=" + patient.getPatientId();
@@ -312,8 +318,9 @@ public class ShortPatientFormController {
 				// they were invalid
 				// and the user changed their mind about adding them and they
 				// removed them)
-				if (id.getPatientIdentifierId() == null && id.isVoided())
+				if (id.getPatientIdentifierId() == null && id.isVoided()) {
 					continue;
+				}
 				
 				patient.addIdentifier(id);
 			}
@@ -323,8 +330,9 @@ public class ShortPatientFormController {
 		if (patientModel.getPersonAttributes() != null) {
 			for (PersonAttribute formAttribute : patientModel.getPersonAttributes()) {
 				//skip past new attributes with no values, because the user left them blank
-				if (formAttribute.getPersonAttributeId() == null && StringUtils.isBlank(formAttribute.getValue()))
+				if (formAttribute.getPersonAttributeId() == null && StringUtils.isBlank(formAttribute.getValue())) {
 					continue;
+				}
 				
 				//if the value has been changed for an existing attribute, void it and create a new one
 				if (formAttribute.getPersonAttributeId() != null
@@ -415,10 +423,11 @@ public class ShortPatientFormController {
 				if (relationshipFound == false) {
 					Relationship relationshipStub = new Relationship();
 					relationshipStub.setRelationshipType(relationshipType);
-					if (aIsToB)
+					if (aIsToB) {
 						relationshipStub.setPersonB(person);
-					else
+					} else {
 						relationshipStub.setPersonA(person);
+					}
 					
 					relationshipMap.put(showRelation, relationshipStub);
 				}
@@ -429,10 +438,11 @@ public class ShortPatientFormController {
 				String submittedPersonId = request.getParameter(showRelation);
 				if (submittedPersonId != null && submittedPersonId.length() > 0) {
 					Person submittedPerson = Context.getPersonService().getPerson(Integer.valueOf(submittedPersonId));
-					if (aIsToB)
+					if (aIsToB) {
 						relationshipMap.get(showRelation).setPersonA(submittedPerson);
-					else
+					} else {
 						relationshipMap.get(showRelation).setPersonB(submittedPerson);
+					}
 				}
 			}
 		}
@@ -497,8 +507,9 @@ public class ShortPatientFormController {
 							obsDeath.setValueCodedName(currCause.getName());
 							
 							Date dateDeath = patientModel.getPatient().getDeathDate();
-							if (dateDeath == null)
+							if (dateDeath == null) {
 								dateDeath = new Date();
+							}
 							obsDeath.setObsDatetime(dateDeath);
 							
 							// check if this is an "other" concept - if
@@ -512,8 +523,9 @@ public class ShortPatientFormController {
 									// concept - let's try to get the
 									// "other" field info
 									String otherInfo = request.getParameter("patient.causeOfDeath_other");
-									if (otherInfo == null)
+									if (otherInfo == null) {
 										otherInfo = "";
+									}
 									log.debug("Setting value_text as " + otherInfo);
 									obsDeath.setValueText(otherInfo);
 									
@@ -526,9 +538,10 @@ public class ShortPatientFormController {
 								obsDeath.setValueText("");
 							}
 							
-							if (StringUtils.isBlank(obsDeath.getVoidReason()))
+							if (StringUtils.isBlank(obsDeath.getVoidReason())) {
 								obsDeath.setVoidReason(Context.getMessageSourceService().getMessage(
 								    "general.default.changeReason"));
+							}
 							Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
 						} else {
 							log.debug("Current cause is still null - aborting mission");
@@ -558,9 +571,10 @@ public class ShortPatientFormController {
 		if (personNameCache.getId() != null) {
 			// if the existing persoName has been edited
 			if (!getPersonNameString(personName).equalsIgnoreCase(getPersonNameString(personNameCache))) {
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("Voiding person name with id: " + personName.getId() + " and replacing it with a new one: "
 					        + personName.getFullName());
+				}
 				foundChanges = true;
 				// create a new one and copy the changes to it
 				PersonName newName = PersonName.newInstance(personName);
@@ -593,9 +607,10 @@ public class ShortPatientFormController {
 				// if the existing personAddress has been edited
 				if (!personAddress.isBlank() && !personAddressCache.isBlank()
 				        && !personAddress.equalsContent(personAddressCache)) {
-					if (log.isDebugEnabled())
+					if (log.isDebugEnabled()) {
 						log.debug("Voiding person address with id: " + personAddress.getId()
 						        + " and replacing it with a new one: " + personAddress.toString());
+					}
 					
 					foundChanges = true;
 					// create a new one and copy the changes to it
@@ -644,12 +659,15 @@ public class ShortPatientFormController {
 	 */
 	public static String getPersonNameString(PersonName name) {
 		ArrayList<String> tempName = new ArrayList<String>();
-		if (StringUtils.isNotBlank(name.getGivenName()))
+		if (StringUtils.isNotBlank(name.getGivenName())) {
 			tempName.add(name.getGivenName().trim());
-		if (StringUtils.isNotBlank(name.getMiddleName()))
+		}
+		if (StringUtils.isNotBlank(name.getMiddleName())) {
 			tempName.add(name.getMiddleName().trim());
-		if (StringUtils.isNotBlank(name.getFamilyName()))
+		}
+		if (StringUtils.isNotBlank(name.getFamilyName())) {
 			tempName.add(name.getFamilyName().trim());
+		}
 		
 		return StringUtils.join(tempName, " ");
 	}

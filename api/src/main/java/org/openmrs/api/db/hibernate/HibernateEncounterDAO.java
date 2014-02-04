@@ -53,7 +53,7 @@ import org.openmrs.api.db.EncounterDAO;
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
  * Context.getEncounterService() object
- * 
+ *
  * @see EncounterDAO
  * @see EncounterService
  */
@@ -68,7 +68,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -202,8 +202,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		criteria.addOrder(Order.asc("name"));
 		
-		if (!includeRetired)
+		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
+		}
 		
 		return criteria.list();
 	}
@@ -256,10 +257,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		Criteria criteria = createEncounterByQueryCriteria(query, patientId, includeVoided, true);
 		
-		if (start != null)
+		if (start != null) {
 			criteria.setFirstResult(start);
-		if (length != null && length > 0)
+		}
+		if (length != null && length > 0) {
 			criteria.setMaxResults(length);
+		}
 		
 		return criteria.list();
 	}
@@ -303,7 +306,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	
 	/**
 	 * Create the criteria for fetching all encounters based on cohort
-	 * 
+	 *
 	 * @param patients
 	 * @return a map of patient with their encounters
 	 */
@@ -312,8 +315,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		criteria.setCacheMode(org.hibernate.CacheMode.IGNORE);
 		
 		// only include this where clause if patients were passed in
-		if (patients != null)
+		if (patients != null) {
 			criteria.add(Restrictions.in("patient.personId", patients.getMemberIds()));
+		}
 		
 		criteria.add(Restrictions.eq("voided", false));
 		
@@ -337,7 +341,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * Utility method that returns a criteria for searching for patient encounters that match the
 	 * specified search phrase
-	 * 
+	 *
 	 * @param query patient name or identifier
 	 * @param patientId the patient id
 	 * @param includeVoided Specifies whether voided encounters should be included
@@ -347,8 +351,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	private Criteria createEncounterByQueryCriteria(String query, Integer patientId, boolean includeVoided,
 	        boolean orderByNames) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
-		if (!includeVoided)
+		if (!includeVoided) {
 			criteria.add(Restrictions.eq("enc.voided", false));
+		}
 		
 		criteria = criteria.createCriteria("patient", "pat");
 		if (patientId != null) {
@@ -484,7 +489,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	
 	/**
 	 * Convenience method since this DAO fetches several different domain objects by uuid
-	 * 
+	 *
 	 * @param uuid uuid to fetch
 	 * @param table a simple classname (e.g. "Encounter")
 	 * @return

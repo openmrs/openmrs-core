@@ -39,15 +39,17 @@ public class PatientVisitsPortletController extends PortletController {
 	 */
 	@Override
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("In PatientVisitsPortletController...");
+		}
 		
 		PortletControllerUtil.addFormToEditAndViewUrlMaps(model);
 		
 		List<Encounter> unAssignedEncounters = new ArrayList<Encounter>();
 		Patient patient = (Patient) model.get("patient");
-		if (patient.getPatientId() != null)
+		if (patient.getPatientId() != null) {
 			unAssignedEncounters = Context.getEncounterService().getEncountersNotAssignedToAnyVisit(patient);
+		}
 		
 		model.put("unAssignedEncounters", unAssignedEncounters);
 		

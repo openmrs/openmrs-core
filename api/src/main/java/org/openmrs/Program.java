@@ -61,7 +61,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	/**
 	 * Constructor with name
-	 * 
+	 *
 	 * @since 1.10
 	 */
 	public Program(String name) {
@@ -74,7 +74,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	/**
 	 * Adds a new {@link ProgramWorkflow} to this Program
-	 * 
+	 *
 	 * @param workflow - the {@link ProgramWorkflow} to add
 	 */
 	public void addWorkflow(ProgramWorkflow workflow) {
@@ -84,7 +84,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	/**
 	 * Removes a {@link ProgramWorkflow} from this Program
-	 * 
+	 *
 	 * @param workflow - the {@link ProgramWorkflow} to remove
 	 */
 	public void removeWorkflow(ProgramWorkflow workflow) {
@@ -96,7 +96,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	/**
 	 * Retires a {@link ProgramWorkflow}
-	 * 
+	 *
 	 * @param workflow - the {@link ProgramWorkflow} to retire
 	 */
 	public void retireWorkflow(ProgramWorkflow workflow) {
@@ -106,7 +106,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	/**
 	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that
 	 * matches the given <code>name</name>
-	 * 
+	 *
 	 * @param name the {@link ProgramWorkflow} name, in any {@link Locale}
 	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any
 	 *         {@link Locale}
@@ -157,36 +157,39 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	/**
 	 * Get only the non-retired workflows
-	 * 
+	 *
 	 * @return Returns a Set<ProgramWorkflow> of all non-retired workflows
 	 */
 	public Set<ProgramWorkflow> getWorkflows() {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
 		for (ProgramWorkflow workflow : getAllWorkflows()) {
-			if (workflow.isRetired() == false)
+			if (workflow.isRetired() == false) {
 				ret.add(workflow);
+			}
 		}
 		return ret;
 	}
 	
 	/**
 	 * Get the workflow with the specified ID
-	 * 
+	 *
 	 * @return the workflow matching the given id or null if none found
 	 * @since 1.6
 	 */
 	public ProgramWorkflow getWorkflow(Integer programWorkflowId) {
 		if (getWorkflows() != null) {
-			for (ProgramWorkflow wf : getWorkflows())
-				if (wf.getId().equals(programWorkflowId))
+			for (ProgramWorkflow wf : getWorkflows()) {
+				if (wf.getId().equals(programWorkflowId)) {
 					return wf;
+				}
+			}
 		}
 		return null;
 	}
 	
 	/**
 	 * Get all workflows...including the retired ones
-	 * 
+	 *
 	 * @return Returns a Set<ProgramWorkflow> of all workflows
 	 */
 	public Set<ProgramWorkflow> getAllWorkflows() {

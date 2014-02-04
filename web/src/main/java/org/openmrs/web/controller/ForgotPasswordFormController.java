@@ -44,7 +44,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 	
 	/**
 	 * Not used with the forgot password form controller.
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -65,7 +65,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 	/**
 	 * This takes in the form twice. The first time when the input their username and the second
 	 * when they submit both their username and their secret answer
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -79,8 +79,9 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		
 		String ipAddress = request.getRemoteAddr();
 		Integer forgotPasswordAttempts = loginAttemptsByIP.get(ipAddress);
-		if (forgotPasswordAttempts == null)
+		if (forgotPasswordAttempts == null) {
 			forgotPasswordAttempts = 1;
+		}
 		
 		boolean lockedOut = false;
 		
@@ -118,8 +119,9 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 					
 					// only search if they actually put in a username
-					if (username != null && username.length() > 0)
+					if (username != null && username.length() > 0) {
 						user = Context.getUserService().getUserByUsername(username);
+					}
 				}
 				finally {
 					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);

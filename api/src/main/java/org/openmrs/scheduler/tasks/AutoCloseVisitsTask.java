@@ -25,7 +25,7 @@ import org.openmrs.util.OpenmrsUtil;
  * A scheduled task that automatically closes all unvoided active visits that match the visit
  * type(s) set as the value of the global property
  * {@link OpenmrsConstants#GP_VISIT_TYPES_TO_AUTO_CLOSE}
- * 
+ *
  * @since 1.9
  */
 public class AutoCloseVisitsTask extends AbstractTask {
@@ -38,8 +38,9 @@ public class AutoCloseVisitsTask extends AbstractTask {
 	@Override
 	public void execute() {
 		if (!isExecuting) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Starting Auto Close Visits Task...");
+			}
 			
 			startExecuting();
 			try {

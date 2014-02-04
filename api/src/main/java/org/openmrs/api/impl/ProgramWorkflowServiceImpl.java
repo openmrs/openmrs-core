@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  * invoked by itself. Spring injection is used to inject this implementation into the
  * ServiceContext. Which implementation is injected is determined by the spring application context
  * file: /metadata/api/spring/applicationContext.xml
- * 
+ *
  * @see org.openmrs.api.ProgramWorkflowService
  */
 @Transactional
@@ -187,7 +187,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @deprecated use {@link #retireProgram(Program program,String reason)}
+	 * @deprecated use {@link #retireProgram(Program program, String reason)}
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
 	@Deprecated
@@ -317,10 +317,11 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
-		if (cohort.getMemberIds().size() < 1)
+		if (cohort.getMemberIds().size() < 1) {
 			return dao.getPatientPrograms(null, programs);
-		else
+		} else {
 			return dao.getPatientPrograms(cohort, programs);
+		}
 	}
 	
 	/**
@@ -450,12 +451,15 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public void triggerStateConversion(Patient patient, Concept trigger, Date dateConverted) {
 		
 		// Check input parameters
-		if (patient == null)
+		if (patient == null) {
 			throw new APIException("Attempting to convert state of an invalid patient");
-		if (trigger == null)
+		}
+		if (trigger == null) {
 			throw new APIException("Attempting to convert state for a patient without a valid trigger concept");
-		if (dateConverted == null)
+		}
+		if (dateConverted == null) {
 			throw new APIException("Invalid date for converting patient state");
+		}
 		
 		for (PatientProgram patientProgram : getPatientPrograms(patient, null, null, null, null, null, false)) {
 			//skip past patient programs that already completed
@@ -504,6 +508,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	// **************************
 	// DEPRECATED PROGRAM
 	// **************************
+	
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#createOrUpdateProgram(org.openmrs.Program)
 	 * @deprecated

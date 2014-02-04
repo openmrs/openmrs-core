@@ -33,15 +33,18 @@ public class ProgramWorkflowHandler extends AbstractFieldGenHandler implements F
 			String initialValue = "";
 			checkEmptyVal((ProgramWorkflow) null);
 			ProgramWorkflow pw = (ProgramWorkflow) this.fieldGenTag.getVal();
-			if (pw != null)
-				if (pw.getProgramWorkflowId() != null)
+			if (pw != null) {
+				if (pw.getProgramWorkflowId() != null) {
 					initialValue = pw.getProgramWorkflowId().toString();
+				}
+			}
 			String optionHeader = "";
 			if (this.fieldGenTag.getParameterMap() != null) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
 			}
-			if (optionHeader == null)
+			if (optionHeader == null) {
 				optionHeader = "";
+			}
 			String programPrefix = "false";
 			if (this.fieldGenTag.getParameterMap() != null) {
 				programPrefix = "true".equalsIgnoreCase((String) (this.fieldGenTag.getParameterMap().get("programPrefix"))) ? "true"
@@ -55,8 +58,9 @@ public class ProgramWorkflowHandler extends AbstractFieldGenHandler implements F
 			if (programs != null) {
 				for (Program program : programs) {
 					Set<ProgramWorkflow> currFlows = program.getWorkflows();
-					if (currFlows != null)
+					if (currFlows != null) {
 						workflows.addAll(currFlows);
+					}
 				}
 			}
 			

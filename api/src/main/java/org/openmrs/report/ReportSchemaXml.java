@@ -22,7 +22,7 @@ import org.simpleframework.xml.Serializer;
 /**
  * This represents a very simplified saving technique for ReportSchemas. The "xml" attribute is
  * assumed to be a serialized ReportSchema object.
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
@@ -46,7 +46,7 @@ public class ReportSchemaXml extends BaseOpenmrsObject {
 	
 	/**
 	 * Convenience constructor taking in a primary key report schema id
-	 * 
+	 *
 	 * @param reportschemaId
 	 */
 	public ReportSchemaXml(Integer reportschemaId) {
@@ -56,7 +56,7 @@ public class ReportSchemaXml extends BaseOpenmrsObject {
 	/**
 	 * Convenience constructor to allow a user to create this shlub of a class from a full
 	 * ReportSchema object
-	 * 
+	 *
 	 * @param schema the ReportSchema to serialize and store with this tiny class
 	 * @throws Exception if serialization fails
 	 */
@@ -71,7 +71,7 @@ public class ReportSchemaXml extends BaseOpenmrsObject {
 	
 	/**
 	 * Set the Report Schema Id
-	 * 
+	 *
 	 * @param reportSchemaId
 	 */
 	public void setReportSchemaId(Integer reportSchemaId) {
@@ -80,7 +80,7 @@ public class ReportSchemaXml extends BaseOpenmrsObject {
 	
 	/**
 	 * Returns the ReportSchema Id
-	 * 
+	 *
 	 * @return the Integer Report Schema Id
 	 */
 	public Integer getReportSchemaId() {
@@ -117,7 +117,7 @@ public class ReportSchemaXml extends BaseOpenmrsObject {
 	
 	/**
 	 * Set the xml content for the ReportSchemaXml
-	 * 
+	 *
 	 * @param xml serialized content
 	 */
 	public void setXml(String xml) {
@@ -126,7 +126,7 @@ public class ReportSchemaXml extends BaseOpenmrsObject {
 	
 	/**
 	 * Returns the xml of the ReportSchemaXml
-	 * 
+	 *
 	 * @return current xml serialization
 	 */
 	public String getXml() {
@@ -136,7 +136,7 @@ public class ReportSchemaXml extends BaseOpenmrsObject {
 	/**
 	 * Convenience helper method to set the attributes on this ReportSchemaXML object with what is
 	 * in the report schema object
-	 * 
+	 *
 	 * @param reportSchema ReportSchema from which to pull values
 	 */
 	public void populateFromReportSchema(ReportSchema reportSchema) {
@@ -153,11 +153,12 @@ public class ReportSchemaXml extends BaseOpenmrsObject {
 	public void updateXmlFromAttributes() throws Exception {
 		if (getXml() != null && getReportSchemaId() != null) {
 			String newXml;
-			if (xml.contains("reportSchemaId="))
+			if (xml.contains("reportSchemaId=")) {
 				newXml = xml.replaceFirst("reportSchemaId=[\"'][^ ]*[\"']", "reportSchemaId=\"" + reportSchemaId + "\"");
-			else
+			} else {
 				newXml = xml
 				        .replaceFirst("<reportSchema([ >])", "<reportSchema reportSchemaId=\"" + reportSchemaId + "\"$1");
+			}
 			
 			setXml(newXml);
 		}

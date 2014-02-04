@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 import org.apache.commons.logging.Log;
@@ -78,7 +79,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * Convenience constructor with the basic requirements
-	 * 
+	 *
 	 * @param givenName String this person's first name
 	 * @param middleName String this person's middle name
 	 * @param familyName String this person's last name
@@ -94,7 +95,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * {@link #equals(Object)} in that this method compares the inner fields of each name for
 	 * equality. Note: Null/empty fields on <code>otherName</code> /will not/ cause a false value to
 	 * be returned
-	 * 
+	 *
 	 * @param otherName PersonName with which to compare
 	 * @return boolean true/false whether or not they are the same names
 	 * @should return true if given middle and family name are equal
@@ -113,44 +114,59 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	/**
 	 * bitwise copy of the personName object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
 	 * PersonName.person object in this object AND the cloned object will point at the same person
-	 * 
+	 *
 	 * @return New PersonName object
 	 * @should copy every property of given personName
 	 */
 	public static PersonName newInstance(PersonName pn) {
-		if (pn == null)
+		if (pn == null) {
 			throw new IllegalArgumentException();
+		}
 		PersonName newName = new PersonName(Integer.valueOf(pn.getPersonNameId()));
-		if (pn.getGivenName() != null)
+		if (pn.getGivenName() != null) {
 			newName.setGivenName(new String(pn.getGivenName()));
-		if (pn.getMiddleName() != null)
+		}
+		if (pn.getMiddleName() != null) {
 			newName.setMiddleName(new String(pn.getMiddleName()));
-		if (pn.getFamilyName() != null)
+		}
+		if (pn.getFamilyName() != null) {
 			newName.setFamilyName(new String(pn.getFamilyName()));
-		if (pn.getFamilyName2() != null)
+		}
+		if (pn.getFamilyName2() != null) {
 			newName.setFamilyName2(new String(pn.getFamilyName2()));
-		if (pn.getFamilyNamePrefix() != null)
+		}
+		if (pn.getFamilyNamePrefix() != null) {
 			newName.setFamilyNamePrefix(new String(pn.getFamilyNamePrefix()));
-		if (pn.getFamilyNameSuffix() != null)
+		}
+		if (pn.getFamilyNameSuffix() != null) {
 			newName.setFamilyNameSuffix(new String(pn.getFamilyNameSuffix()));
-		if (pn.getPrefix() != null)
+		}
+		if (pn.getPrefix() != null) {
 			newName.setPrefix(new String(pn.getPrefix()));
-		if (pn.getDegree() != null)
+		}
+		if (pn.getDegree() != null) {
 			newName.setDegree(new String(pn.getDegree()));
-		if (pn.getVoidReason() != null)
+		}
+		if (pn.getVoidReason() != null) {
 			newName.setVoidReason(new String(pn.getVoidReason()));
+		}
 		
-		if (pn.getDateChanged() != null)
+		if (pn.getDateChanged() != null) {
 			newName.setDateChanged((Date) pn.getDateChanged().clone());
-		if (pn.getDateCreated() != null)
+		}
+		if (pn.getDateCreated() != null) {
 			newName.setDateCreated((Date) pn.getDateCreated().clone());
-		if (pn.getDateVoided() != null)
+		}
+		if (pn.getDateVoided() != null) {
 			newName.setDateVoided((Date) pn.getDateVoided().clone());
+		}
 		
-		if (pn.getPreferred() != null)
+		if (pn.getPreferred() != null) {
 			newName.setPreferred(pn.getPreferred().booleanValue());
-		if (pn.getVoided() != null)
+		}
+		if (pn.getVoided() != null) {
 			newName.setVoided(pn.getVoided().booleanValue());
+		}
 		
 		newName.setPerson(pn.getPerson());
 		newName.setVoidedBy(pn.getVoidedBy());
@@ -162,7 +178,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * This still exists on PersonName for the SimpleFramework annotation
-	 * 
+	 *
 	 * @return Returns the dateVoided.
 	 */
 	@Element(required = false)
@@ -200,8 +216,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@Element(data = true, required = false)
 	public String getFamilyName() {
-		if (OpenmrsConstants.OBSCURE_PATIENTS)
+		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME;
+		}
 		return familyName;
 	}
 	
@@ -219,8 +236,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@Element(data = true, required = false)
 	public String getFamilyName2() {
-		if (OpenmrsConstants.OBSCURE_PATIENTS)
+		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return null;
+		}
 		return familyName2;
 	}
 	
@@ -238,8 +256,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@Element(data = true, required = false)
 	public String getFamilyNamePrefix() {
-		if (OpenmrsConstants.OBSCURE_PATIENTS)
+		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return null;
+		}
 		return familyNamePrefix;
 	}
 	
@@ -257,8 +276,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@Element(data = true, required = false)
 	public String getFamilyNameSuffix() {
-		if (OpenmrsConstants.OBSCURE_PATIENTS)
+		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return null;
+		}
 		return familyNameSuffix;
 	}
 	
@@ -276,8 +296,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@Element(data = true, required = false)
 	public String getGivenName() {
-		if (OpenmrsConstants.OBSCURE_PATIENTS)
+		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME;
+		}
 		return givenName;
 	}
 	
@@ -295,8 +316,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@Element(data = true, required = false)
 	public String getMiddleName() {
-		if (OpenmrsConstants.OBSCURE_PATIENTS)
+		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME;
+		}
 		return middleName;
 	}
 	
@@ -344,8 +366,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @return Returns the preferred.
 	 */
 	public Boolean isPreferred() {
-		if (preferred == null)
+		if (preferred == null) {
 			return Boolean.FALSE;
+		}
 		return preferred;
 	}
 	
@@ -368,8 +391,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	@Element(data = true, required = false)
 	public String getPrefix() {
-		if (OpenmrsConstants.OBSCURE_PATIENTS)
+		if (OpenmrsConstants.OBSCURE_PATIENTS) {
 			return null;
+		}
 		return prefix;
 	}
 	
@@ -391,7 +415,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * This still exists on PersonName for the SimpleFramework annotation
-	 * 
+	 *
 	 * @param voided The voided to set.
 	 */
 	@Attribute(required = true)
@@ -401,7 +425,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * This still exists on PersonName for the SimpleFramework annotation
-	 * 
+	 *
 	 * @return Returns the voidedBy.
 	 */
 	@Element(required = false)
@@ -411,7 +435,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * This still exists on PersonName for the SimpleFramework annotation
-	 * 
+	 *
 	 * @param voidedBy The voidedBy to set.
 	 */
 	@Element(required = false)
@@ -421,7 +445,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * This still exists on PersonName for the SimpleFramework annotation
-	 * 
+	 *
 	 * @return Returns the voidReason.
 	 */
 	@Element(data = true, required = false)
@@ -431,7 +455,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * This still exists on PersonName for the SimpleFramework annotation
-	 * 
+	 *
 	 * @param voidReason The voidReason to set.
 	 */
 	@Element(data = true, required = false)
@@ -443,28 +467,36 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * Convenience method to get all the names of this PersonName and concatonating them together
 	 * with spaces in between. If any part of {@link #getPrefix()}, {@link #getGivenName()},
 	 * {@link #getMiddleName()}, etc are null, they are not included in the returned name
-	 * 
+	 *
 	 * @return all of the parts of this {@link PersonName} joined with spaces
 	 * @should not put spaces around an empty middle name
 	 */
 	public String getFullName() {
 		List<String> temp = new ArrayList<String>();
-		if (StringUtils.hasText(getPrefix()))
+		if (StringUtils.hasText(getPrefix())) {
 			temp.add(getPrefix());
-		if (StringUtils.hasText(getGivenName()))
+		}
+		if (StringUtils.hasText(getGivenName())) {
 			temp.add(getGivenName());
-		if (StringUtils.hasText(getMiddleName()))
+		}
+		if (StringUtils.hasText(getMiddleName())) {
 			temp.add(getMiddleName());
-		if (StringUtils.hasText(getFamilyNamePrefix()))
+		}
+		if (StringUtils.hasText(getFamilyNamePrefix())) {
 			temp.add(getFamilyNamePrefix());
-		if (StringUtils.hasText(getFamilyName()))
+		}
+		if (StringUtils.hasText(getFamilyName())) {
 			temp.add(getFamilyName());
-		if (StringUtils.hasText(getFamilyName2()))
+		}
+		if (StringUtils.hasText(getFamilyName2())) {
 			temp.add(getFamilyName2());
-		if (StringUtils.hasText(getFamilyNameSuffix()))
+		}
+		if (StringUtils.hasText(getFamilyNameSuffix())) {
 			temp.add(getFamilyNameSuffix());
-		if (StringUtils.hasText(getDegree()))
+		}
+		if (StringUtils.hasText(getDegree())) {
 			temp.add(getDegree());
+		}
 		
 		String nameString = StringUtils.collectionToDelimitedString(temp, " ");
 		
@@ -484,7 +516,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * TODO: the behavior of this method needs to be controlled by some sort of global property
 	 * because an implementation can define how they want their names to look (which fields to
 	 * show/hide)
-	 * 
+	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * @should return negative if other name is voided
 	 * @should return negative if this name is preferred
@@ -498,28 +530,37 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	public int compareTo(PersonName other) {
 		int ret = isVoided().compareTo(other.isVoided());
-		if (ret == 0)
+		if (ret == 0) {
 			ret = other.isPreferred().compareTo(isPreferred());
-		if (ret == 0)
+		}
+		if (ret == 0) {
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName(), other.getFamilyName());
-		if (ret == 0)
+		}
+		if (ret == 0) {
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName2(), other.getFamilyName2());
-		if (ret == 0)
+		}
+		if (ret == 0) {
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getGivenName(), other.getGivenName());
-		if (ret == 0)
+		}
+		if (ret == 0) {
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getMiddleName(), other.getMiddleName());
-		if (ret == 0)
+		}
+		if (ret == 0) {
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNamePrefix(), other.getFamilyNamePrefix());
-		if (ret == 0)
+		}
+		if (ret == 0) {
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNameSuffix(), other.getFamilyNameSuffix());
-		if (ret == 0 && getDateCreated() != null)
+		}
+		if (ret == 0 && getDateCreated() != null) {
 			ret = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
+		}
 		
 		// if we've gotten this far, just check all name values. If they are
 		// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 		// and return that (they are not equal).
-		if (ret == 0 && !equalsContent(other))
+		if (ret == 0 && !equalsContent(other)) {
 			ret = 1;
+		}
 		
 		return ret;
 	}

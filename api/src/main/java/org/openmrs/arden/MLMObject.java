@@ -325,7 +325,7 @@ public class MLMObject {
 			
 			/*******************
 			 * Code for implementing If() then in Action
-			 * 
+			 *
 			 */
 			for (String uniqueKey : uniqueKeys) {
 				if (uniqueKey.startsWith("Box") || uniqueKey.startsWith("mode")) // Needs improvement - for now we allow if(variable not like Box1,...
@@ -366,19 +366,19 @@ public class MLMObject {
 			}
 			
 			/*****
-			 * 
+			 *
 			 * End of code for implementing If() then in Action
 			 */
 			
 			/*********** DO NOT NEED THIS because the above code does it
-			if (this.calls.get("action") != null) {
-				w.append("\t\t\t\tString value = null;\n");
-				w.append("\t\t\t\tString variable = null;\n");
-				w.append("\t\t\t\tint varLen = 0;\n");
-				for (Call currCall : this.calls.get("action")) {
-					currCall.write(w);
-				}
-			}
+			 if (this.calls.get("action") != null) {
+			 w.append("\t\t\t\tString value = null;\n");
+			 w.append("\t\t\t\tString variable = null;\n");
+			 w.append("\t\t\t\tint varLen = 0;\n");
+			 for (Call currCall : this.calls.get("action")) {
+			 currCall.write(w);
+			 }
+			 }
 			 **************/
 			
 			w.append("\t\t\t\tfor(String currAction:actions){\n");
@@ -1269,9 +1269,11 @@ public class MLMObject {
 					
 					compBySection.remove("__Temp__" + keyId);
 					if (keyId > 100) // At most 100 Temp Keys
+					{
 						setKeyId(1);
-					else
+					} else {
 						setKeyId(keyId + 1);
+					}
 				}
 			} else if (thisComparison != null) {
 				
@@ -1282,9 +1284,11 @@ public class MLMObject {
 				compBySection.remove("__Temp__" + keyId);
 				retVal = false;
 				if (keyId > 100) // At most 100 Temp Keys
+				{
 					setKeyId(1);
-				else
+				} else {
 					setKeyId(keyId + 1);
+				}
 				
 			}
 		}

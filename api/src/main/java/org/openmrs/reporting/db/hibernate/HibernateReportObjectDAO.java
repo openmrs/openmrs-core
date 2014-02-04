@@ -47,7 +47,7 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -86,12 +86,14 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(
 		    ReportObjectWrapper.class, reportObjId);
 		
-		if (wrappedReportObject == null)
+		if (wrappedReportObject == null) {
 			return null;
+		}
 		
 		AbstractReportObject reportObject = wrappedReportObject.getReportObject();
-		if (reportObject.getReportObjectId() == null)
+		if (reportObject.getReportObjectId() == null) {
 			reportObject.setReportObjectId(wrappedReportObject.getReportObjectId());
+		}
 		
 		return reportObject;
 	}

@@ -87,7 +87,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * This is the controlling class for the conceptForm.jsp page. It initBinder and formBackingObject
  * are called before page load. After submission, formBackingObject (because we're not a session
  * form), processFormSubmission, and onSubmit methods are called
- * 
+ *
  * @see org.openmrs.Concept
  */
 public class ConceptFormController extends SimpleFormController {
@@ -98,7 +98,7 @@ public class ConceptFormController extends SimpleFormController {
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
 	 * are expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -140,14 +140,16 @@ public class ConceptFormController extends SimpleFormController {
 		String jumpAction = request.getParameter("jumpAction");
 		if (jumpAction != null) {
 			Concept newConcept = null;
-			if ("previous".equals(jumpAction))
+			if ("previous".equals(jumpAction)) {
 				newConcept = cs.getPrevConcept(concept);
-			else if ("next".equals(jumpAction))
+			} else if ("next".equals(jumpAction)) {
 				newConcept = cs.getNextConcept(concept);
-			if (newConcept != null)
+			}
+			if (newConcept != null) {
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + newConcept.getConceptId()));
-			else
+			} else {
 				return new ModelAndView(new RedirectView(getSuccessView()));
+			}
 		}
 		
 		return super.processFormSubmission(request, response, object, errors);
@@ -156,7 +158,7 @@ public class ConceptFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -251,8 +253,9 @@ public class ConceptFormController extends SimpleFormController {
 				//if the user is editing a concept, initialise the associated creator property
 				//this is aimed at avoiding a lazy initialisation exception when rendering
 				//the jsp after validation has failed
-				if (concept.getConceptId() != null)
+				if (concept.getConceptId() != null) {
 					concept.getCreator().getPersonName();
+				}
 				
 				try {
 					ValidateUtil.validate(concept, errors);
@@ -316,7 +319,7 @@ public class ConceptFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -338,7 +341,7 @@ public class ConceptFormController extends SimpleFormController {
 	
 	/**
 	 * Called prior to form display. Allows for data to be put in the request to be used in the view
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -350,8 +353,9 @@ public class ConceptFormController extends SimpleFormController {
 		
 		String defaultVerbose = "false";
 		
-		if (Context.isAuthenticated())
+		if (Context.isAuthenticated()) {
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+		}
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		map.put("tags", cs.getAllConceptNameTags());
@@ -370,8 +374,9 @@ public class ConceptFormController extends SimpleFormController {
 			try {
 				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
 				dataTypeReadOnly = cs.hasAnyObservation(concept);
-				if (concept != null && concept.getDatatype().isBoolean())
+				if (concept != null && concept.getDatatype().isBoolean()) {
 					map.put("isBoolean", true);
+				}
 			}
 			catch (NumberFormatException ex) {
 				// nothing to do
@@ -436,7 +441,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		/**
 		 * Default constructor must take in a Concept object to create itself
-		 * 
+		 *
 		 * @param concept The concept for this page
 		 */
 		@SuppressWarnings("unchecked")
@@ -454,12 +459,15 @@ public class ConceptFormController extends SimpleFormController {
 				indexTermsByLocale.put(locale, (List<ConceptName>) concept.getIndexTermsForLocale(locale));
 				
 				// put in default values so the binding doesn't fail
-				if (namesByLocale.get(locale) == null)
+				if (namesByLocale.get(locale) == null) {
 					namesByLocale.put(locale, new ConceptName(null, locale));
-				if (shortNamesByLocale.get(locale) == null)
+				}
+				if (shortNamesByLocale.get(locale) == null) {
 					shortNamesByLocale.put(locale, new ConceptName(null, locale));
-				if (descriptionsByLocale.get(locale) == null)
+				}
+				if (descriptionsByLocale.get(locale) == null) {
 					descriptionsByLocale.put(locale, new ConceptDescription(null, locale));
+				}
 				
 				synonymsByLocale.put(locale, ListUtils.lazyList(synonymsByLocale.get(locale), FactoryUtils
 				        .instantiateFactory(ConceptName.class)));
@@ -495,7 +503,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * This method takes all the form data from the input boxes and puts it onto the concept
 		 * object so that it can be saved to the database
-		 * 
+		 *
 		 * @return the concept to be saved to the database
 		 */
 		public Concept getConceptFromFormData() {
@@ -528,9 +536,9 @@ public class ConceptFormController extends SimpleFormController {
 						//if the user removed this synonym with a void reason, returned to the page due validation errors,
 						//then they chose to cancel the removal of the synonym but forgot to clear the void reason text box,
 						//clear the text
-						if (!synonym.isVoided())
+						if (!synonym.isVoided()) {
 							synonym.setVoidReason(null);
-						else {
+						} else {
 							// always set the default void/retire reason
 							synonym
 							        .setVoidReason(Context.getMessageSourceService()
@@ -547,11 +555,12 @@ public class ConceptFormController extends SimpleFormController {
 							concept.addName(indexTerm);
 						}
 						
-						if (!indexTerm.isVoided())
+						if (!indexTerm.isVoided()) {
 							indexTerm.setVoidReason(null);
-						else if (indexTerm.isVoided() && !StringUtils.hasText(indexTerm.getVoidReason()))
+						} else if (indexTerm.isVoided() && !StringUtils.hasText(indexTerm.getVoidReason())) {
 							indexTerm.setVoidReason(Context.getMessageSourceService().getMessage(
 							    "Concept.name.default.voidReason"));
+						}
 					}
 				}
 				
@@ -566,14 +575,16 @@ public class ConceptFormController extends SimpleFormController {
 			//store ids of already mapped terms so that we don't map a term multiple times
 			Set<Integer> mappedTermIds = null;
 			for (ConceptMap map : conceptMappings) {
-				if (mappedTermIds == null)
+				if (mappedTermIds == null) {
 					mappedTermIds = new HashSet<Integer>();
+				}
 				
 				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
 					//if the user didn't select an existing term via the reference term autocomplete
 					// OR the user added a new row but entered nothing, ignore
-					if (map.getConceptMapId() == null)
+					if (map.getConceptMapId() == null) {
 						continue;
+					}
 					
 					// because of the _mappings[x].conceptReferenceTerm input name in the jsp, the ids for 
 					// terms will be empty for deleted mappings, remove those from the concept object now.
@@ -604,9 +615,9 @@ public class ConceptFormController extends SimpleFormController {
 			// add in subobject specific code
 			if (concept.getDatatype().getName().equals("Numeric")) {
 				ConceptNumeric cn;
-				if (concept instanceof ConceptNumeric)
+				if (concept instanceof ConceptNumeric) {
 					cn = (ConceptNumeric) concept;
-				else {
+				} else {
 					cn = new ConceptNumeric(concept);
 				}
 				cn.setHiAbsolute(hiAbsolute);
@@ -623,9 +634,9 @@ public class ConceptFormController extends SimpleFormController {
 				
 			} else if (concept.getDatatype().getName().equals("Complex")) {
 				ConceptComplex complexConcept;
-				if (concept instanceof ConceptComplex)
+				if (concept instanceof ConceptComplex) {
 					complexConcept = (ConceptComplex) concept;
-				else {
+				} else {
 					complexConcept = new ConceptComplex(concept);
 				}
 				complexConcept.setHandler(handlerKey);
@@ -887,7 +898,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		/**
 		 * Get the forms that this concept is declared to be used in
-		 * 
+		 *
 		 * @return
 		 */
 		public List<Form> getFormsInUse() {
@@ -897,7 +908,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * Get the list of extensions/metadata and the specific instances of them that use this
 		 * concept.
-		 * 
+		 *
 		 * @return list of {@link ConceptUsageExtension}
 		 */
 		public List<ConceptUsageExtension> getConceptUsage() {
@@ -950,7 +961,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		/**
 		 * Get the number of observations that use this concept.
-		 * 
+		 *
 		 * @return number of obs using this concept
 		 */
 		public int getNumberOfObsUsingThisConcept() {
@@ -961,7 +972,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		/**
 		 * Get the other concept questions that this concept is declared as an answer for
-		 * 
+		 *
 		 * @return
 		 */
 		public List<Concept> getQuestionsAnswered() {
@@ -970,7 +981,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		/**
 		 * Get the sets that this concept is declared to be a child member of
-		 * 
+		 *
 		 * @return
 		 */
 		public List<ConceptSet> getContainedInSets() {
@@ -980,7 +991,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * Get the answers for this concept with decoded names. The keys to this map are the
 		 * conceptIds or the conceptIds^drugId if applicable
-		 * 
+		 *
 		 * @return
 		 */
 		public Map<String, String> getConceptAnswers() {
@@ -991,15 +1002,17 @@ public class ConceptFormController extends SimpleFormController {
 				String key = answer.getAnswerConcept().getConceptId().toString();
 				ConceptName cn = answer.getAnswerConcept().getName(Context.getLocale());
 				String name = "";
-				if (cn != null)
+				if (cn != null) {
 					name = cn.toString();
+				}
 				if (answer.getAnswerDrug() != null) {
 					// if this answer is a drug, append the drug id information
 					key = key + "^" + answer.getAnswerDrug().getDrugId();
 					name = answer.getAnswerDrug().getFullName(Context.getLocale());
 				}
-				if (answer.getAnswerConcept().isRetired())
+				if (answer.getAnswerConcept().isRetired()) {
 					name = "<span class='retired'>" + name + "</span>";
+				}
 				conceptAnswers.put(key, name);
 			}
 			
@@ -1029,7 +1042,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		/**
 		 * Sets the list of drugs for its concept object
-		 * 
+		 *
 		 * @param conceptDrugList the value to be set
 		 */
 		public void setConceptDrugList(List<Drug> conceptDrugList) {

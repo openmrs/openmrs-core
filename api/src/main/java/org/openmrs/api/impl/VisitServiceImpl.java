@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
  * current OpenMRS implementation should be fetched from the Context.
- * 
+ *
  * @since 1.9
  */
 @Transactional
@@ -52,7 +52,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	
 	/**
 	 * Method used to inject the visit data access object.
-	 * 
+	 *
 	 * @param dao the visit data access object.
 	 */
 	public void setVisitDAO(VisitDAO dao) {
@@ -165,22 +165,24 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public Visit saveVisit(Visit visit) throws APIException {
-		if (visit.getVisitId() == null)
+		if (visit.getVisitId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_VISITS);
-		else
+		} else {
 			Context.requirePrivilege(PrivilegeConstants.EDIT_VISITS);
+		}
 		
 		CustomDatatypeUtil.saveAttributesIfNecessary(visit);
 		return dao.saveVisit(visit);
 	}
 	
 	/**
-	 * @see org.openmrs.api.VisitService#endVisit(org.openmrs.Visit,java.util.Date)
+	 * @see org.openmrs.api.VisitService#endVisit(org.openmrs.Visit, java.util.Date)
 	 */
 	@Override
 	public Visit endVisit(Visit visit, Date stopDate) {
-		if (stopDate == null)
+		if (stopDate == null) {
 			stopDate = new Date();
+		}
 		
 		visit.setStopDatetime(stopDate);
 		
@@ -208,11 +210,13 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public void purgeVisit(Visit visit) throws APIException {
-		if (visit.getVisitId() == null)
+		if (visit.getVisitId() == null) {
 			return;
-		if (Context.getEncounterService().getEncountersByVisit(visit, true).size() > 0)
+		}
+		if (Context.getEncounterService().getEncountersByVisit(visit, true).size() > 0) {
 			throw new APIException(Context.getMessageSourceService().getMessage("Visit.purge.inUse", null,
 			    "Cannot purge a visit that has encounters associated to it", Context.getLocale()));
+		}
 		dao.deleteVisit(visit);
 	}
 	
@@ -241,8 +245,9 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@Transactional(readOnly = true)
 	public List<Visit> getVisitsByPatient(Patient patient) throws APIException {
 		//Don't bother to hit the database
-		if (patient == null || patient.getId() == null)
+		if (patient == null || patient.getId() == null) {
 			return Collections.EMPTY_LIST;
+		}
 		
 		return Context.getVisitService().getVisits(null, Collections.singletonList(patient), null, null, null, null, null,
 		    null, null, true, false);
@@ -265,8 +270,9 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@Transactional(readOnly = true)
 	public List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
 	        throws APIException {
-		if (patient == null || patient.getId() == null)
+		if (patient == null || patient.getId() == null) {
 			return Collections.EMPTY_LIST;
+		}
 		
 		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null,
 		    includeInactive, includeVoided);
@@ -349,8 +355,9 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		String gpValue = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
 		VisitService vs = Context.getVisitService();
 		if (StringUtils.isNotBlank(gpValue)) {
-			if (maximumStartDate == null)
+			if (maximumStartDate == null) {
 				maximumStartDate = new Date();
+			}
 			
 			List<VisitType> visitTypesToStop = new ArrayList<VisitType>();
 			String[] visitTypeNames = StringUtils.split(gpValue.trim(), ",");
@@ -361,8 +368,9 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 			
 			List<VisitType> allVisitTypes = vs.getAllVisitTypes();
 			for (VisitType visitType : allVisitTypes) {
-				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase()))
+				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
 					visitTypesToStop.add(visitType);
+				}
 			}
 			
 			if (visitTypesToStop.size() > 0) {

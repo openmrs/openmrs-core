@@ -54,8 +54,9 @@ public class HttpClient {
 			for (Map.Entry<String, String> entry : parameters.entrySet()) {
 				
 				// skip over invalid post variables
-				if (entry.getKey() == null || entry.getValue() == null)
+				if (entry.getKey() == null || entry.getValue() == null) {
 					continue;
+				}
 				data.append("&"); // only append this if its _not_ the first
 				// datum
 				
@@ -91,18 +92,20 @@ public class HttpClient {
 			log.warn("Reponse from server was: " + response);
 		}
 		finally {
-			if (wr != null)
+			if (wr != null) {
 				try {
 					wr.close();
 				}
 				catch (Exception e) { /* pass */
 				}
-			if (rd != null)
+			}
+			if (rd != null) {
 				try {
 					rd.close();
 				}
 				catch (Exception e) { /* pass */
 				}
+			}
 		}
 		
 		return response;

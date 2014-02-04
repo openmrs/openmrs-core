@@ -52,7 +52,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * Constructor defining the key for this GP
-	 * 
+	 *
 	 * @param property key to name the property
 	 */
 	public GlobalProperty(String property) {
@@ -61,7 +61,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * Constructor defining the key and value of this GP
-	 * 
+	 *
 	 * @param property key to name the property
 	 * @param value value to give to the property
 	 */
@@ -72,7 +72,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * Constructor defining key/value/description for this GP
-	 * 
+	 *
 	 * @param property key to name the property
 	 * @param value value to give to the property
 	 * @param description description of how this property is used
@@ -84,13 +84,13 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * Constructor defining key/value/description/customDatatype/datatypeConfig
-	 * 
+	 *
 	 * @param property
 	 * @param value
 	 * @param description
 	 * @param datatypeClass
 	 * @param datatypeConfig
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	public GlobalProperty(String property, String value, String description,
@@ -235,7 +235,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getDescriptor()
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	@Override
@@ -245,7 +245,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValueReference()
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	@Override
@@ -255,7 +255,7 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValueReferenceInternal(java.lang.String)
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	@Override
@@ -265,19 +265,20 @@ public class GlobalProperty extends BaseOpenmrsObject implements CustomValueDesc
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#getValue()
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	@Override
 	public Object getValue() throws InvalidCustomValueException {
-		if (typedValue == null)
+		if (typedValue == null) {
 			typedValue = CustomDatatypeUtil.getDatatypeOrDefault(this).fromReferenceString(getValueReference());
+		}
 		return typedValue;
 	}
 	
 	/**
 	 * @see org.openmrs.customdatatype.SingleCustomValue#setValue(java.lang.Object)
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	@Override

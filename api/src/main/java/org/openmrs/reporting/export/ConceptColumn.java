@@ -65,8 +65,9 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	
 	private String toSingleTemplateString(int conceptId) {
 		StringBuilder s = new StringBuilder("");
-		if (extras == null)
+		if (extras == null) {
 			extras = new String[] {};
+		}
 		
 		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)
 		        || DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
@@ -77,31 +78,34 @@ public class ConceptColumn implements ExportColumn, Serializable {
 				s.append("'");
 				s.append(extras[x]);
 				s.append("'");
-				if (!x.equals(extras.length - 1))
+				if (!x.equals(extras.length - 1)) {
 					s.append(",");
+				}
 			}
 			s.append("])");
 			
-			if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier))
+			if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
 				s.append("#set($obsValues = $fn.getLastNObsWithValues(").append(num).append(", '").append(conceptId).append(
 				    "', $arr))");
-			else if (DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier))
+			} else if (DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
 				s.append("#set($obsValues = $fn.getFirstNObsWithValues(").append(num).append(", '").append(conceptId)
 				        .append("', $arr))");
+			}
 			s.append("#foreach($vals in $obsValues)").append("#if($velocityCount > 1)").append("$!{fn.getSeparator()}")
 			        .append("#end").append("#foreach($val in $vals)").append("#if($velocityCount > 1)").append(
 			            "$!{fn.getSeparator()}").append("#end").append("$!{fn.getValueAsString($val)}").append("#end")
 			        .append("#end\n");
 		} else {
 			String function = " ";
-			if (DataExportReportObject.MODIFIER_ANY.equals(modifier))
+			if (DataExportReportObject.MODIFIER_ANY.equals(modifier)) {
 				function += "$fn.getLastObs";
-			else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier))
+			} else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier)) {
 				function += "$fn.getFirstObs";
-			else if (DataExportReportObject.MODIFIER_LAST.equals(modifier))
+			} else if (DataExportReportObject.MODIFIER_LAST.equals(modifier)) {
 				function += "$fn.getLastObs";
-			else
+			} else {
 				throw new APIException("Unknown modifier: " + modifier);
+			}
 			
 			if (extras.length < 1) {
 				function = "$!{fn.getValueAsString(" + function;
@@ -112,8 +116,9 @@ public class ConceptColumn implements ExportColumn, Serializable {
 				s.append("#set($arr = [");
 				for (Integer x = 0; x < extras.length; x++) {
 					s.append("'").append(extras[x]).append("'");
-					if (!x.equals(extras.length - 1))
+					if (!x.equals(extras.length - 1)) {
 						s.append(",");
+					}
 				}
 				s.append("])");
 				
@@ -167,7 +172,7 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	/**
 	 * Convenience method used by {@link #getTemplateColumnName()} to print out for just the given
 	 * concept. This is used for all normal columns and then for the each set member of a column
-	 * 
+	 *
 	 * @param columnName the conceptName to act on
 	 * @return string for this one concept
 	 */
@@ -178,10 +183,11 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)
 		        || DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
 			
-			if (modifierNum == null || modifierNum < 2)
+			if (modifierNum == null || modifierNum < 2) {
 				s += "#foreach($o in []) ";
-			else
+			} else {
 				s += "#foreach($o in [1.." + (modifierNum - 1) + "]) ";
+			}
 			s += "$!{fn.getSeparator()}";
 			s += "\"";
 			s += columnName + "_($velocityCount)";
@@ -221,7 +227,7 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	
 	/**
 	 * Get the extras template for the given conceptName
-	 * 
+	 *
 	 * @param columnName optional column name to use instead of conceptName
 	 * @param appendCount the extra label to append to the name
 	 * @return template column string for this concept
@@ -231,8 +237,9 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		if (extras != null) {
 			for (String ext : extras) {
 				s.append("$!{fn.getSeparator()}").append("\"").append(columnName).append("_").append(ext);
-				if (appendCount)
+				if (appendCount) {
 					s.append("_($velocityCount)");
+				}
 				s.append("\"");
 			}
 		}
@@ -293,10 +300,11 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	// returns conceptId if not null, conceptName otherwise
 	// convenience method for backwards compatibility to pre 1.0.43
 	public String getConceptIdOrName() {
-		if (conceptId != null)
+		if (conceptId != null) {
 			return conceptId.toString();
-		else
+		} else {
 			return conceptName;
+		}
 	}
 	
 }

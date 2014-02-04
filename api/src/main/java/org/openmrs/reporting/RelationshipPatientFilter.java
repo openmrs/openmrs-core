@@ -55,18 +55,21 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 			if (includeAtoB && includeBtoA) {
 				sb.append("who are either " + relType.getaIsToB() + " or " + relType.getbIsToA() + " of ");
 			} else {
-				if (includeAtoB)
+				if (includeAtoB) {
 					sb.append("who are " + relType.getaIsToB() + " to " + relType.getbIsToA() + " ");
-				if (includeBtoA)
+				}
+				if (includeBtoA) {
 					sb.append("who are " + relType.getbIsToA() + " to " + relType.getaIsToB() + " ");
+				}
 			}
 		} else {
 			sb.append("with any relationship to ");
 		}
-		if (getPerson() != null)
+		if (getPerson() != null) {
 			sb.append(getPerson().toString());
-		else
+		} else {
 			sb.append("anyone");
+		}
 		return sb.toString();
 	}
 	
@@ -81,8 +84,9 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 			sb.append(includeAtoB + ".");
 			sb.append(includeBtoA + ".");
 		}
-		if (getPerson() != null)
+		if (getPerson() != null) {
 			sb.append("p" + getPerson().getPersonId() + ".");
+		}
 		return sb.toString();
 	}
 	

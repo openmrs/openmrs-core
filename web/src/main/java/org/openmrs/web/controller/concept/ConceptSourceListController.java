@@ -48,7 +48,7 @@ public class ConceptSourceListController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -60,7 +60,7 @@ public class ConceptSourceListController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -92,8 +92,9 @@ public class ConceptSourceListController extends SimpleFormController {
 		// make available the source that corresponds to the implementation id 
 		if (implId != null) {
 			for (ConceptSource conceptSource : conceptSources) {
-				if (conceptSource.getHl7Code() != null && conceptSource.getHl7Code().equals(implId.getImplementationId()))
+				if (conceptSource.getHl7Code() != null && conceptSource.getHl7Code().equals(implId.getImplementationId())) {
 					map.put("implIdSource", conceptSource);
+				}
 			}
 		}
 		

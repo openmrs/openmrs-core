@@ -68,12 +68,14 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 	private String nameHelper(List list) {
 		StringBuilder ret = new StringBuilder();
 		for (Object o : list) {
-			if (ret.length() > 0)
+			if (ret.length() > 0) {
 				ret.append(" ");
-			if (o instanceof List)
+			}
+			if (o instanceof List) {
 				ret.append("(" + nameHelper((List) o) + ")");
-			else
+			} else {
 				ret.append(o);
+			}
 		}
 		return ret.toString();
 	}
@@ -81,7 +83,7 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 	/**
 	 * Call this to notify this composition filter that the _i_th element of the search history has
 	 * been removed, and it potentially needs to renumber its constituent parts
-	 * 
+	 *
 	 * @return whether or not this filter itself should be removed (because it directly references
 	 *         the removed history element
 	 */
@@ -108,7 +110,6 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 			return ret;
 		}
 		*/
-
 	@SuppressWarnings("unchecked")
 	private PatientFilter toPatientFilter(List<Object> phrase) {
 		// Recursive step:
@@ -118,12 +119,13 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 		List<Object> use = new ArrayList<Object>();
 		for (ListIterator<Object> i = phrase.listIterator(); i.hasNext();) {
 			Object o = i.next();
-			if (o instanceof List)
+			if (o instanceof List) {
 				use.add(toPatientFilter((List<Object>) o));
-			else if (o instanceof Integer)
+			} else if (o instanceof Integer) {
 				use.add(getHistory().getSearchHistory().get((Integer) o - 1));
-			else
+			} else {
 				use.add(o);
+			}
 		}
 		
 		// base case. All elements are PatientFilter or BooleanOperator.
@@ -138,8 +140,9 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 					i.remove();
 					invertTheNext = !invertTheNext;
 				} else {
-					if (invertTheNext)
+					if (invertTheNext) {
 						throw new RuntimeException("Can't have NOT AND. Test() should have failed");
+					}
 				}
 			} else {
 				if (invertTheNext) {
@@ -162,11 +165,13 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 		}
 		BooleanOperator bo = BooleanOperator.AND;
 		List<PatientFilter> args = new ArrayList<PatientFilter>();
-		for (Object o : use)
-			if (o instanceof BooleanOperator)
+		for (Object o : use) {
+			if (o instanceof BooleanOperator) {
 				bo = (BooleanOperator) o;
-			else
+			} else {
 				args.add((PatientFilter) o);
+			}
+		}
 		
 		return new CompoundPatientFilter(bo, args);
 	}

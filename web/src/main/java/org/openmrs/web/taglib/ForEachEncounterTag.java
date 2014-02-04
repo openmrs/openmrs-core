@@ -80,8 +80,9 @@ public class ForEachEncounterTag extends BodyTagSupport {
 		// If not provided, return all encounters
 		matchingEncs = new ArrayList<Encounter>();
 		for (Iterator<Encounter> i = encounters.iterator(); i.hasNext();) {
-			if (getNum() != null && getNum() <= matchingEncs.size())
+			if (getNum() != null && getNum() <= matchingEncs.size()) {
 				break;
+			}
 			Encounter e = i.next();
 			if (type == null || e.getEncounterType().getEncounterTypeId().intValue() == type.intValue()) {
 				matchingEncs.add(e);
@@ -170,10 +171,11 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	 * @param num the num to set
 	 */
 	public void setNum(Integer num) {
-		if (num != 0)
+		if (num != 0) {
 			this.num = num;
-		else
+		} else {
 			num = null;
+		}
 	}
 	
 	/**

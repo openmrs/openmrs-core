@@ -117,7 +117,7 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
@@ -139,7 +139,7 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
-	 * 
+	 *
 	 * @see org.openmrs.web.filter.StartupFilter#doPost(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
@@ -149,9 +149,10 @@ public class UpdateFilter extends StartupFilter {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
-		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null)
+		if (httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE) != null) {
 			referenceMap
 			        .put(FilterUtil.LOCALE_ATTRIBUTE, httpRequest.getSession().getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+		}
 		
 		// step one
 		if (DEFAULT_PAGE.equals(page)) {
@@ -259,8 +260,9 @@ public class UpdateFilter extends StartupFilter {
 					result.put("hasWarnings", updateJob.hasWarnings());
 					StringBuilder sb = new StringBuilder("<ul>");
 					
-					for (String warning : updateJob.getUpdateWarnings())
+					for (String warning : updateJob.getUpdateWarnings()) {
 						sb.append("<li>" + warning + "</li>");
+					}
 					
 					sb.append("</ul>");
 					result.put("updateWarnings", sb.toString());
@@ -279,8 +281,9 @@ public class UpdateFilter extends StartupFilter {
 					MemoryAppender memoryAppender = (MemoryAppender) appender;
 					List<String> logLines = memoryAppender.getLogLines();
 					// truncate the list to the last five so we don't overwhelm jquery
-					if (logLines.size() > 5)
+					if (logLines.size() > 5) {
 						logLines = logLines.subList(logLines.size() - 5, logLines.size());
+					}
 					result.put("logLines", logLines);
 				} else {
 					result.put("logLines", new ArrayList<String>());
@@ -297,7 +300,7 @@ public class UpdateFilter extends StartupFilter {
 	 * to application. It retrieves user locale from request object and checks if this locale is
 	 * supported by application. If not, it tries to load system default locale. If it's not specified it 
 	 * uses {@link Locale#ENGLISH} by default
-	 * 
+	 *
 	 * @param httpRequest the http request object
 	 */
 	public void checkLocaleAttributesForFirstTime(HttpServletRequest httpRequest) {
@@ -318,7 +321,7 @@ public class UpdateFilter extends StartupFilter {
 	/**
 	 * Look in the users table for a user with this username and password and see if they have a
 	 * role of {@link OpenmrsConstants#SUPERUSER_ROLE}.
-	 * 
+	 *
 	 * @param usernameOrSystemId user entered username
 	 * @param password user entered password
 	 * @return true if this user has the super user role
@@ -382,13 +385,14 @@ public class UpdateFilter extends StartupFilter {
 			}
 		}
 		finally {
-			if (connection != null)
+			if (connection != null) {
 				try {
 					connection.close();
 				}
 				catch (SQLException e) {
 					log.debug("Error while closing the database", e);
 				}
+			}
 		}
 		
 		return false;
@@ -397,7 +401,7 @@ public class UpdateFilter extends StartupFilter {
 	/**
 	 * Checks the given user to see if they have been given the
 	 * {@link OpenmrsConstants#SUPERUSER_ROLE} role. This method does not look at child roles.
-	 * 
+	 *
 	 * @param connection the java sql connection to use
 	 * @param userId the user id to look at
 	 * @return true if the given user is a super user
@@ -424,7 +428,7 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**``
 	 * Do everything to get openmrs going.
-	 * 
+	 *
 	 * @param servletContext the servletContext from the filterconfig
 	 * @see Listener#startOpenmrs(ServletContext)
 	 */
@@ -462,14 +466,15 @@ public class UpdateFilter extends StartupFilter {
 			try {
 				// this pings the DatabaseUpdater.updatesRequired which also
 				// considers a db lock to be a 'required update'
-				if (model.updateRequired)
+				if (model.updateRequired) {
 					setUpdatesRequired(true);
-				else if (model.changes == null)
+				} else if (model.changes == null) {
 					setUpdatesRequired(false);
-				else {
-					if (log.isDebugEnabled())
+				} else {
+					if (log.isDebugEnabled()) {
 						log.debug("Setting updates required to " + (model.changes.size() > 0)
 						        + " because of the size of unrun changes");
+					}
 					setUpdatesRequired(model.changes.size() > 0);
 				}
 			}
@@ -506,7 +511,7 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * Used by the Listener to know if this filter wants to do its magic
-	 * 
+	 *
 	 * @return true if updates have been determined to be required
 	 * @see #init(FilterConfig)
 	 * @see Listener#setupNeeded
@@ -647,7 +652,7 @@ public class UpdateFilter extends StartupFilter {
 				
 				/**
 				 * TODO split this up into multiple testable methods
-				 * 
+				 *
 				 * @see java.lang.Runnable#run()
 				 */
 				public void run() {

@@ -284,8 +284,9 @@ public class PatientSearchCriteria {
 		// split the pattern before replacing in case the user searched on a comma
 		List<String> searchPatterns = new ArrayList<String>();
 		// replace the @SEARCH@, etc in all elements
-		for (String pattern : patternSearch.split(","))
+		for (String pattern : patternSearch.split(",")) {
 			searchPatterns.add(replaceSearchString(pattern, identifier));
+		}
 		return Restrictions.in("ids.identifier", searchPatterns);
 	}
 	

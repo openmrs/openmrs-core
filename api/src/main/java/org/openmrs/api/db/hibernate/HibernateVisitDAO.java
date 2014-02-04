@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Hibernate specific visit related functions This class should not be used directly. All calls
  * should go through the {@link org.openmrs.api.VisitService} methods.
- * 
+ *
  * @since 1.9
  */
 public class HibernateVisitDAO implements VisitDAO {
@@ -172,19 +172,25 @@ public class HibernateVisitDAO implements VisitDAO {
 		
 		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
 		
-		if (visitTypes != null)
+		if (visitTypes != null) {
 			criteria.add(Restrictions.in("visitType", visitTypes));
-		if (patients != null)
+		}
+		if (patients != null) {
 			criteria.add(Restrictions.in("patient", patients));
-		if (locations != null)
+		}
+		if (locations != null) {
 			criteria.add(Restrictions.in("location", locations));
-		if (indications != null)
+		}
+		if (indications != null) {
 			criteria.add(Restrictions.in("indication", indications));
+		}
 		
-		if (minStartDatetime != null)
+		if (minStartDatetime != null) {
 			criteria.add(Restrictions.ge("startDatetime", minStartDatetime));
-		if (maxStartDatetime != null)
+		}
+		if (maxStartDatetime != null) {
 			criteria.add(Restrictions.le("startDatetime", maxStartDatetime));
+		}
 		
 		// active visits have null end date, so it doesn't make sense to search against it if include inactive is set to false
 		if (!includeInactive) {
@@ -195,12 +201,14 @@ public class HibernateVisitDAO implements VisitDAO {
 				criteria.add(Restrictions.or(Restrictions.isNull("stopDatetime"), Restrictions.ge("stopDatetime",
 				    minEndDatetime)));
 			}
-			if (maxEndDatetime != null)
+			if (maxEndDatetime != null) {
 				criteria.add(Restrictions.le("stopDatetime", maxEndDatetime));
+			}
 		}
 		
-		if (!includeVoided)
+		if (!includeVoided) {
 			criteria.add(Restrictions.eq("voided", false));
+		}
 		
 		criteria.addOrder(Order.desc("startDatetime"));
 		criteria.addOrder(Order.desc("visitId"));
@@ -282,11 +290,13 @@ public class HibernateVisitDAO implements VisitDAO {
 		criteria.add(Restrictions.eq("voided", false)).add(
 		    Restrictions.gt("visitId", (previousVisit != null) ? previousVisit.getVisitId() : 0)).addOrder(
 		    Order.asc("visitId")).add(Restrictions.isNull("stopDatetime")).setMaxResults(1);
-		if (maximumStartDate != null)
+		if (maximumStartDate != null) {
 			criteria.add(Restrictions.le("startDatetime", maximumStartDate));
+		}
 		
-		if (CollectionUtils.isNotEmpty(visitTypes))
+		if (CollectionUtils.isNotEmpty(visitTypes)) {
 			criteria.add(Restrictions.in("visitType", visitTypes));
+		}
 		
 		return (Visit) criteria.uniqueResult();
 	}

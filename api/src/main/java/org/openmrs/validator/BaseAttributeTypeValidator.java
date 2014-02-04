@@ -27,7 +27,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Abstract class which handles basic validation common to all attribute types
- * 
+ *
  * @since 1.9
  */
 public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> implements Validator {
@@ -88,9 +88,10 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 				try {
 					CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(attributeType);
 					CustomDatatypeHandler<?, ?> handler = CustomDatatypeUtil.getHandler(attributeType);
-					if (!CustomDatatypeUtil.isCompatibleHandler(handler, datatype))
+					if (!CustomDatatypeUtil.isCompatibleHandler(handler, datatype)) {
 						errors.rejectValue("preferredHandlerClassname",
 						    "AttributeType.preferredHandlerClassname.wrongDatatype");
+					}
 				}
 				catch (Exception ex) {
 					errors.rejectValue("handlerConfig", "AttributeType.handlerConfig.invalid", new Object[] { ex

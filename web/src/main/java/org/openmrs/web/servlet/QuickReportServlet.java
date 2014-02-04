@@ -123,8 +123,9 @@ public class QuickReportServlet extends HttpServlet {
 			catch (ParseException e) {
 				throw new ServletException("Error parsing 'Start Date'", e);
 			}
-		} else
+		} else {
 			cal.setTime(new Date());
+		}
 		
 		// if they don't input an end date, assume they meant "this week"
 		if (endDate == null || endDate.equals("")) {
@@ -148,9 +149,9 @@ public class QuickReportServlet extends HttpServlet {
 		
 		List<Obs> allObs = null;
 		
-		if (location == null || location.equals(""))
+		if (location == null || location.equals("")) {
 			allObs = os.getObservations(c, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
-		else {
+		} else {
 			Location locationObj = es.getLocation(Integer.valueOf(location));
 			allObs = os.getObservations(c, locationObj, "location.locationId asc, obs.valueDatetime asc",
 			    ObsService.PATIENT, true);
@@ -159,9 +160,11 @@ public class QuickReportServlet extends HttpServlet {
 		List<Obs> obs = new Vector<Obs>();
 		
 		for (Obs o : allObs) {
-			if (o.getValueDatetime() != null)
-				if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end))
+			if (o.getValueDatetime() != null) {
+				if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end)) {
 					obs.add(o);
+				}
+			}
 		}
 		
 		velocityContext.put("observations", obs);
@@ -191,8 +194,9 @@ public class QuickReportServlet extends HttpServlet {
 			catch (ParseException e) {
 				throw new ServletException("Error parsing 'Start Date'", e);
 			}
-		} else
+		} else {
 			cal.setTime(new Date());
+		}
 		
 		// if they don't input an end date, assume they meant "this week"
 		if (endDate == null || endDate.equals("")) {
@@ -216,9 +220,9 @@ public class QuickReportServlet extends HttpServlet {
 		
 		Collection<Encounter> encounters = null;
 		
-		if (location == null || location.equals(""))
+		if (location == null || location.equals("")) {
 			encounters = es.getEncounters(null, null, start, end, null, null, null, true);
-		else {
+		} else {
 			Location locationObj = ls.getLocation(Integer.valueOf(location));
 			encounters = es.getEncounters(null, locationObj, start, end, null, null, null, true);
 		}
@@ -252,8 +256,9 @@ public class QuickReportServlet extends HttpServlet {
 			catch (ParseException e) {
 				throw new ServletException("Error parsing 'Start Date'", e);
 			}
-		} else
+		} else {
 			cal.setTime(new Date());
+		}
 		
 		// if they don't input an end date, assume they meant "this week"
 		if (endDate == null || endDate.equals("")) {
@@ -280,8 +285,9 @@ public class QuickReportServlet extends HttpServlet {
 		
 		List<Obs> obs = new Vector<Obs>();
 		for (Obs o : allObs) {
-			if (o.getVoided() == true)
+			if (o.getVoided() == true) {
 				obs.add(o);
+			}
 		}
 		
 		velocityContext.put("observations", obs);

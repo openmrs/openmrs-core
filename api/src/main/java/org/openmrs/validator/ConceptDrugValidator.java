@@ -23,7 +23,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates {@link Drug} objects.
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { Drug.class }, order = 50)
@@ -34,7 +34,7 @@ public class ConceptDrugValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 * @should support Drug class
 	 * @should reject classes not extending Drug
@@ -46,7 +46,7 @@ public class ConceptDrugValidator implements Validator {
 	
 	/**
 	 * Checks that a given <code>Drug</code> object is valid.
-	 * 
+	 *
 	 * @param obj the Object to validate
 	 * @param errors holds the validation errors
 	 * @throws <code>IllegalArgumentException</code> Runtime Exception if the supplied argument is
@@ -56,8 +56,9 @@ public class ConceptDrugValidator implements Validator {
 	 * @should fail if a concept is not specified
 	 */
 	public void validate(Object obj, Errors errors) throws IllegalArgumentException {
-		if (obj == null || !(obj instanceof Drug))
+		if (obj == null || !(obj instanceof Drug)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Drug.class);
+		}
 		log.debug("request to validate drug having concept: " + ((Drug) obj).getConcept());
 		ValidationUtils.rejectIfEmpty(errors, "concept", "ConceptDrug.error.conceptRequired");
 	}

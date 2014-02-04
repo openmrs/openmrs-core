@@ -22,7 +22,7 @@ import org.openmrs.api.context.Context;
 
 /**
  * A utility class for working with locations
- * 
+ *
  * @since 1.9
  */
 public class LocationUtility implements GlobalPropertyListener {
@@ -37,13 +37,14 @@ public class LocationUtility implements GlobalPropertyListener {
 	
 	/**
 	 * Gets the system default location specified as a global property.
-	 * 
+	 *
 	 * @return default location object.
 	 * @should return the updated defaultLocation when the value of the global property is changed
 	 */
 	public static Location getDefaultLocation() {
-		if (defaultLocation == null && Context.isSessionOpen())
+		if (defaultLocation == null && Context.isSessionOpen()) {
 			defaultLocation = Context.getLocationService().getDefaultLocation();
+		}
 		
 		return defaultLocation;
 	}
@@ -51,7 +52,7 @@ public class LocationUtility implements GlobalPropertyListener {
 	/**
 	 * Convenience method that returns the default location of the authenticated user. It should
 	 * return the user's specified location from the user properties if any is set.
-	 * 
+	 *
 	 * @should return the user specified location if any is set
 	 */
 	public static Location getUserDefaultLocation() {

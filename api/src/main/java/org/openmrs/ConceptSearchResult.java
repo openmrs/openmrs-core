@@ -16,7 +16,7 @@ package org.openmrs;
 /**
  * An Object of this class represents a search result returned when searching for concepts, it holds
  * extra metadata about the matched concept(s).
- * 
+ *
  * @since 1.8
  */
 public class ConceptSearchResult implements java.io.Serializable {
@@ -42,7 +42,7 @@ public class ConceptSearchResult implements java.io.Serializable {
 	 * Optional constructor for turning a conceptWord into a conceptSearchResult, the constructor is
 	 * hidden from API users so as to hide the idea of conceptWord, it is meant to be used
 	 * underneath the API for convenience purposes.
-	 * 
+	 *
 	 * @param conceptWord the conceptWord from which to construct a search result
 	 */
 	protected ConceptSearchResult(ConceptWord conceptWord) {
@@ -52,14 +52,15 @@ public class ConceptSearchResult implements java.io.Serializable {
 			this.word = conceptWord.getWord();
 			// if a null value is passed in, ignore it and maintain the default
 			// of 0.0
-			if (conceptWord.getWeight() != null)
+			if (conceptWord.getWeight() != null) {
 				this.transientWeight = conceptWord.getWeight();
+			}
 		}
 	}
 	
 	/**
 	 * Convenience constructor
-	 * 
+	 *
 	 * @param word the single word that will be matched to search terms
 	 * @param concept the concept that is being matched to
 	 * @param conceptName the specific name that will be matched
@@ -72,7 +73,7 @@ public class ConceptSearchResult implements java.io.Serializable {
 	
 	/**
 	 * Convenience constructor that takes in a weight too
-	 * 
+	 *
 	 * @param word the single word that will be matched to search terms
 	 * @param concept the concept that is being matched to
 	 * @param conceptName the specific name that will be matched
@@ -82,8 +83,9 @@ public class ConceptSearchResult implements java.io.Serializable {
 		this.concept = concept;
 		this.conceptName = conceptName;
 		this.word = word;
-		if (transientWeight != null)
+		if (transientWeight != null) {
 			this.transientWeight = transientWeight;
+		}
 	}
 	
 	/**
@@ -130,7 +132,7 @@ public class ConceptSearchResult implements java.io.Serializable {
 	
 	/**
 	 * Getter for transientWeight
-	 * 
+	 *
 	 * @return
 	 */
 	public Double getTransientWeight() {
@@ -139,7 +141,7 @@ public class ConceptSearchResult implements java.io.Serializable {
 	
 	/**
 	 * Setter transientWeight
-	 * 
+	 *
 	 * @param transientWeight
 	 */
 	public void setTransientWeight(Double transientWeight) {
@@ -151,13 +153,16 @@ public class ConceptSearchResult implements java.io.Serializable {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!(obj instanceof ConceptSearchResult))
+		}
+		if (!(obj instanceof ConceptSearchResult)) {
 			return false;
+		}
 		ConceptSearchResult other = (ConceptSearchResult) obj;
-		if (getConcept() == null)
+		if (getConcept() == null) {
 			return false;
+		}
 		return getConcept().equals(other.getConcept());
 	}
 	
@@ -166,8 +171,9 @@ public class ConceptSearchResult implements java.io.Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		if (getConcept() == null)
+		if (getConcept() == null) {
 			return super.hashCode();
+		}
 		return getConcept().hashCode();
 	}
 }

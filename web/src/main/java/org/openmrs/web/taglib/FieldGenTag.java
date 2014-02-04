@@ -83,10 +83,12 @@ public class FieldGenTag extends TagSupport {
 	@SuppressWarnings("unchecked")
 	public int doStartTag() throws JspException {
 		
-		if (type == null)
+		if (type == null) {
 			type = "";
-		if (formFieldName == null)
+		}
+		if (formFieldName == null) {
 			formFieldName = "";
+		}
 		
 		if (formFieldName.length() > 0) {
 			FieldGenHandler handler = getHandlerByClassName(type);
@@ -102,8 +104,9 @@ public class FieldGenTag extends TagSupport {
 					if (val != null) {
 						startVal = val.toString();
 					}
-					if (startVal.length() > 1)
+					if (startVal.length() > 1) {
 						startVal = startVal.substring(0, 1);
+					}
 					String fieldLength = this.parameterMap != null ? (String) this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_CHAR_LENGTH : fieldLength;
 					output.setLength(0);
@@ -141,12 +144,15 @@ public class FieldGenTag extends TagSupport {
 						startVal = val.toString();
 					}
 					startVal = (startVal == null) ? "" : startVal.toLowerCase();
-					if ("false".equals(startVal) || "0".equals(startVal))
+					if ("false".equals(startVal) || "0".equals(startVal)) {
 						startVal = "false";
-					if ("true".equals(startVal) || "1".equals(startVal))
+					}
+					if ("true".equals(startVal) || "1".equals(startVal)) {
 						startVal = "true";
-					if ("unknown".equals(startVal) || "?".equals(startVal))
+					}
+					if ("unknown".equals(startVal) || "?".equals(startVal)) {
 						startVal = "unknown";
+					}
 					
 					String forceInputType = this.parameterMap != null ? (String) this.parameterMap.get("forceInputType")
 					        : null;
@@ -155,8 +161,9 @@ public class FieldGenTag extends TagSupport {
 					String falseLabel = this.parameterMap != null ? (String) this.parameterMap.get("falseLabel") : null;
 					String unknownLabel = this.parameterMap != null ? (String) this.parameterMap.get("unknownLabel") : null;
 					
-					if (forceInputType == null)
+					if (forceInputType == null) {
 						forceInputType = "";
+					}
 					
 					if ("checkbox".equals(forceInputType)) {
 						output.setLength(0);
@@ -164,14 +171,18 @@ public class FieldGenTag extends TagSupport {
 						    formFieldName);
 						output.append("\" value=\"true\"").append(("true".equals(startVal) ? " checked" : "")).append("/> ");
 					} else {
-						if (isNullable == null)
+						if (isNullable == null) {
 							isNullable = "";
-						if (trueLabel == null)
+						}
+						if (trueLabel == null) {
 							trueLabel = Context.getMessageSourceService().getMessage("general.yes");
-						if (falseLabel == null)
+						}
+						if (falseLabel == null) {
 							falseLabel = Context.getMessageSourceService().getMessage("general.no");
-						if (unknownLabel == null)
+						}
+						if (unknownLabel == null) {
 							unknownLabel = Context.getMessageSourceService().getMessage("general.unknown");
+						}
 						
 						if ("false".equalsIgnoreCase(isNullable) || "f".equalsIgnoreCase(isNullable)
 						        || "0".equals(isNullable)) {
@@ -229,12 +240,14 @@ public class FieldGenTag extends TagSupport {
 							if (enumConstants != null) {
 								if (enumConstants.length > 0) {
 									String startVal = "";
-									if (val != null)
+									if (val != null) {
 										startVal = val.toString();
+									}
 									log.debug("val is " + val);
 									log.debug("val.toString is " + startVal);
-									if (startVal == null)
+									if (startVal == null) {
 										startVal = "";
+									}
 									output.setLength(0);
 									output.append("<select name=\"").append(formFieldName).append("\" id=\"").append(
 									    formFieldName).append("\">");
@@ -261,12 +274,14 @@ public class FieldGenTag extends TagSupport {
 			}
 		}
 		
-		if (url == null)
+		if (url == null) {
 			url = "default.field";
+		}
 		
 		// all fieldGens are contained in the /WEB-INF/view/fieldGen/ folder and end with .field
-		if (!url.endsWith("field"))
+		if (!url.endsWith("field")) {
 			url += ".field";
+		}
 		url = "/fieldGen/" + url;
 		
 		// add attrs to request so that the controller (and field jsp) can see/use them
@@ -275,10 +290,12 @@ public class FieldGenTag extends TagSupport {
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameters", OpenmrsUtil.parseParameterList(parameters));
 		HashMap<String, Object> hmParamMap = (HashMap<String, Object>) pageContext.getRequest().getAttribute(
 		    "org.openmrs.fieldGen.parameterMap");
-		if (hmParamMap == null)
+		if (hmParamMap == null) {
 			hmParamMap = new HashMap<String, Object>();
-		if (this.parameterMap != null)
+		}
+		if (this.parameterMap != null) {
 			hmParamMap.putAll(this.parameterMap);
+		}
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameterMap", hmParamMap);
 		
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.object", val);
@@ -349,7 +366,7 @@ public class FieldGenTag extends TagSupport {
 	
 	/**
 	 * This is the initial value or the stored value for this tag.
-	 * 
+	 *
 	 * @return Returns the startVal.
 	 */
 	public Object getVal() {
@@ -404,14 +421,17 @@ public class FieldGenTag extends TagSupport {
 			for (String nvPair : nvPairs) {
 				String[] nameValue = nvPair.split("=");
 				String name = "";
-				if (nameValue.length > 0)
+				if (nameValue.length > 0) {
 					name = nameValue[0];
+				}
 				String val = "";
-				if (nameValue.length > 1)
+				if (nameValue.length > 1) {
 					val = nameValue[1];
+				}
 				
-				if (this.parameterMap == null)
+				if (this.parameterMap == null) {
 					this.parameterMap = new HashMap<String, Object>();
+				}
 				this.parameterMap.put(name, val);
 			}
 		}
@@ -437,7 +457,7 @@ public class FieldGenTag extends TagSupport {
 	 * previous user and the current user is only editing. Therefore, the
 	 * FieldGenTag.java#setAllowUserDefault() should only be set to true if creating an object for
 	 * the first time)
-	 * 
+	 *
 	 * @param allowUserDefault the allowUserDefault to set
 	 */
 	public void setAllowUserDefault(Boolean allowUserDefault) {

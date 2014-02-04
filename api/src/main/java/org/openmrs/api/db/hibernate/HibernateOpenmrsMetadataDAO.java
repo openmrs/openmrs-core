@@ -21,7 +21,7 @@ public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends 
 		super();
 		this.mappedClass = mappedClass;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAll(boolean)
 	 */
@@ -48,23 +48,23 @@ public class HibernateOpenmrsMetadataDAO<T extends BaseOpenmrsMetadata> extends 
 		crit.setMaxResults(maxResults);
 		
 		return crit.list();
-
+		
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.OpenmrsMetadataDAO#getAllCount(boolean)
 	 */
 	public int getAllCount(boolean includeRetired) {
-
+		
 		String hql = "select count(*)" + " from " + mappedClass;
-
+		
 		if (!includeRetired) {
 			hql += " where retired = false";
 		}
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-
+		
 		Number count = (Number) query.uniqueResult();
-
+		
 		return count == null ? 0 : count.intValue();
 	}
 }

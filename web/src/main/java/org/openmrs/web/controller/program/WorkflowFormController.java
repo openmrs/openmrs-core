@@ -65,15 +65,18 @@ public class WorkflowFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			String programWorkflowId = request.getParameter("programWorkflowId");
-			if (programWorkflowId != null)
+			if (programWorkflowId != null) {
 				wf = ps.getWorkflow(Integer.valueOf(programWorkflowId));
+			}
 			
-			if (wf == null)
+			if (wf == null) {
 				throw new IllegalArgumentException("Can't find workflow");
+			}
 		}
 		
-		if (wf == null)
+		if (wf == null) {
 			wf = new ProgramWorkflow();
+		}
 		
 		return wf;
 	}

@@ -44,7 +44,7 @@ public class ConceptDatatypeListController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -56,7 +56,7 @@ public class ConceptDatatypeListController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -81,25 +81,29 @@ public class ConceptDatatypeListController extends SimpleFormController {
 			for (String cd : cdList) {
 				try {
 					cs.purgeConceptDatatype(cs.getConceptDatatype(Integer.valueOf(cd)));
-					if (!success.toString().equals(""))
+					if (!success.toString().equals("")) {
 						success.append("<br/>");
+					}
 					success.append(cd);
 					success.append(" ");
 					success.append(deleted);
 				}
 				catch (APIException e) {
 					log.warn("Error deleting concept datatype", e);
-					if (!error.equals(""))
+					if (!error.equals("")) {
 						error.append("<br/>");
+					}
 					error.append(cd).append(" ").append(notDeleted);
 				}
 			}
 			
 			view = getSuccessView();
-			if (!success.toString().equals(""))
+			if (!success.toString().equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
-			if (!error.equals(""))
+			}
+			if (!error.equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -108,7 +112,7 @@ public class ConceptDatatypeListController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {

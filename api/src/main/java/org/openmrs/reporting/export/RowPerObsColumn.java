@@ -20,7 +20,7 @@ import java.util.Arrays;
  * Used with the RowPerObsDataExport to output data for one concept answered multiple times per
  * patient. The output will repeat patients in rows in order to list off all observations for the
  * given concept Example output:
- * 
+ *
  * <pre>
  * PatientId, Obs Value, Obs Date
  * 123,       55.3,      1/1/2000
@@ -30,7 +30,7 @@ import java.util.Arrays;
  * 4393,      35.0,      1/7/2000
  * 4400,      12.0,      1/1/2000
  * </pre>
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
@@ -53,7 +53,7 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 	
 	/**
 	 * Convenience constructor to build the column with all values at once
-	 * 
+	 *
 	 * @param columnName
 	 * @param conceptId
 	 * @param extras
@@ -111,8 +111,9 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 		if (extras != null) {
 			for (String ext : extras) {
 				s.append("$!{fn.getSeparator()}").append(columnName).append("_").append(ext);
-				if (appendCount)
+				if (appendCount) {
 					s.append("_($velocityCount)");
+				}
 			}
 		}
 		return s.toString();
@@ -156,10 +157,11 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 	// returns conceptId if not null, conceptName otherwise
 	// convenience method for backwards compatibility to pre 1.0.43
 	public String getConceptIdOrName() {
-		if (conceptId != null)
+		if (conceptId != null) {
 			return conceptId.toString();
-		else
+		} else {
 			return conceptName;
+		}
 	}
 	
 }

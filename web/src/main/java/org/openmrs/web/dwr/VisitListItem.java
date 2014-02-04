@@ -23,7 +23,7 @@ import org.openmrs.util.Format;
 
 /**
  * Represents a DWR List Item for a visit
- * 
+ *
  * @since 1.9
  */
 public class VisitListItem {
@@ -67,19 +67,24 @@ public class VisitListItem {
 			PersonName pn = visit.getPatient().getPersonName();
 			if (pn != null) {
 				personName = "";
-				if (pn.getGivenName() != null)
+				if (pn.getGivenName() != null) {
 					personName += pn.getGivenName();
-				if (pn.getMiddleName() != null)
+				}
+				if (pn.getMiddleName() != null) {
 					personName += " " + pn.getMiddleName();
-				if (pn.getFamilyName() != null)
+				}
+				if (pn.getFamilyName() != null) {
 					personName += " " + pn.getFamilyName();
+				}
 			}
 			
-			if (visit.getLocation() != null)
+			if (visit.getLocation() != null) {
 				location = visit.getLocation().getName();
+			}
 			
-			if (visit.getIndication() != null && visit.getIndication().getName() != null)
+			if (visit.getIndication() != null && visit.getIndication().getName() != null) {
 				indicationConcept = visit.getIndication().getName().getName();
+			}
 			
 			voided = visit.isVoided();
 		}
@@ -234,8 +239,9 @@ public class VisitListItem {
 			return false;
 		}
 		VisitListItem rhs = (VisitListItem) obj;
-		if (this.visitId != null && rhs.visitId != null)
+		if (this.visitId != null && rhs.visitId != null) {
 			return (this.visitId.equals(rhs.visitId));
+		}
 		
 		return this == obj;
 	}
@@ -245,8 +251,9 @@ public class VisitListItem {
 	 */
 	@Override
 	public int hashCode() {
-		if (this.visitId == null)
+		if (this.visitId == null) {
 			return super.hashCode();
+		}
 		int hash = 5;
 		hash = hash + 51 * this.visitId;
 		return hash;
