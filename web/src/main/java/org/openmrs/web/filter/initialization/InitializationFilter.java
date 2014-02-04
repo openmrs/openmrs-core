@@ -1440,7 +1440,7 @@ public class InitializationFilter extends StartupFilter {
 						
 						runtimeProperties.put("connection.url", finalDatabaseConnectionString);
 						runtimeProperties.put("connection.username", connectionUsername);
-						runtimeProperties.put("connection.password", connectionPassword);
+						runtimeProperties.put("connection.password", connectionPassword.toString());
 						if (StringUtils.hasText(wizardModel.databaseDriver)) {
 							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						}
