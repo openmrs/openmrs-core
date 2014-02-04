@@ -13,7 +13,12 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.openmrs.api.ConceptService;
@@ -22,12 +27,10 @@ import org.openmrs.api.PatientService;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-
 /**
  * Contains end to end tests for order entry operations i.g placing, discontinuing revising an order
  */
-public class OrderEntryTest extends BaseContextSensitiveTest {
+public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	protected static final String ORDER_ENTRY_DATASET_XML = "org/openmrs/api/include/OrderEntryTest-other.xml";
 	
@@ -47,20 +50,20 @@ public class OrderEntryTest extends BaseContextSensitiveTest {
 		CareSetting careSetting = orderService.getCareSetting(1);
 		assertEquals(0, orderService.getActiveOrders(patient, TestOrder.class, careSetting, null).size());
 		
-		//place test order, should call OrderService.placeOrder
+		//place test order
 		TestOrder order = new TestOrder();
 		order.setPatient(patient);
 		order.setConcept(conceptService.getConcept(5497));
 		order.setCareSetting(careSetting);
 		order.setStartDate(new Date());
 		order.setClinicalHistory("Patient had a negative reaction to the test in the past");
-		order.setLaterality(TestOrder.Laterality.BILATERAL);
 		order.setFrequency(orderService.getOrderFrequency(1));
 		order.setSpecimenSource(conceptService.getConcept(1000));
 		order.setNumberOfRepeats(3);
 		
 		orderService.saveOrder(order);
-		
-		assertEquals(1, orderService.getActiveOrders(patient, TestOrder.class, careSetting, null).size());
+		List<TestOrder> activeOrders = orderService.getActiveOrders(patient, TestOrder.class, careSetting, null);
+		assertEquals(1, activeOrders.size());
+		assertThat(activeOrders, hasItems(order));
 	}
 }
