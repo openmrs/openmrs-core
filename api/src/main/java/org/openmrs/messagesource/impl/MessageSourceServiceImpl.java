@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -121,6 +122,10 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 *      java.lang.Object[], java.util.Locale)
 	 */
 	public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
+		if (StringUtils.isBlank(code)) {
+			return "";
+		}
+		
 		return activeMessageSource.getMessage(code, args, code, locale);
 	}
 	
@@ -129,6 +134,10 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 *      java.lang.Object[], java.lang.String, java.util.Locale)
 	 */
 	public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
+		if (StringUtils.isBlank(code)) {
+			return "";
+		}
+		
 		return activeMessageSource.getMessage(code, args, defaultMessage, locale);
 	}
 	
