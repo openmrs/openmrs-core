@@ -428,12 +428,12 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should Get all group members if passed true, and non-voided if passed false
 	 */
 	public Set<Obs> getGroupMembers(boolean includeVoided) {
-		if (includeVoided) //just return all group members
-		{
+		if (includeVoided) {
+			//just return all group members
 			return groupMembers;
 		}
-		if (groupMembers == null) //Empty set so return null
-		{
+		if (groupMembers == null) {
+			//Empty set so return null
 			return null;
 		}
 		Set<Obs> nonVoided = new LinkedHashSet<Obs>(groupMembers);

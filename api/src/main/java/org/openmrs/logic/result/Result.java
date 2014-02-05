@@ -820,10 +820,9 @@ public class Result extends ArrayList<Result> {
 					return false;
 			}
 		}
-		if (isSingleResult() || r.isSingleResult())
-		// we already know they're not both single results, so if one is
-		// single, it's not a match
-		{
+		if (isSingleResult() || r.isSingleResult()) {
+			// we already know they're not both single results, so if one is
+			// single, it's not a match
 			return false;
 		}
 		if (this.size() != r.size()) {

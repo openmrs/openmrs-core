@@ -121,8 +121,8 @@ public class HL7Util {
 		} else {
 			dateString.append("00");
 		}
-		if (s.length() >= 15 && s.charAt(14) != '.') // decimal point
-		{
+		if (s.length() >= 15 && s.charAt(14) != '.') {
+			// decimal point
 			throw new HL7Exception("Invalid date format '" + s + "'");
 		} else {
 			dateString.append(".");
@@ -246,8 +246,8 @@ public class HL7Util {
 		} else {
 			timeString.append("00");
 		}
-		if (s.length() >= 7 && s.charAt(6) != '.') // decimal point
-		{
+		if (s.length() >= 7 && s.charAt(6) != '.') {
+			// decimal point
 			throw new HL7Exception("Invalid time format '" + s + "'");
 		} else {
 			timeString.append(".");

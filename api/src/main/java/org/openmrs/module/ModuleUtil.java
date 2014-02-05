@@ -685,8 +685,8 @@ public class ModuleUtil {
 		String output = "";
 		try {
 			in = getURLStream(url);
-			if (in == null) // skip this module if updateURL is not defined
-			{
+			if (in == null) {
+				// skip this module if updateURL is not defined
 				return "";
 			}
 			

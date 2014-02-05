@@ -307,9 +307,8 @@ public class OptionsFormController extends SimpleFormController {
 				// they are separate objects
 				personName = PersonName.newInstance(user.getPersonName());
 				personName.setPersonNameId(null);
-			} else
-			// use blank person name
-			{
+			} else {
+				// use blank person name
 				personName = new PersonName();
 			}
 			opts.setPersonName(personName);

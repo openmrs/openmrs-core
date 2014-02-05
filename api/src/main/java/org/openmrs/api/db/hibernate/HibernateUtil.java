@@ -53,9 +53,8 @@ public class HibernateUtil {
 	 */
 	public static boolean isHSQLDialect(SessionFactory sessionFactory) {
 		
-		if (isHSQLDialect == null)
-		// check and cache the dialect
-		{
+		if (isHSQLDialect == null) {
+			// check and cache the dialect
 			isHSQLDialect = HSQLDialect.class.getName().equals(getDialect(sessionFactory).getClass().getName());
 		}
 		
