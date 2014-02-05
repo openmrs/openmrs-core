@@ -2026,11 +2026,11 @@ public class OpenmrsUtil {
 		StringBuffer sb = new StringBuffer(size);
 		for (int i = 0; i < size; i++) {
 			int ch = (int) (Math.random() * 62);
-			if (ch < 10) // 0-9
-			{
+			if (ch < 10) {
+				// 0-9
 				sb.append(ch);
-			} else if (ch < 36) // a-z
-			{
+			} else if (ch < 36) {
+				// a-z
 				sb.append((char) (ch - 10 + 'a'));
 			} else {
 				sb.append((char) (ch - 36 + 'A'));

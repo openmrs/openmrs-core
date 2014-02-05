@@ -406,9 +406,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 			if (currentAttribute.equals(newAttribute)) {
 				return; // if we have the same PersonAttributeId, don't add the new attribute
 			} else if (currentAttribute.getAttributeType().equals(newAttribute.getAttributeType())) {
-				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue()))
-				// this person already has this attribute
-				{
+				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue())) {
+					// this person already has this attribute
 					return;
 				}
 				
@@ -417,10 +416,9 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 				if (newAttribute.isVoided() == false || newIsNull) {
 					if (currentAttribute.getCreator() != null) {
 						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
-					} else
-					// remove the attribute if it was just temporary (didn't have a creator
-					// attached to it yet)
-					{
+					} else {
+						// remove the attribute if it was just temporary (didn't have a creator
+						// attached to it yet)
 						removeAttribute(currentAttribute);
 					}
 				}

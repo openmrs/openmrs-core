@@ -927,8 +927,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 				newConceptSource.setName(implementationId.getName());
 				newConceptSource.setDescription(implementationId.getDescription());
 				newConceptSource.setHl7Code(implementationId.getImplementationId());
-				if (Context.getAuthenticatedUser() == null) // (hackish)
-				{
+				if (Context.getAuthenticatedUser() == null) {
+					// (hackish)
 					newConceptSource.setCreator(new User(1)); // fake the user because no one is logged in
 				}
 				Context.getConceptService().saveConceptSource(newConceptSource);

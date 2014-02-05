@@ -430,8 +430,8 @@ public class ShowGraphServlet extends HttpServlet {
 			minRange = (rangeAxis.getLowerBound() < minRange) ? rangeAxis.getLowerBound() : minRange;
 		}
 		
-		if (userSpecifiedMaxRange) // otherwise we just use default range
-		{
+		if (userSpecifiedMaxRange) {
+			// otherwise we just use default range
 			maxRange = (rangeAxis.getUpperBound() > maxRange) ? rangeAxis.getUpperBound() : maxRange;
 		}
 		

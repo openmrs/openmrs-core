@@ -1268,8 +1268,8 @@ public class MLMObject {
 					compBySection.put(key + "__" + keyId, thisComparison);
 					
 					compBySection.remove("__Temp__" + keyId);
-					if (keyId > 100) // At most 100 Temp Keys
-					{
+					if (keyId > 100) {
+						// At most 100 Temp Keys
 						setKeyId(1);
 					} else {
 						setKeyId(keyId + 1);
@@ -1283,8 +1283,8 @@ public class MLMObject {
 				compBySection.put(key, thisComparison);
 				compBySection.remove("__Temp__" + keyId);
 				retVal = false;
-				if (keyId > 100) // At most 100 Temp Keys
-				{
+				if (keyId > 100) {
+					// At most 100 Temp Keys
 					setKeyId(1);
 				} else {
 					setKeyId(keyId + 1);

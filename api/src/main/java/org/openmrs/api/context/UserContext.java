@@ -248,9 +248,8 @@ public class UserContext implements Serializable {
 	 * @return current locale for this context
 	 */
 	public Locale getLocale() {
-		if (locale == null)
-		// don't cache default locale - allows recognition of changed default at login page
-		{
+		if (locale == null) {
+			// don't cache default locale - allows recognition of changed default at login page
 			return LocaleUtility.getDefaultLocale();
 		}
 		

@@ -86,9 +86,8 @@ public class ChainingInterceptor implements Interceptor {
 	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
-		for (Interceptor i : interceptors)
-		// must be in this order so that java doesn't skip the method call for optimizations
-		{
+		for (Interceptor i : interceptors) {
+			// must be in this order so that java doesn't skip the method call for optimizations
 			objectChanged = i.onLoad(entity, id, state, propertyNames, types) || objectChanged;
 		}
 		
@@ -98,9 +97,8 @@ public class ChainingInterceptor implements Interceptor {
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
-		for (Interceptor i : interceptors)
-		// must be in this order so that java doesn't skip the method call for optimizations
-		{
+		for (Interceptor i : interceptors) {
+			// must be in this order so that java doesn't skip the method call for optimizations
 			objectChanged = i.onSave(entity, id, state, propertyNames, types) || objectChanged;
 		}
 		

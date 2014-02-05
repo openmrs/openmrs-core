@@ -184,9 +184,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 				if (child.isVoided() == false) {
 					if (child.isObsGrouping() == false) {
 						leaves.add(child);
-					} else
-					// recurse if this is a grouping obs
-					{
+					} else {
+						// recurse if this is a grouping obs
 						leaves.addAll(getObsLeaves(child));
 					}
 				}

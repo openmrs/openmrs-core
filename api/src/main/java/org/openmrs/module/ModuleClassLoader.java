@@ -1111,10 +1111,9 @@ public class ModuleClassLoader extends URLClassLoader {
 			this.additionalPackages = new LinkedHashSet<String>();
 		}
 		
-		for (String provPackage : providedPackages)
+		for (String provPackage : providedPackages) {
 		// its pointless to add a package that is below the module's package
 		// name because we are automatically looking at that in the classloader
-		{
 			addAdditionalPackage(provPackage);
 		}
 	}

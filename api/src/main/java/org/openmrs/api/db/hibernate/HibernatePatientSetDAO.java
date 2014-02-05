@@ -1258,8 +1258,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				while (index < rowArray.length) {
 					Object value = rowArray[index++];
 					if (tmpConditional) {
-						if (index == 2 && value != null) // skip null first value if we must
-						{
+						if (index == 2 && value != null) {
+							// skip null first value if we must
 							row.add(value);
 						} else {
 							row.add(rowArray[index]);
@@ -1519,14 +1519,12 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			
 			// do not include voided person rows
-			if (className.equals("org.openmrs.Person"))
+			if (className.equals("org.openmrs.Person")) {
 			// the voided column on the person table is mapped to the person object
 			// through the getPersonVoided() to distinguish it from patient/user.voided
-			{
 				criteria.add(Restrictions.eq("personVoided", false));
-			} else
+			} else {
 			// this is here to support PersonName and PersonAddress
-			{
 				criteria.add(Restrictions.eq("voided", false));
 			}
 		}

@@ -335,11 +335,10 @@ public class ORUR01Handler implements Application {
 						}
 						
 						// set the obsGroup on this obs
-						if (obsGrouper != null)
-						// set the obs to the group.  This assumes the group is already
-						// on the encounter and that when the encounter is saved it will
-						// propagate to the children obs
-						{
+						if (obsGrouper != null) {
+							// set the obs to the group.  This assumes the group is already
+							// on the encounter and that when the encounter is saved it will
+							// propagate to the children obs
 							obsGrouper.addGroupMember(obs);
 						} else {
 							// set this obs on the encounter object that we
@@ -527,9 +526,8 @@ public class ORUR01Handler implements Application {
 	public List<NK1> getNK1List(ORU_R01 oru) throws HL7Exception {
 		List<NK1> res = new ArrayList<NK1>();
 		// there will always be at least one NK1, even if the original message does not contain one
-		for (int i = 0; i < oru.getPATIENT_RESULT().getPATIENT().getNK1Reps(); i++)
-		// if the setIDNK1 value is null, this NK1 is blank
-		{
+		for (int i = 0; i < oru.getPATIENT_RESULT().getPATIENT().getNK1Reps(); i++) {
+			// if the setIDNK1 value is null, this NK1 is blank
 			if (oru.getPATIENT_RESULT().getPATIENT().getNK1(i).getSetIDNK1().getValue() != null) {
 				res.add(oru.getPATIENT_RESULT().getPATIENT().getNK1(i));
 			}
