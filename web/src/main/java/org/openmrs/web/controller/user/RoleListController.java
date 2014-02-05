@@ -13,10 +13,20 @@
  */
 package org.openmrs.web.controller.user;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
+import org.openmrs.api.DeleteRolesWithChildrenException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -31,14 +41,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class RoleListController extends SimpleFormController {
 	
@@ -83,6 +85,7 @@ public class RoleListController extends SimpleFormController {
 				
 				String deleted = msa.getMessage("general.deleted");
 				String notDeleted = msa.getMessage("Role.cannot.delete");
+				String roleWithdChild = msa.getMessage("Role.purge.with.child");
 				for (String p : roleList) {
 					//TODO convenience method deleteRole(String) ??
 					try {
@@ -95,9 +98,13 @@ public class RoleListController extends SimpleFormController {
 					catch (DataIntegrityViolationException e) {
 						error = handleRoleIntegrityException(e, error, notDeleted);
 					}
+					catch (DeleteRolesWithChildrenException e) {
+						error = handleRoleIntegrityException(e, e.getMessage(), roleWithdChild);
+					}
 					catch (APIException e) {
 						error = handleRoleIntegrityException(e, error, notDeleted);
 					}
+					
 				}
 			} else {
 				error = msa.getMessage("Role.select");
@@ -116,8 +123,8 @@ public class RoleListController extends SimpleFormController {
 	}
 	
 	/**
-	 * Logs a role delete data integrity violation exception and returns a user friedly message of
-	 * the problem that occured.
+	 * Logs a role delete data integrity violation exception and returns a user friendly message of
+	 * the problem that occurred.
 	 *
 	 * @param e the exception.
 	 * @param error the error message.
@@ -126,10 +133,8 @@ public class RoleListController extends SimpleFormController {
 	 */
 	private String handleRoleIntegrityException(Exception e, String error, String notDeleted) {
 		log.warn("Error deleting role", e);
-		if (!error.equals("")) {
-			error += "<br/>";
-		}
-		error += notDeleted;
+		error = notDeleted + " " + error;
+
 		return error;
 	}
 	
