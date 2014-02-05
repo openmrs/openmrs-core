@@ -193,7 +193,7 @@ public class EncounterFormController extends SimpleFormController {
 			
 			if (Context.isAuthenticated()) {
 				Encounter encounter = (Encounter) obj;
-
+				
 				// if this is a new encounter, they can specify a patient.  add it
 				if (request.getParameter("patientId") != null) {
 					encounter.setPatient(Context.getPatientService().getPatient(
@@ -377,7 +377,7 @@ public class EncounterFormController extends SimpleFormController {
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getSortWeight(), other.getSortWeight());
 			}
 			if (temp == 0) {
-			// to prevent ties
+				// to prevent ties
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFormFieldId(), other.getFormFieldId());
 			}
 			return temp;
