@@ -90,9 +90,8 @@ public class FormatDateTag extends TagSupport {
 				
 				if (status.getValue() != null) {
 					log.debug("status.value: " + status.getValue());
-					if (status.getValue().getClass() == Date.class)
-					// if no editor was registered all will go well here
-					{
+					if (status.getValue().getClass() == Date.class) {
+						// if no editor was registered all will go well here
 						date = (Date) status.getValue();
 					} else {
 						// if a "Date" property editor was registerd for the form, the status.getValue()

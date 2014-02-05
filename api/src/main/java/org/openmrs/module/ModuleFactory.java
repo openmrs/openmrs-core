@@ -699,8 +699,8 @@ public class ModuleFactory {
 				// should be near the bottom so the module has all of its stuff
 				// set up for it already.
 				try {
-					if (module.getModuleActivator() != null)// if extends BaseModuleActivator
-					{
+					if (module.getModuleActivator() != null) {
+						// if extends BaseModuleActivator
 						module.getModuleActivator().willStart();
 					} else {
 						module.getActivator().startup();//implements old Activator interface
@@ -964,8 +964,8 @@ public class ModuleFactory {
 			}
 			
 			try {
-				if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
-				{
+				if (mod.getModuleActivator() != null) {
+					// if extends BaseModuleActivator
 					mod.getModuleActivator().willStop();
 				}
 			}
@@ -1064,8 +1064,8 @@ public class ModuleFactory {
 			}
 			
 			try {
-				if (mod.getModuleActivator() != null)//extends BaseModuleActivator
-				{
+				if (mod.getModuleActivator() != null) {
+					//extends BaseModuleActivator
 					mod.getModuleActivator().stopped();
 				} else {
 					mod.getActivator().shutdown();//implements old  Activator interface

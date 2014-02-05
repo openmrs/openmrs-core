@@ -583,10 +583,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.eq("retired", false));
 		
 		if (!StringUtils.isBlank(name)) {
-			if (loc == null)
+			if (loc == null) {
 			// TRUNK-2730 replaces this behavior with use of the default locale
 			// throw new DAOException("Locale must be not null");
-			{
 				loc = Context.getLocale();
 			}
 			

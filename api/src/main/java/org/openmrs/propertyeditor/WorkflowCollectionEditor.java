@@ -62,9 +62,8 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 				int ind = text.indexOf(":");
 				String progIdStr = text.substring(0, ind);
 				text = text.substring(ind + 1);
-				if (program == null)
-				// if a program wasn't passed in, try to look it up now
-				{
+				if (program == null) {
+					// if a program wasn't passed in, try to look it up now
 					program = pws.getProgram(Integer.valueOf(progIdStr));
 				}
 			}

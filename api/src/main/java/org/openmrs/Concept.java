@@ -1758,9 +1758,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (sortedConceptSets.isEmpty()) {
 			weight = 1000.0;
-		} else if (index == -1 || index >= setsSize)
-		// deals with list size of 1 and any large index given by dev
-		{
+		} else if (index == -1 || index >= setsSize) {
+			// deals with list size of 1 and any large index given by dev
 			weight = sortedConceptSets.get(setsSize - 1).getSortWeight() + 10.0;
 		} else if (index == 0) {
 			weight = sortedConceptSets.get(0).getSortWeight() - 10.0;

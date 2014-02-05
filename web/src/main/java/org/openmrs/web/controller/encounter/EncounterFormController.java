@@ -193,20 +193,18 @@ public class EncounterFormController extends SimpleFormController {
 			
 			if (Context.isAuthenticated()) {
 				Encounter encounter = (Encounter) obj;
-				
+
 				// if this is a new encounter, they can specify a patient.  add it
 				if (request.getParameter("patientId") != null) {
 					encounter.setPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(request.getParameter("patientId"))));
 				}
 				
-				if (encounter.isVoided() && encounter.getVoidedBy() == null)
-				// if this is a "new" voiding, call voidEncounter to set appropriate attributes
-				{
+				if (encounter.isVoided() && encounter.getVoidedBy() == null) {
+					// if this is a "new" voiding, call voidEncounter to set appropriate attributes
 					Context.getEncounterService().voidEncounter(encounter, encounter.getVoidReason());
-				} else if (!encounter.isVoided() && encounter.getVoidedBy() != null)
-				// if this was just unvoided, call unvoidEncounter to unset appropriate attributes
-				{
+				} else if (!encounter.isVoided() && encounter.getVoidedBy() != null) {
+					// if this was just unvoided, call unvoidEncounter to unset appropriate attributes
 					Context.getEncounterService().unvoidEncounter(encounter);
 				} else {
 					Context.getEncounterService().saveEncounter(encounter);
@@ -378,8 +376,8 @@ public class EncounterFormController extends SimpleFormController {
 			        && formField.getFieldPart() == null) {
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getSortWeight(), other.getSortWeight());
 			}
-			if (temp == 0) // to prevent ties
-			{
+			if (temp == 0) {
+			// to prevent ties
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFormFieldId(), other.getFormFieldId());
 			}
 			return temp;
