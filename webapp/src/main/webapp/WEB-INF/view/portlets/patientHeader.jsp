@@ -19,7 +19,8 @@
 
 <%-- Header showing preferred name, id, and treatment status --%>
 <div id="patientHeader" class="boxHeader${model.patientVariation}">
-<div id="patientHeaderPatientName"><c:out value="${model.patient.personName}" /></div>
+<openmrs:globalProperty key="layout.name.format" var="layoutnameformat"/>
+<div id="patientHeaderPatientName"><c:choose><c:when test="${layoutnameformat == 'long'}"><c:out value="${model.patient.personName}" /></c:when><c:otherwise><c:out value="${model.patient.personName.givenName} ${model.patient.personName.middleName} ${model.patient.personName.familyName}"/></c:otherwise></c:choose></div>
 <div id="patientHeaderPreferredIdentifier">
 	<c:if test="${fn:length(model.patient.activeIdentifiers) > 0}">
 		<c:forEach var="identifier" items="${model.patient.activeIdentifiers}"
