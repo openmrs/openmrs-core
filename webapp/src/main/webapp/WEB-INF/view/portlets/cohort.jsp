@@ -75,11 +75,30 @@
 		DWRCohortBuilderService.getFilterResultAsCommaSeparatedIds(filterId, cohort_setIdsHelper);
 	}
 	
-	function cohort_refreshDisplay() {
-		jQuery('#cohort_fromNumber').html(cohort_startIndex + 1);
-		jQuery('#cohort_toNumber').html(cohort_endIndex);
-		jQuery('#cohort_ofNumber').html(cohort_patientIds.length);
-		jQuery('#cohort_contents').html('<openmrs:message code="general.loading"/>');
+	function cohort_refreshDisplay()
+	{    
+		       
+		if(cohort_patientIds.length==1 && cohort_patientIds[0].toString()=="")
+		{	
+		$('prev_navs').style.display='none';
+		 $('general.displaying').style.display='none';
+		 $('nxt_navs').style.display='none';
+		 $('no_results').style.display = 'inline';                          
+ 		 $('no_results').innerHTML='<openmrs:message code="general.noresult"/>';	
+		}
+			
+	else
+		{
+		$j('no_results').hide();
+		 $j('prev_navs').show();  
+         $j('general.displaying').show(); 
+		$('cohort_fromNumber').innerHTML = cohort_startIndex+1;
+		$('cohort_toNumber').innerHTML = cohort_endIndex;
+		$('cohort_ofNumber').innerHTML = cohort_patientIds.length;
+		 $j('nxt_navs').show();
+		}
+		
+		$('cohort_contents').innerHTML = '<openmrs:message code="general.loading"/>';
 		var str = '';
 		for (var i = cohort_startIndex; i < cohort_endIndex; ++i)
 			str += cohort_patientIds[i] + ',';
@@ -112,7 +131,7 @@
 		}
 		if (cohort_endIndex < cohort_patientIds.length)
 			str += '...<br/>';
-		jQuery('#cohort_contents').html(str);
+		$('cohort_contents').innerHTML = str;
 	}
 
 	<c:choose>
@@ -141,15 +160,34 @@
 	</div>
 	<div id="cohort_navButtons">
 		<b><u>
+		
+		<input type="hidden"/>
+		<span id="prev_navs">
 		<a href="javascript:cohort_goToStart()">|&lt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_pageBack()">&lt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<openmrs:message code="general.displayingXtoYofZ" arguments='<span id="cohort_fromNumber"></span>,<span id="cohort_toNumber"></span>,<span id="cohort_ofNumber"></span>' />
+		</span>
+		
+
+		<span id="no_results" style="display:none" ></span>
+		
+        <input type="hidden" />
+		<span id="general.displaying"  >
+		<openmrs:message code="general.displayingXtoYofZ" 
+		arguments='<span id="cohort_fromNumber"></span>,<span id="cohort_toNumber"></span>,<span id="cohort_ofNumber"></span>' />
+		</span>
+		
+		
+		<input type="hidden" />
+		<span id="nxt_navs">
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_pageForwards()">&gt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_goToEnd()">&gt;|</a>
+		</span>
+		
+		
 		</u></b>
 	</div>
 	<div id="cohort_contents">
