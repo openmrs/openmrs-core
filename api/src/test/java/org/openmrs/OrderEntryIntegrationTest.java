@@ -46,7 +46,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private ConceptService conceptService;
-
+	
 	@Test
 	public void shouldGetTheActiveOrdersForAPatient() {
 		Patient patient = patientService.getPatient(2);
@@ -138,6 +138,8 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Order secondOrderToDiscontinue = orderService.getOrder(5);
 		assertEquals(patient, secondOrderToDiscontinue.getPatient());
 		assertTrue(OrderUtil.isOrderActive(secondOrderToDiscontinue, null));
+		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null);
+		assertEquals(secondOrderToDiscontinue, discontinuationOrder2.getPreviousOrder());
 		
 		//Lets discontinue another order by saving a DC order
 		Order thirdOrderToDiscontinue = orderService.getOrder(7);
@@ -145,13 +147,10 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Order discontinuationOrder = thirdOrderToDiscontinue.cloneForDiscontinuing();
 		orderService.saveOrder(discontinuationOrder);
 		
-		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null);
-		assertEquals(secondOrderToDiscontinue, discontinuationOrder2.getPreviousOrder());
-		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(ordersCount - 3, activeOrders.size());
 		assertFalse(activeOrders.contains(firstOrderToDiscontinue));
 		assertFalse(activeOrders.contains(secondOrderToDiscontinue));
-        assertFalse(activeOrders.contains(thirdOrderToDiscontinue));
+		assertFalse(activeOrders.contains(thirdOrderToDiscontinue));
 	}
 }

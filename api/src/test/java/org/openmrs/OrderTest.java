@@ -104,7 +104,6 @@ public class OrderTest {
 		anOrder.setPatient(new Patient());
 		anOrder.setCareSetting(new CareSetting());
 		anOrder.setConcept(new Concept());
-		anOrder.setUuid(UUID.randomUUID().toString());
 		
 		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
 		
