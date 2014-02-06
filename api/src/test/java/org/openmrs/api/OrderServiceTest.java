@@ -442,6 +442,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-globalProperties.xml");
 		
 		Order order = orderService.getOrderByOrderNumber("111");
+		assertTrue(isOrderActive(order, null));
 		Date discontinueDate = new Date();
 		String discontinueReasonNonCoded = "Test if I can discontinue this";
 		
@@ -550,6 +551,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setStartDate(new Date());
 		Order previousOrder = orderService.getOrder(111);
+		assertTrue(isOrderActive(previousOrder, null));
 		order.setPreviousOrder(previousOrder);
 		
 		orderService.saveOrder(order);

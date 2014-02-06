@@ -77,7 +77,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getOrderId() != null) {
 			throw new APIException("Cannot edit an existing order, see OrderService.reviseOrder");
 		}
-
+		
 		discontinueExistingOrdersIfNecessary(order);
 		
 		return saveOrderInternal(order);
