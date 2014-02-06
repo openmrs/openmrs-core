@@ -22,6 +22,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
@@ -35,7 +38,7 @@ import static org.apache.commons.lang.StringUtils.defaultString;
  * A Person can have zero to n PersonName(s).
  */
 @Root(strict = false)
-public class PersonName extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
+public class PersonName extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName>, GlobalPropertyListener {
 	
 	public static final long serialVersionUID = 4353L;
 	
@@ -64,6 +67,8 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	private String familyNameSuffix;
 	
 	private String degree;
+	
+	private static String format = "long";
 	
 	// Constructors
 	
@@ -449,23 +454,33 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	public String getFullName() {
 		List<String> temp = new ArrayList<String>();
-		if (StringUtils.hasText(getPrefix()))
-			temp.add(getPrefix());
-		if (StringUtils.hasText(getGivenName()))
-			temp.add(getGivenName());
-		if (StringUtils.hasText(getMiddleName()))
-			temp.add(getMiddleName());
-		if (StringUtils.hasText(getFamilyNamePrefix()))
-			temp.add(getFamilyNamePrefix());
-		if (StringUtils.hasText(getFamilyName()))
-			temp.add(getFamilyName());
-		if (StringUtils.hasText(getFamilyName2()))
-			temp.add(getFamilyName2());
-		if (StringUtils.hasText(getFamilyNameSuffix()))
-			temp.add(getFamilyNameSuffix());
-		if (StringUtils.hasText(getDegree()))
-			temp.add(getDegree());
-		
+		String format = PersonName.format;
+		if (format.equals("long")) {
+			if (StringUtils.hasText(getPrefix()))
+				temp.add(getPrefix());
+			if (StringUtils.hasText(getGivenName()))
+				temp.add(getGivenName());
+			if (StringUtils.hasText(getMiddleName()))
+				temp.add(getMiddleName());
+			if (StringUtils.hasText(getFamilyNamePrefix()))
+				temp.add(getFamilyNamePrefix());
+			if (StringUtils.hasText(getFamilyName()))
+				temp.add(getFamilyName());
+			if (StringUtils.hasText(getFamilyName2()))
+				temp.add(getFamilyName2());
+			if (StringUtils.hasText(getFamilyNameSuffix()))
+				temp.add(getFamilyNameSuffix());
+			if (StringUtils.hasText(getDegree()))
+				temp.add(getDegree());
+		} else {
+			if (StringUtils.hasText(getGivenName()))
+				temp.add(getGivenName());
+			if (StringUtils.hasText(getMiddleName()))
+				temp.add(getMiddleName());
+			if (StringUtils.hasText(getFamilyName()))
+				temp.add(getFamilyName());
+			
+		}
 		String nameString = StringUtils.collectionToDelimitedString(temp, " ");
 		
 		return nameString.trim();
@@ -539,5 +554,37 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	public void setId(Integer id) {
 		setPersonNameId(id);
 		
+	}
+	
+	private static String initializeClassVariable() {
+		
+		// initialization code goes here
+		AdministrationService as = Context.getAdministrationService();
+		String gp = as.getGlobalProperty("layout.name.format");
+		return gp;
+	}
+	
+	public static void setFormat(String newFormat) {
+		PersonName.format = newFormat;
+	}
+	
+	@Override
+	public boolean supportsPropertyName(String propertyName) {
+		// TODO Auto-generated method stub
+		return "layout.name.format".equals(propertyName);
+	}
+	
+	@Override
+	public void globalPropertyChanged(GlobalProperty newValue) {
+		// TODO Auto-generated method stub
+		String format = newValue.getPropertyValue();
+		PersonName.setFormat(format);
+		
+	}
+	
+	@Override
+	public void globalPropertyDeleted(String propertyName) {
+		// TODO Auto-generated method stub
+		PersonName.setFormat(null);
 	}
 }

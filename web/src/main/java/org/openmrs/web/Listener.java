@@ -16,6 +16,7 @@ package org.openmrs.web;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
@@ -165,6 +166,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				ApplicationContext parent = loadParentContext(servletContext);
 				WebApplicationContext context = createWebApplicationContext(servletContext, parent);
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+				PersonName.setFormat(Context.getAdministrationService().getGlobalProperty("layout.name.format"));
 				/** */
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
