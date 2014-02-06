@@ -45,6 +45,15 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	private ConceptService conceptService;
 	
 	@Test
+	public void shouldGetTheActiveDrugOrdersForAPatient() {
+		Patient patient = patientService.getPatient(2);
+		List<DrugOrder> activeDrugOrders = orderService.getActiveOrders(patient, DrugOrder.class, null, null);
+		assertEquals(2, activeDrugOrders.size());
+		DrugOrder[] expectedDrugOrders = { (DrugOrder) orderService.getOrder(3), (DrugOrder) orderService.getOrder(3) };
+		assertThat(activeDrugOrders, hasItems(expectedDrugOrders));
+	}
+	
+	@Test
 	public void shouldPlaceADrugOrder() throws Exception {
 		executeDataSet(ORDER_ENTRY_DATASET_XML);
 		Patient patient = patientService.getPatient(7);
