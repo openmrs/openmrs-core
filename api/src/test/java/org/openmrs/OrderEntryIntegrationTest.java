@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
-	protected static final String ORDER_ENTRY_DATASET_XML = "org/openmrs/api/include/OrderEntryTest-other.xml";
+	protected static final String ORDER_ENTRY_DATASET_XML = "org/openmrs/api/include/OrderEntryIntegrationTest-other.xml";
 	
 	@Autowired
 	private OrderService orderService;
@@ -42,6 +43,36 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private ConceptService conceptService;
+	
+	@Test
+	public void shouldPlaceADrugOrder() throws Exception {
+		executeDataSet(ORDER_ENTRY_DATASET_XML);
+		Patient patient = patientService.getPatient(7);
+		CareSetting careSetting = orderService.getCareSetting(1);
+		assertEquals(0, orderService.getActiveOrders(patient, DrugOrder.class, careSetting, null).size());
+		
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		order.setPatient(patient);
+		order.setConcept(conceptService.getConcept(5497));
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setStartDate(new Date());
+		order.setDrug(conceptService.getDrug(1));
+		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDose(300.0);
+		order.setDoseUnits(conceptService.getConcept(50));//mgs
+		order.setQuantity(20.0);
+		order.setQuantityUnits(conceptService.getConcept(51));//tabs
+		order.setDuration(20.0);
+		order.setDurationUnits(conceptService.getConcept(1002));//days
+		order.setFrequency(orderService.getOrderFrequency(1003));//Once Daily
+		
+		orderService.saveOrder(order);
+		List<DrugOrder> activeOrders = orderService.getActiveOrders(patient, DrugOrder.class, careSetting, null);
+		assertEquals(1, activeOrders.size());
+		assertThat(activeOrders, hasItems(order));
+	}
 	
 	@Test
 	public void shouldPlaceATestOrder() throws Exception {
