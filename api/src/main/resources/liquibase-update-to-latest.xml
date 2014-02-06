@@ -7045,8 +7045,12 @@
             FROM users u JOIN orders o ON o.orderer = u.user_id
             WHERE u.person_id NOT IN (SELECT DISTINCT person_id FROM provider) GROUP BY u.person_id
         </sql>
-        <modifySql dbms="mysql"><replace replace="generate-uuid" with="UUID()"/></modifySql>
-        <modifySql dbms="h2"><replace replace="generate-uuid" with="random_uuid()"/></modifySql>
+        <modifySql dbms="mysql"><replace replace="generate-uuid" with="UUID()" /></modifySql>
+        <modifySql dbms="h2"><replace replace="generate-uuid" with="random_uuid()" /></modifySql>
+        <modifySql dbms="oracle"><replace replace="generate-uuid" with="SYS_GUID()" /></modifySql>
+        <modifySql dbms="mssql"><replace replace="generate-uuid" with="NEWID()" /></modifySql>
+        <!-- On postgres the uuid-ossp module is required -->
+        <modifySql dbms="postgresql"><replace replace="generate-uuid" with="uuid_generate_v4()" /></modifySql>
     </changeSet>
 
     <changeSet id="201402051638-TRUNK-4202" author="wyclif">
