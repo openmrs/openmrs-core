@@ -34,6 +34,7 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,10 +65,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public void setOrderDAO(OrderDAO dao) {
 		this.dao = dao;
-	}
-	
-	private boolean isValidActiveOrder(Order order) {
-		return order.isCurrent() && order.getAction() != Order.Action.DISCONTINUE;
 	}
 	
 	/**
@@ -120,7 +117,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (!previousOrder.getConcept().equals(order.getConcept())) {
 				throw new APIException("Concept of previous order and this order should be the same");
 			}
-			if (isValidActiveOrder(previousOrder)) {
+			if (OrderUtil.isOrderActive(previousOrder, null)) {
 				markAsDiscontinued(previousOrder, order.getStartDate());
 				saveOrderInternal(previousOrder);
 			}
