@@ -58,7 +58,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		executeDataSet(ORDER_ENTRY_DATASET_XML);
 		Patient patient = patientService.getPatient(7);
 		CareSetting careSetting = orderService.getCareSetting(1);
-		assertEquals(0, orderService.getActiveOrders(patient, DrugOrder.class, careSetting, null).size());
+		int activeDrugOrderCount = orderService.getActiveOrders(patient, DrugOrder.class, careSetting, null).size();
 		
 		//place drug order
 		DrugOrder order = new DrugOrder();
@@ -79,7 +79,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		
 		orderService.saveOrder(order);
 		List<DrugOrder> activeOrders = orderService.getActiveOrders(patient, DrugOrder.class, careSetting, null);
-		assertEquals(1, activeOrders.size());
+		assertEquals(++activeDrugOrderCount, activeOrders.size());
 		assertThat(activeOrders, hasItems(order));
 	}
 	
@@ -88,7 +88,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		executeDataSet(ORDER_ENTRY_DATASET_XML);
 		Patient patient = patientService.getPatient(7);
 		CareSetting careSetting = orderService.getCareSetting(1);
-		assertEquals(0, orderService.getActiveOrders(patient, TestOrder.class, careSetting, null).size());
+		int activeTestOrderCount = orderService.getActiveOrders(patient, TestOrder.class, careSetting, null).size();
 		
 		//place test order
 		TestOrder order = new TestOrder();
@@ -103,7 +103,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		
 		orderService.saveOrder(order);
 		List<TestOrder> activeOrders = orderService.getActiveOrders(patient, TestOrder.class, careSetting, null);
-		assertEquals(1, activeOrders.size());
+		assertEquals(++activeTestOrderCount, activeOrders.size());
 		assertThat(activeOrders, hasItems(order));
 	}
 }
