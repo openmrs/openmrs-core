@@ -7033,6 +7033,31 @@
 								 referencedColumnNames="user_id"
 								 referencedTableName="users"/>
 	</changeSet>
+	
+	<changeSet id="201401161532-TRUNK-4202" author="k-joseph" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
+		</preConditions>
+		<comment>Creating provider accounts for all users who have placed orders for patients and have no associated provider accounts</comment>
+		<sql>
+			INSERT INTO provider(person_id, identifier, creator, date_created, retired, uuid)
+			SELECT u.person_id, u.system_id , (select user_id from users where uuid = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"), CURRENT_TIMESTAMP , u.retired, UUID()
+				FROM users as u JOIN orders AS o ON o.orderer = u.user_id
+			WHERE u.person_id NOT IN (SELECT DISTINCT person_id FROM provider)
+		</sql>
+	</changeSet>
+	
+	<changeSet id="201401202238-TRUNK-4202" author="k-joseph" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
+		</preConditions>
+		<comment>Migrating data in orders.orderer column to be provider_ids instead of user_ids</comment>
+		<sql>
+			UPDATE orders AS o INNER JOIN users u ON o.orderer = u.user_id
+			INNER JOIN provider p ON u.user_id = p.provider_id
+			SET o.orderer = p.provider_id
+		</sql>
+	</changeSet>
 
     <changeSet id="201401161532-TRUNK-4202" author="k-joseph">
         <preConditions onFail="MARK_RAN">
