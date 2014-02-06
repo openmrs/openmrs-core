@@ -46,13 +46,23 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private ConceptService conceptService;
+
+	@Test
+	public void shouldGetTheActiveOrdersForAPatient() {
+		Patient patient = patientService.getPatient(2);
+		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(5, activeOrders.size());
+		Order[] expectedOrders = { orderService.getOrder(3), orderService.getOrder(5), orderService.getOrder(7),
+		        orderService.getOrder(222), orderService.getOrder(444) };
+		assertThat(activeOrders, hasItems(expectedOrders));
+	}
 	
 	@Test
 	public void shouldGetTheActiveDrugOrdersForAPatient() {
 		Patient patient = patientService.getPatient(2);
 		List<DrugOrder> activeDrugOrders = orderService.getActiveOrders(patient, DrugOrder.class, null, null);
 		assertEquals(2, activeDrugOrders.size());
-		DrugOrder[] expectedDrugOrders = { (DrugOrder) orderService.getOrder(3), (DrugOrder) orderService.getOrder(3) };
+		DrugOrder[] expectedDrugOrders = { (DrugOrder) orderService.getOrder(3), (DrugOrder) orderService.getOrder(5) };
 		assertThat(activeDrugOrders, hasItems(expectedDrugOrders));
 	}
 	
@@ -129,12 +139,19 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertEquals(patient, secondOrderToDiscontinue.getPatient());
 		assertTrue(OrderUtil.isOrderActive(secondOrderToDiscontinue, null));
 		
+		//Lets discontinue another order by saving a DC order
+		Order thirdOrderToDiscontinue = orderService.getOrder(7);
+		assertTrue(OrderUtil.isOrderActive(thirdOrderToDiscontinue, null));
+		Order discontinuationOrder = thirdOrderToDiscontinue.cloneForDiscontinuing();
+		orderService.saveOrder(discontinuationOrder);
+		
 		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null);
 		assertEquals(secondOrderToDiscontinue, discontinuationOrder2.getPreviousOrder());
 		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
-		assertEquals(ordersCount - 2, activeOrders.size());
+		assertEquals(ordersCount - 3, activeOrders.size());
 		assertFalse(activeOrders.contains(firstOrderToDiscontinue));
 		assertFalse(activeOrders.contains(secondOrderToDiscontinue));
+        assertFalse(activeOrders.contains(thirdOrderToDiscontinue));
 	}
 }

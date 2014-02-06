@@ -13,9 +13,7 @@
  */
 package org.openmrs;
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.test.Verifies;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -103,11 +101,18 @@ public class OrderTest {
 	public void cloneForDiscontinuing_shouldSetAllTheRelevantFields() throws Exception {
 		
 		TestOrder anOrder = new TestOrder();
+		anOrder.setPatient(new Patient());
+		anOrder.setCareSetting(new CareSetting());
+		anOrder.setConcept(new Concept());
 		anOrder.setUuid(UUID.randomUUID().toString());
 		
 		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
 		
-		assertEquals(anOrder.getClass(), anOrder.cloneForDiscontinuing().getClass());
+		assertEquals(anOrder.getClass(), orderThatCanDiscontinueTheOrder.getClass());
+		
+		assertEquals(anOrder.getPatient(), orderThatCanDiscontinueTheOrder.getPatient());
+		
+		assertEquals(anOrder.getConcept(), orderThatCanDiscontinueTheOrder.getConcept());
 		
 		assertEquals("should set previous order to anOrder", orderThatCanDiscontinueTheOrder.getPreviousOrder(), anOrder);
 		
