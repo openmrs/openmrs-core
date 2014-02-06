@@ -15,7 +15,9 @@ package org.openmrs;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +27,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.order.OrderUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -105,5 +108,33 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		List<TestOrder> activeOrders = orderService.getActiveOrders(patient, TestOrder.class, careSetting, null);
 		assertEquals(++activeTestOrderCount, activeOrders.size());
 		assertThat(activeOrders, hasItems(order));
+	}
+	
+	@Test
+	public void shouldDiscontinueAnActiveOrder() throws Exception {
+		executeDataSet(ORDER_ENTRY_DATASET_XML);
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
+		
+		Order firstOrderToDiscontinue = orderService.getOrder(3);
+		assertTrue(OrderUtil.isOrderActive(firstOrderToDiscontinue, null));
+		Patient patient = firstOrderToDiscontinue.getPatient();
+		int ordersCount = orderService.getActiveOrders(patient, null, null, null).size();
+		
+		Concept concept = Context.getConceptService().getConcept(1);
+		Order discontinuationOrder1 = orderService.discontinueOrder(firstOrderToDiscontinue, concept, null);
+		assertEquals(firstOrderToDiscontinue, discontinuationOrder1.getPreviousOrder());
+		
+		//Lets discontinue another order with reason being a string instead of concept
+		Order secondOrderToDiscontinue = orderService.getOrder(5);
+		assertEquals(patient, secondOrderToDiscontinue.getPatient());
+		assertTrue(OrderUtil.isOrderActive(secondOrderToDiscontinue, null));
+		
+		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null);
+		assertEquals(secondOrderToDiscontinue, discontinuationOrder2.getPreviousOrder());
+		
+		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(ordersCount - 2, activeOrders.size());
+		assertFalse(activeOrders.contains(firstOrderToDiscontinue));
+		assertFalse(activeOrders.contains(secondOrderToDiscontinue));
 	}
 }

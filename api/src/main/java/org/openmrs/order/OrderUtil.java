@@ -18,8 +18,8 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.Order;
 import org.openmrs.Patient;
-import org.openmrs.api.OrderService;
 
 /**
  * Contains convenience methods for working with Orders.
@@ -27,6 +27,10 @@ import org.openmrs.api.OrderService;
 public class OrderUtil {
 	
 	private static final Log log = LogFactory.getLog(OrderUtil.class);
+	
+	public static boolean isOrderActive(Order order, Date asOfDate) {
+		return order.isCurrent(asOfDate) && order.getAction() != Order.Action.DISCONTINUE;
+	}
 	
 	/**
 	 * Discontinues all current orders for the given <code>patient</code>
