@@ -17,7 +17,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.util.DatabaseUtil;
 
@@ -208,7 +207,7 @@ public class Database1_9To1_10UpgradeTest {
 		Set<Integer> newProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider", Integer.class,
 		    upgradeTestUtil.getConnection());
 		//A provider account should have been created for each user with none
-		Assert.assertEquals(originalProviderIds.size() + 2, newProviderIds.size());
+		Assert.assertEquals(originalProviderIds.size() + personIdsWithNoProviderAccount.size(), newProviderIds.size());
 		
 		//Should still have the 2 orders with null orderer
 		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
@@ -227,19 +226,20 @@ public class Database1_9To1_10UpgradeTest {
 			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where order_id = "
 			            + op.getOrderId(), true);
 			Assert.assertEquals(op.getPersonId(), rows.get(0).get(1));
-			//The provider account should be an existing one prior to upgrade
-			Assert.assertFalse(originalProviderIds.contains(rows.get(0).get(0)));
+			//The provider account should have been among the existing ones prior to upgrade
+			Assert.assertTrue(originalProviderIds.contains(rows.get(0).get(0)));
 		}
 		
 		//That correct providers were set for each order, i.e the person record for the created provider
 		//should match the that of the user account before upgrade
 		for (OrderAndPerson op : ordersAndOrderersWithNoProviderAccount) {
 			rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
-			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where order_id = "
+			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where o.order_id = "
 			            + op.getOrderId(), true);
+			Assert.assertEquals(1, rows.size());
 			Assert.assertEquals(op.getPersonId(), rows.get(0).get(1));
-			//The provider account should be new
-			Assert.assertFalse(newProviderIds.contains(rows.get(0).get(0)));
+			//The provider account shouldn't have been among the existing ones prior to upgrade
+			Assert.assertFalse(originalProviderIds.contains(rows.get(0).get(0)));
 		}
 	}
 	

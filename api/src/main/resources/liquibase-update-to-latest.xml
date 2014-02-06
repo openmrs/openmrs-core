@@ -7033,46 +7033,45 @@
 								 referencedColumnNames="user_id"
 								 referencedTableName="users"/>
 	</changeSet>
-	
-	<changeSet id="201401161532-TRUNK-4202" author="k-joseph" dbms="mysql">
-		<preConditions onFail="MARK_RAN">
-			<not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
-		</preConditions>
-		<comment>Creating provider accounts for all users who have placed orders for patients and have no associated provider accounts</comment>
-		<sql>
-			INSERT INTO provider(person_id, identifier, creator, date_created, retired, uuid)
-			SELECT u.person_id, u.system_id , (select user_id from users where uuid = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"), CURRENT_TIMESTAMP , u.retired, UUID()
-				FROM users as u JOIN orders AS o ON o.orderer = u.user_id
-			WHERE u.person_id NOT IN (SELECT DISTINCT person_id FROM provider)
-		</sql>
-	</changeSet>
-	
-	<changeSet id="201401202238-TRUNK-4202" author="k-joseph" dbms="mysql">
-		<preConditions onFail="MARK_RAN">
-			<not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
-		</preConditions>
-		<comment>Migrating data in orders.orderer column to be provider_ids instead of user_ids</comment>
-		<sql>
-			UPDATE orders AS o INNER JOIN users u ON o.orderer = u.user_id
-			INNER JOIN provider p ON u.user_id = p.provider_id
-			SET o.orderer = p.provider_id
-		</sql>
-	</changeSet>
 
-    <changeSet id="201402041601-TRUNK-4138" author="wyclif">
+    <changeSet id="201401161532-TRUNK-4202" author="k-joseph">
         <preConditions onFail="MARK_RAN">
-            <columnExists columnName="discontinued_reason" tableName="orders" />
+            <not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
         </preConditions>
-        <comment>Renaming orders.discontinued_reason column to order_reason</comment>
-        <renameColumn tableName="orders" newColumnName="order_reason" oldColumnName="discontinued_reason" columnDataType="int" />
+        <comment>Creating provider accounts for all users who have placed orders for patients and have no associated provider accounts</comment>
+        <sql>
+            INSERT INTO provider(person_id, identifier, creator, date_created, retired, uuid)
+            SELECT u.person_id, u.username, (SELECT user_id FROM users WHERE uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB'), CURRENT_TIMESTAMP , u.retired, generate-uuid
+            FROM users u JOIN orders o ON o.orderer = u.user_id
+            WHERE u.person_id NOT IN (SELECT DISTINCT person_id FROM provider) GROUP BY u.person_id
+        </sql>
+        <modifySql dbms="mysql"><replace replace="generate-uuid" with="UUID()"/></modifySql>
+        <modifySql dbms="h2"><replace replace="generate-uuid" with="random_uuid()"/></modifySql>
     </changeSet>
 
-    <changeSet id="201402041604-TRUNK-4138" author="wyclif">
+    <changeSet id="201402051638-TRUNK-4202" author="wyclif">
         <preConditions onFail="MARK_RAN">
-            <columnExists columnName="discontinued_reason_non_coded" tableName="orders" />
+            <foreignKeyConstraintExists foreignKeyName="orderer_not_drug" />
         </preConditions>
-        <comment>Renaming orders.discontinued_reason_non_coded column to order_reason_non_coded</comment>
-        <renameColumn tableName="orders" newColumnName="order_reason_non_coded" oldColumnName="discontinued_reason_non_coded" columnDataType="varchar(255)" />
+        <comment>Temporarily removing foreign key constraint from orders.orderer column</comment>
+        <dropForeignKeyConstraint baseTableName="orders" constraintName="orderer_not_drug" />
+    </changeSet>
+
+    <changeSet id="201402042238-TRUNK-4202" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
+        </preConditions>
+        <comment>Converting orders.orderer to reference provider.provider_id</comment>
+        <customChange class="org.openmrs.util.databasechange.ConvertOrderersToProviders" />
+    </changeSet>
+
+    <changeSet id="201402051639-TRUNK-4202" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="fk_orderer_provider" /></not>
+        </preConditions>
+        <comment>Adding foreign key constraint to orders.orderer column</comment>
+        <addForeignKeyConstraint constraintName="fk_orderer_provider" baseTableName="orders" baseColumnNames="orderer"
+                                 referencedTableName="provider" referencedColumnNames="provider_id" />
     </changeSet>
 
 </databaseChangeLog>
