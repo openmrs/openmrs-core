@@ -13,15 +13,14 @@
  */
 package org.openmrs;
 
-import org.junit.Test;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.UUID;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import org.junit.Test;
 
 /**
  * This class tests all methods that are not getter or setters in the Order java object TODO: finish
@@ -107,13 +106,11 @@ public class OrderTest {
 		
 		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
 		
-		assertEquals(anOrder.getClass(), orderThatCanDiscontinueTheOrder.getClass());
-		
 		assertEquals(anOrder.getPatient(), orderThatCanDiscontinueTheOrder.getPatient());
 		
 		assertEquals(anOrder.getConcept(), orderThatCanDiscontinueTheOrder.getConcept());
 		
-		assertEquals("should set previous order to anOrder", orderThatCanDiscontinueTheOrder.getPreviousOrder(), anOrder);
+		assertEquals("should set previous order to anOrder", anOrder, orderThatCanDiscontinueTheOrder.getPreviousOrder());
 		
 		assertEquals("should set new order action to new", orderThatCanDiscontinueTheOrder.getAction(),
 		    Order.Action.DISCONTINUE);

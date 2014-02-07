@@ -412,6 +412,24 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.durationUnits = durationUnits;
 	}
 	
+	/**
+	 * @see org.openmrs.Order#cloneForDiscontinuing()
+	 * @should set all the relevant fields
+	 * @since 1.10
+	 */
+	@Override
+	public Order cloneForDiscontinuing() {
+		DrugOrder newOrder = new DrugOrder();
+		newOrder.setCareSetting(this.getCareSetting());
+		newOrder.setConcept(this.getConcept());
+		newOrder.setAction(Action.DISCONTINUE);
+		newOrder.setPreviousOrder(this);
+		newOrder.setPatient(this.getPatient());
+		newOrder.setDrug(this.getDrug());
+		
+		return newOrder;
+	}
+	
 	public String toString() {
 		return "DrugOrder(" + getDose() + getDoseUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
 		        + " from " + getStartDate() + " to " + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate())

@@ -128,15 +128,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getClass(), order.getCareSetting(), null);
 		boolean isDrugOrderAndHasADrug = order.isDrugOrder() && ((DrugOrder) order).getDrug() != null;
 		for (Order activeOrder : orders) {
-			//For drug orders, the drug must match if order has a drug
+			boolean shouldMarkAsDiscontinued = false;
+			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {
 				DrugOrder drugOrder1 = (DrugOrder) order;
 				DrugOrder drugOrder2 = (DrugOrder) activeOrder;
-				if (!OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
-					continue;
+				if (OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
+					shouldMarkAsDiscontinued = true;
 				}
+			} else if (activeOrder.getConcept().equals(order.getConcept())) {
+				shouldMarkAsDiscontinued = true;
 			}
-			if (isDrugOrderAndHasADrug || activeOrder.getConcept().equals(order.getConcept())) {
+			
+			if (shouldMarkAsDiscontinued) {
 				order.setPreviousOrder(activeOrder);
 				markAsDiscontinued(activeOrder, order.getStartDate());
 				saveOrderInternal(activeOrder);
