@@ -2043,7 +2043,7 @@ public interface ConceptService extends OpenmrsService {
 	 * Fetches un retired drugs that match the specified search phrase. The logic matches on drug
 	 * names, concept names of the associated concepts or the concept reference term codes of the
 	 * drug reference term mappings
-	 *
+	 * 
 	 * @param searchPhrase The string to match against
 	 * @param locale The locale to match against when searching in drug concept names
 	 * @param exactLocale If false then concepts with names in a broader locale will be matched e.g
@@ -2062,24 +2062,26 @@ public interface ConceptService extends OpenmrsService {
 	 * @should reject a null search phrase
 	 */
 	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired);
-
+	
 	/**
-	 *
-	 * Fetches all drugs with reference mappings to the specified concept source that match the specified code and concept map types
-	 * @param code  the code
+	 * Fetches all drugs with reference mappings to the specified concept source that match the
+	 * specified code and concept map types
+	 * 
+	 * @param code the code
 	 * @param conceptSource
 	 * @param withAnyOfTheseTypes
 	 * @param includeRetired
 	 * @since 1.10
 	 * @return the list of {@link Drug}
 	 * @throws APIException
-	 * @should get a list of non retired drug mappings with given code and concept source and conceptmapTypes
-	 * @should only return non-retired drugs
+	 * @should get a list of non retired drug mappings with given code and concept source and
+	 *         conceptmapTypes
 	 * @should return retired and non-retired drugs
 	 * @should return empty list if no matches are found
-	 * @should match on the  code
+	 * @should match on the code
 	 * @should match on the concept source
 	 * @should match on the map types
+	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
@@ -2087,9 +2089,10 @@ public interface ConceptService extends OpenmrsService {
 	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException;
 	
 	/**
-	 * Gets the "best" matching drug, i.e. matching the earliest ConceptMapType passed in
-	 * e.g. getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan))
-	 * If there are multiple matches for the highest-priority ConceptMapType, throw an exception
+	 * Gets the "best" matching drug, i.e. matching the earliest ConceptMapType passed in e.g.
+	 * getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan)) If there are multiple
+	 * matches for the highest-priority ConceptMapType, throw an exception
+	 * 
 	 * @param code
 	 * @param conceptSource
 	 * @param withAnyOfTheseTypesOrOrderOfPreference
@@ -2097,9 +2100,10 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 * @return the {@link Drug}
 	 * @throws APIException
-	 * @should return a drug that matches the best map type
+	 * @should return a drug that matches the code and source and the best map type
 	 * @should fail if multiple drugs are found matching the best map type
 	 * @should return null if no match found
+	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
