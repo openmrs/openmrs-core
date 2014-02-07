@@ -75,10 +75,21 @@
 		DWRCohortBuilderService.getFilterResultAsCommaSeparatedIds(filterId, cohort_setIdsHelper);
 	}
 	
-	function cohort_refreshDisplay() {
-		jQuery('#cohort_fromNumber').html(cohort_startIndex + 1);
-		jQuery('#cohort_toNumber').html(cohort_endIndex);
-		jQuery('#cohort_ofNumber').html(cohort_patientIds.length);
+	function cohort_refreshDisplay() 
+	{
+		if(cohort_patientIds.length==1 && cohort_patientIds[0].toString()=="")
+		{
+            jQuery('#prev_navs').hide();
+	        jQuery('#general_display').hide();
+            jQuery('#nxt_navs').hide();
+		}
+		else
+		{
+            jQuery('#no_results').hide();
+            jQuery('#cohort_fromNumber').html(cohort_startIndex + 1);
+		    jQuery('#cohort_toNumber').html(cohort_endIndex);
+	        jQuery('#cohort_ofNumber').html(cohort_patientIds.length);
+		}
 		jQuery('#cohort_contents').html('<openmrs:message code="general.loading"/>');
 		var str = '';
 		for (var i = cohort_startIndex; i < cohort_endIndex; ++i)
@@ -141,15 +152,28 @@
 	</div>
 	<div id="cohort_navButtons">
 		<b><u>
+		<span id="prev_navs">
 		<a href="javascript:cohort_goToStart()">|&lt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_pageBack()">&lt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
+		</span>
+        
+
+		<span id="no_results" ><openmrs:message code="general.noresult"/></span>
+
+
+		<span id="general_display">
 		<openmrs:message code="general.displayingXtoYofZ" arguments='<span id="cohort_fromNumber"></span>,<span id="cohort_toNumber"></span>,<span id="cohort_ofNumber"></span>' />
+        </span>
+ 
+       
+        <span id=nxt_navs>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_pageForwards()">&gt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_goToEnd()">&gt;|</a>
+		</span>
 		</u></b>
 	</div>
 	<div id="cohort_contents">
