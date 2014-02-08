@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+ 
+    <changeSet id="drop_logic_rule_token_tag" author="nribeka">
+        <preConditions onFail="MARK_RAN"><tableExists tableName="logic_rule_token_tag"/></preConditions>
+        <dropTable tableName="logic_rule_token_tag" />
+    </changeSet>
+
+    <changeSet id="drop_logic_rule_token" author="nribeka">
+        <preConditions onFail="MARK_RAN"><tableExists tableName="logic_rule_token"/></preConditions>
+        <dropTable tableName="logic_rule_token" />
+    </changeSet>
+
+    <changeSet id="create_logic_rule_token" author="nribeka">
+        <preConditions onFail="MARK_RAN"><not><tableExists tableName="logic_rule_token"/></not></preConditions>
+        <createTable tableName="logic_rule_token">
+            <column name="logic_rule_token_id" autoIncrement="true" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime" defaultValueDate="0002-11-30T00:00:00.0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime" />
+            <column name="token" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="class_name" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="varchar(512)" />
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="creator" 
+            constraintName="token_creator" referencedTableName="person" referencedColumnNames="person_id" />
+        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="changed_by" 
+            constraintName="token_changed_by" referencedTableName="person" referencedColumnNames="person_id"/>
+    </changeSet>
+
+    <changeSet id="create-logic-rule-token-tag" author="nribeka">
+        <preConditions onFail="MARK_RAN"><not><tableExists tableName="logic_rule_token_tag"/></not></preConditions>
+        <createTable tableName="logic_rule_token_tag">
+            <column name="logic_rule_token_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="logic_rule_token_tag" baseColumnNames="logic_rule_token_id" 
+            constraintName="token_tag" referencedTableName="logic_rule_token" referencedColumnNames="logic_rule_token_id" />
+    </changeSet>
+
+    <changeSet id="create-logic-rule-definition" author="mseaton">
+        <preConditions onFail="MARK_RAN"><not><tableExists tableName="logic_rule_definition"/></not></preConditions>
+        <createTable tableName="logic_rule_definition">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(1000)" />
+            <column name="rule_content" type="varchar(2048)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime" defaultValueDate="0000-00-00T00:00:00.0" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int" />
+            <column name="date_changed" type="datetime" />
+            <column name="retired" type="smallint" defaultValueNumeric="0" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int"/>
+            <column name="date_retired" type="datetime"/>
+            <column name="retire_reason" type="varchar(255)"/>
+        </createTable>
+        <createIndex tableName="logic_rule_definition" indexName="creator_idx">
+            <column name="creator" />
+        </createIndex>
+        <createIndex tableName="logic_rule_definition" indexName="changed_by_idx">
+            <column name="changed_by" />
+        </createIndex>
+        <createIndex tableName="logic_rule_definition" indexName="retired_by_idx">
+            <column name="retired_by" />
+        </createIndex>
+        <addForeignKeyConstraint baseTableName="logic_rule_definition" baseColumnNames="creator" 
+            constraintName="creator_for_rule_definition" referencedTableName="users" referencedColumnNames="user_id" />
+        <addForeignKeyConstraint baseTableName="logic_rule_definition" baseColumnNames="changed_by" 
+            constraintName="changed_by_for_rule_definition" referencedTableName="users" referencedColumnNames="user_id" />
+        <addForeignKeyConstraint baseTableName="logic_rule_definition" baseColumnNames="retired_by" 
+            constraintName="retired_by_for_rule_definition" referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+
+    <changeSet id="create-logic_token_registration" author="djazayeri">
+        <preConditions onFail="MARK_RAN"><not><tableExists tableName="logic_token_registration"/></not></preConditions>
+        <createTable tableName="logic_token_registration">
+            <column name="token_registration_id" autoIncrement="true" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime" defaultValueDate="0002-11-30T00:00:00.0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime" />
+            <column name="token" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_class_name" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_token" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="configuration" type="varchar(2000)" />
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="logic_token_registration" baseColumnNames="creator" 
+            constraintName="token_registration_creator" referencedTableName="users" referencedColumnNames="user_id" />
+        <addForeignKeyConstraint baseTableName="logic_token_registration" baseColumnNames="changed_by" 
+            constraintName="token_registration_changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+
+    <changeSet id="create-logic_token_registration_tag" author="djazayeri">
+        <preConditions onFail="MARK_RAN"><not><tableExists tableName="logic_token_registration_tag"/></not></preConditions>
+        <createTable tableName="logic_token_registration_tag">
+            <column name="token_registration_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="logic_token_registration_tag" baseColumnNames="token_registration_id" 
+            constraintName="token_registration_tag" referencedTableName="logic_token_registration" referencedColumnNames="token_registration_id" />
+    </changeSet>
+
+</databaseChangeLog>

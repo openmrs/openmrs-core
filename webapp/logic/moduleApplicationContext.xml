@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+    	
+	<!-- Register LogicService with OpenMRS ServiceContext -->
+	<bean parent="serviceContext">
+		<property name="logicService">
+			<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+				<property name="transactionManager"><ref bean="transactionManager"/></property>
+				<property name="target">
+					<bean id="logicServiceTarget" class="org.openmrs.logic.impl.LogicServiceImpl"/>
+				</property>
+				<property name="preInterceptors">
+					<ref bean="serviceInterceptors" />
+				</property>
+				<property name="transactionAttributeSource"><ref bean="transactionAttributeSource" /></property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- Register TokenService with OpenMRS ServiceContext -->
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.logic.token.TokenService</value> 
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager"><ref bean="transactionManager"/></property>
+					<property name="target">
+						<bean class="org.openmrs.logic.token.impl.TokenServiceImpl">
+							<property name="dao">
+								<bean class="org.openmrs.logic.token.db.hibernate.HibernateTokenDAO">
+									<property name="sessionFactory"><ref bean="sessionFactory" /></property>
+								</bean>
+							</property>
+						</bean>
+					</property>
+					<property name="preInterceptors">
+						<ref bean="serviceInterceptors" />
+					</property>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Register RuleDefinitionService with OpenMRS ServiceContext -->
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.logic.rule.definition.RuleDefinitionService</value> 
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager"><ref bean="transactionManager"/></property>
+					<property name="target">
+						<bean class="org.openmrs.logic.rule.definition.impl.RuleDefinitionServiceImpl">
+							<property name="dao">
+								<bean class="org.openmrs.logic.rule.definition.db.hibernate.HibernateRuleDefinitionDAO">
+									<property name="sessionFactory"><ref bean="sessionFactory" /></property>
+								</bean>
+							</property>
+						</bean>
+					</property>
+					<property name="preInterceptors">
+						<ref bean="serviceInterceptors" />
+					</property>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+</beans>
