@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -132,7 +131,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderNumberGenerator#getNewOrderNumber()}
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should always return unique orderNumbers when called multiple times without saving orders", method = "getNewOrderNumber()")
 	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
 	        throws Exception {

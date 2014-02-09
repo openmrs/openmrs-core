@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
@@ -164,9 +164,9 @@ public class HibernateOrderDAO implements OrderDAO {
 	public Long getNextOrderNumberSeedSequenceValue() {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
 		searchCriteria.add(Restrictions.eq("property", OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED));
-		searchCriteria.setLockMode(LockMode.PESSIMISTIC_WRITE);
+		GlobalProperty globalProperty = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class,
+		    OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
 		
-		GlobalProperty globalProperty = (GlobalProperty) searchCriteria.uniqueResult();
 		if (globalProperty == null) {
 			throw new APIException("Missing global property named: "
 			        + OpenmrsConstants.GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED);
