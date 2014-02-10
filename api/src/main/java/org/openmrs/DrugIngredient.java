@@ -26,10 +26,6 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	
 	private Concept ingredient;
 	
-	private Double quantity;
-	
-	private Concept units;
-	
 	// Constructors
 	
 	/** default constructor */
@@ -80,44 +76,6 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	 */
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Gets quantity of Drug Ingredient
-	 * 
-	 * @since 1.10
-	 */
-	public Double getQuantity() {
-		return quantity;
-	}
-	
-	/**
-	 * Sets quantity of Drug Ingredient
-	 * 
-	 * @param quantity
-	 * @since 1.10
-	 */
-	public void setQuantity(Double quantity) {
-		this.quantity = quantity;
-	}
-	
-	/**
-	 * Gets units of Drug Ingredient
-	 * 
-	 * @since 1.10
-	 */
-	public Concept getUnits() {
-		return units;
-	}
-	
-	/**
-	 * Sets units of Drug Ingredient
-	 * 
-	 * @param units
-	 * @since 1.10
-	 */
-	public void setUnits(Concept units) {
-		this.units = units;
 	}
 	
 }
