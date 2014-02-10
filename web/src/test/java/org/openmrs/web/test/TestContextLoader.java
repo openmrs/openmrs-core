@@ -52,7 +52,6 @@ public class TestContextLoader extends AbstractContextLoader {
 	 */
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
