@@ -59,6 +59,18 @@ public interface OrderService extends OpenmrsService {
 	public Order saveOrder(Order order) throws APIException;
 	
 	/**
+	 * Save or update the given <code>order</code> in the database
+	 *
+	 * @param order the Order to revise
+	 * @return the Order that was saved
+	 * @throws APIException
+	 * @should stop existing order
+	 * @should not allow editing an existing order
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	public Order saveRevisedOrder(Order order) throws APIException;
+	
+	/**
 	 * Completely delete an order from the database. This should not typically be used unless
 	 * desperately needed. Most orders should just be voided. See {@link #voidOrder(Order, String)}
 	 * 

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <global_property property="order.nextOrderNumberSeed" property_value="1" uuid="1d55827e-26fe-102b-80cb-0017a47879y5"/>
+    <orders order_id="6" order_number="6" urgency="ROUTINE" order_action="NEW" concept_id="88" orderer="1" instructions="" 
+          start_date="2012-08-19 00:00:00.0" auto_expire_date="2012-08-29 00:00:00.0" creator="1" date_created="2012-01-19 12:24:10.0" 
+          voided="false" patient_id="2"
+          uuid="0c96f25c-4949-4f72-9931-d808fbcdb611" care_setting="1" />
+  <drug_order order_id="6" drug_inventory_id="3" dose="125.0" dose_units="50" frequency="1" as_needed="false" dosing_type="SIMPLE" duration="10"/>
+</dataset>
