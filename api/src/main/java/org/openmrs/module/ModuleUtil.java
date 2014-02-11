@@ -361,9 +361,6 @@ public class ModuleUtil {
 	 * @should treat SNAPSHOT as earliest version
 	 */
 	public static int compareVersion(String version, String value) {
-		String qualifierVersion = "";
-		String qualifierValue = "";
-		
 		try {
 			if (version == null || value == null) {
 				return 0;
@@ -372,19 +369,16 @@ public class ModuleUtil {
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
 			String separator = "-";
-			String snapshotValue = ".0";
 			
-			// treat qualifier version (i.e. "-SNAPSHOT") as the lowest possible version
-			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
-			if (isVersionWithQualifier(version)) {
-				qualifierVersion = version.substring(version.indexOf(separator));
-				version = version.replace(qualifierVersion, snapshotValue);
+			// strip off any qualifier e.g. "-SNAPSHOT"
+			int qualifierIndex = version.indexOf(separator);
+			if (qualifierIndex != -1) {
+				version = version.substring(0, qualifierIndex);
 			}
-			// replace the qualifier with .0
-			// e.g 1.9.2-SNAPSHOT becomes 1.9.2.0
-			if (isVersionWithQualifier(value)) {
-				qualifierValue = value.substring(value.indexOf(separator));
-				value = value.replace(qualifierValue, snapshotValue);
+			
+			qualifierIndex = value.indexOf(separator);
+			if (qualifierIndex != -1) {
+				value = value.substring(0, qualifierIndex);
 			}
 			
 			Collections.addAll(versions, version.split("\\."));
