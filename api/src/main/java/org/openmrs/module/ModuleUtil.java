@@ -352,10 +352,16 @@ public class ModuleUtil {
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
 			
-			// treat "-SNAPSHOT" as the lowest possible version
-			// e.g. 1.8.4-SNAPSHOT is really 1.8.4.0 
-			version = version.replace("-SNAPSHOT", ".0");
-			value = value.replace("-SNAPSHOT", ".0");
+			// strip off any qualifier e.g. "-SNAPSHOT"
+			int qualifierIndex = version.indexOf("-");
+			if (qualifierIndex != -1) {
+				version = version.substring(0, qualifierIndex);
+			}
+			
+			qualifierIndex = value.indexOf("-");
+			if (qualifierIndex != -1) {
+				value = value.substring(0, qualifierIndex);
+			}
 			
 			Collections.addAll(versions, version.split("\\."));
 			Collections.addAll(values, value.split("\\."));
