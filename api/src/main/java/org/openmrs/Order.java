@@ -555,4 +555,25 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		
 		return newOrder;
 	}
+	
+	/**
+	 * Creates an order for revision from this order, sets the previousOrder and action field.
+	 *
+	 * @return the newly created order
+	 * @since 1.10
+	 * @should set all the relevant fields
+	 */
+	public Order cloneForRevision() {
+		Order newOrder = new Order();
+		newOrder.setCareSetting(this.getCareSetting());
+		newOrder.setConcept(this.getConcept());
+		newOrder.setAction(Action.REVISE);
+		newOrder.setPreviousOrder(this);
+		newOrder.setPatient(this.getPatient());
+		
+		newOrder.setInstructions(this.getInstructions());
+		newOrder.setUrgency(this.getUrgency());
+		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
+		return newOrder;
+	}
 }
