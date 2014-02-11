@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -29,7 +30,9 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
@@ -50,6 +53,8 @@ import org.openmrs.util.PrivilegeConstants;
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
+	private ConceptService conceptService;
+	
 	private OrderService orderService;
 	
 	private PatientService patientService;
@@ -61,6 +66,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		}
 		if (patientService == null) {
 			patientService = Context.getPatientService();
+		}
+		
+		if (conceptService == null) {
+			conceptService = Context.getConceptService();
 		}
 	}
 	
@@ -705,4 +714,79 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		final DrugOrder order = (DrugOrder) orderService.getOrder(5);
 		orderService.saveOrder(order);
 	}
+	
+	/**
+	 * @see OrderService#saveRevisedOrder(org.openmrs.Order) (org.openmrs.Order)
+	 */
+	@Test
+	public void saveOrder_shouldReviseDrugOrder() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseActiveOrders.xml");
+		DrugOrder order = getOrder(16);
+		
+		order.setDose((double) 200);
+		order.setDoseUnits(conceptService.getConcept(51));
+		order.setFrequency(orderService.getOrderFrequency(2));
+		order.setAsNeeded(false);
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDateCreated(new Date());
+		order.setDuration((double) 10);
+		order.setAutoExpireDate(dateAfterDays(10));
+		
+		Integer revisedOrderId = orderService.saveRevisedOrder(order).getOrderId();
+		DrugOrder revisedOrder = (DrugOrder) orderService.getOrder(revisedOrderId);
+		
+		assertEquals(new Integer(16), revisedOrder.getPreviousOrder().getOrderId());
+		assertNotNull(revisedOrder.getPreviousOrder().getDateStopped());
+		assertEquals(Action.REVISE, revisedOrder.getAction());
+		assertEquals(new Double(200), revisedOrder.getDose());
+		assertEquals(new Integer(51), revisedOrder.getDoseUnits().getConceptId());
+		assertFalse(revisedOrder.getAsNeeded());
+		assertEquals(DrugOrder.DosingType.FREE_TEXT, revisedOrder.getDosingType());
+		
+		assertNotEquals(order.getOrderNumber(), revisedOrder.getOrderNumber());
+	}
+	
+	private DrugOrder getOrder(int orderId) {
+		Order order = orderService.getOrder(orderId);
+		DrugOrder copy = (DrugOrder) order.copy();
+		copy.setOrderId(orderId);
+		copy.setUuid(order.getUuid());
+		return copy;
+	}
+	
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
+	
+	/**
+	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void saveOrder_shouldNotReviseToAnInActiveDrugOrder() throws Exception {
+		
+		expectedEx.expect(APIException.class);
+		expectedEx.expectMessage("Cannot revise an inactive order.");
+		
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseInActiveOrders.xml");
+		DrugOrder order = getOrder(6);
+		
+		order.setDose((double) 200);
+		order.setDoseUnits(conceptService.getConcept(51));
+		order.setFrequency(orderService.getOrderFrequency(2));
+		order.setAsNeeded(false);
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		
+		order.setDateCreated(new Date());
+		order.setDuration((double) 10);
+		order.setAutoExpireDate(dateAfterDays(10));
+		
+		orderService.saveRevisedOrder(order);
+	}
+	
+	private Date dateAfterDays(int days) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		c.add(Calendar.DATE, days);
+		return c.getTime();
+	}
+	
 }

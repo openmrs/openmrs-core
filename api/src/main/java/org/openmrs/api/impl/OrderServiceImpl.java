@@ -80,6 +80,41 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return saveOrderInternal(order);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#saveRevisedOrder(org.openmrs.Order)
+	 */
+	public Order saveRevisedOrder(Order order) throws APIException {
+		
+		Order existingOrder = getOrder(order.getOrderId());
+		if (existingOrder == null) {
+			throw new APIException("No order with the given id.");
+		}
+		
+		if (OrderUtil.isOrderActive(existingOrder, null)) {
+			markAsRevised(existingOrder, new Date());
+			saveOrderInternal(existingOrder);
+		} else {
+			throw new APIException("Cannot revise an inactive order.");
+		}
+		
+		Order revised = order.copy();
+		revised.setAction(Order.Action.REVISE);
+		revised.setPreviousOrder(existingOrder);
+		
+		return saveOrderInternal(revised);
+	}
+	
+	/**
+	 * Make necessary checks, set necessary fields for discontinuing <code>orderToDiscontinue</code>
+	 * and save.
+	 *
+	 
+	 * @param revisionDate
+	 */
+	private void markAsRevised(Order orderToRevise, Date revisionDate) {
+		orderToRevise.setDateStopped(revisionDate);
+	}
+	
 	private Order saveOrderInternal(Order order) {
 		//TODO call module registered order number generators
 		//and if there is none, use the default below
@@ -226,7 +261,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Transactional(readOnly = true)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	                                               List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
 		if (orderClassType == null)
 			throw new APIException(
 			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
