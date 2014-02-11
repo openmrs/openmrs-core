@@ -36,21 +36,24 @@ import org.openmrs.util.SystemClock;
 public class AutoCloseVisitsTask extends AbstractTask {
 	
 	private static final Log log = LogFactory.getLog(AutoCloseVisitsTask.class);
-    private AdministrationService administrationService;
-    private VisitService visitService;
-    private Clock clock;
-
-    public AutoCloseVisitsTask(AdministrationService administrationService, VisitService visitService, Clock clock) {
-        this.administrationService = administrationService;
-        this.visitService = visitService;
-        this.clock = clock;
-    }
-
-    public AutoCloseVisitsTask() {
-        this(Context.getAdministrationService(), Context.getVisitService(), new SystemClock());
-    }
-
-    /**
+	
+	private AdministrationService administrationService;
+	
+	private VisitService visitService;
+	
+	private Clock clock;
+	
+	public AutoCloseVisitsTask(AdministrationService administrationService, VisitService visitService, Clock clock) {
+		this.administrationService = administrationService;
+		this.visitService = visitService;
+		this.clock = clock;
+	}
+	
+	public AutoCloseVisitsTask() {
+		this(Context.getAdministrationService(), Context.getVisitService(), new SystemClock());
+	}
+	
+	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
 	@Override
@@ -61,9 +64,11 @@ public class AutoCloseVisitsTask extends AbstractTask {
 			
 			startExecuting();
 			try {
-                String minimumNumberOfDaysProperty = administrationService.getGlobalProperty(OpenmrsConstants.GP_VISIT_AUTO_CLOSE_MINIMUM_NUMBER_OF_DAYS);
-                Integer minimumNumberOfDays = NumberUtils.toInt(minimumNumberOfDaysProperty, OpenmrsConstants.GP_VISIT_AUTO_CLOSE_MINIMUM_NUMBER_OF_DAYS_DEFAULT_VALUE);
-                visitService.stopVisits(DateUtils.addDays(clock.getCurrentTime(), -1 * minimumNumberOfDays));
+				String minimumNumberOfDaysProperty = administrationService
+				        .getGlobalProperty(OpenmrsConstants.GP_VISIT_AUTO_CLOSE_MINIMUM_NUMBER_OF_DAYS);
+				Integer minimumNumberOfDays = NumberUtils.toInt(minimumNumberOfDaysProperty,
+				    OpenmrsConstants.GP_VISIT_AUTO_CLOSE_MINIMUM_NUMBER_OF_DAYS_DEFAULT_VALUE);
+				visitService.stopVisits(DateUtils.addDays(clock.getCurrentTime(), -1 * minimumNumberOfDays));
 			}
 			catch (Exception e) {
 				log.error("Error while auto closing visits:", e);

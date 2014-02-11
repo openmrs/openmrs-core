@@ -15,9 +15,20 @@ package org.openmrs.util;
 
 import java.util.Date;
 
+/**
+ * Default implementation of Clock which will be used in application code.
+ */
 public class SystemClock implements Clock {
-    @Override
-    public Date getCurrentTime() {
-        return new Date();
-    }
+	
+	/**
+	 * Get current time.
+	 *
+	 * @return <code>Date</code> object representing the current time.
+	 *
+	 * @see java.util.Date#Date()
+	 */
+	@Override
+	public Date getCurrentTime() {
+		return new Date();
+	}
 }

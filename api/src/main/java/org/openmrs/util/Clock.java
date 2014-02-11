@@ -15,6 +15,17 @@ package org.openmrs.util;
 
 import java.util.Date;
 
+/**
+ * Facilitates unit testing the application logic depending on current time.
+ * Default implementation returning <code>new Date()</code> will be used in application code.
+ * FakeClock or stubbed clock instance will be used in unit tests.
+ */
 public interface Clock {
-    Date getCurrentTime();
+	
+	/**
+	 * Get current time.
+	 *
+	 * @return <code>Date</code> representing the current time
+	 */
+	Date getCurrentTime();
 }
