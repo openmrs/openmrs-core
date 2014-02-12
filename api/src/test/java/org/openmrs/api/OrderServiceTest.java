@@ -40,6 +40,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
+import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
@@ -286,6 +287,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderFrequency_shouldReturnTheOrderFrequencyThatMatchedTheSpecifiedUuid() throws Exception {
 		Assert.assertEquals(1, Context.getOrderService().getOrderFrequencyByUuid("28090760-7c38-11e3-baa7-0800200c9a66")
 		        .getOrderFrequencyId().intValue());
+	}
+	
+	/**
+	 * @verifies return the order frequency that matched the specified uuid
+	 * @see OrderService#getOrderFrequencyByUuid(String)
+	 */
+	@Test
+	public void getOrderFrequency_shouldReturnAllActiveOrderFrequencies() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-getAllOrderFrequencies.xml");
+		List<OrderFrequency> orderFrequencies = Context.getOrderService().getOrderFrequencies();
+		Assert.assertEquals(2, orderFrequencies.size());
+		Assert.assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(0).getUuid());
+		Assert.assertEquals("38090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(1).getUuid());
 	}
 	
 	/**
