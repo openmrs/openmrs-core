@@ -2701,13 +2701,28 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get a list of non retired drug mappings with given code and concept source and
-	 *           conceptmapTypes
-	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 * @verifies get a list of all drugs that match on all the parameter values
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
 	 */
 	@Test
-	public void getDrugsByMapping_shouldGetAListOfNonRetiredDrugMappingsWithGivenCodeAndConceptSourceAndConceptmapTypes()
-	        throws Exception {
+	public void getDrugsByMapping_shouldGetAListOfAllDrugsThatMatchOnAllTheParameterValues() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = new ArrayList<ConceptMapType>();
+		conceptMapTypeList.add(conceptService.getConceptMapType(1));
+		ConceptSource source = conceptService.getConceptSource(1);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", source, conceptMapTypeList, false);
+		assertEquals(1, drugs.size());
+		assertTrue(containsId(drugs, 2));
+	}
+	
+	/**
+	 * @verifies exclude duplicate matches
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldExcludeDuplicateMatches() throws Exception {
 		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
 		//the expected matching drug has two mappings to different concept sources but same code
@@ -2718,11 +2733,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return retired and non-retired drugs
-	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 * @verifies return retired and non-retired drugs if includeRetired is set to true
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
 	 */
 	@Test
-	public void getDrugsByMapping_shouldReturnRetiredAndNonretiredDrugs() throws Exception {
+	public void getDrugsByMapping_shouldReturnRetiredAndNonretiredDrugsIfIncludeRetiredIsSetToTrue() throws Exception {
 		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
 		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", conceptService.getConceptSource(1),
@@ -2838,9 +2854,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getDrugByMapping_shouldReturnNullIfNoMatchFound() throws Exception {
 		executeDataSet(GET_DRUG_MAPPINGS);
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
-		Drug drugs = conceptService.getDrugByMapping("random code", conceptService.getConceptSource(1), conceptMapTypeList,
+		Drug drug = conceptService.getDrugByMapping("random code", conceptService.getConceptSource(1), conceptMapTypeList,
 		    false);
-		assertNull(drugs);
+		assertNull(drug);
 	}
 	
 	/**

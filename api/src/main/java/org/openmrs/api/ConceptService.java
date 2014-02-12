@@ -2067,21 +2067,21 @@ public interface ConceptService extends OpenmrsService {
 	 * Fetches all drugs with reference mappings to the specified concept source that match the
 	 * specified code and concept map types
 	 * 
-	 * @param code the code
-	 * @param conceptSource
-	 * @param withAnyOfTheseTypes
-	 * @param includeRetired
+	 * @param code the code the reference term code to match on
+	 * @param conceptSource the concept source on which to match on
+	 * @param withAnyOfTheseTypes the ConceptMapTypes to match on
+	 * @param includeRetired specifies if retired drugs should be included or not
 	 * @since 1.10
 	 * @return the list of {@link Drug}
 	 * @throws APIException
-	 * @should get a list of non retired drug mappings with given code and concept source and
-	 *         conceptmapTypes
-	 * @should return retired and non-retired drugs
+	 * @should get a list of all drugs that match on all the parameter values
+	 * @should return retired and non-retired drugs if includeRetired is set to true
 	 * @should return empty list if no matches are found
 	 * @should match on the code
 	 * @should match on the concept source
 	 * @should match on the map types
 	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
+	 * @should exclude duplicate matches
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
@@ -2093,10 +2093,10 @@ public interface ConceptService extends OpenmrsService {
 	 * getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan)) If there are multiple
 	 * matches for the highest-priority ConceptMapType, throw an exception
 	 * 
-	 * @param code
-	 * @param conceptSource
-	 * @param withAnyOfTheseTypesOrOrderOfPreference
-	 * @param includeRetired
+	 * @param code the code the reference term code to match on
+	 * @param conceptSource the concept source to match on
+	 * @param withAnyOfTheseTypesOrOrderOfPreference the ConceptMapTypes to match on
+	 * @param includeRetired specifies if a retired drug should be returned as a match
 	 * @since 1.10
 	 * @return the {@link Drug}
 	 * @throws APIException

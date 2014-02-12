@@ -2136,7 +2136,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (conceptSource != null) {
 			searchCriteria.add(Restrictions.eq("term.conceptSource", conceptSource));
 		}
-		//check whether retired on not retired drugs
+		//check whether retired or not retired drugs
 		if (!includeRetired) {
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		}
