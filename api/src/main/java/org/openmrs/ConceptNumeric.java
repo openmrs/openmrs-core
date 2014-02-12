@@ -43,7 +43,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	private String units;
 	
-	private Boolean precise = false;
+	private Boolean allowDecimal = false;
 	
 	/**
 	 * displayPrecision, represents the number of significant digits
@@ -126,7 +126,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.lowCritical = null;
 		this.lowNormal = null;
 		this.units = "";
-		this.precise = false;
+		this.allowDecimal = false;
 	}
 	
 	// Property accessors
@@ -223,17 +223,17 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 	
 	public Boolean isPrecise() {
-		return (precise == null ? false : precise);
+		return (allowDecimal == null ? false : allowDecimal);
 	}
 	
 	@Attribute
 	public Boolean getPrecise() {
-		return isPrecise();
+		return getAllowDecimal();
 	}
 	
 	@Attribute
 	public void setPrecise(Boolean precise) {
-		this.precise = precise;
+		setAllowDecimal(precise);
 	}
 	
 	/**
@@ -259,5 +259,15 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	 */
 	public void setDisplayPrecision(Integer displayPrecision) {
 		this.displayPrecision = displayPrecision;
+	}
+	
+	@Attribute
+	public Boolean getAllowDecimal() {
+		return isPrecise();
+	}
+	
+	@Attribute
+	public void setAllowDecimal(Boolean allowDecimal) {
+		this.allowDecimal = allowDecimal;
 	}
 }
