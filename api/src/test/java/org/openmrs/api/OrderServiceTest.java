@@ -753,60 +753,74 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldReviseDrugOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseActiveOrders.xml");
-		DrugOrder order = getOrder(16);
+		Order order = orderService.getOrder(16);
 		
-		order.setDose((double) 200);
-		order.setDoseUnits(conceptService.getConcept(51));
-		order.setFrequency(orderService.getOrderFrequency(2));
-		order.setAsNeeded(false);
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
-		order.setDateCreated(new Date());
-		order.setDuration((double) 10);
-		order.setAutoExpireDate(dateAfterDays(10));
+		DrugOrder orderWithRevision = (DrugOrder) order.cloneForRevision();
+		orderWithRevision.setDose((double) 200);
+		orderWithRevision.setDoseUnits(conceptService.getConcept(51));
+		orderWithRevision.setFrequency(orderService.getOrderFrequency(2));
+		orderWithRevision.setAsNeeded(false);
+		orderWithRevision.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		orderWithRevision.setDateCreated(new Date());
+		orderWithRevision.setDuration((double) 10);
+		orderWithRevision.setAutoExpireDate(dateAfterDays(10));
 		
-		Integer revisedOrderId = orderService.saveRevisedOrder(order).getOrderId();
-		DrugOrder revisedOrder = (DrugOrder) orderService.getOrder(revisedOrderId);
+		Integer revisedOrderId = orderService.saveRevisedOrder(orderWithRevision).getOrderId();
+		DrugOrder savedRevisedOrder = (DrugOrder) orderService.getOrder(revisedOrderId);
 		
-		assertEquals(new Integer(16), revisedOrder.getPreviousOrder().getOrderId());
-		assertNotNull(revisedOrder.getPreviousOrder().getDateStopped());
-		assertEquals(Action.REVISE, revisedOrder.getAction());
-		assertEquals(new Double(200), revisedOrder.getDose());
-		assertEquals(new Integer(51), revisedOrder.getDoseUnits().getConceptId());
-		assertFalse(revisedOrder.getAsNeeded());
-		assertEquals(DrugOrder.DosingType.FREE_TEXT, revisedOrder.getDosingType());
+		assertEquals(new Integer(16), savedRevisedOrder.getPreviousOrder().getOrderId());
+		assertEquals(new Date().toString(), savedRevisedOrder.getPreviousOrder().getDateStopped().toString());
+		assertEquals(Action.REVISE, savedRevisedOrder.getAction());
+		assertEquals(new Double(200), savedRevisedOrder.getDose());
+		assertEquals(new Integer(51), savedRevisedOrder.getDoseUnits().getConceptId());
+		assertFalse(savedRevisedOrder.getAsNeeded());
+		assertEquals(DrugOrder.DosingType.FREE_TEXT, savedRevisedOrder.getDosingType());
 		
-		assertNotEquals(order.getOrderNumber(), revisedOrder.getOrderNumber());
-	}
-	
-	private DrugOrder getOrder(int orderId) {
-		Order order = orderService.getOrder(orderId);
-		DrugOrder copy = (DrugOrder) order.copy();
-		copy.setOrderId(orderId);
-		copy.setUuid(order.getUuid());
-		return copy;
+		assertNotEquals(order.getOrderNumber(), savedRevisedOrder.getOrderNumber());
 	}
 	
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
 	
 	/**
+	 * @verifies not allow revisions for an inactive order
 	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
 	 */
 	@Test
-	public void saveOrder_shouldNotReviseToAnInActiveDrugOrder() throws Exception {
+	public void saveOrder_shouldNotReviseAnInActiveOrder() throws Exception {
 		
 		expectedEx.expect(APIException.class);
 		expectedEx.expectMessage("Cannot revise an inactive order.");
 		
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseInActiveOrders.xml");
-		DrugOrder order = getOrder(6);
+		DrugOrder order = (DrugOrder) orderService.getOrder(6);
 		
+		DrugOrder orderWithRevision = (DrugOrder) order.cloneForRevision();
+		orderWithRevision.setDose((double) 200);
+		orderWithRevision.setDoseUnits(conceptService.getConcept(51));
+		orderWithRevision.setFrequency(orderService.getOrderFrequency(2));
+		orderWithRevision.setAsNeeded(false);
+		orderWithRevision.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		
+		orderWithRevision.setDateCreated(new Date());
+		orderWithRevision.setDuration((double) 10);
+		orderWithRevision.setAutoExpireDate(dateAfterDays(10));
+		
+		orderService.saveRevisedOrder(orderWithRevision);
+	}
+	
+	/**
+	 * @verifies not allow revisions for an order with no previous order
+	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void saveOrder_shouldNotReviseOrderWithNoPreviousOrder() throws Exception {
+		expectedEx.expect(APIException.class);
+		expectedEx.expectMessage("Previous order cannot be null");
+		
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseActiveOrders.xml");
+		DrugOrder order = (DrugOrder) orderService.getOrder(16);
 		order.setDose((double) 200);
-		order.setDoseUnits(conceptService.getConcept(51));
-		order.setFrequency(orderService.getOrderFrequency(2));
-		order.setAsNeeded(false);
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
-		
 		order.setDateCreated(new Date());
 		order.setDuration((double) 10);
 		order.setAutoExpireDate(dateAfterDays(10));

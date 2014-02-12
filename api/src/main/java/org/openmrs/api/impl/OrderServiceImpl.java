@@ -83,25 +83,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#saveRevisedOrder(org.openmrs.Order)
 	 */
-	public Order saveRevisedOrder(Order order) throws APIException {
+	public Order saveRevisedOrder(Order revisedOrder) throws APIException {
 		
-		Order existingOrder = getOrder(order.getOrderId());
-		if (existingOrder == null) {
-			throw new APIException("No order with the given id.");
+		Order previousOrder = revisedOrder.getPreviousOrder();
+		if (previousOrder == null) {
+			throw new APIException("Previous order cannot be null");
 		}
 		
-		if (OrderUtil.isOrderActive(existingOrder, null)) {
-			markAsRevised(existingOrder, new Date());
-			saveOrderInternal(existingOrder);
+		if (OrderUtil.isOrderActive(previousOrder, null)) {
+			markAsRevised(previousOrder, new Date());
 		} else {
 			throw new APIException("Cannot revise an inactive order.");
 		}
 		
-		Order revised = order.copy();
-		revised.setAction(Order.Action.REVISE);
-		revised.setPreviousOrder(existingOrder);
-		
-		return saveOrderInternal(revised);
+		return saveOrderInternal(revisedOrder);
 	}
 	
 	/**
