@@ -277,4 +277,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
 		return (OrderFrequency) sessionFactory.getCurrentSession().get(OrderFrequency.class, orderFrequencyId);
 	}
+	
+	@Override
+	public OrderFrequency getOrderFrequencyByUuid(String uuid) {
+		return (OrderFrequency) sessionFactory.getCurrentSession().createQuery("from OrderFrequency o where o.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
 }
