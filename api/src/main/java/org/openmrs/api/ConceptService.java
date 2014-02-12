@@ -1435,6 +1435,12 @@ public interface ConceptService extends OpenmrsService {
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
 	        throws APIException;
 	
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Concept> getConceptsList(String phrase, List<Locale> locales, boolean includeRetired,
+        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+        throws APIException;	
+
 	/**
 	 * Finds concepts that are possible value coded answers to concept parameter
 	 * 

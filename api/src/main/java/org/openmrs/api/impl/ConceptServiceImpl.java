@@ -1947,6 +1947,28 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		
 	}
 	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Concept> getConceptsList(String phrase, List<Locale> locales, boolean includeRetired,
+        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+        throws APIException
+        {
+		if (requireClasses == null)
+			requireClasses = new Vector<ConceptClass>();
+		if (excludeClasses == null)
+			excludeClasses = new Vector<ConceptClass>();
+		if (requireDatatypes == null)
+			requireDatatypes = new Vector<ConceptDatatype>();
+		if (excludeDatatypes == null)
+			excludeDatatypes = new Vector<ConceptDatatype>();
+		
+		return dao.getConceptsList(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
+		    excludeDatatypes, answersToConcept, start, size);
+		
+		
+        }
+
 	/**
 	 * @see ConceptService#updateConceptIndexes(Integer, Integer)
 	 */

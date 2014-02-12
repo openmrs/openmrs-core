@@ -1561,6 +1561,25 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return results;
 	}
 	
+	@Override
+    public List<Concept> getConceptsList(String phrase, List<Locale> locales, boolean includeRetired,
+       List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+       List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+       throws DAOException {
+		
+		List<Concept> res = new Vector<Concept>();
+		Concept c = Context.getConceptService().getConcept(phrase);
+		res.add(c);
+		List<ConceptSearchResult> results = new Vector<ConceptSearchResult>();
+		results=getConcepts(phrase,locales,includeRetired,requireClasses,excludeClasses,requireDatatypes,
+	        excludeDatatypes,answersToConcept,start,size);
+		for (ConceptSearchResult cs : results) {
+			res.add(cs.getConcept());
+		}
+		return res;
+	}
+
+	
 	/**
 	 * @see ConceptDAO#weighConceptWord(ConceptWord)
 	 */

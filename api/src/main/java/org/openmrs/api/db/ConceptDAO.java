@@ -119,6 +119,11 @@ public interface ConceptDAO {
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
 	        throws DAOException;
 	
+	public List<Concept> getConceptsList(String phrase, List<Locale> locales, boolean includeRetired,
+        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+        throws DAOException;	
+
 	/**
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
 	 *      Integer, Integer)
