@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -29,7 +30,9 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
@@ -37,6 +40,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
+import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
@@ -50,6 +54,8 @@ import org.openmrs.util.PrivilegeConstants;
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
+	private ConceptService conceptService;
+	
 	private OrderService orderService;
 	
 	private PatientService patientService;
@@ -61,6 +67,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		}
 		if (patientService == null) {
 			patientService = Context.getPatientService();
+		}
+		
+		if (conceptService == null) {
+			conceptService = Context.getConceptService();
 		}
 	}
 	
@@ -265,6 +275,29 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert
 		        .assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", Context.getOrderService().getOrderFrequency(1)
 		                .getUuid());
+	}
+	
+	/**
+	 * @verifies return the order frequency that matched the specified uuid
+	 * @see OrderService#getOrderFrequencyByUuid(String) 
+	 */
+	@Test
+	public void getOrderFrequency_shouldReturnTheOrderFrequencyThatMatchedTheSpecifiedUuid() throws Exception {
+		Assert.assertEquals(1, Context.getOrderService().getOrderFrequencyByUuid("28090760-7c38-11e3-baa7-0800200c9a66")
+		        .getOrderFrequencyId().intValue());
+	}
+	
+	/**
+	 * @verifies return the order frequency that matched the specified uuid
+	 * @see OrderService#getOrderFrequencyByUuid(String)
+	 */
+	@Test
+	public void getOrderFrequency_shouldReturnAllActiveOrderFrequencies() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-getAllOrderFrequencies.xml");
+		List<OrderFrequency> orderFrequencies = Context.getOrderService().getOrderFrequencies();
+		Assert.assertEquals(2, orderFrequencies.size());
+		Assert.assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(0).getUuid());
+		Assert.assertEquals("38090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(1).getUuid());
 	}
 	
 	/**
@@ -687,4 +720,93 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		final DrugOrder order = (DrugOrder) orderService.getOrder(5);
 		orderService.saveOrder(order);
 	}
+	
+	/**
+	 * @see OrderService#saveRevisedOrder(org.openmrs.Order) (org.openmrs.Order)
+	 */
+	@Test
+	public void saveOrder_shouldReviseDrugOrder() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseActiveOrders.xml");
+		Order order = orderService.getOrder(16);
+		
+		DrugOrder orderWithRevision = (DrugOrder) order.cloneForRevision();
+		orderWithRevision.setDose((double) 200);
+		orderWithRevision.setDoseUnits(conceptService.getConcept(51));
+		orderWithRevision.setFrequency(orderService.getOrderFrequency(2));
+		orderWithRevision.setAsNeeded(false);
+		orderWithRevision.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		orderWithRevision.setDateCreated(new Date());
+		orderWithRevision.setDuration((double) 10);
+		orderWithRevision.setAutoExpireDate(dateAfterDays(10));
+		
+		Integer revisedOrderId = orderService.saveRevisedOrder(orderWithRevision).getOrderId();
+		DrugOrder savedRevisedOrder = (DrugOrder) orderService.getOrder(revisedOrderId);
+		
+		assertEquals(new Integer(16), savedRevisedOrder.getPreviousOrder().getOrderId());
+		assertEquals(new Date().toString(), savedRevisedOrder.getPreviousOrder().getDateStopped().toString());
+		assertEquals(Action.REVISE, savedRevisedOrder.getAction());
+		assertEquals(new Double(200), savedRevisedOrder.getDose());
+		assertEquals(new Integer(51), savedRevisedOrder.getDoseUnits().getConceptId());
+		assertFalse(savedRevisedOrder.getAsNeeded());
+		assertEquals(DrugOrder.DosingType.FREE_TEXT, savedRevisedOrder.getDosingType());
+		
+		assertNotEquals(order.getOrderNumber(), savedRevisedOrder.getOrderNumber());
+	}
+	
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
+	
+	/**
+	 * @verifies not allow revisions for an inactive order
+	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void saveOrder_shouldNotReviseAnInActiveOrder() throws Exception {
+		
+		expectedEx.expect(APIException.class);
+		expectedEx.expectMessage("Cannot revise an inactive order.");
+		
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseInActiveOrders.xml");
+		DrugOrder order = (DrugOrder) orderService.getOrder(6);
+		
+		DrugOrder orderWithRevision = (DrugOrder) order.cloneForRevision();
+		orderWithRevision.setDose((double) 200);
+		orderWithRevision.setDoseUnits(conceptService.getConcept(51));
+		orderWithRevision.setFrequency(orderService.getOrderFrequency(2));
+		orderWithRevision.setAsNeeded(false);
+		orderWithRevision.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		
+		orderWithRevision.setDateCreated(new Date());
+		orderWithRevision.setDuration((double) 10);
+		orderWithRevision.setAutoExpireDate(dateAfterDays(10));
+		
+		orderService.saveRevisedOrder(orderWithRevision);
+	}
+	
+	/**
+	 * @verifies not allow revisions for an order with no previous order
+	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void saveOrder_shouldNotReviseOrderWithNoPreviousOrder() throws Exception {
+		expectedEx.expect(APIException.class);
+		expectedEx.expectMessage("Previous order cannot be null");
+		
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseActiveOrders.xml");
+		DrugOrder order = (DrugOrder) orderService.getOrder(16);
+		order.setDose((double) 200);
+		order.setDateCreated(new Date());
+		order.setDuration((double) 10);
+		order.setAutoExpireDate(dateAfterDays(10));
+		
+		orderService.saveRevisedOrder(order);
+	}
+	
+	private Date dateAfterDays(int days) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		c.add(Calendar.DATE, days);
+		return c.getTime();
+	}
+	
 }

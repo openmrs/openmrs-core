@@ -141,4 +141,29 @@ public class TestOrder extends Order {
 	public void setNumberOfRepeats(Integer numberOfRepeats) {
 		this.numberOfRepeats = numberOfRepeats;
 	}
+	
+	/**
+	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and other test order fields.
+	 *
+	 * @return the newly created order
+	 * @since 1.10
+	 * @should set all the relevant fields
+	 */
+	@Override
+	public Order cloneForRevision() {
+		TestOrder newOrder = new TestOrder();
+		newOrder.setCareSetting(this.getCareSetting());
+		newOrder.setConcept(this.getConcept());
+		newOrder.setAction(Action.REVISE);
+		newOrder.setPreviousOrder(this);
+		newOrder.setPatient(this.getPatient());
+		
+		newOrder.setSpecimenSource(getSpecimenSource());
+		newOrder.setLaterality(getLaterality());
+		newOrder.setClinicalHistory(getClinicalHistory());
+		newOrder.setFrequency(getFrequency());
+		newOrder.setNumberOfRepeats(getNumberOfRepeats());
+		return newOrder;
+		
+	}
 }
