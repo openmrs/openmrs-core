@@ -383,6 +383,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
+	 * @see OrderService#getOrderFrequencies
+	 */
+	@Override
+	public List<OrderFrequency> getOrderFrequencies() {
+		return dao.getOrderFrequencies(false);
+	}
+	
+	/**
 	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
 	 *      java.util.Date)
 	 */
