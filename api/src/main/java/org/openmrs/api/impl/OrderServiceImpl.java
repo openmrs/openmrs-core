@@ -405,6 +405,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
+	 * @see OrderService#getOrderFrequencyByUuid(String)
+	 */
+	@Override
+	public OrderFrequency getOrderFrequencyByUuid(String uuid) {
+		return dao.getOrderFrequencyByUuid(uuid);
+	}
+	
+	/**
 	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
 	 *      java.util.Date)
 	 */

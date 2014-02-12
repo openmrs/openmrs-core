@@ -294,6 +294,16 @@ public interface OrderService extends OpenmrsService {
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
 	
 	/**
+	 * Gets OrderFrequenecy that matches the specified uuid
+	 *
+	 * @param uuid the uuid to match against
+	 * @return OrderFrequency
+	 * @since 1.10
+	 * @should return the order frequency that matched the specified id
+	 */
+	public OrderFrequency getOrderFrequencyByUuid(String uuid);
+	
+	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue
 	 * 
 	 * @param orderToDiscontinue

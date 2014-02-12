@@ -278,6 +278,16 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies return the order frequency that matched the specified uuid
+	 * @see OrderService#getOrderFrequencyByUuid(String) 
+	 */
+	@Test
+	public void getOrderFrequency_shouldReturnTheOrderFrequencyThatMatchedTheSpecifiedUuid() throws Exception {
+		Assert.assertEquals(1, Context.getOrderService().getOrderFrequencyByUuid("28090760-7c38-11e3-baa7-0800200c9a66")
+		        .getOrderFrequencyId().intValue());
+	}
+	
+	/**
 	 * @verifies return all active orders for the specified patient
 	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
 	 *      java.util.Date)
