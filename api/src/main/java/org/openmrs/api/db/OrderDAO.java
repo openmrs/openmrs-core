@@ -125,4 +125,8 @@ public interface OrderDAO {
 	 */
 	public OrderFrequency getOrderFrequencyByUuid(String uuid);
 	
+	/**
+	 * @See OrderService#getOrderFrequencies
+	 */
+	List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
 }

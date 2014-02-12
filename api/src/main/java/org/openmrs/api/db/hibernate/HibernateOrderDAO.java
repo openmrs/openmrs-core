@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptMapType;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
@@ -37,6 +39,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -278,9 +281,23 @@ public class HibernateOrderDAO implements OrderDAO {
 		return (OrderFrequency) sessionFactory.getCurrentSession().get(OrderFrequency.class, orderFrequencyId);
 	}
 	
+	/**
+	 * @See OrderDAO#getOrderFrequencyByUuid
+	 */
 	@Override
 	public OrderFrequency getOrderFrequencyByUuid(String uuid) {
 		return (OrderFrequency) sessionFactory.getCurrentSession().createQuery("from OrderFrequency o where o.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @See OrderDAO#getOrderFrequencies
+	 */
+	@Override
+	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderFrequency.class);
+		if (!includeRetired)
+			criteria.add(Restrictions.eq("retired", false));
+		return criteria.list();
 	}
 }
