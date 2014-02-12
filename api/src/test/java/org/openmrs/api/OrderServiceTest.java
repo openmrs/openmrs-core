@@ -38,6 +38,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
+import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
@@ -266,6 +267,43 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert
 		        .assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", Context.getOrderService().getOrderFrequency(1)
 		                .getUuid());
+	}
+	
+	/**
+	 * @verifies return the order frequency that matched the specified uuid
+	 * @see OrderService#getOrderFrequencyByUuid(String) 
+	 */
+	@Test
+	public void getOrderFrequency_shouldReturnTheOrderFrequencyThatMatchedTheSpecifiedUuid() throws Exception {
+		Assert.assertEquals(1, Context.getOrderService().getOrderFrequencyByUuid("28090760-7c38-11e3-baa7-0800200c9a66")
+		        .getOrderFrequencyId().intValue());
+	}
+	
+	/**
+	 * @verifies return all active order frequencies
+	 * @see OrderService#getOrderFrequencyByUuid(String)
+	 */
+	@Test
+	public void getOrderFrequencies_shouldReturnAllActiveOrderFrequencies() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-getAllOrderFrequencies.xml");
+		List<OrderFrequency> orderFrequencies = Context.getOrderService().getOrderFrequencies(false);
+		Assert.assertEquals(2, orderFrequencies.size());
+		Assert.assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(0).getUuid());
+		Assert.assertEquals("38090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(1).getUuid());
+	}
+	
+	/**
+	 * @verifies return all order frequencies. should include retired as well.
+	 * @see OrderService#getOrderFrequencyByUuid(String)
+	 */
+	@Test
+	public void getOrderFrequencies_shouldReturnAllOrderFrequenciesIncludingRetired() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-getAllOrderFrequencies.xml");
+		List<OrderFrequency> orderFrequencies = Context.getOrderService().getOrderFrequencies(true);
+		Assert.assertEquals(3, orderFrequencies.size());
+		Assert.assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(0).getUuid());
+		Assert.assertEquals("38090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(1).getUuid());
+		Assert.assertEquals("48090760-7c38-11e3-baa7-0800200c9a66", orderFrequencies.get(2).getUuid());
 	}
 	
 	/**
