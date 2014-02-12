@@ -430,6 +430,41 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		return newOrder;
 	}
 	
+	/**
+	 * Creates a DrugOrder for revision from this order, sets the previousOrder, action field and other drug order fields.
+	 *
+	 * @return the newly created order
+	 * @since 1.10
+	 * @should set all the relevant fields
+	 */
+	@Override
+	public Order cloneForRevision() {
+		DrugOrder newOrder = new DrugOrder();
+		newOrder.setCareSetting(this.getCareSetting());
+		newOrder.setConcept(this.getConcept());
+		newOrder.setAction(Action.REVISE);
+		newOrder.setPreviousOrder(this);
+		newOrder.setPatient(this.getPatient());
+		newOrder.setInstructions(this.getInstructions());
+		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
+		newOrder.setOrderReason(this.getOrderReason());
+		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
+		newOrder.setDose(this.getDose());
+		newOrder.setDoseUnits(this.getDoseUnits());
+		newOrder.setFrequency(this.getFrequency());
+		newOrder.setAsNeeded(this.getAsNeeded());
+		newOrder.setAsNeededCondition(this.getAsNeededCondition());
+		newOrder.setQuantity(this.getQuantity());
+		newOrder.setQuantityUnits(this.getQuantityUnits());
+		newOrder.setDrug(this.getDrug());
+		newOrder.setDosingType(this.getDosingType());
+		newOrder.setDosingInstructions(this.getDosingInstructions());
+		newOrder.setDuration(this.getDuration());
+		newOrder.setDurationUnits(this.getDurationUnits());
+		newOrder.setRoute(this.getRoute());
+		return newOrder;
+	}
+	
 	public String toString() {
 		return "DrugOrder(" + getDose() + getDoseUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
 		        + " from " + getStartDate() + " to " + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate())
