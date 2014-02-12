@@ -36,8 +36,6 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	
 	/**
 	 * Get the orderFrequencyId
-	 * 
-	 * @since 1.10
 	 */
 	public Integer getOrderFrequencyId() {
 		return orderFrequencyId;
@@ -54,8 +52,6 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	
 	/**
 	 * Get the frequencyPerDay
-	 * 
-	 * @since 1.10
 	 */
 	public Double getFrequencyPerDay() {
 		return frequencyPerDay;
@@ -67,8 +63,6 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	
 	/**
 	 * Get the uuid
-	 * 
-	 * @since 1.10
 	 */
 	public String getUuid() {
 		return uuid;
@@ -79,7 +73,6 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	}
 	
 	/**
-	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -87,7 +80,6 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	}
 	
 	/**
-	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {
@@ -96,8 +88,6 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	
 	/**
 	 * Get the concept for the drugFrequency
-	 * 
-	 * @since 1.10
 	 */
 	public Concept getConcept() {
 		return concept;
@@ -105,15 +95,35 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	
 	/**
 	 * Sets the concept for the drugFrequency
-	 * 
-	 * @since 1.10
 	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 	
+	/**
+	 * @see BaseOpenmrsMetadata#getDescription()
+	 */
+	@Override
+	public String getName() {
+		if (getConcept() != null || getConcept().getName() != null) {
+			return getConcept().getName().toString();
+		}
+		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
+	 */
+	@Override
+	public String getDescription() {
+		if (getConcept() != null || getConcept().getDescription() != null) {
+			return getConcept().getDescription().getDescription();
+		}
+		return null;
+	}
+	
 	@Override
 	public String toString() {
-		return ((getConcept() == null) ? null : getConcept().getName().toString());
+		return getName();
 	}
 }
