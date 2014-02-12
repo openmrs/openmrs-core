@@ -12,5 +12,4 @@
 
     <order_frequency order_frequency_id="3000" concept_id="1001" creator="1" date_created="2008-08-15 13:52:53.0" retired="0" uuid="38090760-7c38-11e4-baa7-0800200c9a67" />
 
-    <global_property property="order.nextOrderNumberSeed" property_value="1" uuid="7ed7aeb4-0663-11e1-8c99-2b4f0c4f671b" />
 </dataset>
