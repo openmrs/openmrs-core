@@ -101,6 +101,21 @@ public interface OrderDAO {
 	public CareSetting getCareSetting(Integer careSettingId);
 	
 	/**
+	 * @see org.openmrs.api.OrderService#getCareSettingByUuid(String)
+	 */
+	public CareSetting getCareSettingByUuid(String uuid);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getCareSettingByName(String)
+	 */
+	public CareSetting getCareSettingByName(String name);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getCareSettings(boolean)
+	 */
+	public List<CareSetting> getCareSettings(boolean includeRetired);
+	
+	/**
 	 * @See OrderService#getOrderFrequency
 	 */
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);

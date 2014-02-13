@@ -243,6 +243,35 @@ public interface OrderService extends OpenmrsService {
 	public CareSetting getCareSetting(Integer careSettingId);
 	
 	/**
+	 * Gets the CareSetting with the specified uuid
+	 * 
+	 * @param uuid the uuid to match on
+	 * @return CareSetting
+	 * @should return the care setting with the specified uuid
+	 */
+	public CareSetting getCareSettingByUuid(String uuid);
+	
+	/**
+	 * Gets the CareSetting with the specified name
+	 * 
+	 * @param name the name to match on
+	 * @return CareSetting
+	 * @should return the care setting with the specified name
+	 */
+	public CareSetting getCareSettingByName(String name);
+	
+	/**
+	 * Gets all non retired CareSettings if includeRetired is set to true otherwise retired ones are
+	 * included too
+	 * 
+	 * @param includeRetired specifies whether retired care settings should be returned or not
+	 * @return A List of CareSettings
+	 * @should return only un retired care settings if includeRetired is set to false
+	 * @should return retired care settings if includeRetired is set to true
+	 */
+	public List<CareSetting> getCareSettings(boolean includeRetired);
+	
+	/**
 	 * Gets OrderFrequenecy that matches the specified orderFrequencyId
 	 * 
 	 * @param orderFrequencyId the id to match against

@@ -241,6 +241,36 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
+	 * @see OrderDAO#getCareSettingByUuid(String)
+	 */
+	@Override
+	public CareSetting getCareSettingByUuid(String uuid) {
+		return (CareSetting) sessionFactory.getCurrentSession().createQuery("from CareSetting cs where cs.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see OrderDAO#getCareSettingByName(String)
+	 */
+	@Override
+	public CareSetting getCareSettingByName(String name) {
+		return (CareSetting) sessionFactory.getCurrentSession().createCriteria(CareSetting.class).add(
+		    Restrictions.ilike("name", name)).uniqueResult();
+	}
+	
+	/**
+	 * @see OrderDAO#getCareSettings(boolean)
+	 */
+	@Override
+	public List<CareSetting> getCareSettings(boolean includeRetired) {
+		Criteria c = sessionFactory.getCurrentSession().createCriteria(CareSetting.class);
+		if (!includeRetired) {
+			c.add(Restrictions.eq("retired", false));
+		}
+		return c.list();
+	}
+	
+	/**
 	 * @See OrderDAO#getOrderFrequency
 	 */
 	@Override

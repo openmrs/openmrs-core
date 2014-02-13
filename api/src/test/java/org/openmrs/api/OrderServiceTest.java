@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -686,5 +687,54 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldNotAllowEditingAnExistingOrder() throws Exception {
 		final DrugOrder order = (DrugOrder) orderService.getOrder(5);
 		orderService.saveOrder(order);
+	}
+	
+	/**
+	 * @verifies return the care setting with the specified uuid
+	 * @see OrderService#getCareSettingByUuid(String)
+	 */
+	@Test
+	public void getCareSettingByUuid_shouldReturnTheCareSettingWithTheSpecifiedUuid() throws Exception {
+		CareSetting cs = orderService.getCareSettingByUuid("2ed1e57d-9f18-41d3-b067-2eeaf4b30fb1");
+		assertEquals(1, cs.getId().intValue());
+	}
+	
+	/**
+	 * @verifies return the care setting with the specified name
+	 * @see OrderService#getCareSettingByName(String)
+	 */
+	@Test
+	public void getCareSettingByName_shouldReturnTheCareSettingWithTheSpecifiedName() throws Exception {
+		CareSetting cs = orderService.getCareSettingByName("INPATIENT");
+		assertEquals(2, cs.getId().intValue());
+		
+		//should also be case insensitive
+		cs = orderService.getCareSettingByName("inpatient");
+		assertEquals(2, cs.getId().intValue());
+	}
+	
+	/**
+	 * @verifies return only un retired care settings if includeRetired is set to false
+	 * @see OrderService#getCareSettings(boolean)
+	 */
+	@Test
+	public void getCareSettings_shouldReturnOnlyUnRetiredCareSettingsIfIncludeRetiredIsSetToFalse() throws Exception {
+		List<CareSetting> careSettings = orderService.getCareSettings(false);
+		assertEquals(2, careSettings.size());
+		assertTrue(containsId(careSettings, 1));
+		assertTrue(containsId(careSettings, 2));
+	}
+	
+	/**
+	 * @verifies return retired care settings if includeRetired is set to true
+	 * @see OrderService#getCareSettings(boolean)
+	 */
+	@Test
+	public void getCareSettings_shouldReturnRetiredCareSettingsIfIncludeRetiredIsSetToTrue() throws Exception {
+		CareSetting retiredCareSetting = orderService.getCareSetting(3);
+		assertTrue(retiredCareSetting.isRetired());
+		List<CareSetting> careSettings = orderService.getCareSettings(true);
+		assertEquals(3, careSettings.size());
+		assertTrue(containsId(careSettings, retiredCareSetting.getCareSettingId()));
 	}
 }

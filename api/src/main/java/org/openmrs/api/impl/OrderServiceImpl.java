@@ -343,6 +343,30 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
+	 * @see org.openmrs.api.OrderService#getCareSettingByUuid(String)
+	 */
+	@Override
+	public CareSetting getCareSettingByUuid(String uuid) {
+		return dao.getCareSettingByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getCareSettingByName(String)
+	 */
+	@Override
+	public CareSetting getCareSettingByName(String name) {
+		return dao.getCareSettingByName(name);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getCareSettings(boolean)
+	 */
+	@Override
+	public List<CareSetting> getCareSettings(boolean includeRetired) {
+		return dao.getCareSettings(includeRetired);
+	}
+	
+	/**
 	 * @see OrderService#getOrderFrequency(Integer)
 	 */
 	@Override
