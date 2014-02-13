@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
@@ -162,10 +163,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				 * Copied here instead of calling that so that the context is not cached
 				 * and hence not garbage collected
 				 */
-				ApplicationContext parent = loadParentContext(servletContext);
-				WebApplicationContext context = createWebApplicationContext(servletContext, parent);
+				XmlWebApplicationContext context = (XmlWebApplicationContext) createWebApplicationContext(servletContext);
+				configureAndRefreshWebApplicationContext(context, servletContext);
 				servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
-				/** */
 				
 				WebDaemon.startOpenmrs(event.getServletContext());
 			}

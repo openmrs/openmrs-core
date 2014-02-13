@@ -13,8 +13,10 @@
  */
 package org.openmrs.web.test;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -43,5 +45,13 @@ public class TestContextLoader extends AbstractContextLoader {
 	@Override
 	protected String getResourceSuffix() {
 		return "-context.xml";
+	}
+	
+	/**
+	 * @see org.springframework.test.context.SmartContextLoader#loadContext(org.springframework.test.context.MergedContextConfiguration)
+	 */
+	@Override
+	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
+		return null;
 	}
 }
