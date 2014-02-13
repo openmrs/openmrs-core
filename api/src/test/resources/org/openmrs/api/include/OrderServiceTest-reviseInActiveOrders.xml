@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-    <global_property property="order.nextOrderNumberSeed" property_value="1" uuid="1d55827e-26fe-102b-80cb-0017a47879y5"/>
     <orders order_id="6" order_number="6" urgency="ROUTINE" order_action="NEW" concept_id="88" orderer="1" instructions="" 
           start_date="2012-08-19 00:00:00.0" auto_expire_date="2012-08-29 00:00:00.0" creator="1" date_created="2012-01-19 12:24:10.0" 
           voided="false" patient_id="2"

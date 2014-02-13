@@ -61,11 +61,12 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Save or update the given <code>order</code> in the database
 	 *
-	 * @param order the Order to revise
+	 * @param order the revised order
 	 * @return the Order that was saved
 	 * @throws APIException
 	 * @should stop existing order
 	 * @should not allow editing an existing order
+	 * @should not allow revising a discontinued order
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveRevisedOrder(Order order) throws APIException;
