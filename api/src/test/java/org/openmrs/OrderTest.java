@@ -15,12 +15,19 @@ package org.openmrs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
+import org.openmrs.util.Reflect;
 
 /**
  * This class tests all methods that are not getter or setters in the Order java object TODO: finish
@@ -116,5 +123,51 @@ public class OrderTest {
 		    Order.Action.DISCONTINUE);
 		
 		assertEquals(anOrder.getCareSetting(), orderThatCanDiscontinueTheOrder.getCareSetting());
+	}
+	
+	/**
+	 * @verifies copy all fields
+	 * @see Order#copy()
+	 */
+	@Test
+	public void copy_shouldCopyAllFields() throws Exception {
+		assertThatAllFieldsAreCopied(new Order());
+		assertThatAllFieldsAreCopied(new TestOrder());
+	}
+	
+	protected static void assertThatAllFieldsAreCopied(Order original) throws Exception {
+		Collection<?> fieldToExclude = Collections.unmodifiableCollection(Arrays.asList("log", "serialVersionUID",
+		    "orderId", "uuid"));
+		List<Field> fields = Reflect.getAllFields(original.getClass());
+		for (Field field : fields) {
+			if (fieldToExclude.contains(field.getName())) {
+				continue;
+			}
+			field.setAccessible(true);
+			Object fieldValue = null;
+			
+			if (field.getType().isEnum()) {
+				fieldValue = field.getType().getEnumConstants()[0];
+			} else if (field.getType().equals(Boolean.class)) {
+				fieldValue = true;
+			} else if (field.getType().equals(Integer.class)) {
+				fieldValue = 10;
+			} else if (field.getType().equals(Double.class)) {
+				fieldValue = 5.0;
+			} else {
+				fieldValue = field.getType().newInstance();
+			}
+			field.set(original, fieldValue);
+		}
+		
+		Order copy = original.copy();
+		for (Field field : fields) {
+			Object copyValue = field.get(copy);
+			if (fieldToExclude.contains(field.getName())) {
+				continue;
+			}
+			assertNotNull("Order.copy should set " + field.getName() + " on the new Order", copyValue);
+			assertEquals("Order.copy should set " + field.getName() + " on the new Order", field.get(original), copyValue);
+		}
 	}
 }

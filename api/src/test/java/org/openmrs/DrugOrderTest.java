@@ -48,4 +48,13 @@ public class DrugOrderTest {
 		
 		assertEquals(order.getCareSetting(), dcOrder.getCareSetting());
 	}
+	
+	/**
+	 * @verifies copy all drug order fields
+	 * @see DrugOrder#copy()
+	 */
+	@Test
+	public void copy_shouldCopyAllDrugOrderFields() throws Exception {
+		OrderTest.assertThatAllFieldsAreCopied(new DrugOrder());
+	}
 }

@@ -113,6 +113,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * Performs a shallow copy of this Order. Does NOT copy orderId.
 	 * 
 	 * @return a shallow copy of this Order
+	 * @should copy all fields
 	 */
 	public Order copy() {
 		return copyHelper(new Order());
@@ -137,6 +138,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setDateCreated(getDateCreated());
 		target.setDateStopped(getDateStopped());
 		target.setOrderReason(getOrderReason());
+		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		target.setAccessionNumber(getAccessionNumber());
 		target.setVoided(isVoided());
 		target.setVoidedBy(getVoidedBy());
@@ -147,6 +149,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.previousOrder = getPreviousOrder();
 		target.action = getAction();
 		target.orderNumber = getOrderNumber();
+		target.setCareSetting(getCareSetting());
+		target.setChangedBy(getChangedBy());
+		target.setDateChanged(getDateChanged());
 		return target;
 	}
 	

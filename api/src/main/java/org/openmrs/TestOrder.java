@@ -15,9 +15,9 @@
 package org.openmrs;
 
 /**
- * This is a type of order that adds tests specific attributes like: laterality,
- * clinical history, etc.
- *
+ * This is a type of order that adds tests specific attributes like: laterality, clinical history,
+ * etc.
+ * 
  * @since 1.9.2, 1.10
  */
 public class TestOrder extends Order {
@@ -44,13 +44,21 @@ public class TestOrder extends Order {
 	public TestOrder() {
 	}
 	
-	protected Order copyHelper(TestOrder target) {
+	/**
+	 * @see org.openmrs.Order#copy()
+	 * @should copy all test order fields
+	 */
+	public TestOrder copy() {
+		return copyHelper(new TestOrder());
+	}
+	
+	protected TestOrder copyHelper(TestOrder target) {
 		super.copyHelper(target);
-		this.specimenSource = getSpecimenSource();
-		this.laterality = getLaterality();
-		this.clinicalHistory = getClinicalHistory();
-		this.frequency = getFrequency();
-		this.numberOfRepeats = getNumberOfRepeats();
+		target.specimenSource = getSpecimenSource();
+		target.laterality = getLaterality();
+		target.clinicalHistory = getClinicalHistory();
+		target.frequency = getFrequency();
+		target.numberOfRepeats = getNumberOfRepeats();
 		return target;
 	}
 	
@@ -70,7 +78,7 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Gets the laterality.
-	 *
+	 * 
 	 * @return the laterality.
 	 */
 	public Laterality getLaterality() {
@@ -79,7 +87,7 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Sets the laterality.
-	 *
+	 * 
 	 * @param laterality the laterality to set.
 	 */
 	public void setLaterality(Laterality laterality) {
@@ -88,7 +96,7 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Gets the clinical history.
-	 *
+	 * 
 	 * @return the clinical history.
 	 */
 	public String getClinicalHistory() {
@@ -97,7 +105,7 @@ public class TestOrder extends Order {
 	
 	/**
 	 * Sets the clinical history.
-	 *
+	 * 
 	 * @param clinicalHistory the clinical history to set.
 	 */
 	public void setClinicalHistory(String clinicalHistory) {

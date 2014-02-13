@@ -24,6 +24,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * enum dosingType
+	 * 
 	 * @since 1.10
 	 */
 	public enum DosingType {
@@ -75,6 +76,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * @see org.openmrs.Order#copy()
+	 * @should copy all drug order fields
 	 */
 	public DrugOrder copy() {
 		return copyHelper(new DrugOrder());
@@ -97,6 +99,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.dosingInstructions = getDosingInstructions();
 		target.duration = getDuration();
 		target.durationUnits = getDurationUnits();
+		target.setAdministrationInstructions(getAdministrationInstructions());
+		target.setNumRefills(getNumRefills());
 		target.route = getRoute();
 		return target;
 	}
@@ -304,6 +308,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the dosingType
+	 * 
 	 * @since 1.10
 	 */
 	public DosingType getDosingType() {
@@ -312,7 +317,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the dosingType
-	 *
+	 * 
 	 * @param dosingType the DosingType to set
 	 * @since 1.10
 	 */
@@ -322,6 +327,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets numRefills
+	 * 
 	 * @since 1.10
 	 */
 	public Integer getNumRefills() {
@@ -330,7 +336,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets numRefills
-	 *
+	 * 
 	 * @param numRefills the numRefills to set
 	 * @since 1.10
 	 */
@@ -340,6 +346,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the administrationInstructions
+	 * 
 	 * @since 1.10
 	 */
 	public String getAdministrationInstructions() {
@@ -348,7 +355,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the administrationInstructions
-	 *
+	 * 
 	 * @param administrationInstructions to set
 	 * @since 1.10
 	 */
@@ -358,7 +365,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the dosingInstructions
-	 *
+	 * 
 	 * @param dosingInstructions to set
 	 * @since 1.10
 	 */
@@ -368,6 +375,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the dosingInstructions
+	 * 
 	 * @since 1.10
 	 */
 	public String getDosingInstructions() {
