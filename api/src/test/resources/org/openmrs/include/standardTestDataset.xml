@@ -178,6 +178,8 @@
   <concept concept_id="113" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="7e02d1a0-7869-11e3-981f-0800200c9a66"/>
   <concept_name concept_id="113" name="1/day x 7 days/week" concept_name_id="1131" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="83f24a00-7869-11e3-981f-0800200c9a66"/>
   <order_frequency order_frequency_id="1" concept_id="113" creator="1" date_created="2008-08-15 13:52:53.0" retired="false" uuid="28090760-7c38-11e3-baa7-0800200c9a66" />
+  <order_frequency order_frequency_id="2" concept_id="113" creator="1" date_created="2008-08-15 13:52:53.0" retired="false" uuid="38090760-7c38-11e3-baa7-0800200c9a66" />
+  <order_frequency order_frequency_id="3" concept_id="113" creator="1" date_created="2008-08-15 13:52:53.0" retired="true" uuid="48090760-7c38-11e3-baa7-0800200c9a66" />
   <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
   <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
   <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE"/>

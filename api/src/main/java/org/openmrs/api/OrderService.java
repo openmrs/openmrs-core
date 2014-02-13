@@ -272,32 +272,33 @@ public interface OrderService extends OpenmrsService {
 	public List<CareSetting> getCareSettings(boolean includeRetired);
 	
 	/**
-	 * Gets OrderFrequenecy that matches the specified orderFrequencyId
+	 * Gets OrderFrequency that matches the specified orderFrequencyId
 	 * 
 	 * @param orderFrequencyId the id to match against
 	 * @return OrderFrequency
 	 * @since 1.10
-	 * @should return the order frequency that matched the specified id
+	 * @should return the order frequency that matches the specified id
 	 */
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
 	
 	/**
-	 * Gets OrderFrequenecy that matches the specified uuid
-	 *
+	 * Gets OrderFrequency that matches the specified uuid
+	 * 
 	 * @param uuid the uuid to match against
 	 * @return OrderFrequency
 	 * @since 1.10
-	 * @should return the order frequency that matched the specified uuid
+	 * @should return the order frequency that matches the specified uuid
 	 */
 	public OrderFrequency getOrderFrequencyByUuid(String uuid);
 	
 	/**
-	 * Gets OrderFrequency that matches the specified uuid
-	 *
+	 * Gets all order frequencies
+	 * 
 	 * @return List<OrderFrequency>
 	 * @since 1.10
-	 * @should return all the order frequencies
-	 * @param includeRetired
+	 * @param includeRetired specifies whether retired ones should be include or not
+	 * @should return only non retired order frequencies if includeRetired is set to false
+	 * @should return all the order frequencies if includeRetired is set to true
 	 */
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
 	
