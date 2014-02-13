@@ -80,6 +80,34 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return saveOrderInternal(order);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#saveRevisedOrder(org.openmrs.Order)
+	 */
+	public Order saveRevisedOrder(Order revisedOrder) throws APIException {
+		
+		if (!Order.Action.REVISE.equals(revisedOrder.getAction())) {
+			throw new APIException("Action has to be 'REVISE'");
+		}
+		
+		Order previousOrder = revisedOrder.getPreviousOrder();
+		
+		if (previousOrder == null) {
+			throw new APIException("Previous order cannot be null");
+		}
+		
+		if (Order.Action.DISCONTINUE.equals(previousOrder.getAction())) {
+			throw new APIException("Cannot revise a discontinued order");
+		}
+		
+		if (OrderUtil.isOrderActive(previousOrder, null)) {
+			markAsDiscontinued(previousOrder, new Date());
+		} else {
+			throw new APIException("Cannot revise an inactive order.");
+		}
+		
+		return saveOrderInternal(revisedOrder);
+	}
+	
 	private Order saveOrderInternal(Order order) {
 		//TODO call module registered order number generators
 		//and if there is none, use the default below
@@ -372,6 +400,22 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId) {
 		return dao.getOrderFrequency(orderFrequencyId);
+	}
+	
+	/**
+	 * @see OrderService#getOrderFrequencyByUuid(String)
+	 */
+	@Override
+	public OrderFrequency getOrderFrequencyByUuid(String uuid) {
+		return dao.getOrderFrequencyByUuid(uuid);
+	}
+	
+	/**
+	 * @see OrderService#getOrderFrequencies
+	 */
+	@Override
+	public List<OrderFrequency> getOrderFrequencies() {
+		return dao.getOrderFrequencies(false);
 	}
 	
 	/**
