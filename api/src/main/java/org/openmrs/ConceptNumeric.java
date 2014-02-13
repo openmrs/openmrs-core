@@ -222,15 +222,24 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.units = units;
 	}
 	
+	/**
+	 * @deprecated use {@link #isAllowDecimal()}
+	 */
 	public Boolean isPrecise() {
 		return isAllowDecimal();
 	}
 	
+	/**
+	 * @deprecated use {@link #getAllowDecimal()}
+	 */
 	@Attribute
 	public Boolean getPrecise() {
 		return isPrecise();
 	}
 	
+	/**
+	 * @deprecated use {@link #setAllowDecimal(Boolean)}
+	 */
 	@Attribute
 	public void setPrecise(Boolean precise) {
 		setAllowDecimal(precise);
