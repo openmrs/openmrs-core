@@ -297,8 +297,9 @@ public interface OrderService extends OpenmrsService {
 	 * @return List<OrderFrequency>
 	 * @since 1.10
 	 * @should return all the order frequencies
+	 * @param includeRetired
 	 */
-	public List<OrderFrequency> getOrderFrequencies();
+	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
 	
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue

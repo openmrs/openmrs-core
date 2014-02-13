@@ -384,10 +384,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * @see OrderService#getOrderFrequencies
+	 * @param includeRetired
 	 */
 	@Override
-	public List<OrderFrequency> getOrderFrequencies() {
-		return dao.getOrderFrequencies(false);
+	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired) {
+		return dao.getOrderFrequencies(includeRetired);
 	}
 	
 	/**
