@@ -7648,7 +7648,7 @@
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_numeric" columnName="precise"/></not>
 		</preConditions>
-		<comment>Rename concept_numeric.precise to 	concept_numeric.allow_decimal</comment>
+		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
 		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
 	</changeset>
 </databaseChangeLog>
