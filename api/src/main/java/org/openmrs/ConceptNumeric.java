@@ -236,7 +236,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	@Deprecated
 	@Attribute
 	public Boolean getPrecise() {
-		return isPrecise();
+		return getAllowDecimal();
 	}
 	
 	/**
