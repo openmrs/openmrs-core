@@ -136,6 +136,7 @@ public class FieldFormController extends SimpleFormController {
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
+		FormService fs = Context.getFormService();
 		Field field = (Field) obj;
 		Locale locale = Context.getLocale();
 		
@@ -143,7 +144,6 @@ public class FieldFormController extends SimpleFormController {
 		String defaultVerbose = "false";
 		
 		if (Context.isAuthenticated()) {
-			FormService fs = Context.getFormService();
 			//map.put("fieldTypes", es.getFieldTypes());
 			map.put("fieldTypes", fs.getAllFieldTypes());
 			if (field.getConcept() != null) {
@@ -156,32 +156,17 @@ public class FieldFormController extends SimpleFormController {
 		
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
-		Collection<EncounterType> encounterTypes = new ArrayList<EncounterType>(); // 
+		Collection<EncounterType> encounterTypes = new ArrayList<EncounterType>();
 		Collection<FormField> containingAnyFormField = new ArrayList<FormField>();
 		Collection<FormField> containingAllFormFields = new ArrayList<FormField>();
 		Collection<Field> fields = new ArrayList<Field>();
 		fields.add(field); // add the field to the fields collection                                                             
-		FormService fs = Context.getFormService();
+		
 		List<Form> formsReturned = fs.getForms(null, null, encounterTypes, null, containingAnyFormField,
 		    containingAllFormFields, fields); // call getForms method to retrieve forms that contain this particular field
-		/*if (formsReturned == null) {
-			formsReturned = new ArrayList<Form>();
-		}
-		Form f = new Form();
-		f.setName("testststs");
-		f.setVersion("5");
-		f.setBuild(11);
-		f.setDescription("asdfghjkmnbvc");
-		formsReturned.add(f);*/
+		
 		map.put("formList", formsReturned); // add the returned forms to the map
 		
-		/*List<String> country = new ArrayList<String>();
-		country.add(field.getName());
-		country.add("sdfsd");
-		country.add("sdf");
-		country.add("sdfsdzz");
-		map.put("countryList", country);*/
-
 		return map;
 	}
 	

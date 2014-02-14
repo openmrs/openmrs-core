@@ -68,7 +68,7 @@
 <br/>
 <br/>
 <div class="boxHeader">
-	<b>Forms that are bieng used</b>
+	<b><openmrs:message code="Field.formTableTitle" /></b>
 </div>
 <form method="post" class="box">
 	<table cellpadding="2" cellspacing="0" id="formTable" width="98%">
