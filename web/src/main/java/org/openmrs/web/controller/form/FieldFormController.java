@@ -13,7 +13,10 @@
  */
 package org.openmrs.web.controller.form;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,7 +27,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.EncounterType;
 import org.openmrs.Field;
+import org.openmrs.Form;
+import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -150,6 +156,32 @@ public class FieldFormController extends SimpleFormController {
 		
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
+		Collection<EncounterType> encounterTypes = new ArrayList<EncounterType>(); // 
+		Collection<FormField> containingAnyFormField = new ArrayList<FormField>();
+		Collection<FormField> containingAllFormFields = new ArrayList<FormField>();
+		Collection<Field> fields = new ArrayList<Field>();
+		fields.add(field); // add the field to the fields collection                                                             
+		FormService fs = Context.getFormService();
+		List<Form> formsReturned = fs.getForms(null, null, encounterTypes, null, containingAnyFormField,
+		    containingAllFormFields, fields); // call getForms method to retrieve forms that contain this particular field
+		/*if (formsReturned == null) {
+			formsReturned = new ArrayList<Form>();
+		}
+		Form f = new Form();
+		f.setName("testststs");
+		f.setVersion("5");
+		f.setBuild(11);
+		f.setDescription("asdfghjkmnbvc");
+		formsReturned.add(f);*/
+		map.put("formList", formsReturned); // add the returned forms to the map
+		
+		/*List<String> country = new ArrayList<String>();
+		country.add(field.getName());
+		country.add("sdfsd");
+		country.add("sdf");
+		country.add("sdfsdzz");
+		map.put("countryList", country);*/
+
 		return map;
 	}
 	
