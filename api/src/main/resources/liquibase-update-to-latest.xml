@@ -7643,4 +7643,12 @@
 			<column name="date_changed" type="datetime" />
 		</addColumn>
 	</changeSet>
+	
+	<changeSet id="201402120720-TRUNK-3902" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_numeric" columnName="precise"/></not>
+		</preConditions>
+		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
+		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
+	</changeSet>
 </databaseChangeLog>

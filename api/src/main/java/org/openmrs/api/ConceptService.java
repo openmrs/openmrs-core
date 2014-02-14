@@ -191,6 +191,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should set audit info if any item in the child collections is edited
 	 * @should set audit info if an item is added to any of its child collections
 	 * @should pass when saving a concept after removing a name
+	 * @should save a conceptNumeric with allowDecimal value
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;

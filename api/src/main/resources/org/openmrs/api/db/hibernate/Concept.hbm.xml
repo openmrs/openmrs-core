@@ -108,7 +108,7 @@
 			<property name="lowCritical" type="java.lang.Double" column="low_critical" length="22" />
 			<property name="lowNormal" type="java.lang.Double" column="low_normal" length="22" />
 			<property name="units" type="java.lang.String" column="units" length="50" />
-			<property name="precise" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
+			<property name="allowDecimal" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
 			<property name="displayPrecision" type="java.lang.Integer" column="display_precision" not-null="false"/>
 		</joined-subclass>
 	
