@@ -154,7 +154,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		//Mark first order found corresponding to this DC order as discontinued.
 		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getClass(), order.getCareSetting(), null);
-		boolean isDrugOrderAndHasADrug = order.isDrugOrder() && ((DrugOrder) order).getDrug() != null;
+		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(order.getClass())
+		        && ((DrugOrder) order).getDrug() != null;
 		for (Order activeOrder : orders) {
 			boolean shouldMarkAsDiscontinued = false;
 			//For drug orders, the drug must match if the order has a drug

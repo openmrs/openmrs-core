@@ -155,13 +155,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		return target;
 	}
 	
-	/**
-	 * true/false whether or not this is a drug order overridden in extending class drugOrders.
-	 */
-	public boolean isDrugOrder() {
-		return false;
-	}
-	
 	// Property accessors
 	
 	/**
