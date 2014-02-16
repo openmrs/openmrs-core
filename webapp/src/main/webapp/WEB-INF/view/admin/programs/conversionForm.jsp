@@ -19,7 +19,7 @@
 <form method="post" id="theForm">
 <table>
 	<tr>
-		<td><openmrs:message code="Program.conversion.programWorkflow"/>:</td>
+		<td><openmrs:message code="Program.conversion.programWorkflow"/>:<span class="required">*</span></td>
 		<td>
 			<spring:bind path="conversion.programWorkflow">
 				<openmrs:fieldGen type="org.openmrs.ProgramWorkflow" formFieldName="programWorkflow" val="${status.editor.value}" parameters="onChange=updateStates()|optionHeader=[blank]|programPrefix=true" />
@@ -28,7 +28,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Program.conversion.concept"/>:</td>
+		<td><openmrs:message code="Program.conversion.concept"/>:<span class="required">*</span></td>
 		<td>
 			<spring:bind path="conversion.concept">
 				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="concept" val="${status.editor.value}" parameters="" />
@@ -37,7 +37,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Program.conversion.programWorkflowState"/>:</td>
+		<td><openmrs:message code="Program.conversion.programWorkflowState"/>:<span class="required">*</span></td>
 		<td>
 			<spring:bind path="conversion.programWorkflowState">
 				<select name="programWorkflowState" id="programWorkflowState"></select>

@@ -29,7 +29,8 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
+		
 		<td>
 			<spring:bind path="encounterType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />

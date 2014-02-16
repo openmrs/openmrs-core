@@ -591,6 +591,7 @@ table.patientTreatmentPrograms td {
 .error {
 	background-color: lightpink;
 }
+	
 	span.error, div.error {
 		border: 1px dashed darkred;
 		padding: 1px 6px 1px 6px;

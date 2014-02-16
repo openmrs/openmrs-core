@@ -21,7 +21,7 @@
 		</tr>
 		<tr>
 			<spring:bind path="implId.implementationId">
-				<td style="white-space: nowrap"><openmrs:message code="ImplementationId.implementationId"/></td>
+				<td style="white-space: nowrap"><openmrs:message code="ImplementationId.implementationId"/><span class="required">*</span></td>
 				<td><input type="text" value="${status.value}" name="${status.expression}" maxlength="20" size="8"/></td>
 				<td class="description"><openmrs:message code="ImplementationId.sourceId.help"/></td>
 			</spring:bind>

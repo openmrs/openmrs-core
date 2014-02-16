@@ -102,7 +102,7 @@
 <form method="post" id="theForm">
 <table>
 	<tr>
-		<th><openmrs:message code="general.name"/></th>
+		<th><openmrs:message code="general.name"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="program.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -111,7 +111,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="general.description"/></th>
+		<th><openmrs:message code="general.description"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="program.description">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -120,7 +120,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="Program.concept"/></th>
+		<th><openmrs:message code="Program.concept"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="program.concept">
 				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>

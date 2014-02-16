@@ -259,7 +259,7 @@
 		</tr>
 	</c:if>
 	<tr>
-		<th><openmrs:message code="Obs.person"/></th>
+		<th><openmrs:message code="Obs.person"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="person">
 				<openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
@@ -303,7 +303,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="Obs.datetime"/></th>
+		<th><openmrs:message code="Obs.datetime"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="obsDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
@@ -314,7 +314,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="Obs.concept"/></th>
+		<th><openmrs:message code="Obs.concept"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="obs.concept">
 				<openmrs_tag:conceptField formFieldName="concept" formFieldId="conceptId" excludeDatatypes="N/A" initialValue="${status.editor.value.conceptId}" onSelectFunction="onQuestionSelect" />

@@ -32,10 +32,9 @@
 	<form method="post" action="locationTagAdd.form" id="locationTagForm">
 		<table>
 			<tr>
-				<th><openmrs:message code="LocationTag.name"/></th>
+				<th><openmrs:message code="LocationTag.name"/><span class="required">*</span></th>
 				<td>
 					<input type="text" name="name"/>
-					<span class="required">*</span>
                     <span class="required" id="nameError"></span>
 				</td>
 			</tr>

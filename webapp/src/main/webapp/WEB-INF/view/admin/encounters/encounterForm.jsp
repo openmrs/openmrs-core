@@ -376,8 +376,8 @@
 	<div class="box">
 	<table cellspacing="0" cellpadding="2" width="98%" id="providers">
 		<tr id="providersListingHeaderRow">
-			<th><openmrs:message code="Role.role"/></th>
-			<th><openmrs:message code="Provider.name"/></th>
+			<th><openmrs:message code="Role.role"/><span class="required">*</span></th>
+			<th><openmrs:message code="Provider.name"/><span class="required">*</span></th>
 			<th><openmrs:message code="Provider.identifier"/></th>
 			<th></th>
 		</tr>
