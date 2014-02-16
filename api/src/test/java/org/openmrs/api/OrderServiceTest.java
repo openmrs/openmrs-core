@@ -61,6 +61,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private PatientService patientService;
 	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
 	@Before
 	public void setup() {
 		if (orderService == null) {
@@ -783,130 +786,87 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see OrderService#saveRevisedOrder(org.openmrs.Order) (org.openmrs.Order)
+	 * @verifies not allow revising a stopped order
+	 * @see OrderService#saveOrder(org.openmrs.Order)
 	 */
 	@Test
-	public void saveRevisedOrder_shouldReviseDrugOrder() throws Exception {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseActiveOrders.xml");
-		Order order = orderService.getOrder(16);
-		
-		DrugOrder reviseOrder = (DrugOrder) order.cloneForRevision();
-		reviseOrder.setDose((double) 200);
-		reviseOrder.setDoseUnits(conceptService.getConcept(51));
-		reviseOrder.setFrequency(orderService.getOrderFrequency(2));
-		reviseOrder.setAsNeeded(false);
-		reviseOrder.setDosingType(DrugOrder.DosingType.FREE_TEXT);
-		reviseOrder.setDateCreated(new Date());
-		reviseOrder.setDuration((double) 10);
-		reviseOrder.setAutoExpireDate(dateAfterDays(10));
-		
-		Integer revisedOrderId = orderService.saveRevisedOrder(reviseOrder).getOrderId();
-		DrugOrder savedRevisedOrder = (DrugOrder) orderService.getOrder(revisedOrderId);
-		
-		assertEquals(new Integer(16), savedRevisedOrder.getPreviousOrder().getOrderId());
-		assertEquals(new Date().toString(), savedRevisedOrder.getPreviousOrder().getDateStopped().toString());
-		assertEquals(Action.REVISE, savedRevisedOrder.getAction());
-		assertEquals(new Double(200), savedRevisedOrder.getDose());
-		assertEquals(new Integer(51), savedRevisedOrder.getDoseUnits().getConceptId());
-		assertFalse(savedRevisedOrder.getAsNeeded());
-		assertEquals(DrugOrder.DosingType.FREE_TEXT, savedRevisedOrder.getDosingType());
-		
-		assertNotEquals(order.getOrderNumber(), savedRevisedOrder.getOrderNumber());
-	}
-	
-	@Rule
-	public ExpectedException expectedEx = ExpectedException.none();
-	
-	/**
-	 * @verifies not allow revisions for an inactive order
-	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
-	 */
-	@Test
-	public void saveRevisedOrder_shouldNotReviseAnInActiveOrder() throws Exception {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseInActiveOrders.xml");
-		DrugOrder order = (DrugOrder) orderService.getOrder(6);
-		
-		DrugOrder orderWithRevision = (DrugOrder) order.cloneForRevision();
-		orderWithRevision.setDose((double) 200);
-		orderWithRevision.setDoseUnits(conceptService.getConcept(51));
-		orderWithRevision.setFrequency(orderService.getOrderFrequency(2));
-		orderWithRevision.setAsNeeded(false);
-		orderWithRevision.setDosingType(DrugOrder.DosingType.FREE_TEXT);
-		
-		orderWithRevision.setDateCreated(new Date());
-		orderWithRevision.setDuration((double) 10);
-		orderWithRevision.setAutoExpireDate(dateAfterDays(10));
-		
-		expectedEx.expect(APIException.class);
-		expectedEx.expectMessage("Cannot revise an inactive order.");
-		orderService.saveRevisedOrder(orderWithRevision);
+	public void saveOrder_shouldNotAllowRevisingAStoppedOrder() throws Exception {
+		Order originalOrder = orderService.getOrder(1);
+		assertNotNull(originalOrder.getDateStopped());
+		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setInstructions("Take after a meal");
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
+		orderService.saveOrder(revisedOrder);
 	}
 	
 	/**
-	 * @verifies not allow revisions for an order with no previous order
-	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
+	 * @verifies not allow revising a voided order
+	 * @see OrderService#saveOrder(org.openmrs.Order)
 	 */
 	@Test
-	public void saveRevisedOrder_shouldNotReviseOrderWithNoPreviousOrder() throws Exception {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseActiveOrders.xml");
-		
-		DrugOrder order = new DrugOrder();
-		order.setAction(Action.REVISE);
-		order.setDose((double) 200);
-		order.setDateCreated(new Date());
-		order.setDuration((double) 10);
-		order.setAutoExpireDate(dateAfterDays(10));
-		order.setConcept(conceptService.getConcept(88));
-		order.setPatient(patientService.getPatient(2));
-		
-		expectedEx.expect(APIException.class);
-		expectedEx.expectMessage("Previous order cannot be null");
-		orderService.saveRevisedOrder(order);
+	public void saveOrder_shouldNotAllowRevisingAVoidedOrder() throws Exception {
+		Order originalOrder = orderService.getOrder(8);
+		assertTrue(originalOrder.isVoided());
+		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setInstructions("Take after a meal");
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
+		orderService.saveOrder(revisedOrder);
 	}
 	
 	/**
-	 * @verifies not allow revisions for a discontinued order
-	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
+	 * @verifies not allow revising an expired order
+	 * @see OrderService#saveOrder(org.openmrs.Order)
 	 */
 	@Test
-	public void saveRevisedOrder_shouldNotReviseAPreviouslyDiscontinuedOrder() throws Exception {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseDiscontinuedOrders.xml");
-		
-		Order previousOrder = orderService.getOrder(16);
-		
-		DrugOrder order = (DrugOrder) previousOrder.cloneForRevision();
-		order.setDose((double) 200);
-		order.setDateCreated(new Date());
-		order.setAutoExpireDate(dateAfterDays(10));
-		order.setPreviousOrder(previousOrder);
-		
-		expectedEx.expect(APIException.class);
-		expectedEx.expectMessage("Cannot revise a discontinued order");
-		orderService.saveRevisedOrder(order);
+	public void saveOrder_shouldNotAllowRevisingAnExpiredOrder() throws Exception {
+		Order originalOrder = orderService.getOrder(6);
+		assertNotNull(originalOrder.getAutoExpireDate());
+		assertTrue(originalOrder.getAutoExpireDate().before(new Date()));
+		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setInstructions("Take after a meal");
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
+		orderService.saveOrder(revisedOrder);
 	}
 	
 	/**
-	 * @verifies not allow revisions only for a REVISE Order
-	 * @see OrderService#saveRevisedOrder(org.openmrs.Order)
+	 * @verifies not allow revising an order with no previous order
+	 * @see OrderService#saveOrder(org.openmrs.Order)
 	 */
 	@Test
-	public void saveRevisedOrder_shouldReviseOnlyWhenActionIsRevise() throws Exception {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-reviseActiveOrders.xml");
-		Order order = orderService.getOrder(16);
+	public void saveOrder_shouldNotAllowRevisingAnOrderWithNoPreviousOrder() throws Exception {
+		Order originalOrder = orderService.getOrder(111);
+		assertTrue(originalOrder.isCurrent());
+		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setInstructions("Take after a meal");
+		revisedOrder.setPreviousOrder(null);
 		
-		DrugOrder revisionOrder = (DrugOrder) order.cloneForRevision();
-		revisionOrder.setAction(Action.DISCONTINUE);
-		
-		expectedEx.expect(APIException.class);
-		expectedEx.expectMessage("Action has to be 'REVISE'");
-		orderService.saveRevisedOrder(revisionOrder).getOrderId();
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Previous Order is required for a revised order");
+		orderService.saveOrder(revisedOrder);
 	}
 	
-	private Date dateAfterDays(int days) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(new Date());
-		c.add(Calendar.DATE, days);
-		return c.getTime();
+	/**
+	 * @verifies save a revised order
+	 * @see OrderService#saveOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void saveOrder_shouldSaveARevisedOrder() throws Exception {
+		Order originalOrder = orderService.getOrder(111);
+		assertTrue(originalOrder.isCurrent());
+		final Patient patient = originalOrder.getPatient();
+		List<Order> originalActiveOrders = orderService.getActiveOrders(patient, null, null, null);
+		final int originalOrderCount = originalActiveOrders.size();
+		assertTrue(originalActiveOrders.contains(originalOrder));
+		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setInstructions("Take after a meal");
+		revisedOrder.setStartDate(new Date());
+		orderService.saveOrder(revisedOrder);
+		
+		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(originalOrderCount, activeOrders.size());
+		assertFalse(originalOrder.isCurrent());
 	}
-	
 }

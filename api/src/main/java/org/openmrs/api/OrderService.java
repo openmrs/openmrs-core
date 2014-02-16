@@ -47,29 +47,20 @@ public interface OrderService extends OpenmrsService {
 	 * @return the Order that was saved
 	 * @throws APIException
 	 * @should not save order if order doesnt validate
-	 * @should save discontinued reason non coded
 	 * @should discontinue existing active order if new order being saved with action to discontinue
 	 * @should pass if the existing drug order matches the concept and drug of the DC order
 	 * @should fail if the existing drug order matches the concept and not drug of the DC order
 	 * @should discontinue previousOrder if it is not already discontinued
 	 * @should fail if concept in previous order does not match this concept
 	 * @should not allow editing an existing order
+	 * @should not allow revising a voided order
+	 * @should not allow revising a stopped order
+	 * @should not allow revising an expired order
+	 * @should not allow revising an order with no previous order
+	 * @should save a revised order
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
-	
-	/**
-	 * Save or update the given <code>order</code> in the database
-	 *
-	 * @param order the revised order
-	 * @return the Order that was saved
-	 * @throws APIException
-	 * @should stop existing order
-	 * @should not allow editing an existing order
-	 * @should not allow revising a discontinued order
-	 */
-	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
-	public Order saveRevisedOrder(Order order) throws APIException;
 	
 	/**
 	 * Completely delete an order from the database. This should not typically be used unless
