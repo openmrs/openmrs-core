@@ -446,7 +446,7 @@ public class HibernateFormDAO implements FormDAO {
 			subquery.add(Restrictions.eqProperty("ff.form", "form"));
 			subquery.add(Restrictions.in("ff.formFieldId", anyFormFieldIds));
 			
-			crit.add(Subqueries.gt(0L, subquery));
+			crit.add(Subqueries.lt(0L, subquery));
 		}
 		
 		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);
