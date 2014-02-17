@@ -12,7 +12,7 @@
 
 <script type="text/javascript">
 	$j(document).ready(function() {
-		new OpenmrsSearch("findPersons", false, doPersonSearch, doSelectionHandler, 
+		new OpenmrsSearch("findPersons", true, doPersonSearch, doSelectionHandler, 
 				[	{fieldName:"givenName", header:omsgs.givenName},
 					{fieldName:"middleName", header:omsgs.middleName},
 					{fieldName:"familyName", header:omsgs.familyName},
