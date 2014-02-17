@@ -567,6 +567,10 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		newOrder.setInstructions(this.getInstructions());
 		newOrder.setUrgency(this.getUrgency());
 		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
+		newOrder.setAccessionNumber(this.getAccessionNumber());
+		newOrder.setAutoExpireDate(this.getAutoExpireDate());
+		newOrder.setOrderReason(this.getOrderReason());
+		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
 		return newOrder;
 	}
 }

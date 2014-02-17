@@ -21,11 +21,11 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.beanutils.MethodUtils;
 import org.junit.Test;
 import org.openmrs.util.Reflect;
 
@@ -36,6 +36,50 @@ import org.openmrs.util.Reflect;
  * @see Order
  */
 public class OrderTest {
+	
+	protected static void assertThatAllFieldsAreCopied(Order original, String methodName, String... otherfieldsToExclude)
+	        throws Exception {
+		if (methodName == null) {
+			methodName = "copy";
+		}
+		List<String> fieldsToExclude = new ArrayList<String>();
+		fieldsToExclude.addAll(Arrays.asList("log", "serialVersionUID", "orderId", "uuid"));
+		if (otherfieldsToExclude != null) {
+			fieldsToExclude.addAll(Arrays.asList(otherfieldsToExclude));
+		}
+		List<Field> fields = Reflect.getAllFields(original.getClass());
+		for (Field field : fields) {
+			if (fieldsToExclude.contains(field.getName())) {
+				continue;
+			}
+			field.setAccessible(true);
+			Object fieldValue = null;
+			
+			if (field.getType().isEnum()) {
+				fieldValue = field.getType().getEnumConstants()[0];
+			} else if (field.getType().equals(Boolean.class)) {
+				fieldValue = true;
+			} else if (field.getType().equals(Integer.class)) {
+				fieldValue = 10;
+			} else if (field.getType().equals(Double.class)) {
+				fieldValue = 5.0;
+			} else {
+				fieldValue = field.getType().newInstance();
+			}
+			field.set(original, fieldValue);
+		}
+		
+		Order copy = (Order) MethodUtils.invokeExactMethod(original, methodName, null);
+		for (Field field : fields) {
+			Object copyValue = field.get(copy);
+			if (fieldsToExclude.contains(field.getName())) {
+				continue;
+			}
+			assertNotNull("Order." + methodName + " should set " + field.getName() + " on the new Order", copyValue);
+			assertEquals("Order." + methodName + " should set " + field.getName() + " on the new Order",
+			    field.get(original), copyValue);
+		}
+	}
 	
 	/**
 	 * Tests the {@link Order#isDiscontinuedRightNow()} method TODO this should be split into many
@@ -131,43 +175,18 @@ public class OrderTest {
 	 */
 	@Test
 	public void copy_shouldCopyAllFields() throws Exception {
-		assertThatAllFieldsAreCopied(new Order());
-		assertThatAllFieldsAreCopied(new TestOrder());
+		assertThatAllFieldsAreCopied(new Order(), null);
+		assertThatAllFieldsAreCopied(new TestOrder(), null);
 	}
 	
-	protected static void assertThatAllFieldsAreCopied(Order original) throws Exception {
-		Collection<?> fieldToExclude = Collections.unmodifiableCollection(Arrays.asList("log", "serialVersionUID",
-		    "orderId", "uuid"));
-		List<Field> fields = Reflect.getAllFields(original.getClass());
-		for (Field field : fields) {
-			if (fieldToExclude.contains(field.getName())) {
-				continue;
-			}
-			field.setAccessible(true);
-			Object fieldValue = null;
-			
-			if (field.getType().isEnum()) {
-				fieldValue = field.getType().getEnumConstants()[0];
-			} else if (field.getType().equals(Boolean.class)) {
-				fieldValue = true;
-			} else if (field.getType().equals(Integer.class)) {
-				fieldValue = 10;
-			} else if (field.getType().equals(Double.class)) {
-				fieldValue = 5.0;
-			} else {
-				fieldValue = field.getType().newInstance();
-			}
-			field.set(original, fieldValue);
-		}
-		
-		Order copy = original.copy();
-		for (Field field : fields) {
-			Object copyValue = field.get(copy);
-			if (fieldToExclude.contains(field.getName())) {
-				continue;
-			}
-			assertNotNull("Order.copy should set " + field.getName() + " on the new Order", copyValue);
-			assertEquals("Order.copy should set " + field.getName() + " on the new Order", field.get(original), copyValue);
-		}
+	/**
+	 * @verifies set all the relevant fields
+	 * @see Order#cloneForRevision()
+	 */
+	@Test
+	public void cloneForRevision_shouldSetAllTheRelevantFields() throws Exception {
+		assertThatAllFieldsAreCopied(new Order(), "cloneForRevision", "creator", "dateCreated", "action", "changedBy",
+		    "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber", "orderer",
+		    "previousOrder", "startDate", "dateStopped");
 	}
 }

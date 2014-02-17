@@ -151,8 +151,9 @@ public class TestOrder extends Order {
 	}
 	
 	/**
-	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and other test order fields.
-	 *
+	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and
+	 * other test order fields.
+	 * 
 	 * @return the newly created order
 	 * @since 1.10
 	 * @should set all the relevant fields
@@ -165,6 +166,13 @@ public class TestOrder extends Order {
 		newOrder.setAction(Action.REVISE);
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(this.getPatient());
+		newOrder.setInstructions(this.getInstructions());
+		newOrder.setUrgency(this.getUrgency());
+		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
+		newOrder.setAccessionNumber(this.getAccessionNumber());
+		newOrder.setAutoExpireDate(this.getAutoExpireDate());
+		newOrder.setOrderReason(this.getOrderReason());
+		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
 		
 		newOrder.setSpecimenSource(getSpecimenSource());
 		newOrder.setLaterality(getLaterality());

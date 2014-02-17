@@ -27,6 +27,17 @@ public class TestOrderTest {
 	 */
 	@Test
 	public void copy_shouldCopyAllTestOrderFields() throws Exception {
-		OrderTest.assertThatAllFieldsAreCopied(new TestOrder());
+		OrderTest.assertThatAllFieldsAreCopied(new TestOrder(), null);
+	}
+	
+	/**
+	 * @verifies set all the relevant fields
+	 * @see TestOrder#cloneForRevision()
+	 */
+	@Test
+	public void cloneForRevision_shouldSetAllTheRelevantFields() throws Exception {
+		OrderTest.assertThatAllFieldsAreCopied(new TestOrder(), "cloneForRevision", "creator", "dateCreated", "action",
+		    "changedBy", "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber",
+		    "orderer", "previousOrder", "startDate", "dateStopped");
 	}
 }

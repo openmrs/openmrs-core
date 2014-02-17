@@ -122,7 +122,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the doseUnits of this drug order
-	 *
+	 * 
 	 * @param doseUnits
 	 */
 	public void setDoseUnits(Concept doseUnits) {
@@ -439,8 +439,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * Creates a DrugOrder for revision from this order, sets the previousOrder, action field and other drug order fields.
-	 *
+	 * Creates a DrugOrder for revision from this order, sets the previousOrder, action field and
+	 * other drug order fields.
+	 * 
 	 * @return the newly created order
 	 * @since 1.10
 	 * @should set all the relevant fields
@@ -454,9 +455,13 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(this.getPatient());
 		newOrder.setInstructions(this.getInstructions());
+		newOrder.setUrgency(this.getUrgency());
 		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
+		newOrder.setAccessionNumber(this.getAccessionNumber());
+		newOrder.setAutoExpireDate(this.getAutoExpireDate());
 		newOrder.setOrderReason(this.getOrderReason());
 		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
+		
 		newOrder.setDose(this.getDose());
 		newOrder.setDoseUnits(this.getDoseUnits());
 		newOrder.setFrequency(this.getFrequency());
@@ -470,6 +475,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setDuration(this.getDuration());
 		newOrder.setDurationUnits(this.getDurationUnits());
 		newOrder.setRoute(this.getRoute());
+		newOrder.setAdministrationInstructions(this.getAdministrationInstructions());
+		newOrder.setNumRefills(this.getNumRefills());
 		return newOrder;
 	}
 	
