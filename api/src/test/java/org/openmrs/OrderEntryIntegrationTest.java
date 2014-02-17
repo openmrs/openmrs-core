@@ -83,12 +83,16 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setDrug(conceptService.getDrug(1));
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);
 		order.setDose(300.0);
-		order.setDoseUnits(conceptService.getConcept(50));//mgs
+		Concept mgs = conceptService.getConcept(50);
+		order.setDoseUnits(mgs);
 		order.setQuantity(20.0);
-		order.setQuantityUnits(conceptService.getConcept(51));//tabs
+		Concept tabs = conceptService.getConcept(51);
+		order.setQuantityUnits(tabs);
 		order.setDuration(20.0);
-		order.setDurationUnits(conceptService.getConcept(1002));//days
-		order.setFrequency(orderService.getOrderFrequency(1003));//Once Daily
+		Concept days = conceptService.getConcept(1002);
+		order.setDurationUnits(days);
+		OrderFrequency onceDaily = orderService.getOrderFrequency(1003);
+		order.setFrequency(onceDaily);
 		
 		orderService.saveOrder(order);
 		List<DrugOrder> activeOrders = orderService.getActiveOrders(patient, DrugOrder.class, careSetting, null);
@@ -130,8 +134,8 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Patient patient = firstOrderToDiscontinue.getPatient();
 		int ordersCount = orderService.getActiveOrders(patient, null, null, null).size();
 		
-		Concept concept = Context.getConceptService().getConcept(1);
-		Order discontinuationOrder1 = orderService.discontinueOrder(firstOrderToDiscontinue, concept, null);
+		Concept discontinueReason = Context.getConceptService().getConcept(1);
+		Order discontinuationOrder1 = orderService.discontinueOrder(firstOrderToDiscontinue, discontinueReason, null);
 		assertEquals(firstOrderToDiscontinue, discontinuationOrder1.getPreviousOrder());
 		
 		//Lets discontinue another order with reason being a string instead of concept
