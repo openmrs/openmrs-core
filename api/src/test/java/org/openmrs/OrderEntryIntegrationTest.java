@@ -153,4 +153,23 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertFalse(activeOrders.contains(secondOrderToDiscontinue));
 		assertFalse(activeOrders.contains(thirdOrderToDiscontinue));
 	}
+	
+	@Test
+	public void shouldReviseAnOrder() throws Exception {
+		Order originalOrder = orderService.getOrder(111);
+		assertTrue(OrderUtil.isOrderActive(originalOrder, null));
+		final Patient patient = originalOrder.getPatient();
+		List<Order> originalActiveOrders = orderService.getActiveOrders(patient, null, null, null);
+		final int originalOrderCount = originalActiveOrders.size();
+		assertTrue(originalActiveOrders.contains(originalOrder));
+		
+		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setInstructions("Take after a meal");
+		revisedOrder.setStartDate(new Date());
+		orderService.saveOrder(revisedOrder);
+		
+		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(originalOrderCount, activeOrders.size());
+		assertFalse(OrderUtil.isOrderActive(originalOrder, null));
+	}
 }
