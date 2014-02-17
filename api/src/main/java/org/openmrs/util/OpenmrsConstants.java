@@ -1007,6 +1007,13 @@ public final class OpenmrsConstants {
 	 */
 	public static final String AUTO_CLOSE_VISITS_TASK_NAME = "Auto Close Visits Task";
 	
+	/**
+	 * Global property minimum number of days after which visit should be closed
+	 */
+	public static final String GP_VISIT_AUTO_CLOSE_MINIMUM_NUMBER_OF_DAYS = "visits.autoCloseMinimumNumberOfDays";
+	
+	public static final int GP_VISIT_AUTO_CLOSE_MINIMUM_NUMBER_OF_DAYS_DEFAULT_VALUE = 0;
+	
 	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "concept.IndexUpdateTask.lastConceptUpdated";
 	
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
@@ -1415,6 +1422,10 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_VISIT_TYPES_TO_AUTO_CLOSE, "",
 		        "comma-separated list of the visit type(s) to automatically close"));
+		
+		props.add(new GlobalProperty(GP_VISIT_AUTO_CLOSE_MINIMUM_NUMBER_OF_DAYS, String
+		        .valueOf(GP_VISIT_AUTO_CLOSE_MINIMUM_NUMBER_OF_DAYS_DEFAULT_VALUE),
+		        "Minimum number of days after which visit should be auto closed"));
 		
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
