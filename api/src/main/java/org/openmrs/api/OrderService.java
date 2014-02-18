@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -300,11 +301,33 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @return List<OrderFrequency>
 	 * @since 1.10
-	 * @param includeRetired specifies whether retired ones should be include or not
+	 * @param includeRetired specifies whether retired ones should be included or not
 	 * @should return only non retired order frequencies if includeRetired is set to false
 	 * @should return all the order frequencies if includeRetired is set to true
 	 */
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
+	
+	/**
+	 * Gets all non retired order frequencies associated to concepts that match the specified search
+	 * phrase
+	 * 
+	 * @param searchPhrase The string to match on
+	 * @param locale The locale to match on when searching in associated concept names
+	 * @param exactLocale If false then order frequencies associated to concepts with names in a
+	 *            broader locale will be matched e.g in case en_GB is passed in then en will be
+	 *            matched
+	 * @param includeRetired Specifies if retired order frequencies that match should be included or
+	 *            not
+	 * @return List<OrderFrequency>
+	 * @since 1.10
+	 * @should get non retired frequencies with names matching the search phrase
+	 * @should include retired frequencies if includeRetired is set to true
+	 * @should get frequencies with names that match the phrase and locale if exact locale is true
+	 * @should return unique frequencies
+	 * @should reject a null search phrase
+	 */
+	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
+	        boolean includeRetired);
 	
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue

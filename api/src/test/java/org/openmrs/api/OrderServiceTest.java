@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
@@ -868,5 +870,94 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
 		assertFalse(originalOrder.isCurrent());
+	}
+	
+	/**
+	 * @verifies get non retired frequencies with names matching the search phrase
+	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getOrderFrequencies_shouldGetNonRetiredFrequenciesWithNamesMatchingTheSearchPhrase() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml");
+		List<OrderFrequency> orderFrequencies = orderService.getOrderFrequencies("once", Locale.US, false, false);
+		assertEquals(2, orderFrequencies.size());
+		assertTrue(containsId(orderFrequencies, 100));
+		assertTrue(containsId(orderFrequencies, 102));
+		
+		//should match anywhere in the concept name
+		orderFrequencies = orderService.getOrderFrequencies("nce", Locale.US, false, false);
+		assertEquals(2, orderFrequencies.size());
+		assertTrue(containsId(orderFrequencies, 100));
+		assertTrue(containsId(orderFrequencies, 102));
+	}
+	
+	/**
+	 * @verifies include retired frequencies if includeRetired is set to true
+	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getOrderFrequencies_shouldIncludeRetiredFrequenciesIfIncludeRetiredIsSetToTrue() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml");
+		List<OrderFrequency> orderFrequencies = orderService.getOrderFrequencies("ce", Locale.US, false, true);
+		assertEquals(4, orderFrequencies.size());
+		assertTrue(containsId(orderFrequencies, 100));
+		assertTrue(containsId(orderFrequencies, 101));
+		assertTrue(containsId(orderFrequencies, 102));
+		assertTrue(containsId(orderFrequencies, 103));
+	}
+	
+	/**
+	 * @verifies get frequencies with names that match the phrase and locale if exact locale is true
+	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getOrderFrequencies_shouldGetFrequenciesWithNamesThatMatchThePhraseAndLocaleIfExactLocaleIsTrue()
+	        throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml");
+		List<OrderFrequency> orderFrequencies = orderService.getOrderFrequencies("ce", Locale.US, true, false);
+		assertEquals(1, orderFrequencies.size());
+		assertEquals(102, orderFrequencies.get(0).getOrderFrequencyId().intValue());
+		
+		orderFrequencies = orderService.getOrderFrequencies("ce", Locale.ENGLISH, true, false);
+		assertEquals(2, orderFrequencies.size());
+		assertTrue(containsId(orderFrequencies, 100));
+		assertTrue(containsId(orderFrequencies, 101));
+	}
+	
+	/**
+	 * @verifies return unique frequencies
+	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getOrderFrequencies_shouldReturnUniqueFrequencies() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml");
+		final String searchPhrase = "once";
+		final Locale locale = Locale.ENGLISH;
+		List<OrderFrequency> orderFrequencies = orderService.getOrderFrequencies(searchPhrase, locale, true, false);
+		assertEquals(1, orderFrequencies.size());
+		final OrderFrequency expectedOrderFrequency = orderService.getOrderFrequency(100);
+		assertEquals(expectedOrderFrequency, orderFrequencies.get(0));
+		
+		//Add a new name to the frequency concept so that our search phrase matches on 2 
+		//concept names for the same frequency concept
+		Concept frequencyConcept = expectedOrderFrequency.getConcept();
+		final String newConceptName = searchPhrase + " A Day";
+		frequencyConcept.addName(new ConceptName(newConceptName, locale));
+		conceptService.saveConcept(frequencyConcept);
+		
+		orderFrequencies = orderService.getOrderFrequencies(searchPhrase, locale, true, false);
+		assertEquals(1, orderFrequencies.size());
+		assertEquals(expectedOrderFrequency, orderFrequencies.get(0));
+	}
+	
+	/**
+	 * @verifies reject a null search phrase
+	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getOrderFrequencies_shouldRejectANullSearchPhrase() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("searchPhrase is required");
+		orderService.getOrderFrequencies(null, Locale.ENGLISH, false, false);
 	}
 }

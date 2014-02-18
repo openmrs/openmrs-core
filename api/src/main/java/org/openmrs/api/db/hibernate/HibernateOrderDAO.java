@@ -13,8 +13,10 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -24,7 +26,9 @@ import org.hibernate.LockOptions;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -288,7 +292,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @See OrderDAO#getOrderFrequencies
+	 * @See OrderDAO#getOrderFrequencies(boolean)
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired) {
@@ -296,6 +300,37 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired", false));
 		}
+		return criteria.list();
+	}
+	
+	/**
+	 * @See OrderDAO#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 */
+	@Override
+	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
+	        boolean includeRetired) {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderFrequency.class, "orderFreq");
+		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
+		
+		//match on the concept names of the concepts
+		criteria.createAlias("orderFreq.concept", "concept");
+		criteria.createAlias("concept.names", "conceptName");
+		criteria.add(Restrictions.ilike("conceptName.name", searchPhrase, MatchMode.ANYWHERE));
+		if (locale != null) {
+			List<Locale> locales = new ArrayList<Locale>(2);
+			locales.add(locale);
+			//look in the broader locale too if exactLocale is false e.g en for en_GB
+			if (!exactLocale && StringUtils.isNotBlank(locale.getCountry())) {
+				locales.add(new Locale(locale.getLanguage()));
+			}
+			criteria.add(Restrictions.in("conceptName.locale", locales));
+		}
+		
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("orderFreq.retired", false));
+		}
+		
 		return criteria.list();
 	}
 }

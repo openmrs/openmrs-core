@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -387,12 +388,25 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see OrderService#getOrderFrequencies
+	 * @see OrderService#getOrderFrequencies(boolean)
 	 * @param includeRetired
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired) {
 		return dao.getOrderFrequencies(includeRetired);
+	}
+	
+	/**
+	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 * @param includeRetired
+	 */
+	@Override
+	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
+	        boolean includeRetired) {
+		if (searchPhrase == null) {
+			throw new IllegalArgumentException("searchPhrase is required");
+		}
+		return dao.getOrderFrequencies(searchPhrase, locale, exactLocale, includeRetired);
 	}
 	
 	/**

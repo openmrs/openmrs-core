@@ -15,6 +15,7 @@ package org.openmrs.api.db;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -126,7 +127,13 @@ public interface OrderDAO {
 	public OrderFrequency getOrderFrequencyByUuid(String uuid);
 	
 	/**
-	 * @See OrderService#getOrderFrequencies
+	 * @See OrderService#getOrderFrequencies(boolean)
 	 */
 	List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
+	
+	/**
+	 * @See OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 */
+	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
+	        boolean includeRetired);
 }
