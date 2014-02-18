@@ -1,11 +1,15 @@
 package org.openmrs.validator;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
@@ -122,6 +126,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		anotherConcept.getFullySpecifiedName(Context.getLocale()).setName(duplicateName);
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
+		
 	}
 	
 	/**
@@ -371,5 +376,43 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		//the second mapping should be rejected
 		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
+	}
+	
+	@Test
+	@Verifies(value = "fail if any description is a null value", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAnyDescriptionHasNullValue() throws Exception {
+		Concept concept = new Concept();
+		concept.addDescription(new ConceptDescription("Description", Context.getLocale()));
+		concept.addDescription(new ConceptDescription(null, Context.getLocale()));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+		
+	}
+	
+	@Test
+	@Verifies(value = "fail if any description is an empty string", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAnyDescriptionIsAnEmptyString() throws Exception {
+		Concept concept = new Concept();
+		concept.addDescription(new ConceptDescription("Description", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("", Context.getLocale()));
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
+	@Test
+	@Verifies(value = "should fail if the atleast one ConceptDescription is not found in Concept", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAtleastOneDescriptionIsNotFound() throws Exception {
+		Concept concept = new Concept();
+		List<Locale> locales = Context.getAdministrationService().getAllowedLocales();
+		for (Locale l : locales) {
+			concept.addDescription(new ConceptDescription(null));
+		}
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		
+		Assert.assertEquals(true, errors.hasErrors());
+		
 	}
 }
