@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/admin/patients/index.htm" />
-
+<openmrs:message var="pageTitle" code="patient.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
@@ -54,7 +54,7 @@
 	}
 </script>
 
-<h2><openmrs:message code="Patient.title"/></h2>
+<h2><openmrs:message code="patient.title"/></h2>
 
 <a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient&viewType=edit"><openmrs:message code="Patient.create"/></a><br/><br/>
 
