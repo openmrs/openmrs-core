@@ -105,7 +105,7 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	 */
 	@Override
 	public String getName() {
-		if (getConcept() != null || getConcept().getName() != null) {
+		if (getConcept() != null && getConcept().getName() != null) {
 			return getConcept().getName().toString();
 		}
 		return null;
@@ -116,7 +116,7 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	 */
 	@Override
 	public String getDescription() {
-		if (getConcept() != null || getConcept().getDescription() != null) {
+		if (getConcept() != null && getConcept().getDescription() != null) {
 			return getConcept().getDescription().getDescription();
 		}
 		return null;
