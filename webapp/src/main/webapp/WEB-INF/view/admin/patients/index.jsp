@@ -14,7 +14,7 @@
 
 <script type="text/javascript">
 	$j(document).ready(function() {
-		new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler, 
+		new OpenmrsSearch("findPatients", true, doPatientSearch, doSelectionHandler, 
 				[	{fieldName:"identifier", header:omsgs.identifier},
 					{fieldName:"givenName", header:omsgs.givenName},
 					{fieldName:"middleName", header:omsgs.middleName},
@@ -45,12 +45,14 @@
 	});
 	
 	function doSelectionHandler(index, data) {
-		document.location = "patient.form?patientId=" + data.patientId;
+		document.location = "patient.form?patientId=" + data.patientId + "&phrase=" + lastSearch;
 	}
 	
 	//searchHandler for the Search widget
 	function doPatientSearch(text, resultHandler, getMatchCount, opts) {
-		DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
+		lastSearch=text;
+		//DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
+		DWRPatientService.findCountAndPatients1(text, opts.includeVoided, opts.start, opts.length, getMatchCount, resultHandler);
 	}
 </script>
 

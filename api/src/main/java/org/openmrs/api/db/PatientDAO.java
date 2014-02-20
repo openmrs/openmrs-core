@@ -316,5 +316,22 @@ public interface PatientDAO {
 	 * @should count patients by searchable attribute _ signature no 2
 	 */
 	public Long getCountOfPatients(String query);
+
+	/**
+	 * @see org.openmrs.api.PatientService#getCountOfPatients(String)
+	 *
+	 * @should count zero patients when query is empty _ signature no 2
+	 * @should count zero patients when query is null _ signature no 2
+	 * @should count zero patients for non-matching query _ signature no 2
+
+	 * @should not count voided patients _ signature no 2
+	 * @should count single patient _ signature no 2
+	 * @should count multiple patients _ signature no 2
+	 *
+	 * @should count patients by name _ signature no 2
+	 * @should count patients by identifier _ signature no 2
+	 * @should count patients by searchable attribute _ signature no 2
+	 */
+	public Long getCountOfPatients1(String query, boolean includeVoided);
 	
 }

@@ -186,8 +186,129 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @should not signal for a new search if the new search value has no matches
 	 * @should match patient with identifiers that contain no digit
 	 */
-	public Map<String, Object> findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount)
-	        throws APIException {
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> findCountAndPatients1(String searchValue, boolean includeVoided, Integer start,
+	        Integer length, boolean getMatchCount) throws APIException {
+		System.out.println("hie\n");
+		//Map to return
+		Map<String, Object> resultsMap = new HashMap<String, Object>();
+		Collection<Object> objectList = new Vector<Object>();
+		try {
+			//PatientService ps = Context.getPatientService();
+			int patientCount = 0;
+			//patientCount+=ps.getCountOfPatients(searchValue);
+			//if this is the first call
+			if (getMatchCount) {
+				//patientCount += ps.getCountOfPatients1(searchValue, includeVoided);
+				//patientCount += Context.getPatientService().getCountOfPatients(searchValue);
+				patientCount += Context.getPatientService().getCountOfPatients1(searchValue, includeVoided);
+				// if there are no results found and a number was not in the
+				// search and this is the first call, then do a decapitated search: 
+				//trim each word down to the first three characters and search again
+				if (patientCount == 0 && start == 0 && !searchValue.matches(".*\\d+.*")) {
+					String[] names = searchValue.split(" ");
+					StringBuilder newSearch = new StringBuilder("");
+					for (String name : names) {
+						if (name.length() > 3) {
+							name = name.substring(0, 3);
+						}
+						newSearch.append(" ").append(name);
+					}
+					
+					String newSearchStr = newSearch.toString().trim();
+					if (!newSearchStr.equals(searchValue)) {
+					//	int newPatientCount = ps.getCountOfPatients1(newSearchStr, includeVoided);
+						//int newPatientCount = Context.getPatientService().getCountOfPatients(newSearchStr);
+						int newPatientCount = Context.getPatientService().getCountOfPatients1(newSearchStr, includeVoided);
+						if (newPatientCount > 0) {
+							// Send a signal to the core search widget to search again against newSearch
+							resultsMap.put("searchAgain", newSearchStr);
+							resultsMap.put("notification", Context.getMessageSourceService().getMessage(
+							    "searchWidget.noResultsFoundFor", new Object[] { searchValue, newSearchStr },
+							    Context.getLocale()));
+						}
+					}
+				}
+
+				//no results found and a number was in the search --
+				//should check whether the check digit is correct.
+				else if (patientCount == 0 && searchValue.matches(".*\\d+.*")) {
+					
+					//Looks through all the patient identifier validators to see if this type of identifier
+					//is supported for any of them.  If it isn't, then no need to warn about a bad check
+					//digit.  If it does match, then if any of the validators validates the check digit
+					//successfully, then the user is notified that the identifier has been entered correctly.
+					//Otherwise, the user is notified that the identifier was entered incorrectly.
+					
+					PatientService ps = Context.getPatientService();
+					Collection<IdentifierValidator> pivs = ps.getAllIdentifierValidators();
+					boolean shouldWarnUser = true;
+					boolean validCheckDigit = false;
+					boolean identifierMatchesValidationScheme = false;
+					
+					for (IdentifierValidator piv : pivs) {
+						try {
+							if (piv.isValid(searchValue)) {
+								shouldWarnUser = false;
+								validCheckDigit = true;
+							}
+							identifierMatchesValidationScheme = true;
+						}
+						catch (UnallowedIdentifierException e) {}
+					}
+					
+					if (identifierMatchesValidationScheme) {
+						if (shouldWarnUser) {
+							resultsMap.put("notification", "<b>"
+							        + Context.getMessageSourceService().getMessage("Patient.warning.inValidIdentifier")
+							        + "<b/>");
+						} else if (validCheckDigit) {
+							resultsMap.put("notification", "<b style=\"color:green;\">"
+							        + Context.getMessageSourceService().getMessage("Patient.message.validIdentifier")
+							        + "<b/>");
+						}
+					}
+				} else {
+					//ensure that count never exceeds this value because the API's service layer would never
+					//return more than it since it is limited in the DAO layer
+					if (maximumResults == null) {
+						setMaximumResults(getMaximumSearchResults());
+					}
+					if (length != null && length > maximumResults) {
+						length = maximumResults;
+					}
+					
+					if (patientCount > maximumResults) {
+						patientCount = maximumResults;
+						if (log.isDebugEnabled()) {
+							log.debug("Limitng the size of matching patients to " + maximumResults);
+						}
+					}
+				}
+				
+			}
+			
+			//if we have any matches or this isn't the first ajax call when the caller
+			//requests for the count
+			if (patientCount > 0 || !getMatchCount) {
+				objectList = findBatchOfPatients(searchValue, false, start, length);
+			}
+			
+			resultsMap.put("count", patientCount);
+			resultsMap.put("objectList", objectList);
+		}
+		catch (Exception e) {
+			log.error("Error while searching for patients", e);
+			objectList.clear();
+			objectList.add(Context.getMessageSourceService().getMessage("Patient.search.error") + " - " + e.getMessage());
+			resultsMap.put("count", 0);
+			resultsMap.put("objectList", objectList);
+		}
+		return resultsMap;
+	}
+	
+	public Map<String, Object> findCountAndPatients(String searchValue, Integer start,
+	        Integer length, boolean getMatchCount) throws APIException {
 		
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
