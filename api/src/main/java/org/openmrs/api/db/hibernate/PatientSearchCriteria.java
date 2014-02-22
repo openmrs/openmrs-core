@@ -117,7 +117,7 @@ public class PatientSearchCriteria {
 			
 		}
 		
-		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.eq("voided", true));
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
 		log.debug(criteria.toString());
@@ -146,6 +146,21 @@ public class PatientSearchCriteria {
 		        .add(prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false)));
 		
 		criteria.add(Restrictions.eq("voided", false));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		
+		log.debug(criteria.toString());
+		
+		return criteria;
+	}
+	
+	Criteria prepareCriteria(String query, boolean includeVoided) {
+		addAliasForName(criteria, true);
+		personSearchCriteria.addAliasForAttribute(criteria);
+		addAliasForIdentifiers(criteria);
+		
+		criteria.add(Restrictions.disjunction().add(prepareCriterionForName(query)).add(prepareCriterionForAttribute(query))
+		        .add(prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false)));
+		criteria.add(Restrictions.eq("voided", includeVoided));
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
 		log.debug(criteria.toString());

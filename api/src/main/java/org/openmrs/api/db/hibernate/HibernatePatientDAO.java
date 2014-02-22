@@ -620,4 +620,20 @@ public class HibernatePatientDAO implements PatientDAO {
 		//
 		return (long) criteria.list().size();
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getCountOfPatients1(String,boolean)
+	 */
+	public Long getCountOfPatients1(String query, boolean includeVoided) {
+		if (StringUtils.isBlank(query)) {
+			return 0L;
+		}
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query, includeVoided);
+		
+		// Using Hibernate projections did NOT work here, the resulting queries could not be executed due to
+		// missing group-by clauses. Hence the poor man's implementation of counting search results.
+		//
+		return (long) criteria.list().size();
+	}
 }
