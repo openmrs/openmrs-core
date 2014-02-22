@@ -1715,6 +1715,21 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
+	 * @see PatientService#getCountOfPatients(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Integer getCountOfPatients1(String query, boolean includeVoided) {
+		int count = 0;
+		if (StringUtils.isBlank(query)) {
+			return count;
+		}
+		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
+		
+		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query, includeVoided));
+	}
+
+	/**
 	 * @see PatientService#getPatients(String, Integer, Integer)
 	 */
 	@SuppressWarnings("unchecked")
