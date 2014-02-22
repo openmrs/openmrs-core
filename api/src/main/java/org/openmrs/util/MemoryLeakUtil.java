@@ -69,11 +69,23 @@ public class MemoryLeakUtil {
 	public static void shutdownKeepAliveTimer() {
 		try {
 			final Field kac = HttpClient.class.getDeclaredField("kac");
+			if (kac == null) {
+				return;
+			}
+			
 			kac.setAccessible(true);
 			final Field keepAliveTimer = KeepAliveCache.class.getDeclaredField("keepAliveTimer");
+			if (keepAliveTimer == null) {
+				return;
+			}
+			
 			keepAliveTimer.setAccessible(true);
 			
 			final Thread thread = (Thread) keepAliveTimer.get(kac.get(null));
+			if (thread == null) {
+				return;
+			}
+			
 			if (thread.getContextClassLoader() == OpenmrsClassLoader.getInstance()) {
 				//Set to system class loader such that we can be garbage collected.
 				thread.setContextClassLoader(ClassLoader.getSystemClassLoader());
