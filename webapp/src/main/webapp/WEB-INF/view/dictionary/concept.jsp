@@ -277,7 +277,7 @@
 							<td colspan="2"><c:out value="${command.concept.units}" /></td>
 						</tr>
 						<tr>
-							<th><openmrs:message code="ConceptNumeric.precise"/></th>
+							<th><openmrs:message code="ConceptNumeric.allowDecimal"/></th>
 							<td colspan="2">
 								<spring:bind path="command.concept.precise">
 									<c:if test="${status.value}">Yes</c:if>

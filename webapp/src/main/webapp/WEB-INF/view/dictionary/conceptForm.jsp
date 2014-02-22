@@ -578,7 +578,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th><openmrs:message code="ConceptNumeric.precise"/></th>
+					<th><openmrs:message code="ConceptNumeric.allowDecimal"/></th>
 					<td colspan="2">
 						<spring:bind path="command.precise">
 							<input type="hidden" name="_${status.expression}" value=""/>
