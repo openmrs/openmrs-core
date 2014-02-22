@@ -66,7 +66,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	private String degree;
 	
-	private static String format = "long";
+	private static String format = "short";
 	
 	// Constructors
 	
@@ -597,5 +597,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	public static void setFormat(String format) {
 		PersonName.format = format;
+	}
+	
+	public static String getFormat() {
+		return PersonName.format;
 	}
 }
