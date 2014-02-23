@@ -33,6 +33,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -160,13 +161,17 @@ public class FieldFormController extends SimpleFormController {
 		Collection<FormField> containingAnyFormField = new ArrayList<FormField>();
 		Collection<FormField> containingAllFormFields = new ArrayList<FormField>();
 		Collection<Field> fields = new ArrayList<Field>();
-		fields.add(field); // add the field to the fields collection                                                             
+		fields.add(field); // add the field to the fields collection                                                      	
+		List<Form> formsReturned = null;
+		try {
+			formsReturned = fs.getForms(null, null, encounterTypes, null, containingAnyFormField, containingAllFormFields,
+			    fields); // Retrieving forms which contain this particular field
+		}
+		catch (Exception e) {
+			// When Object parameter doesn't contain a valid Form object, getFroms() throws an Exception
+		}
 		
-		List<Form> formsReturned = fs.getForms(null, null, encounterTypes, null, containingAnyFormField,
-		    containingAllFormFields, fields); // call getForms method to retrieve forms that contain this particular field
-		
-		map.put("formList", formsReturned); // add the returned forms to the map
-		
+		map.put("formList", formsReturned); // add the returned forms to the map		
 		return map;
 	}
 	

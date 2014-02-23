@@ -67,6 +67,7 @@
 
 <br/>
 <br/>
+<c:if test="${field.fieldId!=null}">
 <div class="boxHeader">
 	<b><openmrs:message code="Field.formTableTitle" /></b>
 </div>
@@ -91,5 +92,6 @@
 		</c:forEach>
 	</table>
 </form>
+</c:if>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>
