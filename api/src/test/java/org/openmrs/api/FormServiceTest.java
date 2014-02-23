@@ -859,18 +859,17 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveForm(Form)}}
+	 * @see {@link FormService#purgeForm(Form)}}
 	 * 
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
-	@Verifies(method = "saveForm(Form)", value = "should throw an error when trying to delete a form while forms are locked")
+	@Verifies(method = "purgeForm(Form)", value = "should throw an error when trying to delete a form while forms are locked")
 	public void purgeForm_shouldThrowAnErrorWhenTryingToDeleteFormWhileFormsAreLocked() throws Exception {
 		FormService fs = Context.getFormService();
 		createFormsLockedGPAndSetValueTrue();
 		
 		Form form = fs.getForm(1);
-		form.setName("modified basic form");
 		
 		fs.purgeForm(form);
 	}

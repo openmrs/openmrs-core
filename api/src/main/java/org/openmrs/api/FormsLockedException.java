@@ -20,10 +20,11 @@ import org.openmrs.util.OpenmrsConstants;
  * 
  * @see OpenmrsConstants#GLOBAL_PROPERTY_FORMS_LOCKED
  * @see FormService#checkIfFormsAreLocked()
+ * @since 1.11
  */
 public class FormsLockedException extends APIException {
 	
-	private static final long serialVersionUID = 12344321L;
+	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * Generic constructor that gives a normal reason why the user is not being allowed to save or
