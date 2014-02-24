@@ -49,6 +49,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
+import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
@@ -812,6 +813,7 @@ public class ModuleUtil {
 		}
 		
 		OpenmrsClassLoader.saveState();
+		SchedulerUtil.shutdown();
 		ServiceContext.destroyInstance();
 		
 		try {
@@ -839,6 +841,7 @@ public class ModuleUtil {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		OpenmrsClassLoader.restoreState();
+		SchedulerUtil.startup(Context.getRuntimeProperties());
 		
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 		
