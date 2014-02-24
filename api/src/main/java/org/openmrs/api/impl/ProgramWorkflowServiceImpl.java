@@ -127,7 +127,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public Program getProgramByName(String name) {
 		for (Program p : getAllPrograms()) {
-			if (p.getConcept().isNamed(name)) {
+			if (p.getConcept().isNamed(name) || p.getName().equals(name)) {
 				return p;
 			}
 		}
