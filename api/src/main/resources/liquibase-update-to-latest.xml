@@ -7651,4 +7651,12 @@
 		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
 		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
 	</changeSet>
+
+    <changeSet id="201402241054" author="Akshika">
+        <comment>Makes the start_date in Orders not nullable</comment>
+        <ext:modifyColumn tableName="orders">
+            <column name="start_date" type="DATETIME"/>
+            <constraints nullable="false"/>
+        </ext:modifyColumn>
+    </changeSet>
 </databaseChangeLog>
