@@ -13,7 +13,7 @@
                         <br />$l10n.get("install.simple.empty")</td>
                 </tr>
                 <tr>
-                    <td class="yes">$l10n.get("install.simple.passwd") &nbsp; <input type="password" name="database_root_password" value="${databaseRootPassword}" onKeyPress="return submitenter(this,event);" /></td>
+                    <td class="yes">$l10n.get("install.simple.passwd") &nbsp; <input type="password" name="database_root_password" value="" onKeyPress="return submitenter(this,event);" /></td>
                 </tr>
                 <tr>
                     <td class="question">$l10n.get("install.simple.defpasswd") </b></td>

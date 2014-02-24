@@ -37,7 +37,7 @@
 					<td>$l10n.get("install.advanced.dbsetup.instDb.userName") &nbsp;<input type="text" name="current_database_username" value="${currentDatabaseUsername}" onfocus="clickRadio('current_database_user', 'yes')" onKeyPress="return submitenter(this,event);" /></td>
 				</tr>
 				<tr>
-					<td>$l10n.get("install.simple.passwd") &nbsp;<input type="password" name="current_database_password" value="${currentDatabasePassword}" onfocus="clickRadio('current_database_user', 'yes')" onKeyPress="return submitenter(this,event);" /></td>
+					<td>$l10n.get("install.simple.passwd") &nbsp;<input type="password" name="current_database_password" value="" onfocus="clickRadio('current_database_user', 'yes')" onKeyPress="return submitenter(this,event);" /></td>
 				</tr>
 				<tr>
 					<td rowspan="3" class="no" valign="top">$l10n.get("general.no")<input type="radio" name="current_database_user" value="no" #if( $hasCurrentDatabaseUser == false )checked="checked"#end/></td>
@@ -47,7 +47,7 @@
 					<td>$l10n.get("install.advanced.dbsetup.instDb.userName")  &nbsp; <input type="text" name="create_user_username" value="${createUserUsername}" onfocus="clickRadio('current_database_user', 'no')" onKeyPress="return submitenter(this,event);" /></td>
 				</tr>
 				<tr>
-					<td>$l10n.get("install.simple.passwd") &nbsp; <input type="password" name="create_user_password" value="${createUserPassword}" onfocus="clickRadio('current_database_user', 'no')" onKeyPress="return submitenter(this,event);" /></td>
+					<td>$l10n.get("install.simple.passwd") &nbsp; <input type="password" name="create_user_password" value="" onfocus="clickRadio('current_database_user', 'no')" onKeyPress="return submitenter(this,event);" /></td>
 				</tr>
 				<tr>
 			    	<td colspan="2" align="center">
