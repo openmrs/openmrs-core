@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptComplex;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
@@ -67,8 +69,11 @@ import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.MetadataComparator;
 import org.openmrs.validator.ConceptValidator;
 import org.openmrs.validator.ValidateUtil;
+import org.openmrs.validator.EncounterValidator;
+
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.concept.ConceptReferenceTermWebValidator;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -353,12 +358,16 @@ public class ConceptFormController extends SimpleFormController {
 		
 		String defaultVerbose = "false";
 		
+		List<ConceptNameTag> cstags = new ArrayList<ConceptNameTag>(cs.getAllConceptNameTags());
+		
 		if (Context.isAuthenticated()) {
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			// Non-retired types first
+			Collections.sort(cstags, new MetadataComparator(Context.getLocale()));
 		}
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
-		
-		map.put("tags", cs.getAllConceptNameTags());
+		//map.put("tags", cs.getAllConceptNameTags());
+		map.put("tags", cstags);
 		
 		//get complete class and datatype lists
 		if (Context.hasPrivilege(PrivilegeConstants.VIEW_CONCEPT_CLASSES)) {
