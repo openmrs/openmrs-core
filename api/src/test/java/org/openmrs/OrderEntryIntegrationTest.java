@@ -91,7 +91,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setDuration(20.0);
 		Concept days = conceptService.getConcept(1002);
 		order.setDurationUnits(days);
-		OrderFrequency onceDaily = orderService.getOrderFrequency(1003);
+		OrderFrequency onceDaily = orderService.getOrderFrequency(3000);
 		order.setFrequency(onceDaily);
 		
 		orderService.saveOrder(order);
@@ -114,7 +114,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setCareSetting(careSetting);
 		order.setStartDate(new Date());
 		order.setClinicalHistory("Patient had a negative reaction to the test in the past");
-		order.setFrequency(orderService.getOrderFrequency(1));
+		order.setFrequency(orderService.getOrderFrequency(3000));
 		order.setSpecimenSource(conceptService.getConcept(1000));
 		order.setNumberOfRepeats(3);
 		
