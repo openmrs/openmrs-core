@@ -873,11 +873,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get non retired frequencies with names matching the search phrase
+	 * @verifies get non retired frequencies with names matching the phrase if includeRetired is
+	 *           false
 	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
 	 */
 	@Test
-	public void getOrderFrequencies_shouldGetNonRetiredFrequenciesWithNamesMatchingTheSearchPhrase() throws Exception {
+	public void getOrderFrequencies_shouldGetNonRetiredFrequenciesWithNamesMatchingThePhraseIfIncludeRetiredIsFalse()
+	        throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml");
 		List<OrderFrequency> orderFrequencies = orderService.getOrderFrequencies("once", Locale.US, false, false);
 		assertEquals(2, orderFrequencies.size());
@@ -904,6 +906,22 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(containsId(orderFrequencies, 101));
 		assertTrue(containsId(orderFrequencies, 102));
 		assertTrue(containsId(orderFrequencies, 103));
+	}
+	
+	/**
+	 * @verifies get frequencies with names that match the phrase and locales if exact locale is
+	 *           false
+	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getOrderFrequencies_shouldGetFrequenciesWithNamesThatMatchThePhraseAndLocalesIfExactLocaleIsFalse()
+	        throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml");
+		List<OrderFrequency> orderFrequencies = orderService.getOrderFrequencies("ce", Locale.US, false, false);
+		assertEquals(3, orderFrequencies.size());
+		assertTrue(containsId(orderFrequencies, 100));
+		assertTrue(containsId(orderFrequencies, 101));
+		assertTrue(containsId(orderFrequencies, 102));
 	}
 	
 	/**

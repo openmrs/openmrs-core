@@ -389,7 +389,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * @see OrderService#getOrderFrequencies(boolean)
-	 * @param includeRetired
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired) {
@@ -398,7 +397,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * @see OrderService#getOrderFrequencies(String, java.util.Locale, boolean, boolean)
-	 * @param includeRetired
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,

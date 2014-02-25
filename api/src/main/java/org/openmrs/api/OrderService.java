@@ -320,8 +320,9 @@ public interface OrderService extends OpenmrsService {
 	 *            not
 	 * @return List<OrderFrequency>
 	 * @since 1.10
-	 * @should get non retired frequencies with names matching the search phrase
+	 * @should get non retired frequencies with names matching the phrase if includeRetired is false
 	 * @should include retired frequencies if includeRetired is set to true
+	 * @should get frequencies with names that match the phrase and locales if exact locale is false
 	 * @should get frequencies with names that match the phrase and locale if exact locale is true
 	 * @should return unique frequencies
 	 * @should reject a null search phrase
