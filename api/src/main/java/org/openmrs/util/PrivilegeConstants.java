@@ -541,4 +541,7 @@ public class PrivilegeConstants {
 	public static final String MANAGE_ORDER_FREQUENCIES = "Manage Order Frequencies";
 	
 	public static final String PURGE_ORDER_FREQUENCIES = "Purge Order Frequencies";
+	
+	@AddOnStartup(description = "Able to view Care Settings")
+	public static final String VIEW_CARE_SETTINGS = "View Care Settings";
 }

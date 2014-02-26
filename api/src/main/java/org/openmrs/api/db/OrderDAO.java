@@ -138,13 +138,13 @@ public interface OrderDAO {
 	        boolean includeRetired);
 	
 	/**
-     * @see org.openmrs.api.OrderService#saveOrderFrequency(org.openmrs.OrderFrequency)
-     */
+	 * @see org.openmrs.api.OrderService#saveOrderFrequency(org.openmrs.OrderFrequency)
+	 */
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency);
 	
 	/**
-     * @see org.openmrs.api.OrderService#purgeOrderFrequency(org.openmrs.OrderFrequency)
-     */
+	 * @see org.openmrs.api.OrderService#purgeOrderFrequency(org.openmrs.OrderFrequency)
+	 */
 	public void purgeOrderFrequency(OrderFrequency orderFrequency);
 	
 	/**

@@ -121,6 +121,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
 	/**
@@ -170,6 +171,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should find object given valid order number
 	 * @should return null if no object found with given order number
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
@@ -184,6 +186,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should reject a null patient
 	 * @should reject a null concept
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 	
 	/**
@@ -203,6 +206,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return a list of orders for given order number
 	 * @should return return all order history for given order number
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 	
 	/**
@@ -235,6 +239,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return active orders as of the specified date
 	 * @should default to Order class if no orderClass is specified
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
 	        Date asOfDate);
 	
@@ -245,6 +250,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the care setting
 	 * @since 1.10
 	 */
+	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
 	public CareSetting getCareSetting(Integer careSettingId);
 	
 	/**
@@ -254,6 +260,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return CareSetting
 	 * @should return the care setting with the specified uuid
 	 */
+	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
 	public CareSetting getCareSettingByUuid(String uuid);
 	
 	/**
@@ -263,6 +270,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return CareSetting
 	 * @should return the care setting with the specified name
 	 */
+	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
 	public CareSetting getCareSettingByName(String name);
 	
 	/**
@@ -274,6 +282,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return only un retired care settings if includeRetired is set to false
 	 * @should return retired care settings if includeRetired is set to true
 	 */
+	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
 	public List<CareSetting> getCareSettings(boolean includeRetired);
 	
 	/**
@@ -284,6 +293,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should return the order frequency that matches the specified id
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
 	
 	/**
@@ -294,6 +304,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should return the order frequency that matches the specified uuid
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
 	public OrderFrequency getOrderFrequencyByUuid(String uuid);
 	
 	/**
@@ -305,6 +316,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return only non retired order frequencies if includeRetired is set to false
 	 * @should return all the order frequencies if includeRetired is set to true
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
 	
 	/**
@@ -327,6 +339,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return unique frequencies
 	 * @should reject a null search phrase
 	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
 	        boolean includeRetired);
 	
@@ -347,6 +360,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should reject a future discontinueDate
 	 * @should fail for a discontinuation order
 	 */
+	@Authorized(PrivilegeConstants.ADD_ORDERS)
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) throws Exception;
 	
 	/**
@@ -364,6 +378,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if discontinueDate is in the future
 	 * @should fail for a voided order
 	 */
+	@Authorized(PrivilegeConstants.ADD_ORDERS)
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) throws Exception;
 	
 	/**

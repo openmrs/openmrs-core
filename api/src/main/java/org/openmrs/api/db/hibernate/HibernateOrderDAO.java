@@ -335,43 +335,43 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		return criteria.list();
 	}
-
+	
 	/**
-     * @see org.openmrs.api.db.OrderDAO#saveOrderFrequency(org.openmrs.OrderFrequency)
-     */
-    @Override
-    public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) {
-    	sessionFactory.getCurrentSession().saveOrUpdate(orderFrequency);
-	    return orderFrequency;
-    }
-
+	 * @see org.openmrs.api.db.OrderDAO#saveOrderFrequency(org.openmrs.OrderFrequency)
+	 */
+	@Override
+	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) {
+		sessionFactory.getCurrentSession().saveOrUpdate(orderFrequency);
+		return orderFrequency;
+	}
+	
 	/**
-     * @see org.openmrs.api.db.OrderDAO#purgeOrderFrequency(org.openmrs.OrderFrequency)
-     */
-    @Override
-    public void purgeOrderFrequency(OrderFrequency orderFrequency) {
-    	sessionFactory.getCurrentSession().delete(orderFrequency);
-    }
-
+	 * @see org.openmrs.api.db.OrderDAO#purgeOrderFrequency(org.openmrs.OrderFrequency)
+	 */
+	@Override
+	public void purgeOrderFrequency(OrderFrequency orderFrequency) {
+		sessionFactory.getCurrentSession().delete(orderFrequency);
+	}
+	
 	/**
-     * @see org.openmrs.api.db.OrderDAO#isOrderFrequencyInUse(org.openmrs.OrderFrequency)
-     */
-    @Override
-    public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
-    	criteria.add(Restrictions.eq("frequency", orderFrequency));
-    	criteria.setMaxResults(1);
-    	if (criteria.list().size() > 0) {
-    		return true;
-    	}
-    	
-    	criteria = sessionFactory.getCurrentSession().createCriteria(TestOrder.class);
-    	criteria.add(Restrictions.eq("frequency", orderFrequency));
-    	criteria.setMaxResults(1);
-    	if (criteria.list().size() > 0) {
-    		return true;
-    	}
-    	
-	    return false;
-    }
+	 * @see org.openmrs.api.db.OrderDAO#isOrderFrequencyInUse(org.openmrs.OrderFrequency)
+	 */
+	@Override
+	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
+		criteria.add(Restrictions.eq("frequency", orderFrequency));
+		criteria.setMaxResults(1);
+		if (criteria.list().size() > 0) {
+			return true;
+		}
+		
+		criteria = sessionFactory.getCurrentSession().createCriteria(TestOrder.class);
+		criteria.add(Restrictions.eq("frequency", orderFrequency));
+		criteria.setMaxResults(1);
+		if (criteria.list().size() > 0) {
+			return true;
+		}
+		
+		return false;
+	}
 }

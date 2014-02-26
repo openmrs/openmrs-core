@@ -2061,6 +2061,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return all drugs with a matching term code or drug name or concept name
 	 * @should reject a null search phrase
 	 */
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired);
 	
 	/**

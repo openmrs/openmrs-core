@@ -457,44 +457,44 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		orderToStop.setDateStopped(discontinueDate);
 		saveOrderInternal(orderToStop);
 	}
-
+	
 	/**
-     * @see org.openmrs.api.OrderService#saveOrderFrequency(org.openmrs.OrderFrequency)
-     */
-    @Override
-    public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException {
-    	
-    	if (orderFrequency.getOrderFrequencyId() != null) {
-    		if (dao.isOrderFrequencyInUse(orderFrequency)) {
-    			throw new APIException("This order frequency cannot be edited because it is already in use");
-    		}
-    	}
-    	
-    	ValidateUtil.validate(orderFrequency);
-	    return dao.saveOrderFrequency(orderFrequency);
-    }
-
+	 * @see org.openmrs.api.OrderService#saveOrderFrequency(org.openmrs.OrderFrequency)
+	 */
+	@Override
+	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException {
+		
+		if (orderFrequency.getOrderFrequencyId() != null) {
+			if (dao.isOrderFrequencyInUse(orderFrequency)) {
+				throw new APIException("This order frequency cannot be edited because it is already in use");
+			}
+		}
+		
+		ValidateUtil.validate(orderFrequency);
+		return dao.saveOrderFrequency(orderFrequency);
+	}
+	
 	/**
-     * @see org.openmrs.api.OrderService#retireOrderFrequency(org.openmrs.OrderFrequency, java.lang.String)
-     */
-    @Override
-    public OrderFrequency retireOrderFrequency(OrderFrequency orderFrequency, String reason) {
-	    return dao.saveOrderFrequency(orderFrequency);
-    }
-
+	 * @see org.openmrs.api.OrderService#retireOrderFrequency(org.openmrs.OrderFrequency, java.lang.String)
+	 */
+	@Override
+	public OrderFrequency retireOrderFrequency(OrderFrequency orderFrequency, String reason) {
+		return dao.saveOrderFrequency(orderFrequency);
+	}
+	
 	/**
-     * @see org.openmrs.api.OrderService#unretireOrderFrequency(org.openmrs.OrderFrequency)
-     */
-    @Override
-    public OrderFrequency unretireOrderFrequency(OrderFrequency orderFrequency) {
-    	return dao.saveOrderFrequency(orderFrequency);
-    }
-
+	 * @see org.openmrs.api.OrderService#unretireOrderFrequency(org.openmrs.OrderFrequency)
+	 */
+	@Override
+	public OrderFrequency unretireOrderFrequency(OrderFrequency orderFrequency) {
+		return dao.saveOrderFrequency(orderFrequency);
+	}
+	
 	/**
-     * @see org.openmrs.api.OrderService#purgeOrderFrequency(org.openmrs.OrderFrequency)
-     */
-    @Override
-    public void purgeOrderFrequency(OrderFrequency orderFrequency) {
-	    dao.purgeOrderFrequency(orderFrequency);
-    }
+	 * @see org.openmrs.api.OrderService#purgeOrderFrequency(org.openmrs.OrderFrequency)
+	 */
+	@Override
+	public void purgeOrderFrequency(OrderFrequency orderFrequency) {
+		dao.purgeOrderFrequency(orderFrequency);
+	}
 }
