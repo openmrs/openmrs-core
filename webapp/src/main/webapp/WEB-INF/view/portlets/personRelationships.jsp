@@ -185,15 +185,32 @@
 		$j("#editRelationship #edit_relationship_id").val(relId);
 		$j("#editRelationship #edit_rel_start_date").val(relationships[relId].startDate);
 		$j("#editRelationship #edit_rel_end_date").val(relationships[relId].endDate);
+		$j("#relationship_invalid_Date").hide();
 		$j("#editRelationship").dialog("open");
 	}
 
+function handleResult(validEndDate)
+{
+	
+if(validEndDate==true)
+	{
+          refreshRelationships();
+	      $j("#relationship_invalid_Date").hide();
+		  $j("#editRelationship").dialog("close");
+	}
+	else
+	{
+        $j("#relationship_invalid_Date").show();
+        $j('#editRelationship #edit_rel_end_date').select();
+	}
+}
 	function handleEditRelationship() {
 		var relId = $j("#editRelationship #edit_relationship_id").val();
 		var startDate = $j("#editRelationship #edit_rel_start_date").val();
 		var endDate = $j("#editRelationship #edit_rel_end_date").val();
-		$j("#editRelationship").dialog("close");
-		DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, refreshRelationships);
+		
+		var check=DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, handleResult);
+		
 	}
 	
 	function voidRelationshipDialog(relId) {
@@ -211,6 +228,7 @@
 		if (reason != null && reason.trim().length > 0) {
 			$j("#voidRelationship").dialog("close");
 			DWRRelationshipService.voidRelationship(relId, reason, refreshRelationships);
+			
 		}
 		else{
 			$j("#relationship_empty_reason").show();
@@ -272,7 +290,7 @@
 		
 		<span id="add_rel_details" style="display: none">
 			<hr/>
-			<c:out value="${model.person.personName}" /><openmrs:message code="Relationship.possessive"/>
+			${model.person.personName}<openmrs:message code="Relationship.possessive"/>
 			<i><span id="add_relationship_name"><openmrs:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<openmrs:message code="Relationship.target"/>
@@ -297,7 +315,11 @@
 			</tr>
 			<tr>
 				<th><openmrs:message code="Relationship.endDateLong"/>:</th>
-				<td><openmrs_tag:dateField formFieldName="edit_rel_end_date" startValue="" /></td>
+				<td><openmrs_tag:dateField formFieldName="edit_rel_end_date" startValue="" />
+				<span id="relationship_invalid_Date" class="error" >
+				<openmrs:message code="Relationship.InvalidDate.error"/>
+				</span>
+				</td>
 			</tr>
 		</table>
 	</div>
