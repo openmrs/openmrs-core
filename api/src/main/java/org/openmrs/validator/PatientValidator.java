@@ -84,6 +84,10 @@ public class PatientValidator extends PersonValidator {
 		//so get all otherwise get the active ones
 		Collection<PatientIdentifier> identifiers = patient.isVoided() ? patient.getIdentifiers() : patient
 		        .getActiveIdentifiers();
+		String voidreason = patient.getVoidReason();
+		if (patient.getVoided() && voidreason == null) {
+			errors.reject("error.preferredIdentifier");
+		}
 		for (PatientIdentifier pi : identifiers) {
 			if (pi.isPreferred()) {
 				preferredIdentifierChosen = true;
