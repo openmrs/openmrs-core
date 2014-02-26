@@ -470,7 +470,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
     		}
     	}
     	
-    	//ValidateUtil.validate(orderFrequency);
+    	ValidateUtil.validate(orderFrequency);
 	    return dao.saveOrderFrequency(orderFrequency);
     }
 
