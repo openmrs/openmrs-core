@@ -17,7 +17,7 @@
 			column="uuid" length="38" unique="true" />
 
 		<property name="instructions" type="java.lang.String" column="instructions" length="65535"/>
-		<property name="startDate" type="java.util.Date" column="start_date" length="19"/>
+		<property name="startDate" type="java.util.Date" column="start_date" length="19" not-null="true"/>
 		<property name="autoExpireDate" type="java.util.Date" column="auto_expire_date" length="19"/>
 		<property name="dateStopped" type="java.util.Date" column="date_stopped" length="19"/>
 		<property name="accessionNumber" type="java.lang.String" column="accession_number" length="255" />
