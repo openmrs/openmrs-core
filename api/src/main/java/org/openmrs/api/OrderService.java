@@ -365,4 +365,50 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail for a voided order
 	 */
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) throws Exception;
+	
+	/**
+	 * Creates or updates the given order frequency in the database
+	 * 
+	 * @param orderFrequency the order frequency to save
+	 * @return the order frequency created/saved
+	 * @since 1.10
+	 * @should add a new order frequency to the database
+	 * @should edit an existing order frequency that is not in use
+	 * @should not allow editing an existing order frequency that is in use
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_FREQUENCIES)
+	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException;
+	
+	/**
+	 * Retires the given order frequency in the database
+	 * 
+	 * @param orderFrequency the order frequency to retire
+	 * @param reason the retire reason
+	 * @return the retired order frequency
+	 * @since 1.10
+	 * @should retire given order frequency
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_FREQUENCIES)
+	public OrderFrequency retireOrderFrequency(OrderFrequency orderFrequency, String reason);
+	
+	/**
+	 * Restores an order frequency that was previous retired in the database
+	 * 
+	 * @param orderFrequency the order frequency to unretire
+	 * @return the unretired order frequency
+	 * @since 1.10
+	 * @should unretire given order frequency
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_FREQUENCIES)
+	public OrderFrequency unretireOrderFrequency(OrderFrequency orderFrequency);
+	
+	/**
+	 * Completely removes an order frequency from the database
+	 * 
+	 * @param orderFrequency the order frequency to purge
+	 * @since 1.10
+	 * @should delete given order frequency
+	 */
+	@Authorized(PrivilegeConstants.PURGE_ORDER_FREQUENCIES)
+	public void purgeOrderFrequency(OrderFrequency orderFrequency);
 }

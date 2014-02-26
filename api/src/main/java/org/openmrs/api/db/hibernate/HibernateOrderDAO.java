@@ -31,12 +31,14 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
+import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
@@ -333,4 +335,43 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		return criteria.list();
 	}
+
+	/**
+     * @see org.openmrs.api.db.OrderDAO#saveOrderFrequency(org.openmrs.OrderFrequency)
+     */
+    @Override
+    public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) {
+    	sessionFactory.getCurrentSession().saveOrUpdate(orderFrequency);
+	    return orderFrequency;
+    }
+
+	/**
+     * @see org.openmrs.api.db.OrderDAO#purgeOrderFrequency(org.openmrs.OrderFrequency)
+     */
+    @Override
+    public void purgeOrderFrequency(OrderFrequency orderFrequency) {
+    	sessionFactory.getCurrentSession().delete(orderFrequency);
+    }
+
+	/**
+     * @see org.openmrs.api.db.OrderDAO#isOrderFrequencyInUse(org.openmrs.OrderFrequency)
+     */
+    @Override
+    public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
+    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
+    	criteria.add(Restrictions.eq("frequency", orderFrequency));
+    	criteria.setMaxResults(1);
+    	if (criteria.list().size() > 0) {
+    		return true;
+    	}
+    	
+    	criteria = sessionFactory.getCurrentSession().createCriteria(TestOrder.class);
+    	criteria.add(Restrictions.eq("frequency", orderFrequency));
+    	criteria.setMaxResults(1);
+    	if (criteria.list().size() > 0) {
+    		return true;
+    	}
+    	
+	    return false;
+    }
 }

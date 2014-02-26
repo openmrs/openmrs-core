@@ -533,4 +533,12 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to assign System Developer role")
 	public static final String ASSIGN_SYSTEM_DEVELOPER_ROLE = "Assign System Developer Role";
+	
+	@AddOnStartup(description = "Able to view Order Frequencies")
+	public static final String VIEW_ORDER_FREQUENCIES = "View Order Frequencies";
+	
+	@AddOnStartup(description = "Able to add/edit/retire Order Frequencies")
+	public static final String MANAGE_ORDER_FREQUENCIES = "Manage Order Frequencies";
+	
+	public static final String PURGE_ORDER_FREQUENCIES = "Purge Order Frequencies";
 }

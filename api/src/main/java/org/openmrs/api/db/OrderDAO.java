@@ -136,4 +136,22 @@ public interface OrderDAO {
 	 */
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
 	        boolean includeRetired);
+	
+	/**
+     * @see org.openmrs.api.OrderService#saveOrderFrequency(org.openmrs.OrderFrequency)
+     */
+	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency);
+	
+	/**
+     * @see org.openmrs.api.OrderService#purgeOrderFrequency(org.openmrs.OrderFrequency)
+     */
+	public void purgeOrderFrequency(OrderFrequency orderFrequency);
+	
+	/**
+	 * Checks if an order frequency is being referenced by any order
+	 * 
+	 * @param orderFrequency the order frequency
+	 * @return true if in use, else false
+	 */
+	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency);
 }

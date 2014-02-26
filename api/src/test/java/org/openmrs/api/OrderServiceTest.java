@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.TestUtil.containsId;
@@ -977,5 +978,105 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		expectedException.expect(IllegalArgumentException.class);
 		expectedException.expectMessage("searchPhrase is required");
 		orderService.getOrderFrequencies(null, Locale.ENGLISH, false, false);
+	}
+	
+	@Test
+	@Verifies(value = "should retire given order frequency", method = "retireOrderFrequency(orderFrequency, String)")
+	public void retireOrderFrequency_shouldRetireGivenOrderFrequency() throws Exception {
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		assertNotNull(orderFrequency);
+		Assert.assertFalse(orderFrequency.isRetired());
+		Assert.assertNull(orderFrequency.getRetireReason());
+		
+		Context.getOrderService().retireOrderFrequency(orderFrequency, "retire reason");
+		
+		orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		assertNotNull(orderFrequency);
+		assertTrue(orderFrequency.isRetired());
+		assertEquals("retire reason", orderFrequency.getRetireReason());
+		
+		//Should not change the number of order frequencies.
+		assertEquals(3, Context.getOrderService().getOrderFrequencies(true).size());
+	}
+	
+	@Test
+	@Verifies(value = "should unretire given order frequency", method = "unretireOrderFrequency(OrderFrequency)")
+	public void unretireOrderFrequency_shouldUnretireGivenOrderFrequency() throws Exception {
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(3);
+		assertNotNull(orderFrequency);
+		assertTrue(orderFrequency.isRetired());
+		assertEquals("Some Retire Reason", orderFrequency.getRetireReason());
+		
+		Context.getOrderService().unretireOrderFrequency(orderFrequency);
+		
+		orderFrequency = Context.getOrderService().getOrderFrequency(3);
+		assertNotNull(orderFrequency);
+		assertFalse(orderFrequency.isRetired());
+		assertNull(orderFrequency.getRetireReason());
+		
+		//Should not change the number of order frequencies.
+		assertEquals(3, Context.getOrderService().getOrderFrequencies(true).size());
+	}
+	
+	@Test
+	@Verifies(value = "should delete given order frequency", method = "purgeOrderFrequency(OrderFrequency)")
+	public void purgeOrderFrequency_shouldDeleteGivenOrderFrequency() throws Exception {
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(3);
+		assertNotNull(orderFrequency);
+		
+		Context.getOrderService().purgeOrderFrequency(orderFrequency);
+		
+		orderFrequency = Context.getOrderService().getOrderFrequency(3);
+		Assert.assertNull(orderFrequency);
+		
+		//Should reduce the existing number of order frequencies.
+		assertEquals(2, Context.getOrderService().getOrderFrequencies(true).size());
+	}
+	
+	/**
+	 * @see {@link OrderService#saveOrderFrequency(OrderFrequency)}
+	 */
+	@Test
+	@Verifies(value = "should add a new order frequency to the database", method = "saveOrderFrequency(OrderFrequency)")
+	public void saveOrderFrequency_shouldAddANewOrderFrequencyToTheDatabase() throws Exception {
+		OrderService os = Context.getOrderService();
+		Integer originalSize = os.getOrderFrequencies(true).size();
+		OrderFrequency orderFrequency = new OrderFrequency();
+		orderFrequency.setConcept(new Concept(3));
+		orderFrequency.setFrequencyPerDay(2d);
+		
+		orderFrequency = os.saveOrderFrequency(orderFrequency);
+		
+		assertNotNull(orderFrequency.getId());
+		assertNotNull(orderFrequency.getUuid());
+		assertNotNull(orderFrequency.getCreator());
+		assertNotNull(orderFrequency.getDateCreated());
+		assertEquals(originalSize + 1, os.getOrderFrequencies(true).size());
+	}
+	
+	/**
+	 * @see {@link OrderService#saveOrderFrequency(OrderFrequency)}
+	 */
+	@Test
+	@Verifies(value = "should edit an existing order frequency that is not in use", method = "saveOrderFrequency(OrderFrequency)")
+	public void saveOrderFrequency_shouldEditAnExistingOrderFrequencyThatIsNotInUse() throws Exception {
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(2);
+		assertNotNull(orderFrequency);
+		
+		orderFrequency.setFrequencyPerDay(4d);
+		Context.getOrderService().saveOrderFrequency(orderFrequency);
+	}
+	
+	/**
+	 * @see {@link OrderService#saveOrderFrequency(OrderFrequency)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should not allow editing an existing order frequency that is in use", method = "saveOrderFrequency(OrderFrequency)")
+	public void saveOrderFrequency_shouldNotAllowEditingAnExistingOrderFrequencyThatIsInUse() throws Exception {
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		assertNotNull(orderFrequency);
+		
+		orderFrequency.setFrequencyPerDay(4d);
+		Context.getOrderService().saveOrderFrequency(orderFrequency);
 	}
 }
