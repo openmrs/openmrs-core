@@ -492,7 +492,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(new Concept(1));
 		order.setPatient(new Patient(2));
-		
+        order.setStartDate(new Date());
 		Field field = Order.class.getDeclaredField("orderNumber");
 		field.setAccessible(true);
 		field.set(order, "ORD-1");

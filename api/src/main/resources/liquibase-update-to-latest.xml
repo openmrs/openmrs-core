@@ -7051,4 +7051,11 @@
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
     </changeSet>
 
+    <changeSet id="201402241054" author="Akshika">
+           <comment>Makes the start_date in Orders not nullable</comment>
+                 <ext:modifyColumn tableName="orders">
+                       <column name="start_date" type="DATETIME"/>
+                          <constraints nullable="false"/>
+                 </ext:modifyColumn>
+    </changeSet>
 </databaseChangeLog>
