@@ -2108,13 +2108,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (withAnyOfTheseTypesOrOrderOfPreference.size() > 0) {
 			for (ConceptMapType conceptMapType : withAnyOfTheseTypesOrOrderOfPreference) {
 				criteria.add(Restrictions.eq("map.conceptMapType", conceptMapType));
-				if (criteria.list().size() > 1) {
+				List<Drug> drugs = criteria.list();
+				if (drugs.size() > 1) {
 					throw new DAOException("There are multiple matches for the highest-priority ConceptMapType");
-				} else if (criteria.list().size() == 1) {
-					return (Drug) criteria.list().get(0);
+				} else if (drugs.size() == 1) {
+					return drugs.get(0);
 				}
 				//reset for the next execution to avoid unwanted AND clauses on every found map type
 				criteria = createSearchDrugByMappingCriteria(code, conceptSource, includeRetired);
+			}
+		} else {
+			List<Drug> drugs = criteria.list();
+			if (drugs.size() > 1) {
+				throw new DAOException("There are multiple matches for the highest-priority ConceptMapType");
+			} else if (drugs.size() == 1) {
+				return drugs.get(0);
 			}
 		}
 		return null;
@@ -2126,8 +2134,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		//join to the drugReferenceMap table
 		searchCriteria.createAlias("drug.drugReferenceMaps", "map");
-		// join to the conceptReferenceTerm table
-		searchCriteria.createAlias("map.conceptReferenceTerm", "term");
+		if (code != null || conceptSource != null) {
+			// join to the conceptReferenceTerm table
+			searchCriteria.createAlias("map.conceptReferenceTerm", "term");
+		}
 		// match the source code to the passed code
 		if (code != null) {
 			searchCriteria.add(Restrictions.eq("term.code", code));

@@ -2100,6 +2100,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 * @return the {@link Drug}
 	 * @throws APIException
+	 * @should return a drug that matches the code and source
 	 * @should return a drug that matches the code and source and the best map type
 	 * @should fail if multiple drugs are found matching the best map type
 	 * @should return null if no match found

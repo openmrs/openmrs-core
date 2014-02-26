@@ -2878,4 +2878,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getDrugByMapping_shouldFailIfNoCodeAndConceptSourceAndWithAnyOfTheseTypesAreProvided() throws Exception {
 		conceptService.getDrugByMapping(null, null, Collections.EMPTY_LIST, false);
 	}
+	
+	/**
+	 * @verifies return a drug that matches the code and source
+	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection,
+	 *      boolean)
+	 */
+	@Test
+	public void getDrugByMapping_shouldReturnADrugThatMatchesTheCodeAndSource() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		final Integer expectedDrugId = 2;
+		Drug drug = conceptService.getDrugByMapping("WGT234", conceptService.getConceptSource(2), null, false);
+		assertEquals(expectedDrugId, drug.getDrugId());
+	}
 }
