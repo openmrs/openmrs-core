@@ -65,11 +65,11 @@ public class PatientDashboardController {
 		}
 		
 		if (patient == null) {
-            // redirect to the patient search page if no patient is found
-            HttpSession session = request.getSession();
-            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "patientDashboard.noPatientWithId");
-            session.setAttribute(WebConstants.OPENMRS_ERROR_ARGS, patientId);
-            return "findPatient";
+			// redirect to the patient search page if no patient is found
+			HttpSession session = request.getSession();
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "patientDashboard.noPatientWithId");
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ARGS, patientId);
+			return "findPatient";
 		}
 		
 		log.debug("patient: '" + patient + "'");
