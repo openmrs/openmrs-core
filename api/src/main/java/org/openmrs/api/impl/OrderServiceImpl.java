@@ -36,7 +36,6 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -470,7 +469,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 		}
 		
-		ValidateUtil.validate(orderFrequency);
 		return dao.saveOrderFrequency(orderFrequency);
 	}
 	
@@ -495,6 +493,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void purgeOrderFrequency(OrderFrequency orderFrequency) {
+		
+		if (dao.isOrderFrequencyInUse(orderFrequency)) {
+			throw new APIException("This order frequency cannot be deleted because it is already in use");
+		}
+		
 		dao.purgeOrderFrequency(orderFrequency);
 	}
 }

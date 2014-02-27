@@ -407,7 +407,7 @@ public interface OrderService extends OpenmrsService {
 	public OrderFrequency retireOrderFrequency(OrderFrequency orderFrequency, String reason);
 	
 	/**
-	 * Restores an order frequency that was previous retired in the database
+	 * Restores an order frequency that was previously retired in the database
 	 * 
 	 * @param orderFrequency the order frequency to unretire
 	 * @return the unretired order frequency
@@ -423,7 +423,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderFrequency the order frequency to purge
 	 * @since 1.10
 	 * @should delete given order frequency
+	 * @should not allow deleting an order frequency that is in use
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDER_FREQUENCIES)
-	public void purgeOrderFrequency(OrderFrequency orderFrequency);
+	public void purgeOrderFrequency(OrderFrequency orderFrequency) throws APIException;
 }

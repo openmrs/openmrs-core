@@ -987,6 +987,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderFrequency);
 		Assert.assertFalse(orderFrequency.isRetired());
 		Assert.assertNull(orderFrequency.getRetireReason());
+		Assert.assertNull(orderFrequency.getDateRetired());
 		
 		Context.getOrderService().retireOrderFrequency(orderFrequency, "retire reason");
 		
@@ -994,6 +995,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderFrequency);
 		assertTrue(orderFrequency.isRetired());
 		assertEquals("retire reason", orderFrequency.getRetireReason());
+		assertNotNull(orderFrequency.getDateRetired());
 		
 		//Should not change the number of order frequencies.
 		assertEquals(3, Context.getOrderService().getOrderFrequencies(true).size());
@@ -1006,6 +1008,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderFrequency);
 		assertTrue(orderFrequency.isRetired());
 		assertEquals("Some Retire Reason", orderFrequency.getRetireReason());
+		assertNotNull(orderFrequency.getDateRetired());
 		
 		Context.getOrderService().unretireOrderFrequency(orderFrequency);
 		
@@ -1013,6 +1016,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderFrequency);
 		assertFalse(orderFrequency.isRetired());
 		assertNull(orderFrequency.getRetireReason());
+		assertNull(orderFrequency.getDateRetired());
 		
 		//Should not change the number of order frequencies.
 		assertEquals(3, Context.getOrderService().getOrderFrequencies(true).size());
@@ -1070,13 +1074,29 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#saveOrderFrequency(OrderFrequency)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	@Verifies(value = "should not allow editing an existing order frequency that is in use", method = "saveOrderFrequency(OrderFrequency)")
 	public void saveOrderFrequency_shouldNotAllowEditingAnExistingOrderFrequencyThatIsInUse() throws Exception {
 		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(1);
 		assertNotNull(orderFrequency);
 		
 		orderFrequency.setFrequencyPerDay(4d);
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("This order frequency cannot be edited because it is already in use");
 		Context.getOrderService().saveOrderFrequency(orderFrequency);
+	}
+	
+	/**
+	 * @see {@link OrderService#purgeOrderFrequency(OrderFrequency)}
+	 */
+	@Test
+	@Verifies(value = "should not allow deleting an order frequency that is in use", method = "purgeOrderFrequency(OrderFrequency)")
+	public void purgeOrderFrequency_shouldNotAllowDeletingAnOrderFrequencyThatIsInUse() throws Exception {
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		assertNotNull(orderFrequency);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("This order frequency cannot be deleted because it is already in use");
+		Context.getOrderService().purgeOrderFrequency(orderFrequency);
 	}
 }
