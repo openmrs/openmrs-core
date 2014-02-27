@@ -372,7 +372,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail for a discontinuation order
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) throws Exception;
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Encounter encounter)
+	        throws Exception;
 	
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue.
@@ -390,7 +391,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail for a voided order
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) throws Exception;
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Encounter encounter)
+	        throws Exception;
 	
 	/**
 	 * Creates or updates the given order frequency in the database

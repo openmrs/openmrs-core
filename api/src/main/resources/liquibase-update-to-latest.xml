@@ -7050,5 +7050,14 @@
         <addForeignKeyConstraint constraintName="fk_orderer_provider" baseTableName="orders" baseColumnNames="orderer"
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
     </changeSet>
+    
+    <changeSet id="201402281648-TRUNK-4274" author="k-joseph">
+		<comment>Making order.encounter required</comment>
+		<ext:modifyColumn tableName="orders">
+			<column name="encounter_id" type="int">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
 
 </databaseChangeLog>
