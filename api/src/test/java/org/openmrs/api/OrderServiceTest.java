@@ -476,7 +476,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)}
+	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider)}
 	 */
 	@Test
 	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, String, Date)")
@@ -486,7 +486,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Date discontinueDate = new Date();
 		String discontinueReasonNonCoded = "Test if I can discontinue this";
 		
-		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReasonNonCoded, discontinueDate);
+		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReasonNonCoded, discontinueDate, null);
 		
 		Assert.assertEquals(order.getDateStopped(), discontinueDate);
 		Assert.assertNotNull(discontinueOrder);
@@ -497,7 +497,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)}
+	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)}
 	 */
 	@Test
 	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, Concept, Date)")
@@ -508,7 +508,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Date discontinueDate = new Date();
 		Concept concept = Context.getConceptService().getConcept(1);
 		
-		Order discontinueOrder = orderService.discontinueOrder(order, concept, discontinueDate);
+		Order discontinueOrder = orderService.discontinueOrder(order, concept, discontinueDate, null);
 		
 		Assert.assertEquals(order.getDateStopped(), discontinueDate);
 		Assert.assertNotNull(discontinueOrder);
@@ -519,7 +519,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)}
+	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider)}
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, String, Date)")
@@ -528,11 +528,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderService orderService = Context.getOrderService();
 		Order discontinueOrder = orderService.getOrder(26);
 		
-		orderService.discontinueOrder(discontinueOrder, "Test if I can discontinue this", null);
+		orderService.discontinueOrder(discontinueOrder, "Test if I can discontinue this", null, null);
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)}
+	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)}
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, Concept, Date)")
@@ -542,7 +542,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderService orderService = Context.getOrderService();
 		Order discontinueOrder = orderService.getOrder(26);
 		
-		orderService.discontinueOrder(discontinueOrder, (Concept) null, null);
+		orderService.discontinueOrder(discontinueOrder, (Concept) null, null, null);
 	}
 	
 	/**
@@ -617,7 +617,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @verifies reject a future discontinueDate
-	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void discontinueOrder_shouldRejectAFutureDiscontinueDate() throws Exception {
@@ -626,12 +626,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		CareSetting careSetting = orderService.getCareSetting(1);
 		Order orderToDiscontinue = orderService.getActiveOrders(patient, Order.class, careSetting, null).get(0);
-		orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime());
+		orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime(), null);
 	}
 	
 	/**
 	 * @verifies fail if discontinueDate is in the future
-	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void discontinueOrder_shouldFailIfDiscontinueDateIsInTheFuture() throws Exception {
@@ -639,7 +639,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Order orderToDiscontinue = orderService.getActiveOrders(Context.getPatientService().getPatient(2), Order.class,
 		    orderService.getCareSetting(1), null).get(0);
-		orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime());
+		orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime(), null);
 	}
 	
 	/**
@@ -697,36 +697,36 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @verifies fail for a stopped order
-	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)
 	 */
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAStoppedOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(1);
 		assertNotNull(orderToDiscontinue.getDateStopped());
-		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null);
+		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null);
 	}
 	
 	/**
 	 * @verifies fail for a voided order
-	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider)
 	 */
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAVoidedOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(8);
 		assertTrue(orderToDiscontinue.isVoided());
-		orderService.discontinueOrder(orderToDiscontinue, "testing", null);
+		orderService.discontinueOrder(orderToDiscontinue, "testing", null, null);
 	}
 	
 	/**
 	 * @verifies fail for an expired order
-	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)
 	 */
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAnExpiredOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(6);
 		assertNotNull(orderToDiscontinue.getAutoExpireDate());
 		assertTrue(orderToDiscontinue.getAutoExpireDate().before(new Date()));
-		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null);
+		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null);
 	}
 	
 	/**

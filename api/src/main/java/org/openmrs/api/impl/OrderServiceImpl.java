@@ -22,14 +22,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
-import org.openmrs.Patient;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
@@ -408,27 +401,27 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
-	 *      java.util.Date)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)
 	 */
 	@Override
-	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) throws Exception {
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer) throws Exception {
 		stopOrder(orderToDiscontinue, discontinueDate);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReason(reasonCoded);
+        newOrder.setOrderer(orderer);
 		
 		return saveOrderInternal(newOrder);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider)
 	 */
 	@Override
-	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) throws Exception {
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer) throws Exception {
 		stopOrder(orderToDiscontinue, discontinueDate);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReasonNonCoded(reasonNonCoded);
-		
+		newOrder.setOrderer(orderer);
 		return saveOrderInternal(newOrder);
 	}
 	

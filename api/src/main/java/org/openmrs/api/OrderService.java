@@ -27,6 +27,7 @@ import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.Provider;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
@@ -357,10 +358,12 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue
 	 * 
-	 * @param orderToDiscontinue
-	 * @param reasonCoded
-	 * @param discontinueDate
-	 * @return the new order that discontinued orderToDiscontinue
+	 *
+     * @param orderToDiscontinue
+     * @param reasonCoded
+     * @param discontinueDate
+     * @param orderer
+     * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
 	 * @since 1.10
@@ -372,15 +375,17 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail for a discontinuation order
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) throws Exception;
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer) throws Exception;
 	
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue.
 	 * 
-	 * @param orderToDiscontinue
-	 * @param reasonNonCoded
-	 * @param discontinueDate
-	 * @return the new order that discontinued orderToDiscontinue
+	 *
+     * @param orderToDiscontinue
+     * @param reasonNonCoded
+     * @param discontinueDate
+     * @param orderer
+     * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
 	 * @since 1.10
@@ -390,7 +395,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail for a voided order
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) throws Exception;
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer) throws Exception;
 	
 	/**
 	 * Creates or updates the given order frequency in the database
