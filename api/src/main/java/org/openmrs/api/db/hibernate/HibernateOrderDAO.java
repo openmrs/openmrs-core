@@ -362,33 +362,32 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
-
+		
 		//check for all classes that subclass Order
 		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
 		provider.addIncludeFilter(new AssignableTypeFilter(Order.class));
-
+		
 		// scan in org.openmrs
 		Set<BeanDefinition> components = provider.findCandidateComponents("org/openmrs");
-		for (BeanDefinition component : components)
-		{
+		for (BeanDefinition component : components) {
 			try {
 				if (Order.class.getName().equals(component.getBeanClassName())) {
 					continue; //ignore the org.openmrs.Order class itself
 				}
 				
-			    Class<?> cls = Context.loadClass(component.getBeanClassName());
-			    
-			    Field[] fields = cls.getDeclaredFields();
-		        for (Field field : fields) {
-		        	if (field.getType().equals(OrderFrequency.class)) {
-					    Criteria criteria = sessionFactory.getCurrentSession().createCriteria(cls);
+				Class<?> cls = Context.loadClass(component.getBeanClassName());
+				
+				Field[] fields = cls.getDeclaredFields();
+				for (Field field : fields) {
+					if (field.getType().equals(OrderFrequency.class)) {
+						Criteria criteria = sessionFactory.getCurrentSession().createCriteria(cls);
 						criteria.add(Restrictions.eq(field.getName(), orderFrequency));
 						criteria.setMaxResults(1);
 						if (criteria.list().size() > 0) {
 							return true;
 						}
-		        	}
-		        }
+					}
+				}
 			}
 			catch (ClassNotFoundException ex) {
 				log.error("Failed to check whether order frequency is in use for: " + component.getBeanClassName(), ex);
