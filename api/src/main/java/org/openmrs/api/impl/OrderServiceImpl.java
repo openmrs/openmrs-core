@@ -410,25 +410,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
-	 *      java.util.Date)
+	 *      java.util.Date, org.openmrs.Encounter)
 	 */
 	@Override
-	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate) throws Exception {
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Encounter encounter)
+	        throws Exception {
 		stopOrder(orderToDiscontinue, discontinueDate);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReason(reasonCoded);
+		newOrder.setEncounter(encounter);
 		
 		return saveOrderInternal(newOrder);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Encounter)
 	 */
 	@Override
-	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate) throws Exception {
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Encounter encounter)
+	        throws Exception {
 		stopOrder(orderToDiscontinue, discontinueDate);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReasonNonCoded(reasonNonCoded);
+		newOrder.setEncounter(encounter);
 		
 		return saveOrderInternal(newOrder);
 	}
