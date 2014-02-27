@@ -13,10 +13,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -31,19 +33,21 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
-import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -358,18 +362,37 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
-		criteria.add(Restrictions.eq("frequency", orderFrequency));
-		criteria.setMaxResults(1);
-		if (criteria.list().size() > 0) {
-			return true;
-		}
-		
-		criteria = sessionFactory.getCurrentSession().createCriteria(TestOrder.class);
-		criteria.add(Restrictions.eq("frequency", orderFrequency));
-		criteria.setMaxResults(1);
-		if (criteria.list().size() > 0) {
-			return true;
+
+		//check for all classes that subclass Order
+		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+		provider.addIncludeFilter(new AssignableTypeFilter(Order.class));
+
+		// scan in org.openmrs
+		Set<BeanDefinition> components = provider.findCandidateComponents("org/openmrs");
+		for (BeanDefinition component : components)
+		{
+			try {
+				if (Order.class.getName().equals(component.getBeanClassName())) {
+					continue; //ignore the org.openmrs.Order class itself
+				}
+				
+			    Class<?> cls = Context.loadClass(component.getBeanClassName());
+			    
+			    Field[] fields = cls.getDeclaredFields();
+		        for (Field field : fields) {
+		        	if (field.getType().equals(OrderFrequency.class)) {
+					    Criteria criteria = sessionFactory.getCurrentSession().createCriteria(cls);
+						criteria.add(Restrictions.eq(field.getName(), orderFrequency));
+						criteria.setMaxResults(1);
+						if (criteria.list().size() > 0) {
+							return true;
+						}
+		        	}
+		        }
+			}
+			catch (ClassNotFoundException ex) {
+				log.error("Failed to check whether order frequency is in use for: " + component.getBeanClassName(), ex);
+			}
 		}
 		
 		return false;
