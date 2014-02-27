@@ -396,4 +396,14 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		return false;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderFrequencyByConcept(org.openmrs.Concept)
+	 */
+	@Override
+	public OrderFrequency getOrderFrequencyByConcept(Concept concept) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderFrequency.class);
+		criteria.add(Restrictions.eq("concept", concept));
+		return (OrderFrequency) criteria.uniqueResult();
+	}
 }

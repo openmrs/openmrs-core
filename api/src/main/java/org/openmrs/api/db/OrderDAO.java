@@ -154,4 +154,9 @@ public interface OrderDAO {
 	 * @return true if in use, else false
 	 */
 	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency);
+	
+	/**
+	 * @See OrderService#getOrderFrequencyByConcept
+	 */
+	public OrderFrequency getOrderFrequencyByConcept(Concept concept);
 }

@@ -500,4 +500,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		dao.purgeOrderFrequency(orderFrequency);
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderFrequencyByConcept(org.openmrs.Concept)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderFrequency getOrderFrequencyByConcept(Concept concept) {
+		return dao.getOrderFrequencyByConcept(concept);
+	}
 }

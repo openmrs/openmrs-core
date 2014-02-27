@@ -308,6 +308,17 @@ public interface OrderService extends OpenmrsService {
 	public OrderFrequency getOrderFrequencyByUuid(String uuid);
 	
 	/**
+	 * Gets an OrderFrequency that matches the specified concept
+	 * 
+	 * @param concept the concept to match against
+	 * @return OrderFrequency
+	 * @since 1.10
+	 * @should return the order frequency that matches the specified concept
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
+	public OrderFrequency getOrderFrequencyByConcept(Concept concept);
+	
+	/**
 	 * Gets all order frequencies
 	 * 
 	 * @return List<OrderFrequency>
