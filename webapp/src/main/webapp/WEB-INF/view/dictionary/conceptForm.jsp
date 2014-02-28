@@ -70,7 +70,57 @@
 	});
 
 </script>
-
+<script src="<openmrs:contextPath/>/dwr/interface/DWRConceptService.js"></script>
+ <script type="text/javascript">
+ 
+ 	// logic for showing similar existing concepts using ajax
+ 	
+ 	var timer;
+ 	
+ 	$j(document).ready(function(){
+ 		$j('#similarConceptsStart input').keyup(startTiming);
+ 	});
+ 	
+ 	function startTiming() {
+ 		clearTimeout(timer);
+ 		timer = setTimeout(searchForConcepts, 1000);
+ 	}
+ 	
+ 	function searchForConcepts() {
+ 		DWRConceptService.findBatchOfConcepts($j('#similarConceptsStart input').val(), false, null, null, null, null, null, 3, displayConcepts);
+ 	}
+ 	
+ 	function displayConcepts(concepts) {
+ 		var aString;
+ 		var conceptExists = false;
+ 		if(typeof(concepts[0]) !== 'string') { // check returned array not a message - indicates no results
+ 			var conceptsSize = concepts.length;
+ 			var theInput = $j.trim($j('#similarConceptsStart input').val().toLowerCase());
+ 		    aString = "| ";
+ 			$j.each(concepts, function(index, value) {
+ 				var theName = value.name.toString().toLowerCase();
+ 				var theId = value.conceptId.toString();
+ 				if(theName === theInput) {
+ 					conceptExists = true;
+ 				}
+ 				aString += "<a href='concept.htm?conceptId=";
+ 			aString += theId;
+ 				aString += "' target='_blank'>";
+ 				aString += value.name;
+ 			aString += "</a>";
+ 				aString += " | ";
+ 			});
+ 		} else {
+ 			$j("#similarConcepts").text("");
+ 	}
+ 		if(conceptExists) {
+ 			$j('#similarConceptsStart #duplicateConceptError').show();
+ 		} else {
+ 			$j('#similarConceptsStart #duplicateConceptError').hide();
+ 		}
+ 		$j("#similarConcepts").html(aString);
+ 	}
+ </script>
 <style>
 	.inlineForm { padding: 0px; margin: 0px; display: inline; }
 	#conceptTable th { text-align: right; padding-right: 15px; }
@@ -185,9 +235,10 @@
 			<td class="${loc}" style = "padding: 0px 0px 0px 0px;" >	
 				<table id = "containerTable[${loc}]">
 					<tr>
-						<td valign="bottom" >
+						<td id="similarConceptsStart" valign="bottom" >
 								<spring:bind path="command.namesByLocale[${loc}].name">
 								<input type="text" name="${status.expression}" value="${status.value}" id="${status.expression}" class="largeWidth" onchange="setRadioValue(this, 'fullySpecPreferred[${loc}]')" />
+								<span class="error" id="duplicateConceptError" hidden="true"><openmrs:message code="Concept.error.fullySpecifiedName.notUnique"/></span>
 								</spring:bind>
 						</td>
 						<!-- belown code displays (radio button, help icon and label) as a completed preffered group -->
@@ -216,6 +267,12 @@
 			</td>
 		</c:forEach>
 	</tr>
+	<tr>
+ 		<th valign="top"></th>
+ 		<td>
+ 			<div id="similarConcepts"></div>
+ 		</td>
+ 	</tr>
 	<tr class="localeSpecific">
 		<th valign="top">
 			<openmrs:message code="Concept.synonyms" /> <img class="help_icon_bottom" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<openmrs:message code="Concept.synonyms.help"/>"/>
