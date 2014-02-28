@@ -16,20 +16,24 @@ package org.openmrs.api.db.hibernate;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.EntityMode;
 import org.hibernate.LockOptions;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -45,9 +49,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AssignableTypeFilter;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -363,19 +364,19 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public boolean isOrderFrequencyInUse(OrderFrequency orderFrequency) {
 		
-		//check for all classes that subclass Order
-		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
-		provider.addIncludeFilter(new AssignableTypeFilter(Order.class));
-		
-		// scan in org.openmrs
-		Set<BeanDefinition> components = provider.findCandidateComponents("org/openmrs");
-		for (BeanDefinition component : components) {
+		Map<String, ClassMetadata> metadata = sessionFactory.getAllClassMetadata();
+		for (Iterator<ClassMetadata> i = metadata.values().iterator(); i.hasNext();) {
+			Class<?> entityClass = ((EntityPersister) i.next()).getClassMetadata().getMappedClass(EntityMode.POJO);
+			if (Order.class.getName().equals(entityClass.getName())) {
+				continue; //ignore the org.openmrs.Order class itself
+			}
+			
+			if (!Order.class.isAssignableFrom(entityClass)) {
+				continue; //not a sub class of Order
+			}
+			
 			try {
-				if (Order.class.getName().equals(component.getBeanClassName())) {
-					continue; //ignore the org.openmrs.Order class itself
-				}
-				
-				Class<?> cls = Context.loadClass(component.getBeanClassName());
+				Class<?> cls = Context.loadClass(entityClass.getName());
 				
 				Field[] fields = cls.getDeclaredFields();
 				for (Field field : fields) {
@@ -390,7 +391,7 @@ public class HibernateOrderDAO implements OrderDAO {
 				}
 			}
 			catch (ClassNotFoundException ex) {
-				log.error("Failed to check whether order frequency is in use for: " + component.getBeanClassName(), ex);
+				log.error("Failed to check whether order frequency is in use for: " + entityClass.getName(), ex);
 			}
 		}
 		
