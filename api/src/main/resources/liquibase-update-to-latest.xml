@@ -6421,6 +6421,14 @@
         </comment>
     </changeSet>
 
+    <changeSet id="201402241054" author="Akshika">
+        <comment>Making orders.start_date not nullable</comment>
+        <ext:modifyColumn tableName="orders">
+            <column name="start_date" type="DATETIME"/>
+            <constraints nullable="false"/>
+        </ext:modifyColumn>
+    </changeSet>
+
     <changeSet id="201311041510" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="as_needed" /></not>
@@ -7049,13 +7057,5 @@
         <comment>Adding foreign key constraint to orders.orderer column</comment>
         <addForeignKeyConstraint constraintName="fk_orderer_provider" baseTableName="orders" baseColumnNames="orderer"
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
-    </changeSet>
-
-    <changeSet id="201402241054" author="Akshika">
-        <comment>Making orders.start_date not nullable</comment>
-        <ext:modifyColumn tableName="orders">
-        <column name="start_date" type="DATETIME"/>
-            <constraints nullable="false"/>
-    </ext:modifyColumn>
     </changeSet>
 </databaseChangeLog>
