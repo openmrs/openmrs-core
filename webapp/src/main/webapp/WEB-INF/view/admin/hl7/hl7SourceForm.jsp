@@ -29,7 +29,7 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="hl7Source.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -38,7 +38,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/><span class="required">*</span></td>
 		<td valign="top">
 			<spring:bind path="hl7Source.description">
 				<textarea name="description" rows="3" cols="40" onkeypress="return maxLength(this, 1024);" >${status.value}</textarea>

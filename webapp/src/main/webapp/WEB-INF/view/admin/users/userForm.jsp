@@ -97,7 +97,7 @@
 				<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
 			</spring:nestedPath>
 			<tr>
-				<td><openmrs:message code="Person.gender"/></td>
+				<td><openmrs:message code="Person.gender"/><span class="required">*</span></td>
 				<td><spring:bind path="user.person.gender">
 						<openmrs:forEachRecord name="gender">
 							<input type="radio" name="${status.expression}" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />

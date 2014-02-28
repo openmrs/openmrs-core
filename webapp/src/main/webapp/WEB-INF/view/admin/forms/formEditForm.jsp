@@ -40,7 +40,7 @@
 <form method="post" enctype="multipart/form-data">
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="form.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -58,7 +58,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Form.version"/></td>
+		<td><openmrs:message code="Form.version"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="form.version">
 				<input type="text" name="${status.expression}" value="${status.value}" size="5" />

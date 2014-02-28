@@ -151,7 +151,7 @@
 <form method="post">
 <table>
 	<tr>
-		<th valign="top"><openmrs:message code="Alert.text"/></th>
+		<th valign="top"><openmrs:message code="Alert.text"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="alert.text">
 				<textarea id="text" name="${status.expression}" rows="2" cols="43">${status.value}</textarea>
