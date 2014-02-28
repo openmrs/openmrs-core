@@ -45,7 +45,7 @@
                 </tr>
                 <tr>
                     <td>$l10n.get("install.simple.passwd") &nbsp;
-                    <input type="password" name="create_database_password" value="${createDatabasePassword}" onfocus="clickRadio('current_openmrs_database', 'no')" onKeyPress="return submitenter(this,event);" /></td>
+                    <input type="password" name="create_database_password" value="" onfocus="clickRadio('current_openmrs_database', 'no')" onKeyPress="return submitenter(this,event);" /></td>
                 </tr>
                 <tr>
                     <td colspan="2" align="center">
