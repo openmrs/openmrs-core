@@ -1670,9 +1670,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
         ObsService obsService = Context.getObsService();
 
         List<Obs> obss = obsService.getObservations(null,null, null, null, null,
-                null, null, null, null, null, null,false,"0756940372");
+                null, null, null, null, null, null,true,"0756940372");
 
-        Assert.assertEquals(9, obss.size());
+        Assert.assertEquals(1, obss.size());
     }
 	
 }

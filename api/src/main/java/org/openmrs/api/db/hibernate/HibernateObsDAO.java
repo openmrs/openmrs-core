@@ -249,7 +249,11 @@ public class HibernateObsDAO implements ObsDAO {
 		
 		if (!includeVoidedObs) {
 			criteria.add(Restrictions.eq("voided", false));
-		}
+        }
+
+        if (accessionnumber != null) {
+            criteria.add(Restrictions.eq("accessionNumber",accessionnumber));
+        }
 		return criteria;
 	}
 	
