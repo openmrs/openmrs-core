@@ -89,6 +89,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			newOrder.setConcept(order.getConcept());
 			newOrder.setPatient(order.getPatient());
 			newOrder.setOrderNumber(order.getOrderNumber());
+			newOrder.setOrderer(order.getOrderer());
 			newOrder.setStartDate(new Date());
 			newOrder.setUuid(UUID.randomUUID().toString());
 			
@@ -438,6 +439,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		newOrder.setOrderNumber(getNewOrderNumber());
 		newOrder.setConcept(oldOrder.getConcept());
 		newOrder.setPatient(oldOrder.getPatient());
+		newOrder.setOrderer(oldOrder.getOrderer());
 		newOrder.setPreviousOrderNumber(oldOrder.getOrderNumber());
 		newOrder.setOrderAction(OrderAction.DISCONTINUE);
 		newOrder.setStartDate(new Date());

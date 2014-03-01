@@ -41,7 +41,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setEncounter(Context.getEncounterService().getEncounter(3));
-		
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
@@ -58,6 +58,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDiscontinued(null);
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
@@ -77,6 +78,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setVoided(null);
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
@@ -95,6 +97,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfConceptIsNull() throws Exception {
 		Order order = new Order();
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
@@ -112,6 +115,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfPatientIsNull() throws Exception {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
@@ -125,12 +129,31 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail validation if orderer is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfOrdererIsNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertFalse(errors.hasFieldErrors("discontinued"));
+		Assert.assertFalse(errors.hasFieldErrors("concept"));
+		Assert.assertTrue(errors.hasFieldErrors("orderer"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail validation if startDate after discontinuedDate", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfStartDateAfterDiscontinuedDate() throws Exception {
 		Order order = new Order();
 		;
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(new Date());
@@ -152,6 +175,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(new Date());
@@ -173,6 +197,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
@@ -206,6 +231,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setOrderNumber("orderNumber");
 		order.setDiscontinued(true);
 		order.setDiscontinuedDate(null);
@@ -224,6 +250,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setOrderNumber("orderNumber");
 		order.setDiscontinued(true);
 		order.setDiscontinuedBy(null);
@@ -243,6 +270,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setOrderNumber("orderNumber");
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setDiscontinued(true);
 		order.setDiscontinuedReason(null);
 		
@@ -266,6 +294,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setOrderNumber("orderNumber");
 		order.setDiscontinued(false);
 		order.setDiscontinuedDate(new Date());
@@ -284,6 +313,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setOrderNumber("orderNumber");
 		order.setDiscontinued(false);
 		order.setDiscontinuedBy(new User());
@@ -302,6 +332,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setOrderNumber("orderNumber");
 		order.setDiscontinued(false);
 		order.setDiscontinuedReason("reason");
@@ -326,6 +357,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setDiscontinued(true);
 		order.setDiscontinuedReason("discontinuedReason");
 		order.setDiscontinuedBy(new User());
@@ -351,6 +383,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setDiscontinued(true);
 		order.setDiscontinuedReason("discontinuedReason");
 		order.setDiscontinuedBy(new User());

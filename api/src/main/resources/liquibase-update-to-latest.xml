@@ -7651,4 +7651,14 @@
 		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
 		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
 	</changeSet>
+	
+	<changeSet id="201403011348" author="alexisduque" dbms="mysql">
+		<comment>Make orders.orderer not NULLable</comment>
+		<ext:modifyColumn tableName="orders">
+			<column name="orderer" type="int">
+				<constraints nullable="false" />
+			</column>
+		</ext:modifyColumn>
+	</changeSet>
+	
 </databaseChangeLog>

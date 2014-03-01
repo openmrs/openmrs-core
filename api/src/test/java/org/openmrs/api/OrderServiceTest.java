@@ -578,6 +578,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(Context.getPatientService().getPatient(6));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setStartDate(new Date());
 		service.saveOrder(order);
 		Assert.assertNotNull(order.getOrderId());

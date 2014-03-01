@@ -106,10 +106,11 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.orderId = orderId;
 	}
 	
-	public Order(Integer orderId, Patient patient, Concept concept) {
+	public Order(Integer orderId, Patient patient, Concept concept, Provider orderer) {
 		this.setOrderId(orderId);
 		this.setPatient(patient);
 		this.setConcept(concept);
+		this.setOrderer(orderer);
 	}
 	
 	/**
