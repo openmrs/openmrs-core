@@ -43,6 +43,7 @@ public class WebUtil implements GlobalPropertyListener {
 		}
 		
 		s = s.replace("<", "&lt;");
+		
 		s = s.replace(">", "&gt;");
 		s = s.replace("\n", "<br/>");
 		
