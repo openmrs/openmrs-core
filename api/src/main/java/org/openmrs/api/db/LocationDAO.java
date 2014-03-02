@@ -189,9 +189,9 @@ public interface LocationDAO {
 	 * @see LocationService#getLocationAttributeByUuid(String)
 	 */
 	public LocationAttribute getLocationAttributeByUuid(String uuid);
-
-    /**
-     * @see LocationService#getLocationAttributeTypeByName(String)
-     */
-    public LocationAttributeType getLocationAttributeTypeByName(String name);
+	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByName(String)
+	 */
+	public LocationAttributeType getLocationAttributeTypeByName(String name);
 }
