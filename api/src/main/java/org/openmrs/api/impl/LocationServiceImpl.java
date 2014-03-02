@@ -489,4 +489,13 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE, xml);
 		
 	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationAttributeTypeByName(java.lang.String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public LocationAttributeType getLocationAttributeTypeByName(String name) {
+		return dao.getLocationAttributeTypeByName(name);
+	}
 }

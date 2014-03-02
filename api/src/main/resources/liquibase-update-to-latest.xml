@@ -7651,4 +7651,30 @@
 		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
 		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
 	</changeSet>
+
+    <changeSet id="20140304-TRUNK-4170-duplicateLocationAttributeTypeNameChangeSet" author="harsz89">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult = "0">
+                    <![CDATA[
+ 					SELECT count(*) from location_attribute_type;
+				]]>
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Custom changeset to identify and resolve duplicate Location Attribute Type names</comment>
+        <customChange class="org.openmrs.util.databasechange.DuplicateLocationAttributeTypeNameChangeSet"></customChange>
+    </changeSet>
+
+    <changeSet id="20140304-TRUNK-4170-location_attribute_type_unique_name" author="harsz89">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="location_attribute_type_unique_name" />
+            </not>
+        </preConditions>
+        <comment>
+            Adding the unique constraint to the location_attribute_type.name column
+        </comment>
+        <addUniqueConstraint tableName="location_attribute_type" columnNames="name" constraintName="location_attribute_type_unique_name"/>
+    </changeSet>
 </databaseChangeLog>
