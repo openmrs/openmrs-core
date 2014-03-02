@@ -130,19 +130,22 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		
 		Order firstOrderToDiscontinue = orderService.getOrder(3);
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
 		assertTrue(OrderUtil.isOrderActive(firstOrderToDiscontinue, null));
 		Patient patient = firstOrderToDiscontinue.getPatient();
 		int ordersCount = orderService.getActiveOrders(patient, null, null, null).size();
 		
 		Concept discontinueReason = Context.getConceptService().getConcept(1);
-		Order discontinuationOrder1 = orderService.discontinueOrder(firstOrderToDiscontinue, discontinueReason, null, null);
+		Order discontinuationOrder1 = orderService.discontinueOrder(firstOrderToDiscontinue, discontinueReason, null, null,
+		    encounter);
 		assertEquals(firstOrderToDiscontinue, discontinuationOrder1.getPreviousOrder());
 		
 		//Lets discontinue another order with reason being a string instead of concept
 		Order secondOrderToDiscontinue = orderService.getOrder(5);
 		assertEquals(patient, secondOrderToDiscontinue.getPatient());
 		assertTrue(OrderUtil.isOrderActive(secondOrderToDiscontinue, null));
-		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null, null);
+		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null, null,
+		    encounter);
 		assertEquals(secondOrderToDiscontinue, discontinuationOrder2.getPreviousOrder());
 		
 		//Lets discontinue another order by saving a DC order

@@ -363,6 +363,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param reasonCoded
 	 * @param discontinueDate
 	 * @param orderer
+	 * @param encounter
 	 * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
@@ -375,8 +376,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail for a discontinuation order
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer)
-	        throws Exception;
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
+	        Encounter encounter) throws Exception;
 	
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue.
@@ -386,6 +387,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param reasonNonCoded
 	 * @param discontinueDate
 	 * @param orderer
+	 * @param encounter
 	 * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
@@ -396,8 +398,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail for a voided order
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
-	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer)
-	        throws Exception;
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
+	        Encounter encounter) throws Exception;
 	
 	/**
 	 * Creates or updates the given order frequency in the database

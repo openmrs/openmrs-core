@@ -401,29 +401,31 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Override
-	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer)
-	        throws Exception {
+	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
+	        Encounter encounter) throws Exception {
 		stopOrder(orderToDiscontinue, discontinueDate);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReason(reasonCoded);
 		newOrder.setOrderer(orderer);
+		newOrder.setEncounter(encounter);
 		
 		return saveOrderInternal(newOrder);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Override
-	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer)
-	        throws Exception {
+	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
+	        Encounter encounter) throws Exception {
 		stopOrder(orderToDiscontinue, discontinueDate);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReasonNonCoded(reasonNonCoded);
 		newOrder.setOrderer(orderer);
+		newOrder.setEncounter(encounter);
 		return saveOrderInternal(newOrder);
 	}
 	
