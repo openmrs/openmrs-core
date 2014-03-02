@@ -41,6 +41,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.Action;
@@ -64,6 +65,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private PatientService patientService;
 	
+	private EncounterService encounterService;
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -78,6 +81,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		if (conceptService == null) {
 			conceptService = Context.getConceptService();
+		}
+		
+		if (encounterService == null) {
+			encounterService = Context.getEncounterService();
 		}
 	}
 	
@@ -482,11 +489,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, String, Date)")
 	public void discontinueOrderWithNonCodedReason_shouldPopulateCorrectAttributesOnBothOrders() throws Exception {
 		Order order = orderService.getOrderByOrderNumber("111");
+		Encounter encounter = encounterService.getEncounter(3);
 		assertTrue(OrderUtil.isOrderActive(order, null));
 		Date discontinueDate = new Date();
 		String discontinueReasonNonCoded = "Test if I can discontinue this";
 		
-		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReasonNonCoded, discontinueDate, null);
+		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReasonNonCoded, discontinueDate, null,
+		    encounter);
 		
 		Assert.assertEquals(order.getDateStopped(), discontinueDate);
 		Assert.assertNotNull(discontinueOrder);
@@ -505,10 +514,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		
 		Order order = orderService.getOrderByOrderNumber("111");
+		Encounter encounter = encounterService.getEncounter(3);
 		Date discontinueDate = new Date();
 		Concept concept = Context.getConceptService().getConcept(1);
 		
-		Order discontinueOrder = orderService.discontinueOrder(order, concept, discontinueDate, null);
+		Order discontinueOrder = orderService.discontinueOrder(order, concept, discontinueDate, null, encounter);
 		
 		Assert.assertEquals(order.getDateStopped(), discontinueDate);
 		Assert.assertNotNull(discontinueOrder);
@@ -527,8 +537,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
 		OrderService orderService = Context.getOrderService();
 		Order discontinueOrder = orderService.getOrder(26);
+		Encounter encounter = encounterService.getEncounter(3);
 		
-		orderService.discontinueOrder(discontinueOrder, "Test if I can discontinue this", null, null);
+		orderService.discontinueOrder(discontinueOrder, "Test if I can discontinue this", null, null, encounter);
 	}
 	
 	/**
@@ -541,8 +552,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		OrderService orderService = Context.getOrderService();
 		Order discontinueOrder = orderService.getOrder(26);
+		Encounter encounter = encounterService.getEncounter(3);
 		
-		orderService.discontinueOrder(discontinueOrder, (Concept) null, null, null);
+		orderService.discontinueOrder(discontinueOrder, (Concept) null, null, null, encounter);
 	}
 	
 	/**
@@ -626,7 +638,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		CareSetting careSetting = orderService.getCareSetting(1);
 		Order orderToDiscontinue = orderService.getActiveOrders(patient, Order.class, careSetting, null).get(0);
-		orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime(), null);
+		Encounter encounter = encounterService.getEncounter(3);
+		orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime(), null, encounter);
 	}
 	
 	/**
@@ -639,7 +652,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Order orderToDiscontinue = orderService.getActiveOrders(Context.getPatientService().getPatient(2), Order.class,
 		    orderService.getCareSetting(1), null).get(0);
-		orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime(), null);
+		Encounter encounter = encounterService.getEncounter(3);
+		orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime(), null, encounter);
 	}
 	
 	/**
@@ -702,8 +716,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAStoppedOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(1);
+		Encounter encounter = encounterService.getEncounter(3);
 		assertNotNull(orderToDiscontinue.getDateStopped());
-		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null);
+		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter);
 	}
 	
 	/**
@@ -713,8 +728,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAVoidedOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(8);
+		Encounter encounter = encounterService.getEncounter(3);
 		assertTrue(orderToDiscontinue.isVoided());
-		orderService.discontinueOrder(orderToDiscontinue, "testing", null, null);
+		orderService.discontinueOrder(orderToDiscontinue, "testing", null, null, encounter);
 	}
 	
 	/**
@@ -724,9 +740,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAnExpiredOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(6);
+		Encounter encounter = encounterService.getEncounter(3);
 		assertNotNull(orderToDiscontinue.getAutoExpireDate());
 		assertTrue(orderToDiscontinue.getAutoExpireDate().before(new Date()));
-		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null);
+		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter);
 	}
 	
 	/**
