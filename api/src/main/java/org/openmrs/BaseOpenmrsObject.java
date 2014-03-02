@@ -14,6 +14,7 @@
 package org.openmrs;
 
 import java.util.UUID;
+import org.hibernate.Hibernate;
 
 import com.google.common.base.Objects;
 
@@ -58,12 +59,14 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	
 	/**
 	 * Returns <code>true</code> if and only if <code>x</code> and <code>y</code> refer to the same
-	 * object (<code>x == y</code> has the value <code>true</code>) or both have the same
+	 * object (<code>x == y</code> has the value <code>true</code>) or both are on the same branch
 	 * <code>uuid</code> (<code>((x.uuid != null) && x.uuid.equals(y.uuid))</code> has the value
 	 * <code>true</code>).
 	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 * @should return false if given obj is not instance of BaseOpenmrsObject
+	 * @should return false if given obj is not instance of super of extending class
+	 * @should return true if given obj is instance of super of extending class
 	 * @should return false if given obj is null
 	 * @should return false if given obj has null uuid
 	 * @should return false if uuid is null
@@ -78,6 +81,12 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 		if (!(obj instanceof BaseOpenmrsObject)) {
 			return false;
 		}
+		//In case of hibernate proxy objects we need to get real classes
+		Class<?> thisClass = Hibernate.getClass(this);
+		Class<?> objClass = Hibernate.getClass(obj);
+		if (!(thisClass.isAssignableFrom(objClass) || objClass.isAssignableFrom(thisClass)))
+			return false;
+		
 		BaseOpenmrsObject other = (BaseOpenmrsObject) obj;
 		// Need to call getUuid to make sure the hibernate proxy objects return the correct uuid.
 		// The private member may not be set for a hibernate proxy.
