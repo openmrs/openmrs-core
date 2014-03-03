@@ -26,6 +26,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
@@ -71,6 +72,15 @@ public class UpdateFileParser {
 				
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
+				
+				// Disable resolution of external entities. See TRUNK-3942
+				db.setEntityResolver(new EntityResolver() {
+					
+					public InputSource resolveEntity(String publicId, String systemId) {
+						return new InputSource(new StringReader(""));
+					}
+				});
+				
 				updateDoc = db.parse(inputSource);
 			}
 			catch (Exception e) {

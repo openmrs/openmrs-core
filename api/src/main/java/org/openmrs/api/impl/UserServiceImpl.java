@@ -13,14 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
@@ -35,11 +27,19 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -426,11 +426,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		List<String> requiredPrivs = new Vector<String>();
 		
 		for (Role r : roles) {
-			if (r.getRole().equals(RoleConstants.SUPERUSER) && !authUser.hasRole(RoleConstants.SUPERUSER))
+			if (r.getRole().equals(RoleConstants.SUPERUSER)
+			        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE))
 				throw new APIException("You must have the role '" + RoleConstants.SUPERUSER + "' in order to assign it.");
 			if (r.getPrivileges() != null) {
 				for (Privilege p : r.getPrivileges())
-					if (!authUser.hasPrivilege(p.getPrivilege()))
+					if (!Context.hasPrivilege(p.getPrivilege()))
 						requiredPrivs.add(p.getPrivilege());
 			}
 		}
@@ -629,7 +630,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see UserService#notifyPrivilegeListeners(User, String, boolean)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public void notifyPrivilegeListeners(User user, String privilege, boolean hasPrivilege) {
 		if (privilegeListeners != null) {
 			for (PrivilegeListener privilegeListener : privilegeListeners) {

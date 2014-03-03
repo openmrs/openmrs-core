@@ -37,6 +37,7 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.EncounterTypeLockedException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.ProviderService;
@@ -379,6 +380,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#saveEncounterType(org.openmrs.EncounterType)
 	 */
 	public EncounterType saveEncounterType(EncounterType encounterType) {
+		//make sure the user has not turned off encounter types editing
+		checkIfEncounterTypesAreLocked();
+		
 		dao.saveEncounterType(encounterType);
 		return encounterType;
 	}
@@ -425,6 +429,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (reason == null)
 			throw new IllegalArgumentException("The 'reason' for retiring is required");
 		
+		//make sure the user has not turned off encounter types editing
+		checkIfEncounterTypesAreLocked();
+		
 		encounterType.setRetired(true);
 		encounterType.setRetireReason(reason);
 		return saveEncounterType(encounterType);
@@ -434,6 +441,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#unretireEncounterType(org.openmrs.EncounterType)
 	 */
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException {
+		checkIfEncounterTypesAreLocked();
+		
 		encounterType.setRetired(false);
 		return saveEncounterType(encounterType);
 	}
@@ -442,6 +451,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#purgeEncounterType(org.openmrs.EncounterType)
 	 */
 	public void purgeEncounterType(EncounterType encounterType) throws APIException {
+		//make sure the user has not turned off encounter types editing
+		checkIfEncounterTypesAreLocked();
+		
 		dao.deleteEncounterType(encounterType);
 	}
 	
@@ -669,23 +681,42 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public EncounterVisitHandler getActiveEncounterVisitHandler() throws APIException {
-		String value = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
-		    null);
 		
-		if (StringUtils.isBlank(value))
+		String handlerGlobalValue = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER, null);
+		
+		if (StringUtils.isBlank(handlerGlobalValue))
 			return null;
 		
-		try {
-			Object handler = OpenmrsClassLoader.getInstance().loadClass(value).newInstance();
-			if (!(handler instanceof EncounterVisitHandler))
+		EncounterVisitHandler handler = null;
+		
+		// convention = [NamePrefix:beanName] or [className]
+		String namePrefix = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX;
+		
+		if (handlerGlobalValue.startsWith(namePrefix)) {
+			String beanName = handlerGlobalValue.substring(namePrefix.length());
+			
+			handler = Context.getRegisteredComponent(beanName, EncounterVisitHandler.class);
+		} else {
+			Object instance;
+			
+			try {
+				instance = OpenmrsClassLoader.getInstance().loadClass(handlerGlobalValue).newInstance();
+			}
+			catch (Exception ex) {
+				throw new APIException("Failed to instantiate assignment handler object for class class: "
+				        + handlerGlobalValue, ex);
+			}
+			
+			if (instance instanceof EncounterVisitHandler) {
+				handler = (EncounterVisitHandler) instance;
+			} else {
 				throw new APIException(
 				        "The registered visit assignment handler should implement the EncounterVisitHandler interface");
-			
-			return (EncounterVisitHandler) handler;
+			}
 		}
-		catch (Exception ex) {
-			throw new APIException("Failed to instantiate assignment handler object for class class: " + value, ex);
-		}
+		
+		return handler;
 	}
 	
 	/**
@@ -771,5 +802,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
 	        throws APIException {
 		return dao.getEncountersByVisitsAndPatientCount(patient, includeVoided, query);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#checkIfEncounterTypesAreLocked()
+	 */
+	@Transactional(readOnly = true)
+	public void checkIfEncounterTypesAreLocked() {
+		String locked = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED, "false");
+		if (locked.toLowerCase().equals("true")) {
+			throw new EncounterTypeLockedException();
+		}
 	}
 }

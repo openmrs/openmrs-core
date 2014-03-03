@@ -59,6 +59,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -815,7 +816,10 @@ public class ServiceContext implements ApplicationContextAware {
 					if (log.isDebugEnabled()) {
 						log.debug("cls2 classloader: " + cls.getClass().getClassLoader() + " uid: "
 						        + cls.getClass().getClassLoader().hashCode());
-						log.debug("cls==cls2: " + String.valueOf(cls == cls));
+						//pay attention that here, cls = Class.forName(classString), the system class loader and
+						//cls2 is the openmrs class loader, like above.
+						log.debug("cls==cls2: "
+						        + String.valueOf(cls == OpenmrsClassLoader.getInstance().loadClass(classString)));
 					}
 				}
 				catch (Exception e) { /*pass*/}
@@ -913,6 +917,24 @@ public class ServiceContext implements ApplicationContextAware {
 		if (log.isTraceEnabled())
 			log.trace("getRegisteredComponents(" + type + ") = " + m);
 		return new ArrayList<T>(m.values());
+	}
+	
+	/**
+	 * Retrieves a bean that match the given type (including subclasses) and name.
+	 * 
+	 * @param beanName the name of registered bean to retrieve
+	 * @param type the type of bean to retrieve 
+	 * @return bean of passed type
+	 * 
+	 * @since 1.9.4
+	 */
+	public <T> T getRegisteredComponent(String beanName, Class<T> type) throws APIException {
+		try {
+			return applicationContext.getBean(beanName, type);
+		}
+		catch (BeansException beanException) {
+			throw new APIException("Error during getting registered component.", beanException);
+		}
 	}
 	
 	/**

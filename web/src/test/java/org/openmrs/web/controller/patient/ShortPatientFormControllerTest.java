@@ -40,6 +40,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.WebTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -59,20 +60,7 @@ import org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMa
 public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	@Autowired
-	private AnnotationMethodHandlerAdapter handlerAdapter;
-	
-	@Autowired
-	private DefaultAnnotationHandlerMapping handlerMapping;
-	
-	private MockHttpServletRequest request;
-	
-	private MockHttpServletResponse response;
-	
-	@Before
-	public void setUp() {
-		request = new MockHttpServletRequest();
-		response = new MockHttpServletResponse();
-	}
+	WebTestHelper webTestHelper;
 	
 	/**
 	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)}
@@ -556,16 +544,16 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		Patient patient = Context.getPatientService().getPatient(2);
 		PersonAddress personAddress = patient.getPersonAddress();
 		
+		MockHttpServletRequest request = webTestHelper.newPOST("/admin/patients/shortPatientForm.form");
 		request.setParameter("patientId", patient.getPatientId().toString());
 		request.setParameter("personAddress.address1", personAddress.getAddress1());
 		request.setParameter("personAddress.countyDistrict", "");
-		request.setMethod("POST");
-		request.setRequestURI("/admin/patients/shortPatientForm.form");
 		
-		Object handler = handlerMapping.getHandler(request).getHandler();
-		handlerAdapter.handle(request, response, handler);
+		webTestHelper.handle(request);
 		
-		assertFalse(personAddress.isVoided());
+		patient = Context.getPatientService().getPatient(2);
+		assertEquals(1, patient.getAddresses().size());
+		assertFalse(patient.getPersonAddress().isVoided());
 		assertEquals(personAddress, patient.getPersonAddress());
 	}
 	
@@ -578,16 +566,21 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		Patient patient = Context.getPatientService().getPatient(2);
 		PersonAddress personAddress = patient.getPersonAddress();
 		
+		MockHttpServletRequest request = webTestHelper.newPOST("/admin/patients/shortPatientForm.form");
 		request.setParameter("patientId", patient.getPatientId().toString());
 		request.setParameter("personAddress.address1", "new");
 		request.setParameter("personAddress.countyDistrict", "");
-		request.setMethod("POST");
-		request.setRequestURI("/admin/patients/shortPatientForm.form");
 		
-		Object handler = handlerMapping.getHandler(request).getHandler();
-		handlerAdapter.handle(request, response, handler);
+		webTestHelper.handle(request);
 		
-		assertTrue(personAddress.isVoided());
-		assertEquals("new", patient.getPersonAddress().getAddress1());
+		patient = Context.getPatientService().getPatient(2);
+		assertEquals(2, patient.getAddresses().size());
+		for (PersonAddress address : patient.getAddresses()) {
+			if (address.getAddress1().equals("new")) {
+				assertFalse(address.isVoided());
+			} else {
+				assertTrue(address.isVoided());
+			}
+		}
 	}
 }

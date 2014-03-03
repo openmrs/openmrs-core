@@ -193,4 +193,14 @@ public class HibernateOrderDAO implements OrderDAO {
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
+	/**
+	 * Delete Obs that references (deleted) Order
+	 */
+	public void deleteObsThatReference(Order order) {
+		if (order != null) {
+			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setParameter("order", order)
+			        .executeUpdate();
+		}
+	}
+	
 }

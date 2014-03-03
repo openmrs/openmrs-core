@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<concept concept_id="6043" retired="false" datatype_id="13" class_id="7" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" uuid="8b68403d-8c7e-4961-8952-2da8f249a156"/>
+	<concept_complex concept_id="6043" handler="NeigborHandler" />
+	<concept_name concept_id="6043" name="NEIGHBOR" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2395" voided="0" uuid="9c067348-5bf2-4050-b824-0aa009436ed6" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+</dataset>

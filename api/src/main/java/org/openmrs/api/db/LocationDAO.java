@@ -14,6 +14,7 @@
 package org.openmrs.api.db;
 
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.SessionFactory;
 import org.openmrs.Location;
@@ -68,12 +69,19 @@ public interface LocationDAO {
 	public List<Location> getAllLocations(boolean includeRetired);
 	
 	/**
-	 * Returns a specified number of locations starting with a given string from the specified index
-	 * 
-	 * @see LocationService#getLocations(String, boolean, Integer, Integer)
+	 * Gets the locations matching the specified arguments
+	 *
+	 * @param nameFragment is the string used to search for locations
+	 * @param parent only return children of this parent
+	 * @param serializedAttributeValues the serialized attribute values
+	 * @param includeRetired specifies if retired locations should also be returned
+	 * @param start the beginning index
+	 * @param length the number of matching locations to return
+	 * @return the list of locations
 	 */
-	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
-	        throws DAOException;
+	public List<Location> getLocations(String nameFragment, Location parent,
+	        Map<LocationAttributeType, String> serializedAttributeValues, boolean includeRetired, Integer start,
+	        Integer length) throws DAOException;
 	
 	/**
 	 * Completely remove the location from the database.

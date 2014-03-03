@@ -1866,8 +1866,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Encounter> encs = Context.getEncounterService().getEncountersNotAssignedToAnyVisit(
 		    Context.getPatientService().getPatient(10));
 		Assert.assertEquals(2, encs.size());
-		Assert.assertEquals(17, encs.get(0).getEncounterId().intValue());
-		Assert.assertEquals(18, encs.get(1).getEncounterId().intValue());
+		Assert.assertNull(encs.get(0).getVisit());
+		Assert.assertNull(encs.get(1).getVisit());
 	}
 	
 	/**
@@ -1943,5 +1943,107 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		encounter = encounterService.getEncounter(encounter.getEncounterId());
 		assertEquals(1, encounter.getProvidersByRoles().size());
+	}
+	
+	@Test(expected = APIException.class)
+	public void getActiveEncounterVisitHandler_shouldThrowIfBeanWithGivenTypeAndNameNotFound() {
+		
+		String incorrectBeanName = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX + "invalidName";
+		
+		GlobalProperty visitHandlerProperty = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
+		        incorrectBeanName);
+		
+		Context.getAdministrationService().saveGlobalProperty(visitHandlerProperty);
+		
+		Context.getEncounterService().getActiveEncounterVisitHandler();
+	}
+	
+	@Test
+	public void getActiveEncounterVisitHandler_shouldReturnBeanHaveBeenRegisteredWithGivenName() {
+		
+		String correctBeanName = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX + "existingOrNewVisitAssignmentHandler";
+		
+		GlobalProperty visitHandlerProperty = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
+		        correctBeanName);
+		
+		Context.getAdministrationService().saveGlobalProperty(visitHandlerProperty);
+		
+		EncounterVisitHandler activeEncounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
+		
+		Assert.assertNotNull(activeEncounterVisitHandler);
+	}
+	
+	/**
+	 * @see {@link EncounterService#saveEncounterType(EncounterType)}}
+	 * @see {@link EncounterService#checkIfEncounterTypesAreLocked()}}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to save encounter type when encounter types are locked", method = "saveEncounterType(EncounterType)")
+	public void saveEncounterType_shouldThrowErrorWhenTryingToSaveEncounterTypeWhenEncounterTypesAreLocked()
+	        throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		
+		Assert.assertNotNull(encounterType);
+		
+		encounterService.saveEncounterType(encounterType);
+	}
+	
+	/**
+	 * @see {@link EncounterService#retireEncounterType(EncounterType, String)}}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to retire encounter type when encounter types are locked", method = "retireEncounterType(EncounterType, String)")
+	public void retireEncounterType_shouldThrowErrorWhenTryingToRetireEncounterTypeWhenEncounterTypesAreLocked()
+	        throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		Assert.assertNotNull(encounterType);
+		
+		encounterService.retireEncounterType(encounterType, "reason");
+	}
+	
+	/**
+	 * @see {@link EncounterService#unretireEncounterType(EncounterType)}}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to unretire encounter type when encounter types are locked", method = "unretireEncounterType(EncounterType)")
+	public void unretireEncounterType_shouldThrowErrorWhenTryingToUnretireEncounterTypeWhenEncounterTypesAreLocked()
+	        throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(2);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		encounterService.unretireEncounterType(encounterType);
+	}
+	
+	/**
+	 * @see {@link EncounterService#purgeEncounterType(EncounterType)}}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to delete encounter type when encounter types are locked", method = "purgeEncounterType(EncounterType)")
+	public void purgeEncounterType_shouldThrowErrorWhenTryingToDeleteEncounterTypeWhenEncounterTypesAreLocked()
+	        throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		
+		Assert.assertNotNull(encounterType);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		encounterService.purgeEncounterType(encounterType);
 	}
 }

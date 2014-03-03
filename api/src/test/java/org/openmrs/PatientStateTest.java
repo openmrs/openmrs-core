@@ -18,6 +18,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 public class PatientStateTest {
 	
@@ -30,6 +31,10 @@ public class PatientStateTest {
 	private Date rightOutOfRange;
 	
 	private Date leftOutOfRange;
+	
+	private String uuid2;
+	
+	private String uuid1;
 	
 	@Before
 	public void before() {
@@ -259,4 +264,51 @@ public class PatientStateTest {
 		Assert.assertTrue(result < 0);
 	}
 	
+	/**
+	 * @see PatientState#compareTo(PatientState)
+	 */
+	@Test
+	@Verifies(value = "pass if two states have the same start date, end date and uuid", method = "compareTo(PatientState)")
+	public void compareTo_shouldPassIfTwoStatesHaveTheSameStartDateEndDateAndUuid() throws Exception {
+		
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(rightRange);
+		patientState.setUuid(uuid1);
+		patientState.setVoided(false);
+		
+		PatientState patientState2 = new PatientState();
+		patientState2.setStartDate(leftRange);
+		patientState2.setEndDate(rightRange);
+		patientState2.setUuid(uuid1);
+		patientState2.setVoided(false);
+		
+		Assert.assertTrue(patientState.compareTo(patientState2) == 0);
+	}
+	
+	/**
+	 * @see PatientState#compareTo(PatientState)
+	 */
+	@Test
+	@Verifies(value = "return positive or negative if two states have the same start date and end date but different uuids", method = "compareTo(PatientState)")
+	public void compareTo_shouldReturnPositiveOrNegativeIfTwoStatesHaveTheSameStartDatesEndDatesAndUuids() throws Exception {
+		uuid1 = "some uuid 1";
+		uuid2 = "some uuid 2";
+		
+		PatientState patientState = new PatientState();
+		patientState.setStartDate(leftRange);
+		patientState.setEndDate(rightRange);
+		patientState.setUuid(uuid1);
+		patientState.setVoided(false);
+		
+		PatientState patientState2 = new PatientState();
+		patientState2.setStartDate(leftRange);
+		patientState2.setEndDate(rightRange);
+		patientState2.setUuid(uuid2);
+		patientState2.setVoided(false);
+		
+		int result = (patientState.compareTo(patientState2));
+		
+		Assert.assertTrue(result <= -1 || result >= 1);
+	}
 }

@@ -19,11 +19,13 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
@@ -37,6 +39,19 @@ import org.openmrs.util.OpenmrsClassLoader;
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
+	
+	@Before
+	public void setUp() throws Exception {
+		Context.flushSession();
+		
+		Collection<TaskDefinition> tasks = Context.getSchedulerService().getRegisteredTasks();
+		for (TaskDefinition task : tasks) {
+			Context.getSchedulerService().shutdownTask(task);
+			Context.getSchedulerService().deleteTask(task.getId());
+		}
+		
+		Context.flushSession();
+	}
 	
 	@Test
 	public void shouldResolveValidTaskClass() throws Exception {
@@ -96,6 +111,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * </pre>
 	 */
 	@Test
+	@Ignore("TRUNK-4212 SchedulerServiceTest fails depending on thread scheduling")
 	public void shouldAllowTwoTasksToRunConcurrently() throws Exception {
 		SchedulerService schedulerService = Context.getSchedulerService();
 		
@@ -167,12 +183,11 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * </pre>
 	 */
 	@Test
-	@Ignore("TRUNK-3596: SchedulerServiceTest:shouldAllowTwoTasksInitMethodsToRunConcurrently fails randomly")
+	@Ignore("TRUNK-4212 SchedulerServiceTest fails depending on thread scheduling")
 	public void shouldAllowTwoTasksInitMethodsToRunConcurrently() throws Exception {
 		SchedulerService schedulerService = Context.getSchedulerService();
 		
 		TaskDefinition t3 = new TaskDefinition();
-		t3.setId(3);
 		t3.setStartOnStartup(false);
 		t3.setStartTime(null); // so it starts immediately
 		t3.setTaskClass(SimpleTask.class.getName());
@@ -182,7 +197,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t3.setRepeatInterval(5000l);
 		
 		TaskDefinition t4 = new TaskDefinition();
-		t4.setId(4);
 		t4.setStartOnStartup(false);
 		t4.setStartTime(null); // so it starts immediately
 		t4.setTaskClass(SimpleTask.class.getName());

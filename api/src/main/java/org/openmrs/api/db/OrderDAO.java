@@ -99,4 +99,9 @@ public interface OrderDAO {
 	 */
 	public OrderType getOrderTypeByUuid(String uuid);
 	
+	/**
+	 * Delete Obs that references an order
+	 */
+	public void deleteObsThatReference(Order order);
+	
 }

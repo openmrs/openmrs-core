@@ -106,10 +106,11 @@ public class ObsFormController extends SimpleFormController {
 			obs.setValueCoded(obs.getValueCodedName().getConcept());
 		}
 		
-		//Set the complex obs value before we validate. See TRUNK-3353
-		if (obs.getConcept().isComplex()) {
+		if (obs.getConcept() != null && obs.getConcept().isComplex()) {
 			InputStream complexDataInputStream = setComplexData(obs, request);
-			complexDataInputStream.close();
+			if (complexDataInputStream != null) {
+				complexDataInputStream.close();
+			}
 		}
 		
 		super.onBind(request, command);
@@ -149,7 +150,9 @@ public class ObsFormController extends SimpleFormController {
 							// the handler on the obs.concept is called with the given complex data
 							newlySavedObs = os.saveObs(obs, reason);
 							
-							complexDataInputStream.close();
+							if (complexDataInputStream != null) {
+								complexDataInputStream.close();
+							}
 						}
 					} else {
 						newlySavedObs = os.saveObs(obs, reason);
@@ -176,6 +179,10 @@ public class ObsFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.unvoidedSuccessfully");
 				}
 				
+			}
+			catch (IllegalArgumentException e) {
+				errors.reject("invalidImage", "Obs.invalidImage");
+				return showForm(request, response, errors);
 			}
 			catch (APIException e) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());

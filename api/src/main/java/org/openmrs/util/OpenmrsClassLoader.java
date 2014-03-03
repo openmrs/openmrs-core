@@ -19,15 +19,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -202,21 +206,41 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Enumeration<URL> findResources(final String name) throws IOException {
-		Set<URL> results = new HashSet<URL>();
+		Set<URI> results = new HashSet<URI>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.findResources(name);
 			while (urls.hasMoreElements()) {
 				URL result = urls.nextElement();
 				if (result != null)
-					results.add(result);
+					try {
+						results.add(result.toURI());
+					}
+					catch (URISyntaxException e) {
+						throwInvalidURI(result, e);
+					}
 			}
 		}
 		
 		for (Enumeration<URL> en = super.findResources(name); en.hasMoreElements();) {
-			results.add(en.nextElement());
+			URL url = en.nextElement();
+			try {
+				results.add(url.toURI());
+			}
+			catch (URISyntaxException e) {
+				throwInvalidURI(url, e);
+			}
 		}
 		
-		return Collections.enumeration(results);
+		List<URL> resources = new ArrayList<URL>(results.size());
+		for (URI result : results) {
+			resources.add(result.toURL());
+		}
+		
+		return Collections.enumeration(resources);
+	}
+	
+	private void throwInvalidURI(URL url, Exception e) throws IOException {
+		throw new IOException(url.getPath() + " is not a valid URI", e);
 	}
 	
 	/**
@@ -242,21 +266,37 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Enumeration<URL> getResources(String packageName) throws IOException {
-		Set<URL> results = new HashSet<URL>();
+		Set<URI> results = new HashSet<URI>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.getResources(packageName);
 			while (urls.hasMoreElements()) {
 				URL result = urls.nextElement();
 				if (result != null)
-					results.add(result);
+					try {
+						results.add(result.toURI());
+					}
+					catch (URISyntaxException e) {
+						throwInvalidURI(result, e);
+					}
 			}
 		}
 		
 		for (Enumeration<URL> en = super.getResources(packageName); en.hasMoreElements();) {
-			results.add(en.nextElement());
+			URL url = en.nextElement();
+			try {
+				results.add(url.toURI());
+			}
+			catch (URISyntaxException e) {
+				throwInvalidURI(url, e);
+			}
 		}
 		
-		return Collections.enumeration(results);
+		List<URL> resources = new ArrayList<URL>(results.size());
+		for (URI result : results) {
+			resources.add(result.toURL());
+		}
+		
+		return Collections.enumeration(resources);
 	}
 	
 	/**

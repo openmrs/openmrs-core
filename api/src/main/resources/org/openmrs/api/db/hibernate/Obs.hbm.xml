@@ -70,7 +70,7 @@
 		
 		<!-- one-to-many association to all obs in this grouping -->
 		<set name="groupMembers" inverse="true" cascade="all" order-by="obs_id"
-		access = "field">
+		access = "field" batch-size="25">
 			<key column="obs_group_id" />
 			<one-to-many class="Obs" />
 		</set> 

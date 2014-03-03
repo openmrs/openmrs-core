@@ -1114,5 +1114,4 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public PersonAddress savePersonAddress(PersonAddress personAddress);
-	
 }

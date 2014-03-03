@@ -68,8 +68,14 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.inForm" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />
 
-<input type="submit" value="<openmrs:message code="EncounterType.save"/>" name="save">
+<openmrs:globalProperty key="EncounterType.encounterTypes.locked" var="encounterTypesLocked"/>
 
+<c:if test="${encounterTypesLocked != 'true'}">
+<input type="submit" value="<openmrs:message code="EncounterType.save"/>" name="save">
+</c:if>
+<c:if test="${encounterTypesLocked == 'true'}">
+<input type="submit" value="<openmrs:message code="EncounterType.save"/>" name="save" disabled>
+</c:if>
 </fieldset>
 </form>
 
@@ -88,7 +94,12 @@
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
+			<c:if test="${encounterTypesLocked != 'true'}">
 			<input type="submit" value='<openmrs:message code="EncounterType.retireEncounterType"/>' name="retire"/>
+			</c:if>
+			<c:if test="${encounterTypesLocked == 'true'}">
+			<input type="submit" value='<openmrs:message code="EncounterType.retireEncounterType"/>' name="retire" disabled/>
+			</c:if>
 		</fieldset>
 	</form>
 </c:if>
@@ -99,7 +110,12 @@
 			<h4><openmrs:message code="EncounterType.unretireEncounterType"/></h4>
 			
 			<br/>
+			<c:if test="${encounterTypesLocked != 'true'}">
 			<input type="submit" value='<openmrs:message code="EncounterType.unretireEncounterType"/>' name="unretire"/>
+			</c:if>
+			<c:if test="${encounterTypesLocked == 'true'}">
+			<input type="submit" value='<openmrs:message code="EncounterType.unretireEncounterType"/>' name="unretire" disabled/>
+			</c:if>
 		</fieldset>
 	</form>
 </c:if>
@@ -111,7 +127,12 @@
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
 				<h4><openmrs:message code="EncounterType.purgeEncounterType"/></h4>
+				<c:if test="${encounterTypesLocked != 'true'}">
 				<input type="submit" value='<openmrs:message code="EncounterType.purgeEncounterType"/>' name="purge" />
+				</c:if>
+				<c:if test="${encounterTypesLocked == 'true'}">
+				<input type="submit" value='<openmrs:message code="EncounterType.purgeEncounterType"/>' name="purge" disabled />
+				</c:if>
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>

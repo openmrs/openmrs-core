@@ -29,6 +29,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptComplex;
 import org.openmrs.EncounterType;
 import org.openmrs.Field;
 import org.openmrs.FieldAnswer;
@@ -43,6 +44,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.FormValidator;
 import org.springframework.validation.BindException;
@@ -710,7 +713,27 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		if (field.getUuid() == null)
 			field.setUuid(UUID.randomUUID().toString());
 		
-		return dao.saveFormField(formField);
+		formField = dao.saveFormField(formField);
+		
+		//Include all formfields from all serializable complex obs handlers
+		Concept concept = formField.getField().getConcept();
+		if (concept != null && concept.isComplex()) {
+			ComplexObsHandler handler = Context.getObsService().getHandler(((ConceptComplex) concept).getHandler());
+			if (handler instanceof SerializableComplexObsHandler) {
+				SerializableComplexObsHandler sHandler = (SerializableComplexObsHandler) handler;
+				if (sHandler.getFormFields() != null) {
+					for (FormField ff : sHandler.getFormFields()) {
+						ff.setParent(formField);
+						ff.setForm(formField.getForm());
+						ff.setCreator(formField.getCreator());
+						ff.setDateCreated(formField.getDateCreated());
+						dao.saveFormField(ff);
+					}
+				}
+			}
+		}
+		
+		return formField;
 	}
 	
 	/**
@@ -819,7 +842,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormResource(java.lang.Integer) 
+	 * @see org.openmrs.api.FormService#getFormResource(java.lang.Integer)
 	 */
 	@Override
 	public FormResource getFormResource(Integer formResourceId) throws APIException {
@@ -827,7 +850,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormResourceByUuid(java.lang.String) 
+	 * @see org.openmrs.api.FormService#getFormResourceByUuid(java.lang.String)
 	 */
 	@Override
 	public FormResource getFormResourceByUuid(String uuid) throws APIException {
@@ -835,7 +858,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormResource(org.openmrs.Form, java.lang.String) 
+	 * @see org.openmrs.api.FormService#getFormResource(org.openmrs.Form, java.lang.String)
 	 */
 	@Override
 	public FormResource getFormResource(Form form, String name) throws APIException {
@@ -843,7 +866,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#saveFormResource(org.openmrs.FormResource) 
+	 * @see org.openmrs.api.FormService#saveFormResource(org.openmrs.FormResource)
 	 */
 	@Override
 	public FormResource saveFormResource(FormResource formResource) throws APIException {
@@ -866,7 +889,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#purgeFormResource(org.openmrs.FormResource) 
+	 * @see org.openmrs.api.FormService#purgeFormResource(org.openmrs.FormResource)
 	 */
 	@Override
 	public void purgeFormResource(FormResource formResource) throws APIException {
@@ -874,7 +897,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormResourcesForForm(org.openmrs.Form) 
+	 * @see org.openmrs.api.FormService#getFormResourcesForForm(org.openmrs.Form)
 	 */
 	@Override
 	public Collection<FormResource> getFormResourcesForForm(Form form) throws APIException {
@@ -883,7 +906,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * duplicates form resources from one form to another
-	 *
+	 * 
 	 * @param source the form to copy resources from
 	 * @param destination the form to copy resources to
 	 */

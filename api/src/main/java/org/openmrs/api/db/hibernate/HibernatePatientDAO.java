@@ -176,6 +176,13 @@ public class HibernatePatientDAO implements PatientDAO {
 					}
 				}
 			}
+			
+			//Without evicting person, you will get this error when promoting person to patient
+			//org.hibernate.NonUniqueObjectException: a different object with the same identifier
+			//value was already associated with the session: [org.openmrs.Patient#]
+			//see TRUNK-3728
+			Person person = (Person) sessionFactory.getCurrentSession().get(Person.class, patient.getPersonId());
+			sessionFactory.getCurrentSession().evict(person);
 		}
 		
 		// commenting this out to get the save patient as a user option to work correctly
@@ -184,11 +191,12 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
-	 *      Integer)
+	 *      Integer, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
+	        boolean matchIdentifierExactly, Integer start, Integer length, boolean searchOnNamesOrIdentifiers)
+	        throws DAOException {
 		if (StringUtils.isBlank(name) && StringUtils.isBlank(identifier)
 		        && (identifierTypes == null || identifierTypes.isEmpty())) {
 			return Collections.emptyList();
@@ -196,7 +204,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, true);
+		    matchIdentifierExactly, true, searchOnNamesOrIdentifiers);
 		// restricting the search to the max search results value
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -566,16 +574,16 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean)
+	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean, boolean)
 	 */
 	public Long getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly) {
+	        boolean matchIdentifierExactly, boolean searchOnNamesOrIdentifiers) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		//Skip the ordering of names because H2(and i think PostgreSQL) will require one of the ordered
 		//columns to be in the resultset which then contradicts with the combination of 
 		//(Projections.rowCount() and Criteria.uniqueResult()) that expect back only one row with one column
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly, false);
+		    matchIdentifierExactly, false, searchOnNamesOrIdentifiers);
 		criteria.setProjection(Projections.countDistinct("patientId"));
 		return (Long) criteria.uniqueResult();
 	}

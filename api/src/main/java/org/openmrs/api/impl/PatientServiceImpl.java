@@ -13,18 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,6 +60,18 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Vector;
 
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
@@ -1435,10 +1435,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#savePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
-		//if the argument or the following required fields are not specified
-		if (patientIdentifier == null || patientIdentifier.getPatient() == null
-		        || patientIdentifier.getIdentifierType() == null || patientIdentifier.getLocation() == null
-		        || StringUtils.isBlank(patientIdentifier.getIdentifier()))
+		//fail if the argument or the following required fields are not specified
+		PatientIdentifierType.LocationBehavior locationBehavior = null;
+		if (patientIdentifier != null) {
+			locationBehavior = patientIdentifier.getIdentifierType().getLocationBehavior();
+		}
+		
+		if (patientIdentifier == null
+		        || patientIdentifier.getPatient() == null
+		        || patientIdentifier.getIdentifierType() == null
+		        || StringUtils.isBlank(patientIdentifier.getIdentifier())
+		        || (locationBehavior == PatientIdentifierType.LocationBehavior.REQUIRED && patientIdentifier.getLocation() == null))
 			throw new APIException("PatientIdentifier argument or one of its required fields is null or invalid");
 		if (patientIdentifier.getPatientIdentifierId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS);
@@ -1548,14 +1555,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query))
 			return count;
 		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
-		// if there is a number in the query string
-		if (query.matches(".*\\d+.*")) {
-			log.debug("[Identifier search] Query: " + query);
-			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false));
-		} else {
-			// there is no number in the string, search on name
-			return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query, null, emptyList, false));
-		}
+		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(null, query, emptyList, false, true));
 	}
 	
 	/**
@@ -1581,20 +1581,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see PatientService#getPatients(String, Integer, Integer)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
 		if (StringUtils.isBlank(query))
 			return patients;
 		
-		// if there is a number in the query string
-		if (query.matches(".*\\d+.*")) {
-			log.debug("[Identifier search] Query: " + query);
-			return getPatients(null, query, null, false, start, length);
-		} else {
-			// there is no number in the string, search on name
-			return getPatients(query, null, null, false, start, length);
-		}
+		return dao.getPatients(query, null, Collections.EMPTY_LIST, false, start, length, true);
 	}
 	
 	/**
@@ -1606,6 +1600,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
 		
-		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length);
+		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length, false);
 	}
 }

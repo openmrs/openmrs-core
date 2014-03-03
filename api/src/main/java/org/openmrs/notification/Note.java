@@ -117,5 +117,4 @@ public class Note implements Serializable {
 	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}
-	
 }

@@ -569,7 +569,12 @@ public final class Listener extends ContextLoaderListener {
 				throw ex;
 			}
 			catch (Throwable t) {
-				log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
+				Throwable rootCause = getActualRootCause(t, true);
+				if (rootCause != null)
+					log.fatal("Unable to refresh the spring application context.  Root Cause was:", rootCause);
+				else
+					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
+				
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
 					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
@@ -606,6 +611,24 @@ public final class Listener extends ContextLoaderListener {
 			WebModuleUtil.loadServlets(mod, servletContext);
 			WebModuleUtil.loadFilters(mod, servletContext);
 		}
+	}
+	
+	/**
+	 * Convenience method that recursively attempts to pull the root case from a Throwable
+	 * 
+	 * @param t the Throwable object
+	 * @param isOriginalError specifies if the passed in Throwable is the original Exception that
+	 *            was thrown
+	 * @return the root cause if any was found
+	 */
+	private static Throwable getActualRootCause(Throwable t, boolean isOriginalError) {
+		if (t.getCause() != null)
+			return getActualRootCause(t.getCause(), false);
+		
+		if (!isOriginalError)
+			return t;
+		
+		return null;
 	}
 	
 }

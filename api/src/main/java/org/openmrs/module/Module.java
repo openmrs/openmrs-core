@@ -95,6 +95,8 @@ public final class Module {
 	
 	private boolean mandatory = Boolean.FALSE;
 	
+	private List<ModuleConditionalResource> conditionalResources = new ArrayList<ModuleConditionalResource>();
+	
 	// keep a reference to the file that we got this module from so we can delete
 	// it if necessary
 	private File file = null;
@@ -359,6 +361,10 @@ public final class Module {
 	 */
 	public List<String> getAwareOfModules() {
 		return awareOfModulesMap == null ? null : new ArrayList<String>(awareOfModulesMap.keySet());
+	}
+	
+	public String getAwareOfModuleVersion(String awareOfModule) {
+		return awareOfModulesMap == null ? null : awareOfModulesMap.get(awareOfModule);
 	}
 	
 	/**
@@ -713,14 +719,6 @@ public final class Module {
 		sb.append(t.getMessage());
 		sb.append("\n");
 		
-		// loop over and append all stacktrace elements marking the "openmrs" ones 
-		for (StackTraceElement traceElement : t.getStackTrace()) {
-			if (traceElement.getClassName().contains("openmrs"))
-				sb.append(" ** ");
-			sb.append(traceElement);
-			sb.append("\n");
-		}
-		
 		this.startupErrorMessage = sb.toString();
 	}
 	
@@ -750,5 +748,13 @@ public final class Module {
 		for (AdvicePoint advicePoint : advicePoints) {
 			advicePoint.disposeClassInstance();
 		}
+	}
+	
+	public List<ModuleConditionalResource> getConditionalResources() {
+		return conditionalResources;
+	}
+	
+	public void setConditionalResources(List<ModuleConditionalResource> conditionalResources) {
+		this.conditionalResources = conditionalResources;
 	}
 }

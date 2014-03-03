@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs</artifactId>
-	<version>1.9.4-SNAPSHOT</version>
+	<version>1.9.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>
 	<description>Master project for the modules of OpenMRS</description>
@@ -30,7 +30,8 @@
 		<connection>scm:git:https://github.com/openmrs/openmrs-core</connection>
 		<developerConnection>scm:git:https://github.com/openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<modules>
 		<module>tools</module>
@@ -582,7 +583,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.8</version>
+				<version>5.1.28</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -626,26 +627,37 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.8.1</version>
+				<version>4.11</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
-				<artifactId>mockito-all</artifactId>
-				<version>1.8.5</version>
+				<artifactId>mockito-core</artifactId>
+				<version>1.9.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
-				<version>1.4.10</version>
+				<version>1.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-api-mockito</artifactId>
-				<version>1.4.10</version>
+				<version>1.5</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>mockito-all</artifactId>
+						<groupId>org.mockito</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-library</artifactId>
                 <version>1.3</version>
             </dependency>
 			<dependency>
@@ -683,7 +695,17 @@
 				<artifactId>ehcache-core</artifactId>
 				<version>2.2.0</version>
 			</dependency>
-		</dependencies>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>1.0.0.GA</version>
+            </dependency>
+            <dependency>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                    <version>4.2.0.Final</version>
+            </dependency>
+        </dependencies>
 	</dependencyManagement>
 
 	<build>
@@ -792,7 +814,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.1</version>
+					<version>2.4.1</version>
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -991,18 +1013,18 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-   <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <javaCompilerVersion>1.6</javaCompilerVersion>
-      <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-      <TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
-      
-      <openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
-      <openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}-${parsedVersion.qualifier}</openmrs.version.short>
-      <openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<javaCompilerVersion>1.6</javaCompilerVersion>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 
-      <springVersion>3.0.5.RELEASE</springVersion>
-      <customArgLineForTesting />
-   </properties>
-   
+		<openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
+		<openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${revisionNumber}</openmrs.version.short>
+		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</openmrs.version.shortnumericonly>
+		<openmrs.version>${project.version}</openmrs.version>
+
+		<springVersion>3.0.5.RELEASE</springVersion>
+		<customArgLineForTesting />
+	</properties>
 </project>

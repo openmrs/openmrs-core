@@ -48,6 +48,10 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public class SourceMySqldiffFile implements CustomTaskChange {
 	
+	public static final String CONNECTION_USERNAME = "connection.username";
+	
+	public static final String CONNECTION_PASSWORD = "connection.password";
+	
 	private static Log log = LogFactory.getLog(SourceMySqldiffFile.class);
 	
 	/**
@@ -67,9 +71,20 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		
 		Properties runtimeProperties = Context.getRuntimeProperties();
 		
+		String username = runtimeProperties.getProperty(CONNECTION_USERNAME);
+		String password = runtimeProperties.getProperty(CONNECTION_PASSWORD);
+		
+		if (username == null) {
+			username = System.getProperty(CONNECTION_USERNAME);
+		}
+		if (password == null) {
+			password = System.getProperty(CONNECTION_PASSWORD);
+		}
+		
 		// if we're in a "generate sql file" mode, quit early
-		if (runtimeProperties.size() == 0)
+		if (username == null || password == null) {
 			return;
+		}
 		
 		DatabaseConnection connection = database.getConnection();
 		
@@ -87,8 +102,6 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		
 		// build the mysql command line string
 		List<String> commands = new ArrayList<String>();
-		String username = runtimeProperties.getProperty("connection.username");
-		String password = runtimeProperties.getProperty("connection.password");
 		String databaseName;
 		try {
 			commands.add("mysql");
@@ -109,8 +122,8 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		}
 		
 		// to be used in error messages if this fails
-		String errorCommand = "\"mysql -u" + runtimeProperties.getProperty("connection.username") + " -p -e\"source "
-		        + tmpOutputFile.getAbsolutePath() + "\"" + databaseName;
+		String errorCommand = "\"mysql -u" + username + " -p -e\"source " + tmpOutputFile.getAbsolutePath() + "\""
+		        + databaseName;
 		
 		// run the command line string
 		StringBuffer output = new StringBuffer();

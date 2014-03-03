@@ -50,7 +50,7 @@
 			format = '<openmrs:datePattern />';
 		format = format.toLowerCase();
 
-		var yyyy = date.getYear() + 1900
+		var yyyy = date.getFullYear();
 		var mm = date.getMonth() + 1;
 		if (mm < 10)
 			mm = "0" + mm;

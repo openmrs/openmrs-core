@@ -320,9 +320,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 		    //catch control keys to stop the cursor in the input box from moving.
 		    input.keydown(function(event) {
-		    	//UP(38), DOWN(40), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
+		    	//UP(38), DOWN(40), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
-		    	if(((kc >= 33) && (kc <= 36)) || (kc == 38) || (kc == 40)) {
+		    	if(kc == 33 || kc == 34 || kc == 38 || kc == 40) {
 		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none')) {
 						return true;
 					}
@@ -334,12 +334,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			    		case 34:
 			    			self._doPageDown();
 			    			break;
-				    	case 35:
-				    		self._doKeyEnd();
-				    		break;
-				    	case 36:
-				    		self._doKeyHome();
-				    		break;
 				    	case 38:
 				    		self._doKeyUp();
 				    		break;
@@ -902,22 +896,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			
 			if(selectedRowIndex != null)
 				this._doSelected(selectedRowIndex, this._results[selectedRowIndex]);
-		},
-		
-		_doKeyHome: function() {
-			this._table.fnPageChange('first');
-			if(this._isHighlightedRowOnVisiblePage())
-				return;
-			
-			this._highlightRowOnPageFlip();
-		},
-		
-		_doKeyEnd: function() {
-			this._table.fnPageChange('last');
-			if(this._isHighlightedRowOnVisiblePage())
-				return;
-			
-			this._highlightRowOnPageFlip();
 		},
 		
 		_doSelected: function(position, rowData) {

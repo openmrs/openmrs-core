@@ -192,7 +192,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 			cohort = new Cohort(getPatientIds());
 		}
 		
-		if (location != null && !location.equals("")) {
+		if (location != null) {
 			cohort = intersectFast(cohort, pss.getPatientsHavingLocation(getLocation()));
 		}
 		
