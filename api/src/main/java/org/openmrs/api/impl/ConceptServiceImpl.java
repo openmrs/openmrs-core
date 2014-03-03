@@ -2204,8 +2204,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException {
-		if (code == null && conceptSource == null && CollectionUtils.isEmpty(withAnyOfTheseTypes)) {
-			throw new APIException("Please provide a code or concept source or map types");
+		
+		if (conceptSource == null) {
+			throw new APIException("ConceptSource is required");
 		}
 		if (withAnyOfTheseTypes == null) {
 			withAnyOfTheseTypes = Collections.EMPTY_LIST;
@@ -2214,18 +2215,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, ConceptSource, Collection,
-	 *      boolean)
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
 	 */
 	@Override
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
-	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws APIException {
-		if (code == null && conceptSource == null && CollectionUtils.isEmpty(withAnyOfTheseTypesOrOrderOfPreference)) {
-			throw new APIException("Please provide a code or concept source or map types");
+	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws APIException {
+		if (conceptSource == null) {
+			throw new APIException("ConceptSource is required");
 		}
 		if (withAnyOfTheseTypesOrOrderOfPreference == null) {
 			withAnyOfTheseTypesOrOrderOfPreference = Collections.EMPTY_LIST;
 		}
-		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference, includeRetired);
+		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference);
 	}
 }
