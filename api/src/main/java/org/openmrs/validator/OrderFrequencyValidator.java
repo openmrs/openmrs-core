@@ -63,12 +63,8 @@ public class OrderFrequencyValidator {
 			
 			Concept concept = orderFrequency.getConcept();
 			if (concept != null) {
-				if (concept.getConceptClass() == null) {
+				if (!OrderFrequency.CONCEPT_CLASS_UUID.equals(concept.getConceptClass().getUuid())) {
 					errors.rejectValue("concept", "OrderFrequency.concept.shouldBeClassFrequency");
-				} else {
-					if (!"Frequency".equals(concept.getConceptClass().getName())) {
-						errors.rejectValue("concept", "OrderFrequency.concept.shouldBeClassFrequency");
-					}
 				}
 				
 				OrderFrequency of = Context.getOrderService().getOrderFrequencyByConcept(concept);
