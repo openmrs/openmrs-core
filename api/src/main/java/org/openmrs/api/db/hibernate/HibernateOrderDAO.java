@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -33,7 +32,6 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
@@ -45,7 +43,6 @@ import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -366,8 +363,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		Map<String, ClassMetadata> metadata = sessionFactory.getAllClassMetadata();
 		for (Iterator<ClassMetadata> i = metadata.values().iterator(); i.hasNext();) {
-			Class<?> entityClass = ((EntityPersister) i.next()).getClassMetadata().getMappedClass(EntityMode.POJO);
-			if (Order.class.getName().equals(entityClass.getName())) {
+			ClassMetadata classMetadata = i.next();
+			Class<?> entityClass = classMetadata.getMappedClass(EntityMode.POJO);
+			if (Order.class.equals(entityClass)) {
 				continue; //ignore the org.openmrs.Order class itself
 			}
 			
@@ -375,23 +373,16 @@ public class HibernateOrderDAO implements OrderDAO {
 				continue; //not a sub class of Order
 			}
 			
-			try {
-				Class<?> cls = Context.loadClass(entityClass.getName());
-				
-				Field[] fields = cls.getDeclaredFields();
-				for (Field field : fields) {
-					if (field.getType().equals(OrderFrequency.class)) {
-						Criteria criteria = sessionFactory.getCurrentSession().createCriteria(cls);
-						criteria.add(Restrictions.eq(field.getName(), orderFrequency));
-						criteria.setMaxResults(1);
-						if (criteria.list().size() > 0) {
-							return true;
-						}
+			String[] names = classMetadata.getPropertyNames();
+			for (String name : names) {
+				if (classMetadata.getPropertyType(name).getName().equals(OrderFrequency.class.getName())) {
+					Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass);
+					criteria.add(Restrictions.eq(name, orderFrequency));
+					criteria.setMaxResults(1);
+					if (criteria.list().size() > 0) {
+						return true;
 					}
 				}
-			}
-			catch (ClassNotFoundException ex) {
-				log.error("Failed to check whether order frequency is in use for: " + entityClass.getName(), ex);
 			}
 		}
 		
