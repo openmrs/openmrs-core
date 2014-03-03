@@ -16,6 +16,8 @@ package org.openmrs.reporting;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -48,25 +50,30 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 	 */
 	@Override
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Patients ");
+		sb.append(msa.getMessage("reporting.patients") + " ");
 		RelationshipType relType = getRelationshipType();
 		if (relType != null) {
 			if (includeAtoB && includeBtoA) {
-				sb.append("who are either " + relType.getaIsToB() + " or " + relType.getbIsToA() + " of ");
+				sb.append(msa.getMessage("reporting.whoAreEither") + " " + relType.getaIsToB() + " "
+				        + msa.getMessage("reporting.patients") + " " + relType.getbIsToA() + " "
+				        + msa.getMessage("reporting.of") + " ");
 			} else {
 				if (includeAtoB)
-					sb.append("who are " + relType.getaIsToB() + " to " + relType.getbIsToA() + " ");
+					sb.append(msa.getMessage("reporting.whoAre") + " " + relType.getaIsToB() + " "
+					        + msa.getMessage("reporting.to") + " " + relType.getbIsToA() + " ");
 				if (includeBtoA)
-					sb.append("who are " + relType.getbIsToA() + " to " + relType.getaIsToB() + " ");
+					sb.append(msa.getMessage("reporting.whoAre") + " " + relType.getbIsToA() + " "
+					        + msa.getMessage("reporting.to") + " " + relType.getaIsToB() + " ");
 			}
 		} else {
-			sb.append("with any relationship to ");
+			sb.append(msa.getMessage("reporting.withAnyRelationshipTo") + " ");
 		}
 		if (getPerson() != null)
 			sb.append(getPerson().toString());
 		else
-			sb.append("anyone");
+			sb.append(msa.getMessage("reporting.anyone"));
 		return sb.toString();
 	}
 	
