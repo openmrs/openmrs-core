@@ -197,10 +197,10 @@ tr.bottom-encounter-in-visit td:last-child {
 																	+ visitId
 																	+ '&patientId=${model.patient.patientId}">'
 																	+ type
-																	+ '</a><br/><span class="dimmedDates"><openmrs:message code="general.fromDate" /> '
+																	+ '</a><br/><span class="dimmedDates"><openmrs:message javaScriptEscape="true" code="general.fromDate" /> '
 																	+ from;
 															if (to != '') {
-																visit = visit + ' <openmrs:message code="general.toDate" /> ' + to;
+																visit = visit + ' <openmrs:message javaScriptEscape="true" code="general.toDate" /> ' + to;
 															}
 															visit = visit + '</span>';
 															$j('td:eq(0)',
