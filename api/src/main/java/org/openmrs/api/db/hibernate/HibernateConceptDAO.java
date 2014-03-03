@@ -2101,8 +2101,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
-	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws DAOException {
-		Criteria criteria = createSearchDrugByMappingCriteria(code, conceptSource, includeRetired);
+	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws DAOException {
+		Criteria criteria = createSearchDrugByMappingCriteria(code, conceptSource, true);
 		
 		// match with any of the supplied collection or order of preference of conceptMapTypes
 		if (withAnyOfTheseTypesOrOrderOfPreference.size() > 0) {
@@ -2115,7 +2115,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					return drugs.get(0);
 				}
 				//reset for the next execution to avoid unwanted AND clauses on every found map type
-				criteria = createSearchDrugByMappingCriteria(code, conceptSource, includeRetired);
+				criteria = createSearchDrugByMappingCriteria(code, conceptSource, true);
 			}
 		} else {
 			List<Drug> drugs = criteria.list();

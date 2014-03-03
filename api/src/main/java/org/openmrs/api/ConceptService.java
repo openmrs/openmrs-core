@@ -2083,6 +2083,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should match on the map types
 	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
 	 * @should exclude duplicate matches
+	 * @should fail if source is null
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
@@ -2094,10 +2095,10 @@ public interface ConceptService extends OpenmrsService {
 	 * getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan)) If there are multiple
 	 * matches for the highest-priority ConceptMapType, throw an exception
 	 * 
+	 *
 	 * @param code the code the reference term code to match on
 	 * @param conceptSource the concept source to match on
 	 * @param withAnyOfTheseTypesOrOrderOfPreference the ConceptMapTypes to match on
-	 * @param includeRetired specifies if a retired drug should be returned as a match
 	 * @since 1.10
 	 * @return the {@link Drug}
 	 * @throws APIException
@@ -2106,10 +2107,11 @@ public interface ConceptService extends OpenmrsService {
 	 * @should fail if multiple drugs are found matching the best map type
 	 * @should return null if no match found
 	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
+	 * @should fail if source is null
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
-	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference, boolean includeRetired) throws APIException;
+	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws APIException;
 	
 }
