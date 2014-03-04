@@ -435,7 +435,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setPatient(this.getPatient());
 		newOrder.setDrug(this.getDrug());
 		newOrder.setStartDate(this.getStartDate());
-		
 		return newOrder;
 	}
 	
