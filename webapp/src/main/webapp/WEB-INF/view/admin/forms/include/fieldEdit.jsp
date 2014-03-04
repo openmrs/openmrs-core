@@ -1,7 +1,7 @@
 <table>
 	<tr>
 		<td valign="top">
-			<openmrs:message code="Field.name" />
+			<openmrs:message code="Field.name" /><span class="required">*</span>
 		</td>
 		<td>
 			<spring:bind path="field.name">

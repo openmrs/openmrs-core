@@ -37,7 +37,7 @@
 <fieldset>
 	<table class="left-aligned-th">
 		<tr>
-			<th><openmrs:message code="general.name"/></th>
+			<th><openmrs:message code="general.name"/><span class="required">*</span></th>
 			<td colspan="5">
 				<spring:bind path="location.name">
 					<input type="text" name="name" value='<c:out value="${status.value}"/>' size="35" />

@@ -12,7 +12,7 @@
 <form method="post">
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="conceptClass.name">
 				<input type="text" name="name" value="<c:out value="${status.value}" />" size="35" />
