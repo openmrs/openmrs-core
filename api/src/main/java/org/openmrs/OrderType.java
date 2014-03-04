@@ -15,10 +15,7 @@ package org.openmrs;
 
 /**
  * OrderType
- * 
- * @deprecated Will be removed in version 1.10
  */
-@Deprecated
 public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 23232L;
@@ -27,13 +24,23 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	private Integer orderTypeId;
 	
+	private String javaClass;
+	
+	private OrderType parent;
+	
 	// Constructors
 	
-	/** default constructor */
+	/**
+	 * default constructor
+	 */
 	public OrderType() {
 	}
 	
-	/** constructor with id */
+	/**
+	 * Constructor with ID
+	 *
+	 * @param orderTypeId the ID of the {@link org.openmrs.OrderType}
+	 */
 	public OrderType(Integer orderTypeId) {
 		this.orderTypeId = orderTypeId;
 	}
@@ -41,13 +48,14 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	/**
 	 * Convenience constructor that takes in the elements required to save this OrderType to the
 	 * database
-	 * 
-	 * @param name The name of this order Type
+	 *
+	 * @param name        The name of this order Type
 	 * @param description A short description about this order type
 	 */
-	public OrderType(String name, String description) {
+	public OrderType(String name, String description, Class javaClass) {
 		setName(name);
 		setDescription(description);
+		setJavaClass(javaClass.toString());
 	}
 	
 	// Property accessors
@@ -67,20 +75,66 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	}
 	
 	/**
-	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @since 1.5
 	 */
 	public Integer getId() {
 		return getOrderTypeId();
 	}
 	
 	/**
-	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @since 1.5
 	 */
 	public void setId(Integer id) {
 		setOrderTypeId(id);
 		
 	}
 	
+	/**
+	 * @return Returns the Java class as String
+	 */
+	public String getJavaClass() {
+		return javaClass;
+	}
+	
+	/**
+	 * Same as the {@link org.openmrs.OrderType#getJavaClass()}, but it returns a {@link java.lang.Class} for convenience
+	 *
+	 * @return The Java class as {@link java.lang.Class}
+	 * @throws ClassNotFoundException
+	 */
+	public Class getJavaClassAsClass() throws ClassNotFoundException {
+		return Class.forName(javaClass);
+	}
+	
+	/**
+	 * @param javaClass The Java class to set as String
+	 */
+	public void setJavaClass(String javaClass) {
+		this.javaClass = javaClass;
+	}
+	
+	/**
+	 * Same as the {@link org.openmrs.OrderType#setJavaClass(String)}, but it takes a {@link java.lang.Class} for convenience
+	 *
+	 * @param javaClass The Java class to set
+	 */
+	public void setJavaClass(Class javaClass) {
+		this.javaClass = javaClass.getName();
+	}
+	
+	/**
+	 * @return Returns the {@link org.openmrs.OrderType}
+	 */
+	public OrderType getParent() {
+		return parent;
+	}
+	
+	/**
+	 * @param parent The {@link org.openmrs.OrderType} to set
+	 */
+	public void setParent(OrderType parent) {
+		this.parent = parent;
+	}
 }
