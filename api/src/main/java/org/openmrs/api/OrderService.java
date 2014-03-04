@@ -363,6 +363,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param reasonCoded
 	 * @param discontinueDate
 	 * @param orderer
+	 * @param encounter
 	 * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
@@ -386,6 +387,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param reasonNonCoded
 	 * @param discontinueDate
 	 * @param orderer
+	 * @param encounter
 	 * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
