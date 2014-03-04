@@ -7058,4 +7058,14 @@
         <addForeignKeyConstraint constraintName="fk_orderer_provider" baseTableName="orders" baseColumnNames="orderer"
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
     </changeSet>
+
+    <changeSet id="20140304816-TRUNK-4139" author="Akshika">
+                <preConditions onFail="MARK_RAN">
+                    <not><columnExists tableName="orders" columnName="scheduled_date"/></not>
+                </preConditions>
+                <comment>Adding scheduled_date column to orders table</comment>
+                <addColumn tableName="orders">
+                    <column name="scheduled_date" type="datetime"/>
+                </addColumn>
+            </changeSet>
 </databaseChangeLog>
