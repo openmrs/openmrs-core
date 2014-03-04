@@ -6420,7 +6420,19 @@
             upgrade process if any unmapped text is found
         </comment>
     </changeSet>
-
+    
+    <changeSet id="201403011348" author="alexisduque">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM orders WHERE orderer = NULL</sqlCheck>
+        </preConditions>
+ 	<comment>Make orders.orderer not NULLable</comment>
+ 	<ext:modifyColumn tableName="orders">
+ 		<column name="orderer" type="int">
+ 			<constraints nullable="false" />
+ 		</column>
+ 	</ext:modifyColumn>
+    </changeSet>
+    
     <changeSet id="201402241054" author="Akshika">
         <comment>Making orders.start_date not nullable</comment>
         <ext:modifyColumn tableName="orders">
