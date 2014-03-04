@@ -435,7 +435,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setPatient(this.getPatient());
 		newOrder.setDrug(this.getDrug());
 		newOrder.setStartDate(this.getStartDate());
-		
+		newOrder.setOrderer(this.getOrderer());
 		return newOrder;
 	}
 	
@@ -455,6 +455,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setAction(Action.REVISE);
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(this.getPatient());
+		newOrder.setOrderer(this.getOrderer());
 		newOrder.setInstructions(this.getInstructions());
 		newOrder.setUrgency(this.getUrgency());
 		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());

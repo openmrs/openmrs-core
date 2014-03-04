@@ -64,6 +64,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private PatientService patientService;
 	
+	private ProviderService providerService;
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -79,6 +81,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		if (conceptService == null) {
 			conceptService = Context.getConceptService();
 		}
+		
+		if (providerService == null) {
+			providerService = Context.getProviderService();
+		}
 	}
 	
 	/**
@@ -90,6 +96,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderService orderService = Context.getOrderService();
 		Order order = new Order();
 		order.setPatient(null);
+		order.setOrderer(null);
 		orderService.saveOrder(order);
 	}
 	
@@ -555,6 +562,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setStartDate(new Date());
@@ -582,6 +590,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setStartDate(new Date());
@@ -606,6 +615,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setConcept(Context.getConceptService().getConcept(3));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setStartDate(new Date());
@@ -657,6 +667,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(orderToDiscontinue.getPatient());
 		order.setConcept(orderToDiscontinue.getConcept());
+		order.setOrderer(orderToDiscontinue.getOrderer());
 		order.setCareSetting(orderToDiscontinue.getCareSetting());
 		order.setStartDate(new Date());
 		
@@ -687,6 +698,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(orderToDiscontinue.getPatient());
 		order.setConcept(orderToDiscontinue.getConcept());
+		order.setOrderer(orderToDiscontinue.getOrderer());
 		order.setCareSetting(orderToDiscontinue.getCareSetting());
 		order.setStartDate(new Date());
 		

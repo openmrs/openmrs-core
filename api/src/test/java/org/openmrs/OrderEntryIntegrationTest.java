@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -46,6 +47,9 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private ConceptService conceptService;
+	
+	@Autowired
+	private ProviderService providerService;
 	
 	@Test
 	public void shouldGetTheActiveOrdersForAPatient() {
@@ -111,6 +115,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		TestOrder order = new TestOrder();
 		order.setPatient(patient);
 		order.setConcept(conceptService.getConcept(5497));
+		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(careSetting);
 		order.setStartDate(new Date());
 		order.setClinicalHistory("Patient had a negative reaction to the test in the past");
