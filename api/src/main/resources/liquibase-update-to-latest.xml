@@ -6421,13 +6421,6 @@
         </comment>
     </changeSet>
     
-    <changeSet id="201403021223-TRUNK-4274" author="k-joseph" dbms="mysql">
-    	<preConditions onFail="HALT">
-    		<not><sqlCheck expectedResult="0">SELECT count(encounter_id) FROM orders WHERE encounter_id IS NULL</sqlCheck></not>
-    	</preConditions>
-    	<comment>Checks that no order has a null encounter, fails if any is found</comment>
-    </changeSet>
-    
     <changeSet id="201402281648-TRUNK-4274" author="k-joseph">
     	<comment>Making order.encounter required</comment>
     	<ext:modifyColumn tableName="orders">
