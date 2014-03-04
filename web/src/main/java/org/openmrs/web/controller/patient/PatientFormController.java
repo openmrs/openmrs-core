@@ -271,8 +271,7 @@ public class PatientFormController extends PersonFormController {
 				if (StringUtils.isBlank(voidReason)) {
 					voidReason = msa.getMessage("PatientForm.default.voidReason", null, "Voided from patient form", Context
 					        .getLocale());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.cannot.delete"
-					        + "  Delete reason cannot be empty");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.error.delete_empty");
 				} else {
 					ps.voidPatient(patient, voidReason);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
