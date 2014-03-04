@@ -375,7 +375,7 @@ public class HibernateOrderDAO implements OrderDAO {
 			
 			String[] names = classMetadata.getPropertyNames();
 			for (String name : names) {
-				if (classMetadata.getPropertyType(name).getName().equals(OrderFrequency.class.getName())) {
+				if (classMetadata.getPropertyType(name).getReturnedClass().equals(OrderFrequency.class)) {
 					Criteria criteria = sessionFactory.getCurrentSession().createCriteria(entityClass);
 					criteria.add(Restrictions.eq(name, orderFrequency));
 					criteria.setMaxResults(1);
