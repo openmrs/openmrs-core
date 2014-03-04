@@ -28,6 +28,7 @@ import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -121,28 +122,29 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 	}
 	
 	public String getDescription() {
+		MessageSourceService mss = Context.getMessageSourceService();
 		// TODO: internationalize this
 		StringBuilder sb = new StringBuilder();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE)
-			sb.append("No drug orders");
+			sb.append(mss.getMessage("reporting.no.drug.order"));
 		else if (drugId != null || drugConcept != null) {
-			sb.append("Taking ");
+			sb.append(mss.getMessage("reporting.taking") + " ");
 			SortedSet<String> names = new TreeSet<String>();
 			if (drugId != null) {
 				Drug drug = Context.getConceptService().getDrug(drugId);
 				if (drug == null) {
 					log.error("Can't find drug with id " + drugId);
-					names.add("MISSING DRUG " + drugId);
+					names.add(mss.getMessage("reporting.miss.drug") + " " + drugId);
 				} else
 					names.add(drug.getName());
 			}
 			if (drugConcept != null)
 				names.add(drugConcept.getName(Context.getLocale(), false).getName());
-			sb.append(OpenmrsUtil.join(names, " or "));
+			sb.append(OpenmrsUtil.join(names, " " + mss.getMessage("reporting.or") + " "));
 		} else
-			sb.append("Any Drug Order");
+			sb.append(mss.getMessage("reporting.anyDrugOrder"));
 		if (getOnDate() != null)
-			sb.append(" on " + getOnDate());
+			sb.append(" " + mss.getMessage("reporting.on") + " " + getOnDate());
 		return sb.toString();
 	}
 	

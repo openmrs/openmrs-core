@@ -22,6 +22,7 @@ import org.openmrs.Program;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortUtil;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -59,20 +60,21 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 	}
 	
 	public String getDescription() {
+		MessageSourceService mss = Context.getMessageSourceService();
 		if (!isReadyToRun())
 			return "";
 		Locale locale = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		StringBuffer ret = new StringBuffer();
-		ret.append("Patients in ");
+		ret.append(mss.getMessage("reporting.patientsIn") + " ");
 		ret.append(getConceptName(program.getConcept()));
 		if (onDate != null)
-			ret.append(" on " + df.format(onDate));
+			ret.append(" " + mss.getMessage("reporting.on") + " " + df.format(onDate));
 		else {
 			if (fromDate != null)
-				ret.append(" anytime after " + df.format(fromDate));
+				ret.append(" " + mss.getMessage("reporting.anytimeAfter") + " " + df.format(fromDate));
 			if (toDate != null)
-				ret.append(" anytime before " + df.format(toDate));
+				ret.append(" " + mss.getMessage("reporting.anytimeBefore") + " " + df.format(toDate));
 		}
 		return ret.toString();
 	}
