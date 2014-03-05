@@ -41,7 +41,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/><span class="required">*</span></td>
 		<td valign="top">
 			<spring:bind path="relationshipType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>

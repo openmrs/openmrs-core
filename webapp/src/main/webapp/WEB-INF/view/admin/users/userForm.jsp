@@ -143,12 +143,12 @@
 			</tr>
 			<c:if test="${modifyPasswords == true}">
 				<tr>
-				<td><openmrs:message code="User.usersPassword" /></td>
+				<td><openmrs:message code="User.usersPassword" /><span class="required">*</span></td>
 					<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/></td>
 		
 				</tr>
 				<tr>
-					<td><openmrs:message code="User.confirm" /></td>
+					<td><openmrs:message code="User.confirm" /><span class="required">*</span></td>
 					<td>
 						<input type="password" name="confirm" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off" />
 						<i><openmrs:message code="User.confirm.description" /></i>

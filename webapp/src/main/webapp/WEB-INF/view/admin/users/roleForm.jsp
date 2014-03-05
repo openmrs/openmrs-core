@@ -55,7 +55,7 @@
 <form method="post">
 <table>
 	<tr>
-		<th><openmrs:message code="Role.role"/></th>
+		<th><openmrs:message code="Role.role"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="role.role">
 				<c:if test="${param.roleName == null}"><input type="text" id="role" name="${status.expression}" value="${status.value}" onChange="updateRoleName()"></c:if>
