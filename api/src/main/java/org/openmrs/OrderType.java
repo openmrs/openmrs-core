@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.api.context.Context;
+
 import java.util.Collection;
 
 /**
@@ -80,7 +82,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
-	 * @since 1.5
 	 */
 	public Integer getId() {
 		return getOrderTypeId();
@@ -88,7 +89,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 * @since 1.5
 	 */
 	public void setId(Integer id) {
 		setOrderTypeId(id);
@@ -108,8 +108,8 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @return The Java class as {@link java.lang.Class}
 	 * @throws ClassNotFoundException
 	 */
-	public Class getJavaClassAsClass() throws ClassNotFoundException {
-		return Class.forName(javaClass);
+	public Class getJavaClassObject() throws ClassNotFoundException {
+		return Context.loadClass(javaClass);
 	}
 	
 	/**
@@ -117,15 +117,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 */
 	public void setJavaClass(String javaClass) {
 		this.javaClass = javaClass;
-	}
-	
-	/**
-	 * Same as the {@link org.openmrs.OrderType#setJavaClass(String)}, but it takes a {@link java.lang.Class} for convenience
-	 *
-	 * @param javaClass The Java class to set
-	 */
-	public void setJavaClass(Class javaClass) {
-		this.javaClass = javaClass.getName();
 	}
 	
 	/**
