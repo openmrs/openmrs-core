@@ -894,6 +894,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ADDRESS_TEMPLATE = "layout.address.format";
 	
+	public static final String GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT = "layout.name.format";
+	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
@@ -1808,4 +1810,9 @@ public final class OpenmrsConstants {
 	
 	/**Prefix followed by registered component name.*/
 	public static final String REGISTERED_COMPONENT_NAME_PREFIX = "bean:";
+	
+	/** Person Name Format*/
+	public static final String PersonNameFormat_Short = "short";
+	
+	public static final String PersonNameFormat_Long = "long";
 }

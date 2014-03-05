@@ -466,4 +466,19 @@ public class PersonNameTest {
 		Assert.assertEquals("Bob Jones", pn.getFullName());
 	}
 	
+	/**
+	 * @see {@link PersonName#getFullName()}
+	 */
+	@Test
+	@Verifies(value = "should return short if the Person name format is set to OpenmrsConstants.PersonNameFormat_Short", method = "getFullName()")
+	public void getFullName_shouldNotreturnLongIfPersonNameFormatIsShort() throws Exception {
+		PersonName pn = new PersonName();
+		pn.setGivenName("Taylor");
+		pn.setMiddleName("Bob");
+		pn.setFamilyName("Jones");
+		pn.setFamilyNamePrefix("jr.");
+		PersonName.setFormat(OpenmrsConstants.PersonNameFormat_Short);
+		Assert.assertEquals(pn.getFullName(), "Taylor Bob Jones");
+	}
+	
 }
