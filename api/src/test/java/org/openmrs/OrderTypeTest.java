@@ -13,27 +13,11 @@ import org.openmrs.test.Verifies;
 public class OrderTypeTest {
 	
 	/**
-	 * @see org.openmrs.OrderType#setJavaClass(Class)
+	 * @see org.openmrs.OrderType#getJavaClassObject()
 	 */
 	@Test
-	@Verifies(value = "should set java class as String", method = "setJavaClass(Class)")
-	public void setJavaClass_shouldSetJavaClassAsString() throws Exception {
-		//Create a new OrderType
-		OrderType orderType = new OrderType();
-		
-		//Test with Integer class
-		Class clazz = Integer.class;
-		
-		orderType.setJavaClass(clazz);
-		Assert.assertEquals("java.lang.Integer", orderType.getJavaClass());
-	}
-	
-	/**
-	 * @see OrderType#getJavaClassAsClass()
-	 */
-	@Test
-	@Verifies(value = "should get java class String as class", method = "getJavaClassAsClass()")
-	public void setJavaClass_shouldGetJavaClassStringAsClass() throws Exception {
+	@Verifies(value = "should get java class String as class", method = "getJavaClassObject()")
+	public void setJavaClass_shouldGetJavaClassObject() throws Exception {
 		//Create a new OrderType
 		OrderType orderType = new OrderType();
 		
@@ -41,6 +25,6 @@ public class OrderTypeTest {
 		Class clazz = Integer.class;
 		
 		orderType.setJavaClass(clazz.getName());
-		Assert.assertEquals(clazz, orderType.getJavaClassAsClass());
+		Assert.assertEquals(clazz, orderType.getJavaClassObject());
 	}
 }
