@@ -6771,6 +6771,22 @@
         <renameColumn tableName="orders" oldColumnName="discontinued_date" newColumnName="date_stopped" columnDataType="datetime"/>
     </changeSet>
 
+    <changeSet id="201403011303-TRUNK-4198_1" author="harsha">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="type_of_order"/>
+        </preConditions>
+        <comment>Dropping foreign key constraint on orders.order_type_id</comment>
+        <dropForeignKeyConstraint baseTableName="orders" constraintName="type_of_order"/>
+    </changeSet>
+
+    <changeSet id="201403011303-TRUNK-4198_2" author="harsha">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="order_type_id"/>
+        </preConditions>
+        <comment>Remove the order_type_id column from orders table</comment>
+        <dropColumn tableName="orders" columnName="order_type_id"/>
+    </changeSet>
+
 	<changeSet id="201312201523-TRUNK-4138" author="banka">
         <preConditions onFail="HALT" onFailMessage="Please make sure all discontinued orders have the date_stopped field set">
             <sqlCheck expectedResult="0">select count(*) from orders where discontinued = true and date_stopped is null</sqlCheck>
