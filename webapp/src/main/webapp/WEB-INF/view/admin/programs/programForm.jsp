@@ -102,7 +102,7 @@
 <form method="post" id="theForm">
 <table>
 	<tr>
-		<th><openmrs:message code="general.name"/><<span class="required">*</span>/th>
+		<th><openmrs:message code="general.name"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="program.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
