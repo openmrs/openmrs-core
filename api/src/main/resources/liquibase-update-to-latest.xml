@@ -7128,4 +7128,31 @@
                                  referencedTableName="users"
                                  referencedColumnNames="user_id"/>
     </changeSet>
+
+    <changeSet author="Banka, Vinay" id="201403061757-TRUNK-4284">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from concept_class where uuid = '8e071bfe-520c-44c0-a89b-538e9129b42a'</sqlCheck>
+        </preConditions>
+        <insert tableName="concept_class">
+            <column name="name" value="Frequency"/>
+            <column name="description" value="A class for order frequencies"/>
+            <column name="uuid" value="8e071bfe-520c-44c0-a89b-538e9129b42a" />
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2014-03-06"/>
+            <column name="retired" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+    <changeSet author="Banka, Vinay" id="201403061803-TRUNK-4284">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from concept_class where uuid = 'e30d8601-07f8-413a-9d11-cdfbb28196ec'</sqlCheck>
+        </preConditions>
+        <insert tableName="concept_class">
+            <column name="name" value="Units of Measure"/>
+            <column name="description" value="A class for Units of Measure"/>
+            <column name="uuid" value="e30d8601-07f8-413a-9d11-cdfbb28196ec" />
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2014-03-06"/>
+            <column name="retired" valueBoolean="false"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
