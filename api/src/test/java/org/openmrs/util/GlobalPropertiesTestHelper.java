@@ -11,17 +11,17 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.api.db;
+package org.openmrs.util;
 
 import org.junit.Assert;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 
-public class PatientSearchTestHelper {
+public class GlobalPropertiesTestHelper {
 	
 	private AdministrationService administrationService;
 	
-	public PatientSearchTestHelper(AdministrationService administrationService) {
+	public GlobalPropertiesTestHelper(AdministrationService administrationService) {
 		this.administrationService = administrationService;
 	}
 	
