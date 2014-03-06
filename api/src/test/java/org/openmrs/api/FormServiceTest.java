@@ -41,11 +41,13 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.FormResource;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * TODO clean up and finish this test for all methods in FormService
@@ -811,4 +813,61 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 	
+	/**
+	 * Creates a new Global Property to lock forms by setting its value to true
+	 */
+	public void createFormsLockedGPAndSetValueTrue() {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+	}
+	
+	/**
+	 * @see {@link FormService#saveForm(Form)}
+	 * @throws FormsLockedException
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(method = "saveForm(Form)", value = "should throw an error when trying to save an existing form while forms are locked")
+	public void saveForm_shouldThrowAnErrorWhenTryingToSaveAnExistingFormWhileFormsAreLocked() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValueTrue();
+		
+		Form form = fs.getForm(1);
+		form.setName("modified basic form");
+		
+		fs.saveForm(form);
+	}
+	
+	/**
+	 * @see {@link FormService#saveForm(Form)}
+	 * @throws FormsLockedException
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(method = "saveForm(Form)", value = "should throw an error when trying to save a new form while forms are locked")
+	public void saveForm_shouldThrowAnErrorWhenTryingToSaveANewFormWhileFormsAreLocked() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValueTrue();
+		
+		Form form = new Form();
+		form.setName("new form");
+		form.setVersion("1.0");
+		form.setDescription("testing TRUNK-4030");
+		
+		fs.saveForm(form);
+	}
+	
+	/**
+	 * @see {@link FormService#purgeForm(Form)}
+	 * @throws FormsLockedException
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(method = "purgeForm(Form)", value = "should throw an error when trying to delete a form while forms are locked")
+	public void purgeForm_shouldThrowAnErrorWhenTryingToDeleteFormWhileFormsAreLocked() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValueTrue();
+		
+		Form form = fs.getForm(1);
+		
+		fs.purgeForm(form);
+	}
 }

@@ -42,6 +42,8 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @should save given form successfully
 	 * @should update an existing form
+	 * @should throw an error when trying to save an existing form while forms are locked
+	 * @should throw an error when trying to save a new form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Form saveForm(Form form) throws APIException;
@@ -286,6 +288,7 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @should delete given form successfully
 	 * @should delete form resources for deleted form
+	 * @should throw an error when trying to delete a form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeForm(Form form) throws APIException;
@@ -813,4 +816,11 @@ public interface FormService extends OpenmrsService {
 	 * @since 1.9
 	 */
 	public void purgeFormResource(FormResource formResource) throws APIException;
+	
+	/**
+	 * Checks if the forms are locked, and if they are throws an exception when saving or deleting a form
+	 * 
+	 * @throws FormsLockedException
+	 */
+	public void checkIfFormsAreLocked() throws FormsLockedException;
 }
