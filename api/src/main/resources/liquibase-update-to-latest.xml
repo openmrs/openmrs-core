@@ -6420,6 +6420,15 @@
             upgrade process if any unmapped text is found
         </comment>
     </changeSet>
+    
+    <changeSet id="201402281648-TRUNK-4274" author="k-joseph">
+    	<comment>Making order.encounter required</comment>
+    	<ext:modifyColumn tableName="orders">
+    		<column name="encounter_id" type="int">
+    			<constraints nullable="false" />
+    		</column>
+    	</ext:modifyColumn>
+    </changeSet>
 
     <changeSet id="201403011303-TRUNK-4198_1" author="harsha">
         <preConditions onFail="MARK_RAN">

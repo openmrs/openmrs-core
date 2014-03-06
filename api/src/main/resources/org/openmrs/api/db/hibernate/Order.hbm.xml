@@ -54,7 +54,7 @@
 			<column name="concept_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Encounter -->
-		<many-to-one name="encounter" class="org.openmrs.Encounter">
+		<many-to-one name="encounter" class="org.openmrs.Encounter" not-null="true">
 			<column name="encounter_id" />
 		</many-to-one>
 
