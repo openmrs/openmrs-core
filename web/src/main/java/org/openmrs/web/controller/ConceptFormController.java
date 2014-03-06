@@ -411,9 +411,9 @@ public class ConceptFormController extends SimpleFormController {
 		public Map<Locale, ConceptDescription> descriptionsByLocale = new HashMap<Locale, ConceptDescription>();
 		
 		public Map<Locale, List<ConceptName>> indexTermsByLocale = new HashMap<Locale, List<ConceptName>>();
-
+		
 		public Map<Locale, Map<String, String>> conceptAnswersByLocale = new HashMap<Locale, Map<String, String>>();
-
+		
 		public List<ConceptMap> conceptMappings; // a "lazy list" version of the concept.getMappings() list
 		
 		/** The list of drugs for its concept object */
@@ -1021,7 +1021,7 @@ public class ConceptFormController extends SimpleFormController {
 			
 			return conceptAnswers;
 		}
-
+		
 		/**
 		 * @see #getConceptAnswers(java.util.Locale)
 		 * @return a map with localized concept answers
@@ -1067,14 +1067,14 @@ public class ConceptFormController extends SimpleFormController {
 		public void setDisplayPrecision(Integer displayPrecision) {
 			this.displayPrecision = displayPrecision;
 		}
-
+		
 		/**
 		 * @return the conceptAnswersByLocale
 		 */
 		public Map<Locale, Map<String, String>> getConceptAnswersByLocale() {
 			return conceptAnswersByLocale;
 		}
-
+		
 		/**
 		 * @param conceptAnswersByLocale the conceptAnswersByLocale to set
 		 */

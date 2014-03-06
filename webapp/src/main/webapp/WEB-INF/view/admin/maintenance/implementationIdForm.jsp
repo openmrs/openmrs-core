@@ -35,7 +35,7 @@
 		</tr>
 		<tr>
 			<spring:bind path="implId.description">
-				<td valign="top"><openmrs:message code="general.description"/></td>
+				<td valign="top"><openmrs:message code="general.description"/><span class="required">*</span></td>
 				<td><textarea name="${status.expression}" rows="3" cols="43">${status.value}</textarea></td>
 				<td class="description" valign="top"><openmrs:message code="ImplementationId.description.help"/></td>
 			</spring:bind>
