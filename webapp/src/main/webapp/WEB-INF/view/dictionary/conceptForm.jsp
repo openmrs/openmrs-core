@@ -231,7 +231,7 @@
 	</tr>
 	<tr class="localeSpecific">
 		<th valign="bottom">
-			<openmrs:message code="Concept.fullySpecifiedName" /> 
+			<openmrs:message code="Concept.fullySpecifiedName" /><span class="required">*</span>
 			<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<openmrs:message code="Concept.fullySpecified.help"/>"/>
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
