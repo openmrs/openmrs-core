@@ -6421,6 +6421,22 @@
         </comment>
     </changeSet>
 
+    <changeSet id="201403011303-TRUNK-4198_1" author="harsha">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="type_of_order"/>
+        </preConditions>
+        <comment>Dropping foreign key constraint on orders.order_type_id</comment>
+        <dropForeignKeyConstraint baseTableName="orders" constraintName="type_of_order"/>
+    </changeSet>
+
+    <changeSet id="201403011303-TRUNK-4198_2" author="harsha">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="order_type_id"/>
+        </preConditions>
+        <comment>Remove the order_type_id column from orders table</comment>
+        <dropColumn tableName="orders" columnName="order_type_id"/>
+    </changeSet>
+
     <changeSet id="201402241054" author="Akshika">
         <comment>Making orders.start_date not nullable</comment>
         <ext:modifyColumn tableName="orders">
@@ -6753,22 +6769,6 @@
         </preConditions>
         <comment>Rename orders.discontinued_date to date_stopped</comment>
         <renameColumn tableName="orders" oldColumnName="discontinued_date" newColumnName="date_stopped" columnDataType="datetime"/>
-    </changeSet>
-
-    <changeSet id="201403011303-TRUNK-4198_1" author="harsha">
-        <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="type_of_order"/>
-        </preConditions>
-        <comment>Dropping foreign key constraint on orders.order_type_id</comment>
-        <dropForeignKeyConstraint baseTableName="orders" constraintName="type_of_order"/>
-    </changeSet>
-
-    <changeSet id="201403011303-TRUNK-4198_2" author="harsha">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="orders" columnName="order_type_id"/>
-        </preConditions>
-        <comment>Remove the order_type_id column from orders table</comment>
-        <dropColumn tableName="orders" columnName="order_type_id"/>
     </changeSet>
 
 	<changeSet id="201312201523-TRUNK-4138" author="banka">
