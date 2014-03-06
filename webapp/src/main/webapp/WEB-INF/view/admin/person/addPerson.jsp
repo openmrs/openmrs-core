@@ -17,7 +17,7 @@
 				</c:otherwise>
 			</c:choose>
 		</h2>
-		<openmrs:portlet id="createPerson" url="addPersonForm" parameters="personType=${param.personType}|postURL=addPerson.htm|viewType=${param.viewType}" />
+		<openmrs:portlet id="createPerson" url="addPersonForm" parameters="personType=${param.personType}|postURL=addPerson.htm|viewType=shortEdit" />
 		<script type="text/javascript">
 			document.getElementById("personName").focus();
 		</script>
