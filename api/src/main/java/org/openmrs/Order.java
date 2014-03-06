@@ -85,6 +85,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private CareSetting careSetting;
 	
+	private OrderType orderType;
+	
 	private Date scheduledDate;
 	
 	/**
@@ -548,6 +550,22 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setCareSetting(CareSetting careSetting) {
 		this.careSetting = careSetting;
+	}
+	
+	/**
+	 * Get the {@link org.openmrs.OrderType}
+	 * @return the {@link org.openmrs.OrderType}
+	 */
+	public OrderType getOrderType() {
+		return orderType;
+	}
+	
+	/**
+	 * Set the {@link org.openmrs.OrderType}
+	 * @param orderType the {@link org.openmrs.OrderType}
+	 */
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
 	}
 	
 	/**
