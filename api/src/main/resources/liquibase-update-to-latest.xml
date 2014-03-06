@@ -7060,7 +7060,7 @@
     </changeSet>
 
     <changeSet id="201403052242-TRUNK-4286" author="andras-szell">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="order_type"/></not>
         </preConditions>
         <comment>OrderType table added</comment>
@@ -7068,13 +7068,13 @@
             <column name="order_type_id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="varchar(256)">
+            <column name="name" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="varchar(1024)">
                 <constraints nullable="false"/>
             </column>
-            <column name="javaClass" type="varchar(1024)">
+            <column name="java_class_name" type="varchar(1024)">
                 <constraints nullable="false"/>
             </column>
             <column name="parent" type="int"/>

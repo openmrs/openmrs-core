@@ -13,28 +13,29 @@
  */
 package org.openmrs;
 
+import java.util.Collection;
+import java.util.HashSet;
+
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
-import java.util.Collection;
-
 /**
- * OrderType
+ * OrderTypes are used to classify different types of Orders e.g to distinguish between Serology and
+ * Radiology TestOrders
+ * 
+ * @since 1.10
  */
 public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 23232L;
 	
-	// Fields
-	
 	private Integer orderTypeId;
 	
-	private String javaClass;
+	private String javaClassName;
 	
 	private OrderType parent;
 	
 	private Collection<ConceptClass> conceptClasses;
-	
-	// Constructors
 	
 	/**
 	 * default constructor
@@ -44,7 +45,7 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	/**
 	 * Constructor with ID
-	 *
+	 * 
 	 * @param orderTypeId the ID of the {@link org.openmrs.OrderType}
 	 */
 	public OrderType(Integer orderTypeId) {
@@ -54,17 +55,16 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	/**
 	 * Convenience constructor that takes in the elements required to save this OrderType to the
 	 * database
-	 *
-	 * @param name        The name of this order Type
+	 * 
+	 * @param name The name of this order Type
 	 * @param description A short description about this order type
+	 * @param javaClassName The fully qualified java class name
 	 */
-	public OrderType(String name, String description, Class javaClass) {
+	public OrderType(String name, String description, String javaClassName) {
 		setName(name);
 		setDescription(description);
-		setJavaClass(javaClass.toString());
+		setJavaClassName(javaClassName);
 	}
-	
-	// Property accessors
 	
 	/**
 	 * @return Returns the orderTypeId.
@@ -96,27 +96,17 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	}
 	
 	/**
-	 * @return Returns the Java class as String
+	 * @return Returns the Java className as String
 	 */
-	public String getJavaClass() {
-		return javaClass;
+	public String getJavaClassName() {
+		return javaClassName;
 	}
 	
 	/**
-	 * Same as the {@link org.openmrs.OrderType#getJavaClass()}, but it returns a {@link java.lang.Class} for convenience
-	 *
-	 * @return The Java class as {@link java.lang.Class}
-	 * @throws ClassNotFoundException
+	 * @param javaClassName The Java class to set as String
 	 */
-	public Class getJavaClassObject() throws ClassNotFoundException {
-		return Context.loadClass(javaClass);
-	}
-	
-	/**
-	 * @param javaClass The Java class to set as String
-	 */
-	public void setJavaClass(String javaClass) {
-		this.javaClass = javaClass;
+	public void setJavaClassName(String javaClassName) {
+		this.javaClassName = javaClassName;
 	}
 	
 	/**
@@ -137,6 +127,9 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @return Get the {@link org.openmrs.ConceptClass}es
 	 */
 	public Collection<ConceptClass> getConceptClasses() {
+		if (conceptClasses == null) {
+			conceptClasses = new HashSet<ConceptClass>();
+		}
 		return conceptClasses;
 	}
 	
@@ -145,5 +138,33 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 */
 	public void setConceptClasses(Collection<ConceptClass> conceptClasses) {
 		this.conceptClasses = conceptClasses;
+	}
+	
+	/**
+	 * Convenience method that returns a {@link java.lang.Class} object for the associated
+	 * javaClassName
+	 * 
+	 * @return The Java class as {@link java.lang.Class}
+	 * @throws APIException
+	 */
+	public Class getJavaClass() throws APIException {
+		try {
+			return Context.loadClass(javaClassName);
+		}
+		catch (ClassNotFoundException e) {
+			//re throw as a runtime exception
+			throw new APIException("Failed to load class:" + javaClassName, e);
+		}
+	}
+	
+	/**
+	 * Convenience method that adds the specified concept class
+	 * 
+	 * @param conceptClass the ConceptClass to add
+	 * @should add the specified concept class
+	 * @should not add a duplicate concept class
+	 */
+	public void addConceptClass(ConceptClass conceptClass) {
+		getConceptClasses().add(conceptClass);
 	}
 }
