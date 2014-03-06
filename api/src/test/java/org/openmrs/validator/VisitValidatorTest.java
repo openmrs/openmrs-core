@@ -13,6 +13,11 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -29,22 +34,18 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-
-import static org.junit.Assert.*;
 
 public class VisitValidatorTest extends BaseContextSensitiveTest {
 	
 	protected static final String DATA_XML = "org/openmrs/validator/include/VisitValidatorTest.xml";
 	
 	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
-	
-	private String oldPropertyValue;
 	
 	private VisitService visitService;
 	
@@ -59,18 +60,23 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		executeDataSet(DATA_XML);
 		visitService = Context.getVisitService();
 		
+		//The only reason for adding the four lines below is because without them,
+		//some tests fail on my macbook.
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+		DATE_TIME_2014_01_04_00_00_00_0 = formatter.parse("2014/01/04").getTime();
+		DATE_TIME_2014_02_05_00_00_00_0 = formatter.parse("2014/02/05").getTime();
+		DATE_TIME_2014_02_11_00_00_00_0 = formatter.parse("2014/02/11").getTime();
+		
 		// Do not allow overlapping visits to test full validation of visit start and stop dates.
 		//
 		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
-        globalPropertiesTestHelper.setGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "false");
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "false");
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-        globalPropertiesTestHelper.setGlobalProperty(
-            OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true");
-    }
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true");
+	}
 	
 	/**
 	 * @see VisitValidator#validate(Object,Errors)
