@@ -86,10 +86,12 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 	public String getDescription() {
 		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuffer ret = new StringBuffer();
-		ret.append(msa.getMessage("reporting.patientWith") + " ");
+		ret.append(msa.getMessage("reporting.patient(s)With") + " ");
 		if (atLeastCount != null || atMostCount != null) {
 			if (atLeastCount != null)
-				ret.append(msa.getMessage("reporting.atLeast") + " " + atLeastCount + " ");
+				//ret.append(msa.getMessage("reporting.atLeast") + " " + atLeastCount + " ");
+				ret.append(msa.getMessage("reporting.atLeast", new Object[] { atLeastCount }, Context.getLocale())).append(
+				    " ");
 			if (atMostCount != null)
 				ret.append(msa.getMessage("reporting.atMost") + " " + atMostCount + " ");
 		} else {
@@ -111,9 +113,9 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		if (withinLastMonths != null || withinLastDays != null) {
 			ret.append(msa.getMessage("reporting.withinTheLast") + " ");
 			if (withinLastMonths != null)
-				ret.append(withinLastMonths + " " + msa.getMessage("reporting.months") + " ");
+				ret.append(withinLastMonths + " " + msa.getMessage("reporting.month(s)") + " ");
 			if (withinLastDays != null)
-				ret.append(withinLastDays + " " + msa.getMessage("reporting.days") + " ");
+				ret.append(withinLastDays + " " + msa.getMessage("reporting.day(s)") + " ");
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
@@ -121,7 +123,7 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		if (untilDate != null)
 			ret.append(msa.getMessage("reporting.onOrBefore") + " " + untilDate + " ");
 		if (form != null)
-			ret.append(msa.getMessage("reporting.fromThe") + " " + form.getName() + " " + msa.getMessage("reporting.from"));
+			ret.append(msa.getMessage("reporting.fromThe") + " " + form.getName() + " " + msa.getMessage("reporting.form"));
 		return ret.toString();
 	}
 	

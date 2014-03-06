@@ -107,11 +107,11 @@ public class DrugOrderFilter extends CachingPatientFilter {
 				if (getAnyOrAll() == GroupMethod.NONE)
 					ret.append(mss.getMessage("reporting.notTaking") + " ");
 				else
-					ret.append(mss.getMessage("reporting.sTaking") + " ");
+					ret.append(mss.getMessage("reporting.taking").toLowerCase() + " ");
 				ret.append(getDrugListToUse().get(0).getName());
 			} else {
-				ret.append(mss.getMessage("reporting.sTaking") + " " + getAnyOrAll() + " " + mss.getMessage("reporting.of")
-				        + " [");
+				ret.append(mss.getMessage("reporting.taking").toLowerCase() + " " + getAnyOrAll() + " "
+				        + mss.getMessage("reporting.of") + " [");
 				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext();) {
 					ret.append(i.next().getName());
 					if (i.hasNext())
@@ -124,9 +124,9 @@ public class DrugOrderFilter extends CachingPatientFilter {
 			if (getWithinLastDays() != null || getWithinLastMonths() != null) {
 				ret.append(" " + mss.getMessage("reporting.withinTheLast"));
 				if (getWithinLastMonths() != null)
-					ret.append(" " + getWithinLastMonths() + " " + mss.getMessage("reporting.months"));
+					ret.append(" " + getWithinLastMonths() + " " + mss.getMessage("reporting.month(s)"));
 				if (getWithinLastDays() != null)
-					ret.append(" " + getWithinLastDays() + " " + mss.getMessage("reporting.days"));
+					ret.append(" " + getWithinLastDays() + " " + mss.getMessage("reporting.day(s)"));
 			}
 		if (getSinceDate() != null)
 			ret.append(" " + mss.getMessage("reporting.since") + " " + df.format(getSinceDate()));

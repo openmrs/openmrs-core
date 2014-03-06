@@ -139,12 +139,12 @@ public class ObsPatientFilter extends CachingPatientFilter {
 		StringBuffer ret = new StringBuffer();
 		if (question == null) {
 			if (getValue() != null)
-				ret.append(mss.getMessage("reporting.patientWith") + " " + timeModifier + " "
+				ret.append(mss.getMessage("reporting.patient(s)With") + " " + timeModifier + " "
 				        + mss.getMessage("reporting.obsWithValue") + " " + ((Concept) value).getName().getName());
 			else
 				ret.append(mss.getMessage("reporting.qtnNValNull"));
 		} else {
-			ret.append(mss.getMessage("reporting.patientWith") + " ");
+			ret.append(mss.getMessage("reporting.patient(s)With") + " ");
 			ret.append(timeModifier + " ");
 			ConceptName questionName = null;
 			if (question == null)
@@ -168,18 +168,18 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			}
 		}
 		if (withinLastDays != null || withinLastMonths != null) {
-			ret.append(" " + mss.getMessage("reporting.withinTheLast"));
+			ret.append(" " + mss.getMessage("reporting.withinLast"));
 			if (withinLastMonths != null)
-				ret.append(" " + withinLastMonths + " " + mss.getMessage("reporting.months"));
+				ret.append(" " + withinLastMonths + " " + mss.getMessage("reporting.month(s)"));
 			if (withinLastDays != null)
-				ret.append(" " + withinLastDays + " " + mss.getMessage("reporting.days"));
+				ret.append(" " + withinLastDays + " " + mss.getMessage("reporting.day(s)"));
 		}
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
 			ret.append(" until");
 			if (untilMonthsAgo != null)
-				ret.append(" " + untilMonthsAgo + " " + mss.getMessage("reporting.months"));
+				ret.append(" " + untilMonthsAgo + " " + mss.getMessage("reporting.month(s)"));
 			if (untilDaysAgo != null)
-				ret.append(" " + untilDaysAgo + " " + mss.getMessage("reporting.days"));
+				ret.append(" " + untilDaysAgo + " " + mss.getMessage("reporting.day(s)"));
 			ret.append(" ago");
 		}
 		DateFormat df = null;

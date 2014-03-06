@@ -118,8 +118,11 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		}
 		if (minBirthdate != null) {
 			if (maxBirthdate != null) {
-				ret.append(" " + msa.getMessage("reporting.bornBetween") + " " + df.format(minBirthdate) + " "
-				        + msa.getMessage("reporting.and") + " " + df.format(maxBirthdate));
+				//				ret.append(" " + msa.getMessage("reporting.bornBetween") + " " + df.format(minBirthdate) + " "
+				//				        + msa.getMessage("reporting.and") + " " + df.format(maxBirthdate));
+				ret.append(" "
+				        + msa.getMessage("reporting.bornBetween", new Object[] { (Object) df.format(minBirthdate),
+				                (Object) df.format(maxBirthdate) }, Context.getLocale()));
 			} else {
 				ret.append(" " + msa.getMessage("reporting.bornAfter") + " " + df.format(minBirthdate));
 			}
@@ -130,16 +133,24 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		}
 		if (minAge != null) {
 			if (maxAge != null) {
-				ret.append(" " + msa.getMessage("reporting.betweenTheAgesOf") + " " + minAge + " "
-				        + msa.getMessage("reporting.bornBetween") + " " + maxAge);
+				//ret.append(" " + msa.getMessage("reporting.betweenTheAgesOf") + " " + minAge + " "
+				//        + msa.getMessage("reporting.bornBetween") + " " + maxAge);
+				ret.append(" "
+				        + msa.getMessage("reporting.betweenTheAgesOf", new Object[] { (Object) minAge, (Object) maxAge },
+				            Context.getLocale()));
+				
 			} else {
-				ret.append(" " + msa.getMessage("reporting.atLeast") + " " + minAge + " "
-				        + msa.getMessage("reporting.yearsOld"));
+				//ret.append(" " + msa.getMessage("reporting.atLeast") + " " + minAge + " "
+				//        + msa.getMessage("reporting.yearsOld"));
+				
+				ret.append(" ").append(msa.getMessage("reporting.atLeast", new Object[] { minAge }, Context.getLocale()));
 			}
 		} else {
 			if (maxAge != null) {
-				ret.append(" " + msa.getMessage("reporting.upto") + " " + maxAge + " "
-				        + msa.getMessage("reporting.yearsOld"));
+				//				ret.append(" " + msa.getMessage("reporting.upto") + " " + maxAge + " "
+				//				        + msa.getMessage("reporting.yearsOld"));
+				
+				ret.append(" ").append(msa.getMessage("reporting.upto", new Object[] { maxAge }, Context.getLocale()));
 			}
 		}
 		if (aliveOnly != null && aliveOnly) {

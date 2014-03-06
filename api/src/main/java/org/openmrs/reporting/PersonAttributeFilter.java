@@ -47,7 +47,7 @@ public class PersonAttributeFilter extends CachingPatientFilter {
 	public String getDescription() {
 		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append(msa.getMessage("reporting.patientWith") + " ");
+		sb.append(msa.getMessage("reporting.patient(s)With") + " ");
 		sb.append(getAttribute() != null ? getAttribute().getName() : " " + msa.getMessage("reporting.anyAttribute"));
 		if (getValue() != null) {
 			sb.append(" " + msa.getMessage("reporting.equalTo") + " ");

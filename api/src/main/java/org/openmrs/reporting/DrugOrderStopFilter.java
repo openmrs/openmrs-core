@@ -86,7 +86,7 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 	public String getDescription() {
 		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append(msa.getMessage("reporting.patientWhoStopOrChanged") + " ");
+		sb.append(msa.getMessage("reporting.patient(s)WhoStopOrChanged") + " ");
 		if ((getDrugList() != null && getDrugList().size() > 0)
 		        || (getGenericDrugList() != null && getGenericDrugList().size() > 0)) {
 			if (getDrugList() != null && getDrugList().size() > 0) {
@@ -137,15 +137,15 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 		if (withinLastMonths != null || withinLastDays != null) {
 			sb.append(" " + msa.getMessage("reporting.withinTheLast") + " ");
 			if (withinLastMonths != null)
-				sb.append(withinLastMonths + " " + msa.getMessage("reporting.months") + " ");
+				sb.append(withinLastMonths + " " + msa.getMessage("reporting.month(s)") + " ");
 			if (withinLastDays != null)
-				sb.append(withinLastDays + " " + msa.getMessage("reporting.days") + " ");
+				sb.append(withinLastDays + " " + msa.getMessage("reporting.day(s)") + " ");
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
 			sb.append(" " + msa.getMessage("reporting.onOrAfter") + " " + sinceDate + " ");
 		if (untilDate != null)
-			sb.append(" " + msa.getMessage("reporting.onOfBefore") + " " + untilDate + " ");
+			sb.append(" " + msa.getMessage("reporting.onOrBefore") + " " + untilDate + " ");
 		return sb.toString();
 	}
 	

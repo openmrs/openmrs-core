@@ -125,9 +125,9 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		if (withinLastMonths != null || withinLastDays != null) {
 			ret.append(msa.getMessage("reporting.withinTheLast") + " ");
 			if (withinLastMonths != null)
-				ret.append(withinLastMonths + " " + msa.getMessage("reporting.months") + " ");
+				ret.append(withinLastMonths + " " + msa.getMessage("reporting.month(s)") + " ");
 			if (withinLastDays != null)
-				ret.append(withinLastDays + " " + msa.getMessage("reporting.days") + " ");
+				ret.append(withinLastDays + " " + msa.getMessage("reporting.day(s)") + " ");
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)

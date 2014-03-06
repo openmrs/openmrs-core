@@ -126,7 +126,7 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		// TODO: internationalize this
 		StringBuilder sb = new StringBuilder();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE)
-			sb.append(mss.getMessage("reporting.no.drug.order"));
+			sb.append(mss.getMessage("reporting.noDrugOrders"));
 		else if (drugId != null || drugConcept != null) {
 			sb.append(mss.getMessage("reporting.taking") + " ");
 			SortedSet<String> names = new TreeSet<String>();
@@ -134,7 +134,7 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 				Drug drug = Context.getConceptService().getDrug(drugId);
 				if (drug == null) {
 					log.error("Can't find drug with id " + drugId);
-					names.add(mss.getMessage("reporting.miss.drug") + " " + drugId);
+					names.add(mss.getMessage("reporting.missingDrug") + " " + drugId);
 				} else
 					names.add(drug.getName());
 			}

@@ -56,16 +56,24 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 		RelationshipType relType = getRelationshipType();
 		if (relType != null) {
 			if (includeAtoB && includeBtoA) {
-				sb.append(msa.getMessage("reporting.whoAreEither") + " " + relType.getaIsToB() + " "
-				        + msa.getMessage("reporting.patients") + " " + relType.getbIsToA() + " "
-				        + msa.getMessage("reporting.of") + " ");
+				//				sb.append(msa.getMessage("reporting.whoAreEither") + " " + relType.getaIsToB() + " "
+				//				        + msa.getMessage("reporting.or") + " " + relType.getbIsToA() + " "
+				//				        + msa.getMessage("reporting.of") + " ");
+				
+				sb.append(msa.getMessage("reporting.whoAreEither",
+				    new Object[] { relType.getaIsToB(), relType.getbIsToA() }, Context.getLocale()));
+				sb.append(" ");
 			} else {
-				if (includeAtoB)
-					sb.append(msa.getMessage("reporting.whoAre") + " " + relType.getaIsToB() + " "
-					        + msa.getMessage("reporting.to") + " " + relType.getbIsToA() + " ");
-				if (includeBtoA)
-					sb.append(msa.getMessage("reporting.whoAre") + " " + relType.getbIsToA() + " "
-					        + msa.getMessage("reporting.to") + " " + relType.getaIsToB() + " ");
+				if (includeAtoB) {
+					sb.append(msa.getMessage("reporting.whoAre", new Object[] { relType.getaIsToB(), relType.getbIsToA() },
+					    Context.getLocale()));
+					sb.append(" ");
+				}
+				if (includeBtoA) {
+					sb.append(msa.getMessage("reporting.whoAre", new Object[] { relType.getaIsToB(), relType.getbIsToA() },
+					    Context.getLocale()));
+					sb.append(" ");
+				}
 			}
 		} else {
 			sb.append(msa.getMessage("reporting.withAnyRelationshipTo") + " ");
