@@ -31,7 +31,7 @@
 
 	function selectTab(tab) {
 		var displays = new Array();
-		
+		if(tab!=null){
 		var tabs = tab.parentNode.getElementsByTagName("a");
 		for (var tabIndex=0; tabIndex<tabs.length; tabIndex++) {
 			var index = tabs[tabIndex].id.indexOf("Tab");
@@ -54,6 +54,7 @@
 		}
 		
 		tab.blur();
+		}
 		return false;
 	}
 	
