@@ -7128,4 +7128,20 @@
                                  referencedTableName="users"
                                  referencedColumnNames="user_id"/>
     </changeSet>
+    
+    <changeSet id="201403070131" author="andras-szell">
+        <preConditions>
+            <not><sqlCheck expectedResult="0">select count(*) from order_type where java_class like "org.openmrs.DrugOrder" or java_class like "org.openmrs.TestOrder"</sqlCheck></not>
+        </preConditions>
+        <comment>Insert order types for test and drug orders after checking that there are no entries in the order_type table with their java_class column set to org.openmrs.DrugOrder or org.openmrs.TestOrder</comment>
+        <insert tableName="order_type">
+            <column name="name">Drug order</column>
+            <column name="description">Drug order</column>
+            <column name="java_class_name">org.openmrs.DrugOrder</column>
+            <column name="creator">1</column>
+            <column name="date_created">CURRENT_TIMESTAMP</column>
+            <column name="retired">false</column>
+            <column name="uuid"></column>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
