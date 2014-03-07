@@ -13,6 +13,7 @@
  */
 package org.openmrs.util.databasechange;
 
+import liquibase.database.Database;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -71,7 +72,7 @@ public class Database1_9To1_10UpgradeTest {
 	        SQLException {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		
-		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings", "mg:-1,tab(s):-2");
+		DatabaseUtil.createOrderEntryUpgradeFileWithTestData("mg=-1\ntab(s)=-2");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -82,8 +83,8 @@ public class Database1_9To1_10UpgradeTest {
 		
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
 		
-		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings",
-		    "mg:111,tab(s):112,1/day x 7 days/week:113,2/day x 7 days/week:114");
+		DatabaseUtil
+		        .createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
@@ -116,8 +117,7 @@ public class Database1_9To1_10UpgradeTest {
 		Assert.assertTrue(uniqueUnits.size() > 0);
 		
 		//map the frequencies only
-		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings",
-		    "1/day x 7 days/week:113,2/day x 7 days/week:114");
+		DatabaseUtil.createOrderEntryUpgradeFileWithTestData("1/day x 7 days/week=113\n2/day x 7 days/week=114");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -131,7 +131,7 @@ public class Database1_9To1_10UpgradeTest {
 		Assert.assertTrue(uniqueFrequencies.size() > 0);
 		
 		//map the dose units only
-		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings", "mg:111,tab(s):112");
+		DatabaseUtil.createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -151,8 +151,8 @@ public class Database1_9To1_10UpgradeTest {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
 		
 		//set the mappings for all existing frequencies and dose units
-		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings",
-		    "mg:111,tab(s):112,1/day x 7 days/week:113,2/day x 7 days/week:114");
+		DatabaseUtil
+		        .createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -199,8 +199,8 @@ public class Database1_9To1_10UpgradeTest {
 		Set<Integer> originalProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider",
 		    Integer.class, upgradeTestUtil.getConnection());
 		
-		upgradeTestUtil.insertGlobalProperty("orderEntry.unitsToConceptsMappings",
-		    "mg:111,tab(s):112,1/day x 7 days/week:113,2/day x 7 days/week:114");
+		DatabaseUtil
+		        .createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		

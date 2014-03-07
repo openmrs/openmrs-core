@@ -58,8 +58,7 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 			Date date = new Date(new java.util.Date().getTime());
 			
 			for (String frequency : uniqueFrequencies) {
-				Integer conceptIdForFrequency = DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(),
-				    frequency);
+				Integer conceptIdForFrequency = DatabaseUtil.getConceptIdForUnits(frequency);
 				if (conceptIdForFrequency == null) {
 					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
 				}

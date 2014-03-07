@@ -13,6 +13,12 @@
  */
 package org.openmrs.util;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,17 +26,19 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.springframework.util.StringUtils;
 
 /**
  * Utility class that provides database related methods
- * 
+ *
  * @since 1.6
  */
 public class DatabaseUtil {
@@ -41,7 +49,7 @@ public class DatabaseUtil {
 	 * Load the jdbc driver class for the database which is specified by the connectionUrl parameter <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
-	 * 
+	 *
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @throws ClassNotFoundException
@@ -58,12 +66,15 @@ public class DatabaseUtil {
 	 * <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
-	 * 
+	 *
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @param connectionDriver the database driver class name, such as "com.mysql.jdbc.Driver"
 	 * @throws ClassNotFoundException
 	 */
+	
+	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
+	
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
 			Class.forName(connectionDriver);
@@ -155,58 +166,65 @@ public class DatabaseUtil {
 	}
 	
 	/**
-	 * Returns conceptId for the given units from OpenmrsConstants#GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
-	 * global property.
+	 * Returns conceptId for the given units from DatabaseUtil#ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME
+	 * located in application data directory.
 	 *
-	 * @param connection
 	 * @param units
 	 * @return conceptId
-	 * @throws DAOException
-	 * @should return concept_id for drug_order_quantity_units
+	 * @should return concept_id for units
 	 * @should fail if units is not specified
 	 */
-	public static Integer getConceptIdForUnits(Connection connection, String units) throws DAOException {
-		PreparedStatement unitsToConceptsQuery;
+	public static Integer getConceptIdForUnits(String units) {
+		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
+		PropertiesWithWhitespace props = new PropertiesWithWhitespace();
+		String conceptId = null;
 		try {
-			unitsToConceptsQuery = connection
-			        .prepareStatement("select property_value from global_property where property = ?");
-			unitsToConceptsQuery.setString(1, OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS);
-			ResultSet unitsToConceptsResult = unitsToConceptsQuery.executeQuery();
-			if (!unitsToConceptsResult.next()) {
-				throw new DAOException(
-				        OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
-				                + " global property must be specified before upgrading. Please refer to upgrade instructions for more details.");
-			}
-			
-			String unitsToConceptsGP = unitsToConceptsResult.getString(1);
-			String[] unitsToConcepts = unitsToConceptsGP.split(",");
-			for (String unitsToConcept : unitsToConcepts) {
-				if (unitsToConcept.startsWith(units)) {
-					String concept = unitsToConcept.substring(units.length() + 1);// '+ 1' stands for ':'
+			props.load(new FileInputStream(appDataDir + "/" + ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME));
+			for (Map.Entry prop : props.entrySet()) {
+				if (prop.getKey().equals(units)) {
+					conceptId = prop.getValue().toString();
 					
-					if (concept.toLowerCase().equals("null")) {
+					if (conceptId != null) {
+						return Integer.valueOf(conceptId);
+					} else {
 						return null;
-					}
-					
-					try {
-						return Integer.valueOf(concept);
-					}
-					catch (NumberFormatException e) {
-						throw new DAOException(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
-						        + " global property contains invalid mapping from " + units + " to concept ID " + concept
-						        + ". ID must be an integer or null. Please refer to upgrade instructions for more details.",
-						        e);
 					}
 				}
 			}
 		}
-		catch (SQLException e) {
-			throw new DAOException(e);
+		catch (NumberFormatException e) {
+			throw new APIException("Your order entry upgrade settings file" + "contains invalid mapping from " + units
+			        + " to concept ID " + conceptId
+			        + ". ID must be an integer or null. Please refer to upgrade instructions for more details.", e);
+		}
+		catch (IOException e) {
+			if (e instanceof FileNotFoundException) {
+				throw new APIException("Unable to find file containing order entry upgrade settings in your "
+				        + "application data directory: " + appDataDir
+				        + "\nPlease refer to upgrade instructions for more details.", e);
+			} else {
+				throw new APIException(e);
+			}
 		}
 		
-		throw new DAOException(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
-		        + " global property does not have mapping for " + units
+		throw new APIException("Your order entry upgrade settings file" + " does not have mapping for " + units
 		        + ". Please refer to upgrade instructions for more details.");
+	}
+	
+	/**
+	 * This method creates mock order entry upgrade file
+	 * @see DatabaseUtil#getConceptIdForUnits(String)
+	 */
+	public static void createOrderEntryUpgradeFileWithTestData(String text) throws IOException {
+		
+		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
+		File propFile = new File(appDataDir, DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME);
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter(propFile));
+		writer.write(text.replaceAll(" ", "\\ "));
+		writer.close();
+		propFile.deleteOnExit();
+		
 	}
 	
 	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
@@ -240,7 +258,7 @@ public class DatabaseUtil {
 	
 	/**
 	 * Gets all unique values excluding nulls in the specified column and table
-	 * 
+	 *
 	 * @param columnName the column
 	 * @param tableName the table
 	 * @param connection

@@ -71,7 +71,7 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 		Set<String> unmappedText = new HashSet<String>(textList.size());
 		for (String text : textList) {
 			try {
-				if (DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), text) != null) {
+				if (DatabaseUtil.getConceptIdForUnits(text) != null) {
 					continue;
 				}
 			}

@@ -53,8 +53,7 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 			updateDrugOrderStatement = connection
 			        .prepareStatement("update drug_order set frequency = ? where frequency_text = ?");
 			for (String frequency : uniqueFrequencies) {
-				Integer conceptIdForFrequency = DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(),
-				    frequency);
+				Integer conceptIdForFrequency = DatabaseUtil.getConceptIdForUnits(frequency);
 				if (conceptIdForFrequency == null) {
 					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
 				}

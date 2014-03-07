@@ -16,43 +16,33 @@ package org.openmrs.util;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.GlobalProperty;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOException;
+import org.openmrs.api.APIException;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class DatabaseUtilIntegrationTest extends BaseContextSensitiveTest {
 	
-	@Autowired
-	AdministrationService adminService;
-	
 	/**
 	 * @verifies return concept_id for drug_order_quantity_units
-	 * @see DatabaseUtil#getConceptIdForUnits(java.sql.Connection, String)
+	 * @see DatabaseUtil#getConceptIdForUnits(String)
 	 */
 	@Test
 	public void getConceptIdForUnits_shouldReturnConcept_idForDrug_order_quantity_units() throws Exception {
-		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS,
-		        "mg:5401,drug_order_quantity_units:5403,ounces:5402"));
-		Context.flushSession();
+		DatabaseUtil.createOrderEntryUpgradeFileWithTestData("mg=5401" + "\n" + "drug_order_quantity_units=5403" + "\n"
+		        + "ounces=5402");
 		
-		Integer conceptId = DatabaseUtil.getConceptIdForUnits(getConnection(), "drug_order_quantity_units");
+		Integer conceptId = DatabaseUtil.getConceptIdForUnits("drug_order_quantity_units");
 		
 		Assert.assertThat(conceptId, Is.is(5403));
 	}
 	
 	/**
 	 * @verifies fail if units is not specified
-	 * @see DatabaseUtil#getConceptIdForUnits(java.sql.Connection, String)
+	 * @see DatabaseUtil#getConceptIdForUnits(String)
 	 */
-	@Test(expected = DAOException.class)
+	@Test(expected = APIException.class)
 	public void getConceptIdForUnits_shouldFailIfUnitsIsNotSpecified() throws Exception {
-		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS,
-		        "mg:5401,ounces:5402"));
-		Context.flushSession();
+		DatabaseUtil.createOrderEntryUpgradeFileWithTestData("mg=540" + "\n" + "ounces=5402");
 		
-		DatabaseUtil.getConceptIdForUnits(getConnection(), "drug_order_quantity_units");
+		DatabaseUtil.getConceptIdForUnits("drug_order_quantity_units");
 	}
 }

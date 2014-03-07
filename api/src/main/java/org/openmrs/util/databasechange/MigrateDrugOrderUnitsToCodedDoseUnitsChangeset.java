@@ -53,7 +53,7 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 			connection.setAutoCommit(false);
 			updateDrugOrderStatement = connection.prepareStatement("update drug_order set dose_units = ? where units = ?");
 			for (String unit : uniqueUnits) {
-				Integer conceptIdForUnit = DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), unit);
+				Integer conceptIdForUnit = DatabaseUtil.getConceptIdForUnits(unit);
 				if (conceptIdForUnit == null) {
 					throw new CustomChangeException("No concept mapping found for unit: " + unit);
 				}
