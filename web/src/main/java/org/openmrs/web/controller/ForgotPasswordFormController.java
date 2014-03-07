@@ -218,8 +218,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		
 		//compute random index and return value within question array
 		int randIndex = randomGenerator.nextInt(questions.size());
-		String randomQ = questions.get(randIndex);
 		
-		return randomQ;
+		return questions.get(randIndex)
 	}
 }
