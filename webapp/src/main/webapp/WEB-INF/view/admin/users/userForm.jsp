@@ -151,7 +151,7 @@
                     <openmrs:globalProperty key="security.passwordRequiresNonDigit" var="passwordRequiresNonDigit"/>
                     <openmrs:globalProperty key="security.passwordRequiresUpperAndLowerCase" var="passwordRequiresUpperAndLowerCase"/>
                     
-                    <i><openmrs:message code="general.password" /> <c:out value="${passwordMinimumLength}"/> <openmrs:message code="general.charactersLong" />
+                    <i><openmrs:message code="general.passwordLength" arguments="${passwordMinimumLength}" />
                     <% boolean prevCondition=false; %>
                     
                     <c:if test="${passwordRequiresUpperAndLowerCase == true || passwordRequiresDigit == true || passwordRequiresNonDigit == true}"> <openmrs:message 					code="general.shouldHave" /></c:if>
