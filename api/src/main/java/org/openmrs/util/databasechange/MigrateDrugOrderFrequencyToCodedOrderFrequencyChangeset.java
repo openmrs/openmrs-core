@@ -22,6 +22,7 @@ import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.UpgradeUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -53,8 +54,7 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 			updateDrugOrderStatement = connection
 			        .prepareStatement("update drug_order set frequency = ? where frequency_text = ?");
 			for (String frequency : uniqueFrequencies) {
-				Integer conceptIdForFrequency = DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(),
-				    frequency);
+				Integer conceptIdForFrequency = UpgradeUtil.getConceptIdForUnits(frequency);
 				if (conceptIdForFrequency == null) {
 					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
 				}

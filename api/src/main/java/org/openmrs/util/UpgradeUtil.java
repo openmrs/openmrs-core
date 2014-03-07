@@ -1,0 +1,72 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+package org.openmrs.util;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+
+import org.openmrs.api.APIException;
+
+public class UpgradeUtil {
+	
+	/**
+	 * Returns conceptId for the given units from DatabaseUtil#ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME
+	 * located in application data directory.
+	 * 
+	 * @param units
+	 * @return conceptId
+	 * @should return concept_id for units
+	 * @should fail if units is not specified
+	 */
+	public static Integer getConceptIdForUnits(String units) {
+		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
+		Properties props = new Properties();
+		String conceptId = null;
+		try {
+			props.load(new FileInputStream(appDataDir + System.getProperty("file.separator")
+			        + DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME));
+			for (Map.Entry prop : props.entrySet()) {
+				if (prop.getKey().equals(units)) {
+					conceptId = prop.getValue().toString();
+					
+					if (conceptId != null) {
+						return Integer.valueOf(conceptId);
+					} else {
+						return null;
+					}
+				}
+			}
+		}
+		catch (NumberFormatException e) {
+			throw new APIException("Your order entry upgrade settings file" + "contains invalid mapping from " + units
+			        + " to concept ID " + conceptId
+			        + ". ID must be an integer or null. Please refer to upgrade instructions for more details.", e);
+		}
+		catch (IOException e) {
+			if (e instanceof FileNotFoundException) {
+				throw new APIException("Unable to find file containing order entry upgrade settings in your "
+				        + "application data directory: " + appDataDir
+				        + "\nPlease refer to upgrade instructions for more details.", e);
+			} else {
+				throw new APIException(e);
+			}
+		}
+		
+		throw new APIException("Your order entry upgrade settings file" + " does not have mapping for " + units
+		        + ". Please refer to upgrade instructions for more details.");
+	}
+}
