@@ -123,16 +123,14 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets the order with the associated order id
-	 * 
-	 * @param <Ord> An Order type. Currently only org.openmrs.Order or org.openmrs.DrugOrder
+	 *
 	 * @param orderId the primary key of the Order
-	 * @param orderClassType The class of Order to fetch (Currently only org.openmrs.Order or
-	 *            org.openmrs.DrugOrder)
+	 * @param orderType The type of Order to get
 	 * @return The Order in the system corresponding to given primary key id
 	 * @throws APIException
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws APIException;
+	public Order getOrder(Integer orderId, OrderType orderType) throws APIException;
 	
 	/**
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
@@ -147,8 +145,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return list of Orders matching the parameters
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public <Ord extends Order> List<Ord> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts,
-	        List<User> orderers, List<Encounter> encounters);
+	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
+	        List<Encounter> encounters);
 	
 	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}
@@ -236,8 +234,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should default to Order class if no orderClass is specified
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting,
-	        Date asOfDate);
+	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate);
 	
 	/**
 	 * Retrieve care setting
