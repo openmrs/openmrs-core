@@ -255,7 +255,7 @@ public class PatientFormController extends PersonFormController {
 			String action = request.getParameter("action");
 			PatientService ps = Context.getPatientService();
 			
-			if (action.equals(msa.getMessage("Patient.delete"))) {
+			if (action.equals(msa.getMessage("Patient.delete")) && StringUtils.isNotBlank(patient.getVoidReason())) {
 				try {
 					ps.purgePatient(patient);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.deleted");
@@ -272,9 +272,11 @@ public class PatientFormController extends PersonFormController {
 				if (StringUtils.isBlank(voidReason)) {
 					voidReason = msa.getMessage("PatientForm.default.voidReason", null, "Voided from patient form", Context
 					        .getLocale());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.error.delete.reasonEmpty");
+				} else {
+					ps.voidPatient(patient, voidReason);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
 				}
-				ps.voidPatient(patient, voidReason);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
 				return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId()));
 			} else if (action.equals(msa.getMessage("Patient.unvoid"))) {
 				ps.unvoidPatient(patient);
