@@ -28,7 +28,7 @@
 		</tr>
 		<tr>
 			<spring:bind path="implId.passphrase">
-				<td><openmrs:message code="ImplementationId.passphrase"/></td>
+				<td><openmrs:message code="ImplementationId.passphrase"/><span class="required">*</span></td>
 				<td><input type="text" value="${status.value}" name="${status.expression}" maxlength="255" size="40"/></td>
 				<td class="description"><openmrs:message code="ImplementationId.passphrase.help"/></td>
 			</spring:bind>
