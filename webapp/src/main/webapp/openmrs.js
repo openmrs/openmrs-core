@@ -560,7 +560,12 @@ function colorVisibleTableRows(tableId, oddColorClass, evenColorClass, includeHe
  */
  function maxLength(object, maxLength) {
       if( object.value.length >= maxLength) {
-         object.value = object.value.substring(0, maxLength); 
+         object.value = object.value.substring(0, maxLength);
+         $j("#show_error").show();
+      }
+      if( object.value.length < maxLength) {
+    	 object.value = object.value.substring(0, maxLength); 
+    	 $j("#show_error").hide();
       }
    }
  
