@@ -144,7 +144,22 @@
 			<c:if test="${modifyPasswords == true}">
 				<tr>
 				<td><openmrs:message code="User.usersPassword" /><span class="required">*</span></td>
-					<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/></td>
+					<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/>
+                 	<openmrs:globalProperty key="security.passwordMinimumLength" var="passwordMinimumLength"/>
+                    <openmrs:globalProperty key="security.passwordRequiresDigit" var="passwordRequiresDigit"/>
+                    <openmrs:globalProperty key="security.passwordRequiresNonDigit" var="passwordRequiresNonDigit"/>
+                    <openmrs:globalProperty key="security.passwordRequiresUpperAndLowerCase" var="passwordRequiresUpperAndLowerCase"/>
+                    
+                    <i>Password should be <c:out value="${passwordMinimumLength}"/> characters long
+                    <% boolean prevCondition=false; %>
+                    
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true || passwordRequiresDigit == true || passwordRequiresNonDigit == true}"> and should have                    a</c:if>
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true}" > uppercase, lowercase<% prevCondition=true; %></c:if>
+                    <c:if test="${passwordRequiresDigit == true}" ><% if(prevCondition==true) out.print(","); %> digit<% prevCondition=true; %></c:if>
+                    <c:if test="${passwordRequiresNonDigit == true}" ><% if(prevCondition==true) out.print(","); %> non-digit</c:if>
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true || passwordRequiresDigit == true || passwordRequiresNonDigit == true}"> character</c:if>
+                    </i> 
+                </td>
 		
 				</tr>
 				<tr>
