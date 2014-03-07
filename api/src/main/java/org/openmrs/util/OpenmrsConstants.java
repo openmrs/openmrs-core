@@ -1552,10 +1552,8 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
 		
-		// TODO - understand how global properties work, what is defined in this class and what is stored in the DB?
-		
-		//		props.add(new GlobalProperty(GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true",
-		//		        "true/false whether or not to allow visits of a given patient to overlap", BooleanDatatype.class, null));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true",
+		        "true/false whether or not to allow visits of a given patient to overlap", BooleanDatatype.class, null));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
