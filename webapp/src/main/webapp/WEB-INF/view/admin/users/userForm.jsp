@@ -154,13 +154,13 @@
                     <i><openmrs:message code="general.passwordLength" arguments="${passwordMinimumLength}" />
                     <% boolean prevCondition=false; %>
                     
-                    <c:if test="${passwordRequiresUpperAndLowerCase == true || passwordRequiresDigit == true || passwordRequiresNonDigit == true}"> <openmrs:message 					code="general.shouldHave" /></c:if>
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true || passwordRequiresDigit == true || passwordRequiresNonDigit == true}"> <openmrs:message code="general.shouldHave" /></c:if>
                     
-                    <c:if test="${passwordRequiresUpperAndLowerCase == true}" > <openmrs:message code="changePassword.hint.password.bothCasesRequired" /><% 			 					prevCondition=true; %></c:if>
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true}" > <openmrs:message code="changePassword.hint.password.bothCasesRequired" /><% prevCondition=true; %></c:if>
                     
-                    <c:if test="${passwordRequiresDigit == true}" ><% if(prevCondition==true) out.print(","); %> <openmrs:message code=	 	    "changePassword.hint.password.digitRequired" /><% prevCondition=true; %></c:if>
+                    <c:if test="${passwordRequiresDigit == true}" ><% if(prevCondition==true) out.print(","); %> <openmrs:message code="changePassword.hint.password.digitRequired" /><% prevCondition=true; %></c:if>
                     
-                    <c:if test="${passwordRequiresNonDigit == true}" ><% if(prevCondition==true) out.print(","); %> <openmrs:message code=     "changePassword.hint.password.nonDigitRequired" /></c:if>
+                    <c:if test="${passwordRequiresNonDigit == true}" ><% if(prevCondition==true) out.print(","); %> <openmrs:message code="changePassword.hint.password.nonDigitRequired" /></c:if>
                     
                     </i> 
                 </td>
