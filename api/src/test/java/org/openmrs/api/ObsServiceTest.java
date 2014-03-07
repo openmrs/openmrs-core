@@ -1663,5 +1663,16 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(obs.getPerson(), obsSaved.getEncounter().getPatient());
 	}
+
+    @Test
+    @Verifies(value = "check accessionNumber", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)")
+    public void getObservations_accessionNumber() throws Exception {
+        ObsService obsService = Context.getObsService();
+
+        List<Obs> obss = obsService.getObservations(null,null, null, null, null,
+                null, null, null, null, null, null,false,"0756940372");
+
+        Assert.assertEquals(1, obss.size());
+    }
 	
 }

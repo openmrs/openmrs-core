@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.logic.rule.definition">
+
+	<class name="RuleDefinition" table="logic_rule_definition">
+		<id name="id" type="int" column="id" unsaved-value="0">
+			<generator class="native">
+				<param name="sequence">logic_rule_definition_id_seq</param>
+			</generator>
+		</id>
+		<property name="uuid" type="string" length="38" not-null="true" />
+		<property name="name" type="string" not-null="true" />
+		<property name="description" type="string" />
+		<property name="ruleContent" type="java.lang.String" column="rule_content" length="2048" />
+		<property name="language" type="java.lang.String" column="language" not-null="true" length="255" />
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
+		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
+		<property name="dateChanged" type="java.util.Date" column="date_changed" />		
+		<property name="retired" type="java.lang.Boolean" length="1" not-null="true"/>
+		<many-to-one name="retiredBy" class="org.openmrs.User" column="retired_by" />
+		<property name="dateRetired" type="java.util.Date" column="date_retired" />	
+		<property name="retireReason" type="string" column="retire_reason" />
+	</class>
+	
+</hibernate-mapping>

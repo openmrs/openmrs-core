@@ -83,8 +83,8 @@ public interface ObsDAO {
 	 */
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
-	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
-	        throws DAOException;
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
+	        String accessionnumber) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
@@ -94,8 +94,8 @@ public interface ObsDAO {
 	 */
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
-	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
-	        throws DAOException;
+	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs,
+	        String accessionnumber) throws DAOException;
 	
 	/**
 	 * Auto generated method comment

@@ -23,4 +23,6 @@
   <orders order_id="712" order_number="ORD-222" previous_order_number="ORD-111" concept_id="792" encounter_id="3" order_action="ORDER" urgency="ROUTINE" orderer="1" instructions="" start_date="2012-09-19 00:00:00.0" discontinued="false" creator="1" date_created="2012-02-19 12:24:10.0" voided="false" patient_id="7" uuid="1c96f25c-4949-4f72-9931-d808fbcdb617"/>
   <orders order_id="623" order_number="ORD-333" previous_order_number="ORD-222" concept_id="88" encounter_id="3" order_action="ORDER" urgency="ROUTINE" orderer="1" instructions="" start_date="2012-08-19 00:00:00.0" discontinued="false" creator="1" date_created="2012-01-19 12:24:10.0" voided="false" patient_id="7" uuid="0c96f25c-4949-4f72-9931-d808fbcdb618"/>
 
+  <orders order_id="700" order_number="ORD-555" previous_order_number="ORD-555" concept_id="988" encounter_id="111" order_action="ORDER" urgency="ROUTINE" orderer="2" instructions="" start_date="2012-08-19 00:00:00.0" discontinued="false" creator="2" date_created="2012-01-19 12:24:10.0" voided="false" patient_id="12" accession_number="0756940372" uuid="0c96f25c-4949-4f72-9181-d808fbcdb618"/>
+
 </dataset>

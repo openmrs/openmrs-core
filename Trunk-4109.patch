@@ -1,0 +1,233 @@
+From ee7ebf6bf8bfa72c560d3eb112982b444cf50cae Mon Sep 17 00:00:00 2001
+From: Ak <akshikaakalanka@gmail.com>
+Date: Fri, 28 Feb 2014 00:25:05 +0530
+Subject: [PATCH] Trunk-4109
+
+---
+ api/src/main/java/org/openmrs/api/ObsService.java  | 53 ++++++++++++++++++++++
+ api/src/main/java/org/openmrs/api/db/ObsDAO.java   |  8 ++--
+ .../openmrs/api/db/hibernate/HibernateObsDAO.java  | 17 ++++---
+ .../java/org/openmrs/api/impl/ObsServiceImpl.java  | 28 ++++++++++--
+ .../main/java/org/openmrs/module/ModuleUtil.java   |  4 +-
+ 5 files changed, 92 insertions(+), 18 deletions(-)
+
+diff --git a/api/src/main/java/org/openmrs/api/ObsService.java b/api/src/main/java/org/openmrs/api/ObsService.java
+index a25a9e8..64d6e9ba 100644
+--- a/api/src/main/java/org/openmrs/api/ObsService.java
++++ b/api/src/main/java/org/openmrs/api/ObsService.java
+@@ -682,4 +682,57 @@ public interface ObsService extends OpenmrsService {
+ 	@Authorized(PrivilegeConstants.VIEW_OBS)
+ 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided);
+ 	
++	/**
++	 * This method fetches observations according to the criteria in the given arguments. All
++	 * arguments are optional and nullable. If more than one argument is non-null, the result is
++	 * equivalent to an "and"ing of the arguments. (e.g. if both a <code>location</code> and a
++	 * <code>fromDate</code> are given, only Obs that are <u>both</u> at that Location and after the
++	 * fromDate are returned). <br/>
++	 * <br/>
++	 * Note: If <code>whom</code> has elements, <code>personType</code> is ignored <br/>
++	 * <br/>
++	 * Note: to get all observations on a certain date, use:<br/>
++	 * Date fromDate = "2009-08-15";<br/>
++	 * Date toDate = OpenmrsUtil.lastSecondOfDate(fromDate); List<Obs> obs = getObservations(....,
++	 * fromDate, toDate, ...);
++	 *
++	 * @param whom List<Person> to restrict obs to (optional)
++	 * @param encounters List<Encounter> to restrict obs to (optional)
++	 * @param questions List<Concept> to restrict the obs to (optional)
++	 * @param answers List<Concept> to restrict the valueCoded to (optional)
++	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
++	 *            <code>whom</code> is an empty list (optional)
++	 * @param locations The org.openmrs.Location objects to restrict to (optional)
++	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
++	 *            obsDatetime (optional)
++	 * @param mostRecentN restrict the number of obs returned to this size (optional)
++	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
++	 * @param fromDate the earliest Obs date to get (optional)
++	 * @param toDate the latest Obs date to get (optional)
++	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
++	 * @param accessionnumber String , given from the lab
++	 * @return list of Observations that match all of the criteria given in the arguments
++	 * @throws APIException
++	 * @should compare dates using lte and gte
++	 * @should get all obs assigned to given encounters
++	 * @should get all obs with question concept in given questions parameter
++	 * @should get all obs with answer concept in given answers parameter
++	 * @should return all obs whose person is a person only
++	 * @should return obs whose person is a patient only
++	 * @should return obs whose person is a user only
++	 * @should return obs with location in given locations parameter
++	 * @should sort returned obs by obsDatetime if sort is empty
++	 * @should sort returned obs by conceptId if sort is concept
++	 * @should limit number of obs returned to mostReturnN parameter
++	 * @should return obs whose groupId is given obsGroupId
++	 * @should not include voided obs
++	 * @should include voided obs if includeVoidedObs is true
++	 * @should accessionnumber to search with the accessionnumber
++	 */
++	@Authorized(PrivilegeConstants.VIEW_OBS)
++	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
++	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
++	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
++	        String accessionnumber) throws APIException;
++	
+ }
+diff --git a/api/src/main/java/org/openmrs/api/db/ObsDAO.java b/api/src/main/java/org/openmrs/api/db/ObsDAO.java
+index b2d97a4..5944314 100644
+--- a/api/src/main/java/org/openmrs/api/db/ObsDAO.java
++++ b/api/src/main/java/org/openmrs/api/db/ObsDAO.java
+@@ -83,8 +83,8 @@ public interface ObsDAO {
+ 	 */
+ 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+ 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+-	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+-	        throws DAOException;
++	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
++	        String accessionnumber) throws DAOException;
+ 	
+ 	/**
+ 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
+@@ -94,8 +94,8 @@ public interface ObsDAO {
+ 	 */
+ 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+ 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+-	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
+-	        throws DAOException;
++	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs,
++	        String accessionnumber) throws DAOException;
+ 	
+ 	/**
+ 	 * Auto generated method comment
+diff --git a/api/src/main/java/org/openmrs/api/db/hibernate/HibernateObsDAO.java b/api/src/main/java/org/openmrs/api/db/hibernate/HibernateObsDAO.java
+index bc510f0..62e0a03 100644
+--- a/api/src/main/java/org/openmrs/api/db/hibernate/HibernateObsDAO.java
++++ b/api/src/main/java/org/openmrs/api/db/hibernate/HibernateObsDAO.java
+@@ -141,17 +141,16 @@ public class HibernateObsDAO implements ObsDAO {
+ 	}
+ 	
+ 	/**
+-	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List,
+-	 *      Integer, Integer, Date, Date, boolean)
++	 * @see org.openmrs.api.db.ObsDAO#getObservations(java.util.List
+ 	 */
+ 	@SuppressWarnings("unchecked")
+ 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+ 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+-	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+-	        throws DAOException {
++	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
++	        String accessionnumber) throws DAOException {
+ 		
+ 		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
+-		    sortList, mostRecentN, obsGroupId, fromDate, toDate, null, includeVoidedObs);
++		    sortList, mostRecentN, obsGroupId, fromDate, toDate, null, includeVoidedObs, accessionnumber);
+ 		
+ 		return criteria.list();
+ 	}
+@@ -163,10 +162,10 @@ public class HibernateObsDAO implements ObsDAO {
+ 	 */
+ 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+ 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+-	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
+-	        throws DAOException {
++	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs,
++	        String accessionnumber) throws DAOException {
+ 		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
+-		    null, null, obsGroupId, fromDate, toDate, valueCodedNameAnswers, includeVoidedObs);
++		    null, null, obsGroupId, fromDate, toDate, valueCodedNameAnswers, includeVoidedObs, accessionnumber);
+ 		criteria.setProjection(Projections.rowCount());
+ 		return (Long) criteria.list().get(0);
+ 	}
+@@ -191,7 +190,7 @@ public class HibernateObsDAO implements ObsDAO {
+ 	private Criteria createGetObservationsCriteria(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+ 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+ 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers,
+-	        boolean includeVoidedObs) {
++	        boolean includeVoidedObs, String accessionnumber) {
+ 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class, "obs");
+ 		
+ 		if (CollectionUtils.isNotEmpty(whom)) {
+diff --git a/api/src/main/java/org/openmrs/api/impl/ObsServiceImpl.java b/api/src/main/java/org/openmrs/api/impl/ObsServiceImpl.java
+index 76f9931..4a93b49 100644
+--- a/api/src/main/java/org/openmrs/api/impl/ObsServiceImpl.java
++++ b/api/src/main/java/org/openmrs/api/impl/ObsServiceImpl.java
+@@ -320,7 +320,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
+ 		}
+ 		
+ 		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, mostRecentN,
+-		    obsGroupId, fromDate, toDate, includeVoidedObs);
++		    obsGroupId, fromDate, toDate, includeVoidedObs, null);
+ 	}
+ 	
+ 	/**
+@@ -333,7 +333,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
+ 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+ 	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException {
+ 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
+-		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs));
++		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs, null));
+ 	}
+ 	
+ 	/**
+@@ -875,7 +875,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
+ 	@Transactional(readOnly = true)
+ 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided) {
+ 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(null, null, null, null, null, null, null, null, null,
+-		    conceptNames, true));
++		    conceptNames, true, null));
+ 	}
+ 	
+ 	/**
+@@ -885,4 +885,26 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
+ 		handlers.remove(key);
+ 	}
+ 	
++	/**
++	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
++	 *      java.util.List, java.util.List, List, List, java.util.List, java.lang.Integer,
++	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean)
++	 */
++	@Transactional(readOnly = true)
++	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
++	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
++	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
++	        String accessionnumber) throws APIException {
++		
++		if (sort == null) {
++			sort = new Vector<String>();
++		}
++		if (sort.isEmpty()) {
++			sort.add("obsDatetime");
++		}
++		
++		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, mostRecentN,
++		    obsGroupId, fromDate, toDate, includeVoidedObs, accessionnumber);
++	}
++	
+ }
+diff --git a/api/src/main/java/org/openmrs/module/ModuleUtil.java b/api/src/main/java/org/openmrs/module/ModuleUtil.java
+index 18eb9a2..fbdfaff 100644
+--- a/api/src/main/java/org/openmrs/module/ModuleUtil.java
++++ b/api/src/main/java/org/openmrs/module/ModuleUtil.java
+@@ -369,7 +369,7 @@ public class ModuleUtil {
+ 			List<String> versions = new Vector<String>();
+ 			List<String> values = new Vector<String>();
+ 			String separator = "-";
+-			
++			
+ 			// strip off any qualifier e.g. "-SNAPSHOT"
+ 			int qualifierIndex = version.indexOf(separator);
+ 			if (qualifierIndex != -1) {
+@@ -378,7 +378,7 @@ public class ModuleUtil {
+ 			
+ 			qualifierIndex = value.indexOf(separator);
+ 			if (qualifierIndex != -1) {
+-				value = value.substring(0, qualifierIndex);
++				value = value.substring(0, qualifierIndex);
+ 			}
+ 			
+ 			Collections.addAll(versions, version.split("\\."));
+-- 
+1.8.5.2.msysgit.0
+

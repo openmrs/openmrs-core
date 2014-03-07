@@ -141,17 +141,16 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List,
-	 *      Integer, Integer, Date, Date, boolean)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(java.util.List
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
-	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
-	        throws DAOException {
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
+	        String accessionnumber) throws DAOException {
 		
 		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
-		    sortList, mostRecentN, obsGroupId, fromDate, toDate, null, includeVoidedObs);
+		    sortList, mostRecentN, obsGroupId, fromDate, toDate, null, includeVoidedObs, accessionnumber);
 		
 		return criteria.list();
 	}
@@ -163,10 +162,10 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
-	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
-	        throws DAOException {
+	        Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs,
+	        String accessionnumber) throws DAOException {
 		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
-		    null, null, obsGroupId, fromDate, toDate, valueCodedNameAnswers, includeVoidedObs);
+		    null, null, obsGroupId, fromDate, toDate, valueCodedNameAnswers, includeVoidedObs, accessionnumber);
 		criteria.setProjection(Projections.rowCount());
 		return (Long) criteria.list().get(0);
 	}
@@ -191,7 +190,7 @@ public class HibernateObsDAO implements ObsDAO {
 	private Criteria createGetObservationsCriteria(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, List<ConceptName> valueCodedNameAnswers,
-	        boolean includeVoidedObs) {
+	        boolean includeVoidedObs, String accessionnumber) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class, "obs");
 		
 		if (CollectionUtils.isNotEmpty(whom)) {
@@ -250,7 +249,11 @@ public class HibernateObsDAO implements ObsDAO {
 		
 		if (!includeVoidedObs) {
 			criteria.add(Restrictions.eq("voided", false));
-		}
+        }
+
+        if (accessionnumber != null) {
+            criteria.add(Restrictions.eq("accessionNumber",accessionnumber));
+        }
 		return criteria;
 	}
 	
