@@ -44,6 +44,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -236,6 +242,42 @@ public class WebModuleUtil {
 					
 					// get the dwr-module.xml file that we're appending our code to
 					File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
+
+					// testing if file exists
+					if (!f.exists()) {
+						// if it does not -> needs to be created
+						try {
+							
+							DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+							DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+							
+							// root elements
+							Document doc = docBuilder.newDocument();
+							Element rootElement = doc.createElement("dwr");
+							doc.appendChild(rootElement);
+							
+							// write the content into xml file
+							TransformerFactory transformerFactory = TransformerFactory.newInstance();
+							Transformer transformer = transformerFactory.newTransformer();
+							DOMSource source = new DOMSource(doc);
+							StreamResult result = new StreamResult(new File(realPath + "/WEB-INF/dwr-modules.xml"));
+							
+							// Output to console for testing
+							// StreamResult result = new StreamResult(System.out);
+							
+							transformer.transform(source, result);
+							
+							System.out.println("File saved!");
+							
+						}
+						catch (ParserConfigurationException pce) {
+							log.error(pce);
+						}
+						catch (TransformerException tfe) {
+							log.error(tfe);
+						}
+					}
+					
 					inputStream = new FileInputStream(f);
 					Document dwrmodulexml = getDWRModuleXML(inputStream, realPath);
 					Element outputRoot = dwrmodulexml.getDocumentElement();
@@ -809,6 +851,39 @@ public class WebModuleUtil {
 				
 				// get the dwr-module.xml file that we're appending our code to
 				File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
+
+				if (!f.exists()) {
+					// if it does not -> needs to be created
+					try {
+						
+						DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+						DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+						
+						// root elements
+						Document doc = docBuilder.newDocument();
+						Element rootElement = doc.createElement("dwr");
+						doc.appendChild(rootElement);
+						
+						// write the content into xml file
+						TransformerFactory transformerFactory = TransformerFactory.newInstance();
+						Transformer transformer = transformerFactory.newTransformer();
+						DOMSource source = new DOMSource(doc);
+						StreamResult result = new StreamResult(new File(realPath + "/WEB-INF/dwr-modules.xml"));
+						
+						// Output to console for testing
+						// StreamResult result = new StreamResult(System.out);
+						
+						transformer.transform(source, result);
+						
+					}
+					catch (ParserConfigurationException pce) {
+						log.error(pce);
+					}
+					catch (TransformerException tfe) {
+						log.error(tfe);
+					}
+				}
+				
 				inputStream = new FileInputStream(f);
 				Document dwrmodulexml = getDWRModuleXML(inputStream, realPath);
 				Element outputRoot = dwrmodulexml.getDocumentElement();
