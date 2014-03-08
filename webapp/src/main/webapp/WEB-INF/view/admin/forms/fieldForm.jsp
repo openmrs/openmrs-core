@@ -71,7 +71,7 @@
 <div class="boxHeader">
 	<b><openmrs:message code="Field.formTableTitle" /></b>
 </div>
-<form method="post" class="box">
+<div class="box">
 	<table cellpadding="2" cellspacing="0" id="formTable" width="98%">
 		<tr>
 			<th> <openmrs:message code="general.name" /> </th>
@@ -91,7 +91,7 @@
 			</tr>
 		</c:forEach>
 	</table>
-</form>
+</div>
 </c:if>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>
