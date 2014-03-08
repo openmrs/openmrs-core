@@ -223,10 +223,15 @@ public class PersonFormController extends SimpleFormController {
 		
 		if (action.equals(msa.getMessage("Person.delete"))) {
 			try {
-				ps.purgePerson(person);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.deleted");
+				String voidReason = request.getParameter("voidReason");
+				if (StringUtils.isBlank(voidReason)) {
+					voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
+					        .getLocale());
+				}
+				ps.voidPerson(person, voidReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
 				
-				return new ModelAndView(new RedirectView("index.htm"));
+				return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId()));
 			}
 			catch (DataIntegrityViolationException e) {
 				log.error("Unable to delete person because of database FK errors: " + person, e);
