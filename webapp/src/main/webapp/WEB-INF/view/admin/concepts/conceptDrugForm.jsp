@@ -98,7 +98,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="ConceptDrug.concept"/></th>
+		<th><openmrs:message code="ConceptDrug.concept"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="drug.concept">
 				<openmrs_tag:conceptField formFieldName="${status.expression}" formFieldId="concept" initialValue="${status.value}" includeClasses="Drug" />

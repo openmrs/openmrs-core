@@ -259,7 +259,7 @@
 		</tr>
 	</c:if>
 	<tr>
-		<th><openmrs:message code="Obs.person"/></th>
+		<th><openmrs:message code="Obs.person"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="person">
 <c:choose>
@@ -310,7 +310,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="Obs.datetime"/></th>
+		<th><openmrs:message code="Obs.datetime"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="obsDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
@@ -321,7 +321,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="Obs.concept"/></th>
+		<th><openmrs:message code="Obs.concept"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="obs.concept">
 				<openmrs_tag:conceptField formFieldName="concept" formFieldId="conceptId" excludeDatatypes="N/A" initialValue="${status.editor.value.conceptId}" onSelectFunction="onQuestionSelect" />
@@ -418,7 +418,7 @@
 		</td>
 	</tr>
 	<tr id="valueNumericRow" class="obsValue">
-		<th><openmrs:message code="Obs.numericAnswer"/></th>
+		<th><openmrs:message code="Obs.numericAnswer"/><span class="required">*</span></th>
 		<spring:bind path="valueNumeric">
 			<td>
 				<input type="text" name="${status.expression}" value="${status.value}" size="10" onKeyUp="validateNumericRange(this.value)"/>
@@ -447,7 +447,7 @@
 		</spring:bind>
 	</tr>
 	<tr id="valueComplex" class="obsValue">
-		<th><openmrs:message code="Obs.complexAnswer"/></th>
+		<th><openmrs:message code="Obs.complexAnswer"/><span class="required">*</span></th>
 		<spring:bind path="valueComplex">
 			<td>
 				${status.value}<br/>

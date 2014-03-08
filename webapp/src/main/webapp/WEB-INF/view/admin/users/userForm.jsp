@@ -97,7 +97,7 @@
 				<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
 			</spring:nestedPath>
 			<tr>
-				<td><openmrs:message code="Person.gender"/></td>
+				<td><openmrs:message code="Person.gender"/><span class="required">*</span></td>
 				<td><spring:bind path="user.person.gender">
 						<openmrs:forEachRecord name="gender">
 							<input type="radio" name="${status.expression}" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
@@ -143,12 +143,12 @@
 			</tr>
 			<c:if test="${modifyPasswords == true}">
 				<tr>
-				<td><openmrs:message code="User.usersPassword" /></td>
+				<td><openmrs:message code="User.usersPassword" /><span class="required">*</span></td>
 					<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/></td>
 		
 				</tr>
 				<tr>
-					<td><openmrs:message code="User.confirm" /></td>
+					<td><openmrs:message code="User.confirm" /><span class="required">*</span></td>
 					<td>
 						<input type="password" name="confirm" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off" />
 						<i><openmrs:message code="User.confirm.description" /></i>

@@ -115,7 +115,7 @@
 
 <h2><openmrs:message code="Patient.merge.title"/></h2>
 
-<openmrs:message code="Patient.merge.search_on"/>: <br/>
+<openmrs:message code="Patient.merge.search_on"/><span class="required">*</span>: <br/>
 <input type="checkbox" name="attr" id="identifier" value="identifier" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="identifier"><openmrs:message code="Patient.identifier"/></label> <br/>
 <input type="checkbox" name="attr" id="gender" value="gender" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="gender"><openmrs:message code="Person.gender"/></label> <br/>
 <input type="checkbox" name="attr" id="birthdate" value="birthdate" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="birthdate"><openmrs:message code="Person.birthdate"/></label> <br/>

@@ -151,7 +151,7 @@
 <form method="post">
 <table>
 	<tr>
-		<th valign="top"><openmrs:message code="Alert.text"/></th>
+		<th valign="top"><openmrs:message code="Alert.text"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="alert.text">
 				<textarea id="text" name="${status.expression}" rows="2" cols="43">${status.value}</textarea>
@@ -160,7 +160,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><openmrs:message code="Alert.recipients"/></th>
+		<th valign="top"><openmrs:message code="Alert.recipients"/><span class="required">*</span></th>
 		<td valign="top">
 			<input type="hidden" name="userIds" id="userIds" size="40" value='<c:forEach items="${alert.recipients}" var="recipient">${recipient.recipient.userId} </c:forEach>' />
 			<table cellpadding="0" cellspacing="0">

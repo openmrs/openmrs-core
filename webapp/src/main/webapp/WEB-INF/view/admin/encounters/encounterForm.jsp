@@ -233,7 +233,7 @@
 <div class="box">
 	<table cellpadding="3" cellspacing="0">
 		<tr>
-			<th><openmrs:message code="Encounter.patient"/></th>
+			<th><openmrs:message code="Encounter.patient"/><span class="required">*</span></th>
 			<td>
 				<spring:bind path="encounter.patient">
 					<openmrs_tag:patientField formFieldName="patientId" searchLabelCode="Patient.find" initialValue="${status.value.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" callback="updateSaveButtonAndVisits" allowSearch="${encounter.encounterId == null}"/>
@@ -251,7 +251,7 @@
 			</td>
 		</tr>
 		<tr>
-			<th><openmrs:message code="Encounter.datetime"/></th>
+			<th><openmrs:message code="Encounter.datetime"/><span class="required">*</span></th>
 			<td>
 				<spring:bind path="encounter.encounterDatetime">			
 					<input type="text" name="${status.expression}" size="20" 
@@ -376,8 +376,8 @@
 	<div class="box">
 	<table cellspacing="0" cellpadding="2" width="98%" id="providers">
 		<tr id="providersListingHeaderRow">
-			<th><openmrs:message code="Role.role"/></th>
-			<th><openmrs:message code="Provider.name"/></th>
+			<th><openmrs:message code="Role.role"/><span class="required">*</span></th>
+			<th><openmrs:message code="Provider.name"/><span class="required">*</span></th>
 			<th><openmrs:message code="Provider.identifier"/></th>
 			<th></th>
 		</tr>

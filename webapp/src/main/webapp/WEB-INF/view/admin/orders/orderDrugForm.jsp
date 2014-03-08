@@ -36,7 +36,7 @@
 <form method="post" class="box">
 	<table>
 		<tr>
-			<td valign="top"><openmrs:message code="Order.patient"/></td>
+			<td valign="top"><openmrs:message code="Order.patient"/><span class="required">*</span></td>
 			<td valign="top">
 				<spring:bind path="order.patient">
 					<openmrs:fieldGen type="org.openmrs.Patient" formFieldName="${status.expression}" val="${status.editor.value}" />
@@ -45,7 +45,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><openmrs:message code="Order.concept"/></td>
+			<td valign="top"><openmrs:message code="Order.concept"/><span class="required">*</span></td>
 			<td valign="top">
 				<spring:bind path="order.concept">
 					<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.editor.value}" />
@@ -178,7 +178,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><openmrs:message code="DrugOrder.drug"/></td>
+			<td valign="top"><openmrs:message code="DrugOrder.drug"/><span class="required">*</span></td>
 			<td valign="top">
 				<spring:bind path="order.drug">
 					<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="${status.expression}" val="${status.editor.value}" parameters="optionHeader=[blank]" />

@@ -44,6 +44,7 @@ import org.openmrs.api.db.hibernate.HibernatePersonDAO;
 import org.openmrs.api.db.hibernate.PersonAttributeHelper;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 
 public class PatientDAOTest extends BaseContextSensitiveTest {
@@ -58,7 +59,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	
 	private PatientService pService = null;
 	
-	private PatientSearchTestHelper patientSearchTestHelper;
+	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
 	
 	private PersonAttributeHelper personAttributeHelper;
 	
@@ -83,7 +84,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		personAttributeHelper = new PersonAttributeHelper(sessionFactory);
-		patientSearchTestHelper = new PatientSearchTestHelper(Context.getAdministrationService());
+		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
 		
 	}
 	
@@ -1028,7 +1029,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldGetPatientsWithMatchModeStart_SignatureNo1() throws Exception {
-		String oldPropertyValue = patientSearchTestHelper.setGlobalProperty(
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
 		
@@ -1040,10 +1041,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(patients.get(0).getGivenName().equalsIgnoreCase(patients.get(1).getGivenName()));
 		
 		if (oldPropertyValue != null) {
-			patientSearchTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 			    oldPropertyValue);
 		} else {
-			patientSearchTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		}
 	}
 	
@@ -1053,7 +1054,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldGetPatientsWithMatchModeAnywhere_SignatureNo1() throws Exception {
-		String oldPropertyValue = patientSearchTestHelper.setGlobalProperty(
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
 		
@@ -1065,10 +1066,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(patients.get(0).getGivenName().equalsIgnoreCase(patients.get(1).getGivenName()));
 		
 		if (oldPropertyValue != null) {
-			patientSearchTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 			    oldPropertyValue);
 		} else {
-			patientSearchTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		}
 	}
 	
@@ -1078,17 +1079,17 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldNotGetPatientsWithMatchModeStart_SignatureNo1() throws Exception {
-		String oldPropertyValue = patientSearchTestHelper.setGlobalProperty(
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
 		
 		List<Patient> patients = dao.getPatients("xyz", null, null, false, 0, 11, false);
 		
 		if (oldPropertyValue != null) {
-			patientSearchTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 			    oldPropertyValue);
 		} else {
-			patientSearchTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		}
 	}
 	
@@ -1098,7 +1099,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldNotGetPatientsWithMatchModeAnywhere_SignatureNo1() throws Exception {
-		String oldPropertyValue = patientSearchTestHelper.setGlobalProperty(
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
 		
@@ -1107,10 +1108,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, patients.size());
 		
 		if (oldPropertyValue != null) {
-			patientSearchTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 			    oldPropertyValue);
 		} else {
-			patientSearchTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		}
 	}
 	
@@ -1728,7 +1729,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldGetPatientsWithMatchModeStart_SignatureNo2() throws Exception {
-		String oldPropertyValue = patientSearchTestHelper.setGlobalProperty(
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
 		
@@ -1740,10 +1741,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(patients.get(0).getGivenName().equalsIgnoreCase(patients.get(1).getGivenName()));
 		
 		if (oldPropertyValue != null) {
-			patientSearchTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 			    oldPropertyValue);
 		} else {
-			patientSearchTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		}
 	}
 	
@@ -1753,7 +1754,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldGetPatientsWithMatchModeAnywhere_SignatureNo2() throws Exception {
-		String oldPropertyValue = patientSearchTestHelper.setGlobalProperty(
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
 		
@@ -1765,10 +1766,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(patients.get(0).getGivenName().equalsIgnoreCase(patients.get(1).getGivenName()));
 		
 		if (oldPropertyValue != null) {
-			patientSearchTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 			    oldPropertyValue);
 		} else {
-			patientSearchTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		}
 	}
 	
@@ -1778,17 +1779,17 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldNotGetPatientsWithMatchModeStart_SignatureNo2() throws Exception {
-		String oldPropertyValue = patientSearchTestHelper.setGlobalProperty(
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
 		
 		List<Patient> patients = dao.getPatients("xyz", 0, 11);
 		
 		if (oldPropertyValue != null) {
-			patientSearchTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 			    oldPropertyValue);
 		} else {
-			patientSearchTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		}
 	}
 	
@@ -1798,7 +1799,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldNotGetPatientsWithMatchModeAnywhere_SignatureNo2() throws Exception {
-		String oldPropertyValue = patientSearchTestHelper.setGlobalProperty(
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE);
 		
@@ -1807,10 +1808,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, patients.size());
 		
 		if (oldPropertyValue != null) {
-			patientSearchTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 			    oldPropertyValue);
 		} else {
-			patientSearchTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE);
 		}
 	}
 	

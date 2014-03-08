@@ -412,6 +412,8 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public Map<Locale, List<ConceptName>> indexTermsByLocale = new HashMap<Locale, List<ConceptName>>();
 		
+		public Map<Locale, Map<String, String>> conceptAnswersByLocale = new HashMap<Locale, Map<String, String>>();
+		
 		public List<ConceptMap> conceptMappings; // a "lazy list" version of the concept.getMappings() list
 		
 		/** The list of drugs for its concept object */
@@ -457,6 +459,7 @@ public class ConceptFormController extends SimpleFormController {
 				synonymsByLocale.put(locale, (List<ConceptName>) concept.getSynonyms(locale));
 				descriptionsByLocale.put(locale, concept.getDescription(locale, true));
 				indexTermsByLocale.put(locale, (List<ConceptName>) concept.getIndexTermsForLocale(locale));
+				conceptAnswersByLocale.put(locale, (Map<String, String>) getConceptAnswers(locale));
 				
 				// put in default values so the binding doesn't fail
 				if (namesByLocale.get(locale) == null) {
@@ -992,15 +995,15 @@ public class ConceptFormController extends SimpleFormController {
 		 * Get the answers for this concept with decoded names. The keys to this map are the
 		 * conceptIds or the conceptIds^drugId if applicable
 		 *
-		 * @return
+		 * @return a map with localized concept answers
 		 */
-		public Map<String, String> getConceptAnswers() {
+		private Map<String, String> getConceptAnswers(Locale locale) {
 			Map<String, String> conceptAnswers = new LinkedHashMap<String, String>();
 			// get concept answers with locale decoded names
 			for (ConceptAnswer answer : concept.getAnswers(true)) {
 				log.debug("getting answers");
 				String key = answer.getAnswerConcept().getConceptId().toString();
-				ConceptName cn = answer.getAnswerConcept().getName(Context.getLocale());
+				ConceptName cn = answer.getAnswerConcept().getName(locale);
 				String name = "";
 				if (cn != null) {
 					name = cn.toString();
@@ -1008,7 +1011,7 @@ public class ConceptFormController extends SimpleFormController {
 				if (answer.getAnswerDrug() != null) {
 					// if this answer is a drug, append the drug id information
 					key = key + "^" + answer.getAnswerDrug().getDrugId();
-					name = answer.getAnswerDrug().getFullName(Context.getLocale());
+					name = answer.getAnswerDrug().getFullName(locale);
 				}
 				if (answer.getAnswerConcept().isRetired()) {
 					name = "<span class='retired'>" + name + "</span>";
@@ -1017,6 +1020,14 @@ public class ConceptFormController extends SimpleFormController {
 			}
 			
 			return conceptAnswers;
+		}
+		
+		/**
+		 * @see #getConceptAnswers(java.util.Locale)
+		 * @return a map with localized concept answers
+		 */
+		public Map<String, String> getConceptAnswers() {
+			return getConceptAnswers(Context.getLocale());
 		}
 		
 		/**
@@ -1055,6 +1066,20 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public void setDisplayPrecision(Integer displayPrecision) {
 			this.displayPrecision = displayPrecision;
+		}
+		
+		/**
+		 * @return the conceptAnswersByLocale
+		 */
+		public Map<Locale, Map<String, String>> getConceptAnswersByLocale() {
+			return conceptAnswersByLocale;
+		}
+		
+		/**
+		 * @param conceptAnswersByLocale the conceptAnswersByLocale to set
+		 */
+		public void setConceptAnswersByLocale(Map<Locale, Map<String, String>> conceptAnswersByLocale) {
+			this.conceptAnswersByLocale = conceptAnswersByLocale;
 		}
 	}
 	

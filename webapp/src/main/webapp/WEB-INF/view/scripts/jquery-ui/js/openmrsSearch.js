@@ -195,7 +195,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	notification = div.find("#searchWidgetNotification");
 		    	loadingMsgObj = div.find("#loadingMsg");
 		    	showSearchButton = o.showSearchButton ? true : false;
-		    	lastSearchParams = (o.lastSearchParams !== null) ? o.lastSearchParams : null;
+		    	lastSearchParams = (o.lastSearchParams != null) ? o.lastSearchParams : null;
 		    
 		    this._div = div;
 		    

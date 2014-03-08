@@ -15,7 +15,7 @@
 <form method="post">
 <table>
 	<tr>
-		<td><openmrs:message code="Privilege.privilege"/></td>
+		<td><openmrs:message code="Privilege.privilege"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="privilege.privilege">
 				<c:if test="${status.value == null || status.value == \"\"}"><input type="text" name="${status.expression}" id="priv" value="${status.value}"></c:if>

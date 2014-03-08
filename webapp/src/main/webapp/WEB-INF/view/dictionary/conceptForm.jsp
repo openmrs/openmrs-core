@@ -231,7 +231,7 @@
 	</tr>
 	<tr class="localeSpecific">
 		<th valign="bottom">
-			<openmrs:message code="Concept.fullySpecifiedName" /> 
+			<openmrs:message code="Concept.fullySpecifiedName" /><span class="required">*</span>
 			<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<openmrs:message code="Concept.fullySpecified.help"/>"/>
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
@@ -755,6 +755,7 @@
 						<select name="term.source" >
 							<option value=""><openmrs:message code="ConceptReferenceTerm.searchAllSources" /></option>
 							<openmrs:forEachRecord  name="conceptSource">
+							<c:set var="sourceID" value="${record.conceptSourceId}" scope="page" />
 							<option value="${record.conceptSourceId}">
 								<c:out value="${record.name}" />
 							</option>
@@ -775,8 +776,20 @@
 				
 				<tr>
 					<td colspan="3" valign="top" align="left">
+					<c:choose>
+				           <c:when test="${sourceID != null}">
 						<input id="addMapButton" type="button" value='<openmrs:message code="Concept.mapping.add"/>' class="smallButton" 
 							   onClick="addConceptMapping(${fn:length(command.conceptMappings)})" />
+							    </c:when>
+							    <c:otherwise>
+					<span>
+					<openmrs:message code="Concept.mapping.sourceUnavailable"/>
+                	<a href="${pageContext.request.contextPath}/admin/concepts/conceptSource.list">
+					<openmrs:message code="Concept.mapping.sourceAdd"/>
+					</a>
+					</span>
+					</c:otherwise>
+			       </c:choose>
 					</td>
 					<td class="hideableEle" align="right">
 						<openmrs:hasPrivilege privilege="Create Reference Terms While Editing Concepts">

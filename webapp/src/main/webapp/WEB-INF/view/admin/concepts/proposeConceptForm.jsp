@@ -72,7 +72,7 @@
 </c:if>
 
 <openmrs:message code="ConceptProposal.proposeWarning"/> <br/>
-<openmrs:message code="ConceptProposal.proposeInfo"/>
+<openmrs:message code="ConceptProposal.proposeInfo"/><span class="required">*</span>
 <spring:bind path="conceptProposal.originalText">
 	<input type="text" name="${status.expression}" id="originalText" value="" size="60" />
 	<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
