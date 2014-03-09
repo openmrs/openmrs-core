@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
@@ -387,11 +388,12 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 		
 		// load in the default hibernate properties from hibernate.default.properties
-		InputStream propertyStream = null;
+		////InputStream propertyStream = null;
 		try {
 			Properties props = new Properties();
-			propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
-			OpenmrsUtil.loadProperties(props, propertyStream);
+			//propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
+			File file = new File(getClass().getClassLoader().getResource("/hibernate.default.properties").getFile());
+			OpenmrsUtil.loadProperties(props, file);
 			
 			// add in all default properties that don't exist in the runtime
 			// properties yet
@@ -401,13 +403,16 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 			}
 		}
-		finally {
+		/*finally {
 			try {
 				propertyStream.close();
 			}
 			catch (Exception e) {
 				// pass
 			}
+		}*/
+		catch (Throwable t) {
+
 		}
 		
 	}
