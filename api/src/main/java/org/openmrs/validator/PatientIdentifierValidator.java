@@ -61,6 +61,7 @@ public class PatientIdentifierValidator implements Validator {
 		catch (Exception e) {
 			errors.reject(e.getMessage());
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "identifier");
 	}
 	
 	/**
