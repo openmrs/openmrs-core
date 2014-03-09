@@ -1116,4 +1116,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage("This order frequency cannot be deleted because it is already in use");
 		Context.getOrderService().purgeOrderFrequency(orderFrequency);
 	}
+	
+	@Test
+	public void saveOrderWithScheduledDate_shouldAddANewOrderWithScheduledDateToTheDatabase() {
+		Date scheduledDate = new Date();
+		Order order = new Order();
+		order.setAction(Action.NEW);
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setStartDate(new Date());
+		order.setScheduledDate(scheduledDate);
+		order = orderService.saveOrder(order);
+		assertNotNull(order);
+		assertEquals(scheduledDate, order.getScheduledDate());
+	}
 }

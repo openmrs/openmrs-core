@@ -39,7 +39,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.9.2, 1.10
 	 */
 	public enum Urgency {
-		ROUTINE, STAT
+		ROUTINE, STAT, ON_SCHEDULED_DATE
 	}
 	
 	/**
@@ -85,6 +85,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private CareSetting careSetting;
 	
+	private Date scheduledDate;
+	
 	/**
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
 	 * to the original ampicillin order (the D/C gets its own order number)
@@ -107,6 +109,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/** constructor with id */
 	public Order(Integer orderId) {
 		this.orderId = orderId;
+	}
+	
+	public Date getScheduledDate() {
+		return scheduledDate;
+	}
+	
+	public void setScheduledDate(Date scheduledDate) {
+		this.scheduledDate = scheduledDate;
 	}
 	
 	/**
@@ -152,6 +162,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setCareSetting(getCareSetting());
 		target.setChangedBy(getChangedBy());
 		target.setDateChanged(getDateChanged());
+		target.setScheduledDate(getScheduledDate());
 		return target;
 	}
 	
@@ -564,7 +575,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		newOrder.setAction(Action.REVISE);
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(this.getPatient());
-		
+		newOrder.setScheduledDate(getScheduledDate());
 		newOrder.setInstructions(this.getInstructions());
 		newOrder.setUrgency(this.getUrgency());
 		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
