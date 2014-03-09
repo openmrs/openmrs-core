@@ -810,6 +810,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(originalOrder.getDateStopped());
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setInstructions("Take after a meal");
+		revisedOrder.setOrderer(providerService.getProvider(1));
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
 		orderService.saveOrder(revisedOrder);
@@ -825,6 +826,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(originalOrder.isVoided());
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setInstructions("Take after a meal");
+		revisedOrder.setOrderer(providerService.getProvider(1));
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
 		orderService.saveOrder(revisedOrder);
@@ -841,6 +843,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(originalOrder.getAutoExpireDate().before(new Date()));
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setInstructions("Take after a meal");
+		revisedOrder.setOrderer(providerService.getProvider(1));
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
 		orderService.saveOrder(revisedOrder);
@@ -857,6 +860,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setPreviousOrder(null);
+		revisedOrder.setOrderer(providerService.getProvider(1));
 		
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Previous Order is required for a revised order");
@@ -878,6 +882,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setStartDate(new Date());
+		revisedOrder.setOrderer(providerService.getProvider(1));
 		orderService.saveOrder(revisedOrder);
 		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);

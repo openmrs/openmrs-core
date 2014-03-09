@@ -154,6 +154,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Order thirdOrderToDiscontinue = orderService.getOrder(7);
 		assertTrue(OrderUtil.isOrderActive(thirdOrderToDiscontinue, null));
 		Order discontinuationOrder = thirdOrderToDiscontinue.cloneForDiscontinuing();
+                discontinuationOrder.setOrderer(providerService.getProvider(1));
 		orderService.saveOrder(discontinuationOrder);
 		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
@@ -175,6 +176,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setStartDate(new Date());
+                revisedOrder.setOrderer(providerService.getProvider(1));
 		orderService.saveOrder(revisedOrder);
 		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);

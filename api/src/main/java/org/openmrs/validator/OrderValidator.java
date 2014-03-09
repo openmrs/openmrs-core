@@ -65,7 +65,7 @@ public class OrderValidator implements Validator {
 		if (order == null) {
 			errors.rejectValue("order", "error.general");
 		} else {
-			if (order.getEncounter() != null && order.getPatient() != null && order.getOrderer() != null) {
+			if (order.getEncounter() != null && order.getPatient() != null) {
 				if (!order.getEncounter().getPatient().equals(order.getPatient()))
 					errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
 			}
