@@ -7129,7 +7129,7 @@
                                  referencedColumnNames="user_id"/>
     </changeSet>
     
-    <changeSet id="201403070131" author="andras-szell">
+    <changeSet id="201403070131-TRUNK-4286" author="andras-szell">
         <preConditions>
             <not><sqlCheck expectedResult="0">select count(*) from order_type where java_class like "org.openmrs.DrugOrder" or java_class like "org.openmrs.TestOrder"</sqlCheck></not>
         </preConditions>
@@ -7141,7 +7141,16 @@
             <column name="creator">1</column>
             <column name="date_created">CURRENT_TIMESTAMP</column>
             <column name="retired">false</column>
-            <column name="uuid"></column>
+            <column name="uuid">2ca568f3-a64a-11e3-9aeb-50e549534c5e</column>
+        </insert>
+        <insert tableName="order_type">
+            <column name="name">Test order</column>
+            <column name="description">Test order</column>
+            <column name="java_class_name">org.openmrs.TestOrder</column>
+            <column name="creator">1</column>
+            <column name="date_created">CURRENT_TIMESTAMP</column>
+            <column name="retired">false</column>
+            <column name="uuid">52a447d3-a64a-11e3-9aeb-50e549534c5e</column>
         </insert>
     </changeSet>
 </databaseChangeLog>
