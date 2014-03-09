@@ -6422,6 +6422,9 @@
     </changeSet>
     
     <changeSet id="201402281648-TRUNK-4274" author="k-joseph">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="encounter_id" />
+        </preConditions>
     	<comment>Making order.encounter required</comment>
     	<ext:modifyColumn tableName="orders">
     		<column name="encounter_id" type="int">
@@ -6430,17 +6433,9 @@
     	</ext:modifyColumn>
     </changeSet>
 
-    <changeSet id="201403011303-TRUNK-4198_1" author="harsha">
-        <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="type_of_order"/>
-        </preConditions>
-        <comment>Dropping foreign key constraint on orders.order_type_id</comment>
-        <dropForeignKeyConstraint baseTableName="orders" constraintName="type_of_order"/>
-    </changeSet>
-
     <changeSet id="201403011348" author="alexisduque">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM orders WHERE orderer = NULL</sqlCheck>
+            <columnExists tableName="orders" columnName="orderer" />
         </preConditions>
         <comment>Make orders.orderer not NULLable</comment>
         <ext:modifyColumn tableName="orders">
@@ -6448,6 +6443,14 @@
                 <constraints nullable="false" />
             </column>
         </ext:modifyColumn>
+    </changeSet>
+
+    <changeSet id="201403011303-TRUNK-4198_1" author="harsha">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="type_of_order"/>
+        </preConditions>
+        <comment>Dropping foreign key constraint on orders.order_type_id</comment>
+        <dropForeignKeyConstraint baseTableName="orders" constraintName="type_of_order"/>
     </changeSet>
 
     <changeSet id="201403011303-TRUNK-4198_2" author="harsha">
