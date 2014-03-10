@@ -461,7 +461,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setAutoExpireDate(this.getAutoExpireDate());
 		newOrder.setOrderReason(this.getOrderReason());
 		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
-		
+		newOrder.setScheduledDate(getScheduledDate());
 		newOrder.setDose(this.getDose());
 		newOrder.setDoseUnits(this.getDoseUnits());
 		newOrder.setFrequency(this.getFrequency());

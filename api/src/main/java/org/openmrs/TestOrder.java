@@ -173,8 +173,8 @@ public class TestOrder extends Order {
 		newOrder.setAutoExpireDate(this.getAutoExpireDate());
 		newOrder.setOrderReason(this.getOrderReason());
 		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
-		
-		newOrder.setSpecimenSource(getSpecimenSource());
+        newOrder.setScheduledDate(this.getScheduledDate());
+        newOrder.setSpecimenSource(getSpecimenSource());
 		newOrder.setLaterality(getLaterality());
 		newOrder.setClinicalHistory(getClinicalHistory());
 		newOrder.setFrequency(getFrequency());
