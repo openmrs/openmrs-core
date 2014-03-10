@@ -72,15 +72,36 @@ public class PersonAttributeTypeListController {
 		modelMap.put("userViewingAttributeTypes", as
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES));
 		
+		int count = 0;
 		List<PersonAttributeType> attributeTypeList = new Vector<PersonAttributeType>();
-		
+		//creating a list with nodupattributeTypeList which don't have any duplicates
+		List<PersonAttributeType> nodupattributeTypeList = new Vector<PersonAttributeType>();
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PersonService ps = Context.getPersonService();
 			attributeTypeList = ps.getAllPersonAttributeTypes(true);
 		}
+		for (PersonAttributeType x : attributeTypeList) {
+			if (nodupattributeTypeList.isEmpty()) {
+				//checking whether the list is empty
+				nodupattributeTypeList.add(x);
+				
+			} else {
+				for (PersonAttributeType y : nodupattributeTypeList) {
+					if (!((y.getName()).equals(x.getName()))) {
+						count++;
+					}
+					
+				}
+				//verifying whether all the attributes in the list are searched and it doesn't matched with any attribute
+				if (count == nodupattributeTypeList.size()) {
+					nodupattributeTypeList.add(x);
+				}
+				count = 0;
+			}
+		}
 		
-		modelMap.addAttribute("personAttributeTypeList", attributeTypeList);
+		modelMap.addAttribute("personAttributeTypeList", nodupattributeTypeList);
 		
 		return "/admin/person/personAttributeTypeList";
 	}
