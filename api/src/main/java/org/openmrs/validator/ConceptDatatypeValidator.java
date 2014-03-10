@@ -50,6 +50,7 @@ public class ConceptDatatypeValidator implements Validator {
 	 * @should pass validation if description is null or empty or whitespace	 *      
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field length is valid
 	 */
 	public void validate(Object obj, Errors errors) {
 		ConceptDatatype cd = (ConceptDatatype) obj;
