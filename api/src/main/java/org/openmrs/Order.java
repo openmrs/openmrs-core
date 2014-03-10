@@ -13,10 +13,10 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.Date;
 
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
@@ -189,10 +189,18 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.concept = concept;
 	}
 	
+	/**
+	 * @return the scheduledDate
+	 * @since 1.10
+	 */
 	public Date getScheduledDate() {
 		return scheduledDate;
 	}
 	
+	/**
+	 * @param scheduledDate the date to set
+	 * @since 1.10
+	 */
 	public void setScheduledDate(Date scheduledDate) {
 		this.scheduledDate = scheduledDate;
 	}
@@ -564,7 +572,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Creates an order for revision from this order, sets the previousOrder and action field.
-	 *
+	 * 
 	 * @return the newly created order
 	 * @since 1.10
 	 * @should set all the relevant fields
