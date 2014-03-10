@@ -31,7 +31,7 @@ public class OrderTypeValidator implements Validator {
 	}
 	
 	/**
-	 * Checks theobject for any inconsistencies/errors
+	 * Validates an Order object
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
