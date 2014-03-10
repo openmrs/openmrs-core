@@ -17,52 +17,52 @@
 </fieldset>
 
 <fieldset>
-	<c:if test="${command.concept.conceptId!=null}">
 	<legend><openmrs:message code="Concept.usage" /></legend>
-
-	<h4><openmrs:message code="dictionary.numobs" arguments="${command.numberOfObsUsingThisConcept}" /></h4>
-
-	<c:if test="${fn:length(command.questionsAnswered) > 0}">
-		<h4><openmrs:message code="dictionary.questionsAnswered" /></h4><ul>
-		<c:forEach items="${command.questionsAnswered}" var="question">
-			<li><a href="concept.htm?conceptId=${question.conceptId}"><openmrs:format concept="${question}" /></a></li>
-		</c:forEach></ul>
-	</c:if>
+	<c:if test="${command.concept.conceptId!=null}">
 	
-	<c:if test="${fn:length(command.containedInSets) > 0}">
-		<h4><openmrs:message code="dictionary.containedInSets" /></h4><ul>
-		<c:forEach items="${command.containedInSets}" var="set">
-			<li><a href="concept.htm?conceptId=${set.conceptSet.conceptId}"><openmrs:format concept="${set.conceptSet}" /></a><br/></li>
-		</c:forEach></ul>
-	</c:if>
+		<h4><openmrs:message code="dictionary.numobs" arguments="${command.numberOfObsUsingThisConcept}" /></h4>
 
-	<c:forEach items="${command.conceptUsage}" var="conceptUsageExt">
-		<openmrs:hasPrivilege privilege="${conceptUsageExt.requiredPrivilege}">
-		<c:if test="${fn:length(conceptUsageExt.conceptUsage) > 0}">
-			<h4><openmrs:message code="${conceptUsageExt.header}" /></h4>
-			<ul>
-				<c:forEach items="${conceptUsageExt.conceptUsage}" var="usage">
-					<li><a href="${pageContext.request.contextPath}${usage.url}">
+		<c:if test="${fn:length(command.questionsAnswered) > 0}">
+			<h4><openmrs:message code="dictionary.questionsAnswered" /></h4><ul>
+			<c:forEach items="${command.questionsAnswered}" var="question">
+				<li><a href="concept.htm?conceptId=${question.conceptId}"><openmrs:format concept="${question}" /></a></li>
+			</c:forEach></ul>
+		</c:if>
+	
+		<c:if test="${fn:length(command.containedInSets) > 0}">
+			<h4><openmrs:message code="dictionary.containedInSets" /></h4><ul>
+			<c:forEach items="${command.containedInSets}" var="set">
+				<li><a href="concept.htm?conceptId=${set.conceptSet.conceptId}"><openmrs:format concept="${set.conceptSet}" /></a><br/></li>
+			</c:forEach></ul>
+		</c:if>
+
+		<c:forEach items="${command.conceptUsage}" var="conceptUsageExt">
+			<openmrs:hasPrivilege privilege="${conceptUsageExt.requiredPrivilege}">
+			<c:if test="${fn:length(conceptUsageExt.conceptUsage) > 0}">
+				<h4><openmrs:message code="${conceptUsageExt.header}" /></h4>
+				<ul>
+					<c:forEach items="${conceptUsageExt.conceptUsage}" var="usage">
+						<li><a href="${pageContext.request.contextPath}${usage.url}">
 							<c:if test="${usage.strike}"><strike></c:if>
 								${usage.label}
 							<c:if test="${usage.strike}"></strike></c:if>
-						</a>
-					</li>
-				</c:forEach>
-			</ul>
-		</c:if>
-		</openmrs:hasPrivilege>
-	</c:forEach>
+							</a>
+						</li>
+					</c:forEach>
+				</ul>
+			</c:if>
+			</openmrs:hasPrivilege>
+		</c:forEach>
 
-	<openmrs:extensionPoint pointId="org.openmrs.concept.usage" type="html" requiredClass="org.openmrs.module.web.extension.ConceptUsageExtension">
-		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-		<c:if test="${fn:length(extension.conceptUsage) > 0}">
-			<h4>${extension.header}</h4>
-			<ul><c:forEach items="${extension.conceptUsage}" var="usage">
-			<li><a href="<openmrs_tag:url value="${usage.url}"/>">${usage.label}</a></br></li>
-			</c:forEach></ul>
-		</c:if>
+		<openmrs:extensionPoint pointId="org.openmrs.concept.usage" type="html" requiredClass="org.openmrs.module.web.extension.ConceptUsageExtension">
+			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+			<c:if test="${fn:length(extension.conceptUsage) > 0}">
+				<h4>${extension.header}</h4>
+				<ul><c:forEach items="${extension.conceptUsage}" var="usage">
+				<li><a href="<openmrs_tag:url value="${usage.url}"/>">${usage.label}</a></br></li>
+				</c:forEach></ul>
+			</c:if>
 		</openmrs:hasPrivilege>
-	</openmrs:extensionPoint>
+		</openmrs:extensionPoint>
 	</c:if>
 </fieldset>
