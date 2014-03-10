@@ -418,7 +418,7 @@
 		</td>
 	</tr>
 	<tr id="valueNumericRow" class="obsValue">
-		<th><openmrs:message code="Obs.numericAnswer"/><span class="required">*</span></th>
+		<th><openmrs:message code="Obs.numericAnswer"/></th>
 		<spring:bind path="valueNumeric">
 			<td>
 				<input type="text" name="${status.expression}" value="${status.value}" size="10" onKeyUp="validateNumericRange(this.value)"/><span class="required">*</span>
