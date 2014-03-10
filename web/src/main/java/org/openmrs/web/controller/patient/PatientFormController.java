@@ -255,11 +255,22 @@ public class PatientFormController extends PersonFormController {
 			String action = request.getParameter("action");
 			PatientService ps = Context.getPatientService();
 			
-			if (action.equals(msa.getMessage("Patient.delete"))) {
+			if (action.equals(msa.getMessage("Patient.delete")) && StringUtils.isNotBlank(patient.getVoidReason())) {
 				try {
 					ps.purgePatient(patient);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.deleted");
 					return new ModelAndView(new RedirectView("index.htm"));
+				}
+				catch (DataIntegrityViolationException e) {
+					log.error("Unable to delete patient because of database FK errors: " + patient, e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.cannot.delete");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?patientId="
+					        + patient.getPatientId().toString()));
+				}
+			} else if (action.equals(msa.getMessage("Patient.delete")) && StringUtils.isBlank(patient.getVoidReason())) {
+				try {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.error.delete.reasonEmpty");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId()));
 				}
 				catch (DataIntegrityViolationException e) {
 					log.error("Unable to delete patient because of database FK errors: " + patient, e);
