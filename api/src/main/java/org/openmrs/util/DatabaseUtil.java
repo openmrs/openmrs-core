@@ -13,12 +13,7 @@
  */
 package org.openmrs.util;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,13 +21,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.springframework.util.StringUtils;
 
@@ -164,69 +157,7 @@ public class DatabaseUtil {
 		
 		return results;
 	}
-	
-	/**
-	 * Returns conceptId for the given units from DatabaseUtil#ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME
-	 * located in application data directory.
-	 *
-	 * @param units
-	 * @return conceptId
-	 * @should return concept_id for units
-	 * @should fail if units is not specified
-	 */
-	public static Integer getConceptIdForUnits(String units) {
-		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
-		PropertiesWithWhitespace props = new PropertiesWithWhitespace();
-		String conceptId = null;
-		try {
-			props.load(new FileInputStream(appDataDir + "/" + ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME));
-			for (Map.Entry prop : props.entrySet()) {
-				if (prop.getKey().equals(units)) {
-					conceptId = prop.getValue().toString();
-					
-					if (conceptId != null) {
-						return Integer.valueOf(conceptId);
-					} else {
-						return null;
-					}
-				}
-			}
-		}
-		catch (NumberFormatException e) {
-			throw new APIException("Your order entry upgrade settings file" + "contains invalid mapping from " + units
-			        + " to concept ID " + conceptId
-			        + ". ID must be an integer or null. Please refer to upgrade instructions for more details.", e);
-		}
-		catch (IOException e) {
-			if (e instanceof FileNotFoundException) {
-				throw new APIException("Unable to find file containing order entry upgrade settings in your "
-				        + "application data directory: " + appDataDir
-				        + "\nPlease refer to upgrade instructions for more details.", e);
-			} else {
-				throw new APIException(e);
-			}
-		}
-		
-		throw new APIException("Your order entry upgrade settings file" + " does not have mapping for " + units
-		        + ". Please refer to upgrade instructions for more details.");
-	}
-	
-	/**
-	 * This method creates mock order entry upgrade file
-	 * @see DatabaseUtil#getConceptIdForUnits(String)
-	 */
-	public static void createOrderEntryUpgradeFileWithTestData(String text) throws IOException {
-		
-		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
-		File propFile = new File(appDataDir, DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME);
-		
-		BufferedWriter writer = new BufferedWriter(new FileWriter(propFile));
-		writer.write(text.replaceAll(" ", "\\ "));
-		writer.close();
-		propFile.deleteOnExit();
-		
-	}
-	
+
 	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
 		PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?");
 		try {

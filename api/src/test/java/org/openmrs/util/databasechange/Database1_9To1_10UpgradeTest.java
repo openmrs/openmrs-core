@@ -13,14 +13,17 @@
  */
 package org.openmrs.util.databasechange;
 
-import liquibase.database.Database;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.OpenmrsUtil;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -38,7 +41,24 @@ public class Database1_9To1_10UpgradeTest {
 	public final static String databasePath = "/org/openmrs/util/databasechange/openmrs-1.9.7.h2.db";
 	
 	private DatabaseUpgradeTestUtil upgradeTestUtil;
-	
+
+	/**
+	 * This method creates mock order entry upgrade file
+	 * @see org.openmrs.util.UpgradeUtil#getConceptIdForUnits(String)
+	 */
+	public static void createOrderEntryUpgradeFileWithTestData(String text) throws IOException {
+
+		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
+		File propFile = new File(appDataDir, DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME);
+
+
+		BufferedWriter writer = new BufferedWriter(new FileWriter(propFile));
+		writer.write(text);
+		writer.close();
+		propFile.deleteOnExit();
+
+	}
+
 	@Before
 	public void before() throws IOException, SQLException {
 		upgradeTestUtil = new DatabaseUpgradeTestUtil(databasePath);
@@ -72,7 +92,7 @@ public class Database1_9To1_10UpgradeTest {
 	        SQLException {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		
-		DatabaseUtil.createOrderEntryUpgradeFileWithTestData("mg=-1\ntab(s)=-2");
+		createOrderEntryUpgradeFileWithTestData("mg=-1\ntab(s)=-2");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -83,8 +103,7 @@ public class Database1_9To1_10UpgradeTest {
 		
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
 		
-		DatabaseUtil
-		        .createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
@@ -117,7 +136,7 @@ public class Database1_9To1_10UpgradeTest {
 		Assert.assertTrue(uniqueUnits.size() > 0);
 		
 		//map the frequencies only
-		DatabaseUtil.createOrderEntryUpgradeFileWithTestData("1/day x 7 days/week=113\n2/day x 7 days/week=114");
+		createOrderEntryUpgradeFileWithTestData("1/day x 7 days/week=113\n2/day x 7 days/week=114");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -131,7 +150,7 @@ public class Database1_9To1_10UpgradeTest {
 		Assert.assertTrue(uniqueFrequencies.size() > 0);
 		
 		//map the dose units only
-		DatabaseUtil.createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -151,8 +170,7 @@ public class Database1_9To1_10UpgradeTest {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
 		
 		//set the mappings for all existing frequencies and dose units
-		DatabaseUtil
-		        .createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
 		
 		upgradeTestUtil.upgrade();
 	}
@@ -199,8 +217,7 @@ public class Database1_9To1_10UpgradeTest {
 		Set<Integer> originalProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider",
 		    Integer.class, upgradeTestUtil.getConnection());
 		
-		DatabaseUtil
-		        .createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day x 7 days/week=113\n2/day x 7 days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		

@@ -22,6 +22,7 @@ import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.UpgradeUtil;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -58,7 +59,7 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 			Date date = new Date(new java.util.Date().getTime());
 			
 			for (String frequency : uniqueFrequencies) {
-				Integer conceptIdForFrequency = DatabaseUtil.getConceptIdForUnits(frequency);
+				Integer conceptIdForFrequency = UpgradeUtil.getConceptIdForUnits(frequency);
 				if (conceptIdForFrequency == null) {
 					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
 				}
