@@ -28,7 +28,7 @@
 		<property name="orderReasonNonCoded" type="java.lang.String" column="order_reason_non_coded" length="255"/>
         <property name="orderNumber" type="string" column="order_number" length="50" not-null="true" access="field"/>
         <property name="commentToFulfiller" type="string" column="comment_to_fulfiller" length="1024" />
-
+        <property name="scheduledDate" type="java.util.Date" column="scheduled_date" length="19" />
         <property name="urgency" column="urgency" length="50" not-null="true">
             <type name="org.openmrs.util.HibernateEnumType">
                 <param name="enumClassName">org.openmrs.Order$Urgency</param>
