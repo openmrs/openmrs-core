@@ -11,7 +11,10 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs;
+package org.openmrs.api;
+
+import org.openmrs.CareSetting;
+import org.openmrs.OrderType;
 
 import java.util.HashMap;
 import java.util.Map;
