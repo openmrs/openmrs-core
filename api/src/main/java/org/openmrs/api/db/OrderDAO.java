@@ -24,6 +24,7 @@ import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.OrderType;
 
 /**
  * Order-related database functions
@@ -115,6 +116,11 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getCareSettings(boolean)
 	 */
 	public List<CareSetting> getCareSettings(boolean includeRetired);
+	
+	/**
+	 * @See OrderService#getOrderTypeByName
+	 */
+	public OrderType getOrderTypeByName(String orderTypeName);
 	
 	/**
 	 * @See OrderService#getOrderFrequency
