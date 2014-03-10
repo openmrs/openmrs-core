@@ -421,7 +421,7 @@
 		<th><openmrs:message code="Obs.numericAnswer"/><span class="required">*</span></th>
 		<spring:bind path="valueNumeric">
 			<td>
-				<input type="text" name="${status.expression}" value="${status.value}" size="10" onKeyUp="validateNumericRange(this.value)"/><span class="required">*</span>
+				<input type="text" name="${status.expression}" value="${status.value}" size="10" onKeyUp="validateNumericRange(this.value)"/>
 				<span id="numericUnits"></span>
 				<span id="numericRangeError"></span>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
