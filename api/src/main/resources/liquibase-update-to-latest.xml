@@ -6420,7 +6420,18 @@
             upgrade process if any unmapped text is found
         </comment>
     </changeSet>
-    
+
+    <changeSet id="201402241054" author="Akshika">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="start_date" />
+        </preConditions>
+        <comment>Making orders.start_date not nullable</comment>
+        <ext:modifyColumn tableName="orders">
+            <column name="start_date" type="DATETIME"/>
+            <constraints nullable="false"/>
+        </ext:modifyColumn>
+    </changeSet>
+
     <changeSet id="201402281648-TRUNK-4274" author="k-joseph">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="encounter_id" />
@@ -6461,12 +6472,102 @@
         <dropColumn tableName="orders" columnName="order_type_id"/>
     </changeSet>
 
-    <changeSet id="201402241054" author="Akshika">
-        <comment>Making orders.start_date not nullable</comment>
-        <ext:modifyColumn tableName="orders">
-            <column name="start_date" type="DATETIME"/>
-            <constraints nullable="false"/>
-        </ext:modifyColumn>
+    <changeSet id="201403041701" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="type_created_by" />
+        </preConditions>
+        <comment>Dropping foreign key constraint for creator from old order_type table</comment>
+        <dropForeignKeyConstraint baseTableName="order_type" constraintName="type_created_by"/>
+    </changeSet>
+
+    <changeSet id="201403041702" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="user_who_retired_order_type" />
+        </preConditions>
+        <comment>Dropping foreign key constraint for retired_by from old order_type table</comment>
+        <dropForeignKeyConstraint baseTableName="order_type" constraintName="user_who_retired_order_type"/>
+    </changeSet>
+
+    <changeSet id="201403041703" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="order_type" />
+        </preConditions>
+        <comment>Dropping the old order_type table</comment>
+        <dropTable tableName="order_type" />
+    </changeSet>
+
+    <changeSet id="201403052242-TRUNK-4286" author="andras-szell">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="order_type"/></not>
+        </preConditions>
+        <comment>Adding new order_type table</comment>
+        <createTable tableName="order_type">
+            <column name="order_type_id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="java_class_name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent" type="int"/>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_retired" type="datetime"/>
+            <column name="retired_by" type="int"/>
+            <column name="uuid" type="varchar(38)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="parent_order_type"
+                                 referencedTableName="order_type" referencedColumnNames="order_type_id"/>
+        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="creator" constraintName="order_type_creator"
+                                 referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="retired_by" constraintName="order_type_retired_by"
+                                 referencedTableName="users" referencedColumnNames="user_id"/>
+    </changeSet>
+
+    <changeSet id="201403070131-TRUNK-4286" author="andras-szell">
+        <preConditions onFail="MARK_RAN">
+            <not><sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.DrugOrder'</sqlCheck></not>
+        </preConditions>
+        <comment>Insert order type for drug orders</comment>
+        <insert tableName="order_type">
+            <column name="name" value="Drug order" />
+            <column name="description" value="Order type for drug orders" />
+            <column name="java_class_name" value="org.openmrs.DrugOrder" />
+            <column name="creator" valueNumeric="1" />
+            <column name="date_created" valueDate="2014-03-09" />
+            <column name="retired" valueNumeric="0" />
+            <column name="uuid" value="2ca568f3-a64a-11e3-9aeb-50e549534c5e" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="201403070132-TRUNK-4286" author="andras-szell">
+        <preConditions onFail="MARK_RAN">
+            <not><sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.TestOrder'</sqlCheck></not>
+        </preConditions>
+        <comment>Insert order type for test orders</comment>
+        <insert tableName="order_type">
+            <column name="name" value="Test order" />
+            <column name="description" value="Order type for test orders" />
+            <column name="java_class_name" value="org.openmrs.TestOrder" />
+            <column name="creator" valueNumeric="1" />
+            <column name="date_created" valueDate="2014-03-09" />
+            <column name="retired" valueNumeric="0" />
+            <column name="uuid" value="52a447d3-a64a-11e3-9aeb-50e549534c5e" />
+        </insert>
     </changeSet>
 
     <changeSet id="201311041510" author="wyclif">
@@ -7097,76 +7198,6 @@
         <comment>Adding foreign key constraint to orders.orderer column</comment>
         <addForeignKeyConstraint constraintName="fk_orderer_provider" baseTableName="orders" baseColumnNames="orderer"
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
-    </changeSet>
-
-    <changeSet id="201403052242-TRUNK-4286" author="andras-szell">
-        <preConditions onFail="MARK_RAN">
-            <not><tableExists tableName="order_type"/></not>
-        </preConditions>
-        <comment>OrderType table added</comment>
-        <createTable tableName="order_type">
-            <column name="order_type_id" type="int">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="varchar(1024)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="java_class_name" type="varchar(1024)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="parent" type="int"/>
-            <column name="creator" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_created" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="retired" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_retired" type="datetime"/>
-            <column name="retired_by" type="int"/>
-            <column name="uuid" type="varchar(38)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-        </createTable>
-        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="parent_order_type"
-                                 referencedTableName="order_type"
-                                 referencedColumnNames="order_id"/>
-        <addForeignKeyConstraint baseTableName="order_table" baseColumnNames="creator" constraintName="order_type_creator"
-                                 referencedTableName="users"
-                                 referencedColumnNames="user_id"/>
-        <addForeignKeyConstraint baseTableName="order_table" baseColumnNames="retired_by" constraintName="order_type_retired_by"
-                                 referencedTableName="users"
-                                 referencedColumnNames="user_id"/>
-    </changeSet>
-
-    <changeSet id="201403070131-TRUNK-4286" author="andras-szell">
-        <preConditions>
-            <not><sqlCheck expectedResult="0">select count(*) from order_type where java_class like "org.openmrs.DrugOrder" or java_class like "org.openmrs.TestOrder"</sqlCheck></not>
-        </preConditions>
-        <comment>Insert order types for test and drug orders after checking that there are no entries in the order_type table with their java_class column set to org.openmrs.DrugOrder or org.openmrs.TestOrder</comment>
-        <insert tableName="order_type">
-            <column name="name">Drug order</column>
-            <column name="description">Drug order</column>
-            <column name="java_class_name">org.openmrs.DrugOrder</column>
-            <column name="creator">1</column>
-            <column name="date_created">CURRENT_TIMESTAMP</column>
-            <column name="retired">false</column>
-            <column name="uuid">2ca568f3-a64a-11e3-9aeb-50e549534c5e</column>
-        </insert>
-        <insert tableName="order_type">
-            <column name="name">Test order</column>
-            <column name="description">Test order</column>
-            <column name="java_class_name">org.openmrs.TestOrder</column>
-            <column name="creator">1</column>
-            <column name="date_created">CURRENT_TIMESTAMP</column>
-            <column name="retired">false</column>
-            <column name="uuid">52a447d3-a64a-11e3-9aeb-50e549534c5e</column>
-        </insert>
     </changeSet>
 
     <changeSet author="Banka, Vinay" id="201403061757-TRUNK-4284">
