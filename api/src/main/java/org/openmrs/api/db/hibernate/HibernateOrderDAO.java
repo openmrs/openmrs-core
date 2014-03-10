@@ -42,6 +42,7 @@ import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.OrderType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
@@ -276,6 +277,16 @@ public class HibernateOrderDAO implements OrderDAO {
 			c.add(Restrictions.eq("retired", false));
 		}
 		return c.list();
+	}
+	
+	/**
+	 * @See OrderDAO#getOrderTypeByName
+	 */
+	@Override
+	public OrderType getOrderTypeByName(String orderTypeName) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderType.class);
+		criteria.add(Restrictions.eq("name", orderTypeName));
+		return (OrderType) criteria.uniqueResult();
 	}
 	
 	/**

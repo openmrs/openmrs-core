@@ -66,7 +66,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	private PatientService patientService;
 	
 	private EncounterService encounterService;
-
+	
 	private ProviderService providerService;
 	
 	@Rule
@@ -88,9 +88,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		if (encounterService == null) {
 			encounterService = Context.getEncounterService();
 		}
-        if (providerService == null) {
+		if (providerService == null) {
 			providerService = Context.getProviderService();
-	    }
+		}
 	}
 	
 	/**
