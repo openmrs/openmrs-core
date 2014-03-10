@@ -24,10 +24,11 @@ import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Provider;
+import org.openmrs.OrderType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.Provider;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
@@ -285,6 +286,17 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
 	public List<CareSetting> getCareSettings(boolean includeRetired);
+	
+	/**
+	 * Gets OrderType that matches the specified name
+	 *
+	 * @param orderTypeName the name to match against
+	 * @return OrderType
+	 * @since 1.10
+	 * @should return the order type that matches the specified name
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
+	public OrderType getOrderTypeByName(String orderTypeName);
 	
 	/**
 	 * Gets OrderFrequency that matches the specified orderFrequencyId

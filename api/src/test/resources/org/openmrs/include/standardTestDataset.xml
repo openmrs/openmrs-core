@@ -182,6 +182,7 @@
   <order_frequency order_frequency_id="1" concept_id="113" creator="1" date_created="2008-08-15 13:52:53.0" retired="false" uuid="28090760-7c38-11e3-baa7-0800200c9a66" />
   <order_frequency order_frequency_id="2" concept_id="3" creator="1" date_created="2008-08-15 13:52:53.0" retired="false" uuid="38090760-7c38-11e3-baa7-0800200c9a66" />
   <order_frequency order_frequency_id="3" concept_id="4" creator="1" date_created="2008-08-15 13:52:53.0" retired="true" retire_reason="Some Retire Reason" retired_by="1" date_retired="2009-08-15 13:52:53.0" uuid="48090760-7c38-11e3-baa7-0800200c9a66" />
+  <order_type order_type_id="1" name="Drug order" description="Order of medications for the patient" java_class_name="org.openmrs.DrugOrder" date_created="2008-08-15 13:49:47.0" retired="false" uuid="84ce45a8-5e7c-48f7-a581-ca1d17d63a66" creator="1" />
   <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
   <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
   <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
@@ -342,4 +343,5 @@
   <visit visit_id="5" patient_id="6" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="8cfda6ae-6b78-11e0-93c3-18a905e044dc" />
   <visit visit_id="6" patient_id="2" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="1" voided_by="1" date_voided="2005-01-01 00:00:00.0" void_reason="no reason" uuid="e1428fea-6b78-11e0-93c3-18a905e044dc" />
   <visit_attribute_type visit_attribute_type_id="1" name="Audit Date" datatype="org.openmrs.customdatatype.datatype.DateDatatype" min_occurs="0" max_occurs="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="8770f6d6-7673-11e0-8f03-001e378eb67e" />
+
 </dataset>

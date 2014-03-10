@@ -365,6 +365,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
+	 * @see OrderService#getOrderTypeByName(String)
+	 */
+	@Override
+	public OrderType getOrderTypeByName(String orderTypeName) {
+		return dao.getOrderTypeByName(orderTypeName);
+	}
+	
+	/**
 	 * @see OrderService#getOrderFrequency(Integer)
 	 */
 	@Override
