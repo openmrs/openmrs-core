@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller;
 
+import java.util.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -127,8 +128,14 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 				
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				//if user was not found supply fake question as per fix TRUNK-3933
+				if (user == null) {
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
+					request.setAttribute("secretQuestion", getRandomFakeSecretQuestion());
+					
+				} else if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
+					
 				} else {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
 					request.setAttribute("secretQuestion", user.getSecretQuestion());
@@ -152,8 +159,13 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				}
 				
 				// check the secret question again in case the user got here "illegally"
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user == null) {
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
+					request.setAttribute("secretQuestion", getRandomFakeSecretQuestion());
+					
+				} else if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
+					
 				} else if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
 					
 					StringBuilder randomPassword = new StringBuilder();
@@ -187,4 +199,26 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		return showForm(request, response, errors);
 	}
 	
+	/**
+	 * This method will return a random 'fake secret question'
+	 * @return String randomQ
+	 */
+	private String getRandomFakeSecretQuestion() {
+		
+		Random randomGenerator = new Random();
+		List<String> questions = new ArrayList<String>();
+		
+		questions.add("What is your best friend's last name?");
+		questions.add("What is your grandfather's home town?");
+		questions.add("What is your mother's maiden name?");
+		questions.add("What is your favorite band?");
+		questions.add("What is your first pet's name?");
+		questions.add("What is your brother's middle name?");
+		questions.add("What city were you born?");
+		
+		//compute random index and return value within question array
+		int randIndex = randomGenerator.nextInt(questions.size());
+		
+		return questions.get(randIndex)
+	}
 }
