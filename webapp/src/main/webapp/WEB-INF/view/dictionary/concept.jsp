@@ -31,29 +31,30 @@
 
 	function selectTab(tab) {
 		var displays = new Array();
+		if(tab!=null){
+		         var tabs = tab.parentNode.getElementsByTagName("a");
+		         for (var tabIndex=0; tabIndex<tabs.length; tabIndex++) {
+		               	var index = tabs[tabIndex].id.indexOf("Tab");
+			        var tabName = tabs[tabIndex].id.substr(0, index);
+			        if (tabs[tabIndex] == tab) {
+				       displays[tabName] = "";
+				       addClass(tabs[tabIndex], 'selectedTab');
+			        }
+			        else {
+				        displays[tabName] = "none";
+				        removeClass(tabs[tabIndex], 'selectedTab');
+			        }
+		          }
 		
-		var tabs = tab.parentNode.getElementsByTagName("a");
-		for (var tabIndex=0; tabIndex<tabs.length; tabIndex++) {
-			var index = tabs[tabIndex].id.indexOf("Tab");
-			var tabName = tabs[tabIndex].id.substr(0, index);
-			if (tabs[tabIndex] == tab) {
-				displays[tabName] = "";
-				addClass(tabs[tabIndex], 'selectedTab');
-			}
-			else {
-				displays[tabName] = "none";
-				removeClass(tabs[tabIndex], 'selectedTab');
-			}
+		           var parent = tab.parentNode.parentNode.parentNode;
+		           var elements = parent.getElementsByTagName("td");	
+		           for (var i=0; i<elements.length; i++) {
+			             if (displays[elements[i].className] != null)
+					     elements[i].style.display = displays[elements[i].className];
+		            }
+		
+	               	    tab.blur();
 		}
-		
-		var parent = tab.parentNode.parentNode.parentNode;
-		var elements = parent.getElementsByTagName("td");	
-		for (var i=0; i<elements.length; i++) {
-			if (displays[elements[i].className] != null)
-					elements[i].style.display = displays[elements[i].className];
-		}
-		
-		tab.blur();
 		return false;
 	}
 	
