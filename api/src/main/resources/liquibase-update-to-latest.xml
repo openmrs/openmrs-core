@@ -7236,4 +7236,19 @@
             <column name="scheduled_date" type="datetime"/>
        </addColumn>
     </changeSet>
+    
+    <changeSet id="201403111039-TRUNK-4287" author="andras-szell">
+        <preConditions onFail="MARK_RAN">
+           <not><columnExists tableName="orders" columnName="order_type_id"/></not>
+        </preConditions>
+        <comment>Add order_type column to orders</comment>
+        <addColumn tableName="orders">
+            <column name="order_type" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="order_type" constraintName="orders_order_type"
+                                 referencedTableName="order_type"
+                                 referencedColumnNames="order_type_id"/>
+    </changeSet>
 </databaseChangeLog>
