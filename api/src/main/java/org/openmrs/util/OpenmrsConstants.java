@@ -1811,8 +1811,8 @@ public final class OpenmrsConstants {
 	/**Prefix followed by registered component name.*/
 	public static final String REGISTERED_COMPONENT_NAME_PREFIX = "bean:";
 	
-	/** Person Name Format*/
-	public static final String PersonNameFormat_Short = "short";
+	/** Determining the format of the Person Name (example in Patient Dashboard)*/
+	public static final String PERSON_NAME_FORMAT_SHORT = "short";
 	
-	public static final String PersonNameFormat_Long = "long";
+	public static final String PERSON_NAME_FORMAT_LONG = "long";
 }

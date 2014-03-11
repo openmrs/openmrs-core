@@ -66,7 +66,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	private String degree;
 	
-	private static String format = OpenmrsConstants.PersonNameFormat_Short;
+	private static String format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;
 	
 	// Constructors
 	
@@ -475,7 +475,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	public String getFullName() {
 		List<String> temp = new ArrayList<String>();
-		if ((PersonName.format).equals(OpenmrsConstants.PersonNameFormat_Long)) {
+		if ((PersonName.format).equals(OpenmrsConstants.PERSON_NAME_FORMAT_LONG)) {
 			if (StringUtils.hasText(getPrefix())) {
 				temp.add(getPrefix());
 			}
