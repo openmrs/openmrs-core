@@ -321,10 +321,10 @@ public class ModuleUtil {
 					lowerBound = lowerBound.replaceAll("\\*", "0");
 				}
 				
-				// if the upper contains "*" then change it to 999
-				// assuming 999 will be the max revision number for openmrs
+				// if the upper contains "*" then change it to Maximum Integer
+				// assuming Maximum Integer will be the max revision number for openmrs
 				if (upperBound.indexOf("*") > 0) {
-					upperBound = upperBound.replaceAll("\\*", "999");
+					upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
 				}
 				
 				int lowerReturn = compareVersion(version, lowerBound);

@@ -407,7 +407,28 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		String newerVersion = "2.1.10";
 		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
 	}
-	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test
+	@Verifies(value = "not throw ModuleException if required openmrs version with SNAPSHOT greater than 999", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldnotthrowExceptionifrequiredopenmrsSNAPSHOTgreaterthan999() throws Exception {
+		String openmrsVersion = "1.9.7";//;
+		String requiredOpenmrsVersion = "1.9.0-SNAPSHOT";
+
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+	}
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test
+	@Verifies(value = "not throw ModuleException if openmrs version with SNAPSHOT greater than 999", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldnotthrowExceptionifopenmrsSNAPSHOTgreaterthan999() throws Exception {
+		String openmrsVersion = "1.9.0-SNAPSHOT";//;
+		String requiredOpenmrsVersion = "1.9.7";
+
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+	}
 	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#compareVersion(String,String)}
 	 */
