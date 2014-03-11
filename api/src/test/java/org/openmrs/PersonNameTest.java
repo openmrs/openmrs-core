@@ -466,4 +466,31 @@ public class PersonNameTest {
 		Assert.assertEquals("Bob Jones", pn.getFullName());
 	}
 	
+	/**
+	 * @see {@link PersonName#getFullName()}
+	 */
+	@Test
+	@Verifies(value = "should Not return Long If Person Name Format Is Short", method = "getFullName()")
+	public void getFullName_shouldNotReturnLongIfPersonNameFormatIsShort() throws Exception {
+		PersonName pn = new PersonName();
+		pn.setGivenName("Taylor");
+		pn.setMiddleName("Bob");
+		pn.setFamilyName("Jones");
+		pn.setFamilyNamePrefix("jr.");
+		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_SHORT);
+		Assert.assertEquals(pn.getFullName(), "Taylor Bob Jones");
+	}
+	
+	@Test
+	@Verifies(value = "should Not return Short If Person Name Format Is Long", method = "getFullName()")
+	public void getFullName_shouldNotReturnShortIfPersonNameFormatIsLong() throws Exception {
+		PersonName pn = new PersonName();
+		pn.setGivenName("Taylor");
+		pn.setMiddleName("Bob");
+		pn.setFamilyName("Jones");
+		pn.setFamilyNamePrefix("jr.");
+		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_LONG);
+		Assert.assertEquals(pn.getFullName(), "Taylor Bob Jones jr.");
+	}
+	
 }
