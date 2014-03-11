@@ -98,7 +98,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		OrderFrequency onceDaily = orderService.getOrderFrequency(3000);
 		order.setFrequency(onceDaily);
 		
-		orderService.saveOrder(order);
+		orderService.saveOrder(order, null);
 		List<DrugOrder> activeOrders = orderService.getActiveOrders(patient, DrugOrder.class, careSetting, null);
 		assertEquals(++activeDrugOrderCount, activeOrders.size());
 		assertThat(activeOrders, hasItems(order));
@@ -123,7 +123,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setSpecimenSource(conceptService.getConcept(1000));
 		order.setNumberOfRepeats(3);
 		
-		orderService.saveOrder(order);
+		orderService.saveOrder(order, null);
 		List<TestOrder> activeOrders = orderService.getActiveOrders(patient, TestOrder.class, careSetting, null);
 		assertEquals(++activeTestOrderCount, activeOrders.size());
 		assertThat(activeOrders, hasItems(order));
@@ -158,7 +158,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertTrue(OrderUtil.isOrderActive(thirdOrderToDiscontinue, null));
 		Order discontinuationOrder = thirdOrderToDiscontinue.cloneForDiscontinuing();
 		discontinuationOrder.setOrderer(providerService.getProvider(1));
-		orderService.saveOrder(discontinuationOrder);
+		orderService.saveOrder(discontinuationOrder, null);
 		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(ordersCount - 3, activeOrders.size());
@@ -180,7 +180,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setStartDate(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));
-		orderService.saveOrder(revisedOrder);
+		orderService.saveOrder(revisedOrder, null);
 		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());

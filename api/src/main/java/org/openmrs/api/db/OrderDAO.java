@@ -41,7 +41,7 @@ public interface OrderDAO {
 	// methods for the Order java pojo object
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveOrder(Order)
+	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
 	public Order saveOrder(Order order) throws DAOException;
 	

@@ -13,11 +13,11 @@
  */
 package org.openmrs.api;
 
-import org.openmrs.CareSetting;
-import org.openmrs.OrderType;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openmrs.CareSetting;
+import org.openmrs.OrderType;
 
 /**
  * Contains contextual information like the OrderType, CareSetting and any other custom attributes
@@ -78,6 +78,41 @@ public class OrderContext {
 	 */
 	public void setContextAttributes(Map<String, Object> contextAttributes) {
 		this.contextAttributes = contextAttributes;
+	}
+	
+	/**
+	 * Gets the value of for the specified attribute name
+	 * 
+	 * @param attributeName the attribute name
+	 */
+	public Object getAttribute(String attributeName) {
+		return getContextAttributes().get(attributeName);
+	}
+	
+	/**
+	 * Adds the specified context attribute
+	 * 
+	 * @param attributeName the attribute name
+	 * @param attributeValue the attribute value
+	 */
+	public void addAttribute(String attributeName, Object attributeValue) {
+		getContextAttributes().put(attributeName, attributeValue);
+	}
+	
+	/**
+	 * Removes the attribute with the specified name
+	 * 
+	 * @param attributeName the attribute name
+	 */
+	public void removeAttribute(String attributeName) {
+		getContextAttributes().remove(attributeName);
+	}
+	
+	/**
+	 * Clears all the context attributes
+	 */
+	public void clear() {
+		getContextAttributes().clear();
 	}
 	
 }

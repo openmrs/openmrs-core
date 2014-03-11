@@ -51,6 +51,8 @@ public final class OpenmrsConstants {
 	/**
 	 * This is the hard coded primary key of the order type for DRUG. This has to be done because
 	 * some logic in the API acts on this order type
+	 * 
+	 * @Deprecated
 	 */
 	public static final int ORDERTYPE_DRUG = 2;
 	
@@ -79,15 +81,13 @@ public final class OpenmrsConstants {
 	/**
 	 * This holds the current openmrs code version in a short space-less string.<br/>
 	 * The format is:<br/>
-	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i
-	 * >
+	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i >
 	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion() != null ? THIS_PACKAGE
 	        .getSpecificationVersion() : (getBuildVersionShort() != null ? getBuildVersionShort() : getVersion());
 	
 	/**
-	 * @return build version in the long format (eg:1.10.0 SNAPSHOT Build 24858) 
-	 * 
+	 * @return build version in the long format (eg:1.10.0 SNAPSHOT Build 24858)
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
@@ -97,7 +97,6 @@ public final class OpenmrsConstants {
 	
 	/**
 	 * @return build version in the short format (eg: 1.10.0-24858)
-	 * 
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
@@ -968,17 +967,20 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_MAX_NUMBER_OF_ENCOUNTERS_TO_SHOW = "dashboard.encounters.maximumNumberToShow";
 	
 	/**
-	 * Global property name for the default ConceptMapType which is set automatically when no other is set manually.
+	 * Global property name for the default ConceptMapType which is set automatically when no other
+	 * is set manually.
 	 */
 	public static final String GP_DEFAULT_CONCEPT_MAP_TYPE = "concept.defaultConceptMapType";
 	
 	/**
-	 * Global property name of the allowed concept classes for the dosage form field of the concept drug management form.
+	 * Global property name of the allowed concept classes for the dosage form field of the concept
+	 * drug management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_DOSAGE_FORM_CONCEPT_CLASSES = "conceptDrug.dosageForm.conceptClasses";
 	
 	/**
-	 * Global property name of the allowed concept classes for the route field of the concept drug management form.
+	 * Global property name of the allowed concept classes for the route field of the concept drug
+	 * management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES = "conceptDrug.route.conceptClasses";
 	
@@ -1013,12 +1015,14 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED = "order.nextOrderNumberSeed";
 	
+	public static final String GP_ORDER_NUMBER_GENERATOR_BEAN_ID = "order.orderNumberGeneratorBeanId";
+	
 	public static final String GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS = "orderEntry.unitsToConceptsMappings";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
-	 *
+	 * 
 	 * @return List<GlobalProperty> of the core global properties
 	 */
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
@@ -1443,6 +1447,9 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_NEXT_ORDER_NUMBER_SEED, "1",
 		        "The next order number available for assignment"));
 		
+		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
+		        "Specifies spring bean id of the order generator to use when assigning order numbers"));
+		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
@@ -1697,6 +1704,6 @@ public final class OpenmrsConstants {
 	/** The data type to return on failing to load a custom data type. */
 	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();
 	
-	/**Prefix followed by registered component name.*/
+	/** Prefix followed by registered component name. */
 	public static final String REGISTERED_COMPONENT_NAME_PREFIX = "bean:";
 }

@@ -64,6 +64,7 @@
 				<bean class="org.openmrs.util.LocationUtility" />
 				<ref bean="globalLocaleList" />
 				<ref bean="adminServiceTarget" />
+                <ref bean="orderServiceTarget" />
 			</list>
 		</property>
 	</bean>

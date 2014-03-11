@@ -22,10 +22,10 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
-import org.openmrs.Patient;
-import org.openmrs.User;
-import org.openmrs.Provider;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
@@ -47,6 +47,7 @@ public interface OrderService extends OpenmrsService {
 	 * Save or update the given <code>order</code> in the database
 	 * 
 	 * @param order the Order to save
+	 * @param orderContext the OrderContext object
 	 * @return the Order that was saved
 	 * @throws APIException
 	 * @should not save order if order doesnt validate
@@ -61,9 +62,11 @@ public interface OrderService extends OpenmrsService {
 	 * @should not allow revising an expired order
 	 * @should not allow revising an order with no previous order
 	 * @should save a revised order
+	 * @should set order number specified in the context if specified
+	 * @should set the order number returned by the configured generator
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
-	public Order saveOrder(Order order) throws APIException;
+	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
 	
 	/**
 	 * Completely delete an order from the database. This should not typically be used unless
@@ -289,7 +292,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets OrderType that matches the specified name
-	 *
+	 * 
 	 * @param orderTypeName the name to match against
 	 * @return OrderType
 	 * @since 1.10
@@ -370,7 +373,6 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue
 	 * 
-	 *
 	 * @param orderToDiscontinue
 	 * @param reasonCoded
 	 * @param discontinueDate
@@ -394,7 +396,6 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Discontinues an order. Creates a new order that discontinues the orderToDiscontinue.
 	 * 
-	 *
 	 * @param orderToDiscontinue
 	 * @param reasonNonCoded
 	 * @param discontinueDate

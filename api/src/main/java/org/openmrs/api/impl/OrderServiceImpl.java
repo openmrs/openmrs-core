@@ -14,6 +14,7 @@
 package org.openmrs.api.impl;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,12 +23,25 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.*;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.api.OrderContext;
 import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,13 +56,15 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.api.OrderService
  */
 @Transactional
-public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator {
+public class OrderServiceImpl extends BaseOpenmrsService implements OrderService, OrderNumberGenerator, GlobalPropertyListener {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private static final String ORDER_NUMBER_PREFIX = "ORD-";
 	
 	protected OrderDAO dao;
+	
+	private static OrderNumberGenerator orderNumberGenerator = null;
 	
 	public OrderServiceImpl() {
 	}
@@ -61,9 +77,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
+	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
-	public Order saveOrder(Order order) throws APIException {
+	public Order saveOrder(Order order, OrderContext orderContext) throws APIException {
 		if (order.getOrderId() != null) {
 			throw new APIException("Cannot edit an existing order, you need to revise it instead");
 		}
@@ -78,17 +94,17 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			discontinueExistingOrdersIfNecessary(order);
 		}
 		
-		return saveOrderInternal(order);
+		return saveOrderInternal(order, orderContext);
 	}
 	
-	private Order saveOrderInternal(Order order) {
+	private Order saveOrderInternal(Order order, OrderContext orderContext) {
 		//TODO call module registered order number generators
 		//and if there is none, use the default below
 		if (order.getOrderId() == null) {
 			try {
 				Field field = Order.class.getDeclaredField("orderNumber");
 				field.setAccessible(true);
-				field.set(order, getNewOrderNumber());
+				field.set(order, getOrderNumberGenerator().getNewOrderNumber(orderContext));
 			}
 			catch (Exception e) {
 				throw new APIException("Failed to assign order number", e);
@@ -96,6 +112,26 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		return dao.saveOrder(order);
+	}
+	
+	/**
+	 * Gets the configured order number generator, if none is specified, it defaults to an instance
+	 * if this class
+	 * 
+	 * @return
+	 */
+	private OrderNumberGenerator getOrderNumberGenerator() {
+		if (orderNumberGenerator == null) {
+			String generatorBeanId = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID);
+			if (StringUtils.hasText(generatorBeanId)) {
+				orderNumberGenerator = Context.getRegisteredComponent(generatorBeanId, OrderNumberGenerator.class);
+			} else {
+				orderNumberGenerator = this;
+			}
+		}
+		
+		return orderNumberGenerator;
 	}
 	
 	/**
@@ -191,7 +227,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getDateVoided() == null)
 			order.setDateVoided(new Date());
 		
-		return saveOrderInternal(order);
+		return saveOrderInternal(order, null);
 	}
 	
 	/**
@@ -199,7 +235,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Order unvoidOrder(Order order) throws APIException {
 		order.setVoided(false);
-		return saveOrderInternal(order);
+		return saveOrderInternal(order, null);
 	}
 	
 	/**
@@ -253,10 +289,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderNumberGenerator#getNewOrderNumber()
+	 * @see org.openmrs.api.OrderNumberGenerator#getNewOrderNumber(org.openmrs.api.OrderContext)
+	 * @param orderContext
 	 */
 	@Override
-	public String getNewOrderNumber() {
+	public String getNewOrderNumber(OrderContext orderContext) throws APIException {
 		return ORDER_NUMBER_PREFIX + Context.getOrderService().getNextOrderNumberSeedSequenceValue();
 	}
 	
@@ -409,7 +446,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
+	 *      java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
@@ -420,11 +458,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		newOrder.setOrderer(orderer);
 		newOrder.setEncounter(encounter);
 		
-		return saveOrderInternal(newOrder);
+		return saveOrderInternal(newOrder, null);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
@@ -434,7 +473,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		newOrder.setOrderReasonNonCoded(reasonNonCoded);
 		newOrder.setOrderer(orderer);
 		newOrder.setEncounter(encounter);
-		return saveOrderInternal(newOrder);
+		return saveOrderInternal(newOrder, null);
 	}
 	
 	/**
@@ -457,9 +496,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (orderToStop.getAction().equals(Order.Action.DISCONTINUE)) {
 			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued.");
 		}
-		
 		orderToStop.setDateStopped(discontinueDate);
-		saveOrderInternal(orderToStop);
+		saveOrderInternal(orderToStop, null);
 	}
 	
 	/**
@@ -478,7 +516,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#retireOrderFrequency(org.openmrs.OrderFrequency, java.lang.String)
+	 * @see org.openmrs.api.OrderService#retireOrderFrequency(org.openmrs.OrderFrequency,
+	 *      java.lang.String)
 	 */
 	@Override
 	public OrderFrequency retireOrderFrequency(OrderFrequency orderFrequency, String reason) {
@@ -513,5 +552,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Transactional(readOnly = true)
 	public OrderFrequency getOrderFrequencyByConcept(Concept concept) {
 		return dao.getOrderFrequencyByConcept(concept);
+	}
+	
+	/**
+	 * @see GlobalPropertyListener#supportsPropertyName(String)
+	 */
+	@Override
+	public boolean supportsPropertyName(String propertyName) {
+		return OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID.equals(propertyName);
+	}
+	
+	/**
+	 * @see GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
+	 */
+	@Override
+	public void globalPropertyChanged(GlobalProperty newValue) {
+		orderNumberGenerator = null;
+	}
+	
+	/**
+	 * @see GlobalPropertyListener#globalPropertyDeleted(String)
+	 */
+	@Override
+	public void globalPropertyDeleted(String propertyName) {
+		orderNumberGenerator = null;
 	}
 }
