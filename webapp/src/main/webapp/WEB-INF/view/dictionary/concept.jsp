@@ -1,7 +1,8 @@
+
 <%@ include file="/WEB-INF/template/include.jsp"%>
 <openmrs:message var="pageTitle" code="Concept.view.titlebar" scope="page" htmlEscape="true" arguments="${command.concept.name}"/>
 <%@ include file="/WEB-INF/template/header.jsp"%>
-
+<openmrs:message var="pageTitle" code="Concept.view.title" scope="page" arguments="${command.concept.name}"/>
 <openmrs:require privilege="View Concepts" otherwise="/login.htm"
 	redirect="/dictionary/concept.htm" />
 
@@ -71,7 +72,7 @@
 
 <c:choose>
 	<c:when test="${command.concept.conceptId != null}">
-		<h2><openmrs:message code="Concept.view.title" htmlEscape="true" arguments="${command.concept.name}" /></h2>
+		<h2><openmrs:message code="Concept.view.header" arguments="${command.concept.name}" /></h2>
 	</c:when>
 	<c:otherwise>
 		<h2><openmrs:message code="Concept.noConceptSelected" /></h2>
