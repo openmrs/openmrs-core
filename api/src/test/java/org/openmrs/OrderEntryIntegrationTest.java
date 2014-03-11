@@ -181,10 +181,10 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		revisedOrder.setStartDate(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		orderService.saveOrder(revisedOrder, null);
-
-        //If the time is too close, the original order may be returned because it
-        //dateStopped will be exactly the same as the asOfDate(now) to the millisecond
-        Thread.sleep(1);
+		
+		//If the time is too close, the original order may be returned because it
+		//dateStopped will be exactly the same as the asOfDate(now) to the millisecond
+		Thread.sleep(1);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
 		assertFalse(OrderUtil.isOrderActive(originalOrder, null));
