@@ -848,7 +848,7 @@ public class ORUR01Handler implements Application {
 			// unsupported data type
 			// TODO: support RP (report), SN (structured numeric)
 			// do we need to support BIT just in case it slips thru?
-			throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.UpsupportedObs" ,new Object[]{hl7Datatype},null));
+			throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.UpsupportedObsType" ,new Object[]{hl7Datatype},null));
 		}
 		
 		return obs;
@@ -1177,7 +1177,7 @@ public class ORUR01Handler implements Application {
 				form = Context.getFormService().getForm(formId);
 			}
 			catch (NumberFormatException e) {
-				throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.parse"), e);
+				throw new HL7Exception(Context.getMessageSourceService().getMessage("ORUR01.error.parseFormId"), e);
 			}
 		}
 		
@@ -1306,3 +1306,4 @@ public class ORUR01Handler implements Application {
 		log.debug("finished discharge to location method");
 	}
 }
+
