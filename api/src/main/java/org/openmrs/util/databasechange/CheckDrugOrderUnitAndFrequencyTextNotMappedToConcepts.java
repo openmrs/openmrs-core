@@ -24,6 +24,7 @@ import liquibase.precondition.CustomPrecondition;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.UpgradeUtil;
 
 /**
  * This changesets finds all free text drug order dose units and frequencies and checks that they
@@ -71,7 +72,7 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 		Set<String> unmappedText = new HashSet<String>(textList.size());
 		for (String text : textList) {
 			try {
-				if (DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), text) != null) {
+				if (UpgradeUtil.getConceptIdForUnits(text) != null) {
 					continue;
 				}
 			}

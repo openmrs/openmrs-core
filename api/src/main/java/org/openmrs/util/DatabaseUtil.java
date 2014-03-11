@@ -13,6 +13,7 @@
  */
 package org.openmrs.util;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,7 +31,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Utility class that provides database related methods
- * 
+ *
  * @since 1.6
  */
 public class DatabaseUtil {
@@ -41,7 +42,7 @@ public class DatabaseUtil {
 	 * Load the jdbc driver class for the database which is specified by the connectionUrl parameter <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
-	 * 
+	 *
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @throws ClassNotFoundException
@@ -58,12 +59,15 @@ public class DatabaseUtil {
 	 * <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
-	 * 
+	 *
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @param connectionDriver the database driver class name, such as "com.mysql.jdbc.Driver"
 	 * @throws ClassNotFoundException
 	 */
+	
+	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
+	
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
 			Class.forName(connectionDriver);
@@ -153,62 +157,7 @@ public class DatabaseUtil {
 		
 		return results;
 	}
-	
-	/**
-	 * Returns conceptId for the given units from OpenmrsConstants#GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
-	 * global property.
-	 *
-	 * @param connection
-	 * @param units
-	 * @return conceptId
-	 * @throws DAOException
-	 * @should return concept_id for drug_order_quantity_units
-	 * @should fail if units is not specified
-	 */
-	public static Integer getConceptIdForUnits(Connection connection, String units) throws DAOException {
-		PreparedStatement unitsToConceptsQuery;
-		try {
-			unitsToConceptsQuery = connection
-			        .prepareStatement("select property_value from global_property where property = ?");
-			unitsToConceptsQuery.setString(1, OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS);
-			ResultSet unitsToConceptsResult = unitsToConceptsQuery.executeQuery();
-			if (!unitsToConceptsResult.next()) {
-				throw new DAOException(
-				        OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
-				                + " global property must be specified before upgrading. Please refer to upgrade instructions for more details.");
-			}
-			
-			String unitsToConceptsGP = unitsToConceptsResult.getString(1);
-			String[] unitsToConcepts = unitsToConceptsGP.split(",");
-			for (String unitsToConcept : unitsToConcepts) {
-				if (unitsToConcept.startsWith(units)) {
-					String concept = unitsToConcept.substring(units.length() + 1);// '+ 1' stands for ':'
-					
-					if (concept.toLowerCase().equals("null")) {
-						return null;
-					}
-					
-					try {
-						return Integer.valueOf(concept);
-					}
-					catch (NumberFormatException e) {
-						throw new DAOException(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
-						        + " global property contains invalid mapping from " + units + " to concept ID " + concept
-						        + ". ID must be an integer or null. Please refer to upgrade instructions for more details.",
-						        e);
-					}
-				}
-			}
-		}
-		catch (SQLException e) {
-			throw new DAOException(e);
-		}
-		
-		throw new DAOException(OpenmrsConstants.GP_ORDER_ENTRY_UNITS_TO_CONCEPTS_MAPPINGS
-		        + " global property does not have mapping for " + units
-		        + ". Please refer to upgrade instructions for more details.");
-	}
-	
+
 	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
 		PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?");
 		try {
@@ -240,7 +189,7 @@ public class DatabaseUtil {
 	
 	/**
 	 * Gets all unique values excluding nulls in the specified column and table
-	 * 
+	 *
 	 * @param columnName the column
 	 * @param tableName the table
 	 * @param connection

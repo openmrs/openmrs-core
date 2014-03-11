@@ -27,6 +27,7 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.UpgradeUtil;
 
 public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTaskChange {
 	
@@ -53,7 +54,7 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 			connection.setAutoCommit(false);
 			updateDrugOrderStatement = connection.prepareStatement("update drug_order set dose_units = ? where units = ?");
 			for (String unit : uniqueUnits) {
-				Integer conceptIdForUnit = DatabaseUtil.getConceptIdForUnits(connection.getUnderlyingConnection(), unit);
+				Integer conceptIdForUnit = UpgradeUtil.getConceptIdForUnits(unit);
 				if (conceptIdForUnit == null) {
 					throw new CustomChangeException("No concept mapping found for unit: " + unit);
 				}
