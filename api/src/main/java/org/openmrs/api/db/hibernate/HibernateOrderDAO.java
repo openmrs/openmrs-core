@@ -402,4 +402,35 @@ public class HibernateOrderDAO implements OrderDAO {
 		criteria.add(Restrictions.eq("concept", concept));
 		return (OrderFrequency) criteria.uniqueResult();
 	}
+	
+	/**
+	 * @See org.openmrs.api.db.OrderDAO@getOrderType
+	 */
+	@Override
+	public OrderType getOrderType(Integer orderTypeId) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderType.class);
+		criteria.add(Restrictions.eq("orderTypeId", orderTypeId));
+		return (OrderType) criteria.uniqueResult();
+	}
+	
+	/**
+	 * @See org.openmrs.api.db.OrderDAO@getOrderTypeByUuid
+	 */
+	@Override
+	public OrderType getOrderTypeByUuid(String uuid) {
+		return (OrderType) sessionFactory.getCurrentSession().createQuery("from OrderType o where o.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @See org.openmrs.api.db.OrderDAO@getOrderTypes
+	 */
+	@Override
+	public List<OrderType> getOrderTypes(boolean includeRetired) {
+		Criteria c = sessionFactory.getCurrentSession().createCriteria(OrderType.class);
+		if (!includeRetired) {
+			c.add(Restrictions.eq("retired", false));
+		}
+		return c.list();
+	}
 }
