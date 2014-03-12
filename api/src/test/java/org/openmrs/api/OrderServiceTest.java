@@ -45,6 +45,7 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
@@ -1203,5 +1204,48 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setStartDate(new Date());
 		order = orderService.saveOrder(order, null);
 		assertTrue(order.getOrderNumber().startsWith(TimestampOrderNumberGenerator.ORDER_NUMBER_PREFIX));
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderType(Integer)}
+	 */
+	@Test
+	@Verifies(value = "should get order type by id", method = "getOrderType(Integer)")
+	public void getOrderType_shouldGetOrderTypeById() throws Exception {
+		OrderType orderType = Context.getOrderService().getOrderType(1);
+		assertNotNull(orderType);
+		assertEquals("Drug order", orderType.getName());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderTypeByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should get order type by uuid", method = "getOrderTypeByUuid(String)")
+	public void getOrderType_shouldGetOrderTypeByUuid() throws Exception {
+		OrderType orderType = Context.getOrderService().getOrderTypeByUuid("84ce45a8-5e7c-48f7-a581-ca1d17d63a66");
+		assertNotNull(orderType);
+		assertEquals("Drug order", orderType.getName());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderTypes(boolean)}
+	 */
+	@Test
+	@Verifies(value = "should get order types by retired ones", method = "getOrderTypes(boolean)")
+	public void getOrderType_shouldGetOrderTypeListByRetiredFlag() throws Exception {
+		List<OrderType> orderTypeListWithRetiredOrderTypes = Context.getOrderService().getOrderTypes(true);
+		assertNotNull(orderTypeListWithRetiredOrderTypes);
+		int totalOrderTypes = orderTypeListWithRetiredOrderTypes.size();
+		int count = 0;
+		for (OrderType orderType : orderTypeListWithRetiredOrderTypes) {
+			if (orderType.getRetired()) {
+				count++;
+			}
+		}
+		List<OrderType> orderTypeListWithoutRetiredOrderTypes = Context.getOrderService().getOrderTypes(false);
+		int totalOrdersWithoutRetiredOrderTypes = orderTypeListWithoutRetiredOrderTypes.size();
+		int actualValue = totalOrderTypes - count;
+		assertEquals(actualValue, totalOrdersWithoutRetiredOrderTypes);
 	}
 }
