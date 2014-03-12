@@ -177,14 +177,12 @@ public class HibernateOrderDAO implements OrderDAO {
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
 		
 		if (globalProperty == null) {
-			throw new APIException("Missing global property named: "
-			        + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
+			throw new APIException("Missing global property named: " + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
 		}
 		
 		String gpTextValue = globalProperty.getPropertyValue();
 		if (StringUtils.isBlank(gpTextValue)) {
-			throw new APIException("Invalid value for global property named: "
-			        + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
+			throw new APIException("Invalid value for global property named: " + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
 		}
 		
 		Long gpNumericValue = null;
@@ -192,8 +190,7 @@ public class HibernateOrderDAO implements OrderDAO {
 			gpNumericValue = Long.parseLong(gpTextValue);
 		}
 		catch (NumberFormatException ex) {
-			throw new APIException("Invalid value for global property named: "
-			        + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
+			throw new APIException("Invalid value for global property named: " + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
 		}
 		
 		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));

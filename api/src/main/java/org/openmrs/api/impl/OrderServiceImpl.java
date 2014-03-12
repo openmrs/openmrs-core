@@ -14,7 +14,6 @@
 package org.openmrs.api.impl;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -126,8 +125,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			    OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID);
 			if (StringUtils.hasText(generatorBeanId)) {
 				orderNumberGenerator = Context.getRegisteredComponent(generatorBeanId, OrderNumberGenerator.class);
+				log.info("Successfully set the configured order number generator");
 			} else {
 				orderNumberGenerator = this;
+				log.info("Setting default order number generator");
 			}
 		}
 		

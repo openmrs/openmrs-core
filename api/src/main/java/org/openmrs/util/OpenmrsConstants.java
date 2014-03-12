@@ -1442,8 +1442,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
 		
-		props.add(new GlobalProperty(GP_NEXT_ORDER_NUMBER_SEED, "1",
-		        "The next order number available for assignment"));
+		props.add(new GlobalProperty(GP_NEXT_ORDER_NUMBER_SEED, "1", "The next order number available for assignment"));
 		
 		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
 		        "Specifies spring bean id of the order generator to use when assigning order numbers"));

@@ -95,7 +95,7 @@ public class OrderContext {
 	 * @param attributeName the attribute name
 	 * @param attributeValue the attribute value
 	 */
-	public void addAttribute(String attributeName, Object attributeValue) {
+	public void setAttribute(String attributeName, Object attributeValue) {
 		getContextAttributes().put(attributeName, attributeValue);
 	}
 	

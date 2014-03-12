@@ -1181,7 +1181,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setStartDate(new Date());
 		OrderContext orderCtxt = new OrderContext();
 		final String expectedOrderNumber = "Testing";
-		orderCtxt.addAttribute(TimestampOrderNumberGenerator.NEXT_ORDER_NUMBER, expectedOrderNumber);
+		orderCtxt.setAttribute(TimestampOrderNumberGenerator.NEXT_ORDER_NUMBER, expectedOrderNumber);
 		order = orderService.saveOrder(order, orderCtxt);
 		assertEquals(expectedOrderNumber, order.getOrderNumber());
 	}
