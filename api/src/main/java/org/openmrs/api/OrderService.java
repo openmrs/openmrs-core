@@ -17,15 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
@@ -131,24 +123,21 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets the order with the associated order id
-	 * 
-	 * @param <Ord> An Order type. Currently only org.openmrs.Order or org.openmrs.DrugOrder
+	 *
 	 * @param orderId the primary key of the Order
-	 * @param orderClassType The class of Order to fetch (Currently only org.openmrs.Order or
-	 *            org.openmrs.DrugOrder)
+	 * @param orderType The type of Order to get
 	 * @return The Order in the system corresponding to given primary key id
 	 * @throws APIException
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws APIException;
+	public Order getOrder(Integer orderId, OrderType orderType) throws APIException;
 	
 	/**
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
 	 * multiple arguments are given, the returned orders will match on all arguments. The orders are
 	 * sorted by startDate with the latest coming first
 	 * 
-	 * @param orderClassType The type of Order to get (currently only options are Order and
-	 *            DrugOrder)
+	 * @param orderType The type of Order to get
 	 * @param patients The patients to get orders for
 	 * @param concepts The concepts in order.getConcept to get orders for
 	 * @param orderers The users/orderers of the
@@ -156,8 +145,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return list of Orders matching the parameters
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
+	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
+	        List<Encounter> encounters);
 	
 	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}
@@ -231,7 +220,7 @@ public interface OrderService extends OpenmrsService {
 	 * <pre/>
 	 * 
 	 * @param patient the patient
-	 * @param orderClass the order class to match against, this is required
+	 * @param orderType The type of Order to get
 	 * @param careSetting the care setting, returns all ignoring care setting if value is null
 	 * @param asOfDate defaults to current time
 	 * @return all active orders for given patient parameters
@@ -245,8 +234,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should default to Order class if no orderClass is specified
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
-	        Date asOfDate);
+	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate);
 	
 	/**
 	 * Retrieve care setting
