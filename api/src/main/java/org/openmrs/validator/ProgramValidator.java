@@ -13,8 +13,6 @@
  */
 package org.openmrs.validator;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Program;
@@ -61,14 +59,16 @@ public class ProgramValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description.required");
-			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms(false);
-			for (Program program : programs) {
-				if (program.getName().equals(p.getName()) && !program.getProgramId().equals(p.getProgramId())) {
-					errors.rejectValue("name", "general.error.nameAlreadyInUse");
-					break;
-				} else {
-					Context.evictFromSession(program);
-				}
+			Program program = null;
+			if (p.getName() != null && !p.getName().equals("") && !p.getName().equals(" ")) {
+				program = Context.getProgramWorkflowService().getProgramByName(p.getName());
+			}
+			if (program != null && !program.equals(p)) {
+				errors.rejectValue("name", "general.error.nameAlreadyInUse");
+				
+			} else {
+				
+				Context.evictFromSession(program);
 			}
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
