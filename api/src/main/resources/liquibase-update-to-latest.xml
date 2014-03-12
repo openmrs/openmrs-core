@@ -7249,21 +7249,25 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="201403111039-TRUNK-4287-2" author="andras-szell" failOnError="true">
-        <preConditions onFail="MARK_RAN">
-            <not><columnExists tableName="orders" columnName="order_type_id"/></not>
+    <changeSet id="201403111039-TRUNK-4287-2" author="andras-szell">
+        <preConditions onFail="HALT">
             <columnExists tableName="orders" columnName="order_type"/>
             <sqlCheck expectedResult="0">SELECT COUNT(orders.order_id) FROM orders WHERE (orders.order_id NOT IN (SELECT drug_order.order_id FROM drug_order)) AND (orders.order_id NOT IN (SELECT test_order.order_id FROM test_order));</sqlCheck>
         </preConditions>
         <comment>Test if there's any order which has no type, then set all orders with a matching row in the test_order or drug_order table of their type</comment>
         <sql>
-            SET SQL_SAFE_UPDATES = 0;
             UPDATE orders SET orders.order_type = 1 WHERE orders.order_id IN (SELECT drug_order.order_id FROM drug_order);
             UPDATE orders SET orders.order_type = 2 WHERE orders.order_id IN (SELECT test_order.order_id FROM test_order);
         </sql>
+    </changeSet>
 
+    <changeSet id="201403111039-TRUNK-4287-3" author="andras-szell">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="order_type"/>
+        </preConditions>
         <addForeignKeyConstraint baseTableName="orders" baseColumnNames="order_type" constraintName="orders_order_type"
                                  referencedTableName="order_type"
                                  referencedColumnNames="order_type_id"/>
     </changeSet>
+
 </databaseChangeLog>
