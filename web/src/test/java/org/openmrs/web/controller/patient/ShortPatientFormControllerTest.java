@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
@@ -43,14 +42,11 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.web.test.WebTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
-import org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping;
 
 /**
  * Consists of unit tests for the ShortPatientFormController
@@ -545,7 +541,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		PersonAddress personAddress = patient.getPersonAddress();
 		
 		MockHttpServletRequest request = webTestHelper.newPOST("/admin/patients/shortPatientForm.form");
-		request.setParameter("patientId", patient.getPatientId().toString());
+		request.setParameter("patientId", "2");
 		request.setParameter("personAddress.address1", personAddress.getAddress1());
 		request.setParameter("personAddress.countyDistrict", "");
 		
@@ -567,7 +563,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		PersonAddress personAddress = patient.getPersonAddress();
 		
 		MockHttpServletRequest request = webTestHelper.newPOST("/admin/patients/shortPatientForm.form");
-		request.setParameter("patientId", patient.getPatientId().toString());
+		request.setParameter("patientId", "2");
 		request.setParameter("personAddress.address1", "new");
 		request.setParameter("personAddress.countyDistrict", "");
 		
