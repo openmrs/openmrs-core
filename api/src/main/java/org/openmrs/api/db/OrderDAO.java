@@ -165,4 +165,19 @@ public interface OrderDAO {
 	 * @See OrderService#getOrderFrequencyByConcept
 	 */
 	public OrderFrequency getOrderFrequencyByConcept(Concept concept);
+	
+	/**
+	 * @See OrderService#getOrderType
+	 */
+	public OrderType getOrderType(Integer orderTypeId);
+	
+	/**
+	 * @See OrderService#getOrderTypeByUuid
+	 */
+	public OrderType getOrderTypeByUuid(String uuid);
+	
+	/**
+	 * @See OrderService#getOrderTypes
+	 */
+	public List<OrderType> getOrderTypes(boolean includeRetired);
 }

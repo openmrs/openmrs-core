@@ -578,4 +578,32 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public void globalPropertyDeleted(String propertyName) {
 		orderNumberGenerator = null;
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderType(Integer)
+	 */
+	
+	@Override
+	@Transactional(readOnly = true)
+	public OrderType getOrderType(Integer orderTypeId) {
+		return dao.getOrderType(orderTypeId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypeByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public OrderType getOrderTypeByUuid(String uuid) {
+		return dao.getOrderTypeByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypes(boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderType> getOrderTypes(boolean includeRetired) {
+		return dao.getOrderTypes(includeRetired);
+	}
 }
