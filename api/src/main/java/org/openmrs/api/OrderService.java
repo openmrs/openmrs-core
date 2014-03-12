@@ -136,17 +136,24 @@ public interface OrderService extends OpenmrsService {
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
 	 * multiple arguments are given, the returned orders will match on all arguments. The orders are
 	 * sorted by startDate with the latest coming first
-	 * 
+	 *
+	 * @param patient the patient
+	 * @param careSetting the care settings
 	 * @param orderType The type of Order to get
-	 * @param patients The patients to get orders for
-	 * @param concepts The concepts in order.getConcept to get orders for
-	 * @param orderers The users/orderers of the
-	 * @param encounters The encounters that the orders are assigned to
+	 * @param includeVoided include voided
 	 * @return list of Orders matching the parameters
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
-	        List<Encounter> encounters);
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided);
+	
+	/**
+	 * This searches for orders that are related to this {@link org.openmrs.Patient}
+	 *
+	 * @param patient the patient
+	 * @return list of {@link org.openmrs.Order}s matching the patient
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	public List<Order> getAllOrdersByPatient(Patient patient);
 	
 	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}
