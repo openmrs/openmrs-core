@@ -33,16 +33,8 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Order;
+import org.openmrs.*;
 import org.openmrs.Order.Action;
-import org.openmrs.OrderFrequency;
-import org.openmrs.Patient;
-import org.openmrs.User;
-import org.openmrs.OrderType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
@@ -102,22 +94,24 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	@SuppressWarnings("unchecked")
-	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws DAOException {
+	public Order getOrder(Integer orderId) throws DAOException {
 		if (log.isDebugEnabled())
-			log.debug("getting order #" + orderId + " with class: " + orderClassType);
+			log.debug("getting order #" + orderId);
 		
-		return (Ord) sessionFactory.getCurrentSession().get(orderClassType, orderId);
+		return (Order) sessionFactory.getCurrentSession().get(Order.class, orderId);
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List)
+	 * @see org.openmrs.api.db.OrderDAO#getOrders(org.openmrs.OrderType, java.util.List, java.util.List, java.util.List, java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
-	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
+	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
+	        List<Encounter> encounters) {
 		
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		
+		if (orderType != null)
+			crit.add(Restrictions.eq("orderType", orderType));
 		
 		if (patients.size() > 0)
 			crit.add(Restrictions.in("patient", patients));
@@ -201,14 +195,15 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, Class,
-	 *      org.openmrs.CareSetting, java.util.Date)
+	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType, org.openmrs.CareSetting, java.util.Date)
 	 */
 	@SuppressWarnings("unchecked")
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
-	        Date asOfDate) {
+	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate) {
 		
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClass);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		
+		if (orderType != null)
+			crit.add(Restrictions.eq("orderType", orderType));
 		
 		crit.add(Restrictions.eq("patient", patient));
 		if (careSetting != null) {

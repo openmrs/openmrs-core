@@ -17,14 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
-import org.openmrs.Patient;
-import org.openmrs.User;
-import org.openmrs.OrderType;
+import org.openmrs.*;
 
 /**
  * Order-related database functions
@@ -53,14 +46,13 @@ public interface OrderDAO {
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(Integer)
 	 */
-	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> classType) throws DAOException;
+	public Order getOrder(Integer orderId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List)
+	 * @see org.openmrs.api.OrderService#getOrders(org.openmrs.OrderType, java.util.List, java.util.List, java.util.List, java.util.List)
 	 */
-	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters);
+	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
+	        List<Encounter> encounters);
 	
 	/**
 	 * Auto generated method comment
@@ -88,11 +80,9 @@ public interface OrderDAO {
 	public Long getNextOrderNumberSeedSequenceValue();
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, Class,
-	 *      org.openmrs.CareSetting, java.util.Date)
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType, org.openmrs.CareSetting, java.util.Date)
 	 */
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
-	        Date asOfDate);
+	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate);
 	
 	/**
 	 * Get care setting by type

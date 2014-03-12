@@ -44,6 +44,10 @@
         <many-to-one name="careSetting" class="org.openmrs.CareSetting" not-null="true">
             <column name="care_setting"/>
         </many-to-one>
+        
+        <many-to-one name="orderType" class="org.openmrs.OrderType" not-null="true">
+            <column name="order_type"/>
+        </many-to-one>
 
         <!-- bi-directional many-to-one association to Order -->
 		<many-to-one name="previousOrder" class="org.openmrs.Order">
