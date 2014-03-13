@@ -4,7 +4,18 @@
 
 <c:choose>
 	<c:when test="${command.concept.conceptId != null}">
-		<openmrs:message var="pageTitle" code="Concept.edit.titlebar" scope="page" htmlEscape="true" arguments="${command.concept.name}"/>
+			<openmrs:message var="pageTitle" code="Concept.edit.title" scope="page" arguments="${command.concept.name}"/>
+  	</c:when>
+  	<c:otherwise>
+  	<openmrs:message var="pageTitle" code="Concept.creatingNewConcept.title" scope="page"/>
+  	</c:otherwise>
+  </c:choose>
+  
+ <c:choose>
+  	<c:when test="${command.concept.conceptId != null}">
+  		<openmrs:message var="pageTitle" code="Concept.edit.titlebar" scope="page" arguments="${command.concept.name}"/>
+  	<h2><openmrs:message code="Concept.edit.header" arguments="${command.concept.name}" /></h2>
+  	
 	</c:when>
 	<c:otherwise>
 		<openmrs:message var="pageTitle" code="Concept.creatingNewConcept.titlebar" scope="page"/>

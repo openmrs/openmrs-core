@@ -2,11 +2,11 @@
 
 <openmrs:require privilege="Manage Roles" otherwise="/login.htm" redirect="/admin/users/role.list" />
 <openmrs:message var="pageTitle" code="Role.manage.titlebar" scope="page"/>
-
+<openmrs:message var="pageTitle" code="Role.manage.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><openmrs:message code="Role.manage.title"/></h2>
+<h2><openmrs:message code="Role.manage.header"/></h2>
 
 <a href="role.form"><openmrs:message code="Role.add"/></a>
 <br/><br/>
