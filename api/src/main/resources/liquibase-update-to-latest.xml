@@ -6410,6 +6410,12 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="20140313-TRUNK-4283" author="dszafranek">
+        <preConditions onFail="HALT" onFailMessage="Columns 'start_date', 'orderer' and 'encounter_id' of 'orders' table cannot be null. Please make sure all orders have these columns set.">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) from orders where start_date is NULL or orderer is NULL or encounter_id is NULL</sqlCheck>
+        </preConditions>
+    </changeSet>
+
     <changeSet id="201401101645-TRUNK-4187" author="wyclif">
         <preConditions onFail="HALT">
             <customPrecondition className="org.openmrs.util.databasechange.CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts" />
