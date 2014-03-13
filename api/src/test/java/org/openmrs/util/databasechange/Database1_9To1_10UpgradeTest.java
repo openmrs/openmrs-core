@@ -200,16 +200,7 @@ public class Database1_9To1_10UpgradeTest {
 		for (List<Object> row : rows) {
 			ordersAndOrderersWithAProviderAccount.add(new OrderAndPerson((Integer) row.get(0), (Integer) row.get(1)));
 		}
-		Assert.assertEquals(7, ordersAndOrderersWithAProviderAccount.size());
-		
-		//Sanity check that we have 2 order with null orderer
-		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
-		    "select order_id from orders where orderer is null ", true);
-		List<Integer> ordersWithNullOrderer = new ArrayList<Integer>();
-		for (List<Object> row : rows) {
-			ordersWithNullOrderer.add((Integer) row.get(0));
-		}
-		Assert.assertEquals(2, ordersWithNullOrderer.size());
+		Assert.assertEquals(9, ordersAndOrderersWithAProviderAccount.size());
 		
 		Set<Integer> originalProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider",
 		    Integer.class, upgradeTestUtil.getConnection());
@@ -222,16 +213,6 @@ public class Database1_9To1_10UpgradeTest {
 		    upgradeTestUtil.getConnection());
 		//A provider account should have been created for each user with none
 		Assert.assertEquals(originalProviderIds.size() + personIdsWithNoProviderAccount.size(), newProviderIds.size());
-		
-		//Should still have the 2 orders with null orderer
-		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
-		    "select order_id from orders where orderer is null ", true);
-		List<Integer> newOrdersWithNullOrderer = new ArrayList<Integer>();
-		for (List<Object> row : rows) {
-			newOrdersWithNullOrderer.add((Integer) row.get(0));
-		}
-		Assert.assertEquals(2, newOrdersWithNullOrderer.size());
-		Assert.assertEquals(ordersWithNullOrderer, newOrdersWithNullOrderer);
 		
 		//That correct providers were set for each order, i.e the person record for the provider
 		//should match the that of the user account before upgrade
