@@ -152,7 +152,7 @@ public class FieldFormController extends SimpleFormController {
 				map.put("conceptName", "");
 			}
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
-		}		
+		}
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		Collection<EncounterType> encounterTypes = new ArrayList<EncounterType>();
