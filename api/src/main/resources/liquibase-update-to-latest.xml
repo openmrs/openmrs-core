@@ -7301,5 +7301,43 @@
         <addForeignKeyConstraint baseTableName="orders" baseColumnNames="order_type" constraintName="type_of_order"
                                  referencedTableName="order_type" referencedColumnNames="order_type_id"/>
     </changeSet>
+    <changeSet id="20140313-TRUNK-4288" author="dszafranek">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="order_type_class_map"/></not>
+        </preConditions>
+        <comment>Add order_type_class_map table</comment>
+        <createTable tableName="order_type_class_map">
+            <column name="order_type_class_map_id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_type_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="concept_class_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(38)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="creator" constraintName="order_type_class_map_creator"
+                                 referencedTableName="users"
+                                 referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="order_type_id" constraintName="fk_order_type_order_type_id"
+                                 referencedTableName="order_type"
+                                 referencedColumnNames="order_type_id"/>
+        <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="concept_class_id" constraintName="fk_order_type_class_map_concept_class_concept_class_id"
+                                 referencedTableName="concept_class"
+                                 referencedColumnNames="concept_class_id"/>
+    </changeSet>
 
 </databaseChangeLog>
