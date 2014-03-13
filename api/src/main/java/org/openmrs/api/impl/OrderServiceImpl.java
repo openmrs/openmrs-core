@@ -160,7 +160,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		//Mark first order found corresponding to this DC order as discontinued.
-		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getClass(), order.getCareSetting(), null);
+		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getOrderType(), order.getCareSetting(),
+		    null);
 		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(order.getClass())
 		        && ((DrugOrder) order).getDrug() != null;
 		for (Order activeOrder : orders) {
@@ -168,6 +169,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {
 				DrugOrder drugOrder1 = (DrugOrder) order;
+				System.out.println("ID:" + activeOrder.getId());
 				DrugOrder drugOrder2 = (DrugOrder) activeOrder;
 				if (OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
 					shouldMarkAsDiscontinued = true;
@@ -244,28 +246,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Transactional(readOnly = true)
 	public Order getOrder(Integer orderId) throws APIException {
-		return getOrder(orderId, Order.class);
+		return dao.getOrder(orderId);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer, java.lang.Class)
+	 * @see org.openmrs.api.OrderService#getOrders(org.openmrs.OrderType, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List)
 	 */
 	@Transactional(readOnly = true)
-	public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType) throws APIException {
-		return dao.getOrder(orderId, orderClassType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List)
-	 */
-	@Transactional(readOnly = true)
-	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters) {
-		if (orderClassType == null)
-			throw new APIException(
-			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
-		
+	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
+	        List<Encounter> encounters) {
 		if (patients == null)
 			patients = new Vector<Patient>();
 		
@@ -278,7 +268,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (encounters == null)
 			encounters = new Vector<Encounter>();
 		
-		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters);
+		return dao.getOrders(orderType, patients, concepts, orderers, encounters);
 	}
 	
 	/**
@@ -323,7 +313,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, concepts, null, null);
+		return getOrders(null, patients, concepts, null, null);
 	}
 	
 	/**
@@ -351,23 +341,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, Class,
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
 	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public <Ord extends Order> List<Ord> getActiveOrders(Patient patient, Class<Ord> orderClass, CareSetting careSetting,
-	        Date asOfDate) {
+	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate) {
 		if (patient == null) {
 			throw new IllegalArgumentException("Patient is required when fetching active orders");
 		}
 		if (asOfDate == null) {
 			asOfDate = new Date();
 		}
-		if (orderClass == null) {
-			orderClass = (Class<Ord>) Order.class;
-		}
-		return dao.getActiveOrders(patient, orderClass, careSetting, asOfDate);
+		return dao.getActiveOrders(patient, orderType, careSetting, asOfDate);
 	}
 	
 	/**

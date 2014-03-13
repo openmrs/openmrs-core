@@ -154,6 +154,7 @@ public class OrderTest {
 		anOrder.setPatient(new Patient());
 		anOrder.setCareSetting(new CareSetting());
 		anOrder.setConcept(new Concept());
+		anOrder.setOrderType(new OrderType());
 		
 		Order orderThatCanDiscontinueTheOrder = anOrder.cloneForDiscontinuing();
 		
@@ -167,6 +168,8 @@ public class OrderTest {
 		    Order.Action.DISCONTINUE);
 		
 		assertEquals(anOrder.getCareSetting(), orderThatCanDiscontinueTheOrder.getCareSetting());
+		
+		assertEquals(anOrder.getOrderType(), orderThatCanDiscontinueTheOrder.getOrderType());
 	}
 	
 	/**

@@ -6421,6 +6421,17 @@
         </comment>
     </changeSet>
 
+    <changeSet id="201403111039-TRUNK-4287" author="andras-szell">
+        <preConditions onFail="HALT" onFailMessage="Cannot determine the order type for orders that are neither drug nor test orders">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(orders.order_id) FROM orders
+                WHERE (orders.order_id NOT IN (SELECT drug_order.order_id FROM drug_order))
+                AND (orders.order_id NOT IN (SELECT test_order.order_id FROM test_order))
+            </sqlCheck>
+        </preConditions>
+        <comment>Checking if there are any orders that are neither test nor drug orders</comment>
+    </changeSet>
+
     <changeSet id="201402241054" author="Akshika">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="start_date" />
@@ -6502,7 +6513,7 @@
         </preConditions>
         <comment>Adding new order_type table</comment>
         <createTable tableName="order_type">
-            <column name="order_type_id" type="int">
+            <column name="order_type_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(255)">
@@ -6540,7 +6551,7 @@
 
     <changeSet id="201403070131-TRUNK-4286" author="andras-szell">
         <preConditions onFail="MARK_RAN">
-            <not><sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.DrugOrder'</sqlCheck></not>
+            <sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.DrugOrder'</sqlCheck>
         </preConditions>
         <comment>Insert order type for drug orders</comment>
         <insert tableName="order_type">
@@ -6556,7 +6567,7 @@
 
     <changeSet id="201403070132-TRUNK-4286" author="andras-szell">
         <preConditions onFail="MARK_RAN">
-            <not><sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.TestOrder'</sqlCheck></not>
+            <sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.TestOrder'</sqlCheck>
         </preConditions>
         <comment>Insert order type for test orders</comment>
         <insert tableName="order_type">
@@ -7243,31 +7254,52 @@
         </preConditions>
         <comment>Add order_type column to orders</comment>
         <addColumn tableName="orders">
-            <column name="order_type" type="int">
-                <constraints nullable="false"/>
-            </column>
+            <column name="order_type" type="int" />
         </addColumn>
     </changeSet>
 
-    <changeSet id="201403111039-TRUNK-4287-2" author="andras-szell">
-        <preConditions onFail="HALT">
-            <columnExists tableName="orders" columnName="order_type"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(orders.order_id) FROM orders WHERE (orders.order_id NOT IN (SELECT drug_order.order_id FROM drug_order)) AND (orders.order_id NOT IN (SELECT test_order.order_id FROM test_order));</sqlCheck>
+    <changeSet id="201403111039-TRUNK-4287-2" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(o.order_id) FROM orders o
+                    WHERE o.order_id IN (SELECT do.order_id FROM drug_order do)
+                    AND o.order_type IS NULL
+                </sqlCheck>
+            </not>
         </preConditions>
-        <comment>Test if there's any order which has no type, then set all orders with a matching row in the test_order or drug_order table of their type</comment>
-        <sql>
-            UPDATE orders SET orders.order_type = 1 WHERE orders.order_id IN (SELECT drug_order.order_id FROM drug_order);
-            UPDATE orders SET orders.order_type = 2 WHERE orders.order_id IN (SELECT test_order.order_id FROM test_order);
-        </sql>
+        <comment>Set order_type for drug orders with no order_type</comment>
+        <update tableName="orders">
+            <column name="order_type" valueNumeric="SELECT order_type_id FROM order_type where java_class_name ='org.openmrs.DrugOrder'" />
+            <where>orders.order_id IN (SELECT drug_order.order_id FROM drug_order)</where>
+        </update>
     </changeSet>
 
-    <changeSet id="201403111039-TRUNK-4287-3" author="andras-szell">
+    <changeSet id="201403111039-TRUNK-4287-3" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(o.order_id) FROM orders o
+                    WHERE o.order_id IN (SELECT to.order_id FROM test_order to)
+                    AND o.order_type IS NULL
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Set order_type for test orders with no order_type</comment>
+        <update tableName="orders">
+            <column name="order_type" valueNumeric="SELECT order_type_id FROM order_type where java_class_name ='org.openmrs.TestOrder'" />
+            <where>orders.order_id IN (SELECT test_order.order_id FROM test_order)</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="201403111039-TRUNK-4287-4" author="andras-szell">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="order_type"/>
+            <not><foreignKeyConstraintExists foreignKeyName="type_of_order" /></not>
         </preConditions>
-        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="order_type" constraintName="orders_order_type"
-                                 referencedTableName="order_type"
-                                 referencedColumnNames="order_type_id"/>
+        <comment>Making orders.order_type column not nullable</comment>
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="order_type" constraintName="type_of_order"
+                                 referencedTableName="order_type" referencedColumnNames="order_type_id"/>
     </changeSet>
 
 </databaseChangeLog>

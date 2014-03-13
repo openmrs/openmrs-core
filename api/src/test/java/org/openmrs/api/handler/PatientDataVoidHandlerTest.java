@@ -49,7 +49,7 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		List<Obs> observations = Context.getObsService().getObservationsByPerson(patient);
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
-		List<Order> orders = Context.getOrderService().getOrders(Order.class, patients, null, null, null);
+		List<Order> orders = Context.getOrderService().getOrders(null, patients, null, null, null);
 		
 		//we should have some unvoided encounters, obs and orders for the test to be concrete
 		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
@@ -100,7 +100,7 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		//refresh the lists and check that all encounters, obs and orders were voided
 		encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		observations = Context.getObsService().getObservationsByPerson(patient);
-		orders = Context.getOrderService().getOrders(Order.class, patients, null, null, null);
+		orders = Context.getOrderService().getOrders(null, patients, null, null, null);
 		
 		Assert.assertTrue(CollectionUtils.isEmpty(encounters));
 		Assert.assertTrue(CollectionUtils.isEmpty(observations));

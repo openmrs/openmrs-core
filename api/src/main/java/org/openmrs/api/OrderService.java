@@ -17,7 +17,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.openmrs.*;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
@@ -122,17 +130,6 @@ public interface OrderService extends OpenmrsService {
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Gets the order with the associated order id
-	 *
-	 * @param orderId the primary key of the Order
-	 * @param orderType The type of Order to get
-	 * @return The Order in the system corresponding to given primary key id
-	 * @throws APIException
-	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public Order getOrder(Integer orderId, OrderType orderType) throws APIException;
-	
-	/**
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
 	 * multiple arguments are given, the returned orders will match on all arguments. The orders are
 	 * sorted by startDate with the latest coming first
@@ -198,14 +195,14 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param orderNumber the order number whose history to get
 	 * @return a list of orders for given order number
-	 * @should return return all order history for given order number
+	 * @should return all order history for given order number
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 	
 	/**
-	 * Gets all active orders for the specified patient matching the specified CareSetting, Order
-	 * class as of the specified date. Below is the criteria for determining an active order:
+	 * Gets all active orders for the specified patient matching the specified CareSetting,
+	 * OrderType as of the specified date. Below is the criteria for determining an active order:
 	 * 
 	 * <pre>
 	 * <p>
@@ -220,7 +217,7 @@ public interface OrderService extends OpenmrsService {
 	 * <pre/>
 	 * 
 	 * @param patient the patient
-	 * @param orderType The type of Order to get
+	 * @param orderType The OrderType to match
 	 * @param careSetting the care setting, returns all ignoring care setting if value is null
 	 * @param asOfDate defaults to current time
 	 * @return all active orders for given patient parameters
@@ -231,7 +228,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return all active test orders for the specified patient
 	 * @should fail if patient is null
 	 * @should return active orders as of the specified date
-	 * @should default to Order class if no orderClass is specified
+	 * @should return all orders if no orderType is specified
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate);

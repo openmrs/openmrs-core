@@ -69,7 +69,7 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 		OrderService os = Context.getOrderService();
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
-		List<Order> orders = os.getOrders(Order.class, patients, null, null, null);
+		List<Order> orders = os.getOrders(null, patients, null, null, null);
 		if (CollectionUtils.isNotEmpty(orders)) {
 			for (Order order : orders) {
 				if (!order.isVoided()) {

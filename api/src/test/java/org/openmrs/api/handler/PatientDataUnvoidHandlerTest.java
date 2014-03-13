@@ -61,7 +61,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		OrderService os = Context.getOrderService();
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
-		List<Order> orders = os.getOrders(Order.class, patients, null, null, null);
+		List<Order> orders = os.getOrders(null, patients, null, null, null);
 		Assert.assertTrue(CollectionUtils.isNotEmpty(orders));
 		//all order void related fields should be null
 		for (Order order : orders) {
@@ -114,7 +114,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		//void one of the unvoided orders for testing purposes
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
-		Order testOrder = os.getOrders(Order.class, patients, null, null, null).get(0);
+		Order testOrder = os.getOrders(null, patients, null, null, null).get(0);
 		Assert.assertNotNull(testOrder);
 		Assert.assertNull(testOrder.getDateVoided());
 		Assert.assertNull(testOrder.getVoidedBy());

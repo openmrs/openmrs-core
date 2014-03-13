@@ -13,4 +13,11 @@
     <orders order_id="10" order_type_id="2" urgency="ROUTINE" concept_id="5497" orderer="102" start_date="2009-08-08 00:00:00.0" creator="1" date_created="2009-08-08 00:00:00.0" discontinued="0" voided="0" patient_id="2" uuid="521de0a3-05c4-444a-be03-e01b4c4b914e" />
     <orders order_id="11" order_type_id="2" urgency="ROUTINE" concept_id="5497" start_date="2009-09-08 00:00:00.0" creator="1" date_created="2009-09-08 00:00:00.0" discontinued="0" voided="0" patient_id="2" uuid="621de0a3-05c4-444a-be03-e01b4c4b914f" />
     <orders order_id="12" order_type_id="2" urgency="ROUTINE" concept_id="5497" start_date="2009-10-08 00:00:00.0" creator="1" date_created="2009-10-08 00:00:00.0" discontinued="0" voided="0" patient_id="2" uuid="721de0a3-05c4-444a-be03-e01b4c4b914g" />
+    <test_order order_id="6" />
+    <test_order order_id="7" />
+    <test_order order_id="8" />
+    <test_order order_id="9" />
+    <test_order order_id="10" />
+    <test_order order_id="11" />
+    <test_order order_id="12" />
 </dataset>

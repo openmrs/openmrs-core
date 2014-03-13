@@ -33,6 +33,7 @@ public class DrugOrderTest {
 		order.setCareSetting(new CareSetting());
 		order.setConcept(new Concept());
 		order.setDrug(new Drug());
+		order.setOrderType(new OrderType());
 		
 		DrugOrder dcOrder = (DrugOrder) order.cloneForDiscontinuing();
 		
@@ -47,6 +48,8 @@ public class DrugOrderTest {
 		assertEquals("should set new order action to new", dcOrder.getAction(), Order.Action.DISCONTINUE);
 		
 		assertEquals(order.getCareSetting(), dcOrder.getCareSetting());
+		
+		assertEquals(order.getOrderType(), dcOrder.getOrderType());
 	}
 	
 	/**

@@ -202,8 +202,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Order.class);
 		
-		if (orderType != null)
+		if (orderType != null) {
 			crit.add(Restrictions.eq("orderType", orderType));
+		}
 		
 		crit.add(Restrictions.eq("patient", patient));
 		if (careSetting != null) {

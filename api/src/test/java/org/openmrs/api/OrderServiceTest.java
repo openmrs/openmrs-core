@@ -48,7 +48,6 @@ import org.openmrs.Order;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
-import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
@@ -336,13 +335,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @verifies return all active orders for the specified patient
-	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
-	 *      java.util.Date)
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Test
 	public void getActiveOrders_shouldReturnAllActiveOrdersForTheSpecifiedPatient() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(2);
-		List<Order> orders = orderService.getActiveOrders(patient, Order.class, null, null);
+		List<Order> orders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(5, orders.size());
 		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
 		        orderService.getOrder(5), orderService.getOrder(7) };
@@ -357,14 +356,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @verifies return all active orders for the specified patient and care setting
-	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
-	 *      java.util.Date)
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Test
 	public void getActiveOrders_shouldReturnAllActiveOrdersForTheSpecifiedPatientAndCareSetting() throws Exception {
 		Patient patient = patientService.getPatient(2);
 		CareSetting careSetting = orderService.getCareSetting(1);
-		List<Order> orders = orderService.getActiveOrders(patient, Order.class, careSetting, null);
+		List<Order> orders = orderService.getActiveOrders(patient, null, careSetting, null);
 		assertEquals(4, orders.size());
 		Order[] expectedOrders = { orderService.getOrder(3), orderService.getOrder(444), orderService.getOrder(5),
 		        orderService.getOrder(7) };
@@ -373,103 +372,105 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @verifies return all active drug orders for the specified patient
-	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
-	 *      java.util.Date)
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Test
 	public void getActiveOrders_shouldReturnAllActiveDrugOrdersForTheSpecifiedPatient() throws Exception {
 		Patient patient = patientService.getPatient(2);
-		List<DrugOrder> orders = orderService.getActiveOrders(patient, DrugOrder.class, null, null);
+		List<Order> orders = orderService
+		        .getActiveOrders(patient, orderService.getOrderTypeByName("Drug order"), null, null);
 		assertEquals(2, orders.size());
-		DrugOrder[] expectedOrders = { (DrugOrder) orderService.getOrder(3), (DrugOrder) orderService.getOrder(5) };
+		Order[] expectedOrders = { (Order) orderService.getOrder(3), (Order) orderService.getOrder(5) };
 		assertThat(orders, hasItems(expectedOrders));
 	}
 	
 	/**
 	 * @verifies return all active test orders for the specified patient
-	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
-	 *      java.util.Date)
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Test
 	public void getActiveOrders_shouldReturnAllActiveTestOrdersForTheSpecifiedPatient() throws Exception {
 		Patient patient = patientService.getPatient(2);
-		List<TestOrder> orders = orderService.getActiveOrders(patient, TestOrder.class, null, null);
+		List<Order> orders = orderService
+		        .getActiveOrders(patient, orderService.getOrderTypeByName("Test order"), null, null);
 		assertEquals(1, orders.size());
 		assertEquals(orders.get(0), orderService.getOrder(7));
 	}
 	
 	/**
 	 * @verifies fail if patient is null
-	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
-	 *      java.util.Date)
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void getActiveOrders_shouldFailIfPatientIsNull() throws Exception {
-		orderService.getActiveOrders(null, Order.class, orderService.getCareSetting(1), null);
+		orderService.getActiveOrders(null, null, orderService.getCareSetting(1), null);
 	}
 	
 	/**
 	 * @verifies return active orders as of the specified date
-	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
-	 *      java.util.Date)
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Test
 	public void getActiveOrders_shouldReturnActiveOrdersAsOfTheSpecifiedDate() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Date asOfDate = Context.getDateTimeFormat().parse("02/12/2007 23:59:59");
-		List<Order> orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		List<Order> orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(0, orders.size());
 		
 		asOfDate = Context.getDateFormat().parse("03/12/2007");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(1, orders.size());
 		assertEquals(orderService.getOrder(2), orders.get(0));
 		
 		asOfDate = Context.getDateFormat().parse("10/12/2007");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(1, orders.size());
 		assertEquals(orderService.getOrder(2), orders.get(0));
 		
 		asOfDate = Context.getDateTimeFormat().parse("10/12/2007 00:01:00");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(0, orders.size());
 		
 		asOfDate = Context.getDateFormat().parse("09/04/2008");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(3, orders.size());
 		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(4) };
 		assertThat(orders, hasItems(expectedOrders));
 		
 		asOfDate = Context.getDateFormat().parse("25/09/2008");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(5, orders.size());
 		Order[] expectedOrders1 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
 		        orderService.getOrder(5), orderService.getOrder(6) };
 		assertThat(orders, hasItems(expectedOrders1));
 		
 		asOfDate = Context.getDateTimeFormat().parse("26/09/2008 10:24:10");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(4, orders.size());
 		Order[] expectedOrders2 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
 		        orderService.getOrder(5) };
 		assertThat(orders, hasItems(expectedOrders2));
 		
 		asOfDate = Context.getDateFormat().parse("20/11/2008");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(5, orders.size());
 		Order[] expectedOrders3 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
 		        orderService.getOrder(5), orderService.getOrder(7) };
 		assertThat(orders, hasItems(expectedOrders3));
 		
 		asOfDate = Context.getDateFormat().parse("02/12/2008");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(6, orders.size());
 		Order[] expectedOrders4 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
 		        orderService.getOrder(5), orderService.getOrder(7), orderService.getOrder(9) };
 		assertThat(orders, hasItems(expectedOrders4));
 		
 		asOfDate = Context.getDateFormat().parse("04/12/2008");
-		orders = orderService.getActiveOrders(patient, Order.class, null, asOfDate);
+		orders = orderService.getActiveOrders(patient, null, null, asOfDate);
 		assertEquals(5, orders.size());
 		Order[] expectedOrders5 = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
 		        orderService.getOrder(5), orderService.getOrder(7) };
@@ -477,12 +478,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies default to Order class if no orderClass is specified
-	 * @see OrderService#getActiveOrders(org.openmrs.Patient, Class, org.openmrs.CareSetting,
-	 *      java.util.Date)
+	 * @verifies return all orders if no orderType is specified
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@Test
-	public void getActiveOrders_shouldDefaultToOrderClassIfNoOrderClassIsSpecified() throws Exception {
+	public void getActiveOrders_shouldReturnAllOrdersIfNoOrderTypeIsSpecified() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(5, orders.size());
@@ -492,10 +493,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider)}
+	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
 	@Test
-	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, String, Date)")
+	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, String, Date, Provider, Encounter)")
 	public void discontinueOrderWithNonCodedReason_shouldPopulateCorrectAttributesOnBothOrders() throws Exception {
 		Order order = orderService.getOrderByOrderNumber("111");
 		Encounter encounter = encounterService.getEncounter(3);
@@ -515,10 +516,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)}
+	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
 	@Test
-	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, Concept, Date)")
+	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, Concept, Date, Provider, Encounter)")
 	public void discontinueOrderWithConcept_shouldPopulateCorrectAttributesOnBothOrders() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		
@@ -538,10 +539,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider)}
+	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, String, Date)")
+	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, String, Date, Provider, Encounter)")
 	public void discontinueOrderWithNonCodedReason_shouldFailForADiscontinueOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
 		OrderService orderService = Context.getOrderService();
@@ -552,10 +553,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider)}
+	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
 	@Test(expected = APIException.class)
-	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, Concept, Date)")
+	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, Concept, Date, Provider, Encounter)")
 	public void discontinueOrderWithConcept_shouldFailForADiscontinueOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
@@ -642,7 +643,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @verifies reject a future discontinueDate
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
-	 *      org.openmrs.Provider)
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void discontinueOrder_shouldRejectAFutureDiscontinueDate() throws Exception {
@@ -650,7 +651,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Patient patient = Context.getPatientService().getPatient(2);
 		CareSetting careSetting = orderService.getCareSetting(1);
-		Order orderToDiscontinue = orderService.getActiveOrders(patient, Order.class, careSetting, null).get(0);
+		Order orderToDiscontinue = orderService.getActiveOrders(patient, null, careSetting, null).get(0);
 		Encounter encounter = encounterService.getEncounter(3);
 		orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime(), null, encounter);
 	}
@@ -658,13 +659,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @verifies fail if discontinueDate is in the future
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
-	 *      org.openmrs.Provider)
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void discontinueOrder_shouldFailIfDiscontinueDateIsInTheFuture() throws Exception {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR_OF_DAY, 1);
-		Order orderToDiscontinue = orderService.getActiveOrders(Context.getPatientService().getPatient(2), Order.class,
+		Order orderToDiscontinue = orderService.getActiveOrders(Context.getPatientService().getPatient(2), null,
 		    orderService.getCareSetting(1), null).get(0);
 		Encounter encounter = encounterService.getEncounter(3);
 		orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime(), null, encounter);
@@ -681,6 +682,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDrug(orderToDiscontinue.getDrug());
+		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(orderToDiscontinue.getPatient());
@@ -712,6 +714,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDrug(discontinuationOrderDrug);
+		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setPatient(orderToDiscontinue.getPatient());
@@ -728,7 +731,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @verifies fail for a stopped order
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
-	 *      org.openmrs.Provider)
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAStoppedOrder() throws Exception {
@@ -741,7 +744,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @verifies fail for a voided order
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
-	 *      org.openmrs.Provider)
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAVoidedOrder() throws Exception {
@@ -754,7 +757,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @verifies fail for an expired order
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
-	 *      org.openmrs.Provider)
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test(expected = APIException.class)
 	public void discontinueOrder_shouldFailForAnExpiredOrder() throws Exception {

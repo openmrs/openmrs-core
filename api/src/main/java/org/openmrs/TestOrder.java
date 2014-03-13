@@ -166,6 +166,7 @@ public class TestOrder extends Order {
 		newOrder.setAction(Action.REVISE);
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(this.getPatient());
+		newOrder.setOrderType(this.getOrderType());
 		newOrder.setInstructions(this.getInstructions());
 		newOrder.setUrgency(this.getUrgency());
 		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());

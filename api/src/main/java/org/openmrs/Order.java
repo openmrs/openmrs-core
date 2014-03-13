@@ -133,6 +133,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	protected Order copyHelper(Order target) {
 		target.setPatient(getPatient());
 		target.setConcept(getConcept());
+		target.setOrderType(getOrderType());
 		target.setInstructions(getInstructions());
 		target.setStartDate(getStartDate());
 		target.setAutoExpireDate(getAutoExpireDate());
@@ -583,6 +584,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		newOrder.setAction(Action.DISCONTINUE);
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(this.getPatient());
+		newOrder.setOrderType(getOrderType());
 		newOrder.setStartDate(this.getStartDate());
 		
 		return newOrder;
@@ -602,6 +604,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		newOrder.setAction(Action.REVISE);
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(this.getPatient());
+		newOrder.setOrderType(this.getOrderType());
 		newOrder.setScheduledDate(getScheduledDate());
 		newOrder.setInstructions(this.getInstructions());
 		newOrder.setUrgency(this.getUrgency());
