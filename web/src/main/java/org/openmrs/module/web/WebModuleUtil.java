@@ -44,6 +44,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -121,7 +127,14 @@ public class WebModuleUtil {
 		// problem.
 		if (ModuleFactory.isModuleStarted(mod) && !mod.hasStartupError()) {
 			
-			String realPath = servletContext.getRealPath("");
+			String realPath = getRealPath(servletContext);
+			
+			if (realPath == null)
+				realPath = System.getProperty("user.dir");
+			
+			File webInf = new File(realPath + "/WEB-INF".replace("/", File.separator));
+			if (!webInf.exists())
+				webInf.mkdir();
 			
 			copyModuleMessagesIntoWebapp(mod, realPath);
 			log.debug("Done copying messages");
@@ -236,6 +249,13 @@ public class WebModuleUtil {
 					
 					// get the dwr-module.xml file that we're appending our code to
 					File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
+					
+					// testing if file exists
+					if (!f.exists()) {
+						// if it does not -> needs to be created
+						createDwrModulesXml(realPath);
+					}
+					
 					inputStream = new FileInputStream(f);
 					Document dwrmodulexml = getDWRModuleXML(inputStream, realPath);
 					Element outputRoot = dwrmodulexml.getDocumentElement();
@@ -243,6 +263,7 @@ public class WebModuleUtil {
 					// loop over all of the children of the "dwr" tag
 					Node node = root.getElementsByTagName("dwr").item(0);
 					Node current = node.getFirstChild();
+					
 					while (current != null) {
 						if ("allow".equals(current.getNodeName()) || "signatures".equals(current.getNodeName())
 						        || "init".equals(current.getNodeName())) {
@@ -726,7 +747,7 @@ public class WebModuleUtil {
 	 */
 	public static void shutdownModules(ServletContext servletContext) {
 		
-		String realPath = servletContext.getRealPath("");
+		String realPath = getRealPath(servletContext);
 		
 		// clear the module messages
 		String messagesPath = realPath + "/WEB-INF/";
@@ -777,7 +798,7 @@ public class WebModuleUtil {
 			}
 		}
 		
-		String realPath = servletContext.getRealPath("");
+		String realPath = getRealPath(servletContext);
 		
 		// delete the web files from the webapp
 		String absPath = realPath + "/WEB-INF/view/module/" + moduleId;
@@ -809,6 +830,13 @@ public class WebModuleUtil {
 				
 				// get the dwr-module.xml file that we're appending our code to
 				File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
+				
+				// testing if file exists
+				if (!f.exists()) {
+					// if it does not -> needs to be created
+					createDwrModulesXml(realPath);
+				}
+				
 				inputStream = new FileInputStream(f);
 				Document dwrmodulexml = getDWRModuleXML(inputStream, realPath);
 				Element outputRoot = dwrmodulexml.getDocumentElement();
@@ -1000,6 +1028,43 @@ public class WebModuleUtil {
 		moduleWebFolder += moduleId;
 		
 		return moduleWebFolder.replace("/", File.separator);
+	}
+	
+	public static void createDwrModulesXml(String realPath) {
+		
+		try {
+			
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			
+			// root elements
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("dwr");
+			doc.appendChild(rootElement);
+			
+			// write the content into xml file
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(realPath
+			        + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
+			
+			// Output to console for testing
+			// StreamResult result = new StreamResult(System.out);
+			
+			transformer.transform(source, result);
+			
+		}
+		catch (ParserConfigurationException pce) {
+			log.error(pce);
+		}
+		catch (TransformerException tfe) {
+			log.error(tfe);
+		}
+	}
+	
+	public static String getRealPath(ServletContext servletContext) {
+		return servletContext.getRealPath("");
 	}
 	
 }
