@@ -13,16 +13,19 @@
  */
 package org.openmrs.validator;
 
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.api.ConceptService;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -31,6 +34,9 @@ import org.springframework.validation.Errors;
  * Contains tests methods for the {@link DrugValidator}
  */
 public class DrugValidatorTest extends BaseContextSensitiveTest {
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Autowired
 	private ConceptService conceptService;
@@ -43,117 +49,100 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugValidator#validate(Object, Errors)}
+	 * @verifies fail if the drug object is null
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
-	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should fail if the drug object is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheDrugObjectIsNull() {
-		Errors errors = new BindException(new Drug(), "drug");
-		new DrugValidator().validate(null, errors);
+	@Test
+	public void validate_shouldFailIfTheDrugObjectIsNull() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("The parameter obj should not be null and must be of type" + Drug.class);
+		new DrugValidator().validate(null, new BindException(new Drug(), "drug"));
 	}
 	
 	/**
-	 * @see {@link DrugValidator#validate(Object, Errors)}
+	 * @verifies fail if drug on drugReferenceMap is null
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the drug on any of drugReferenceMap is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheDrugObjectOnDrugReferenceMapIsNull() {
-		Drug drug = conceptService.getDrug(11);
+	public void validate_shouldFailIfDrugOnDrugReferenceMapIsNull() throws Exception {
+		Drug drug = new Drug();
+		drug.setDrugReferenceMaps(Collections.singleton(new DrugReferenceMap()));
 		Errors errors = new BindException(drug, "drug");
-		
-		for (DrugReferenceMap drugReferenceMap : drug.getDrugReferenceMaps()) {
-			if (drugReferenceMap.getId().equals(3)) {
-				drugReferenceMap.setDrug(null);
-			}
-		}
-		
 		new DrugValidator().validate(drug, errors);
-		
-		Assert.assertEquals(true, errors.hasFieldErrors("drugReferenceMaps[0].drug"));
+		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].drug"));
 	}
 	
 	/**
-	 * @see {@link DrugValidator#validate(Object, Errors)}
+	 * @verifies fail if conceptReferenceTerm on drugReferenceMap is null
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the conceptReferenceTerm on any of drugReferenceMap is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptReferenceTermOnDrugReferenceMapIsNull() {
-		Drug drug = conceptService.getDrug(11);
+	public void validate_shouldFailIfConceptReferenceTermOnDrugReferenceMapIsNull() throws Exception {
+		Drug drug = new Drug();
+		drug.addDrugReferenceMap(new DrugReferenceMap());
 		Errors errors = new BindException(drug, "drug");
-		
-		for (DrugReferenceMap drugReferenceMap : drug.getDrugReferenceMaps()) {
-			if (drugReferenceMap.getId().equals(3)) {
-				drugReferenceMap.setConceptReferenceTerm(null);
-			}
-		}
-		
 		new DrugValidator().validate(drug, errors);
-		
-		Assert.assertEquals(true, errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm"));
+		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm"));
 	}
 	
 	/**
-	 * @see {@link DrugValidator#validate(Object, Errors)}
+	 * @verifies invoke ConceptReferenceTermValidator if term on drugReferenceMap is new
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail if the conceptMapType on any of drugReferenceMap is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheConceptConceptMapTypeOnDrugReferenceMapIsNull() {
-		Drug drug = conceptService.getDrug(11);
+	public void validate_shouldInvokeConceptReferenceTermValidatorIfTermOnDrugReferenceMapIsNew() throws Exception {
+		Drug drug = new Drug();
+		drug.addDrugReferenceMap(new DrugReferenceMap(new ConceptReferenceTerm(), null));
 		Errors errors = new BindException(drug, "drug");
-		for (DrugReferenceMap drugReferenceMap : drug.getDrugReferenceMaps()) {
-			if (drugReferenceMap.getId().equals(3)) {
-				drugReferenceMap.setConceptMapType(null);
-			}
-		}
-		
 		new DrugValidator().validate(drug, errors);
-		
-		Assert.assertEquals(true, errors.hasFieldErrors("drugReferenceMaps[0].conceptMapType"));
+		//reference term validator should have been called which should reject a null code
+		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm.code"));
 	}
 	
 	/**
-	 * @see {@link DrugValidator#validate(Object, Errors)}
+	 * @verifies invoke ConceptMapTypeValidator if conceptMapType on drugReferenceMap is new
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should invoke ConceptReferenceTermValidator and fail if conceptReferenceTerm is new (no id set) and "
-	        + "conceptReferenceTerm.code is null on any of drugReferenceMap", method = "validate(Object,Errors)")
-	public void validate_shouldInvokeConceptReferenceTermValidatorIfTheReferenceTermInDrugReferenceMapIsNew() {
-		Drug drug = conceptService.getDrug(11);
+	public void validate_shouldInvokeConceptMapTypeValidatorIfConceptMapTypeOnDrugReferenceMapIsNew() throws Exception {
+		Drug drug = new Drug();
+		drug.addDrugReferenceMap(new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), new ConceptMapType()));
 		Errors errors = new BindException(drug, "drug");
-		ConceptReferenceTerm newConceptReferenceTerm = new ConceptReferenceTerm();
-		
-		newConceptReferenceTerm.setConceptSource(conceptService.getConceptSource(1));
-		
-		for (DrugReferenceMap drugReferenceMap : drug.getDrugReferenceMaps()) {
-			if (drugReferenceMap.getId().equals(3)) {
-				drugReferenceMap.setConceptReferenceTerm(newConceptReferenceTerm);
-			}
-		}
-		
 		new DrugValidator().validate(drug, errors);
-		
-		Assert.assertEquals(true, errors.hasFieldErrors("drugReferenceMaps[0].conceptReferenceTerm.code"));
+		//concept map type validator should have been called which should reject a null name
+		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[0].conceptMapType.name"));
 	}
 	
 	/**
-	 * @see {@link DrugValidator#validate(Object, Errors)}
+	 * @verifies reject drug multiple mappings to the same term
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should invoke ConceptMapTypeValidator and fail if conceptMapType is new (no id set) and "
-	        + "conceptMapType.name is null on any of drugReferenceMap", method = "validate(Object,Errors)")
-	public void validate_shouldInvokeConceptMapTypeValidatorIfTheConceptMapTypeInDrugReferenceMapIsNew() {
-		Drug drug = conceptService.getDrug(11);
-		
-		ConceptMapType newConceptMapType = new ConceptMapType();
-		
-		for (DrugReferenceMap drugReferenceMap : drug.getDrugReferenceMaps()) {
-			if (drugReferenceMap.getId().equals(3)) {
-				drugReferenceMap.setConceptMapType(newConceptMapType);
-			}
-		}
+	public void validate_shouldRejectDrugMultipleMappingsToTheSameTerm() throws Exception {
+		Drug drug = new Drug();
+		DrugReferenceMap term1 = new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
+		        .getConceptMapType(1));
+		DrugReferenceMap term2 = new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
+		        .getConceptMapType(2));
+		drug.addDrugReferenceMap(term1);
+		drug.addDrugReferenceMap(term2);
+		Assert.assertEquals(2, drug.getDrugReferenceMaps().size());
 		Errors errors = new BindException(drug, "drug");
 		new DrugValidator().validate(drug, errors);
-		
-		Assert.assertEquals(true, errors.hasFieldErrors("drugReferenceMaps[0].conceptMapType.name"));
+		Assert.assertTrue(errors.hasFieldErrors("drugReferenceMaps[1].conceptReferenceTerm"));
+	}
+	
+	/**
+	 * @verifies pass if all fields are correct
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassIfAllFieldsAreCorrect() throws Exception {
+		Drug drug = new Drug();
+		drug.addDrugReferenceMap(new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
+		        .getConceptMapType(1)));
+		Errors errors = new BindException(drug, "drug");
+		new DrugValidator().validate(drug, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
 	}
 }

@@ -13,6 +13,9 @@
  */
 package org.openmrs.validator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptMapType;
@@ -24,11 +27,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import java.util.Set;
-
 /**
  * Validates {@link Drug} objects.
- *
+ * 
  * @since 1.10
  */
 @Handler(supports = { Drug.class })
@@ -39,7 +40,7 @@ public class DrugValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 *
+	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -49,16 +50,16 @@ public class DrugValidator implements Validator {
 	
 	/**
 	 * Validates an Drug object
-	 *
+	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the drug object is null
 	 * @should fail if drug on drugReferenceMap is null
 	 * @should fail if conceptReferenceTerm on drugReferenceMap is null
-	 * @should fail if conceptMapType on drugReferenceMap is null
-	 * @should invoke ConceptReferenceTermValidator if conceptReferenceTerm on drugReferenceMap is new (hasn't id set)
-	 * @should invoke ConceptMapTypeValidator if conceptMapType on drugReferenceMap is new (hasn't id set)
+	 * @should invoke ConceptReferenceTermValidator if term on drugReferenceMap is new
+	 * @should invoke ConceptMapTypeValidator if conceptMapType on drugReferenceMap is new
 	 * @should pass if all fields are correct
+	 * @should reject drug multiple mappings to the same term
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -66,10 +67,9 @@ public class DrugValidator implements Validator {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Drug.class);
 		} else {
 			Drug drug = (Drug) obj;
-			
 			Set<DrugReferenceMap> drugReferenceMaps = drug.getDrugReferenceMaps();
+			Set<String> mappedTermUuids = new HashSet<String>();
 			int index = 0;
-			
 			for (DrugReferenceMap referenceMap : drugReferenceMaps) {
 				Drug mappedDrug = referenceMap.getDrug();
 				ConceptReferenceTerm referenceTerm = referenceMap.getConceptReferenceTerm();
@@ -90,6 +90,7 @@ public class DrugValidator implements Validator {
 						errors.popNestedPath();
 					}
 				}
+				
 				if (mapType == null) {
 					errors.rejectValue("drugReferenceMaps[" + index + "].conceptMapType",
 					    "Drug.drugReferenceMap.conceptMapType");
@@ -101,6 +102,18 @@ public class DrugValidator implements Validator {
 					finally {
 						errors.popNestedPath();
 					}
+				}
+				
+				//don't proceed to the next map
+				if (errors.hasErrors()) {
+					return;
+				}
+				
+				//if we already have a mapping to this term, reject it this map
+				if (!mappedTermUuids.add(referenceMap.getConceptReferenceTerm().getUuid())) {
+					errors.rejectValue("drugReferenceMaps[" + index + "].conceptReferenceTerm",
+					    "Drug.drugReferenceMap.termAlreadyMapped",
+					    "Cannot map a drug multiple times to the same reference term");
 				}
 				index++;
 			}
