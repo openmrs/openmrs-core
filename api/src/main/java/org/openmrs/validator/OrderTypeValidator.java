@@ -15,9 +15,11 @@ package org.openmrs.validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ConceptClass;
 import org.openmrs.OrderType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -53,6 +55,8 @@ public class OrderTypeValidator implements Validator {
 	 * @should fail if name is empty
 	 * @should fail if name is whitespace
 	 * @should fail if name is a duplicate
+	 * @should fail if javaClass is a duplicate
+	 * @should fail if conceptClass is a duplicate
 	 * @should pass if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -66,9 +70,25 @@ public class OrderTypeValidator implements Validator {
 				errors.rejectValue("name", "error.name");
 			}
 			
-			OrderType ot = Context.getOrderService().getOrderTypeByName(name);
-			if (ot != null && !orderType.equals(ot)) {
+			OrderType duplicate = Context.getOrderService().getOrderTypeByName(name);
+			if (duplicate != null && !orderType.equals(duplicate)) {
 				errors.rejectValue("name", "OrderType.duplicate.name", "Duplicate order type name: " + name);
+			}
+			
+			for (OrderType ot : Context.getOrderService().getOrderTypes(true)) {
+				if (ot != null) {
+					if (OpenmrsUtil.nullSafeEquals(orderType.getJavaClassName(), ot.getJavaClassName())) {
+						errors.rejectValue("javaClassName", "OrderType.duplicate.javaClass",
+						    "Duplicate order type java class: " + ot.getJavaClassName());
+					} else {
+						for (ConceptClass cc : ot.getConceptClasses()) {
+							if (cc != null && orderType.getConceptClasses().contains(cc)) {
+								errors.rejectValue("conceptClasses", "OrderType.duplicate.conceptClass",
+								    "Duplicate order type concept class: " + cc.getName());
+							}
+						}
+					}
+				}
 			}
 		}
 	}
