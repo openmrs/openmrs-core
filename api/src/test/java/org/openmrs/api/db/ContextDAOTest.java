@@ -355,11 +355,11 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	
 	@Verifies(value = "should mergeDefaultRuntimeProperties", method = "mergeDefaultRuntimeProperties(Properties runtimeProperties)")
 	@Test
-	public void mergeDefaultRuntimePropertiesTest() {
+	public void should_mergeDefaultRuntimeProperties() {
 		Properties propertiesForTest = new Properties();
-		propertiesForTest.setProperty("x", "y");   // ading properties for testing
+		propertiesForTest.setProperty("x", "y"); // adding properties for testing
 		dao.mergeDefaultRuntimeProperties(propertiesForTest);
-		Assert.assertNotNull(propertiesForTest.getProperty("hibernate.x")); // check whether "x" has converted to "hibernate.x"
+		Assert.assertNotNull(propertiesForTest.getProperty("hibernate.x")); // check whether "x" has been converted to "hibernate.x"
 	}
 	
 }
