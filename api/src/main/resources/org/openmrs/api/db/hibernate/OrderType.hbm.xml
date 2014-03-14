@@ -15,11 +15,11 @@
 
         <discriminator column="order_type_id" insert="false"/>
 
-        <property name="name" type="java.lang.String" not-null="true" length="255"/>
+        <property name="name" type="java.lang.String" not-null="true" length="255" unique="true" />
 
         <property name="description" type="java.lang.String" not-null="true" length="1024"/>
 
-        <property name="javaClassName" type="java.lang.String" column="java_class_name" not-null="true" length="1024"/>
+        <property name="javaClassName" type="java.lang.String" column="java_class_name" not-null="true" length="1024" unique="true" />
 
         <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19"/>
 
