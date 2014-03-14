@@ -91,6 +91,7 @@ public final class Module {
 	
 	private Document sqldiff = null;
 	
+	@Deprecated
 	private Document log4j = null;
 	
 	private boolean mandatory = Boolean.FALSE;
@@ -130,6 +131,7 @@ public final class Module {
 		log.debug("Creating module " + name);
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof Module) {
 			Module mod = (Module) obj;
@@ -616,10 +618,18 @@ public final class Module {
 		this.config = config;
 	}
 	
+	/**
+	 * @deprecated module should not hardcode it's logging properties
+	 */
+	@Deprecated
 	public Document getLog4j() {
 		return log4j;
 	}
 	
+	/**
+	 * @deprecated module should not hardcode it's logging properties
+	 */
+	@Deprecated
 	public void setLog4j(Document log4j) {
 		this.log4j = log4j;
 	}
@@ -736,10 +746,10 @@ public final class Module {
 		this.startupErrorMessage = null;
 	}
 	
+	@Override
 	public String toString() {
-		if (moduleId == null) {
+		if (moduleId == null)
 			return super.toString();
-		}
 		
 		return moduleId;
 	}
