@@ -128,12 +128,13 @@ public class WebModuleUtil {
 		if (ModuleFactory.isModuleStarted(mod) && !mod.hasStartupError()) {
 			
 			String realPath = servletContext.getRealPath("");
-			if(realPath == null)
+			if (realPath == null)
 				realPath = System.getProperty("user.dir");
 			
 			File webInf = new File("WEB-INF");
-			if(!webInf.exists())	webInf.mkdir();
-
+			if (!webInf.exists())
+				webInf.mkdir();
+			
 			copyModuleMessagesIntoWebapp(mod, realPath);
 			log.debug("Done copying messages");
 			
@@ -247,7 +248,7 @@ public class WebModuleUtil {
 					
 					// get the dwr-module.xml file that we're appending our code to
 					File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
-
+					
 					// testing if file exists
 					if (!f.exists()) {
 						// if it does not -> needs to be created
@@ -827,7 +828,7 @@ public class WebModuleUtil {
 				
 				// get the dwr-module.xml file that we're appending our code to
 				File f = new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator));
-
+				
 				// testing if file exists
 				if (!f.exists()) {
 					// if it does not -> needs to be created
@@ -1043,7 +1044,8 @@ public class WebModuleUtil {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(realPath + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
+			StreamResult result = new StreamResult(new File(realPath
+			        + "/WEB-INF/dwr-modules.xml".replace("/", File.separator)));
 			
 			// Output to console for testing
 			// StreamResult result = new StreamResult(System.out);

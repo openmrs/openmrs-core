@@ -51,7 +51,7 @@ public class WebModuleUtilTest {
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
 	 * @verifies creates dwr-modules.xml if not found
-	*/ 
+	 */
 	@Test
 	public void startModule_shouldCreateDwrModulesXmlIfNotExists() throws Exception {
 		partialMockWebModuleUtilForMessagesTests();
@@ -62,7 +62,7 @@ public class WebModuleUtilTest {
 		
 		ServletContext servletContext = mock(ServletContext.class);
 		String realPath = servletContext.getRealPath("");
-		if(realPath == null)
+		if (realPath == null)
 			realPath = System.getProperty("user.dir");
 		
 		// manually delete dwr-modules.xml 
@@ -79,7 +79,7 @@ public class WebModuleUtilTest {
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
 	 * @verifies dwr-modules.xml has dwr tag of module started
-	*/ 
+	 */
 	@Test
 	public void startModule_dwrModuleXmlshouldContainModuleInfo() throws Exception {
 		partialMockWebModuleUtilForMessagesTests();
@@ -90,23 +90,23 @@ public class WebModuleUtilTest {
 		
 		ServletContext servletContext = mock(ServletContext.class);
 		String realPath = servletContext.getRealPath("");
-		if(realPath == null)
+		if (realPath == null)
 			realPath = System.getProperty("user.dir");
 		
 		WebModuleUtil.startModule(mod, servletContext, true);
 		
 		// test if dwr-modules.xml contains id of started dummy module
 		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
-		Scanner scanner=new Scanner(f);
+		Scanner scanner = new Scanner(f);
 		boolean found = false;
 		while (scanner.hasNextLine()) {
-	        String line = scanner.nextLine();
-	        if(line.contains(mod.getModuleId())) { 
-	            found = true;
-	        }
-	    }
-		if(scanner != null) 
-		    scanner.close();
+			String line = scanner.nextLine();
+			if (line.contains(mod.getModuleId())) {
+				found = true;
+			}
+		}
+		if (scanner != null)
+			scanner.close();
 		
 		assertTrue(found);
 	}
@@ -193,7 +193,7 @@ public class WebModuleUtilTest {
 		Attr attr = doc.createAttribute("moduleId");
 		attr.setValue("mymodule");
 		allow.setAttributeNode(attr);
- 
+		
 		Element create = doc.createElement("create");
 		allow.appendChild(create);
 		
