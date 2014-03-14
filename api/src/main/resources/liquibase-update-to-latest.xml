@@ -6734,7 +6734,7 @@
 			<column autoIncrement="true" name="order_frequency_id" type="int">
 				<constraints primaryKey="true" nullable="false"/>
 			</column>
-			<column name="concept_id" type="int"><constraints nullable="false"/></column>
+			<column name="concept_id" type="int"><constraints nullable="false" unique="true"/></column>
 			<column name="frequency_per_day" type="double"/>
 			<column name="creator" type="int"><constraints nullable="false"/></column>
             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
@@ -7005,7 +7005,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="false" unique="true" />
             </column>
             <column name="description" type="varchar(255)"></column>
             <column name="care_setting_type" type="varchar(50)">
@@ -7315,11 +7315,11 @@
         </preConditions>
         <comment>Add order_type_class_map table</comment>
         <createTable tableName="order_type_class_map">
-            <column name="order_type" type="int">
+            <column name="order_type_id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="concept_class" type="int">
-                <constraints nullable="false"/>
+            <column name="concept_class_id" type="int">
+                <constraints nullable="false" unique="true" />
             </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="order_type" constraintName="fk_order_type_order_type_id"

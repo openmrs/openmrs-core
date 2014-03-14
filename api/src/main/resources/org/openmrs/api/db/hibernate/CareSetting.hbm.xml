@@ -19,7 +19,7 @@
         </property>
 
         <property name="name" type="java.lang.String"
-                  not-null="true" length="255" />
+                  not-null="true" length="255" unique="true" />
         <property name="description" type="java.lang.String"
                   not-null="true" length="255" />
         <property name="dateCreated" type="java.util.Date"

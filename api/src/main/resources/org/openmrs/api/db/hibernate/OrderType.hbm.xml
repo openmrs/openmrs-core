@@ -37,7 +37,7 @@
 
         <many-to-one name="creator" class="User" not-null="true"/>
 
-        <set name="conceptClasses" table="order_type_class_map" cascade="none">
+        <set name="conceptClasses" table="order_type_class_map" lazy="true" cascade="none">
             <key column="order_type_id" />
             <many-to-many column="concept_class_id" class="ConceptClass" unique="true"/>
         </set>
