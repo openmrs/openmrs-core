@@ -219,13 +219,7 @@
 <h2><openmrs:message code="Encounter.manage.title"/></h2>
 
 <spring:hasBindErrors name="encounter">
-	<openmrs:message code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/>
-		</c:forEach>
-	</div>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <b class="boxHeader"><openmrs:message code="Encounter.summary"/></b>

@@ -25,13 +25,7 @@
 </c:if>
 
 <spring:hasBindErrors name="location">
-	<openmrs:message code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.globalErrors}" var="error">
-			<openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
