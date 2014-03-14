@@ -64,13 +64,7 @@
 </c:if>
 
 <spring:hasBindErrors name="user">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <form id="thisUserForm" method="post" action="user.form" autocomplete="off">

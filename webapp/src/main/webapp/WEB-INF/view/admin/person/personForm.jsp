@@ -263,12 +263,7 @@
 </openmrs:hasPrivilege>
 
 <spring:hasBindErrors name="person">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}" arguments="${error.arguments}"/><br/><!-- ${fn:replace(error, '--', '\\-\\-')} -->
-		</c:forEach>
-	</div>
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <form method="post" onSubmit="removeBlankData()">
