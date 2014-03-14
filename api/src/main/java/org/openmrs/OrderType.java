@@ -14,7 +14,7 @@
 package org.openmrs;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -128,7 +128,7 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 */
 	public Collection<ConceptClass> getConceptClasses() {
 		if (conceptClasses == null) {
-			conceptClasses = new HashSet<ConceptClass>();
+			conceptClasses = new LinkedHashSet<ConceptClass>();
 		}
 		return conceptClasses;
 	}

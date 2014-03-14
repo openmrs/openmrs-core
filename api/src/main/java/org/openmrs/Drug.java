@@ -13,12 +13,12 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang.StringUtils;
-import org.openmrs.api.context.Context;
-
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 
 /**
  * Drug
@@ -247,7 +247,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 */
 	public Set<DrugReferenceMap> getDrugReferenceMaps() {
 		if (drugReferenceMaps == null) {
-			drugReferenceMaps = new HashSet<DrugReferenceMap>();
+			drugReferenceMaps = new LinkedHashSet<DrugReferenceMap>();
 		}
 		return drugReferenceMaps;
 	}
