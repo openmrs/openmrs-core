@@ -29,6 +29,8 @@
 
         <property name="dateRetired" type="java.util.Date" column="date_retired" length="19"/>
 
+        <property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
+
         <many-to-one name="retiredBy" class="User" column="retired_by"/>
 
         <many-to-one name="parent" class="OrderType"/>

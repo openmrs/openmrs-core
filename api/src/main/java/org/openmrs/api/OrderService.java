@@ -447,9 +447,9 @@ public interface OrderService extends OpenmrsService {
 	public void purgeOrderFrequency(OrderFrequency orderFrequency) throws APIException;
 	
 	/**
-	 * Get order type by order type id
-	 *
-	 * @param orderTypeId the primary key of the order type
+	 * Get OrderType by orderTypeId
+	 * 
+	 * @param orderTypeId the orderTypeId to match on
 	 * @since 1.10
 	 * @return order type object associated with given id
 	 * @should find order type object given valid id
@@ -459,23 +459,25 @@ public interface OrderService extends OpenmrsService {
 	public OrderType getOrderType(Integer orderTypeId);
 	
 	/**
-	 * Get order type by order type uuid
-	 *
-	 * @param uuid  the uuid of the order type
+	 * Get OrderType by uuid
+	 * 
+	 * @param uuid the uuid to match on
 	 * @since 1.10
 	 * @return order type object associated with given uuid
-	 * @should find order type object given valid id
+	 * @should find order type object given valid uuid
 	 * @should return null if no order type object found with given uuid
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public OrderType getOrderTypeByUuid(String uuid);
 	
 	/**
-	 * Get all order types available with or without retired order types according to boolean flag
-	 *
-	 * @param includeRetired boolean flag which indicate search needs to look at retired order types or not
-	 * @param includeRetired if set true then will return all order types include retired order types
-	 * @param includeRetired if set false then will return all order types not include retired order types
+	 * Get all order types, if includeRetired is set to true then retired ones will be included
+	 * otherwise not
+	 * 
+	 * @param includeRetired boolean flag which indicate search needs to look at retired order types
+	 *            or not
+	 * @should get all order types if includeRetired is set to true
+	 * @should get all non retired order types if includeRetired is set to false
 	 * @return list of order types
 	 * @since 1.10
 	 */

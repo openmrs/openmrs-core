@@ -6544,6 +6544,7 @@
             </column>
             <column name="date_retired" type="datetime"/>
             <column name="retired_by" type="int"/>
+            <column name="retire_reason" type="varchar(255)" />
             <column name="uuid" type="varchar(38)">
                 <constraints nullable="false" unique="true"/>
             </column>

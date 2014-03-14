@@ -45,9 +45,9 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtil;
@@ -1210,45 +1210,70 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderType(Integer)}
+	 * @verifies find order type object given valid id
+	 * @see OrderService#getOrderType(Integer)
 	 */
 	@Test
-	@Verifies(value = "should get order type by id", method = "getOrderType(Integer)")
-	public void getOrderType_shouldGetOrderTypeById() throws Exception {
+	public void getOrderType_shouldFindOrderTypeObjectGivenValidId() throws Exception {
 		OrderType orderType = Context.getOrderService().getOrderType(1);
-		assertNotNull(orderType);
 		assertEquals("Drug order", orderType.getName());
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderTypeByUuid(String)}
+	 * @verifies return null if no order type object found with given id
+	 * @see OrderService#getOrderType(Integer)
 	 */
 	@Test
-	@Verifies(value = "should get order type by uuid", method = "getOrderTypeByUuid(String)")
-	public void getOrderType_shouldGetOrderTypeByUuid() throws Exception {
-		OrderType orderType = Context.getOrderService().getOrderTypeByUuid("84ce45a8-5e7c-48f7-a581-ca1d17d63a66");
-		assertNotNull(orderType);
+	public void getOrderType_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenId() throws Exception {
+		OrderType orderType = Context.getOrderService().getOrderType(1000);
+		assertNull(orderType);
+	}
+	
+	/**
+	 * @verifies find order type object given valid uuid
+	 * @see OrderService#getOrderTypeByUuid(String)
+	 */
+	@Test
+	public void getOrderTypeByUuid_shouldFindOrderTypeObjectGivenValidUuid() throws Exception {
+		OrderType orderType = Context.getOrderService().getOrderTypeByUuid("2ca568f3-a64a-11e3-9aeb-50e549534c5e");
 		assertEquals("Drug order", orderType.getName());
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderTypes(boolean)}
+	 * @verifies return null if no order type object found with given uuid
+	 * @see OrderService#getOrderTypeByUuid(String)
 	 */
 	@Test
-	@Verifies(value = "should get order types by retired ones", method = "getOrderTypes(boolean)")
-	public void getOrderType_shouldGetOrderTypeListByRetiredFlag() throws Exception {
-		List<OrderType> orderTypeListWithRetiredOrderTypes = Context.getOrderService().getOrderTypes(true);
-		assertNotNull(orderTypeListWithRetiredOrderTypes);
-		int totalOrderTypes = orderTypeListWithRetiredOrderTypes.size();
-		int count = 0;
-		for (OrderType orderType : orderTypeListWithRetiredOrderTypes) {
-			if (orderType.getRetired()) {
-				count++;
-			}
-		}
-		List<OrderType> orderTypeListWithoutRetiredOrderTypes = Context.getOrderService().getOrderTypes(false);
-		int totalOrdersWithoutRetiredOrderTypes = orderTypeListWithoutRetiredOrderTypes.size();
-		int actualValue = totalOrderTypes - count;
-		assertEquals(actualValue, totalOrdersWithoutRetiredOrderTypes);
+	public void getOrderTypeByUuid_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenUuid() throws Exception {
+		OrderType orderType = Context.getOrderService().getOrderTypeByUuid("some random uuid");
+		assertNull(orderType);
+	}
+	
+	/**
+	 * @verifies get all order types if includeRetired is set to true
+	 * @see OrderService#getOrderTypes(boolean)
+	 */
+	@Test
+	public void getOrderTypes_shouldGetAllOrderTypesIfIncludeRetiredIsSetToTrue() throws Exception {
+		assertEquals(3, orderService.getOrderTypes(true).size());
+	}
+	
+	/**
+	 * @verifies get all non retired order types if includeRetired is set to false
+	 * @see OrderService#getOrderTypes(boolean)
+	 */
+	@Test
+	public void getOrderTypes_shouldGetAllNonRetiredOrderTypesIfIncludeRetiredIsSetToFalse() throws Exception {
+		assertEquals(2, orderService.getOrderTypes(false).size());
+	}
+	
+	/**
+	 * @verifies return the order type that matches the specified name
+	 * @see OrderService#getOrderTypeByName(String)
+	 */
+	@Test
+	public void getOrderTypeByName_shouldReturnTheOrderTypeThatMatchesTheSpecifiedName() throws Exception {
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		assertEquals("2ca568f3-a64a-11e3-9aeb-50e549534c5e", orderType.getUuid());
 	}
 }
