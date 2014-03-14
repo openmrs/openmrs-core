@@ -391,13 +391,11 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 		}
 		
-		copyCacheToRuntimeProperties(cache, runtimeProperties);
+		copyCacheToRuntimeProperties(cache, runtimeProperties);  // copy the cached changes to runtimeProperties
 		// load in the default hibernate properties from hibernate.default.properties
-		////InputStream propertyStream = null;
 		try {
 			cache = new HashMap<Object, Object>(); // Instantiate a HashMap for do caching
 			Properties props = new Properties();
-			//propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
 			File file = new File(getClass().getClassLoader().getResource("/hibernate.default.properties").getFile());
 			OpenmrsUtil.loadProperties(props, file);
 			
@@ -413,7 +411,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 		}
 		
-		copyCacheToRuntimeProperties(cache, runtimeProperties);
+		copyCacheToRuntimeProperties(cache, runtimeProperties);  //// copy the cached changes to runtimeProperties
 	}
 	
 	// copy the cached changed to the runtimeProperties
