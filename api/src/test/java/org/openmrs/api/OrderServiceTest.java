@@ -1091,10 +1091,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should add a new order frequency to the database", method = "saveOrderFrequency(OrderFrequency)")
 	public void saveOrderFrequency_shouldAddANewOrderFrequencyToTheDatabase() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("new name", Context.getLocale()));
+		concept = conceptService.saveConcept(concept);
 		OrderService os = Context.getOrderService();
 		Integer originalSize = os.getOrderFrequencies(true).size();
 		OrderFrequency orderFrequency = new OrderFrequency();
-		orderFrequency.setConcept(new Concept(3));
+		orderFrequency.setConcept(concept);
 		orderFrequency.setFrequencyPerDay(2d);
 		
 		orderFrequency = os.saveOrderFrequency(orderFrequency);

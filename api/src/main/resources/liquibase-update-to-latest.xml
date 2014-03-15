@@ -7322,11 +7322,11 @@
                 <constraints nullable="false" unique="true" />
             </column>
         </createTable>
-        <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="order_type" constraintName="fk_order_type_order_type_id"
+        <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="order_type_id" constraintName="fk_order_type_order_type_id"
                                  referencedTableName="order_type" referencedColumnNames="order_type_id"/>
-        <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="concept_class" constraintName="fk_order_type_class_map_concept_class_concept_class_id"
+        <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="concept_class_id" constraintName="fk_order_type_class_map_concept_class_concept_class_id"
                                  referencedTableName="concept_class" referencedColumnNames="concept_class_id"/>
-        <addPrimaryKey tableName="order_type_class_map" columnNames="order_type,concept_class" constraintName="primary_key_for_order_type_class_map" />
+        <addPrimaryKey tableName="order_type_class_map" columnNames="order_type_id,concept_class_id" constraintName="primary_key_for_order_type_class_map" />
     </changeSet>
 
 </databaseChangeLog>
