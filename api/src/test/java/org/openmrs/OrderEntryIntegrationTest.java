@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
@@ -51,6 +52,9 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	@Autowired
 	private ProviderService providerService;
 	
+	@Autowired
+	private EncounterService encounterService;
+	
 	@Test
 	public void shouldGetTheActiveOrdersForAPatient() {
 		Patient patient = patientService.getPatient(2);
@@ -66,8 +70,9 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Patient patient = patientService.getPatient(2);
 		List<Order> activeDrugOrders = orderService.getActiveOrders(patient, orderService.getOrderTypeByName("Drug order"),
 		    null, null);
-		assertEquals(2, activeDrugOrders.size());
-		Order[] expectedDrugOrders = { (Order) orderService.getOrder(3), (Order) orderService.getOrder(5) };
+		assertEquals(4, activeDrugOrders.size());
+		Order[] expectedDrugOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5) };
 		assertThat(activeDrugOrders, hasItems(expectedDrugOrders));
 	}
 	
@@ -88,6 +93,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setStartDate(new Date());
 		order.setDrug(conceptService.getDrug(1));
 		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);
 		order.setDose(300.0);
 		Concept mgs = conceptService.getConcept(50);
@@ -123,6 +129,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(careSetting);
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
 		order.setClinicalHistory("Patient had a negative reaction to the test in the past");
 		order.setFrequency(orderService.getOrderFrequency(3000));
@@ -142,21 +149,22 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		
 		Order firstOrderToDiscontinue = orderService.getOrder(3);
-		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Encounter encounter = encounterService.getEncounter(3);
 		assertTrue(OrderUtil.isOrderActive(firstOrderToDiscontinue, null));
 		Patient patient = firstOrderToDiscontinue.getPatient();
 		int ordersCount = orderService.getActiveOrders(patient, null, null, null).size();
 		
 		Concept discontinueReason = Context.getConceptService().getConcept(1);
-		Order discontinuationOrder1 = orderService.discontinueOrder(firstOrderToDiscontinue, discontinueReason, null, null,
-		    encounter);
+		Provider orderer = providerService.getProvider(1);
+		Order discontinuationOrder1 = orderService.discontinueOrder(firstOrderToDiscontinue, discontinueReason, null,
+		    orderer, encounter);
 		assertEquals(firstOrderToDiscontinue, discontinuationOrder1.getPreviousOrder());
 		
 		//Lets discontinue another order with reason being a string instead of concept
 		Order secondOrderToDiscontinue = orderService.getOrder(5);
 		assertEquals(patient, secondOrderToDiscontinue.getPatient());
 		assertTrue(OrderUtil.isOrderActive(secondOrderToDiscontinue, null));
-		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null, null,
+		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null, orderer,
 		    encounter);
 		assertEquals(secondOrderToDiscontinue, discontinuationOrder2.getPreviousOrder());
 		
@@ -164,7 +172,8 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Order thirdOrderToDiscontinue = orderService.getOrder(7);
 		assertTrue(OrderUtil.isOrderActive(thirdOrderToDiscontinue, null));
 		Order discontinuationOrder = thirdOrderToDiscontinue.cloneForDiscontinuing();
-		discontinuationOrder.setOrderer(providerService.getProvider(1));
+		discontinuationOrder.setOrderer(orderer);
+		discontinuationOrder.setEncounter(encounterService.getEncounter(6));
 		orderService.saveOrder(discontinuationOrder, null);
 		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
@@ -187,6 +196,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setStartDate(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));
+		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
 		
 		//If the time is too close, the original order may be returned because it

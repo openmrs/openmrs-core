@@ -35,7 +35,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.CareSetting;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -482,17 +481,21 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		User creator = new User(1);
 		encounter.setCreator(creator);
 		
+		ConceptService cs = Context.getConceptService();
 		// create and add an obs to this encounter
-		Obs obs = new Obs(new Patient(2), new Concept(1), new Date(), new Location(1));
+		Obs obs = new Obs(new Patient(2), cs.getConcept(1), new Date(), new Location(1));
 		obs.setDateCreated(date);
 		obs.setCreator(creator);
 		encounter.addObs(obs);
 		
+		OrderService os = Context.getOrderService();
 		// create and add an order to this encounter
 		Order order = new Order();
-		order.setConcept(new Concept(1));
+		order.setConcept(Context.getConceptService().getConcept(5497));
 		order.setPatient(new Patient(2));
 		order.setStartDate(new Date());
+		order.setOrderType(os.getOrderType(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
 		Field field = Order.class.getDeclaredField("orderNumber");
 		field.setAccessible(true);
 		field.set(order, "ORD-1");
@@ -500,7 +503,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		order.setDateCreated(date);
 		order.setCreator(creator);
 		
-		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order.setCareSetting(os.getCareSetting(1));
 		encounter.addOrder(order);
 		
 		// make sure the logged in user isn't the user we're testing with
@@ -516,7 +519,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure the order date created and creator are the same as what we
 		// set
-		Order createdOrder = Context.getOrderService().getOrder(order.getOrderId());
+		Order createdOrder = os.getOrder(order.getOrderId());
 		assertEquals(date, createdOrder.getDateCreated());
 		assertEquals(creator, createdOrder.getCreator());
 	}

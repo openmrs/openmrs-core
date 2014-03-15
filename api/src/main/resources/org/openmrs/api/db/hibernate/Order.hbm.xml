@@ -41,31 +41,21 @@
             </type>
         </property>
 
-        <many-to-one name="careSetting" class="org.openmrs.CareSetting" not-null="true">
-            <column name="care_setting"/>
-        </many-to-one>
+        <many-to-one name="careSetting" column="care_setting" class="org.openmrs.CareSetting" not-null="true" />
         
-        <many-to-one name="orderType" class="org.openmrs.OrderType" not-null="true">
-            <column name="order_type"/>
-        </many-to-one>
+        <many-to-one name="orderType" column="order_type" class="org.openmrs.OrderType" not-null="true" />
 
         <!-- bi-directional many-to-one association to Order -->
 		<many-to-one name="previousOrder" class="org.openmrs.Order">
 			<column name="previous_order_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="concept" class="org.openmrs.Concept" not-null="true">
-			<column name="concept_id" />
-		</many-to-one>
+		<many-to-one name="concept" column="concept_id" class="org.openmrs.Concept" not-null="true" />
 		<!-- bi-directional many-to-one association to Encounter -->
-		<many-to-one name="encounter" class="org.openmrs.Encounter" not-null="true">
-			<column name="encounter_id" />
-		</many-to-one>
+		<many-to-one name="encounter" column="encounter_id" class="org.openmrs.Encounter" not-null="true" />
 
 		<!-- bi-directional many-to-one association to Encounter -->
-		<many-to-one name="patient" class="org.openmrs.Patient" not-null="true">
-			<column name="patient_id" />
-		</many-to-one>
+		<many-to-one name="patient" column="patient_id" class="org.openmrs.Patient" not-null="true" />
 
 		<!-- bi-directional many-to-one association to Concept -->
 		<many-to-one name="orderReason" class="org.openmrs.Concept" not-null="false">
@@ -73,9 +63,7 @@
 		</many-to-one>
 
 		<!-- bi-directional many-to-one association to Provider -->
-		<many-to-one name="orderer" class="org.openmrs.Provider">
-			<column name="orderer" />
-		</many-to-one>
+		<many-to-one name="orderer" class="org.openmrs.Provider" not-null="true" />
 
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="voidedBy" class="org.openmrs.User">
@@ -83,9 +71,7 @@
 		</many-to-one>
 
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
-			<column name="creator" />
-		</many-to-one>
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
 
 		<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 

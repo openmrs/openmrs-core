@@ -49,6 +49,7 @@ import org.openmrs.Order.Action;
 import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
@@ -61,6 +62,8 @@ import org.openmrs.util.PrivilegeConstants;
  * TODO clean up and test all methods in OrderService
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
+	
+	private static final String OTHER_ENCOUNTERS_XML = "org/openmrs/api/include/OrderServiceTest-otherEncounters.xml";
 	
 	private ConceptService conceptService;
 	
@@ -379,10 +382,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getActiveOrders_shouldReturnAllActiveDrugOrdersForTheSpecifiedPatient() throws Exception {
 		Patient patient = patientService.getPatient(2);
-		List<Order> orders = orderService
-		        .getActiveOrders(patient, orderService.getOrderTypeByName("Drug order"), null, null);
-		assertEquals(2, orders.size());
-		Order[] expectedOrders = { (Order) orderService.getOrder(3), (Order) orderService.getOrder(5) };
+		List<Order> orders = orderService.getActiveOrders(patient, orderService.getOrderType(1), null, null);
+		assertEquals(4, orders.size());
+		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
+		        orderService.getOrder(5) };
 		assertThat(orders, hasItems(expectedOrders));
 	}
 	
@@ -501,11 +504,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void discontinueOrderWithNonCodedReason_shouldPopulateCorrectAttributesOnBothOrders() throws Exception {
 		Order order = orderService.getOrderByOrderNumber("111");
 		Encounter encounter = encounterService.getEncounter(3);
+		Provider orderer = providerService.getProvider(1);
 		assertTrue(OrderUtil.isOrderActive(order, null));
 		Date discontinueDate = new Date();
 		String discontinueReasonNonCoded = "Test if I can discontinue this";
 		
-		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReasonNonCoded, discontinueDate, null,
+		Order discontinueOrder = orderService.discontinueOrder(order, discontinueReasonNonCoded, discontinueDate, orderer,
 		    encounter);
 		
 		Assert.assertEquals(order.getDateStopped(), discontinueDate);
@@ -526,10 +530,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Order order = orderService.getOrderByOrderNumber("111");
 		Encounter encounter = encounterService.getEncounter(3);
+		Provider orderer = providerService.getProvider(1);
 		Date discontinueDate = new Date();
 		Concept concept = Context.getConceptService().getConcept(1);
 		
-		Order discontinueOrder = orderService.discontinueOrder(order, concept, discontinueDate, null, encounter);
+		Order discontinueOrder = orderService.discontinueOrder(order, concept, discontinueDate, orderer, encounter);
 		
 		Assert.assertEquals(order.getDateStopped(), discontinueDate);
 		Assert.assertNotNull(discontinueOrder);
@@ -542,29 +547,32 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, String, Date, Provider, Encounter)")
 	public void discontinueOrderWithNonCodedReason_shouldFailForADiscontinueOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
 		OrderService orderService = Context.getOrderService();
 		Order discontinueOrder = orderService.getOrder(26);
 		Encounter encounter = encounterService.getEncounter(3);
-		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued.");
 		orderService.discontinueOrder(discontinueOrder, "Test if I can discontinue this", null, null, encounter);
 	}
 	
 	/**
 	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, Concept, Date, Provider, Encounter)")
 	public void discontinueOrderWithConcept_shouldFailForADiscontinueOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		OrderService orderService = Context.getOrderService();
 		Order discontinueOrder = orderService.getOrder(26);
+		assertEquals(Action.DISCONTINUE, discontinueOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
-		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("An order with action " + Action.DISCONTINUE + " cannot be discontinued.");
 		orderService.discontinueOrder(discontinueOrder, (Concept) null, null, null, encounter);
 	}
 	
@@ -581,6 +589,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderType(orderService.getOrderType(1));
 		order.setStartDate(new Date());
 		
 		//We are trying to discontinue order id 111 in standardTestDataset.xml
@@ -609,6 +619,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderType(orderService.getOrderType(1));
 		order.setStartDate(new Date());
 		Order previousOrder = orderService.getOrder(111);
 		assertTrue(OrderUtil.isOrderActive(previousOrder, null));
@@ -678,7 +690,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldPassIfTheExistingDrugOrderMatchesTheConceptAndDrugOfTheDCOrder() throws Exception {
-		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(5);
+		executeDataSet(OTHER_ENCOUNTERS_XML);
+		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(444);
 		assertTrue(OrderUtil.isOrderActive(orderToDiscontinue, null));
 		
 		DrugOrder order = new DrugOrder();
@@ -690,6 +703,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(orderToDiscontinue.getConcept());
 		order.setOrderer(orderToDiscontinue.getOrderer());
 		order.setCareSetting(orderToDiscontinue.getCareSetting());
+		order.setEncounter(encounterService.getEncounter(6));
 		order.setStartDate(new Date());
 		
 		orderService.saveOrder(order, null);
@@ -722,6 +736,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(orderToDiscontinue.getConcept());
 		order.setOrderer(orderToDiscontinue.getOrderer());
 		order.setCareSetting(orderToDiscontinue.getCareSetting());
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
 		
 		orderService.saveOrder(order, null);
@@ -773,9 +788,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies not allow editing an existing order
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveOrder_shouldNotAllowEditingAnExistingOrder() throws Exception {
+		executeDataSet(OTHER_ENCOUNTERS_XML);
 		final DrugOrder order = (DrugOrder) orderService.getOrder(5);
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot edit an existing order, you need to revise it instead");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -911,6 +929,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setStartDate(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));
+		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
 		
 		//If the time is too close, the original order may be returned because it
@@ -1162,6 +1181,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderer(orderService.getOrder(1).getOrderer());
 		order.setStartDate(new Date());
 		order.setScheduledDate(scheduledDate);
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderType(orderService.getOrderType(1));
 		order = orderService.saveOrder(order, null);
 		Order neworder = orderService.getOrder(order.getOrderId());
 		assertNotNull(order);
@@ -1177,6 +1198,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldSetOrderNumberSpecifiedInTheContextIfSpecified() throws Exception {
+		executeDataSet(OTHER_ENCOUNTERS_XML);
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 		        "orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp);
@@ -1185,6 +1207,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
+		order.setOrderType(orderService.getOrderType(2));
+		order.setEncounter(encounterService.getEncounter(6));
 		order.setStartDate(new Date());
 		OrderContext orderCtxt = new OrderContext();
 		final String expectedOrderNumber = "Testing";
@@ -1199,6 +1223,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldSetTheOrderNumberReturnedByTheConfiguredGenerator() throws Exception {
+		executeDataSet(OTHER_ENCOUNTERS_XML);
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 		        "orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp);
@@ -1207,6 +1232,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
+		order.setOrderType(orderService.getOrderType(2));
+		order.setEncounter(encounterService.getEncounter(6));
 		order.setStartDate(new Date());
 		order = orderService.saveOrder(order, null);
 		assertTrue(order.getOrderNumber().startsWith(TimestampOrderNumberGenerator.ORDER_NUMBER_PREFIX));

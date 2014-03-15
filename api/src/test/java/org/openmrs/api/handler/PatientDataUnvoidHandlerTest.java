@@ -14,12 +14,12 @@
 package org.openmrs.api.handler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -35,6 +35,7 @@ import org.openmrs.test.Verifies;
 /**
  * Contains the tests for the {@link PatientDataUnvoidHandler}
  */
+@Ignore
 public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
@@ -62,7 +63,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
 		List<Order> orders = os.getOrders(null, patients, null, null, null);
-		Assert.assertTrue(CollectionUtils.isNotEmpty(orders));
+		Assert.assertFalse(orders.isEmpty());
 		//all order void related fields should be null
 		for (Order order : orders) {
 			Assert.assertTrue(order.isVoided());
@@ -95,33 +96,34 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not unvoid the orders and encounters that never got voided with the patient", method = "handle(Patient,User,Date,String)")
 	public void handle_shouldNotUnvoidTheOrdersAndEncountersThatNeverGotVoidedWithThePatient() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherEncounters.xml");
 		Patient patient = Context.getPatientService().getPatient(7);
 		
 		EncounterService es = Context.getEncounterService();
 		OrderService os = Context.getOrderService();
 		
-		//void one of the unvoided encounters for testing purposes
 		Encounter testEncounter = es.getEncountersByPatient(patient).get(0);
 		//santy checks
-		Assert.assertNotNull(testEncounter);
+		Assert.assertFalse(testEncounter.isVoided());
 		Assert.assertNull(testEncounter.getDateVoided());
 		Assert.assertNull(testEncounter.getVoidedBy());
 		Assert.assertNull(testEncounter.getVoidReason());
 		
+		//void one of the encounter orders be voided at a different time for testing purposes
+		Assert.assertFalse(testEncounter.getOrders().isEmpty());
+		Order testOrder = testEncounter.getOrders().iterator().next();
+		Assert.assertFalse(testOrder.isVoided());
+		Context.getOrderService().voidOrder(testOrder, "testing");
+		Assert.assertTrue(testOrder.isVoided());
+		TestUtil.waitForClockTick();
+		
+		//void one of the unvoided encounters for testing purposes
 		es.voidEncounter(testEncounter, "random reason");
 		Assert.assertTrue(testEncounter.isVoided());
+		Assert.assertTrue(testOrder.isVoided());
 		
-		//void one of the unvoided orders for testing purposes
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
-		Order testOrder = os.getOrders(null, patients, null, null, null).get(0);
-		Assert.assertNotNull(testOrder);
-		Assert.assertNull(testOrder.getDateVoided());
-		Assert.assertNull(testOrder.getVoidedBy());
-		Assert.assertNull(testOrder.getVoidReason());
-		
-		os.voidOrder(testOrder, "random reason");
-		Assert.assertTrue(testOrder.isVoided());
 		
 		//wait a bit so that the patient isn't voided on the same millisecond
 		TestUtil.waitForClockTick();
