@@ -170,4 +170,26 @@ public interface OrderDAO {
 	 * @See OrderService#getOrderTypes
 	 */
 	public List<OrderType> getOrderTypes(boolean includeRetired);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
+	 */
+	public OrderType saveOrderType(OrderType orderType);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
+	 */
+	public void purgeOrderType(OrderType orderType);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)
+	 */
+	public List<OrderType> getOrderSubtypesOfParent(OrderType orderType, boolean includeRetired);
+	
+	/**
+	 * Check whether give order type is used by any order
+	 * @param orderType the order type to check the usage
+	 * @return true if used else false
+	 */
+	public boolean isOrderTypeInUse(OrderType orderType);
 }
