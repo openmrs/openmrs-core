@@ -592,4 +592,63 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public List<OrderType> getOrderTypes(boolean includeRetired) {
 		return dao.getOrderTypes(includeRetired);
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
+	 */
+	@Override
+	public OrderType saveOrderType(OrderType orderType) {
+		return dao.saveOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
+	 */
+	@Override
+	public void purgeOrderType(OrderType orderType) {
+		if (dao.isOrderTypeInUse(orderType)) {
+			throw new APIException("This order type cannot be deleted because it is already in use");
+		}
+		dao.purgeOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#retireOrderType(org.openmrs.OrderType, String)
+	 */
+	@Override
+	public OrderType retireOrderType(OrderType orderType, String reason) {
+		orderType.setRetired(true);
+		orderType.setRetireReason(reason);
+		return dao.saveOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#unretireOrderType(org.openmrs.OrderType)
+	 */
+	@Override
+	public OrderType unretireOrderType(OrderType orderType) {
+		orderType.setRetired(false);
+		return dao.saveOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrderType> getOrderSubtypes(OrderType orderType, boolean includeRetired) {
+		List<OrderType> orderSuTypes = new ArrayList<OrderType>();
+		List<OrderType> tempFirstLevelList;
+		List<OrderType> tempSecondLevelList = new ArrayList<OrderType>();
+		tempFirstLevelList = dao.getOrderSubtypesOfParent(orderType, includeRetired);
+		while (!tempFirstLevelList.isEmpty()) {
+			for (OrderType type : tempFirstLevelList) {
+				orderSuTypes.add(type);
+				tempSecondLevelList.addAll(dao.getOrderSubtypesOfParent(type, includeRetired));
+			}
+			tempFirstLevelList = tempSecondLevelList;
+			tempSecondLevelList = new ArrayList<OrderType>();
+		}
+		return orderSuTypes;
+	}
 }
