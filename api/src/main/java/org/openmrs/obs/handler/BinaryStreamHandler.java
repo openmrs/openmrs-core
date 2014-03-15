@@ -105,4 +105,13 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 		return obs;
 	}
 	
+	public String[] getSupportedViews() {
+		final String[] views = { "", "" };
+		return views;
+	}
+	
+	public boolean supportsView(String View) {
+		return true;
+	}
+	
 }

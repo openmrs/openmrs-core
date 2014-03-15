@@ -68,4 +68,17 @@ public interface ComplexObsHandler {
 	 */
 	public boolean purgeComplexData(Obs obs);
 	
+	/** 
+	 * Return true if given view is supported by this handler 
+	 * @param view nullable view type. This is defined by the ui and view/handler
+	 * 
+	 */
+	public boolean supportsView(String view);
+	
+	/** 
+	 * Return all views supported by this handler 
+	 * @return the list of supported views
+	 */
+	public String[] getSupportedViews();
+	
 }

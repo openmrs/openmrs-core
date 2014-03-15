@@ -128,4 +128,13 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		return obs;
 	}
 	
+	public String[] getSupportedViews() {
+		final String[] views = { "", "" };
+		return views;
+	}
+	
+	public boolean supportsView(String View) {
+		return true;
+	}
+	
 }
