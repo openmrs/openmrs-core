@@ -481,4 +481,37 @@ public class HibernateOrderDAO implements OrderDAO {
 		    "from OrderType where :conceptClass in elements(conceptClasses)").setParameter("conceptClass", conceptClass)
 		        .uniqueResult();
 	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
+	 */
+	public OrderType saveOrderType(OrderType orderType) {
+		sessionFactory.getCurrentSession().saveOrUpdate(orderType);
+		return orderType;
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
+	 */
+	public void purgeOrderType(OrderType orderType) {
+		sessionFactory.getCurrentSession().delete(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)
+	 */
+	public List<OrderType> getOrderSubtypesOfParent(OrderType orderType, boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderType.class);
+		criteria.add(Restrictions.eq("parent", orderType));
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
+		}
+		return criteria.list();
+	}
+	
+	public boolean isOrderTypeInUse(OrderType orderType) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		criteria.add(Restrictions.eq("orderType", orderType));
+		return criteria.list().size() > 0;
+	}
 }

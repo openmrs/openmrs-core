@@ -60,7 +60,7 @@ public interface OrderDAO {
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
 	 * multiple arguments are given, the returned orders will match on all arguments. The orders are
 	 * sorted by startDate with the latest coming first
-	 *
+	 * 
 	 * @param orderType The type of Order to get
 	 * @param patients The patients to get orders for
 	 * @param concepts The concepts in order.getConcept to get orders for
@@ -203,4 +203,27 @@ public interface OrderDAO {
 	 * @return the matching order type
 	 */
 	public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
+	 */
+	public OrderType saveOrderType(OrderType orderType);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
+	 */
+	public void purgeOrderType(OrderType orderType);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)
+	 */
+	public List<OrderType> getOrderSubtypesOfParent(OrderType orderType, boolean includeRetired);
+	
+	/**
+	 * Check whether give order type is used by any order
+	 * 
+	 * @param orderType the order type to check the usage
+	 * @return true if used else false
+	 */
+	public boolean isOrderTypeInUse(OrderType orderType);
 }

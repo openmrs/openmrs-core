@@ -1286,7 +1286,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllOrderTypesIfIncludeRetiredIsSetToTrue() throws Exception {
-		assertEquals(3, orderService.getOrderTypes(true).size());
+		assertEquals(13, orderService.getOrderTypes(true).size());
 	}
 	
 	/**
@@ -1295,7 +1295,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllNonRetiredOrderTypesIfIncludeRetiredIsSetToFalse() throws Exception {
-		assertEquals(2, orderService.getOrderTypes(false).size());
+		assertEquals(10, orderService.getOrderTypes(false).size());
 	}
 	
 	/**
@@ -1444,5 +1444,114 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("No order type matches the concept class");
 		orderService.saveOrder(order, null);
+	}
+	
+	/**
+	 * @see {@link OrderService#saveOrderType(org.openmrs.OrderType)}
+	 */
+	@Test
+	@Verifies(value = "shoud save order type", method = "saveOrderType(org.openmrs.OrderType)")
+	public void saveOrderType_shouldAddNewOrderTypeToTheDatabase() {
+		OrderService orderService = Context.getOrderService();
+		int orderTypeCount = orderService.getOrderTypes(true).size();
+		OrderType orderType = new OrderType();
+		orderType.setName("New Order");
+		orderType.setJavaClassName("org.openmrs.NewTestOrder");
+		orderType.setDescription("New order type for testing");
+		orderType.setRetired(false);
+		orderType = orderService.saveOrderType(orderType);
+		assertNotNull(orderType);
+		assertEquals("New Order", orderType.getName());
+		assertNotNull(orderType.getId());
+		assertEquals((orderTypeCount + 1), orderService.getOrderTypes(true).size());
+	}
+	
+	/**
+	 * @see {@link OrderService#purgeOrderType(org.openmrs.OrderType)}
+	 */
+	@Test
+	@Verifies(value = "should purge order type", method = "purgeOrderType(org.openmrs.OrderType)")
+	public void purgeOrderType_shouldPurgeOrderTypeIfNotUse() {
+		OrderService orderService = Context.getOrderService();
+		OrderType orderType = orderService.getOrderType(13);
+		assertNotNull(orderType);
+		orderService.purgeOrderType(orderType);
+		assertNull(orderService.getOrderType(13));
+	}
+	
+	/**
+	 * @see {@link OrderService#purgeOrderType(org.openmrs.OrderType)}
+	 */
+	@Test
+	@Verifies(value = "shoud purge order type", method = "purgeOrderType(org.openmrs.OrderType)")
+	public void purgeOrderType_shouldNotPurgeOrderTypeIfUse() {
+		OrderService orderService = Context.getOrderService();
+		OrderType orderType = orderService.getOrderType(1);
+		assertNotNull(orderType);
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("This order type cannot be deleted because it is already in use");
+		orderService.purgeOrderType(orderType);
+	}
+	
+	/**
+	 * @see {@link OrderService#retireOrderType(org.openmrs.OrderType, String)}
+	 */
+	@Test
+	@Verifies(value = "shoud retire order type", method = "retireOrderType(org.openmrs.OrderType, String)")
+	public void retireOrderType_shouldRetiredTheGivenUnretiredOrderType() {
+		OrderService orderService = Context.getOrderService();
+		OrderType orderType = orderService.getOrderType(15);
+		assertFalse(orderType.getRetired());
+		assertNull(orderType.getRetiredBy());
+		assertNull(orderType.getRetireReason());
+		assertNull(orderType.getDateRetired());
+		orderService.retireOrderType(orderType, "Retire for testing purposes");
+		orderType = orderService.getOrderType(15);
+		assertTrue(orderType.getRetired());
+		assertNotNull(orderType.getRetiredBy());
+		assertNotNull(orderType.getRetireReason());
+		assertNotNull(orderType.getDateRetired());
+	}
+	
+	/**
+	 * @see {@link OrderService#unretireOrderType(org.openmrs.OrderType)}
+	 */
+	@Test
+	@Verifies(value = "shoud unretire order type", method = "unretireOrderType(org.openmrs.OrderType)")
+	public void unretireOrderType_shouldUnretireTheGivenUnretiredOrderType() {
+		OrderService orderService = Context.getOrderService();
+		OrderType orderType = orderService.getOrderType(16);
+		assertTrue(orderType.getRetired());
+		assertNotNull(orderType.getRetiredBy());
+		assertNotNull(orderType.getRetireReason());
+		assertNotNull(orderType.getDateRetired());
+		orderService.unretireOrderType(orderType);
+		orderType = orderService.getOrderType(16);
+		assertFalse(orderType.getRetired());
+		assertNull(orderType.getRetiredBy());
+		assertNull(orderType.getRetireReason());
+		assertNull(orderType.getDateRetired());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)}
+	 */
+	@Test
+	@Verifies(value = "shoud return all order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
+	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithRetiredOrderTypes() {
+		OrderService orderService = Context.getOrderService();
+		List<OrderType> orderTypeList = orderService.getOrderSubtypes(orderService.getOrderType(2), true);
+		assertEquals(7, orderTypeList.size());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)}
+	 */
+	@Test
+	@Verifies(value = "shoud return unretired order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
+	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithoutRetiredOrderTypes() {
+		OrderService orderService = Context.getOrderService();
+		List<OrderType> orderTypeList = orderService.getOrderSubtypes(orderService.getOrderType(2), false);
+		assertEquals(6, orderTypeList.size());
 	}
 }

@@ -498,4 +498,62 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public List<OrderType> getOrderTypes(boolean includeRetired);
+	
+	/**
+	 * Creates or updates the given order type in the database
+	 *
+	 * @param orderType the order type to save
+	 * @return the order type created/saved
+	 * @since 1.10
+	 * @should add a new order type to the database
+	 * @should edit an existing order type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	public OrderType saveOrderType(OrderType orderType);
+	
+	/**
+	 * Completely removes an order type from the database
+	 *
+	 * @param orderType the order type to purge
+	 * @since 1.10
+	 * @should delete given order type
+	 * @should not allow deleting an order type that is in use
+	 */
+	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
+	public void purgeOrderType(OrderType orderType) throws APIException;
+	
+	/**
+	 * Retires the given order type in the database
+	 *
+	 * @param orderType the order type to retire
+	 * @param reason the retire reason
+	 * @return the retired order type
+	 * @since 1.10
+	 * @should retire given order type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	public OrderType retireOrderType(OrderType orderType, String reason);
+	
+	/**
+	 * Restores an order type that was previously retired in the database
+	 *
+	 * @param orderType the order type to unretire
+	 * @return the unretired order type
+	 * @since 1.10
+	 * @should unretire given order type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	public OrderType unretireOrderType(OrderType orderType);
+	
+	/**
+	 * Returns all descendants of a given order type for example
+	 * Given TEST will get back LAB TEST and RADIOLOGY TEST;
+	 * and Given LAB TEST, will might get back SEROLOGY, MICROBIOLOGY, and CHEMISTRY
+	 * @param orderType the order type which needs to search for its' dependencies
+	 * @param includeRetired boolean flag for include retired order types or not
+	 * @return list of order type which matches the given order type
+	 *
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	public List<OrderType> getOrderSubtypes(OrderType orderType, boolean includeRetired);
 }
