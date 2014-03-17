@@ -63,7 +63,7 @@ public interface OrderDAO {
 	 * @param orderType The type of Order to get
 	 * @param patients The patients to get orders for
 	 * @param concepts The concepts in order.getConcept to get orders for
-	 * @param orderers The users/orderers of the
+	 * @param orderers The orderers to match on
 	 * @param encounters The encounters that the orders are assigned to
 	 * @return list of Orders matching the parameters
 	 */
