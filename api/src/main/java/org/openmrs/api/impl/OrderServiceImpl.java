@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -81,6 +82,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException {
 		if (order.getOrderId() != null) {
 			throw new APIException("Cannot edit an existing order, you need to revise it instead");
+		}
+		
+		if (order.getOrderType() == null) {
+			OrderType orderType = getOrderTypeByConcept(order.getConcept());
+			if (orderType == null) {
+				throw new APIException("No order type matches the concept class");
+			}
+			order.setOrderType(orderType);
 		}
 		
 		if (Order.Action.REVISE.equals(order.getAction())) {
@@ -594,5 +603,25 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Transactional(readOnly = true)
 	public List<OrderType> getOrderTypes(boolean includeRetired) {
 		return dao.getOrderTypes(includeRetired);
+	}
+	
+	/**
+	 * Gets the order type mapped to a given concept
+	 * 
+	 * @param concept the concept
+	 * @return the matching order type
+	 */
+	private OrderType getOrderTypeByConcept(Concept concept) {
+		return getOrderTypeByConceptClass(concept.getConceptClass());
+	}
+	
+	/**
+	 * Gets the order type mapped to a given concept class
+	 * 
+	 * @param conceptClass the concept class
+	 * @return the matching order type
+	 */
+	private OrderType getOrderTypeByConceptClass(ConceptClass conceptClass) {
+		return dao.getOrderTypeByConceptClass(conceptClass);
 	}
 }

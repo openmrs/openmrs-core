@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
@@ -194,4 +195,12 @@ public interface OrderDAO {
 	 * @See OrderService#getOrderTypes
 	 */
 	public List<OrderType> getOrderTypes(boolean includeRetired);
+	
+	/**
+	 * Gets the order type mapped to a given concept class
+	 * 
+	 * @param conceptClass the concept class
+	 * @return the matching order type
+	 */
+	public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass);
 }

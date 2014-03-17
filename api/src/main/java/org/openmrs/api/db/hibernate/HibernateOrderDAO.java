@@ -35,6 +35,7 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Order;
@@ -469,5 +470,15 @@ public class HibernateOrderDAO implements OrderDAO {
 			c.add(Restrictions.eq("retired", false));
 		}
 		return c.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderTypeByConceptClass(org.openmrs.ConceptClass)
+	 */
+	@Override
+	public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass) {
+		return (OrderType) sessionFactory.getCurrentSession().createQuery(
+		    "from OrderType where :conceptClass in elements(conceptClasses)").setParameter("conceptClass", conceptClass)
+		        .uniqueResult();
 	}
 }

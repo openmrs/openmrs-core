@@ -1408,4 +1408,41 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(12, orderService.getAllOrdersByPatient(patientService.getPatient(2)).size());
 		assertEquals(2, orderService.getAllOrdersByPatient(patientService.getPatient(7)).size());
 	}
+	
+	/**
+	 * @verifies set order type if null but mapped to the concept class
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldSetOrderTypeIfNullButMappedToTheConceptClass() throws Exception {
+		executeDataSet(OTHER_ENCOUNTERS_XML);
+		Order order = new Order();
+		order.setPatient(patientService.getPatient(2));
+		order.setConcept(conceptService.getConcept(5497));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setStartDate(new Date());
+		order = orderService.saveOrder(order, null);
+		assertTrue(order.getOrderType().getOrderTypeId() == 1);
+	}
+	
+	/**
+	 * @verifies fail if order type is null and not mapped to the concept class
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfOrderTypeIsNullAndNotMappedToTheConceptClass() throws Exception {
+		executeDataSet(OTHER_ENCOUNTERS_XML);
+		Order order = new Order();
+		order.setPatient(patientService.getPatient(2));
+		order.setConcept(conceptService.getConcept(3));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setStartDate(new Date());
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("No order type matches the concept class");
+		orderService.saveOrder(order, null);
+	}
 }

@@ -63,6 +63,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should save a revised order
 	 * @should set order number specified in the context if specified
 	 * @should set the order number returned by the configured generator
+	 * @should set order type if null but mapped to the concept class
+	 * @should fail if order type is null and not mapped to the concept class
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
