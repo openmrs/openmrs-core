@@ -1258,7 +1258,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllOrderTypesIfIncludeRetiredIsSetToTrue() throws Exception {
-		assertEquals(10, orderService.getOrderTypes(true).size());
+		assertEquals(13, orderService.getOrderTypes(true).size());
 	}
 	
 	/**
@@ -1267,7 +1267,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllNonRetiredOrderTypesIfIncludeRetiredIsSetToFalse() throws Exception {
-		assertEquals(8, orderService.getOrderTypes(false).size());
+		assertEquals(10, orderService.getOrderTypes(false).size());
 	}
 	
 	/**
@@ -1287,6 +1287,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "shoud save order type", method = "saveOrderType(org.openmrs.OrderType)")
 	public void saveOrderType_shouldAddNewOrderTypeToTheDatabase() {
 		OrderService orderService = Context.getOrderService();
+		int orderTypeCount = orderService.getOrderTypes(true).size();
 		OrderType orderType = new OrderType();
 		orderType.setName("New Order");
 		orderType.setJavaClassName("org.openmrs.NewTestOrder");
@@ -1295,6 +1296,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderType = orderService.saveOrderType(orderType);
 		assertNotNull(orderType);
 		assertEquals("New Order", orderType.getName());
+		assertNotNull(orderType.getId());
+		assertEquals((orderTypeCount + 1), orderService.getOrderTypes(true).size());
 	}
 	
 	/**
@@ -1304,7 +1307,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should purge order type", method = "purgeOrderType(org.openmrs.OrderType)")
 	public void purgeOrderType_shouldPurgeOrderTypeIfNotUse() {
 		OrderService orderService = Context.getOrderService();
-		orderService.purgeOrderType(orderService.getOrderType(13));
+		OrderType orderType = orderService.getOrderType(13);
+		assertNotNull(orderType);
+		orderService.purgeOrderType(orderType);
 		assertNull(orderService.getOrderType(13));
 	}
 	
@@ -1329,11 +1334,17 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "shoud retire order type", method = "retireOrderType(org.openmrs.OrderType, String)")
 	public void retireOrderType_shouldRetiredTheGivenUnretiredOrderType() {
 		OrderService orderService = Context.getOrderService();
-		OrderType orderType = orderService.getOrderType(10);
+		OrderType orderType = orderService.getOrderType(15);
 		assertFalse(orderType.getRetired());
+		assertNull(orderType.getRetiredBy());
+		assertNull(orderType.getRetireReason());
+		assertNull(orderType.getDateRetired());
 		orderService.retireOrderType(orderType, "Retire for testing purposes");
-		orderType = orderService.getOrderType(10);
+		orderType = orderService.getOrderType(15);
 		assertTrue(orderType.getRetired());
+		assertNotNull(orderType.getRetiredBy());
+		assertNotNull(orderType.getRetireReason());
+		assertNotNull(orderType.getDateRetired());
 	}
 	
 	/**
@@ -1343,11 +1354,17 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "shoud unretire order type", method = "unretireOrderType(org.openmrs.OrderType)")
 	public void unretireOrderType_shouldUnretireTheGivenUnretiredOrderType() {
 		OrderService orderService = Context.getOrderService();
-		OrderType orderType = orderService.getOrderType(11);
+		OrderType orderType = orderService.getOrderType(16);
 		assertTrue(orderType.getRetired());
+		assertNotNull(orderType.getRetiredBy());
+		assertNotNull(orderType.getRetireReason());
+		assertNotNull(orderType.getDateRetired());
 		orderService.unretireOrderType(orderType);
-		orderType = orderService.getOrderType(11);
+		orderType = orderService.getOrderType(16);
 		assertFalse(orderType.getRetired());
+		assertNull(orderType.getRetiredBy());
+		assertNull(orderType.getRetireReason());
+		assertNull(orderType.getDateRetired());
 	}
 	
 	/**
@@ -1358,7 +1375,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithRetiredOrderTypes() {
 		OrderService orderService = Context.getOrderService();
 		List<OrderType> orderTypeList = orderService.getOrderSubtypes(orderService.getOrderType(2), true);
-		assertEquals(6, orderTypeList.size());
+		assertEquals(7, orderTypeList.size());
 	}
 	
 	/**
@@ -1369,6 +1386,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithoutRetiredOrderTypes() {
 		OrderService orderService = Context.getOrderService();
 		List<OrderType> orderTypeList = orderService.getOrderSubtypes(orderService.getOrderType(2), false);
-		assertEquals(5, orderTypeList.size());
+		assertEquals(6, orderTypeList.size());
 	}
 }

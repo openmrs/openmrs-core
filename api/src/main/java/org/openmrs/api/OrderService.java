@@ -491,8 +491,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the order type created/saved
 	 * @since 1.10
 	 * @should add a new order type to the database
-	 * @should edit an existing order type that is not in use
-	 * @should not allow editing an existing order type that is in use
+	 * @should edit an existing order type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType saveOrderType(OrderType orderType);
@@ -509,7 +508,7 @@ public interface OrderService extends OpenmrsService {
 	public void purgeOrderType(OrderType orderType) throws APIException;
 	
 	/**
-	 * Retires the given order typ in the database
+	 * Retires the given order type in the database
 	 *
 	 * @param orderType the order type to retire
 	 * @param reason the retire reason
@@ -532,9 +531,9 @@ public interface OrderService extends OpenmrsService {
 	public OrderType unretireOrderType(OrderType orderType);
 	
 	/**
-	 * Returns all descendants of a given order type
+	 * Returns all descendants of a given order type for example
 	 * Given TEST will get back LAB TEST and RADIOLOGY TEST;
-	 * Given LAB TEST, will might get back SEROLOGY, MICROBIOLOGY, and CHEMISTRY
+	 * and Given LAB TEST, will might get back SEROLOGY, MICROBIOLOGY, and CHEMISTRY
 	 * @param orderType the order type which needs to search for its' dependencies
 	 * @param includeRetired boolean flag for include retired order types or not
 	 * @return list of order type which matches the given order type

@@ -619,7 +619,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderType retireOrderType(OrderType orderType, String reason) {
 		orderType.setRetired(true);
 		orderType.setRetireReason(reason);
-		return dao.saveOrderType(orderType);
+		return saveOrderType(orderType);
 	}
 	
 	/**
@@ -628,7 +628,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public OrderType unretireOrderType(OrderType orderType) {
 		orderType.setRetired(false);
-		return dao.saveOrderType(orderType);
+		return saveOrderType(orderType);
 	}
 	
 	/**

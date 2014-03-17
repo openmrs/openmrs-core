@@ -464,9 +464,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	public boolean isOrderTypeInUse(OrderType orderType) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
 		criteria.add(Restrictions.eq("orderType", orderType));
-		if (criteria.list().size() > 0) {
-			return true;
-		}
-		return false;
+		return criteria.list().size() > 0;
 	}
 }
