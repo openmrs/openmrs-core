@@ -573,6 +573,10 @@
 				<td nowrap><openmrs:message code="Program.dateEnrolled"/>:</td>
 				<td><openmrs_tag:dateField formFieldName="dateEnrolled" startValue="" /></td>
 			</tr>
+                        <tr>
+                                <td nowrap><openmrs:message code="Program.dateCompleted"/>:</td>
+                                <td><openmrs_tag:dateField formFieldName="dateCompleted" startValue="" /></td>
+                        </tr>
 			<tr>
 				<td nowrap><openmrs:message code="Program.location"/>:</td>
 				<td>

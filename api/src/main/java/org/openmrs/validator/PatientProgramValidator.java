@@ -13,6 +13,7 @@
  */
 package org.openmrs.validator;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -85,6 +86,24 @@ public class PatientProgramValidator implements Validator {
 		    new Object[] { mss.getMessage("Program.program") });
 		
 		if (errors.hasErrors()) {
+			return;
+		}
+		
+		// if enrollment or complete date of program is in future or complete date has come before
+		// enroll date we should throw error
+		if (OpenmrsUtil.compareWithNullAsLatest(patientProgram.getDateCompleted(), patientProgram.getDateEnrolled()) < 0) {
+			errors.rejectValue("states", "PatientProgram.error.endDateCannotBeBeforeStartDate");
+			return;
+		}
+		
+		Date today = new Date();
+		if (patientProgram.getDateEnrolled() != null && today.before(patientProgram.getDateEnrolled())) {
+			errors.rejectValue("states", "PatientProgram.error.startDateCannotBeInFuture");
+			return;
+		}
+		
+		if (patientProgram.getDateCompleted() != null && today.before(patientProgram.getDateCompleted())) {
+			errors.rejectValue("states", "PatientProgram.error.endDateCannotBeInFuture");
 			return;
 		}
 		
