@@ -2609,18 +2609,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(2);
 		
 		//retrieve order for notPreferred patient
-		List<Patient> notPreferredPatients = new ArrayList<Patient>();
-		notPreferredPatients.add(notPreferred);
-		Order order = Context.getOrderService().getOrders(null, notPreferredPatients, null, null, null).get(0);
+		Order order = Context.getOrderService().getAllOrdersByPatient(notPreferred).get(0);
 		
 		//merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		
 		//find the UUID of the order that was created for preferred patient as a result of the merge
 		String addedOrderUuid = null;
-		List<Patient> preferredPatients = new ArrayList<Patient>();
-		preferredPatients.add(preferred);
-		List<Order> orders = Context.getOrderService().getOrders(null, preferredPatients, null, null, null);
+		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(preferred);
 		for (Order o : orders) {
 			if (o.getInstructions().equals(order.getInstructions())) {
 				addedOrderUuid = o.getUuid();

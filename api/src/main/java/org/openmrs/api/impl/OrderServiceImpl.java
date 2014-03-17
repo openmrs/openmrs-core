@@ -169,7 +169,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {
 				DrugOrder drugOrder1 = (DrugOrder) order;
-				System.out.println("ID:" + activeOrder.getId());
 				DrugOrder drugOrder2 = (DrugOrder) activeOrder;
 				if (OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
 					shouldMarkAsDiscontinued = true;
@@ -250,25 +249,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(org.openmrs.OrderType, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List)
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
 	 */
-	@Transactional(readOnly = true)
-	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
-	        List<Encounter> encounters) {
-		if (patients == null)
-			patients = new Vector<Patient>();
-		
-		if (concepts == null)
-			concepts = new Vector<Concept>();
-		
-		if (orderers == null)
-			orderers = new Vector<User>();
-		
-		if (encounters == null)
-			encounters = new Vector<Encounter>();
-		
-		return dao.getOrders(orderType, patients, concepts, orderers, encounters);
+	@Override
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided) {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient is required");
+		}
+		if (careSetting == null) {
+			throw new IllegalArgumentException("CareSetting is required");
+		}
+		return dao.getOrders(patient, careSetting, orderType, includeVoided, false);
+	}
+	
+	/**
+	 * @see OrderService#getAllOrdersByPatient(org.openmrs.Patient)
+	 */
+	@Override
+	public List<Order> getAllOrdersByPatient(Patient patient) {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient is required");
+		}
+		return dao.getOrders(patient, null, null, true, true);
 	}
 	
 	/**
@@ -313,7 +316,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(null, patients, concepts, null, null);
+		return dao.getOrders(null, patients, concepts, new Vector<User>(), new Vector<Encounter>());
 	}
 	
 	/**

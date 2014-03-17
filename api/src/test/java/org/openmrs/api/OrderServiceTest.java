@@ -54,6 +54,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
@@ -1305,5 +1306,106 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderTypeByName_shouldReturnTheOrderTypeThatMatchesTheSpecifiedName() throws Exception {
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
 		assertEquals("2ca568f3-a64a-11e3-9aeb-50e549534c5e", orderType.getUuid());
+	}
+	
+	/**
+	 * @verifies fail if patient is null
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
+	 */
+	@Test
+	public void getOrders_shouldFailIfPatientIsNull() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Patient is required");
+		orderService.getOrders(null, null, null, false);
+	}
+	
+	/**
+	 * @verifies fail if careSetting is null
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
+	 */
+	@Test
+	public void getOrders_shouldFailIfCareSettingIsNull() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("CareSetting is required");
+		orderService.getOrders(new Patient(), null, null, false);
+	}
+	
+	/**
+	 * @verifies get the orders that match all the arguments
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
+	 */
+	@Test
+	public void getOrders_shouldGetTheOrdersThatMatchAllTheArguments() throws Exception {
+		Patient patient = patientService.getPatient(2);
+		CareSetting outPatient = orderService.getCareSetting(1);
+		OrderType testOrderType = orderService.getOrderType(2);
+		List<Order> testOrders = orderService.getOrders(patient, outPatient, testOrderType, false);
+		assertEquals(3, testOrders.size());
+		TestUtil.containsId(testOrders, 6);
+		TestUtil.containsId(testOrders, 7);
+		TestUtil.containsId(testOrders, 9);
+		
+		OrderType drugOrderType = orderService.getOrderType(1);
+		List<Order> drugOrders = orderService.getOrders(patient, outPatient, drugOrderType, false);
+		assertEquals(5, drugOrders.size());
+		TestUtil.containsId(drugOrders, 2);
+		TestUtil.containsId(drugOrders, 3);
+		TestUtil.containsId(drugOrders, 44);
+		TestUtil.containsId(drugOrders, 444);
+		TestUtil.containsId(drugOrders, 5);
+		
+		CareSetting inPatient = orderService.getCareSetting(2);
+		List<Order> inPatientDrugOrders = orderService.getOrders(patient, inPatient, drugOrderType, false);
+		assertEquals(222, inPatientDrugOrders.get(0).getOrderId().intValue());
+	}
+	
+	/**
+	 * @verifies get all unvoided matches if includeVoided is set to false
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
+	 */
+	@Test
+	public void getOrders_shouldGetAllUnvoidedMatchesIfIncludeVoidedIsSetToFalse() throws Exception {
+		Patient patient = patientService.getPatient(2);
+		CareSetting outPatient = orderService.getCareSetting(1);
+		OrderType testOrderType = orderService.getOrderType(2);
+		assertEquals(3, orderService.getOrders(patient, outPatient, testOrderType, false).size());
+	}
+	
+	/**
+	 * @verifies include voided matches if includeVoided is set to true
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
+	 */
+	@Test
+	public void getOrders_shouldIncludeVoidedMatchesIfIncludeVoidedIsSetToTrue() throws Exception {
+		Patient patient = patientService.getPatient(2);
+		CareSetting outPatient = orderService.getCareSetting(1);
+		OrderType testOrderType = orderService.getOrderType(2);
+		assertEquals(4, orderService.getOrders(patient, outPatient, testOrderType, true).size());
+	}
+	
+	/**
+	 * @verifies fail if patient is null
+	 * @see OrderService#getAllOrdersByPatient(org.openmrs.Patient)
+	 */
+	@Test
+	public void getAllOrdersByPatient_shouldFailIfPatientIsNull() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Patient is required");
+		orderService.getAllOrdersByPatient(null);
+	}
+	
+	/**
+	 * @verifies get all the orders for the specified patient
+	 * @see OrderService#getAllOrdersByPatient(org.openmrs.Patient)
+	 */
+	@Test
+	public void getAllOrdersByPatient_shouldGetAllTheOrdersForTheSpecifiedPatient() throws Exception {
+		assertEquals(12, orderService.getAllOrdersByPatient(patientService.getPatient(2)).size());
+		assertEquals(2, orderService.getAllOrdersByPatient(patientService.getPatient(7)).size());
 	}
 }

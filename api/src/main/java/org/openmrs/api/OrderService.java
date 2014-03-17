@@ -25,7 +25,6 @@ import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
-import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.PrivilegeConstants;
@@ -130,20 +129,34 @@ public interface OrderService extends OpenmrsService {
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
 	/**
-	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
-	 * multiple arguments are given, the returned orders will match on all arguments. The orders are
-	 * sorted by startDate with the latest coming first
+	 * Gets all Orders that match the specified parameters excluding discontinuation orders
 	 * 
-	 * @param orderType The type of Order to get
-	 * @param patients The patients to get orders for
-	 * @param concepts The concepts in order.getConcept to get orders for
-	 * @param orderers The users/orderers of the
-	 * @param encounters The encounters that the orders are assigned to
+	 * @param patient the patient to match on
+	 * @param careSetting the CareSetting to match on
+	 * @param orderType The OrderType to match on
+	 * @param includeVoided Specifies whether voided orders should be included or not
 	 * @return list of Orders matching the parameters
+	 * @since 1.10
+	 * @should fail if patient is null
+	 * @should fail if careSetting is null
+	 * @should get the orders that match all the arguments
+	 * @should get all unvoided matches if includeVoided is set to false
+	 * @should include voided matches if includeVoided is set to true
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
-	        List<Encounter> encounters);
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided);
+	
+	/**
+	 * Gets all orders for the specified patient including discontinuation orders
+	 * 
+	 * @param patient the patient to match on
+	 * @return list of matching {@link org.openmrs.Order}
+	 * @since 1.10
+	 * @should fail if patient is null
+	 * @should get all the orders for the specified patient
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	public List<Order> getAllOrdersByPatient(Patient patient);
 	
 	/**
 	 * Unvoid order record. Reverse a previous call to {@link #voidOrder(Order, String)}

@@ -33,8 +33,15 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
-import org.openmrs.*;
-import org.openmrs.Order.Action;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
@@ -102,7 +109,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrders(org.openmrs.OrderType, java.util.List, java.util.List, java.util.List, java.util.List)
+	 * @see org.openmrs.api.db.OrderDAO#getOrders(org.openmrs.OrderType, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
@@ -131,6 +139,16 @@ public class HibernateOrderDAO implements OrderDAO {
 		crit.addOrder(org.hibernate.criterion.Order.desc("startDate"));
 		
 		return crit.list();
+	}
+	
+	/**
+	 * @see OrderDAO#getOrders(org.openmrs.Patient, org.openmrs.CareSetting, org.openmrs.OrderType,
+	 *      boolean, boolean)
+	 */
+	@Override
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided,
+	        boolean includeDiscontinuationOrders) {
+		return createOrderCriteria(patient, careSetting, orderType, includeVoided, includeDiscontinuationOrders).list();
 	}
 	
 	/**
@@ -195,25 +213,12 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType, org.openmrs.CareSetting, java.util.Date)
+	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate) {
-		
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Order.class);
-		
-		if (orderType != null) {
-			crit.add(Restrictions.eq("orderType", orderType));
-		}
-		
-		crit.add(Restrictions.eq("patient", patient));
-		if (careSetting != null) {
-			crit.add(Restrictions.eq("careSetting", careSetting));
-		}
-		
-		//See javadocs on OrderService#getActiveOrders for the description of an active Order
-		crit.add(Restrictions.ne("action", Action.DISCONTINUE));
-		crit.add(Restrictions.eq("voided", false));
+		Criteria crit = createOrderCriteria(patient, careSetting, orderType, false, false);
 		
 		Criterion startDateEqualToOrBeforeAsOfDate = Restrictions.le("startDate", asOfDate);
 		crit.add(startDateEqualToOrBeforeAsOfDate);
@@ -232,6 +237,38 @@ public class HibernateOrderDAO implements OrderDAO {
 		crit.add(dateStoppedAndAutoExpDateDisjunction);
 		
 		return crit.list();
+	}
+	
+	/**
+	 * Creates and returns a Criteria Object filtering on the specified parameters
+	 * 
+	 * @param patient
+	 * @param careSetting
+	 * @param orderType
+	 * @param includeVoided
+	 * @param includeDiscontinuationOrders
+	 * @return
+	 */
+	private Criteria createOrderCriteria(Patient patient, CareSetting careSetting, OrderType orderType,
+	        boolean includeVoided, boolean includeDiscontinuationOrders) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		if (patient != null) {
+			criteria.add(Restrictions.eq("patient", patient));
+		}
+		if (careSetting != null) {
+			criteria.add(Restrictions.eq("careSetting", careSetting));
+		}
+		if (orderType != null) {
+			criteria.add(Restrictions.eq("orderType", orderType));
+		}
+		if (!includeVoided) {
+			criteria.add(Restrictions.eq("voided", false));
+		}
+		if (!includeDiscontinuationOrders) {
+			criteria.add(Restrictions.ne("action", Order.Action.DISCONTINUE));
+		}
+		
+		return criteria;
 	}
 	
 	/**

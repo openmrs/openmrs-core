@@ -17,7 +17,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.openmrs.*;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.User;
 
 /**
  * Order-related database functions
@@ -49,10 +56,26 @@ public interface OrderDAO {
 	public Order getOrder(Integer orderId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(org.openmrs.OrderType, java.util.List, java.util.List, java.util.List, java.util.List)
+	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
+	 * multiple arguments are given, the returned orders will match on all arguments. The orders are
+	 * sorted by startDate with the latest coming first
+	 *
+	 * @param orderType The type of Order to get
+	 * @param patients The patients to get orders for
+	 * @param concepts The concepts in order.getConcept to get orders for
+	 * @param orderers The users/orderers of the
+	 * @param encounters The encounters that the orders are assigned to
+	 * @return list of Orders matching the parameters
 	 */
 	public List<Order> getOrders(OrderType orderType, List<Patient> patients, List<Concept> concepts, List<User> orderers,
 	        List<Encounter> encounters);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
+	 */
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided,
+	        boolean includeDiscontinuationOrders);
 	
 	/**
 	 * Auto generated method comment
@@ -80,7 +103,8 @@ public interface OrderDAO {
 	public Long getNextOrderNumberSeedSequenceValue();
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType, org.openmrs.CareSetting, java.util.Date)
+	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate);
 	
