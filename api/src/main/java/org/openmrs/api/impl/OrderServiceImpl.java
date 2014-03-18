@@ -666,18 +666,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<OrderType> getOrderSubtypes(OrderType orderType, boolean includeRetired) {
-		List<OrderType> orderSuTypes = new ArrayList<OrderType>();
-		List<OrderType> tempFirstLevelList;
-		List<OrderType> tempSecondLevelList = new ArrayList<OrderType>();
-		tempFirstLevelList = dao.getOrderSubtypes(orderType, includeRetired);
-		while (!tempFirstLevelList.isEmpty()) {
-			for (OrderType type : tempFirstLevelList) {
-				orderSuTypes.add(type);
-				tempSecondLevelList.addAll(dao.getOrderSubtypes(type, includeRetired));
+		List<OrderType> allSubtypes = new ArrayList<OrderType>();
+		List<OrderType> immediateAncestors = dao.getOrderSubtypes(orderType, includeRetired);
+		while (!immediateAncestors.isEmpty()) {
+			List<OrderType> ancestorsAtNextLevel = new ArrayList<OrderType>();
+			for (OrderType type : immediateAncestors) {
+				allSubtypes.add(type);
+				ancestorsAtNextLevel.addAll(dao.getOrderSubtypes(type, includeRetired));
 			}
-			tempFirstLevelList = tempSecondLevelList;
-			tempSecondLevelList = new ArrayList<OrderType>();
+			immediateAncestors = ancestorsAtNextLevel;
 		}
-		return orderSuTypes;
+		return allSubtypes;
 	}
 }
