@@ -500,7 +500,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)
 	 */
-	public List<OrderType> getOrderSubtypesOfParent(OrderType orderType, boolean includeRetired) {
+	public List<OrderType> getOrderSubtypes(OrderType orderType, boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderType.class);
 		criteria.add(Restrictions.eq("parent", orderType));
 		if (!includeRetired) {

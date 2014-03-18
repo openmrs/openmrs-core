@@ -649,8 +649,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderType retireOrderType(OrderType orderType, String reason) {
-		orderType.setRetired(true);
-		orderType.setRetireReason(reason);
 		return saveOrderType(orderType);
 	}
 	
@@ -659,7 +657,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderType unretireOrderType(OrderType orderType) {
-		orderType.setRetired(false);
 		return saveOrderType(orderType);
 	}
 	
@@ -672,11 +669,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<OrderType> orderSuTypes = new ArrayList<OrderType>();
 		List<OrderType> tempFirstLevelList;
 		List<OrderType> tempSecondLevelList = new ArrayList<OrderType>();
-		tempFirstLevelList = dao.getOrderSubtypesOfParent(orderType, includeRetired);
+		tempFirstLevelList = dao.getOrderSubtypes(orderType, includeRetired);
 		while (!tempFirstLevelList.isEmpty()) {
 			for (OrderType type : tempFirstLevelList) {
 				orderSuTypes.add(type);
-				tempSecondLevelList.addAll(dao.getOrderSubtypesOfParent(type, includeRetired));
+				tempSecondLevelList.addAll(dao.getOrderSubtypes(type, includeRetired));
 			}
 			tempFirstLevelList = tempSecondLevelList;
 			tempSecondLevelList = new ArrayList<OrderType>();

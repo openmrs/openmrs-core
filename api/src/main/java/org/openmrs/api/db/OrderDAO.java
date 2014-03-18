@@ -217,7 +217,7 @@ public interface OrderDAO {
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)
 	 */
-	public List<OrderType> getOrderSubtypesOfParent(OrderType orderType, boolean includeRetired);
+	public List<OrderType> getOrderSubtypes(OrderType orderType, boolean includeRetired);
 	
 	/**
 	 * Check whether give order type is used by any order
