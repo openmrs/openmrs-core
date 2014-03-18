@@ -41,6 +41,26 @@ public class ConceptDatatypeValidatorTest {
 	 * @see {@link ConceptDatatypeValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should pass validation if field length is valid", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthIsValid() throws Exception {
+		ConceptDatatype cd = new ConceptDatatype();
+		cd.setName("some name");
+		cd.setDescription("some description");
+		
+		Errors errors = new BindException(cd, "cd");
+		errors = new BindException(cd, "cd");
+		new ConceptDatatypeValidator().validate(cd, errors);
+		Assert.assertFalse(errors.hasFieldErrors("name"));
+		
+		new ConceptDatatypeValidator().validate(cd, errors);
+		Assert.assertFalse(errors.hasFieldErrors("description"));
+		
+	}
+	
+	/**
+	 * @see {@link ConceptDatatypeValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptDatatype cd = new ConceptDatatype();
