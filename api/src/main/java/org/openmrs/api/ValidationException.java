@@ -13,6 +13,8 @@
  */
 package org.openmrs.api;
 
+import org.springframework.validation.Errors;
+
 /**
  * Represents often fatal errors that occur when an object fails validation
  * 
@@ -21,6 +23,13 @@ package org.openmrs.api;
 public class ValidationException extends APIException {
 	
 	public static final long serialVersionUID = 1L;
+	
+	/**
+	 * Spring Errors object associated with the validation failure
+	 * @since 1.11
+	 */
+	
+	private Errors errors;
 	
 	/**
 	 * Default empty constructor. If at all possible, don't use this one, but use the
@@ -56,5 +65,41 @@ public class ValidationException extends APIException {
 	 */
 	public ValidationException(Throwable cause) {
 		super(cause);
+	}
+	
+	/**
+	 * Constructor used to associate an Spring Errors object with a ValidationException
+	 *
+	 * @param errors
+	 * @since 1.11
+	 */
+	public ValidationException(Errors errors) {
+		this.errors = errors;
+	}
+	
+	/**
+	 * Constructor to give the end user a helpful message and to associate an Spring Errors object
+	 * with a ValidationException
+	 *
+	 * @param errors
+	 * @since 1.11
+	 */
+	public ValidationException(String message, Errors errors) {
+		super(message);
+		this.errors = errors;
+	}
+	
+	/**
+	 * @since 1.11
+	 */
+	public Errors getErrors() {
+		return errors;
+	}
+	
+	/**
+	 * @since 1.11
+	 */
+	public void setErrors(Errors errors) {
+		this.errors = errors;
 	}
 }

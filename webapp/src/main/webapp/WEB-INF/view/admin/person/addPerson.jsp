@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Add People" otherwise="/login.htm" redirect="/admin/person/addPerson.htm"/>
-
+<openmrs:message var="pageTitle" code="person.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <c:choose>

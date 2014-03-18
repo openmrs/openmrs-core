@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Manage Locations" otherwise="/login.htm" redirect="/admin/locations/location.form" />
-
+<openmrs:message var="pageTitle" code="location.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 

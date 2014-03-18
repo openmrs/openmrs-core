@@ -18,12 +18,18 @@ import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.jar.JarFile;
 
-import junit.framework.Assert;
-
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openmrs.GlobalProperty;
@@ -452,5 +458,74 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		String openMRSVersion = "1.9.2-ALPHA";
 		String requiredOpenmrsVersion = "1.9.2-ALPHA";
 		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+	}
+	
+	private JarFile loadModuleJarFile(String moduleId, String version) throws IOException {
+		InputStream moduleStream = null;
+		File tempFile = null;
+		OutputStream tempFileStream = null;
+		JarFile jarFile = null;
+		try {
+			moduleStream = getClass().getClassLoader().getResourceAsStream(
+			    "org/openmrs/module/include/" + moduleId + "-" + version + ".omod");
+			Assert.assertNotNull(moduleStream);
+			tempFile = File.createTempFile("moduleTest", "omod");
+			tempFileStream = new FileOutputStream(tempFile);
+			IOUtils.copy(moduleStream, tempFileStream);
+			jarFile = new JarFile(tempFile);
+		}
+		finally {
+			IOUtils.closeQuietly(moduleStream);
+			IOUtils.closeQuietly(tempFileStream);
+			if (tempFile != null) {
+				tempFile.delete();
+			}
+		}
+		return jarFile;
+	}
+	
+	/**
+	 * @see ModuleUtil#getResourceFromApi(JarFile,String,String,String)
+	 */
+	@Test
+	@Verifies(value = "load file from api as input stream", method = "getResourceFromApi(JarFile,String,String,String)")
+	public void getResourceFromApi_shouldLoadFileFromApiAsInputStream() throws Exception {
+		String moduleId = "basicmodule";
+		String version = "0.1";
+		String resource = "messages.properties";
+		JarFile moduleJarFile = loadModuleJarFile(moduleId, version);
+		Assert.assertNotNull(moduleJarFile);
+		InputStream resultStream = ModuleUtil.getResourceFromApi(moduleJarFile, moduleId, version, resource);
+		Assert.assertNotNull(resultStream);
+	}
+	
+	/**
+	 * @see ModuleUtil#getResourceFromApi(JarFile,String,String,String)
+	 */
+	@Test
+	@Verifies(value = "return null if api is not found", method = "getResourceFromApi(JarFile,String,String,String)")
+	public void getResourceFromApi_shouldReturnNullIfApiIsNotFound() throws Exception {
+		String moduleId = "logic";
+		String version = "0.2";
+		String resource = "messages.properties";
+		JarFile moduleJarFile = loadModuleJarFile(moduleId, version);
+		Assert.assertNotNull(moduleJarFile);
+		InputStream resultStream = ModuleUtil.getResourceFromApi(moduleJarFile, moduleId, version, resource);
+		Assert.assertNull(resultStream);
+	}
+	
+	/**
+	 * @see ModuleUtil#getResourceFromApi(JarFile,String,String,String)
+	 */
+	@Test
+	@Verifies(value = "return null if file is not found in api", method = "getResourceFromApi(JarFile,String,String,String)")
+	public void getResourceFromApi_shouldReturnNullIfFileIsNotFoundInApi() throws Exception {
+		String moduleId = "basicmodule";
+		String version = "0.1";
+		String resource = "messages_doesnotexist.properties";
+		JarFile moduleJarFile = loadModuleJarFile(moduleId, version);
+		Assert.assertNotNull(moduleJarFile);
+		InputStream resultStream = ModuleUtil.getResourceFromApi(moduleJarFile, moduleId, version, resource);
+		Assert.assertNull(resultStream);
 	}
 }

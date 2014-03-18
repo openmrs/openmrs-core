@@ -3,7 +3,7 @@
 <openmrs:require privilege="View Administration Functions" otherwise="/login.htm" redirect="/admin/index.htm" />
 
 <openmrs:message var="pageTitle" code="admin.titlebar" scope="page"/>
-
+<openmrs:message var="pageTitle" code="admin.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <style>
@@ -25,7 +25,7 @@
 	}
 </style>
 
-<h2><openmrs:message code="admin.title"/></h2>
+<h2><openmrs:message code="admin.header"/></h2>
 
 <table border="0" width="93%">
 	<tbody>

@@ -17,7 +17,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +32,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.web.extension.ExtensionUtil;
 import org.openmrs.module.web.extension.provider.Link;
+import org.openmrs.web.WebConstants;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -47,8 +49,8 @@ public class PatientDashboardController {
 	 * render the patient dashboard model and direct to the view
 	 */
 	@RequestMapping("/patientDashboard.form")
-	protected String renderDashboard(@RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map)
-	        throws Exception {
+	protected String renderDashboard(@RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map,
+	        HttpServletRequest request) throws Exception {
 		
 		// get the patient
 		
@@ -63,7 +65,11 @@ public class PatientDashboardController {
 		}
 		
 		if (patient == null) {
-			throw new ServletException("There is no patient with id: '" + patientId + "'");
+			// redirect to the patient search page if no patient is found
+			HttpSession session = request.getSession();
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "patientDashboard.noPatientWithId");
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ARGS, patientId);
+			return "findPatient";
 		}
 		
 		log.debug("patient: '" + patient + "'");

@@ -144,8 +144,27 @@
 			<c:if test="${modifyPasswords == true}">
 				<tr>
 				<td><openmrs:message code="User.usersPassword" /><span class="required">*</span></td>
-					<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/></td>
-		
+					<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/>
+                    
+                    <openmrs:globalProperty key="security.passwordMinimumLength" var="passwordMinimumLength"/>
+                    <openmrs:globalProperty key="security.passwordRequiresDigit" var="passwordRequiresDigit"/>
+                    <openmrs:globalProperty key="security.passwordRequiresNonDigit" var="passwordRequiresNonDigit"/>
+                    <openmrs:globalProperty key="security.passwordRequiresUpperAndLowerCase" var="passwordRequiresUpperAndLowerCase"/>
+                    
+                    <i><openmrs:message code="general.passwordLength" arguments="${passwordMinimumLength}" />                    
+					
+					<% boolean prevCondition=false; %>
+                    
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true || passwordRequiresDigit == true || passwordRequiresNonDigit == true}"> <openmrs:message code="general.shouldHave" /></c:if>
+                    
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true}" > <openmrs:message code="changePassword.hint.password.bothCasesRequired" /><% prevCondition=true; %></c:if>
+                    
+                    <c:if test="${passwordRequiresDigit == true}" ><% if(prevCondition==true) out.print(","); %> <openmrs:message code="changePassword.hint.password.digitRequired" /><% prevCondition=true; %></c:if>
+                    
+                    <c:if test="${passwordRequiresNonDigit == true}" ><% if(prevCondition==true) out.print(","); %> <openmrs:message code="changePassword.hint.password.nonDigitRequired" /></c:if>
+                    
+                    </i> 
+                    </td>
 				</tr>
 				<tr>
 					<td><openmrs:message code="User.confirm" /><span class="required">*</span></td>
