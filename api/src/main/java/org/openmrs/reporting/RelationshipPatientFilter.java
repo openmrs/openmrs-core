@@ -16,6 +16,8 @@ package org.openmrs.reporting;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -48,25 +50,38 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 	 */
 	@Override
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Patients ");
+		sb.append(msa.getMessage("reporting.patients") + " ");
 		RelationshipType relType = getRelationshipType();
 		if (relType != null) {
 			if (includeAtoB && includeBtoA) {
-				sb.append("who are either " + relType.getaIsToB() + " or " + relType.getbIsToA() + " of ");
+				//				sb.append(msa.getMessage("reporting.whoAreEither") + " " + relType.getaIsToB() + " "
+				//				        + msa.getMessage("reporting.or") + " " + relType.getbIsToA() + " "
+				//				        + msa.getMessage("reporting.of") + " ");
+				
+				sb.append(msa.getMessage("reporting.whoAreEither",
+				    new Object[] { relType.getaIsToB(), relType.getbIsToA() }, Context.getLocale()));
+				sb.append(" ");
 			} else {
-				if (includeAtoB)
-					sb.append("who are " + relType.getaIsToB() + " to " + relType.getbIsToA() + " ");
-				if (includeBtoA)
-					sb.append("who are " + relType.getbIsToA() + " to " + relType.getaIsToB() + " ");
+				if (includeAtoB) {
+					sb.append(msa.getMessage("reporting.whoAre", new Object[] { relType.getaIsToB(), relType.getbIsToA() },
+					    Context.getLocale()));
+					sb.append(" ");
+				}
+				if (includeBtoA) {
+					sb.append(msa.getMessage("reporting.whoAre", new Object[] { relType.getaIsToB(), relType.getbIsToA() },
+					    Context.getLocale()));
+					sb.append(" ");
+				}
 			}
 		} else {
-			sb.append("with any relationship to ");
+			sb.append(msa.getMessage("reporting.withAnyRelationshipTo") + " ");
 		}
 		if (getPerson() != null)
 			sb.append(getPerson().toString());
 		else
-			sb.append("anyone");
+			sb.append(msa.getMessage("reporting.anyone"));
 		return sb.toString();
 	}
 	

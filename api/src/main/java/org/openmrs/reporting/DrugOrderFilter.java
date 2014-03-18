@@ -30,6 +30,7 @@ import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -84,28 +85,33 @@ public class DrugOrderFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService mss = Context.getMessageSourceService();
+		
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 		StringBuffer ret = new StringBuffer();
 		boolean currentlyCase = getWithinLastDays() != null && getWithinLastDays() == 0
 		        && (getWithinLastMonths() == null || getWithinLastMonths() == 0);
 		if (currentlyCase)
-			ret.append("Patients currently ");
+			ret.append(mss.getMessage("reporting.patientCurrently") + " ");
 		else
-			ret.append("Patients ");
+			ret.append(mss.getMessage("reporting.patients") + " ");
 		if (getDrugListToUse() == null || getDrugListToUse().size() == 0) {
 			if (getAnyOrAll() == GroupMethod.NONE)
-				ret.append(currentlyCase ? "taking no drugs" : "who never took any drugs");
+				ret.append(currentlyCase ? mss.getMessage("reporting.takingNoDrugs") : mss
+				        .getMessage("reporting.whoNeverTakeDrug"));
 			else
-				ret.append(currentlyCase ? "taking any drugs" : "ever taking any drugs");
+				ret.append(currentlyCase ? mss.getMessage("reporting.takingAnyDrugs") : mss
+				        .getMessage("reporting.everTakingAnyDrugs"));
 		} else {
 			if (getDrugListToUse().size() == 1) {
 				if (getAnyOrAll() == GroupMethod.NONE)
-					ret.append("not taking ");
+					ret.append(mss.getMessage("reporting.notTaking") + " ");
 				else
-					ret.append("taking ");
+					ret.append(mss.getMessage("reporting.taking").toLowerCase() + " ");
 				ret.append(getDrugListToUse().get(0).getName());
 			} else {
-				ret.append("taking " + getAnyOrAll() + " of [");
+				ret.append(mss.getMessage("reporting.taking").toLowerCase() + " " + getAnyOrAll() + " "
+				        + mss.getMessage("reporting.of") + " [");
 				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext();) {
 					ret.append(i.next().getName());
 					if (i.hasNext())
@@ -116,16 +122,16 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		}
 		if (!currentlyCase)
 			if (getWithinLastDays() != null || getWithinLastMonths() != null) {
-				ret.append(" withing the last");
+				ret.append(" " + mss.getMessage("reporting.withinTheLast"));
 				if (getWithinLastMonths() != null)
-					ret.append(" " + getWithinLastMonths() + " months");
+					ret.append(" " + getWithinLastMonths() + " " + mss.getMessage("reporting.month(s)"));
 				if (getWithinLastDays() != null)
-					ret.append(" " + getWithinLastDays() + " days");
+					ret.append(" " + getWithinLastDays() + " " + mss.getMessage("reporting.day(s)"));
 			}
 		if (getSinceDate() != null)
-			ret.append(" since " + df.format(getSinceDate()));
+			ret.append(" " + mss.getMessage("reporting.since") + " " + df.format(getSinceDate()));
 		if (getUntilDate() != null)
-			ret.append(" until " + df.format(getUntilDate()));
+			ret.append(" " + mss.getMessage("reporting.until") + " " + df.format(getUntilDate()));
 		return ret.toString();
 	}
 	

@@ -24,6 +24,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -83,15 +84,18 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuffer ret = new StringBuffer();
-		ret.append("Patients with ");
+		ret.append(msa.getMessage("reporting.patient(s)With") + " ");
 		if (atLeastCount != null || atMostCount != null) {
 			if (atLeastCount != null)
-				ret.append("at least " + atLeastCount + " ");
+				//ret.append(msa.getMessage("reporting.atLeast") + " " + atLeastCount + " ");
+				ret.append(msa.getMessage("reporting.atLeast", new Object[] { atLeastCount }, Context.getLocale())).append(
+				    " ");
 			if (atMostCount != null)
-				ret.append("at most " + atMostCount + " ");
+				ret.append(msa.getMessage("reporting.atMost") + " " + atMostCount + " ");
 		} else {
-			ret.append("any ");
+			ret.append(msa.getMessage("reporting.any") + " ");
 		}
 		if (encounterTypeList != null) {
 			ret.append("[");
@@ -102,24 +106,24 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 			}
 			ret.append(" ] ");
 		}
-		ret.append("encounters ");
+		ret.append(msa.getMessage("reporting.encounters") + " ");
 		if (location != null) {
-			ret.append("at " + location.getName() + " ");
+			ret.append(msa.getMessage("reporting.at") + " " + location.getName() + " ");
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
-			ret.append("within the last ");
+			ret.append(msa.getMessage("reporting.withinTheLast") + " ");
 			if (withinLastMonths != null)
-				ret.append(withinLastMonths + " month(s) ");
+				ret.append(withinLastMonths + " " + msa.getMessage("reporting.month(s)") + " ");
 			if (withinLastDays != null)
-				ret.append(withinLastDays + " day(s) ");
+				ret.append(withinLastDays + " " + msa.getMessage("reporting.day(s)") + " ");
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
-			ret.append("on or after " + sinceDate + " ");
+			ret.append(msa.getMessage("reporting.onOrAfter") + " " + sinceDate + " ");
 		if (untilDate != null)
-			ret.append("on or before " + untilDate + " ");
+			ret.append(msa.getMessage("reporting.onOrBefore") + " " + untilDate + " ");
 		if (form != null)
-			ret.append("from the " + form.getName() + " form ");
+			ret.append(msa.getMessage("reporting.fromThe") + " " + form.getName() + " " + msa.getMessage("reporting.form"));
 		return ret.toString();
 	}
 	

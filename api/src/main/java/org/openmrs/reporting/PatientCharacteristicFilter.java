@@ -19,6 +19,7 @@ import java.util.Date;
 import org.openmrs.Cohort;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -95,19 +96,21 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 	}
 	
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
 		if (gender == null && minBirthdate == null && maxBirthdate == null && minAge == null && maxAge == null
 		        && aliveOnly == null && deadOnly == null)
-			return "All Patients";
+			return msa.getMessage("reporting.allPatients");
 		
 		StringBuffer ret = new StringBuffer();
 		if (gender != null) {
 			if ("M".equals(gender)) {
-				ret.append("Male");
+				ret.append(msa.getMessage("reporting.male"));
 			} else {
-				ret.append("Female");
+				ret.append(msa.getMessage("reporting.female"));
 			}
 		}
-		ret.append(gender == null ? "Patients " : " patients ");
+		ret.append(gender == null ? msa.getMessage("reporting.patients") + " " : " "
+		        + msa.getMessage("reporting.patients").toLowerCase() + " ");
 		
 		DateFormat df = null;
 		if (minBirthdate != null || maxBirthdate != null) {
@@ -115,31 +118,46 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		}
 		if (minBirthdate != null) {
 			if (maxBirthdate != null) {
-				ret.append(" born between " + df.format(minBirthdate) + " and " + df.format(maxBirthdate));
+				//				ret.append(" " + msa.getMessage("reporting.bornBetween") + " " + df.format(minBirthdate) + " "
+				//				        + msa.getMessage("reporting.and") + " " + df.format(maxBirthdate));
+				ret.append(" "
+				        + msa.getMessage("reporting.bornBetween", new Object[] { (Object) df.format(minBirthdate),
+				                (Object) df.format(maxBirthdate) }, Context.getLocale()));
 			} else {
-				ret.append(" born after " + df.format(minBirthdate));
+				ret.append(" " + msa.getMessage("reporting.bornAfter") + " " + df.format(minBirthdate));
 			}
 		} else {
 			if (maxBirthdate != null) {
-				ret.append(" born before " + df.format(maxBirthdate));
+				ret.append(" " + msa.getMessage("reporting.bornBefore") + " " + df.format(maxBirthdate));
 			}
 		}
 		if (minAge != null) {
 			if (maxAge != null) {
-				ret.append(" between the ages of " + minAge + " and " + maxAge);
+				//ret.append(" " + msa.getMessage("reporting.betweenTheAgesOf") + " " + minAge + " "
+				//        + msa.getMessage("reporting.bornBetween") + " " + maxAge);
+				ret.append(" "
+				        + msa.getMessage("reporting.betweenTheAgesOf", new Object[] { (Object) minAge, (Object) maxAge },
+				            Context.getLocale()));
+				
 			} else {
-				ret.append(" at least " + minAge + " years old");
+				//ret.append(" " + msa.getMessage("reporting.atLeast") + " " + minAge + " "
+				//        + msa.getMessage("reporting.yearsOld"));
+				
+				ret.append(" ").append(msa.getMessage("reporting.atLeast", new Object[] { minAge }, Context.getLocale()));
 			}
 		} else {
 			if (maxAge != null) {
-				ret.append(" up to " + maxAge + " years old");
+				//				ret.append(" " + msa.getMessage("reporting.upto") + " " + maxAge + " "
+				//				        + msa.getMessage("reporting.yearsOld"));
+				
+				ret.append(" ").append(msa.getMessage("reporting.upto", new Object[] { maxAge }, Context.getLocale()));
 			}
 		}
 		if (aliveOnly != null && aliveOnly) {
-			ret.append(" who are alive");
+			ret.append(" " + msa.getMessage("reporting.whoAreAlive"));
 		}
 		if (deadOnly != null && deadOnly) {
-			ret.append(" who are dead");
+			ret.append(" " + msa.getMessage("reporting.whoAreDead"));
 		}
 		return ret.toString();
 	}

@@ -23,6 +23,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -133,19 +134,21 @@ public class ObsPatientFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService mss = Context.getMessageSourceService();
 		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
 		if (question == null) {
 			if (getValue() != null)
-				ret.append("Patients with " + timeModifier + " obs with value " + ((Concept) value).getName().getName());
+				ret.append(mss.getMessage("reporting.patient(s)With") + " " + timeModifier + " "
+				        + mss.getMessage("reporting.obsWithValue") + " " + ((Concept) value).getName().getName());
 			else
-				ret.append("question and value are both null");
+				ret.append(mss.getMessage("reporting.qtnNValNull"));
 		} else {
-			ret.append("Patients with ");
+			ret.append(mss.getMessage("reporting.patient(s)With") + " ");
 			ret.append(timeModifier + " ");
 			ConceptName questionName = null;
 			if (question == null)
-				ret.append("CONCEPT");
+				ret.append(mss.getMessage("reporting.concept"));
 			else {
 				questionName = question.getName(locale, false);
 				if (questionName != null)
@@ -165,27 +168,27 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			}
 		}
 		if (withinLastDays != null || withinLastMonths != null) {
-			ret.append(" within last");
+			ret.append(" " + mss.getMessage("reporting.withinLast"));
 			if (withinLastMonths != null)
-				ret.append(" " + withinLastMonths + " months");
+				ret.append(" " + withinLastMonths + " " + mss.getMessage("reporting.month(s)"));
 			if (withinLastDays != null)
-				ret.append(" " + withinLastDays + " days");
+				ret.append(" " + withinLastDays + " " + mss.getMessage("reporting.day(s)"));
 		}
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
 			ret.append(" until");
 			if (untilMonthsAgo != null)
-				ret.append(" " + untilMonthsAgo + " months");
+				ret.append(" " + untilMonthsAgo + " " + mss.getMessage("reporting.month(s)"));
 			if (untilDaysAgo != null)
-				ret.append(" " + untilDaysAgo + " months");
+				ret.append(" " + untilDaysAgo + " " + mss.getMessage("reporting.day(s)"));
 			ret.append(" ago");
 		}
 		DateFormat df = null;
 		if (sinceDate != null || untilDate != null)
 			df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 		if (sinceDate != null)
-			ret.append(" since " + df.format(sinceDate));
+			ret.append(" " + mss.getMessage("reporting.since") + " " + df.format(sinceDate));
 		if (untilDate != null)
-			ret.append(" until " + df.format(untilDate));
+			ret.append(" " + mss.getMessage("reporting.until") + " " + df.format(untilDate));
 		return ret.toString();
 	}
 	

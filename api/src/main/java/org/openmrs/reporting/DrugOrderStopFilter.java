@@ -22,6 +22,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -83,15 +84,16 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Patients who stopped or changed ");
+		sb.append(msa.getMessage("reporting.patient(s)WhoStopOrChanged") + " ");
 		if ((getDrugList() != null && getDrugList().size() > 0)
 		        || (getGenericDrugList() != null && getGenericDrugList().size() > 0)) {
 			if (getDrugList() != null && getDrugList().size() > 0) {
 				if (getDrugList().size() == 1)
 					sb.append(getDrugList().get(0).getName());
 				else {
-					sb.append("any of [");
+					sb.append(msa.getMessage("reporting.anyOf") + " [");
 					for (Iterator<Drug> i = getDrugList().iterator(); i.hasNext();) {
 						sb.append(" " + i.next().getName() + " ");
 						if (i.hasNext())
@@ -102,9 +104,9 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 			}
 			if (getGenericDrugList() != null && getGenericDrugList().size() > 0) {
 				if (getGenericDrugList().size() == 1)
-					sb.append("any form of " + getGenericDrugList().get(0).getName().getName());
+					sb.append(msa.getMessage("reporting.anyFormOf") + " " + getGenericDrugList().get(0).getName().getName());
 				else {
-					sb.append("any form of [");
+					sb.append(msa.getMessage("reporting.anyFormOf") + " [");
 					for (Iterator<Concept> i = getGenericDrugList().iterator(); i.hasNext();) {
 						sb.append(" " + i.next().getName().getName() + " ");
 						if (i.hasNext())
@@ -114,16 +116,16 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 				}
 			}
 		} else
-			sb.append("any drug");
+			sb.append(msa.getMessage("reporting.anyDrug"));
 		if (getDiscontinuedReasonList() != null && getDiscontinuedReasonList().size() > 0) {
 			if (getDiscontinuedReasonList().size() == 1) {
-				String reason = "[name not defined]";
+				String reason = "[" + msa.getMessage("reporting.nameNotDefined") + "]";
 				ConceptName cn = getDiscontinuedReasonList().get(0).getName();
 				if (cn != null)
 					reason = cn.getName();
-				sb.append(" because of " + reason);
+				sb.append(" " + msa.getMessage("reporting.becauseOf") + " " + reason);
 			} else {
-				sb.append(" because of any of [");
+				sb.append(" " + msa.getMessage("reporting.becauseOfAnyOf") + " [");
 				for (Iterator<Concept> i = getDiscontinuedReasonList().iterator(); i.hasNext();) {
 					sb.append(" " + i.next().getName().getName() + " ");
 					if (i.hasNext())
@@ -133,17 +135,17 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 			}
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
-			sb.append(" within the last ");
+			sb.append(" " + msa.getMessage("reporting.withinTheLast") + " ");
 			if (withinLastMonths != null)
-				sb.append(withinLastMonths + " month(s) ");
+				sb.append(withinLastMonths + " " + msa.getMessage("reporting.month(s)") + " ");
 			if (withinLastDays != null)
-				sb.append(withinLastDays + " day(s) ");
+				sb.append(withinLastDays + " " + msa.getMessage("reporting.day(s)") + " ");
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
-			sb.append(" on or after " + sinceDate + " ");
+			sb.append(" " + msa.getMessage("reporting.onOrAfter") + " " + sinceDate + " ");
 		if (untilDate != null)
-			sb.append(" on or before " + untilDate + " ");
+			sb.append(" " + msa.getMessage("reporting.onOrBefore") + " " + untilDate + " ");
 		return sb.toString();
 	}
 	

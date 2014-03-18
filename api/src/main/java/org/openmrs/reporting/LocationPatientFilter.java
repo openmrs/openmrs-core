@@ -17,6 +17,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService.PatientLocationMethod;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -44,10 +45,11 @@ public class LocationPatientFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Patients who belong to ");
-		sb.append(getLocation() == null ? "NULL" : getLocation().getName());
-		sb.append(" (by method " + getCalculationMethod() + ")");
+		sb.append(msa.getMessage("reporting.patientsWhoBelongTo") + " ");
+		sb.append(getLocation() == null ? msa.getMessage("reporting.null") : getLocation().getName());
+		sb.append(" (" + msa.getMessage("reporting.byMethod") + " " + getCalculationMethod() + ")");
 		return sb.toString();
 	}
 	
