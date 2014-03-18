@@ -73,14 +73,14 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public Program saveProgram(Program program) throws APIException {
 		// Program
 		if (program.getConcept() == null && program.getName() == null) {
-			throw new APIException("Program concept is required");
+			throw new APIException("Program concept and program name is required");
 		}
 		
 		// ProgramWorkflow
 		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
 			
 			if (workflow.getConcept() == null && workflow.getProgram() == null) {
-				throw new APIException("ProgramWorkflow concept is required");
+				throw new APIException("ProgramWorkflow concept and name is required");
 			}
 			if (workflow.getProgram() == null) {
 				workflow.setProgram(program);

@@ -64,12 +64,13 @@ public class ProgramValidator implements Validator {
 			Program program = null;
 			if (p.getName() != null && !p.getName().equals("") && !p.getName().equals(" ")) {
 				program = Context.getProgramWorkflowService().getProgramByName(p.getName());
-			}
-			if (program != null && !program.equals(p)) {
-				errors.rejectValue("name", "general.error.nameAlreadyInUse");
 				
-			} else {
-				Context.evictFromSession(program);
+				if (program != null && !program.equals(p)) {
+					errors.rejectValue("name", "general.error.nameAlreadyInUse");
+					
+				} else {
+					Context.evictFromSession(program);
+				}
 			}
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
