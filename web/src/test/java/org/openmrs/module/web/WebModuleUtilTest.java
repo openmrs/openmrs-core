@@ -4,6 +4,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -12,9 +13,13 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +28,14 @@ import org.mockito.stubbing.Answer;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleException;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.web.DispatcherServlet;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  *
@@ -38,6 +47,70 @@ public class WebModuleUtilTest {
 	private Properties propertiesWritten;
 	
 	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
+	
+	/**
+	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
+	 * @verifies creates dwr-modules.xml if not found
+	 */
+	@Test
+	public void startModule_shouldCreateDwrModulesXmlIfNotExists() throws Exception {
+		partialMockWebModuleUtilForMessagesTests();
+		
+		// create dummy module and start it
+		Module mod = buildModuleForMessageTest();
+		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
+		
+		ServletContext servletContext = mock(ServletContext.class);
+		String realPath = servletContext.getRealPath("");
+		if (realPath == null)
+			realPath = System.getProperty("user.dir");
+		
+		// manually delete dwr-modules.xml 
+		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
+		f.delete();
+		
+		// start the dummy module
+		WebModuleUtil.startModule(mod, servletContext, true);
+		
+		// test if dwr-modules.xml is created
+		assertTrue(f.exists());
+	}
+	
+	/**
+	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
+	 * @verifies dwr-modules.xml has dwr tag of module started
+	 */
+	@Test
+	public void startModule_dwrModuleXmlshouldContainModuleInfo() throws Exception {
+		partialMockWebModuleUtilForMessagesTests();
+		
+		// create dummy module and start it
+		Module mod = buildModuleForMessageTest();
+		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
+		
+		ServletContext servletContext = mock(ServletContext.class);
+		String realPath = servletContext.getRealPath("");
+		if (realPath == null)
+			realPath = System.getProperty("user.dir");
+		
+		WebModuleUtil.startModule(mod, servletContext, true);
+		
+		// test if dwr-modules.xml contains id of started dummy module
+		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
+		Scanner scanner = new Scanner(f);
+		boolean found = false;
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
+			if (line.contains(mod.getModuleId())) {
+				found = true;
+				break;
+			}
+		}
+		if (scanner != null)
+			scanner.close();
+		
+		assertTrue(found);
+	}
 	
 	/**
 	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
@@ -88,7 +161,7 @@ public class WebModuleUtilTest {
 		    anyString());
 	}
 	
-	private Module buildModuleForMessageTest() {
+	private Module buildModuleForMessageTest() throws ParserConfigurationException {
 		Properties englishMessages = new Properties();
 		englishMessages.put("mymodule.title", "My Module");
 		englishMessages.put("withoutPrefix", "Without prefix");
@@ -97,8 +170,35 @@ public class WebModuleUtilTest {
 		mod.setModuleId("mymodule");
 		mod.setMessages(new HashMap<String, Properties>());
 		mod.getMessages().put("en", englishMessages);
+		mod.setFile(new File("sampleFile.jar"));
+		mod.setConfig(buildModuleConfig());
 		
 		return mod;
+	}
+	
+	private Document buildModuleConfig() throws ParserConfigurationException {
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+		Element rootElement = doc.createElement("module");
+		doc.appendChild(rootElement);
+		
+		Element dwr = doc.createElement("dwr");
+		dwr.appendChild(doc.createTextNode(""));
+		rootElement.appendChild(dwr);
+		
+		Element allow = doc.createElement("allow");
+		allow.appendChild(doc.createTextNode(""));
+		dwr.appendChild(allow);
+		
+		Attr attr = doc.createAttribute("moduleId");
+		attr.setValue("mymodule");
+		allow.setAttributeNode(attr);
+		
+		Element create = doc.createElement("create");
+		allow.appendChild(create);
+		
+		return doc;
 	}
 	
 	/**
