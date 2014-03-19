@@ -32,6 +32,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.Security;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.web.test.WebTestHelper;
@@ -67,6 +68,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		request.setParameter("secretQuestionNew", "test_question");
 		
 		String answer = "test_answer";
+		String hashed_answer = Security.encodeString(answer);
 		request.setParameter("secretAnswerNew", answer);
 		request.setParameter("secretAnswerConfirm", answer);
 		
@@ -74,7 +76,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		controller.handleRequest(request, response);
 		
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
-		assertEquals(answer, loginCredential.getSecretAnswer());
+		assertEquals(hashed_answer, loginCredential.getSecretAnswer());
 	}
 	
 	@Test
