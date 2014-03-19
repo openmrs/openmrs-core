@@ -52,7 +52,8 @@ public class OrderFrequencyValidator {
 	 * @should fail if concept is null
 	 * @should fail if the concept is not of class frequency
 	 * @should fail if concept is used by another frequency
-	 * @should pass if all fields are correct
+	 * @should pass for a valid new order frequency
+	 * @should pass for a valid existing order frequency
 	 */
 	public void validate(Object obj, Errors errors) {
 		OrderFrequency orderFrequency = (OrderFrequency) obj;

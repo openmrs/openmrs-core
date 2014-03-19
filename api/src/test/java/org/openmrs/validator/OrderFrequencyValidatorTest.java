@@ -13,10 +13,14 @@
  */
 package org.openmrs.validator;
 
+import static junit.framework.Assert.assertNotNull;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.OrderFrequency;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -59,7 +63,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should fail if the concept is not of class frequency", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfConceptIsNotOfClassFrequency() throws Exception {
+	public void validate_shouldFailIfTheConceptIsNotOfClassFrequency() throws Exception {
 		OrderFrequency orderFrequency = new OrderFrequency();
 		orderFrequency.setConcept(Context.getConceptService().getConcept(88));
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
@@ -83,16 +87,34 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @verifies pass for a valid new order frequency
+	 * @see OrderFrequencyValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass if all fields are correct", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfAllFieldsAreCorrect() throws Exception {
-		Concept concept = new Concept(1);
-		concept.setConceptClass(Context.getConceptService().getConceptClass(19));
+	public void validate_shouldPassForAValidNewOrderFrequency() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = new Concept();
+		ConceptName cn = new ConceptName("new name", Context.getLocale());
+		concept.setConceptClass(cs.getConceptClass(19));
+		concept.addName(cn);
+		cs.saveConcept(concept);
 		
 		OrderFrequency orderFrequency = new OrderFrequency();
 		orderFrequency.setConcept(concept);
+		Errors errors = new BindException(orderFrequency, "orderFrequency");
+		new OrderFrequencyValidator().validate(orderFrequency, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @verifies pass for a valid existing order frequency
+	 * @see OrderFrequencyValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassForAValidExistingOrderFrequency() throws Exception {
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		assertNotNull(orderFrequency);
 		Errors errors = new BindException(orderFrequency, "orderFrequency");
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
