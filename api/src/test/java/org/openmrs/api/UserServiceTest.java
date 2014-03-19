@@ -784,7 +784,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return true when given answer matches stored secret answer", method = "isSecretAnswer(User,String)")
 	public void isSecretAnswer_shouldReturnTrueWhenGivenAnswerMatchesStoredSecretAnswer() throws Exception {
 		executeDataSet(XML_FILENAME);
-		User user = Context.getUserService().getUser(5507);
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(501);
+		userService.changeQuestionAnswer(user, "question", "answer");
 		Assert.assertTrue(Context.getUserService().isSecretAnswer(user, "answer"));
 	}
 	
