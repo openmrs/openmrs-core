@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-    <concept_class concept_class_id="19" name="Frequency" description="Frequency" creator="1" date_created="2008-08-15 13:56:55.0" retired="0" uuid="cc3feb09-e120-4d8c-97ee-f7544720efb8"/>
     <concept concept_id="1000" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800200c9a76"/>
     <concept concept_id="1001" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="7e02d1a0-7869-11e4-981f-0800200c9a75"/>
     <concept concept_id="1002" retired="0" datatype_id="4" class_id="1" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="8e02d1a0-7869-11e4-981f-0800200c9a74"/>

@@ -66,6 +66,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String OTHER_ENCOUNTERS_XML = "org/openmrs/api/include/OrderServiceTest-otherEncounters.xml";
 	
+	private static final String OTHER_ORDER_FREQUENCIES_XML = "org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml";
+	
 	private ConceptService conceptService;
 	
 	private OrderService orderService;
@@ -1113,6 +1115,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrderFrequency_shouldAddANewOrderFrequencyToTheDatabase() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("new name", Context.getLocale()));
+		concept.setConceptClass(conceptService.getConceptClassByName("Frequency"));
 		concept = conceptService.saveConcept(concept);
 		OrderService os = Context.getOrderService();
 		Integer originalSize = os.getOrderFrequencies(true).size();
@@ -1135,7 +1138,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should edit an existing order frequency that is not in use", method = "saveOrderFrequency(OrderFrequency)")
 	public void saveOrderFrequency_shouldEditAnExistingOrderFrequencyThatIsNotInUse() throws Exception {
-		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(2);
+		executeDataSet(OTHER_ORDER_FREQUENCIES_XML);
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(100);
 		assertNotNull(orderFrequency);
 		
 		orderFrequency.setFrequencyPerDay(4d);
