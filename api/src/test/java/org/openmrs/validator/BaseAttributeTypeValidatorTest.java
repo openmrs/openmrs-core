@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.attribute.AttributeType;
+import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -76,5 +77,17 @@ public class BaseAttributeTypeValidatorTest {
 	public void validate_shouldRequireName() throws Exception {
 		validator.validate(attributeType, errors);
 		Assert.assertTrue(errors.getFieldErrors("name").size() > 0);
+	}
+	
+	/**
+	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
+	 * @verifies require DatatypeConfiguration if Datatype equals
+	 * Regex-Validated Text
+	 */
+	@Test
+	public void validate_shouldRequireDatatypeConfigurationIfDatatypeRegexValidatedText() throws Exception {
+		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
+		validator.validate(attributeType, errors);
+		Assert.assertTrue(errors.getFieldErrors("datatypeConfig").size() > 0);
 	}
 }
