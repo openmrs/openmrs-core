@@ -863,7 +863,8 @@ public final class OpenmrsConstants {
 	        + "    </sizeMappings>\n" + "    <lineByLineFormat>\n" + "      <string>address1</string>\n"
 	        + "      <string>address2</string>\n" + "      <string>cityVillage stateProvince country postalCode</string>\n"
 	        + "      <string>latitude longitude</string>\n" + "      <string>startDate endDate</string>\n"
-	        + "    </lineByLineFormat>\n" + "  </org.openmrs.layout.web.address.AddressTemplate>";
+	        + "    </lineByLineFormat>\n" + "   <requiredElements>\n" + "   </requiredElements>\n"
+	        + "  </org.openmrs.layout.web.address.AddressTemplate>";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
