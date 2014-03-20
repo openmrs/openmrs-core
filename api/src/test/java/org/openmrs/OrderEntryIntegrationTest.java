@@ -59,9 +59,10 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	public void shouldGetTheActiveOrdersForAPatient() {
 		Patient patient = patientService.getPatient(2);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
-		assertEquals(5, activeOrders.size());
+		assertEquals(7, activeOrders.size());
 		Order[] expectedOrders = { orderService.getOrder(3), orderService.getOrder(5), orderService.getOrder(7),
-		        orderService.getOrder(222), orderService.getOrder(444) };
+		        orderService.getOrder(222), orderService.getOrder(444), orderService.getOrder(34),
+		        orderService.getOrder(35) };
 		assertThat(activeOrders, hasItems(expectedOrders));
 	}
 	

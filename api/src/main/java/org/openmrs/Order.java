@@ -615,4 +615,24 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
 		return newOrder;
 	}
+	
+	/**
+	 * Check whether order type in the order is equal or subtype of provided order type
+	 * @param orderType the orderType to check against the order type in the order
+	 * @return boolean value whether order type in order equal or subtype of given order
+	 * @should return true if the orderType is equal to the specified type or any of its sub types otherwise false
+	 */
+	public boolean isType(OrderType orderType) {
+		if (this.orderType.equals(orderType)) {
+			return true;
+		}
+		OrderType parentType = this.orderType.getParent();
+		while (parentType != null) {
+			if (parentType.equals(orderType)) {
+				return true;
+			}
+			parentType = parentType.getParent();
+		}
+		return false;
+	}
 }
