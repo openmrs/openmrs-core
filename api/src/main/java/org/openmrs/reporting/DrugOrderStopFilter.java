@@ -16,7 +16,7 @@ package org.openmrs.reporting;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Locale;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -85,17 +85,18 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 	
 	public String getDescription() {
 		MessageSourceService msa = Context.getMessageSourceService();
+		Locale locale = Context.getLocale();
 		StringBuilder sb = new StringBuilder();
-		sb.append(msa.getMessage("reporting.patient(s)WhoStopOrChanged") + " ");
+		sb.append(msa.getMessage("reporting.patient(s)WhoStopOrChanged")).append(" ");
 		if ((getDrugList() != null && getDrugList().size() > 0)
 		        || (getGenericDrugList() != null && getGenericDrugList().size() > 0)) {
 			if (getDrugList() != null && getDrugList().size() > 0) {
 				if (getDrugList().size() == 1)
 					sb.append(getDrugList().get(0).getName());
 				else {
-					sb.append(msa.getMessage("reporting.anyOf") + " [");
+					sb.append(msa.getMessage("reporting.anyOf")).append(" [");
 					for (Iterator<Drug> i = getDrugList().iterator(); i.hasNext();) {
-						sb.append(" " + i.next().getName() + " ");
+						sb.append(" ").append(i.next().getName()).append(" ");
 						if (i.hasNext())
 							sb.append(",");
 					}
@@ -104,11 +105,12 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 			}
 			if (getGenericDrugList() != null && getGenericDrugList().size() > 0) {
 				if (getGenericDrugList().size() == 1)
-					sb.append(msa.getMessage("reporting.anyFormOf") + " " + getGenericDrugList().get(0).getName().getName());
+					sb.append(msa.getMessage("reporting.anyFormOf")).append(" ").append(
+					    getGenericDrugList().get(0).getName().getName());
 				else {
-					sb.append(msa.getMessage("reporting.anyFormOf") + " [");
+					sb.append(msa.getMessage("reporting.anyFormOf")).append(" [");
 					for (Iterator<Concept> i = getGenericDrugList().iterator(); i.hasNext();) {
-						sb.append(" " + i.next().getName().getName() + " ");
+						sb.append(" ").append(i.next().getName().getName()).append(" ");
 						if (i.hasNext())
 							sb.append(",");
 					}
@@ -123,11 +125,11 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 				ConceptName cn = getDiscontinuedReasonList().get(0).getName();
 				if (cn != null)
 					reason = cn.getName();
-				sb.append(" " + msa.getMessage("reporting.becauseOf") + " " + reason);
+				sb.append(" ").append(msa.getMessage("reporting.becauseOf", new Object[] { reason }, locale));
 			} else {
-				sb.append(" " + msa.getMessage("reporting.becauseOfAnyOf") + " [");
+				sb.append(" ").append(msa.getMessage("reporting.becauseOfAnyOf")).append(" [");
 				for (Iterator<Concept> i = getDiscontinuedReasonList().iterator(); i.hasNext();) {
-					sb.append(" " + i.next().getName().getName() + " ");
+					sb.append(" ").append(i.next().getName().getName()).append(" ");
 					if (i.hasNext())
 						sb.append(",");
 				}
@@ -135,17 +137,18 @@ public class DrugOrderStopFilter extends CachingPatientFilter {
 			}
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
-			sb.append(" " + msa.getMessage("reporting.withinTheLast") + " ");
 			if (withinLastMonths != null)
-				sb.append(withinLastMonths + " " + msa.getMessage("reporting.month(s)") + " ");
+				sb.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastMonth(s)", new Object[] { withinLastMonths }, locale));
 			if (withinLastDays != null)
-				sb.append(withinLastDays + " " + msa.getMessage("reporting.day(s)") + " ");
+				sb.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastDay(s)", new Object[] { withinLastDays }, locale));
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
-			sb.append(" " + msa.getMessage("reporting.onOrAfter") + " " + sinceDate + " ");
+			sb.append(" ").append(msa.getMessage("reporting.onOrAfter", new Object[] { sinceDate }, locale));
 		if (untilDate != null)
-			sb.append(" " + msa.getMessage("reporting.onOrBefore") + " " + untilDate + " ");
+			sb.append(" ").append(msa.getMessage("reporting.onOrBefore", new Object[] { untilDate }, locale));
 		return sb.toString();
 	}
 	

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Locale;
 import org.openmrs.Cohort;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -85,45 +85,45 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 	
 	public String getDescription() {
 		MessageSourceService msa = Context.getMessageSourceService();
-		StringBuffer ret = new StringBuffer();
-		ret.append(msa.getMessage("reporting.patient(s)With") + " ");
+		Locale locale = Context.getLocale();
+		StringBuilder ret = new StringBuilder();
+		ret.append(msa.getMessage("reporting.patient(s)With")).append(" ");
 		if (atLeastCount != null || atMostCount != null) {
 			if (atLeastCount != null)
-				//ret.append(msa.getMessage("reporting.atLeast") + " " + atLeastCount + " ");
-				ret.append(msa.getMessage("reporting.atLeast", new Object[] { atLeastCount }, Context.getLocale())).append(
-				    " ");
+				ret.append(msa.getMessage("reporting.atLeast", new Object[] { atLeastCount }, locale)).append(" ");
 			if (atMostCount != null)
-				ret.append(msa.getMessage("reporting.atMost") + " " + atMostCount + " ");
+				ret.append(msa.getMessage("reporting.atMost", new Object[] { atMostCount }, locale)).append(" ");
 		} else {
-			ret.append(msa.getMessage("reporting.any") + " ");
+			ret.append(msa.getMessage("reporting.any")).append(" ");
 		}
 		if (encounterTypeList != null) {
 			ret.append("[");
 			for (Iterator<EncounterType> i = encounterTypeList.iterator(); i.hasNext();) {
-				ret.append(" " + i.next().getName());
+				ret.append(" ").append(i.next().getName());
 				if (i.hasNext())
 					ret.append(" ,");
 			}
 			ret.append(" ] ");
 		}
-		ret.append(msa.getMessage("reporting.encounters") + " ");
+		ret.append(msa.getMessage("reporting.encounters")).append(" ");
 		if (location != null) {
-			ret.append(msa.getMessage("reporting.at") + " " + location.getName() + " ");
+			ret.append(msa.getMessage("reporting.at", new Object[] { location.getName() }, locale)).append(" ");
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
-			ret.append(msa.getMessage("reporting.withinTheLast") + " ");
 			if (withinLastMonths != null)
-				ret.append(withinLastMonths + " " + msa.getMessage("reporting.month(s)") + " ");
+				ret.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastMonth(s)", new Object[] { withinLastMonths }, locale));
 			if (withinLastDays != null)
-				ret.append(withinLastDays + " " + msa.getMessage("reporting.day(s)") + " ");
+				ret.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastDay(s)", new Object[] { withinLastDays }, locale));
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
-			ret.append(msa.getMessage("reporting.onOrAfter") + " " + sinceDate + " ");
+			ret.append(msa.getMessage("reporting.onOrAfter", new Object[] { sinceDate }, locale));
 		if (untilDate != null)
-			ret.append(msa.getMessage("reporting.onOrBefore") + " " + untilDate + " ");
+			ret.append(msa.getMessage("reporting.onOrBefore", new Object[] { untilDate }, locale));
 		if (form != null)
-			ret.append(msa.getMessage("reporting.fromThe") + " " + form.getName() + " " + msa.getMessage("reporting.form"));
+			ret.append(msa.getMessage("reporting.fromThe", new Object[] { form.getName() }, locale));
 		return ret.toString();
 	}
 	

@@ -47,9 +47,9 @@ public class LocationPatientFilter extends CachingPatientFilter {
 	public String getDescription() {
 		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append(msa.getMessage("reporting.patientsWhoBelongTo") + " ");
+		sb.append(msa.getMessage("reporting.patientsWhoBelongTo")).append(" ");
 		sb.append(getLocation() == null ? msa.getMessage("reporting.null") : getLocation().getName());
-		sb.append(" (" + msa.getMessage("reporting.byMethod") + " " + getCalculationMethod() + ")");
+		sb.append(" (").append(msa.getMessage("reporting.byMethod")).append(" ").append(getCalculationMethod()).append(")");
 		return sb.toString();
 	}
 	

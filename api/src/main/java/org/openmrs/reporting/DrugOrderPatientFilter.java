@@ -16,10 +16,10 @@ package org.openmrs.reporting;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -124,11 +124,12 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 	public String getDescription() {
 		MessageSourceService mss = Context.getMessageSourceService();
 		// TODO: internationalize this
+		Locale locale = Context.getLocale();
 		StringBuilder sb = new StringBuilder();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE)
 			sb.append(mss.getMessage("reporting.noDrugOrders"));
 		else if (drugId != null || drugConcept != null) {
-			sb.append(mss.getMessage("reporting.taking") + " ");
+			sb.append(mss.getMessage("reporting.taking")).append(" ");
 			SortedSet<String> names = new TreeSet<String>();
 			if (drugId != null) {
 				Drug drug = Context.getConceptService().getDrug(drugId);
@@ -139,12 +140,12 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 					names.add(drug.getName());
 			}
 			if (drugConcept != null)
-				names.add(drugConcept.getName(Context.getLocale(), false).getName());
+				names.add(drugConcept.getName(locale, false).getName());
 			sb.append(OpenmrsUtil.join(names, " " + mss.getMessage("reporting.or") + " "));
 		} else
 			sb.append(mss.getMessage("reporting.anyDrugOrder"));
 		if (getOnDate() != null)
-			sb.append(" " + mss.getMessage("reporting.on") + " " + getOnDate());
+			sb.append(" ").append(mss.getMessage("reporting.on", new Object[] { getOnDate() }, locale));
 		return sb.toString();
 	}
 	

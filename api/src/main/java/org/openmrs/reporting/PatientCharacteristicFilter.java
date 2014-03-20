@@ -101,7 +101,7 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		        && aliveOnly == null && deadOnly == null)
 			return msa.getMessage("reporting.allPatients");
 		
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		if (gender != null) {
 			if ("M".equals(gender)) {
 				ret.append(msa.getMessage("reporting.male"));
@@ -112,38 +112,37 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		ret.append(gender == null ? msa.getMessage("reporting.patients") + " " : " "
 		        + msa.getMessage("reporting.patients").toLowerCase() + " ");
 		
-		DateFormat df = null;
-		if (minBirthdate != null || maxBirthdate != null) {
-			df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
-		}
+		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
+		
 		if (minBirthdate != null) {
 			if (maxBirthdate != null) {
 				//				ret.append(" " + msa.getMessage("reporting.bornBetween") + " " + df.format(minBirthdate) + " "
 				//				        + msa.getMessage("reporting.and") + " " + df.format(maxBirthdate));
-				ret.append(" "
-				        + msa.getMessage("reporting.bornBetween", new Object[] { (Object) df.format(minBirthdate),
-				                (Object) df.format(maxBirthdate) }, Context.getLocale()));
+				ret.append(" ").append(
+				    msa.getMessage("reporting.bornBetween", new Object[] { (Object) df.format(minBirthdate),
+				            (Object) df.format(maxBirthdate) }, Context.getLocale()));
 			} else {
-				ret.append(" " + msa.getMessage("reporting.bornAfter") + " " + df.format(minBirthdate));
+				ret.append(" ").append(msa.getMessage("reporting.bornAfter")).append(" ").append(df.format(minBirthdate));
 			}
 		} else {
 			if (maxBirthdate != null) {
-				ret.append(" " + msa.getMessage("reporting.bornBefore") + " " + df.format(maxBirthdate));
+				ret.append(" ").append(msa.getMessage("reporting.bornBefore")).append(" ").append(df.format(maxBirthdate));
 			}
 		}
 		if (minAge != null) {
 			if (maxAge != null) {
 				//ret.append(" " + msa.getMessage("reporting.betweenTheAgesOf") + " " + minAge + " "
 				//        + msa.getMessage("reporting.bornBetween") + " " + maxAge);
-				ret.append(" "
-				        + msa.getMessage("reporting.betweenTheAgesOf", new Object[] { (Object) minAge, (Object) maxAge },
-				            Context.getLocale()));
+				ret.append(" ").append(
+				    msa.getMessage("reporting.betweenTheAgesOf", new Object[] { (Object) minAge, (Object) maxAge }, Context
+				            .getLocale()));
 				
 			} else {
 				//ret.append(" " + msa.getMessage("reporting.atLeast") + " " + minAge + " "
 				//        + msa.getMessage("reporting.yearsOld"));
 				
-				ret.append(" ").append(msa.getMessage("reporting.atLeast", new Object[] { minAge }, Context.getLocale()));
+				ret.append(" ").append(
+				    msa.getMessage("reporting.atLeastYear(s)Old", new Object[] { minAge }, Context.getLocale()));
 			}
 		} else {
 			if (maxAge != null) {
@@ -154,10 +153,10 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 			}
 		}
 		if (aliveOnly != null && aliveOnly) {
-			ret.append(" " + msa.getMessage("reporting.whoAreAlive"));
+			ret.append(" ").append(msa.getMessage("reporting.whoAreAlive"));
 		}
 		if (deadOnly != null && deadOnly) {
-			ret.append(" " + msa.getMessage("reporting.whoAreDead"));
+			ret.append(" ").append(msa.getMessage("reporting.whoAreDead"));
 		}
 		return ret.toString();
 	}

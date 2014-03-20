@@ -18,9 +18,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
@@ -77,6 +77,7 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 	
 	public String getDescription() {
 		MessageSourceService msa = Context.getMessageSourceService();
+		Locale locale = Context.getLocale();
 		StringBuilder ret = new StringBuilder();
 		
 		//boolean currentlyCase = withinLastDays != null && withinLastDays == 0
@@ -123,17 +124,20 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 			}
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
-			ret.append(msa.getMessage("reporting.withinTheLast") + " ");
 			if (withinLastMonths != null)
-				ret.append(withinLastMonths + " " + msa.getMessage("reporting.month(s)") + " ");
+				ret.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastMonth(s)", new Object[] { withinLastMonths }, locale));
 			if (withinLastDays != null)
-				ret.append(withinLastDays + " " + msa.getMessage("reporting.day(s)") + " ");
+				ret.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastDay(s)", new Object[] { withinLastDays }, locale));
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
-			ret.append(msa.getMessage("reporting.onOrAfter") + " " + Context.getDateFormat().format(sinceDate) + " ");
+			ret.append(msa.getMessage("reporting.onOrAfter", new Object[] { Context.getDateFormat().format(sinceDate) },
+			    locale));
 		if (untilDate != null)
-			ret.append(msa.getMessage("reporting.onOrBefore") + " " + Context.getDateFormat().format(untilDate) + " ");
+			ret.append(msa.getMessage("reporting.onOrBefore", new Object[] { Context.getDateFormat().format(untilDate) },
+			    locale));
 		
 		return ret.toString();
 	}

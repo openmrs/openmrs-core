@@ -65,16 +65,18 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 			return "";
 		Locale locale = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
-		StringBuffer ret = new StringBuffer();
-		ret.append(mss.getMessage("reporting.patientsIn") + " ");
+		StringBuilder ret = new StringBuilder();
+		ret.append(mss.getMessage("reporting.patientsIn")).append(" ");
 		ret.append(getConceptName(program.getConcept()));
 		if (onDate != null)
-			ret.append(" " + mss.getMessage("reporting.on") + " " + df.format(onDate));
+			ret.append(" ").append(mss.getMessage("reporting.on", new Object[] { df.format(onDate) }, locale));
 		else {
 			if (fromDate != null)
-				ret.append(" " + mss.getMessage("reporting.anytimeAfter") + " " + df.format(fromDate));
+				ret.append(" ").append(
+				    mss.getMessage("reporting.anytimeAfter", new Object[] { df.format(fromDate) }, locale));
 			if (toDate != null)
-				ret.append(" " + mss.getMessage("reporting.anytimeBefore") + " " + df.format(toDate));
+				ret.append(" ")
+				        .append(mss.getMessage("reporting.anytimeBefore", new Object[] { df.format(toDate) }, locale));
 		}
 		return ret.toString();
 	}

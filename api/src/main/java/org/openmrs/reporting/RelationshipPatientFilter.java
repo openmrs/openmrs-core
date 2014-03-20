@@ -52,7 +52,7 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 	public String getDescription() {
 		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append(msa.getMessage("reporting.patients") + " ");
+		sb.append(msa.getMessage("reporting.patients")).append(" ");
 		RelationshipType relType = getRelationshipType();
 		if (relType != null) {
 			if (includeAtoB && includeBtoA) {
@@ -76,7 +76,7 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 				}
 			}
 		} else {
-			sb.append(msa.getMessage("reporting.withAnyRelationshipTo") + " ");
+			sb.append(msa.getMessage("reporting.withAnyRelationshipTo")).append(" ");
 		}
 		if (getPerson() != null)
 			sb.append(getPerson().toString());
@@ -92,12 +92,12 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 	public String getCacheKey() {
 		StringBuilder sb = new StringBuilder();
 		if (getRelationshipType() != null) {
-			sb.append("t" + getRelationshipType().getRelationshipTypeId() + ".");
-			sb.append(includeAtoB + ".");
-			sb.append(includeBtoA + ".");
+			sb.append("t").append(getRelationshipType().getRelationshipTypeId()).append(".");
+			sb.append(includeAtoB).append(".");
+			sb.append(includeBtoA).append(".");
 		}
 		if (getPerson() != null)
-			sb.append("p" + getPerson().getPersonId() + ".");
+			sb.append("p").append(getPerson().getPersonId()).append(".");
 		return sb.toString();
 	}
 	

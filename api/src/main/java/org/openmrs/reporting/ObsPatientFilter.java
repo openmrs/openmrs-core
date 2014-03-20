@@ -136,7 +136,7 @@ public class ObsPatientFilter extends CachingPatientFilter {
 	public String getDescription() {
 		MessageSourceService mss = Context.getMessageSourceService();
 		Locale locale = Context.getLocale();
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		if (question == null) {
 			if (getValue() != null)
 				ret.append(mss.getMessage("reporting.patient(s)With") + " " + timeModifier + " "
@@ -144,8 +144,8 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			else
 				ret.append(mss.getMessage("reporting.qtnNValNull"));
 		} else {
-			ret.append(mss.getMessage("reporting.patient(s)With") + " ");
-			ret.append(timeModifier + " ");
+			ret.append(mss.getMessage("reporting.patient(s)With")).append(" ");
+			ret.append(timeModifier).append(" ");
 			ConceptName questionName = null;
 			if (question == null)
 				ret.append(mss.getMessage("reporting.concept"));
@@ -160,7 +160,7 @@ public class ObsPatientFilter extends CachingPatientFilter {
 				}
 			}
 			if (value != null && modifier != null) {
-				ret.append(" " + modifier.getSqlRepresentation() + " ");
+				ret.append(" ").append(modifier.getSqlRepresentation()).append(" ");
 				if (value instanceof Concept)
 					ret.append(((Concept) value).getName(locale));
 				else
@@ -168,27 +168,25 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			}
 		}
 		if (withinLastDays != null || withinLastMonths != null) {
-			ret.append(" " + mss.getMessage("reporting.withinLast"));
 			if (withinLastMonths != null)
-				ret.append(" " + withinLastMonths + " " + mss.getMessage("reporting.month(s)"));
+				ret.append(" ").append(
+				    mss.getMessage("reporting.withinLastMonth(s)", new Object[] { withinLastMonths }, locale));
 			if (withinLastDays != null)
-				ret.append(" " + withinLastDays + " " + mss.getMessage("reporting.day(s)"));
+				ret.append(" ")
+				        .append(mss.getMessage("reporting.withinLastDay(s)", new Object[] { withinLastDays }, locale));
 		}
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
-			ret.append(" until");
 			if (untilMonthsAgo != null)
-				ret.append(" " + untilMonthsAgo + " " + mss.getMessage("reporting.month(s)"));
+				ret.append(" ")
+				        .append(mss.getMessage("reporting.untilMonth(s)Ago", new Object[] { untilMonthsAgo }, locale));
 			if (untilDaysAgo != null)
-				ret.append(" " + untilDaysAgo + " " + mss.getMessage("reporting.day(s)"));
-			ret.append(" ago");
+				ret.append(" ").append(mss.getMessage("reporting.untilDay(s)Ago", new Object[] { untilDaysAgo }, locale));
 		}
-		DateFormat df = null;
-		if (sinceDate != null || untilDate != null)
-			df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
+		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 		if (sinceDate != null)
-			ret.append(" " + mss.getMessage("reporting.since") + " " + df.format(sinceDate));
+			ret.append(" ").append(mss.getMessage("reporting.since", new Object[] { df.format(sinceDate) }, locale));
 		if (untilDate != null)
-			ret.append(" " + mss.getMessage("reporting.until") + " " + df.format(untilDate));
+			ret.append(" ").append(mss.getMessage("reporting.until", new Object[] { df.format(untilDate) }, locale));
 		return ret.toString();
 	}
 	
