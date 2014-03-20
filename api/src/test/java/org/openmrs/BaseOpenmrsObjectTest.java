@@ -14,9 +14,12 @@
 package org.openmrs;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Order.OrderAction;
 
 public class BaseOpenmrsObjectTest {
 	
@@ -60,7 +63,7 @@ public class BaseOpenmrsObjectTest {
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
 		
 		//when
-		Object obj = new Object();
+		Integer obj = 5;
 		
 		//then
 		Assert.assertFalse(o.equals(obj));
@@ -149,17 +152,33 @@ public class BaseOpenmrsObjectTest {
 	}
 	
 	@Test
-	public void shouldNotBeEqualWhenDifferentClassesAndSameId() throws Exception {
-		Encounter encounter = new Encounter(2);
-		Order order = new Order(2);
-		
-		Assert.assertFalse(encounter.equals(order));
+	public void equals_shouldReturnFalseIfGivenObjIsNotInstanceOfSuperOrExtendingClass() throws Exception {
+		//given
+		Encounter encounter = new Encounter();
+		Concept concept = new Concept();
+		concept.setUuid(encounter.getUuid());
+		assertFalse(encounter.equals(concept));
+		assertFalse(concept.equals(encounter));
 	}
 	
 	@Test
-	public void shouldNotBeEqualWhenFirstIsNull() throws Exception {
-		Encounter encounter = new Encounter(2);
-		Assert.assertFalse(encounter.equals(null));
+	public void equals_shouldReturnTrueIfGivenObjectIsInstanceOfSuperOrExtendingClass() throws Exception {
+		//given
+		Concept concept = new Concept();
+		Concept numeric = new ConceptNumeric();
+		numeric.setUuid(concept.getUuid());
+		assertTrue(numeric.equals(concept));
+		assertTrue(concept.equals(numeric));
+	}
+	
+	@Test
+	public void equals_shouldReturnFalseIfGivenObjectIsNotSubclassOfSuperOrExtendingClass() throws Exception {
+		//given
+		Order order = new Order();
+		Order type = new DrugOrder();
+		type.setUuid(order.getUuid());
+		assertFalse(type.equals(order));
+		assertFalse(order.equals(type));
 	}
 	
 	/**
