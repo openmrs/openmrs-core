@@ -236,11 +236,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		
 		//They must be sorted by startDate starting with the latest
-		Assert.assertEquals(4, orders.size());
-		Assert.assertEquals(5, orders.get(0).getOrderId().intValue());
-		Assert.assertEquals(444, orders.get(1).getOrderId().intValue());
-		Assert.assertEquals(44, orders.get(2).getOrderId().intValue());
-		Assert.assertEquals(4, orders.get(3).getOrderId().intValue());
+		Assert.assertEquals(6, orders.size());
+		Assert.assertEquals(34, orders.get(0).getOrderId().intValue());
+		Assert.assertEquals(35, orders.get(1).getOrderId().intValue());
+		Assert.assertEquals(5, orders.get(2).getOrderId().intValue());
+		Assert.assertEquals(444, orders.get(3).getOrderId().intValue());
+		Assert.assertEquals(44, orders.get(4).getOrderId().intValue());
+		Assert.assertEquals(4, orders.get(5).getOrderId().intValue());
 		
 		concept = Context.getConceptService().getConcept(792);
 		orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
@@ -349,9 +351,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getActiveOrders_shouldReturnAllActiveOrdersForTheSpecifiedPatient() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = orderService.getActiveOrders(patient, null, null, null);
-		assertEquals(5, orders.size());
+		assertEquals(7, orders.size());
 		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
-		        orderService.getOrder(5), orderService.getOrder(7) };
+		        orderService.getOrder(5), orderService.getOrder(7), orderService.getOrder(34), orderService.getOrder(35) };
 		assertThat(orders, hasItems(expectedOrders));
 		
 		assertTrue(OrderUtil.isOrderActive(orders.get(0), null));
@@ -359,6 +361,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(OrderUtil.isOrderActive(orders.get(2), null));
 		assertTrue(OrderUtil.isOrderActive(orders.get(3), null));
 		assertTrue(OrderUtil.isOrderActive(orders.get(4), null));
+		assertTrue(OrderUtil.isOrderActive(orders.get(5), null));
+		assertTrue(OrderUtil.isOrderActive(orders.get(6), null));
 	}
 	
 	/**
@@ -371,9 +375,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Patient patient = patientService.getPatient(2);
 		CareSetting careSetting = orderService.getCareSetting(1);
 		List<Order> orders = orderService.getActiveOrders(patient, null, careSetting, null);
-		assertEquals(4, orders.size());
+		assertEquals(6, orders.size());
 		Order[] expectedOrders = { orderService.getOrder(3), orderService.getOrder(444), orderService.getOrder(5),
-		        orderService.getOrder(7) };
+		        orderService.getOrder(7), orderService.getOrder(34), orderService.getOrder(35) };
 		assertThat(orders, hasItems(expectedOrders));
 	}
 	
@@ -493,9 +497,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getActiveOrders_shouldReturnAllOrdersIfNoOrderTypeIsSpecified() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = orderService.getActiveOrders(patient, null, null, null);
-		assertEquals(5, orders.size());
+		assertEquals(7, orders.size());
 		Order[] expectedOrders = { orderService.getOrder(222), orderService.getOrder(3), orderService.getOrder(444),
-		        orderService.getOrder(5), orderService.getOrder(7) };
+		        orderService.getOrder(5), orderService.getOrder(7), orderService.getOrder(34), orderService.getOrder(35) };
 		assertThat(orders, hasItems(expectedOrders));
 	}
 	
@@ -1409,7 +1413,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getAllOrdersByPatient_shouldGetAllTheOrdersForTheSpecifiedPatient() throws Exception {
-		assertEquals(12, orderService.getAllOrdersByPatient(patientService.getPatient(2)).size());
+		assertEquals(14, orderService.getAllOrdersByPatient(patientService.getPatient(2)).size());
 		assertEquals(2, orderService.getAllOrdersByPatient(patientService.getPatient(7)).size());
 	}
 	
@@ -1557,5 +1561,27 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderService orderService = Context.getOrderService();
 		List<OrderType> orderTypeList = orderService.getOrderSubtypes(orderService.getOrderType(2), false);
 		assertEquals(6, orderTypeList.size());
+	}
+	
+	/**
+	 * @see {@link Order#isType(org.openmrs.OrderType)}
+	 */
+	@Test
+	@Verifies(value = "should return true if the orderType is equal to the specified type or any of its sub types", method = "isType(org.openmrs.OrderType)")
+	public void isOrderType_shouldReturnTrueIfOrderTypeIsEqualToSpecifiedTypeOrAnySubtypeOfIt() {
+		OrderService orderService = Context.getOrderService();
+		Order order = orderService.getOrder(34);
+		assertTrue(order.isType(orderService.getOrderTypeByName("Test order")));
+	}
+	
+	/**
+	 * @see {@link Order#isType(org.openmrs.OrderType)}
+	 */
+	@Test
+	@Verifies(value = "should return false if the orderType is not equal to the specified type or any of its sub types", method = "isType(org.openmrs.OrderType)")
+	public void isOrderType_shouldReturnFalseIfOrderTypeIsNotEqualToSpecifiedTypeOrAnySubtypeOfIt() {
+		OrderService orderService = Context.getOrderService();
+		Order order = orderService.getOrder(35);
+		assertFalse(order.isType(orderService.getOrderTypeByName("Test order")));
 	}
 }
