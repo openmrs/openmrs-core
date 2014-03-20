@@ -555,6 +555,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Get the {@link org.openmrs.OrderType}
+	 * 
 	 * @return the {@link org.openmrs.OrderType}
 	 */
 	public OrderType getOrderType() {
@@ -563,6 +564,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Set the {@link org.openmrs.OrderType}
+	 * 
 	 * @param orderType the {@link org.openmrs.OrderType}
 	 */
 	public void setOrderType(OrderType orderType) {
@@ -614,5 +616,28 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		newOrder.setOrderReason(this.getOrderReason());
 		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
 		return newOrder;
+	}
+	
+	/**
+	 * Checks whether this order's orderType matches or is a sub type of the specified one
+	 * 
+	 * @since 1.10
+	 * @param orderType the orderType to match on
+	 * @return true if the type of the order matches or is a sub type of the other order
+	 * @should true if it is the same or is a subtype
+	 * @should false if it neither the same nor a subtype
+	 */
+	public boolean isType(OrderType orderType) {
+		if (this.orderType.equals(orderType)) {
+			return true;
+		}
+		OrderType parentType = this.orderType.getParent();
+		while (parentType != null) {
+			if (parentType.equals(orderType)) {
+				return true;
+			}
+			parentType = parentType.getParent();
+		}
+		return false;
 	}
 }

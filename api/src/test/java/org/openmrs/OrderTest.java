@@ -192,4 +192,35 @@ public class OrderTest {
 		    "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber", "orderer",
 		    "previousOrder", "startDate", "dateStopped");
 	}
+	
+	/**
+	 * @verifies true if it is the same or is a subtype
+	 * @see Order#isType(OrderType)
+	 */
+	@Test
+	public void isType_shouldTrueIfItIsTheSameOrIsASubtype() throws Exception {
+		Order order = new Order();
+		OrderType orderType = new OrderType();
+		OrderType subType1 = new OrderType();
+		OrderType subType2 = new OrderType();
+		subType2.setParent(subType1);
+		subType1.setParent(orderType);
+		order.setOrderType(subType2);
+		
+		assertTrue(order.isType(subType2));
+		assertTrue(order.isType(subType1));
+		assertTrue(order.isType(orderType));
+	}
+	
+	/**
+	 * @verifies false if it neither the same nor a subtype
+	 * @see Order#isType(OrderType)
+	 */
+	@Test
+	public void isType_shouldFalseIfItNeitherTheSameNorASubtype() throws Exception {
+		Order order = new Order();
+		order.setOrderType(new OrderType());
+		
+		assertFalse(order.isType(new OrderType()));
+	}
 }
