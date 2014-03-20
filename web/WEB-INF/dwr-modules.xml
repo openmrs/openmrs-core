@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dwr>
+<allow moduleId="mymodule">
+<create/>
+</allow>
+<allow moduleId="mymodule">
+<create/>
+</allow>
+</dwr>
