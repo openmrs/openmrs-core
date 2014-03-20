@@ -96,16 +96,16 @@
 			<c:choose>
 			<c:when test="${not empty model.linkUrl && model.target != '_blank'}">
 				str += '<a href="${model.linkUrl}?patientId=' + pli.patientId + '">';
-                str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' year old ' + (pli.gender == 'M' ? 'Male' : 'Female') + ')';
+				str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' <spring:message code="cohortBuilder.yearOld"/> ' + (pli.gender == 'M' ? '<spring:message code="cohortBuilder.male"/>' : '<spring:message code="reporting.female"/>') + ')';
                 str += '</a>';
 			</c:when>
 			<c:when test="${not empty model.linkUrl && model.target == '_blank'}">
                 str += '<a href="${model.linkUrl}?patientId=' + pli.patientId + '" ' + 'target="_blank"' + '>';
-                str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' year old ' + (pli.gender == 'M' ? 'Male' : 'Female') + ')';
+                str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' <spring:message code="cohortBuilder.yearOld"/> ' + (pli.gender == 'M' ? '<spring:message code="cohortBuilder.male"/>' : '<spring:message code="reporting.female"/>') + ')';
                 str += '</a>';
 			</c:when>
             <c:otherwise>
-                str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' year old ' + (pli.gender == 'M' ? 'Male' : 'Female') + ')';			
+            str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' <spring:message code="cohortBuilder.yearOld"/> ' + (pli.gender == 'M' ? '<spring:message code="cohortBuilder.male"/>' : '<spring:message code="reporting.female"/>') + ')';			
 			</c:otherwise>
 			</c:choose>
 			str += '<br/>';
