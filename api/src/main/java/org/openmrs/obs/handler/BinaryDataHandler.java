@@ -128,13 +128,21 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		return obs;
 	}
 	
+	/**
+	 * Returns all the supported views for this handler
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportsView()
+	 * @return a list of all supported views for this handler
+	 * @since 1.11
+	 */
+	 
 	public String[] getSupportedViews() {
 		final String[] views = { "", "" };
 		return views;
 	}
 	
 	/**
-	 * @see org.openmrs.obs.ComplexObsHandler#supportsView()
+	 * Returns true if a given view is supported by this handler
+	 * @see org.openmrs.obs.ComplexObsHandler#supportsView( String View)
 	 * @param View to be compared with the list of supported views for this handler
 	 * @return true if a given view is supported by this handler otherwise return false
 	 * @since 1.11
@@ -152,5 +160,3 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		return supported;
 	}
 }
-		
-
