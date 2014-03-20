@@ -71,7 +71,6 @@ public interface ComplexObsHandler {
 	/** 
 	 * Return true if given view is supported by this handler 
 	 * @param view nullable view type. This is defined by the ui and view/handler
-	 * 
 	 * @since 1.11 
 	 */
 	public boolean supportsView(String view);
