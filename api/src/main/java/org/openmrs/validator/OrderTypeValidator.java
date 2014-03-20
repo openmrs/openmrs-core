@@ -41,6 +41,7 @@ public class OrderTypeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
+	@Override
 	public boolean supports(Class c) {
 		return OrderType.class.isAssignableFrom(c);
 	}
@@ -59,7 +60,9 @@ public class OrderTypeValidator implements Validator {
 	 * @should fail if conceptClass is a duplicate
 	 * @should pass if all fields are correct for a new order type
 	 * @should pass if all fields are correct for an existing order type
+	 * @should be invoked when an order type is saved
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		if (obj == null || !(obj instanceof OrderType)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + OrderType.class);

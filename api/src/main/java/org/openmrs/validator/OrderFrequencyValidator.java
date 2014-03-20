@@ -21,6 +21,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link OrderFrequency} class.
@@ -28,7 +29,7 @@ import org.springframework.validation.ValidationUtils;
  * @since 1.10
  */
 @Handler(supports = { OrderFrequency.class })
-public class OrderFrequencyValidator {
+public class OrderFrequencyValidator implements Validator {
 	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -39,6 +40,7 @@ public class OrderFrequencyValidator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public boolean supports(Class c) {
 		return OrderFrequency.class.isAssignableFrom(c);
 	}
@@ -54,7 +56,9 @@ public class OrderFrequencyValidator {
 	 * @should fail if concept is used by another frequency
 	 * @should pass for a valid new order frequency
 	 * @should pass for a valid existing order frequency
+	 * @should be invoked when an order frequency is saved
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
 		OrderFrequency orderFrequency = (OrderFrequency) obj;
 		if (orderFrequency == null) {

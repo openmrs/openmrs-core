@@ -16,6 +16,7 @@ package org.openmrs;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
@@ -166,5 +167,16 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 */
 	public void addConceptClass(ConceptClass conceptClass) {
 		getConceptClasses().add(conceptClass);
+	}
+	
+	/**
+	 * @see org.openmrs.BaseOpenmrsObject#toString()
+	 */
+	@Override
+	public String toString() {
+		if (StringUtils.isNotBlank(getName())) {
+			return getName();
+		}
+		return super.toString();
 	}
 }

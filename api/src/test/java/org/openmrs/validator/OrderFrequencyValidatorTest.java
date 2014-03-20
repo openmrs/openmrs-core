@@ -16,10 +16,13 @@ package org.openmrs.validator;
 import static junit.framework.Assert.assertNotNull;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.OrderFrequency;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -31,6 +34,9 @@ import org.springframework.validation.Errors;
  * Tests methods on the {@link OrderFrequencyValidator} class.
  */
 public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
@@ -119,5 +125,19 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		new OrderFrequencyValidator().validate(orderFrequency, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @verifies be invoked when an order frequency is saved
+	 * @see OrderFrequencyValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldBeInvokedWhenAnOrderFrequencyIsSaved() throws Exception {
+		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(2);
+		orderFrequency.setConcept(null);
+		expectedException.expect(APIException.class);
+		String expectedMsg = "'" + orderFrequency + "' failed to validate with reason: concept: Concept.noConceptSelected";
+		expectedException.expectMessage(expectedMsg);
+		Context.getOrderService().saveOrderFrequency(orderFrequency);
 	}
 }

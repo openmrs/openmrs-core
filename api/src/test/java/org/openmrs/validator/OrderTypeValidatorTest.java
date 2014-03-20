@@ -20,9 +20,12 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.ConceptClass;
 import org.openmrs.OrderType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -38,6 +41,9 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private OrderService orderService;
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
@@ -173,5 +179,19 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		new OrderTypeValidator().validate(orderType, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @verifies be invoked when an order type is saved
+	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldBeInvokedWhenAnOrderTypeIsSaved() throws Exception {
+		OrderType orderType = orderService.getOrderType(1);
+		orderType.setName(null);
+		expectedException.expect(APIException.class);
+		String expectedMsg = "'" + orderType + "' failed to validate with reason: name: error.name";
+		expectedException.expectMessage(expectedMsg);
+		orderService.saveOrderType(orderType);
 	}
 }
