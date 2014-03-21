@@ -18,15 +18,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -75,16 +76,18 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
+		Locale locale = Context.getLocale();
 		StringBuilder ret = new StringBuilder();
 		
 		//boolean currentlyCase = withinLastDays != null && withinLastDays == 0
 		//       && (withinLastMonths == null || withinLastMonths == 0);
 		
-		ret.append("Patients in program ");
+		ret.append(msa.getMessage("reporting.patientsInProgram") + " ");
 		
 		if (getProgram() != null) {
 			if (getProgram().getConcept() == null)
-				ret.append(" <CONCEPT> ");
+				ret.append(" <" + msa.getMessage("reporting.concept") + "> ");
 			else {
 				ret.append(getConceptName(program.getConcept()) + " ");
 			}
@@ -98,18 +101,19 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 			}
 			boolean first = true;
 			for (Map.Entry<ProgramWorkflow, Set<ProgramWorkflowState>> e : map.entrySet()) {
-				ret.append(first ? "with " : "or ");
+				ret.append(first ? msa.getMessage("reporting.with") + " " : msa.getMessage("reporting.or") + " ");
 				first = false;
 				try {
 					ret.append(e.getKey().getConcept().getName().getName());
 				}
 				catch (NullPointerException ex) {
-					ret.append("CONCEPT?");
+					ret.append(msa.getMessage("reporting.concept") + "?");
 				}
 				if (e.getValue().size() == 1)
-					ret.append(" of " + e.getValue().iterator().next().getConcept().getName().getName());
+					ret.append(" " + msa.getMessage("reporting.of") + " "
+					        + e.getValue().iterator().next().getConcept().getName().getName());
 				else {
-					ret.append(" in [ ");
+					ret.append(" " + msa.getMessage("reporting.in") + " [ ");
 					for (Iterator<ProgramWorkflowState> i = e.getValue().iterator(); i.hasNext();) {
 						ret.append(i.next().getConcept().getName().getName());
 						if (i.hasNext())
@@ -120,17 +124,20 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 			}
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
-			ret.append("within the last ");
 			if (withinLastMonths != null)
-				ret.append(withinLastMonths + " month(s) ");
+				ret.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastMonths", new Object[] { withinLastMonths }, locale));
 			if (withinLastDays != null)
-				ret.append(withinLastDays + " day(s) ");
+				ret.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastDays", new Object[] { withinLastDays }, locale));
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
-			ret.append("on or after " + Context.getDateFormat().format(sinceDate) + " ");
+			ret.append(msa.getMessage("reporting.onOrAfter", new Object[] { Context.getDateFormat().format(sinceDate) },
+			    locale));
 		if (untilDate != null)
-			ret.append("on or before " + Context.getDateFormat().format(untilDate) + " ");
+			ret.append(msa.getMessage("reporting.onOrBefore", new Object[] { Context.getDateFormat().format(untilDate) },
+			    locale));
 		
 		return ret.toString();
 	}
