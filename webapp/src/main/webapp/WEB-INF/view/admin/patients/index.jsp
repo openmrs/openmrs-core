@@ -56,7 +56,7 @@
 
 <h2><openmrs:message code="Patient.title"/></h2>
 
-<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient&viewType=edit"><openmrs:message code="Patient.create"/></a><br/><br/>
+<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient&viewType=shortEdit"><openmrs:message code="Patient.create"/></a><br/><br/>
 
 <div>
 	<b class="boxHeader"><openmrs:message code="Patient.find"/></b>
