@@ -215,7 +215,7 @@ public interface OrderDAO {
 	public void purgeOrderType(OrderType orderType);
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)
+	 * @see org.openmrs.api.OrderService#getSubtypes(org.openmrs.OrderType, boolean)
 	 */
 	public List<OrderType> getOrderSubtypes(OrderType orderType, boolean includeRetired);
 	

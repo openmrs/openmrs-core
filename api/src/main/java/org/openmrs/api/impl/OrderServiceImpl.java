@@ -661,11 +661,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)
+	 * @see org.openmrs.api.OrderService#getSubtypes(org.openmrs.OrderType, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<OrderType> getOrderSubtypes(OrderType orderType, boolean includeRetired) {
+	public List<OrderType> getSubtypes(OrderType orderType, boolean includeRetired) {
 		List<OrderType> allSubtypes = new ArrayList<OrderType>();
 		List<OrderType> immediateAncestors = dao.getOrderSubtypes(orderType, includeRetired);
 		while (!immediateAncestors.isEmpty()) {

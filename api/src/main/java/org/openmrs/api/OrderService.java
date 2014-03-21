@@ -555,5 +555,5 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	public List<OrderType> getOrderSubtypes(OrderType orderType, boolean includeRetired);
+	public List<OrderType> getSubtypes(OrderType orderType, boolean includeRetired);
 }

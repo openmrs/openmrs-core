@@ -1538,24 +1538,24 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)}
+	 * @see {@link OrderService#getSubtypes(org.openmrs.OrderType, boolean)}
 	 */
 	@Test
 	@Verifies(value = "shoud return all order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
 	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithRetiredOrderTypes() {
 		OrderService orderService = Context.getOrderService();
-		List<OrderType> orderTypeList = orderService.getOrderSubtypes(orderService.getOrderType(2), true);
+		List<OrderType> orderTypeList = orderService.getSubtypes(orderService.getOrderType(2), true);
 		assertEquals(7, orderTypeList.size());
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderSubtypes(org.openmrs.OrderType, boolean)}
+	 * @see {@link OrderService#getSubtypes(org.openmrs.OrderType, boolean)}
 	 */
 	@Test
 	@Verifies(value = "shoud return unretired order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
 	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithoutRetiredOrderTypes() {
 		OrderService orderService = Context.getOrderService();
-		List<OrderType> orderTypeList = orderService.getOrderSubtypes(orderService.getOrderType(2), false);
+		List<OrderType> orderTypeList = orderService.getSubtypes(orderService.getOrderType(2), false);
 		assertEquals(6, orderTypeList.size());
 	}
 }
