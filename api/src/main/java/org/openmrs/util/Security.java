@@ -13,7 +13,6 @@
  */
 package org.openmrs.util;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -107,7 +106,7 @@ public class Security {
 	 * @param strToEncode string to encode
 	 * @return the SHA-1 encryption of a given string
 	 */
-	private static String encodeStringSHA1(String strToEncode) throws APIException {
+	public static String encodeStringSHA1(String strToEncode) throws APIException {
 		String algorithm = "SHA1";
 		MessageDigest md;
 		byte[] input;
