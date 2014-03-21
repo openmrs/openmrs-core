@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 
 /**
@@ -50,6 +51,34 @@ public class OrderUtil {
 		
 		//TODO discontinue all active drug orders for a patient
 		//See https://tickets.openmrs.org/browse/TRUNK-4185
+	}
+	
+	/**
+	 * Checks whether orderType2 matches or is a sub type of orderType1
+	 * 
+	 * @since 1.10
+	 * @param orderType1
+	 * @param orderType2
+	 * @return true if orderType2 matches or is a sub type of orderType1
+	 * @should true if orderType2 is the same or is a subtype of orderType1
+	 * @should false if orderType2 is neither the same nor a subtype of orderType1
+	 * @should return false if they are both null
+	 * @should return false if any is null and the other is not
+	 */
+	public static boolean isType(OrderType orderType1, OrderType orderType2) {
+		if (orderType1 != null && orderType2 != null) {
+			if (orderType2.equals(orderType1)) {
+				return true;
+			}
+			OrderType parentType = orderType2.getParent();
+			while (parentType != null) {
+				if (parentType.equals(orderType1)) {
+					return true;
+				}
+				parentType = parentType.getParent();
+			}
+		}
+		return false;
 	}
 	
 }

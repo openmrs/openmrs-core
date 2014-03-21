@@ -17,6 +17,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.order.OrderUtil;
 
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
@@ -628,16 +629,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should false if it neither the same nor a subtype
 	 */
 	public boolean isType(OrderType orderType) {
-		if (this.orderType.equals(orderType)) {
-			return true;
-		}
-		OrderType parentType = this.orderType.getParent();
-		while (parentType != null) {
-			if (parentType.equals(orderType)) {
-				return true;
-			}
-			parentType = parentType.getParent();
-		}
-		return false;
+		return OrderUtil.isType(orderType, this.orderType);
 	}
 }
