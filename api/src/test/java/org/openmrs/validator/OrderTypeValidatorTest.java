@@ -141,7 +141,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfConceptClassIsADuplicate() throws Exception {
 		OrderType orderType = new OrderType();
 		orderType.setName("concept class test");
-		OrderType existing = orderService.getOrderType(1);
+		OrderType existing = orderService.getOrderType(2);
 		assertEquals(1, existing.getConceptClasses().size());
 		orderType.addConceptClass(existing.getConceptClasses().iterator().next());
 		Errors errors = new BindException(orderType, "orderType");

@@ -195,7 +195,7 @@
   <order_type order_type_id="14" name="X-Ray Sheet order" parent="12" java_class_name="org.openmrs.XRaySheetRadiologyOrder" description="Sample radiology sheetorder" creator="1" date_created="2008-08-15 15:49:04.0" retired="false" uuid="e83a5d30-ae07-11e3-a5e2-0800200c9a66"/>
   <order_type order_type_id="15" name="Theater Order"  java_class_name="org.openmrs.TheaterOrder" description="Some theater order" creator="1" date_created="2008-08-15 13:50:14.0" retired="false" uuid="bf7f3ab0-ae06-11e3-a5e2-0800200c9a66"/>
   <order_type order_type_id="16" name="Lab Order" java_class_name="org.openmrs.LabOrder" description="Some lab order" creator="1" date_created="2008-08-15 15:49:04.0" retire_reason="None" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" uuid="cc3fb1d0-ae06-11e3-a5e2-0800200c9a66"/>
-  <order_type_class_map order_type_id="1" concept_class_id="1"/>
+  <order_type_class_map order_type_id="2" concept_class_id="1"/>
   <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
   <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
   <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE"/>

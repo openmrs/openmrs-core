@@ -1428,7 +1428,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setStartDate(new Date());
 		order = orderService.saveOrder(order, null);
-		assertTrue(order.getOrderType().getOrderTypeId() == 1);
+		assertEquals(2, order.getOrderType().getOrderTypeId().intValue());
 	}
 	
 	/**
@@ -1557,5 +1557,29 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderService orderService = Context.getOrderService();
 		List<OrderType> orderTypeList = orderService.getSubtypes(orderService.getOrderType(2), false);
 		assertEquals(6, orderTypeList.size());
+	}
+	
+	/**
+	 * @verifies default to care setting and order type defined in the order context if null
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldDefaultToCareSettingAndOrderTypeDefinedInTheOrderContextIfNull() throws Exception {
+		Order order = new Order();
+		order.setPatient(patientService.getPatient(7));
+		Concept aspirin = conceptService.getConcept(88);
+		order.setConcept(aspirin);
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setStartDate(new Date());
+		OrderType expectedOrderType = orderService.getOrderType(3);
+		CareSetting expectedCareSetting = orderService.getCareSetting(1);
+		OrderContext orderContext = new OrderContext();
+		orderContext.setOrderType(expectedOrderType);
+		orderContext.setCareSetting(expectedCareSetting);
+		order = orderService.saveOrder(order, orderContext);
+		assertFalse(expectedOrderType.getConceptClasses().contains(aspirin.getConceptClass()));
+		assertEquals(expectedOrderType, order.getOrderType());
+		assertEquals(expectedCareSetting, order.getCareSetting());
 	}
 }

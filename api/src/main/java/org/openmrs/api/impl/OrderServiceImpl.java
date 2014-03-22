@@ -86,10 +86,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		if (order.getOrderType() == null) {
 			OrderType orderType = getOrderTypeByConcept(order.getConcept());
+			if (orderType == null && orderContext != null) {
+				orderType = orderContext.getOrderType();
+			}
 			if (orderType == null) {
 				throw new APIException("No order type matches the concept class");
 			}
 			order.setOrderType(orderType);
+		}
+		if (order.getCareSetting() == null) {
+			if (orderContext != null && orderContext.getCareSetting() != null) {
+				order.setCareSetting(orderContext.getCareSetting());
+			} else {
+				throw new APIException("CareSetting is required for an order");
+			}
 		}
 		
 		if (Order.Action.REVISE.equals(order.getAction())) {

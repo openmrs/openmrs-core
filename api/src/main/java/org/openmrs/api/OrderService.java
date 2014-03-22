@@ -43,7 +43,12 @@ public interface OrderService extends OpenmrsService {
 	public void setOrderDAO(OrderDAO dao);
 	
 	/**
-	 * Save or update the given <code>order</code> in the database
+	 * Save or update the given <code>order</code> in the database. If the OrderType for the order
+	 * is not specified, then it will be set to the one associated to the ConceptClass of the
+	 * ordered concept, if none is found then it will default to the one set on the passed in
+	 * OrderContext if any otherwise the save fails. If the CareSetting field of the order is not
+	 * specified then it will default to the one set on the passed in OrderContext if any otherwise
+	 * the save fails.
 	 * 
 	 * @param order the Order to save
 	 * @param orderContext the OrderContext object
@@ -65,6 +70,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should set the order number returned by the configured generator
 	 * @should set order type if null but mapped to the concept class
 	 * @should fail if order type is null and not mapped to the concept class
+	 * @should default to care setting and order type defined in the order context if null
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
@@ -501,7 +507,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Creates or updates the given order type in the database
-	 *
+	 * 
 	 * @param orderType the order type to save
 	 * @return the order type created/saved
 	 * @since 1.10
@@ -513,7 +519,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Completely removes an order type from the database
-	 *
+	 * 
 	 * @param orderType the order type to purge
 	 * @since 1.10
 	 * @should delete given order type
@@ -524,7 +530,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Retires the given order type in the database
-	 *
+	 * 
 	 * @param orderType the order type to retire
 	 * @param reason the retire reason
 	 * @return the retired order type
@@ -536,7 +542,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Restores an order type that was previously retired in the database
-	 *
+	 * 
 	 * @param orderType the order type to unretire
 	 * @return the unretired order type
 	 * @since 1.10
@@ -546,13 +552,13 @@ public interface OrderService extends OpenmrsService {
 	public OrderType unretireOrderType(OrderType orderType);
 	
 	/**
-	 * Returns all descendants of a given order type for example
-	 * Given TEST will get back LAB TEST and RADIOLOGY TEST;
-	 * and Given LAB TEST, will might get back SEROLOGY, MICROBIOLOGY, and CHEMISTRY
+	 * Returns all descendants of a given order type for example Given TEST will get back LAB TEST
+	 * and RADIOLOGY TEST; and Given LAB TEST, will might get back SEROLOGY, MICROBIOLOGY, and
+	 * CHEMISTRY
+	 * 
 	 * @param orderType the order type which needs to search for its' dependencies
 	 * @param includeRetired boolean flag for include retired order types or not
 	 * @return list of order type which matches the given order type
-	 *
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public List<OrderType> getSubtypes(OrderType orderType, boolean includeRetired);

@@ -34,6 +34,6 @@ public class HibernateOrderDAOTest extends BaseContextSensitiveTest {
 		OrderType orderType = dao.getOrderTypeByConceptClass(Context.getConceptService().getConceptClass(1));
 		
 		Assert.assertNotNull(orderType);
-		Assert.assertTrue(orderType.getOrderTypeId() == 1);
+		Assert.assertEquals(2, orderType.getOrderTypeId().intValue());
 	}
 }
