@@ -1053,21 +1053,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (presentationLocales == null) {
 			presentationLocales = new HashSet<Locale>();
 			Collection<Locale> messageLocales = Context.getMessageSourceService().getLocales();
-			List<Locale> allowedLocales = getAllowedLocales();
-			//			for (Locale possibleLocale : messageLocales) {
-			//				if (allowedLocales.contains(possibleLocale)) {
-			//					presentationLocales.add(possibleLocale);
-			//				} else {
-			//					// to be sure, check for language-only matches
-			//					for (Locale allowedLocale : allowedLocales) {
-			//						if (("".equals(allowedLocale.getCountry()) || "".equals(possibleLocale.getCountry()))
-			//						        && (allowedLocale.getLanguage().equals(possibleLocale.getLanguage()))) {
-			//							presentationLocales.add(possibleLocale);
-			//							break;
-			//						}
-			//					}
-			//				}
-			//			}
+			List<Locale> allowedLocales = getAllowedLocales();	
 			
 			for (Locale locale : allowedLocales) {
 				// if no country is specified all countries with this language will be added
