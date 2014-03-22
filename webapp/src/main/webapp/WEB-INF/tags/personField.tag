@@ -99,16 +99,12 @@
 <c:if test="${ canAddNewPerson }">
 	<div id="${ formFieldId }_addDialog">
 		<table>
-			<tr>
-				<td><openmrs:message code="PersonName.givenName"/></td>
-				<td><openmrs:message code="PersonName.middleName"/></td>
-				<td><openmrs:message code="PersonName.familyName"/></td>
-			</tr>
-			<tr>
-				<td><input id="${ formFieldId }_add_given_name" type="text"/></td>
-				<td><input id="${ formFieldId }_add_middle_name" type="text"/></td>
-				<td><input id="${ formFieldId }_add_family_name" type="text"/></td>
-			</tr>
+                    <thead>
+                    <openmrs:portlet url="nameLayout" id="namePortlet" size="columnHeaders" parameters="layoutShowTable=false|layoutShowExtended=false" />
+                    </thead>
+                    <tbody>
+                    <openmrs:portlet url="nameLayout" id="namePortlet" size="inOneRow" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
+                    </tbody>
 		</table>
 		
 		<openmrs:message code="Person.gender"/>:
