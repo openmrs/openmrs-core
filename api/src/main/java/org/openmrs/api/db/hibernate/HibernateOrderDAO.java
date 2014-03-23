@@ -221,9 +221,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate) {
 		Criteria crit = createOrderCriteria(patient, careSetting, orderType, false, false);
 		
-		Criterion startDateEqualToOrBeforeAsOfDate = Restrictions.le("startDate", asOfDate);
-		crit.add(startDateEqualToOrBeforeAsOfDate);
-		
 		Disjunction dateStoppedAndAutoExpDateDisjunction = Restrictions.disjunction();
 		Criterion stopAndAutoExpDateAreBothNull = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions
 		        .isNull("autoExpireDate"));
