@@ -75,6 +75,7 @@ import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.annotation.ExpectedException;
+import org.springframework.validation.Errors;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -2557,5 +2558,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
 		
 		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test(expected = Exception.class)
+	@Verifies(value = "not save a concept name tag if tag is invalid", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldNotSaveATagIfItIsInvalid() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptNameTag faultyNameTag = cs.saveConceptNameTag(cnt);
 	}
 }
