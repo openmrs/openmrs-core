@@ -72,15 +72,15 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public Program saveProgram(Program program) throws APIException {
 		// Program
-		if (program.getConcept() == null) {
-			throw new APIException("Program concept is required");
+		if (program.getConcept() == null && program.getName() == null) {
+			throw new APIException("Program concept and program name is required");
 		}
 		
 		// ProgramWorkflow
 		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
 			
-			if (workflow.getConcept() == null) {
-				throw new APIException("ProgramWorkflow concept is required");
+			if (workflow.getConcept() == null && workflow.getProgram() == null) {
+				throw new APIException("ProgramWorkflow concept and name is required");
 			}
 			if (workflow.getProgram() == null) {
 				workflow.setProgram(program);
@@ -93,7 +93,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			// ProgramWorkflowState
 			for (ProgramWorkflowState state : workflow.getStates()) {
 				
-				if (state.getConcept() == null || state.getInitial() == null || state.getTerminal() == null) {
+				if (state.getProgramWorkflow().getProgram() == null || state.getConcept() == null
+				        || state.getInitial() == null || state.getTerminal() == null) {
 					throw new APIException("ProgramWorkflowState concept, initial, terminal are required");
 				}
 				if (state.getProgramWorkflow() == null) {
@@ -127,7 +128,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public Program getProgramByName(String name) {
 		for (Program p : getAllPrograms()) {
-			if (p.getConcept().isNamed(name)) {
+			if ((p.getConcept().isNamed(name)) || (p.getName().equals(name))) {
 				return p;
 			}
 		}
