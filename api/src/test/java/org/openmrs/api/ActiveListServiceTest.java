@@ -44,6 +44,16 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	protected static ActiveListService activeListService = null;
 	
 	@Before
+	
+	/**
+	 * Runs before all tests
+	 *
+	 * @throws
+	 * 
+	 *@see
+	 * /
+	
+	
 	public void runBeforeAllTests() throws Exception {
 		if (patientService == null) {
 			patientService = Context.getPatientService();
