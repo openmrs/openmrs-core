@@ -265,6 +265,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		String appDataDir = servletContext.getInitParameter("application.data.directory");
 		if (StringUtils.hasLength(appDataDir)) {
 			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = appDataDir;
+		} else {
+			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = OpenmrsUtil.getApplicationDataDirectory();
+			// if the warname is not the default "openmrs" then use a subdirectory with the warname
+			if (!"openmrs".equalsIgnoreCase(WebConstants.WEBAPP_NAME)) {
+				OpenmrsConstants.APPLICATION_DATA_DIRECTORY = OpenmrsConstants.APPLICATION_DATA_DIRECTORY
+				        + WebConstants.WEBAPP_NAME + File.separator;
+			}
 		}
 	}
 	
