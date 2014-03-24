@@ -1256,4 +1256,28 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(editedTag.getChangedBy());
 	}
 	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByName(String)
+	 * @verifies return the location attribute type with the specified name
+	 */
+	@Test
+	public void getLocationAttributeTypeByName_shouldReturnTheLocationAttributeTypeWithTheSpecifiedName() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationAttributeType locationAttributeType = Context.getLocationService().getLocationAttributeTypeByName(
+		    "Audit Date");
+		Assert.assertNotNull(locationAttributeType);
+		Assert.assertEquals("Audit Date", locationAttributeType.getName());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByName(String)
+	 * @verifies return null if no location attribute type exists with the specified name
+	+	 */
+	@Test
+	public void getLocationAttributeTypeByName_shouldReturnNullIfNoLocationAttributeTypeExistsWithTheSpecifiedName()
+	        throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertNull(Context.getLocationService().getLocationAttributeTypeByName("not-a-name"));
+	}
+	
 }

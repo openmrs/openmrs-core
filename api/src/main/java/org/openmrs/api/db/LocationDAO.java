@@ -190,4 +190,8 @@ public interface LocationDAO {
 	 */
 	public LocationAttribute getLocationAttributeByUuid(String uuid);
 	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByName(String)
+	 */
+	public LocationAttributeType getLocationAttributeTypeByName(String name);
 }
