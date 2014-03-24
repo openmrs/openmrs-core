@@ -51,7 +51,7 @@ import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
-import org.openmrs.order.OrderUtil;
+import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
@@ -354,11 +354,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		        orderService.getOrder(5), orderService.getOrder(7) };
 		assertThat(orders, hasItems(expectedOrders));
 		
-		assertTrue(OrderUtil.isOrderActive(orders.get(0), null));
-		assertTrue(OrderUtil.isOrderActive(orders.get(1), null));
-		assertTrue(OrderUtil.isOrderActive(orders.get(2), null));
-		assertTrue(OrderUtil.isOrderActive(orders.get(3), null));
-		assertTrue(OrderUtil.isOrderActive(orders.get(4), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(0), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(1), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(2), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(3), null));
+		assertTrue(OrderUtilTest.isActiveOrder(orders.get(4), null));
 	}
 	
 	/**
@@ -504,7 +504,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = orderService.getOrderByOrderNumber("111");
 		Encounter encounter = encounterService.getEncounter(3);
 		Provider orderer = providerService.getProvider(1);
-		assertTrue(OrderUtil.isOrderActive(order, null));
+		assertTrue(OrderUtilTest.isActiveOrder(order, null));
 		Date discontinueDate = new Date();
 		String discontinueReasonNonCoded = "Test if I can discontinue this";
 		
@@ -622,7 +622,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderType(orderService.getOrderType(1));
 		order.setStartDate(new Date());
 		Order previousOrder = orderService.getOrder(111);
-		assertTrue(OrderUtil.isOrderActive(previousOrder, null));
+		assertTrue(OrderUtilTest.isActiveOrder(previousOrder, null));
 		order.setPreviousOrder(previousOrder);
 		
 		orderService.saveOrder(order, null);
@@ -691,7 +691,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldPassIfTheExistingDrugOrderMatchesTheConceptAndDrugOfTheDCOrder() throws Exception {
 		executeDataSet(OTHER_ENCOUNTERS_XML);
 		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(444);
-		assertTrue(OrderUtil.isOrderActive(orderToDiscontinue, null));
+		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
 		
 		DrugOrder order = new DrugOrder();
 		order.setDrug(orderToDiscontinue.getDrug());
@@ -717,7 +717,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = APIException.class)
 	public void saveOrder_shouldFailIfTheExistingDrugOrderMatchesTheConceptAndNotDrugOfTheDCOrder() throws Exception {
 		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(5);
-		assertTrue(OrderUtil.isOrderActive(orderToDiscontinue, null));
+		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
 		
 		//create a different test drug
 		Drug discontinuationOrderDrug = new Drug();

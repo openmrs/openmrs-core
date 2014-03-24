@@ -29,7 +29,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.order.OrderUtil;
+import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -150,7 +150,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		
 		Order firstOrderToDiscontinue = orderService.getOrder(3);
 		Encounter encounter = encounterService.getEncounter(3);
-		assertTrue(OrderUtil.isOrderActive(firstOrderToDiscontinue, null));
+		assertTrue(OrderUtilTest.isActiveOrder(firstOrderToDiscontinue, null));
 		Patient patient = firstOrderToDiscontinue.getPatient();
 		int ordersCount = orderService.getActiveOrders(patient, null, null, null).size();
 		
@@ -163,14 +163,14 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		//Lets discontinue another order with reason being a string instead of concept
 		Order secondOrderToDiscontinue = orderService.getOrder(5);
 		assertEquals(patient, secondOrderToDiscontinue.getPatient());
-		assertTrue(OrderUtil.isOrderActive(secondOrderToDiscontinue, null));
+		assertTrue(OrderUtilTest.isActiveOrder(secondOrderToDiscontinue, null));
 		Order discontinuationOrder2 = orderService.discontinueOrder(secondOrderToDiscontinue, "Testing", null, orderer,
 		    encounter);
 		assertEquals(secondOrderToDiscontinue, discontinuationOrder2.getPreviousOrder());
 		
 		//Lets discontinue another order by saving a DC order
 		Order thirdOrderToDiscontinue = orderService.getOrder(7);
-		assertTrue(OrderUtil.isOrderActive(thirdOrderToDiscontinue, null));
+		assertTrue(OrderUtilTest.isActiveOrder(thirdOrderToDiscontinue, null));
 		Order discontinuationOrder = thirdOrderToDiscontinue.cloneForDiscontinuing();
 		discontinuationOrder.setOrderer(orderer);
 		discontinuationOrder.setEncounter(encounterService.getEncounter(6));
@@ -186,7 +186,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldReviseAnOrder() throws Exception {
 		Order originalOrder = orderService.getOrder(111);
-		assertTrue(OrderUtil.isOrderActive(originalOrder, null));
+		assertTrue(OrderUtilTest.isActiveOrder(originalOrder, null));
 		final Patient patient = originalOrder.getPatient();
 		List<Order> originalActiveOrders = orderService.getActiveOrders(patient, null, null, null);
 		final int originalOrderCount = originalActiveOrders.size();
@@ -204,6 +204,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Thread.sleep(1);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
-		assertFalse(OrderUtil.isOrderActive(originalOrder, null));
+		assertFalse(OrderUtilTest.isActiveOrder(originalOrder, null));
 	}
 }

@@ -29,10 +29,6 @@ public class OrderUtil {
 	
 	private static final Log log = LogFactory.getLog(OrderUtil.class);
 	
-	public static boolean isOrderActive(Order order, Date asOfDate) {
-		return order.isCurrent(asOfDate) && order.getAction() != Order.Action.DISCONTINUE;
-	}
-	
 	/**
 	 * Discontinues all current orders for the given <code>patient</code>
 	 * 

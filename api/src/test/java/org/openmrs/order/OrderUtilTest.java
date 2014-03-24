@@ -17,12 +17,19 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import org.junit.Test;
+import org.openmrs.Order;
 import org.openmrs.OrderType;
+
+import java.util.Date;
 
 /**
  * Contains test for OrderUtil
  */
 public class OrderUtilTest {
+	
+	public static boolean isActiveOrder(Order order, Date asOfDate) {
+		return order.isCurrent(asOfDate) && order.getAction() != Order.Action.DISCONTINUE;
+	}
 	
 	/**
 	 * @verifies true if orderType2 is the same or is a subtype of orderType1
