@@ -385,10 +385,10 @@
 							<c:forEach var="drug" items="${command.conceptDrugList}">
 								<c:choose>
 									<c:when test="${not empty drug.dosageForm}">
-										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units} ${drug.dosageForm.name}</li>
+										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.strength} ${drug.dosageForm.name}</li>
 									</c:when>
 									<c:otherwise>
-										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.doseStrength} ${drug.units}</li>
+										<li class="<c:if test="${drug.retired}">retired </c:if>">${drug.name} ${drug.strength}</li>
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>

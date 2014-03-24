@@ -238,6 +238,22 @@ public class Database1_9To1_10UpgradeTest {
 		}
 	}
 	
+	@Test
+	public void shouldConcatenateDoseStrengthAndUnits() throws IOException, SQLException {
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		
+		upgradeTestUtil.upgrade();
+		
+		List<Map<String, String>> drugs = upgradeTestUtil.select("drug", "strength");
+		
+		Assert.assertThat(drugs.size(), Matchers.is(3));
+		Assert.assertTrue(drugs.get(0).containsValue("1.0tab(s)"));
+		Assert.assertTrue(drugs.get(1).containsValue("325.0mg"));
+		Assert.assertTrue(drugs.get(2).get("strength").isEmpty());
+	}
+	
 	private Map<String, String> row(String... values) {
 		Map<String, String> row = new HashMap<String, String>();
 		for (int i = 0; i < values.length; i += 2) {

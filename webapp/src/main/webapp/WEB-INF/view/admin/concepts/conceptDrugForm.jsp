@@ -127,19 +127,9 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="ConceptDrug.doseStrength"/></th>
+		<th><openmrs:message code="ConceptDrug.strength"/></th>
 		<td>
-			<spring:bind path="drug.doseStrength">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><openmrs:message code="ConceptDrug.units"/></th>
-		<td>
-			<spring:bind path="drug.units">			
+			<spring:bind path="drug.strength">
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 

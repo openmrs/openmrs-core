@@ -45,6 +45,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private String units;
 	
+	private String strength;
+	
 	private Concept concept;
 	
 	private Set<DrugReferenceMap> drugReferenceMaps;
@@ -120,6 +122,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * 
 	 * @return Double
 	 */
+	@Deprecated
 	public Double getDoseStrength() {
 		return this.doseStrength;
 	}
@@ -129,6 +132,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * 
 	 * @param doseStrength
 	 */
+	@Deprecated
 	public void setDoseStrength(Double doseStrength) {
 		this.doseStrength = doseStrength;
 	}
@@ -138,6 +142,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * 
 	 * @return String
 	 */
+	@Deprecated
 	public String getUnits() {
 		return this.units;
 	}
@@ -147,8 +152,29 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * 
 	 * @param units
 	 */
+	@Deprecated
 	public void setUnits(String units) {
 		this.units = units;
+	}
+	
+	/**
+	 * Gets the strength
+	 *
+	 * @return String
+	 * @since 1.10
+	 */
+	public String getStrength() {
+		return strength;
+	}
+	
+	/**
+	 * Sets the strength
+	 *
+	 * @param strength
+	 * @since 1.10
+	 */
+	public void setStrength(String strength) {
+		this.strength = strength;
 	}
 	
 	/**

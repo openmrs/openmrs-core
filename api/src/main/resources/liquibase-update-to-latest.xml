@@ -7288,7 +7288,7 @@
             <not>
                 <sqlCheck expectedResult="0">
                     SELECT COUNT(o.order_id) FROM orders o
-                    WHERE o.order_id IN (SELECT to.order_id FROM test_order to)
+                    WHERE o.order_id IN (SELECT torder.order_id FROM test_order torder)
                     AND o.order_type IS NULL
                 </sqlCheck>
             </not>
@@ -7327,6 +7327,19 @@
         <addForeignKeyConstraint baseTableName="order_type_class_map" baseColumnNames="concept_class_id" constraintName="fk_order_type_class_map_concept_class_concept_class_id"
                                  referencedTableName="concept_class" referencedColumnNames="concept_class_id"/>
         <addPrimaryKey tableName="order_type_class_map" columnNames="order_type_id,concept_class_id" constraintName="primary_key_for_order_type_class_map" />
+    </changeSet>
+
+    <changeSet id="20140317-TRUNK-4265" author="jkondrat">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="drug" columnName="strength"/></not>
+        </preConditions>
+        <comment>Concatenate dose_strength and units to form the value for the new strength field</comment>
+        <mergeColumns column1Name="dose_strength"
+                      column2Name="units"
+                      finalColumnName="strength"
+                      finalColumnType="varchar(255)"
+                      joinString=""
+                      tableName="drug"/>
     </changeSet>
 
 </databaseChangeLog>
