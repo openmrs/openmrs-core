@@ -844,8 +844,55 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return drugs that are retired", method = "getDrugs(String)")
 	public void getDrugs_shouldReturnDrugsThatAreRetired() throws Exception {
+		Drug drug = Context.getConceptService().getDrug(11);
 		List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL" /* is retired */);
 		Assert.assertTrue(drugs.get(0).isRetired());
+	}
+
+	
+	/**
+	 * @see {@link ConceptService#getDrugs(String)}
+	 */
+	@Test
+	@Verifies(value = "should return drugs retired by search on drug name with phrase", method = "getDrugs(String ,  concept, boolean , boolean ,"
+	        + " boolean , Integer , Integer )")
+	public void getDrugs_shouldReturnDrugsRetiredBySearchOnPhrase() throws Exception {
+		
+		Drug drug = Context.getConceptService().getDrug(11);
+		List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL", null, true, false, true, null, null);
+		Assert.assertTrue(drugs.contains(drug));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getDrugs(String)}
+	 */
+	@Test
+	@Verifies(value = "should return drugs by search on drug name and search concept names", method = "getDrugs(String ,  concept, boolean , boolean ,"
+	        + " boolean , Integer , Integer )")
+	public void getDrugs_shouldReturnDrugBySearchOnPhraseIsTrueAndSearchDrugConceptNamesIsTrue() throws Exception {
+		Drug drug = Context.getConceptService().getDrug(3);
+		List<Drug> drugs = Context.getConceptService().getDrugs("pirin", null, true, true, false, null, null);
+		Assert.assertTrue(drugs.contains(drug));
+	}
+	
+	@Test
+	@Verifies(value = "should return drugs by seach on drug name without phrase", method = "getDrugs(String ,  concept, boolean , boolean ,"
+	        + " boolean , Integer , Integer )")
+	public void getDrugs_shouldReturnDrugsBySearchOnPhraseIsFalse() throws Exception {
+		
+		Drug drug = Context.getConceptService().getDrug(3);
+		List<Drug> drugs = Context.getConceptService().getDrugs("Aspir", null, false, true, false, null, null);
+		Assert.assertTrue(drugs.contains(drug));
+	}
+	
+	@Test
+	@Verifies(value = "should return drugs by search on concept names", method = "getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,\n"
+	        + "\t        boolean includeRetired, Integer start, Integer length)")
+	public void getDrugs_shouldReturnDrugsBySearchOnPhraseIsFalseAndSearchDrugConceptNamesIsTrue() throws Exception {
+		
+		Drug drug = Context.getConceptService().getDrug(3);
+		List<Drug> drugs = Context.getConceptService().getDrugs("Aspiri", null, false, true, true, null, null);
+		Assert.assertTrue(drugs.contains(drug));
 	}
 	
 	/**
