@@ -126,6 +126,25 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * Tests created to check whether getProgramByName(String name) return program for given name
+	 * 
+	 * @see {@link ProgramWorkflowService#getProgramByName(String name)}
+	 */
+	@Test
+	@Verifies(value = "should return program if we have same name or concept", method = "getProgramByName(String name)")
+	public void getProgramByName_shouldReturnTrueIfWeHaveSameNameOrConcept() throws Exception {
+		Program prog = new Program();
+		prog.setName("MDR program");
+		prog.setConcept(Context.getConceptService().getConcept(10));
+		Program DuplicateName = pws.getProgramByName(prog.getName());
+		Assert.assertEquals("MDR program", DuplicateName.getName());
+		Program DuplicateConcept = pws.getProgramByName(prog.getConcept().getName().toString());
+		Assert.assertEquals("MDR-TB PROGRAM", DuplicateConcept.getConcept().getName().toString());
+		
+	}
+	
+	
+	/**
 	 * Tests creating a new program containing workflows and states
 	 * 
 	 * @see {@link ProgramWorkflowService#saveProgram(Program)}
