@@ -1257,5 +1257,12 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			return false;
 		}
 		
+		public String[] getSupportedViews() {
+			return null;
+		}
+		
+		public boolean supportsView(String View) {
+			return false;
+		}
 	}
 }

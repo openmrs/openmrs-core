@@ -809,6 +809,14 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		public String serializeFormData(String data) {
 			return null;
 		}
+		
+		public String[] getSupportedViews() {
+			return null;
+		}
+		
+		public boolean supportsView(String View) {
+			return false;
+		}
 	}
 	
 }

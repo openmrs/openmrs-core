@@ -133,4 +133,35 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		return obs;
 	}
 	
+        /**
+	 * Returns all the supported views for this handler
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportsView()
+	 * @return a list of all supported views for this handler
+	 * @since 1.11
+	 */
+	 
+	public String[] getSupportedViews() {
+		final String[] views = { "", "" };
+		return views;
+	}
+	
+	/**
+	 * Returns true if a given view is supported by this handler
+	 * @see org.openmrs.obs.ComplexObsHandler#supportsView( String View)
+	 * @param View to be compared with the list of supported views for this handler
+	 * @return true if a given view is supported by this handler otherwise return false
+	 * @since 1.11
+	 */	
+	public boolean supportsView(String View) {
+		
+	 boolean supported = false;	
+		for (int i=0;i<this.getSupportedViews().length;i++){
+			
+			if (this.getSupportedViews()[i].equals(View)){
+				supported = true;
+				break;
+			}		
+		}
+		return supported;
+	}
 }
