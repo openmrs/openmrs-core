@@ -13,12 +13,8 @@
  */
 package org.openmrs.api.handler;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
@@ -29,6 +25,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * Contains the tests for the {@link PatientDataVoidHandler}
  */
@@ -38,7 +37,6 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	 * @see {@link PatientDataVoidHandler#handle(Patient,User,Date,String)}
 	 */
 	@Test
-	@Ignore
 	@Verifies(value = "should void the orders encounters and observations associated with the patient", method = "handle(Patient,User,Date,String)")
 	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
@@ -97,10 +95,8 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		//refresh the lists and check that all encounters, obs and orders were voided
 		encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		observations = Context.getObsService().getObservationsByPerson(patient);
-		orders = Context.getOrderService().getAllOrdersByPatient(patient);
 		
 		Assert.assertTrue(CollectionUtils.isEmpty(encounters));
 		Assert.assertTrue(CollectionUtils.isEmpty(observations));
-		Assert.assertTrue(CollectionUtils.isEmpty(orders));
 	}
 }

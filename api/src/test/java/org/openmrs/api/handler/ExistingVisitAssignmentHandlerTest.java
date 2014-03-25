@@ -14,6 +14,7 @@
 package org.openmrs.api.handler;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -86,13 +87,15 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	@Verifies(value = "should not assign visit which stopped before encounter date", method = "beforeCreateEncounter(Encounter)")
 	public void beforeCreateEncounter_shouldNotAssignVisitWhichStoppedBeforeEncounterDate() throws Exception {
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
+		encounter.setEncounterDatetime(new Date());
+		Context.getEncounterService().saveEncounter(encounter);
 		Assert.assertNull(encounter.getVisit());
 		
 		//set the visit stop date to that before the encounter date
 		Visit visit = Context.getVisitService().getVisit(1);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(visit.getStartDatetime());
-		calendar.set(Calendar.YEAR, 2004);
+		calendar.set(Calendar.YEAR, 2009);
 		visit.setStopDatetime(calendar.getTime());
 		Context.getVisitService().saveVisit(visit);
 		

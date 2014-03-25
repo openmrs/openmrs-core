@@ -13,10 +13,6 @@
  */
 package org.openmrs.api.handler;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -31,6 +27,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Contains the tests for the {@link PatientDataUnvoidHandler}

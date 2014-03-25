@@ -13,11 +13,11 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.order.OrderUtil;
+
+import java.util.Date;
 
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on

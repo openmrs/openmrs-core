@@ -13,15 +13,6 @@
  */
 package org.openmrs;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Date;
-import java.util.List;
-
 import org.junit.Test;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -32,6 +23,15 @@ import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Contains end to end tests for order entry operations i.g placing, discontinuing revising an order
@@ -86,26 +86,24 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		
 		//place drug order
 		DrugOrder order = new DrugOrder();
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setPatient(patient);
-		order.setConcept(conceptService.getConcept(5497));
+		order.setConcept(conceptService.getConcept(88));
 		order.setCareSetting(careSetting);
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setStartDate(new Date());
-		order.setDrug(conceptService.getDrug(1));
 		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
-		order.setEncounter(encounterService.getEncounter(3));
+		order.setDrug(conceptService.getDrug(3));
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);
 		order.setDose(300.0);
-		Concept mgs = conceptService.getConcept(50);
-		order.setDoseUnits(mgs);
+		order.setDoseUnits(conceptService.getConcept(50));
 		order.setQuantity(20.0);
-		Concept tabs = conceptService.getConcept(51);
-		order.setQuantityUnits(tabs);
+		order.setQuantityUnits(conceptService.getConcept(51));
 		order.setDuration(20.0);
-		Concept days = conceptService.getConcept(1002);
-		order.setDurationUnits(days);
-		OrderFrequency onceDaily = orderService.getOrderFrequency(3000);
-		order.setFrequency(onceDaily);
+		order.setDurationUnits(conceptService.getConcept(1002));
+		order.setFrequency(orderService.getOrderFrequency(3000));
+		order.setRoute(conceptService.getConcept(22));
+		order.setNumRefills(10);
 		
 		orderService.saveOrder(order, null);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, orderService.getOrderTypeByName("Drug order"),
@@ -126,6 +124,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		TestOrder order = new TestOrder();
 		order.setPatient(patient);
 		order.setOrderType(orderService.getOrderTypeByName("Test order"));
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(careSetting);
@@ -193,6 +192,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertTrue(originalActiveOrders.contains(originalOrder));
 		
 		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setStartDate(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));
