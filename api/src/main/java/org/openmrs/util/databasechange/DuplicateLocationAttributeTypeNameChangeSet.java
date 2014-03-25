@@ -84,8 +84,10 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
+		boolean autoCommit = true;
 		try {
 			// set auto commit mode to false for UPDATE action
+			autoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 			stmt = connection.createStatement();
 			rs = stmt.executeQuery("SELECT * FROM location_attribute_type"
@@ -160,23 +162,14 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 			// marks the changeset as a failed one
 			throw new CustomChangeException("Failed to update one or more duplicate LocationAttributeType names", e);
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Error while updating duplicate LocationAttributeType object names", e);
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException("Error while updating duplicate LocationAttributeType object names", e);
-		}
-		catch (DAOException e) {
-			throw new CustomChangeException("Error accessing database connection", e);
-		}
 		catch (Exception e) {
-			throw new CustomChangeException("Error accessing database connection", e);
+			throw new CustomChangeException("Error while updating duplicate LocationAttributeType object names", e);
 		}
 		finally {
 			// reset to auto commit mode
 			try {
 				connection.commit();
-				connection.setAutoCommit(true);
+				connection.setAutoCommit(autoCommit);
 			}
 			catch (DatabaseException e) {
 				log.warn("Failed to reset auto commit back to true", e);
