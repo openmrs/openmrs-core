@@ -16,13 +16,11 @@ package org.openmrs.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -122,6 +120,24 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		assertNotNull(ptProg.getDateCompleted());
 		assertEquals(today, ptProg.getDateCompleted());
+		
+	}
+	
+	/**
+	 * Tests created to check whether getProgramByName(String name) return program for given name
+	 * 
+	 * @see {@link ProgramWorkflowService#getProgramByName(String name)}
+	 */
+	@Test
+	@Verifies(value = "should return program if we have same name or concept", method = "getProgramByName(String name)")
+	public void getProgramByName_shouldReturnTrueIfWeHaveSameNameOrConcept() throws Exception {
+		Program prog = new Program();
+		prog.setName("MDR program");
+		prog.setConcept(Context.getConceptService().getConcept(10));
+		Program DuplicateName = pws.getProgramByName(prog.getName());
+		Assert.assertEquals("MDR program", DuplicateName.getName());
+		Program DuplicateConcept = pws.getProgramByName(prog.getConcept().getName().toString());
+		Assert.assertEquals("MDR-TB PROGRAM", DuplicateConcept.getConcept().getName().toString());
 		
 	}
 	
