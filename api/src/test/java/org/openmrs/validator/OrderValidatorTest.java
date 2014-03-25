@@ -15,7 +15,10 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.CareSetting;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -130,6 +133,74 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail validation if encounter is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfEncounterIsNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setEncounter(null);
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("encounter"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if urgency is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUrgencyIsNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setUrgency(null);
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("urgency"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if startDate is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfStartDateIsNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setStartDate(null);
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("startDate"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if action is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfActionIsNull() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setAction(null);
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("action"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail validation if startDate after dateStopped", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfStartDateAfterDiscontinuedDate() throws Exception {
 		Order order = new Order();
@@ -177,14 +248,22 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
 		Order order = new Order();
+		Encounter encounter = new Encounter();
 		order.setConcept(Context.getConceptService().getConcept(88));
-		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setOrderer(Context.getProviderService().getProvider(1));
+		Patient patient = Context.getPatientService().getPatient(2);
+		encounter.setPatient(patient);
+		order.setPatient(patient);
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
 		order.setDateStopped(new Date());
 		order.setAutoExpireDate(new Date());
+		order.setCareSetting(new CareSetting());
+		order.setEncounter(encounter);
+		order.setUrgency(Order.Urgency.ROUTINE);
+		order.setAction(Order.Action.NEW);
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);

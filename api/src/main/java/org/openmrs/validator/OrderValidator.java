@@ -55,7 +55,11 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if voided is null
 	 * @should fail validation if concept is null
 	 * @should fail validation if patient is null
+	 * @should fail validation if encounter is null
 	 * @should fail validation if orderer is null
+	 * @should fail validation if urgency is null
+	 * @should fail validation if action is null
+	 * @should fail validation if startDate is null
 	 * @should fail validation if startDate after dateStopped
 	 * @should fail validation if startDate after autoExpireDate
 	 * @should pass validation if all fields are correct
@@ -65,31 +69,41 @@ public class OrderValidator implements Validator {
 		if (order == null) {
 			errors.rejectValue("order", "error.general");
 		} else {
-			if (order.getEncounter() != null && order.getPatient() != null) {
-				if (!order.getEncounter().getPatient().equals(order.getPatient()))
-					errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
-			}
-			
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
 			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "encounter", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "orderer", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "urgency", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "startDate", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "action", "error.null");
 			
-			Date startDate = order.getStartDate();
-			if (startDate != null) {
-				Date dateStopped = order.getDateStopped();
-				if (dateStopped != null && startDate.after(dateStopped)) {
-					errors.rejectValue("startDate", "Order.error.startDateAfterDiscontinuedDate");
-					errors.rejectValue("dateStopped", "Order.error.startDateAfterDiscontinuedDate");
-				}
-				
-				Date autoExpireDate = order.getAutoExpireDate();
-				if (autoExpireDate != null && startDate.after(autoExpireDate)) {
-					errors.rejectValue("startDate", "Order.error.startDateAfterAutoExpireDate");
-					errors.rejectValue("autoExpireDate", "Order.error.startDateAfterAutoExpireDate");
-				}
+			validateSamePatientInOrderAndEncounter(order, errors);
+			validateStartDate(order, errors);
+		}
+	}
+	
+	private void validateStartDate(Order order, Errors errors) {
+		Date startDate = order.getStartDate();
+		if (startDate != null) {
+			Date dateStopped = order.getDateStopped();
+			if (dateStopped != null && startDate.after(dateStopped)) {
+				errors.rejectValue("startDate", "Order.error.startDateAfterDiscontinuedDate");
+				errors.rejectValue("dateStopped", "Order.error.startDateAfterDiscontinuedDate");
 			}
+			Date autoExpireDate = order.getAutoExpireDate();
+			if (autoExpireDate != null && startDate.after(autoExpireDate)) {
+				errors.rejectValue("startDate", "Order.error.startDateAfterAutoExpireDate");
+				errors.rejectValue("autoExpireDate", "Order.error.startDateAfterAutoExpireDate");
+			}
+		}
+	}
+	
+	private void validateSamePatientInOrderAndEncounter(Order order, Errors errors) {
+		if (order.getEncounter() != null && order.getPatient() != null) {
+			if (!order.getEncounter().getPatient().equals(order.getPatient()))
+				errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
 		}
 	}
 }

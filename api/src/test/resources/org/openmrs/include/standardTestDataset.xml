@@ -196,12 +196,12 @@
   <order_type order_type_id="15" name="Theater Order"  java_class_name="org.openmrs.TheaterOrder" description="Some theater order" creator="1" date_created="2008-08-15 13:50:14.0" retired="false" uuid="bf7f3ab0-ae06-11e3-a5e2-0800200c9a66"/>
   <order_type order_type_id="16" name="Lab Order" java_class_name="org.openmrs.LabOrder" description="Some lab order" creator="1" date_created="2008-08-15 15:49:04.0" retire_reason="None" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" uuid="cc3fb1d0-ae06-11e3-a5e2-0800200c9a66"/>
   <order_type_class_map order_type_id="2" concept_class_id="1"/>
-  <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
-  <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
-  <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
-  <drug_order order_id="4" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
-  <drug_order order_id="444" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
-  <drug_order order_id="5" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
+  <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
+  <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
+  <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
+  <drug_order order_id="4" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
+  <drug_order order_id="444" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
+  <drug_order order_id="5" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <encounter_role encounter_role_id="1" name="Unknown" description="Unknown encounter role for legacy providers with no encounter role set" creator="1" retired="false" date_created="2011-08-18 14:00:00.0" uuid="a0b03050-c99b-11e0-9572-0800200c9a66" />
   <provider provider_id="1" person_id="1" identifier="Test" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-cca9-11e0-9572-0800200c9a66" />
   <encounter encounter_id="3" encounter_type="2" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="6519d653-393b-4118-9c83-a3715b82d4ac"/>
@@ -253,7 +253,7 @@
   <orders order_id="8" order_type="2" order_number="ORD-8" urgency="ROUTINE" order_action="NEW" concept_id="5497" orderer="1" start_date="2008-11-19 09:24:10.0" creator="1" date_created="2008-11-19 09:24:10.0" patient_id="2" voided="true" voided_by="1" date_voided="2008-11-20 09:24:10.0" void_reason="Testing 1" uuid="3c96f25c-4949-4f72-9931-d808fbc226dg" care_setting="1" encounter_id="6" />
   <orders order_id="9" order_type="2" order_number="ORD-9" urgency="ROUTINE" order_action="NEW" concept_id="5497" orderer="1" start_date="2008-12-01 09:24:10.0" date_stopped="2008-12-03 09:24:10.0" auto_expire_date="2008-12-05 09:24:10.0" creator="1" date_created="2008-12-01 09:24:10.0" voided="false" patient_id="2" uuid="4c96f25c-4949-4f72-9931-d808fbc226dh" care_setting="1" encounter_id="6" />
   <patient patient_id="2" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
-  <patient patient_id="6" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0" voided="false" void_reason=",,,,"/>                                                                  m
+  <patient patient_id="6" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0" voided="false" void_reason=",,,,"/>
   <patient patient_id="7" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0" voided="false" void_reason=""/>
   <patient patient_id="8" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="false" void_reason=""/>
   <patient patient_id="999" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="true" void_reason="For test purposes"/>

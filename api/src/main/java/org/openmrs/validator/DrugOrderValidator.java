@@ -15,6 +15,7 @@ package org.openmrs.validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.CareSetting;
 import org.openmrs.DrugOrder;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
@@ -51,6 +52,16 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if dosingType is null
 	 * @should fail validation if order concept is null
 	 * @should fail validation if drug concept is different from order concept
+	 * @should fail validation if dose is null for SIMPLE dosingType
+	 * @should fail validation if doseUnits is null for SIMPLE dosingType
+	 * @should fail validation if route is null for SIMPLE dosingType
+	 * @should fail validation if frequency is null for SIMPLE dosingType
+	 * @should fail validation if instruction is null for FREE_TEXT dosingType
+	 * @should fail validation if numberOfRefills is null for outpatient careSetting
+	 * @should fail validation if quantityUnits is null for outpatient careSetting
+	 * @should fail validation if quantity is null for outpatient careSetting
+	 * @should fail validation if doseUnits is null when dose is present
+	 * @should fail validation if quantityUnits is null when quantity is present
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -63,7 +74,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "asNeeded", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "dosingType", "error.null");
-			//ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
 			
 			if (order.getDrug() != null)
 				ValidationUtils.rejectIfEmpty(errors, "drug.concept", "error.null");
@@ -72,9 +82,41 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				if (!(order.getDrug() == null) && !(order.getDrug().getConcept().equals(order.getConcept()))) {
 					errors.rejectValue("drug", "error.general");
 					errors.rejectValue("concept", "error.concept");
-					
 				}
 			}
+			if (order.getDosingType() != null) {
+				if (order.getDosingType().equals(DrugOrder.DosingType.SIMPLE)) {
+					ValidationUtils.rejectIfEmpty(errors, "dose", "error.doseIsNullForDosingTypeSimple");
+					ValidationUtils.rejectIfEmpty(errors, "doseUnits", "error.doseUnitsIsNullForDosingTypeSimple");
+					ValidationUtils.rejectIfEmpty(errors, "route", "error.routeIsNullForDosingTypeSimple");
+					ValidationUtils.rejectIfEmpty(errors, "frequency", "error.frequencyIsNullForDosingTypeSimple");
+				} else if (order.getDosingType().equals(DrugOrder.DosingType.FREE_TEXT)) {
+					ValidationUtils.rejectIfEmpty(errors, "instructions", "error.instructionIsNullForDosingTypeFreeText");
+				} else {
+					ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
+					    "error.dosingInstructionsIsNullForDosingTypeOther");
+				}
+			}
+			validateFieldsForOutpatientCareSettingType(order, errors);
+			validatePairedFields(order, errors);
+		}
+	}
+	
+	private void validateFieldsForOutpatientCareSettingType(DrugOrder order, Errors errors) {
+		if (order.getCareSetting() != null
+		        && order.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
+			ValidationUtils.rejectIfEmpty(errors, "quantity", "error.quantityIsNullForOutPatient");
+			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "error.quantityUnitsIsNullForOutPatient");
+			ValidationUtils.rejectIfEmpty(errors, "numRefills", "error.numRefillsIsNullForOutPatient");
+		}
+	}
+	
+	private void validatePairedFields(DrugOrder order, Errors errors) {
+		if (order.getDose() != null) {
+			ValidationUtils.rejectIfEmpty(errors, "doseUnits", "error.doseUnitsRequiredWithDose");
+		}
+		if (order.getQuantity() != null) {
+			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "error.quantityUnitsRequiredWithQuantity");
 		}
 	}
 }
