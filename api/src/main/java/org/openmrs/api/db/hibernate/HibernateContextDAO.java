@@ -406,8 +406,8 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 			}
 		}
-		catch (Throwable t) {
-
+		catch (RuntimeException e) {
+			log.error("Unexpected error on loading default hibernate properties from hibernate.default.properties", e);
 		}
 		copyCacheToRuntimeProperties(cache, runtimeProperties); //// copy the cached changes to runtimeProperties
 	}
