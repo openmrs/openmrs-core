@@ -137,6 +137,17 @@ public interface OrderService extends OpenmrsService {
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Get discontinuation order for the given order 
+	 * 
+	 * @param order
+	 * @return the discontinuation order or null if none
+	 * @throws APIException
+	 * @should return discontinuation order if order has been discontinued
+	 * @should return null if order has not been discontinued
+	 */
+	public Order getDiscontinuationOrder(Order order) throws APIException;
+	
+	/**
 	 * Gets all Orders that match the specified parameters excluding discontinuation orders
 	 * 
 	 * @param patient the patient to match on

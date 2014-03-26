@@ -13,6 +13,27 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -1651,5 +1672,32 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertFalse(expectedOrderType.getConceptClasses().contains(aspirin.getConceptClass()));
 		assertEquals(expectedOrderType, order.getOrderType());
 		assertEquals(expectedCareSetting, order.getCareSetting());
+	}
+	
+	/**
+	 * @see OrderService#getDiscontinuationOrder(Order)
+	 * @verifies return discontinuation order if order has been discontinued
+	 */
+	@Test
+	public void getDiscontinuationOrder_shouldReturnDiscontinuationOrderIfOrderHasBeenDiscontinued() throws Exception {
+		Order order = orderService.getOrder(111);
+		Order discontinuationOrder = orderService.discontinueOrder(order, "no reason", new Date(), providerService
+		        .getProvider(1), order.getEncounter());
+		
+		Order foundDiscontinuationOrder = orderService.getDiscontinuationOrder(order);
+		
+		assertThat(foundDiscontinuationOrder, is(discontinuationOrder));
+	}
+	
+	/**
+	 * @see OrderService#getDiscontinuationOrder(Order)
+	 * @verifies return null if order has not been discontinued
+	 */
+	@Test
+	public void getDiscontinuationOrder_shouldReturnNullIfOrderHasNotBeenDiscontinued() throws Exception {
+		Order order = orderService.getOrder(111);
+		Order discontinuationOrder = orderService.getDiscontinuationOrder(order);
+		
+		assertThat(discontinuationOrder, is(nullValue()));
 	}
 }

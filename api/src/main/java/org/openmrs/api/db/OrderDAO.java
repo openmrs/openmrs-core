@@ -226,4 +226,9 @@ public interface OrderDAO {
 	 * @return true if used else false
 	 */
 	public boolean isOrderTypeInUse(OrderType orderType);
+	
+	/**
+	 * @see OrderService#getDiscontinuationOrder(Order) 
+	 */
+	public Order getDiscontinuationOrder(Order order);
 }
