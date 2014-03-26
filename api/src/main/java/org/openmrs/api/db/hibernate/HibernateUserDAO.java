@@ -34,6 +34,7 @@ import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
@@ -602,5 +603,4 @@ public class HibernateUserDAO implements UserDAO {
 		
 		return query;
 	}
-	
 }

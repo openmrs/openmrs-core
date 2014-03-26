@@ -53,15 +53,19 @@ public interface UserService extends OpenmrsService {
 	 * @should grant new roles in roles list to user
 	 * @should fail to create the user with a weak password
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_USERS, PrivilegeConstants.EDIT_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User saveUser(User user, String password) throws APIException;
 	
 	/**
-	 * @see #saveUser(User, String)
-	 * @deprecated replaced by {@link #saveUser(User, String)}
+	 * Create user with given password.
+	 * 
+	 * @param user the user
+	 * @param password
+	 * @return created user
+	 * @throws APIException
 	 */
-	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User createUser(User user, String password) throws APIException;
@@ -395,6 +399,24 @@ public interface UserService extends OpenmrsService {
 	public void changePassword(User u, String pw) throws APIException;
 	
 	/**
+	 * Change user password.
+	 * 
+	 * @param user the user to update password
+	 * @param oldPassword the user password to update
+	 * @param newPassword the new user password
+	 * @throws APIException for not existing user and if old password is weak 
+	 * @should throw APIException if old password is not correct
+	 * @should throw APIException if given user does not exist
+	 * @should change password for given user if oldPassword is correctly passed
+	 * @should change password for given user if oldPassword is null and changing user have privileges
+	 * @should throw exception if oldPassword is null and changing user have not privileges
+	 * @should throw exception if new password is too shot
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@Logging(ignoredArgumentIndexes = { 1 })
+	public void changePassword(User user, String oldPassword, String newPassword) throws APIException;
+	
+	/**
 	 * Changes the current user's password.
 	 * 
 	 * @param pw current password
@@ -637,4 +659,5 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	public User saveUserProperties(Map<String, String> properties);
+	
 }

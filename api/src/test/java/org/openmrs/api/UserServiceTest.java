@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +55,8 @@ import org.openmrs.util.Security;
 public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
+	
+	protected static final String XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION = "org/openmrs/api/include/UserServiceTest-changePasswordAction.xml";
 	
 	/**
 	 * Methods in this class might authenticate with a different user, so log that user out after
@@ -1181,5 +1184,133 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//Verify that the new properties were saved
 		assertEquals(USER_PROPERTY_VALUE_1, updatedUser.getUserProperty(USER_PROPERTY_KEY_1));
 		assertEquals(USER_PROPERTY_VALUE_2, updatedUser.getUserProperty(USER_PROPERTY_KEY_2));
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies change password for given user if oldPassword is correctly passed
+	 */
+	@Test
+	public void changePassword_shouldChangePasswordForGivenUserIfOldPasswordIsCorrectlyPassed() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		
+		String oldPassword = "userServiceTest";
+		String newPassword = "newPasswordString123";
+		
+		userService.changePassword(user6001, oldPassword, newPassword);
+		
+		//try to authenticate with new password
+		Context.authenticate(user6001.getUsername(), newPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies change password for given user if oldPassword is null and changing user have privileges
+	 */
+	@Test
+	public void changePassword_shouldChangePasswordForGivenUserIfOldPasswordIsNullAndChangingUserHavePrivileges()
+	        throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		
+		String oldPassword = null;
+		String newPassword = "newPasswordString123";
+		
+		userService.changePassword(user6001, oldPassword, newPassword);
+		
+		//remember previously logged user
+		User previouslyLogged = Context.getAuthenticatedUser();
+		
+		//authenticated user has change user passwords priviliges
+		Context.authenticate(user6001.getUsername(), newPassword);
+		
+		//clean up
+		Context.logout();
+		Context.authenticate("admin", "test");
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies throw APIException if old password is not correct
+	 */
+	@Test(expected = APIAuthenticationException.class)
+	public void changePassword_shouldThrowAPIExceptionIfOldPasswordIsNotCorrect() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		
+		String wrongPassword = "wrong password!";
+		String newPassword = "newPasswordString";
+		
+		//log in user without change user passwords privileges
+		//user6001 has not got required priviliges
+		Context.authenticate(user6001.getUsername(), "userServiceTest");
+		userService.changePassword(user6001, wrongPassword, newPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies throw exception if oldPassword is null and changing user have not privileges
+	 */
+	@Test(expected = APIException.class)
+	public void changePassword_shouldThrowExceptionIfOldPasswordIsNullAndChangingUserHaveNotPrivileges() throws Exception {
+		
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		
+		String oldPassword = null;
+		String newPassword = "newPasswordString";
+		
+		//log in user without change user passwords privileges
+		//user6001 has not got required priviliges
+		Context.authenticate(user6001.getUsername(), "userServiceTest");
+		
+		userService.changePassword(user6001, oldPassword, newPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies throw exception if new password is too shot
+	 */
+	@Test(expected = ShortPasswordException.class)
+	public void changePassword_shouldThrowExceptionIfNewPasswortIsTooShort() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		
+		String oldPassword = "userServiceTest";
+		String weakPassword = "weak";
+		
+		userService.changePassword(user6001, oldPassword, weakPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies throw APIException if given user does not exist
+	 */
+	@Test(expected = APIException.class)
+	public void changePassword_shouldThrowAPIExceptionIfGivenUserDoesNotExist() throws Exception {
+		
+		//user.getUserId is null - so it is not existing user
+		User notExistingUser = new User();
+		
+		final UserService userService = Context.getUserService();
+		
+		String anyString = "anyString";
+		userService.changePassword(notExistingUser, anyString, anyString);
 	}
 }

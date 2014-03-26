@@ -29,17 +29,21 @@ import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
+import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -344,6 +348,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#changePassword(org.openmrs.User, java.lang.String)
 	 */
+	@Deprecated
 	public void changePassword(User u, String pw) throws APIException {
 		dao.changePassword(u, pw);
 	}
@@ -712,4 +717,29 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return dao.saveUser(user, null);
 	}
 	
+	/**
+	 * @see UserService#changePassword(User, String, String)
+	 */
+	@Override
+	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
+	@Logging(ignoredArgumentIndexes = 1)
+	public void changePassword(User user, String oldPassword, String newPassword) throws APIException {
+		
+		if (user.getUserId() == null) {
+			throw new APIException("User must exist.");
+		}
+		
+		if (oldPassword == null) {
+			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
+				throw new APIException("In case of null oldPassword edit user passwords is required.");
+			}
+			
+		} else if (!dao.getLoginCredential(user).checkPassword(oldPassword)) {
+			throw new APIException("Old password is not correct.");
+		}
+		
+		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
+		
+		changePassword(user, newPassword); //TODO - reimplement deprecated method
+	}
 }
