@@ -279,7 +279,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (careSetting == null) {
 			throw new IllegalArgumentException("CareSetting is required");
 		}
-		return dao.getOrders(patient, careSetting, orderType, includeVoided, false);
+		List<OrderType> orderTypes = null;
+		if (orderType != null) {
+			orderTypes = new ArrayList<OrderType>();
+			orderTypes.add(orderType);
+			orderTypes.addAll(getSubtypes(orderType, true));
+		}
+		return dao.getOrders(patient, careSetting, orderTypes, includeVoided, false);
 	}
 	
 	/**
@@ -375,7 +381,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (asOfDate == null) {
 			asOfDate = new Date();
 		}
-		return dao.getActiveOrders(patient, orderType, careSetting, asOfDate);
+		List<OrderType> orderTypes = null;
+		if (orderType != null) {
+			orderTypes = new ArrayList<OrderType>();
+			orderTypes.add(orderType);
+			orderTypes.addAll(getSubtypes(orderType, true));
+		}
+		return dao.getActiveOrders(patient, orderTypes, careSetting, asOfDate);
 	}
 	
 	/**

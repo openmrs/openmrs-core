@@ -150,6 +150,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should get the orders that match all the arguments
 	 * @should get all unvoided matches if includeVoided is set to false
 	 * @should include voided matches if includeVoided is set to true
+	 * @should include orders for sub types if order type is specified
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided);
@@ -250,6 +251,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if patient is null
 	 * @should return active orders as of the specified date
 	 * @should return all orders if no orderType is specified
+	 * @should include orders for sub types if order type is specified
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate);

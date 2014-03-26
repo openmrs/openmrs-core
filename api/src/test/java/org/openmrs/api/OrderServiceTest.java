@@ -496,6 +496,29 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies include orders for sub types if order type is specified
+	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 *      org.openmrs.CareSetting, java.util.Date)
+	 */
+	@Test
+	public void getActiveOrders_shouldIncludeOrdersForSubTypesIfOrderTypeIsSpecified() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrders.xml");
+		Patient patient = Context.getPatientService().getPatient(2);
+		OrderType testOrderType = orderService.getOrderType(2);
+		List<Order> orders = orderService.getActiveOrders(patient, testOrderType, null, null);
+		assertEquals(5, orders.size());
+		Order[] expectedOrder1 = { orderService.getOrder(7), orderService.getOrder(101), orderService.getOrder(102),
+		        orderService.getOrder(103), orderService.getOrder(104) };
+		assertThat(orders, hasItems(expectedOrder1));
+		
+		OrderType labTestOrderType = orderService.getOrderType(7);
+		orders = orderService.getActiveOrders(patient, labTestOrderType, null, null);
+		assertEquals(3, orders.size());
+		Order[] expectedOrder2 = { orderService.getOrder(101), orderService.getOrder(103), orderService.getOrder(104) };
+		assertThat(orders, hasItems(expectedOrder2));
+	}
+	
+	/**
 	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
 	@Test
@@ -1386,6 +1409,31 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		CareSetting outPatient = orderService.getCareSetting(1);
 		OrderType testOrderType = orderService.getOrderType(2);
 		assertEquals(4, orderService.getOrders(patient, outPatient, testOrderType, true).size());
+	}
+	
+	/**
+	 * @verifies include orders for sub types if order type is specified
+	 * @see OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
+	 *      org.openmrs.OrderType, boolean)
+	 */
+	@Test
+	public void getOrders_shouldIncludeOrdersForSubTypesIfOrderTypeIsSpecified() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-otherOrders.xml");
+		Patient patient = patientService.getPatient(2);
+		OrderType testOrderType = orderService.getOrderType(2);
+		CareSetting outPatient = orderService.getCareSetting(1);
+		List<Order> orders = orderService.getOrders(patient, outPatient, testOrderType, false);
+		assertEquals(7, orders.size());
+		Order[] expectedOrder1 = { orderService.getOrder(6), orderService.getOrder(7), orderService.getOrder(9),
+		        orderService.getOrder(101), orderService.getOrder(102), orderService.getOrder(103),
+		        orderService.getOrder(104) };
+		assertThat(orders, hasItems(expectedOrder1));
+		
+		OrderType labTestOrderType = orderService.getOrderType(7);
+		orders = orderService.getOrders(patient, outPatient, labTestOrderType, false);
+		assertEquals(3, orderService.getOrders(patient, outPatient, labTestOrderType, false).size());
+		Order[] expectedOrder2 = { orderService.getOrder(101), orderService.getOrder(103), orderService.getOrder(104) };
+		assertThat(orders, hasItems(expectedOrder2));
 	}
 	
 	/**

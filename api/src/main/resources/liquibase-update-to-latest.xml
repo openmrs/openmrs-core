@@ -6530,7 +6530,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="java_class_name" type="varchar(255)">
-                <constraints nullable="false" unique="true" />
+                <constraints nullable="false" />
             </column>
             <column name="parent" type="int"/>
             <column name="creator" type="int">

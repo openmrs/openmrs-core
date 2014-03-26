@@ -75,8 +75,8 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrders(org.openmrs.Patient, org.openmrs.CareSetting,
 	 *      org.openmrs.OrderType, boolean)
 	 */
-	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided,
-	        boolean includeDiscontinuationOrders);
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, List<OrderType> orderTypes,
+	        boolean includeVoided, boolean includeDiscontinuationOrders);
 	
 	/**
 	 * Auto generated method comment
@@ -107,7 +107,7 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
 	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
-	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate);
+	public List<Order> getActiveOrders(Patient patient, List<OrderType> orderTypes, CareSetting careSetting, Date asOfDate);
 	
 	/**
 	 * Get care setting by type

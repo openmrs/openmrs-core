@@ -143,13 +143,13 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see OrderDAO#getOrders(org.openmrs.Patient, org.openmrs.CareSetting, org.openmrs.OrderType,
+	 * @see OrderDAO#getOrders(org.openmrs.Patient, org.openmrs.CareSetting, java.util.List,
 	 *      boolean, boolean)
 	 */
 	@Override
-	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided,
-	        boolean includeDiscontinuationOrders) {
-		return createOrderCriteria(patient, careSetting, orderType, includeVoided, includeDiscontinuationOrders).list();
+	public List<Order> getOrders(Patient patient, CareSetting careSetting, List<OrderType> orderTypes,
+	        boolean includeVoided, boolean includeDiscontinuationOrders) {
+		return createOrderCriteria(patient, careSetting, orderTypes, includeVoided, includeDiscontinuationOrders).list();
 	}
 	
 	/**
@@ -214,12 +214,12 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
+	 * @see org.openmrs.api.db.OrderDAO#getActiveOrders(org.openmrs.Patient, java.util.List,
 	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate) {
-		Criteria crit = createOrderCriteria(patient, careSetting, orderType, false, false);
+	public List<Order> getActiveOrders(Patient patient, List<OrderType> orderTypes, CareSetting careSetting, Date asOfDate) {
+		Criteria crit = createOrderCriteria(patient, careSetting, orderTypes, false, false);
 		
 		Disjunction dateStoppedAndAutoExpDateDisjunction = Restrictions.disjunction();
 		Criterion stopAndAutoExpDateAreBothNull = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions
@@ -242,12 +242,12 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * 
 	 * @param patient
 	 * @param careSetting
-	 * @param orderType
+	 * @param orderTypes
 	 * @param includeVoided
 	 * @param includeDiscontinuationOrders
 	 * @return
 	 */
-	private Criteria createOrderCriteria(Patient patient, CareSetting careSetting, OrderType orderType,
+	private Criteria createOrderCriteria(Patient patient, CareSetting careSetting, List<OrderType> orderTypes,
 	        boolean includeVoided, boolean includeDiscontinuationOrders) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
 		if (patient != null) {
@@ -256,8 +256,8 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (careSetting != null) {
 			criteria.add(Restrictions.eq("careSetting", careSetting));
 		}
-		if (orderType != null) {
-			criteria.add(Restrictions.eq("orderType", orderType));
+		if (orderTypes != null && orderTypes.size() > 0) {
+			criteria.add(Restrictions.in("orderType", orderTypes));
 		}
 		if (!includeVoided) {
 			criteria.add(Restrictions.eq("voided", false));
