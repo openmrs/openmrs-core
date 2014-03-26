@@ -197,10 +197,7 @@ public interface OrderDAO {
 	public List<OrderType> getOrderTypes(boolean includeRetired);
 	
 	/**
-	 * Gets the order type mapped to a given concept class
-	 * 
-	 * @param conceptClass the concept class
-	 * @return the matching order type
+	 * @see org.openmrs.api.OrderService#getOrderTypeByConceptClass(org.openmrs.ConceptClass)
 	 */
 	public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass);
 	

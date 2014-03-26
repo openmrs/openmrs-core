@@ -13,12 +13,15 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.Date;
+
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
-
-import java.util.Date;
+import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 
 /**
  * This class deals with {@link Order} objects when they are saved via a save* method in an Openmrs
@@ -37,7 +40,16 @@ public class OrderSaveHandler implements SaveHandler<Order> {
 	 *      java.util.Date, java.lang.String)
 	 */
 	public void handle(Order order, User creator, Date dateCreated, String other) {
-		if (order.getPatient() == null && order.getEncounter() != null)
+		if (order.getPatient() == null && order.getEncounter() != null) {
 			order.setPatient(order.getEncounter().getPatient());
+		}
+		
+		if (order.getOrderType() == null) {
+			OrderType orderType = Context.getOrderService().getOrderTypeByConcept(order.getConcept());
+			if (orderType == null) {
+				throw new APIException("No order type matches the concept class");
+			}
+			order.setOrderType(orderType);
+		}
 	}
 }

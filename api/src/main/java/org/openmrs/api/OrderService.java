@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderFrequency;
@@ -575,4 +576,26 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public List<OrderType> getSubtypes(OrderType orderType, boolean includeRetired);
+	
+	/**
+	 * Gets the order type mapped to a given concept class
+	 * 
+	 * @param conceptClass the concept class
+	 * @return the matching order type
+	 * @since 1.10
+	 * @should get order type mapped to the given concept class
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
+	public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass);
+	
+	/**
+	 * Gets the order type mapped to a given concept
+	 * 
+	 * @param concept the concept
+	 * @return the matching order type
+	 * @since 1.10
+	 * @should get order type mapped to the given concept
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
+	public OrderType getOrderTypeByConcept(Concept concept);
 }

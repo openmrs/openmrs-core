@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
@@ -1680,5 +1681,17 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order discontinuationOrder = orderService.getDiscontinuationOrder(order);
 		
 		assertThat(discontinuationOrder, is(nullValue()));
+	}
+	
+	/**
+	 * @see OrderService#getOrderTypeByConceptClass(ConceptClass)
+	 * @verifies return order type mapped to given concept class
+	 */
+	@Test
+	public void getOrderTypeByConceptClass_shouldReturnOrderTypeMappedToGivenConceptClass() throws Exception {
+		OrderType orderType = orderService.getOrderTypeByConceptClass(Context.getConceptService().getConceptClass(1));
+		
+		Assert.assertNotNull(orderType);
+		Assert.assertEquals(2, orderType.getOrderTypeId().intValue());
 	}
 }

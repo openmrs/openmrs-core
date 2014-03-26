@@ -634,26 +634,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * Gets the order type mapped to a given concept
-	 * 
-	 * @param concept the concept
-	 * @return the matching order type
-	 */
-	private OrderType getOrderTypeByConcept(Concept concept) {
-		return getOrderTypeByConceptClass(concept.getConceptClass());
-	}
-	
-	/**
-	 * Gets the order type mapped to a given concept class
-	 * 
-	 * @param conceptClass the concept class
-	 * @return the matching order type
-	 */
-	private OrderType getOrderTypeByConceptClass(ConceptClass conceptClass) {
-		return dao.getOrderTypeByConceptClass(conceptClass);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
 	 */
 	@Override
@@ -706,4 +686,22 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		return allSubtypes;
 	}
+
+	/**
+     * @see org.openmrs.api.OrderService#getOrderTypeByConceptClass(org.openmrs.ConceptClass)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass) {
+	    return dao.getOrderTypeByConceptClass(conceptClass);
+    }
+
+	/**
+     * @see org.openmrs.api.OrderService#getOrderTypeByConcept(org.openmrs.Concept)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public OrderType getOrderTypeByConcept(Concept concept) {
+	    return Context.getOrderService().getOrderTypeByConceptClass(concept.getConceptClass());
+    }
 }
