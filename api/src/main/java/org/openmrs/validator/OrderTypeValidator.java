@@ -19,7 +19,6 @@ import org.openmrs.ConceptClass;
 import org.openmrs.OrderType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -56,7 +55,6 @@ public class OrderTypeValidator implements Validator {
 	 * @should fail if name is empty
 	 * @should fail if name is whitespace
 	 * @should fail if name is a duplicate
-	 * @should fail if javaClass is a duplicate
 	 * @should fail if conceptClass is a duplicate
 	 * @should pass if all fields are correct for a new order type
 	 * @should pass if all fields are correct for an existing order type
@@ -85,20 +83,14 @@ public class OrderTypeValidator implements Validator {
 					if (orderType.equals(ot)) {
 						continue;
 					}
-					if (OpenmrsUtil.nullSafeEquals(orderType.getJavaClassName(), ot.getJavaClassName())) {
-						errors.rejectValue("javaClassName", "OrderType.duplicate", new Object[] {
-						        orderType.getJavaClassName(), orderType.getName() }, ot.getJavaClassName()
-						        + " is already associated to another order type:" + orderType.getName());
-					} else {
-						int index = 0;
-						for (ConceptClass cc : ot.getConceptClasses()) {
-							if (cc != null && orderType.getConceptClasses().contains(cc)) {
-								errors.rejectValue("conceptClasses[" + index + "]", "OrderType.duplicate", new Object[] {
-								        cc.getName(), orderType.getName() }, cc.getName()
-								        + " is already associated to another order type:" + orderType.getName());
-							}
-							index++;
+					int index = 0;
+					for (ConceptClass cc : ot.getConceptClasses()) {
+						if (cc != null && orderType.getConceptClasses().contains(cc)) {
+							errors.rejectValue("conceptClasses[" + index + "]", "OrderType.duplicate", new Object[] {
+							        cc.getName(), orderType.getName() }, cc.getName()
+							        + " is already associated to another order type:" + orderType.getName());
 						}
+						index++;
 					}
 				}
 			}

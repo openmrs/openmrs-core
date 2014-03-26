@@ -123,20 +123,6 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail if javaClass is a duplicate", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfJavaClassIsADuplicate() throws Exception {
-		OrderType orderType = new OrderType();
-		orderType.setName("java class test");
-		orderType.setJavaClassName(orderService.getOrderType(1).getJavaClassName());
-		Errors errors = new BindException(orderType, "orderType");
-		new OrderTypeValidator().validate(orderType, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("javaClassName"));
-	}
-	
-	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should fail if conceptClass is a duplicate", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfConceptClassIsADuplicate() throws Exception {
 		OrderType orderType = new OrderType();
