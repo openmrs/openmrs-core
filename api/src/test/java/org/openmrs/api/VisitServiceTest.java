@@ -426,7 +426,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void purgeVisit_shouldEraseTheVisitFromTheDatabase() throws Exception {
 		VisitService vs = Context.getVisitService();
 		Integer originalSize = vs.getVisits(null, null, null, null, null, null, null, null, null, true, true).size();
-		Visit visit = Context.getVisitService().getVisit(1);
+		Visit visit = Context.getVisitService().getVisit(2);
 		vs.purgeVisit(visit);
 		assertEquals(originalSize - 1, vs.getVisits(null, null, null, null, null, null, null, null, null, true, true).size());
 	}
@@ -927,7 +927,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void saveVisit_shouldAssociateEncounterWithVisitOnSaveEncounter() throws Exception {
 		
 		VisitService vs = Context.getVisitService();
-		Visit visit = vs.getVisit(1);
+		Visit visit = vs.getVisit(2);
 		
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(new Date());
@@ -942,7 +942,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		// reload the visit
-		visit = Context.getVisitService().getVisit(1);
+		visit = Context.getVisitService().getVisit(2);
 		
 		assertEquals(1, visit.getEncounters().size());
 		assertEquals(encounterId, ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
@@ -956,7 +956,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void saveVisit_shouldPersistNewEncounter() throws Exception {
 		
 		VisitService vs = Context.getVisitService();
-		Visit visit = vs.getVisit(1);
+		Visit visit = vs.getVisit(2);
 		
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(new Date());
@@ -972,7 +972,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Integer encounterId = encounter.getEncounterId();
 		
 		// reload the visit
-		visit = Context.getVisitService().getVisit(1);
+		visit = Context.getVisitService().getVisit(2);
 		
 		assertEquals(1, visit.getEncounters().size());
 		assertEquals(encounterId, ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
