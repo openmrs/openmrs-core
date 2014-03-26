@@ -13,7 +13,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.io.File;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -374,42 +376,49 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public void mergeDefaultRuntimeProperties(Properties runtimeProperties) {
 		
+		Map<Object, Object> cache = null; //declare a HashMap for do caching
 		// loop over runtime properties and precede each with "hibernate" if
 		// it isn't already
 		for (Map.Entry<Object, Object> entry : runtimeProperties.entrySet()) {
+			cache = new HashMap<Object, Object>(); // Instantiate a HashMap for do caching
 			Object key = entry.getKey();
 			String prop = (String) key;
 			String value = (String) entry.getValue();
 			log.trace("Setting property: " + prop + ":" + value);
 			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop)) {
-				runtimeProperties.setProperty("hibernate." + prop, value);
+				cache.put("hibernate." + prop, value); // cache the changes to the HashMap
 			}
 		}
 		
+		copyCacheToRuntimeProperties(cache, runtimeProperties); // copy the cached changes to runtimeProperties
 		// load in the default hibernate properties from hibernate.default.properties
-		InputStream propertyStream = null;
 		try {
+			cache = new HashMap<Object, Object>(); // Instantiate a HashMap for do caching
 			Properties props = new Properties();
-			propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
-			OpenmrsUtil.loadProperties(props, propertyStream);
+			File file = new File(getClass().getClassLoader().getResource("/hibernate.default.properties").getFile());
+			OpenmrsUtil.loadProperties(props, file);
 			
 			// add in all default properties that don't exist in the runtime
 			// properties yet
 			for (Map.Entry<Object, Object> entry : props.entrySet()) {
 				if (!runtimeProperties.containsKey(entry.getKey())) {
-					runtimeProperties.put(entry.getKey(), entry.getValue());
+					cache.put(entry.getKey(), entry.getValue()); // cache the changes to the HashMap
 				}
 			}
 		}
-		finally {
-			try {
-				propertyStream.close();
-			}
-			catch (Exception e) {
-				// pass
-			}
+		catch (Throwable t) {
+
 		}
-		
+		copyCacheToRuntimeProperties(cache, runtimeProperties); //// copy the cached changes to runtimeProperties
+	}
+	
+	// copy the cached changed to the runtimeProperties
+	public void copyCacheToRuntimeProperties(Map<Object, Object> cache, Properties runtimeProperties) {
+		for (Map.Entry<Object, Object> entry : cache.entrySet()) {
+			Object prop = entry.getKey();
+			Object value = (String) entry.getValue();
+			runtimeProperties.setProperty((String) prop, (String) value);
+		}
 	}
 	
 }
