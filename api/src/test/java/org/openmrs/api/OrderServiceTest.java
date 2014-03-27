@@ -1685,10 +1685,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see OrderService#getOrderTypeByConceptClass(ConceptClass)
-	 * @verifies return order type mapped to given concept class
+	 * @verifies get order type mapped to the given concept class
 	 */
 	@Test
-	public void getOrderTypeByConceptClass_shouldReturnOrderTypeMappedToGivenConceptClass() throws Exception {
+	public void getOrderTypeByConceptClass_shouldGetOrderTypeMappedToTheGivenConceptClass() throws Exception {
 		OrderType orderType = orderService.getOrderTypeByConceptClass(Context.getConceptService().getConceptClass(1));
 		
 		Assert.assertNotNull(orderType);
@@ -1697,10 +1697,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see OrderService#getOrderTypeByConcept(Concept)
-	 * @verifies return order type mapped to given concept
+	 * @verifies get order type mapped to the given concept
 	 */
 	@Test
-	public void getOrderTypeByConcept_shouldReturnOrderTypeMappedToGivenConcept() throws Exception {
+	public void getOrderTypeByConcept_shouldGetOrderTypeMappedToTheGivenConcept() throws Exception {
 		OrderType orderType = orderService.getOrderTypeByConcept(Context.getConceptService().getConcept(5089));
 		
 		Assert.assertNotNull(orderType);
