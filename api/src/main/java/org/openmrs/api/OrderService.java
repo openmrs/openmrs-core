@@ -595,6 +595,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the matching order type
 	 * @since 1.10
 	 * @should get order type mapped to the given concept
+	 * @should get order type mapped to given concept
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public OrderType getOrderTypeByConcept(Concept concept);
