@@ -7288,7 +7288,7 @@
             <not>
                 <sqlCheck expectedResult="0">
                     SELECT COUNT(o.order_id) FROM orders o
-                    WHERE o.order_id IN (SELECT to.order_id FROM test_order to)
+                    WHERE o.order_id IN (SELECT t.order_id FROM test_order t)
                     AND o.order_type IS NULL
                 </sqlCheck>
             </not>
