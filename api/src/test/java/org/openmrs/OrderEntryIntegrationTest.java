@@ -86,12 +86,13 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		
 		//place drug order
 		DrugOrder order = new DrugOrder();
-		order.setEncounter(encounterService.getEncounter(3));
+		Encounter encounter = encounterService.getEncounter(3);
+		order.setEncounter(encounter);
 		order.setPatient(patient);
 		order.setConcept(conceptService.getConcept(88));
 		order.setCareSetting(careSetting);
 		order.setOrderer(Context.getProviderService().getProvider(1));
-		order.setStartDate(new Date());
+		order.setStartDate(encounter.getEncounterDatetime());
 		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
 		order.setDrug(conceptService.getDrug(3));
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);

@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -105,14 +106,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
 		order.setDrug(Context.getConceptService().getDrug(3));
 		order.setCareSetting(Context.getOrderService().getCareSetting(1));
-		double quantity = 2.00;
-		order.setQuantity(quantity);
-		
-		Concept quantityUnitsConcept = new Concept();
-		quantityUnitsConcept.setConceptId(101);
-		order.setQuantityUnits(quantityUnitsConcept);
-		Assert.assertTrue(order.getQuantityUnits().getConceptId().equals(quantityUnitsConcept.getConceptId()));
+		order.setQuantity(2.00);
+		order.setQuantityUnits(Context.getConceptService().getConcept(50));
 		order.setNumRefills(10);
+		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		Assert.assertFalse(errors.hasErrors());
@@ -300,6 +297,21 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail validation if durationUnits is null when duration is present", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDurationUnitsIsNullWhenDurationIsPresent() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDuration(20.0);
+		order.setDurationUnits(null);
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail validation if drug concept is different from order concept", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfDrugConceptIsDifferentFromOrderConcept() throws Exception {
 		DrugOrder order = new DrugOrder();
@@ -314,5 +326,30 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("concept"));
 		Assert.assertTrue(errors.hasFieldErrors("drug"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if class of quantityUnits,doseUnits or durationUnits is not Units of Measure Concept class", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUnitsConceptAreNotFromUnitsOfMeasureConceptClass() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(3);
+		Assert.assertFalse(concept.getConceptClass().getUuid().equals(ConceptClass.UNITS_OF_MEASURE_UUID));
+		
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDuration(5.0);
+		order.setDurationUnits(concept);
+		order.setDose(1.0);
+		order.setDoseUnits(concept);
+		order.setQuantity(30.0);
+		order.setQuantityUnits(concept);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
+		Assert.assertTrue(errors.hasFieldErrors("quantityUnits"));
+		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
 	}
 }
