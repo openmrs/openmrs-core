@@ -13,9 +13,11 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.CareSetting;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
@@ -25,6 +27,7 @@ import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -48,6 +51,28 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("encounter"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if startDate is before encounter's encounterDatetime", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfStartDateIsBeforeEncounterDateTime() throws Exception {
+		Date encounterDate = new Date();
+		Date orderDate = DateUtils.addDays(encounterDate, -1);
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		encounter.setEncounterDatetime(encounterDate);
+		Order order = new Order();
+		order.setStartDate(orderDate);
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setEncounter(encounter);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("startDate"));
 	}
 	
 	/**
@@ -239,6 +264,90 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("startDate"));
 		Assert.assertTrue(errors.hasFieldErrors("autoExpireDate"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfScheduledDateIsSetUrgencyShouldBeSetAsOnScheduleDate() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		
+		order.setScheduledDate(new Date());
+		order.setUrgency(Order.Urgency.ROUTINE);
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("urgency"));
+		
+		order.setScheduledDate(new Date());
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors("urgency"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfScheduledDateIsNullIfUrgencyIsOnScheduleDate() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		order.setScheduledDate(null);
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("scheduledDate"));
+		
+		order.setScheduledDate(new Date());
+		order.setUrgency(Order.Urgency.STAT);
+		errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors("scheduledDate"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if orderType.javaClass does not match order.class", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfOrderTypeJavaClassAsClassDoesNotMatchOrderClass() throws Exception {
+		Order order = new DrugOrder();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Test order"));
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("orderType"));
+		Assert.assertTrue(Arrays.asList(errors.getFieldError("orderType").getCodes()).contains(
+		    "error.orderTypeClassMismatchesOrderClass"));
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if orderType.javaClass matches order.class' subclass", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfOrderTypeJavaClassAsClassDoesNotMatchOrderClassSubclass() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors("orderType"));
 	}
 	
 	/**
