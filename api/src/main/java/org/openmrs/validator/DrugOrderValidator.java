@@ -16,6 +16,8 @@ package org.openmrs.validator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.DrugOrder;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
@@ -62,6 +64,8 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if quantity is null for outpatient careSetting
 	 * @should fail validation if doseUnits is null when dose is present
 	 * @should fail validation if quantityUnits is null when quantity is present
+	 * @should fail validation if durationUnits is null when duration is present
+	 * @should fail validation if class of quantityUnits,doseUnits or durationUnits is not Units of Measure Concept class
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -99,6 +103,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			}
 			validateFieldsForOutpatientCareSettingType(order, errors);
 			validatePairedFields(order, errors);
+			validateUnitsConceptClassIsUnitsOfMeasure(errors, order);
 		}
 	}
 	
@@ -117,6 +122,21 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		}
 		if (order.getQuantity() != null) {
 			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "error.quantityUnitsRequiredWithQuantity");
+		}
+		if (order.getDuration() != null) {
+			ValidationUtils.rejectIfEmpty(errors, "durationUnits", "error.durationUnitsRequiredWithDuration");
+		}
+	}
+	
+	private void validateUnitsConceptClassIsUnitsOfMeasure(Errors errors, DrugOrder order) {
+		validateConceptClassIsUnitsOfMeasure(order.getDoseUnits(), "doseUnits", errors);
+		validateConceptClassIsUnitsOfMeasure(order.getDurationUnits(), "durationUnits", errors);
+		validateConceptClassIsUnitsOfMeasure(order.getQuantityUnits(), "quantityUnits", errors);
+	}
+	
+	private void validateConceptClassIsUnitsOfMeasure(Concept unitsConcept, String fieldName, Errors errors) {
+		if (unitsConcept != null && !unitsConcept.getConceptClass().getUuid().equals(ConceptClass.UNITS_OF_MEASURE_UUID)) {
+			errors.rejectValue(fieldName, "error.conceptClassIsNotUnitsOfMeasure");
 		}
 	}
 }

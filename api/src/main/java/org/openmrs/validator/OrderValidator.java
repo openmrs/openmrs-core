@@ -15,7 +15,9 @@ package org.openmrs.validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -62,6 +64,11 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if startDate is null
 	 * @should fail validation if startDate after dateStopped
 	 * @should fail validation if startDate after autoExpireDate
+	 * @should fail validation if startDate is before encounter's encounterDatetime
+	 * @should fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE
+	 * @should fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE
+	 * @should fail validation if orderType.javaClass does not match order.class
+	 * @should pass validation if orderType.javaClass matches order.class' subclass
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -80,7 +87,16 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "action", "error.null");
 			
 			validateSamePatientInOrderAndEncounter(order, errors);
+			validateOrderTypeClass(order, errors);
 			validateStartDate(order, errors);
+			validateScheduledDate(order, errors);
+		}
+	}
+	
+	private void validateOrderTypeClass(Order order, Errors errors) {
+		OrderType orderType = order.getOrderType();
+		if (orderType != null && !order.getClass().isAssignableFrom(orderType.getJavaClass())) {
+			errors.rejectValue("orderType", "error.orderTypeClassMismatchesOrderClass");
 		}
 	}
 	
@@ -97,6 +113,11 @@ public class OrderValidator implements Validator {
 				errors.rejectValue("startDate", "Order.error.startDateAfterAutoExpireDate");
 				errors.rejectValue("autoExpireDate", "Order.error.startDateAfterAutoExpireDate");
 			}
+			Encounter encounter = order.getEncounter();
+			if (encounter != null && encounter.getEncounterDatetime() != null
+			        && encounter.getEncounterDatetime().after(startDate)) {
+				errors.rejectValue("startDate", "Order.error.startDateAfterEncounterDatetime");
+			}
 		}
 	}
 	
@@ -104,6 +125,17 @@ public class OrderValidator implements Validator {
 		if (order.getEncounter() != null && order.getPatient() != null) {
 			if (!order.getEncounter().getPatient().equals(order.getPatient()))
 				errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
+		}
+	}
+	
+	private void validateScheduledDate(Order order, Errors errors) {
+		boolean isUrgencyOnScheduledDate = (order.getUrgency() != null && order.getUrgency().equals(
+		    Order.Urgency.ON_SCHEDULED_DATE));
+		if (order.getScheduledDate() != null && !isUrgencyOnScheduledDate) {
+			errors.rejectValue("urgency", "error.urgencyNotOnScheduledDate");
+		}
+		if (isUrgencyOnScheduledDate && order.getScheduledDate() == null) {
+			errors.rejectValue("scheduledDate", "error.scheduledDateNullForOnScheduledDateUrgency");
 		}
 	}
 }

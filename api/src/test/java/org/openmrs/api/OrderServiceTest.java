@@ -13,26 +13,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.openmrs.test.TestUtil.containsId;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,6 +41,26 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -1232,6 +1232,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
 		order.setScheduledDate(scheduledDate);
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setOrderType(orderService.getOrderType(1));
 		order = orderService.saveOrder(order, null);
