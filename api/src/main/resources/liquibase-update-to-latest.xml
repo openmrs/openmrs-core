@@ -6956,11 +6956,12 @@
         <dropColumn tableName="orders" columnName="discontinued_by" />
 	</changeSet>
 	
-	<changeSet id="201401031432-TRUNK-4135" author="rkorytkowski">
+	<changeSet id="201401031433-TRUNK-4135" author="rkorytkowski">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="drug_order" columnName="frequency" />
+            <not><columnExists tableName="drug_order" columnName="frequency_text" /></not>
 		</preConditions>
-		<comment>Renaming the frequency column of the drug_order table to frequency_text</comment>
+		<comment>Temporarily renaming drug_order. frequency column to frequency_text</comment>
 		<renameColumn tableName="drug_order" oldColumnName="frequency" newColumnName="frequency_text" columnDataType="varchar(255)" />
 	</changeSet>
 
@@ -6997,10 +6998,11 @@
 		<customChange class="org.openmrs.util.databasechange.MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset" />
 	</changeSet>
 
-	<changeSet id="201301031454-TRUNK-4135" author="rkorytkowski">
+	<changeSet id="201301031455-TRUNK-4135" author="rkorytkowski">
 		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="frequency_text" /></not>
+			<columnExists tableName="drug_order" columnName="frequency_text" />
 		</preConditions>
+        <comment>Dropping temporary column drug_order.frequency_text</comment>
 		<dropColumn tableName="drug_order" columnName="frequency_text" />
 	</changeSet>
 
