@@ -7186,12 +7186,29 @@
 								 referencedTableName="users"/>
 	</changeSet>
 
+    <changeSet id="201402041600-TRUNK-4138" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="discontinued_because" />
+        </preConditions>
+        <comment>Temporary dropping foreign key on orders.discontinued_reason column</comment>
+        <dropForeignKeyConstraint baseTableName="orders" constraintName="discontinued_because" />
+    </changeSet>
+
     <changeSet id="201402041601-TRUNK-4138" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <columnExists columnName="discontinued_reason" tableName="orders" />
         </preConditions>
         <comment>Renaming orders.discontinued_reason column to order_reason</comment>
         <renameColumn tableName="orders" newColumnName="order_reason" oldColumnName="discontinued_reason" columnDataType="int" />
+    </changeSet>
+
+    <changeSet id="201402041602-TRUNK-4138" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="discontinued_because" /></not>
+        </preConditions>
+        <comment>Adding back foreign key on orders.discontinued_reason column</comment>
+        <addForeignKeyConstraint constraintName="discontinued_because" baseTableName="orders" baseColumnNames="order_reason"
+                                 referencedTableName="concept" referencedColumnNames="concept_id" />
     </changeSet>
 
     <changeSet id="201402041604-TRUNK-4138" author="wyclif">
