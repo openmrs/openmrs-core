@@ -13,14 +13,6 @@
  */
 package org.openmrs.util.databasechange;
 
-import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.OpenmrsUtil;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,6 +26,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.OpenmrsUtil;
+
 /**
  * Tests database upgrade from OpenMRS 1.9.7 to OpenMRS 1.10.
  */
@@ -43,8 +45,12 @@ public class Database1_9To1_10UpgradeTest {
 	
 	private DatabaseUpgradeTestUtil upgradeTestUtil;
 	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
 	/**
 	 * This method creates mock order entry upgrade file
+	 * 
 	 * @see org.openmrs.util.UpgradeUtil#getConceptIdForUnits(String)
 	 */
 	public static void createOrderEntryUpgradeFileWithTestData(String propString) throws IOException {
@@ -252,6 +258,32 @@ public class Database1_9To1_10UpgradeTest {
 		Assert.assertTrue(drugs.get(0).containsValue("1.0tab(s)"));
 		Assert.assertTrue(drugs.get(1).containsValue("325.0mg"));
 		Assert.assertTrue(drugs.get(2).get("strength").isEmpty());
+	}
+	
+	@Test
+	public void shouldFailIfThereAreDrugsWithDoseStrengthAndNoNullUnits() throws IOException, SQLException {
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithStrengthButNullUnits.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		
+		expectedException.expect(IOException.class);
+		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262139-TRUNK-4265::wyclif";
+		expectedException.expectMessage(errorMsgSubString);
+		upgradeTestUtil.upgrade();
+	}
+	
+	@Test
+	public void shouldFailIfThereAreDrugsWithDoseStrengthAndNoBlankUnits() throws IOException, SQLException {
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithStrengthButBlankUnits.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		
+		expectedException.expect(IOException.class);
+		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262139-TRUNK-4265::wyclif";
+		expectedException.expectMessage(errorMsgSubString);
+		upgradeTestUtil.upgrade();
 	}
 	
 	private Map<String, String> row(String... values) {

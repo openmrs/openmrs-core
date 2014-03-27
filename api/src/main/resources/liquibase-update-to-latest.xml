@@ -6439,6 +6439,15 @@
         <comment>Checking if there are any orders that are neither test nor drug orders</comment>
     </changeSet>
 
+    <changeSet id="201403262139-TRUNK-4265" author="wyclif">
+        <preConditions onFail="HALT" onFailMessage="Please make sure that all drugs with dose strength have the units specified">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(drug_id) FROM drug WHERE dose_strength IS NOT NULL AND (units IS NULL OR units = '')
+            </sqlCheck>
+        </preConditions>
+        <comment>Checking if there are any drugs with the dose_strength specified but no units</comment>
+    </changeSet>
+
     <changeSet id="201402241054" author="Akshika">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="start_date" />

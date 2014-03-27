@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <drug drug_id="11" concept_id="3" name="NYQUIL" combination="true" dose_strength="34.5" creator="1" date_created="2008-08-15 15:34:03.0" retired="true" uuid="6e4545fa-0fa0-461f-9b60-6765997d849e"/>
+</dataset>
