@@ -19,6 +19,8 @@ import org.openmrs.ConceptClass;
 import org.openmrs.OrderType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.order.OrderUtil;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -56,6 +58,8 @@ public class OrderTypeValidator implements Validator {
 	 * @should fail if name is whitespace
 	 * @should fail if name is a duplicate
 	 * @should fail if conceptClass is a duplicate
+	 * @should fail if parent is among its descendants
+	 * @should fail if parent is also a direct child
 	 * @should pass if all fields are correct for a new order type
 	 * @should pass if all fields are correct for an existing order type
 	 * @should be invoked when an order type is saved
@@ -70,6 +74,11 @@ public class OrderTypeValidator implements Validator {
 			if (!StringUtils.hasText(name)) {
 				errors.rejectValue("name", "error.name");
 				return;
+			}
+			
+			if (orderType.getParent() != null && OrderUtil.isType(orderType, orderType.getParent())) {
+				errors.rejectValue("parent", "OrderType.parent.amongDescendants", new Object[] { orderType.getName() },
+				    "Parent of " + orderType.getName() + " is among its descendants");
 			}
 			
 			OrderType duplicate = Context.getOrderService().getOrderTypeByName(name);

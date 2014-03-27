@@ -136,6 +136,36 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if parent is among its descendants", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfParentIsAmongItsDescendants() throws Exception {
+		OrderType orderType = orderService.getOrderType(2);
+		OrderType descendant = orderService.getOrderType(9);
+		Assert.assertTrue(descendant.getParent().getParent().equals(orderType));
+		orderType.setParent(descendant);
+		Errors errors = new BindException(orderType, "orderType");
+		new OrderTypeValidator().validate(orderType, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("parent"));
+	}
+	
+	/**
+	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if parent is also a direct child", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfParentIsAlsoADirectChild() throws Exception {
+		OrderType orderType = orderService.getOrderType(8);
+		OrderType descendant = orderService.getOrderType(12);
+		Assert.assertTrue(descendant.getParent().equals(orderType));
+		orderType.setParent(descendant);
+		Errors errors = new BindException(orderType, "orderType");
+		new OrderTypeValidator().validate(orderType, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("parent"));
+	}
+	
+	/**
 	 * @verifies pass if all fields are correct for a new order type
 	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
