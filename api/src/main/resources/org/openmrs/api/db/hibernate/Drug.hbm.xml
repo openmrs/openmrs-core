@@ -16,13 +16,10 @@
 		<property name="name" type="java.lang.String" length="255" />
 		<property name="combination" type="java.lang.Boolean" length="1"
 			not-null="true" />
-		<property name="doseStrength" type="java.lang.Double"
-			column="dose_strength" length="22" />
 		<property name="maximumDailyDose" type="java.lang.Double"
 			column="maximum_daily_dose" length="22" />
 		<property name="minimumDailyDose" type="java.lang.Double"
 			column="minimum_daily_dose" length="22" />
-		<property name="units" type="java.lang.String" length="50" />
         <property name="strength" type="java.lang.String" length="255" />
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
