@@ -255,7 +255,18 @@ public class PatientFormController extends PersonFormController {
 			String action = request.getParameter("action");
 			PatientService ps = Context.getPatientService();
 			
-			if (action.equals(msa.getMessage("Patient.delete"))) {
+			if (action.equals(msa.getMessage("Patient.void"))) {
+				String voidReason = request.getParameter("voidReason");
+				if (StringUtils.isBlank(voidReason)) {
+					voidReason = msa.getMessage("PatientForm.default.voidReason", null, "Voided from patient form", Context
+					        .getLocale());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.error.void.reasonEmpty");
+				} else {
+					ps.voidPatient(patient, voidReason);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
+				}
+				return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId()));
+			} else if (action.equals(msa.getMessage("Patient.delete"))) {
 				try {
 					ps.purgePatient(patient);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.deleted");
@@ -267,15 +278,6 @@ public class PatientFormController extends PersonFormController {
 					return new ModelAndView(new RedirectView(getSuccessView() + "?patientId="
 					        + patient.getPatientId().toString()));
 				}
-			} else if (action.equals(msa.getMessage("Patient.void"))) {
-				String voidReason = request.getParameter("voidReason");
-				if (StringUtils.isBlank(voidReason)) {
-					voidReason = msa.getMessage("PatientForm.default.voidReason", null, "Voided from patient form", Context
-					        .getLocale());
-				}
-				ps.voidPatient(patient, voidReason);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
-				return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId()));
 			} else if (action.equals(msa.getMessage("Patient.unvoid"))) {
 				ps.unvoidPatient(patient);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.unvoided");
