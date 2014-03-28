@@ -13,6 +13,26 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +53,7 @@ import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
+import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
@@ -41,26 +62,6 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.openmrs.test.TestUtil.containsId;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -607,23 +608,31 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "discontinue existing active order if new order being saved with action to discontinue", method = "saveOrder(Order)")
 	public void saveOrder_shouldDiscontinueExistingActiveOrderIfNewOrderBeingSavedWithActionToDiscontinue() throws Exception {
-		Order order = new Order();
+		DrugOrder order = new DrugOrder();
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setEncounter(encounterService.getEncounter(5));
-		order.setPatient(Context.getPatientService().getPatient(7));
-		order.setOrderer(Context.getProviderService().getProvider(1));
-		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(patientService.getPatient(7));
+		order.setOrderer(providerService.getProvider(1));
+		order.setConcept(conceptService.getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setOrderType(orderService.getOrderType(1));
 		order.setStartDate(new Date());
+		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDose(500.0);
+		order.setDoseUnits(conceptService.getConcept(50));
+		order.setFrequency(orderService.getOrderFrequency(1));
+		order.setRoute(conceptService.getConcept(22));
+		order.setNumRefills(10);
+		order.setQuantity(20.0);
+		order.setQuantityUnits(conceptService.getConcept(51));
 		
 		//We are trying to discontinue order id 111 in standardTestDataset.xml
 		Order expectedPreviousOrder = orderService.getOrder(111);
 		Assert.assertNull(expectedPreviousOrder.getDateStopped());
 		
-		order = orderService.saveOrder(order, null);
+		order = (DrugOrder) orderService.saveOrder(order, null);
 		
 		Assert.assertNotNull("should populate dateStopped in previous order", expectedPreviousOrder.getDateStopped());
 		Assert.assertNotNull("should save discontinue order", order.getId());
@@ -638,7 +647,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "discontinue previousOrder if it is not already discontinued", method = "saveOrder(Order)")
 	public void saveOrder_shouldDiscontinuePreviousOrderIfItIsNotAlreadyDiscontinued() throws Exception {
 		//We are trying to discontinue order id 111 in standardTestDataset.xml
-		Order order = new Order();
+		DrugOrder order = new DrugOrder();
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
 		order.setEncounter(encounterService.getEncounter(5));
@@ -649,6 +658,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setOrderType(orderService.getOrderType(1));
 		order.setStartDate(new Date());
+		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDose(500.0);
+		order.setDoseUnits(conceptService.getConcept(50));
+		order.setFrequency(orderService.getOrderFrequency(1));
+		order.setRoute(conceptService.getConcept(22));
+		order.setNumRefills(10);
+		order.setQuantity(20.0);
+		order.setQuantityUnits(conceptService.getConcept(51));
 		Order previousOrder = orderService.getOrder(111);
 		assertTrue(OrderUtilTest.isActiveOrder(previousOrder, null));
 		order.setPreviousOrder(previousOrder);
@@ -1234,7 +1251,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setScheduledDate(scheduledDate);
 		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
 		order.setEncounter(encounterService.getEncounter(3));
-		order.setOrderType(orderService.getOrderType(1));
+		order.setOrderType(orderService.getOrderType(17));
 		order = orderService.saveOrder(order, null);
 		Order newOrder = orderService.getOrder(order.getOrderId());
 		assertNotNull(order);
@@ -1254,7 +1271,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 		        "orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		Order order = new Order();
+		Order order = new TestOrder();
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setPatient(patientService.getPatient(2));
 		order.setConcept(conceptService.getConcept(5497));
@@ -1280,7 +1297,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 		        "orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp);
-		Order order = new Order();
+		Order order = new TestOrder();
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setPatient(patientService.getPatient(2));
 		order.setConcept(conceptService.getConcept(5497));
@@ -1339,7 +1356,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllOrderTypesIfIncludeRetiredIsSetToTrue() throws Exception {
-		assertEquals(13, orderService.getOrderTypes(true).size());
+		assertEquals(14, orderService.getOrderTypes(true).size());
 	}
 	
 	/**
@@ -1348,7 +1365,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypes_shouldGetAllNonRetiredOrderTypesIfIncludeRetiredIsSetToFalse() throws Exception {
-		assertEquals(10, orderService.getOrderTypes(false).size());
+		assertEquals(11, orderService.getOrderTypes(false).size());
 	}
 	
 	/**

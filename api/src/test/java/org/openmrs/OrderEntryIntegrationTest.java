@@ -13,6 +13,15 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Test;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -23,15 +32,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Contains end to end tests for order entry operations i.g placing, discontinuing revising an order

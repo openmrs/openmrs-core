@@ -13,6 +13,8 @@
  */
 package org.openmrs.validator;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -22,8 +24,6 @@ import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-
-import java.util.Date;
 
 /**
  * Validates the {@link Order} class.
@@ -68,7 +68,7 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE
 	 * @should fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE
 	 * @should fail validation if orderType.javaClass does not match order.class
-	 * @should pass validation if orderType.javaClass matches order.class' subclass
+	 * @should pass validation if the class of the order is a subclass of orderType.javaClass
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -95,7 +95,7 @@ public class OrderValidator implements Validator {
 	
 	private void validateOrderTypeClass(Order order, Errors errors) {
 		OrderType orderType = order.getOrderType();
-		if (orderType != null && !order.getClass().isAssignableFrom(orderType.getJavaClass())) {
+		if (orderType != null && !orderType.getJavaClass().isAssignableFrom(order.getClass())) {
 			errors.rejectValue("orderType", "error.orderTypeClassMismatchesOrderClass");
 		}
 	}

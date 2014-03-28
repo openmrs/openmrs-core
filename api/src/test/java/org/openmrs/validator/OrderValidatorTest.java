@@ -13,6 +13,10 @@
  */
 package org.openmrs.validator;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,14 +31,12 @@ import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-
 /**
  * Tests methods on the {@link OrderValidator} class.
  */
 public class OrderValidatorTest extends BaseContextSensitiveTest {
+	
+	private class SomeDrugOrder extends DrugOrder {}
 	
 	/**
 	 * @see {@link OrderValidator#validate(Object,Errors)}
@@ -54,11 +56,11 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if startDate is before encounter's encounterDatetime
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if startDate is before encounter's encounterDatetime", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfStartDateIsBeforeEncounterDateTime() throws Exception {
+	public void validate_shouldFailValidationIfStartDateIsBeforeEncountersEncounterDatetime() throws Exception {
 		Date encounterDate = new Date();
 		Date orderDate = DateUtils.addDays(encounterDate, -1);
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
@@ -267,35 +269,11 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfScheduledDateIsSetUrgencyShouldBeSetAsOnScheduleDate() throws Exception {
-		Order order = new Order();
-		order.setConcept(Context.getConceptService().getConcept(88));
-		order.setPatient(Context.getPatientService().getPatient(2));
-		order.setOrderer(Context.getProviderService().getProvider(1));
-		
-		order.setScheduledDate(new Date());
-		order.setUrgency(Order.Urgency.ROUTINE);
-		Errors errors = new BindException(order, "order");
-		new OrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("urgency"));
-		
-		order.setScheduledDate(new Date());
-		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
-		errors = new BindException(order, "order");
-		new OrderValidator().validate(order, errors);
-		Assert.assertFalse(errors.hasFieldErrors("urgency"));
-	}
-	
-	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfScheduledDateIsNullIfUrgencyIsOnScheduleDate() throws Exception {
+	public void validate_shouldFailValidationIfScheduledDateIsNullWhenUrgencyIsON_SCHEDULED_DATE() throws Exception {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -315,11 +293,35 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if orderType.javaClass does not match order.class", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfOrderTypeJavaClassAsClassDoesNotMatchOrderClass() throws Exception {
+	public void validate_shouldFailValidationIfScheduledDateIsSetAndUrgencyIsNotSetAsON_SCHEDULED_DATE() throws Exception {
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		
+		order.setScheduledDate(new Date());
+		order.setUrgency(Order.Urgency.ROUTINE);
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("urgency"));
+		
+		order.setScheduledDate(new Date());
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors("urgency"));
+	}
+	
+	/**
+	 * @verifies fail validation if orderType.javaClass does not match order.class
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfOrderTypejavaClassDoesNotMatchOrderclass() throws Exception {
 		Order order = new DrugOrder();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
@@ -334,12 +336,12 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @verifies pass validation if the class of the order is a subclass of orderType.javaClass
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should pass validation if orderType.javaClass matches order.class' subclass", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfOrderTypeJavaClassAsClassDoesNotMatchOrderClassSubclass() throws Exception {
-		Order order = new Order();
+	public void validate_shouldPassValidationIfTheClassOfTheOrderIsASubclassOfOrderTypejavaClass() throws Exception {
+		SomeDrugOrder order = new SomeDrugOrder();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setOrderer(Context.getProviderService().getProvider(1));
@@ -356,7 +358,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllFieldsAreCorrect() throws Exception {
-		Order order = new Order();
+		Order order = new DrugOrder();
 		Encounter encounter = new Encounter();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setOrderer(Context.getProviderService().getProvider(1));

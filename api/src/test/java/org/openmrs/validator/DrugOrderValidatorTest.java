@@ -13,6 +13,9 @@
  */
 package org.openmrs.validator;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -26,9 +29,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Tests methods on the {@link DrugOrderValidator} class.
@@ -131,10 +131,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if quantity is null for outpatient careSetting
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if quantity is null for outpatient careSetting", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfQuantityIsNullForOutpatientCareSetting() throws Exception {
 		DrugOrder OutpatientOrder = new DrugOrder();
 		OutpatientOrder.setCareSetting(Context.getOrderService().getCareSetting(1));
@@ -152,10 +152,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if quantityUnits is null for outpatient careSetting
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if quantityUnits is null for outpatient careSetting", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfQuantityUnitsIsNullForOutpatientCareSetting() throws Exception {
 		DrugOrder OutpatientOrder = new DrugOrder();
 		OutpatientOrder.setCareSetting(Context.getOrderService().getCareSetting(1));
@@ -173,11 +173,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if numberOfRefills is null for outpatient careSetting
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if number of refills is null for outpatient careSetting", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNumRefillsIsNullForOutpatientCareSetting() throws Exception {
+	public void validate_shouldFailValidationIfNumberOfRefillsIsNullForOutpatientCareSetting() throws Exception {
 		DrugOrder OutpatientOrder = new DrugOrder();
 		OutpatientOrder.setCareSetting(Context.getOrderService().getCareSetting(1));
 		OutpatientOrder.setNumRefills(null);
@@ -194,11 +194,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if dose is null for SIMPLE dosingType
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if dose is null for SIMPLE dosingType", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDoseIsNullForDosingTypeSimple() throws Exception {
+	public void validate_shouldFailValidationIfDoseIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);
 		order.setDose(null);
@@ -208,11 +208,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if doseUnits is null for SIMPLE dosingType
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if doseUnits is null for SIMPLE dosingType", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDoseUnitsIsNullForDosingTypeSimple() throws Exception {
+	public void validate_shouldFailValidationIfDoseUnitsIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);
 		order.setDoseUnits(null);
@@ -222,11 +222,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if route is null for SIMPLE dosingType
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if route is null for SIMPLE dosingType", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfRouteIsNullForDosingTypeSimple() throws Exception {
+	public void validate_shouldFailValidationIfRouteIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);
 		order.setRoute(null);
@@ -236,11 +236,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if frequency is null for SIMPLE dosingType
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if frequency is null for SIMPLE dosingType", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfFrequencyIsNullForDosingTypeSimple() throws Exception {
+	public void validate_shouldFailValidationIfFrequencyIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);
 		order.setFrequency(null);
@@ -250,11 +250,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if instruction is null for FREE_TEXT dosingType
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if instruction is null for FREE_TEXT dosingType", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfInstructionsIsNullForDosingTypeFreeText() throws Exception {
+	public void validate_shouldFailValidationIfInstructionIsNullForFREE_TEXTDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
 		order.setInstructions(null);
@@ -264,10 +264,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if doseUnits is null when dose is present
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if doseUnits is null when dose is present", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfDoseUnitsIsNullWhenDoseIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
@@ -279,10 +279,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if quantityUnits is null when quantity is present
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if quantityUnits is null when quantity is present", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfQuantityUnitsIsNullWhenQuantityIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
@@ -294,10 +294,10 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if durationUnits is null when duration is present
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if durationUnits is null when duration is present", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfDurationUnitsIsNullWhenDurationIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
@@ -329,11 +329,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @verifies fail validation if class of quantityUnits,doseUnits or durationUnits is not Units
+	 *           of Measure Concept class
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	@Verifies(value = "should fail validation if class of quantityUnits,doseUnits or durationUnits is not Units of Measure Concept class", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfUnitsConceptAreNotFromUnitsOfMeasureConceptClass() throws Exception {
+	public void validate_shouldFailValidationIfClassOfQuantityUnitsdoseUnitsOrDurationUnitsIsNotUnitsOfMeasureConceptClass()
+	        throws Exception {
 		Concept concept = Context.getConceptService().getConcept(3);
 		Assert.assertFalse(concept.getConceptClass().getUuid().equals(ConceptClass.UNITS_OF_MEASURE_UUID));
 		

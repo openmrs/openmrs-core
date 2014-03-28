@@ -182,8 +182,8 @@
   <order_frequency order_frequency_id="1" concept_id="113" creator="1" date_created="2008-08-15 13:52:53.0" retired="false" uuid="28090760-7c38-11e3-baa7-0800200c9a66" />
   <order_frequency order_frequency_id="2" concept_id="3" creator="1" date_created="2008-08-15 13:52:53.0" retired="false" uuid="38090760-7c38-11e3-baa7-0800200c9a66" />
   <order_frequency order_frequency_id="3" concept_id="4" creator="1" date_created="2008-08-15 13:52:53.0" retired="true" retire_reason="Some Retire Reason" retired_by="1" date_retired="2009-08-15 13:52:53.0" uuid="48090760-7c38-11e3-baa7-0800200c9a66" />
-  <order_type order_type_id="1" name="Drug order" java_class_name="org.openmrs.DrugOrder" description="Categorises medication orders for the patient" date_created="2008-08-15 13:49:47.0" retired="false" uuid="2ca568f3-a64a-11e3-9aeb-50e549534c5e" creator="1" />
-  <order_type order_type_id="2" name="Test order" java_class_name="org.openmrs.TestOrder" description="Categorises test orders for the patient" date_created="2008-08-15 13:49:47.0" retired="false" uuid="52a447d3-a64a-11e3-9aeb-50e549534c5e" creator="1" />
+  <order_type order_type_id="1" name="Drug order" parent="17" java_class_name="org.openmrs.DrugOrder" description="Categorises medication orders for the patient" date_created="2008-08-15 13:49:47.0" retired="false" uuid="2ca568f3-a64a-11e3-9aeb-50e549534c5e" creator="1" />
+  <order_type order_type_id="2" name="Test order" parent="17" java_class_name="org.openmrs.TestOrder" description="Categorises test orders for the patient" date_created="2008-08-15 13:49:47.0" retired="false" uuid="52a447d3-a64a-11e3-9aeb-50e549534c5e" creator="1" />
   <order_type order_type_id="3" name="Radiology order" java_class_name="org.openmrs.RadiologyOrder" description="starving" creator="1" date_created="2008-08-15 15:49:04.0" retired="1" retired_by="1" retire_reason="None" date_retired="2008-08-15 18:49:04.0" uuid="00e17510-aa09-11e3-a5e2-0800200c9a66"/>
   <order_type order_type_id="7" name="Lab test" parent="2" java_class_name="org.openmrs.TestOrder" description="An order by a clinician for a laboratory test" creator="1" date_created="2008-08-15 13:50:14.0" retired="false" uuid="87f82f50-ac05-11e3-a5e2-0800200c9a66"/>
   <order_type order_type_id="8" name="Radiology test" parent="2" java_class_name="org.openmrs.RadiologyTestTestOrder" description="Order placed by radiologist" creator="1" date_created="2008-08-15 15:49:04.0" retired="false" uuid="90a1e5b0-ac05-11e3-a5e2-0800200c9a66"/>
@@ -195,8 +195,10 @@
   <order_type order_type_id="14" name="X-Ray Sheet order" parent="12" java_class_name="org.openmrs.XRaySheetRadiologyOrder" description="Sample radiology sheetorder" creator="1" date_created="2008-08-15 15:49:04.0" retired="false" uuid="e83a5d30-ae07-11e3-a5e2-0800200c9a66"/>
   <order_type order_type_id="15" name="Theater Order"  java_class_name="org.openmrs.TheaterOrder" description="Some theater order" creator="1" date_created="2008-08-15 13:50:14.0" retired="false" uuid="bf7f3ab0-ae06-11e3-a5e2-0800200c9a66"/>
   <order_type order_type_id="16" name="Lab Order" java_class_name="org.openmrs.LabOrder" description="Some lab order" creator="1" date_created="2008-08-15 15:49:04.0" retire_reason="None" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" uuid="cc3fb1d0-ae06-11e3-a5e2-0800200c9a66"/>
+  <order_type order_type_id="17" name="Plain Order" java_class_name="org.openmrs.Order" description="Plain order" creator="1" date_created="2008-08-15 15:49:04.0" retired="0" uuid="dd3fb1d0-ae06-11e3-a5e2-0800200c9a77"/>
   <order_type_class_map order_type_id="2" concept_class_id="1"/>
   <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
+  <drug_order order_id="111" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="4" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
@@ -334,7 +336,10 @@
   <relationship_type relationship_type_id="1" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-05-04 09:59:22.0" retired="false" uuid="6d9002ea-a96b-4889-af78-82d48c57a110"/>
   <relationship_type relationship_type_id="2" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="parent and child" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956eabc"/>
   <role role="Provider" description="General privileges held by all providers" uuid="3480cb6d-c291-46c8-8d3a-96dc33d199fb"/>
+  <test_order order_id="6" />
   <test_order order_id="7" number_of_repeats="2" />
+  <test_order order_id="8" />
+  <test_order order_id="9" />
   <user_role user_id="501" role="Provider"/>
   <user_role user_id="502" role="Provider"/>
   <users user_id="501" person_id="501" system_id="2-6" username="bruno" password="ff6d1655327d385e11a04e1632b4f33ceb8fafd2" salt="5d32c5fd9fde391c755f1f4dfd5e1d6e3debe6" secret_question="" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" retired="true" retire_reason="Test purposes" uuid="c1d8f5c2-e131-11de-babe-001e378eb67e"/>

@@ -151,6 +151,28 @@ public class TestOrder extends Order {
 	}
 	
 	/**
+	 * Creates a discontinuation order for this.
+	 * 
+	 * @see org.openmrs.Order#cloneForDiscontinuing()
+	 * @return the newly created order
+	 * @since 1.10
+	 * @should set all the relevant fields
+	 */
+	@Override
+	public Order cloneForDiscontinuing() {
+		Order newOrder = new TestOrder();
+		newOrder.setCareSetting(this.getCareSetting());
+		newOrder.setConcept(this.getConcept());
+		newOrder.setAction(Action.DISCONTINUE);
+		newOrder.setPreviousOrder(this);
+		newOrder.setPatient(this.getPatient());
+		newOrder.setOrderType(getOrderType());
+		newOrder.setStartDate(this.getStartDate());
+		
+		return newOrder;
+	}
+	
+	/**
 	 * Creates a TestOrder for revision from this order, sets the previousOrder, action field and
 	 * other test order fields.
 	 * 

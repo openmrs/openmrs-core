@@ -150,7 +150,7 @@ public class OrderTest {
 	@Test
 	public void cloneForDiscontinuing_shouldSetAllTheRelevantFields() throws Exception {
 		
-		TestOrder anOrder = new TestOrder();
+		Order anOrder = new Order();
 		anOrder.setPatient(new Patient());
 		anOrder.setCareSetting(new CareSetting());
 		anOrder.setConcept(new Concept());
