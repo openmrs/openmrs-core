@@ -21,6 +21,9 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
+import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * This class should test all methods on the patient object. It should not worry about the extended
@@ -108,6 +111,48 @@ public class PatientTest {
 		assertTrue("There should still be only 1 identifier in the patient object now", p.getIdentifiers().size() == 1);
 		p.removeIdentifier(pa1);
 		assertTrue("There shouldn't be any identifiers in the patient object now", p.getIdentifiers().size() == 0);
+	}
+	
+	/**
+	 * Testing for: Patient must not be voided if void reason is not supplied
+	 */
+	@Test
+	public void patientVoid_shouldNotBeVoidedIfVoidReasonIsNotSupplied() {
+		Patient p = new Patient();
+		PatientService ps = Context.getPatientService();
+		p.setVoidReason("");
+		String action = "Patient deleted";
+		if (action.equals("Patient.void")) {
+			String voidReason = p.getVoidReason();
+			if (StringUtils.isBlank(voidReason)) {
+
+			} else {
+				ps.voidPatient(p, voidReason);
+			}
+			String voidReasonBoolean = p.getVoidReason();
+			assertTrue("Patient must not be voided now", voidReasonBoolean == "False");
+		}
+	}
+	
+	/**
+	 * Testing for: Patient must be voided if void reason is supplied
+	 */
+	@Test
+	public void patientVoid_shouldBeVoidedIfVoidReasonIsSupplied() {
+		Patient p = new Patient();
+		PatientService ps = Context.getPatientService();
+		p.setVoidReason("Voiding the patient");
+		String action = "Patient deleted";
+		if (action.equals("Patient.void")) {
+			String voidReason = p.getVoidReason();
+			if (StringUtils.isBlank(voidReason)) {
+
+			} else {
+				ps.voidPatient(p, voidReason);
+			}
+			String voidReasonBoolean = p.getVoidReason();
+			assertTrue("Patient must not be voided now", voidReasonBoolean == "True");
+		}
 	}
 	
 	/**
