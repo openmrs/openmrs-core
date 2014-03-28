@@ -16,12 +16,12 @@ package org.openmrs.reporting;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortUtil;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -61,22 +61,24 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 	}
 	
 	public String getDescription() {
-		if (!isReadyToRun()) {
+		MessageSourceService mss = Context.getMessageSourceService();
+		if (!isReadyToRun())
 			return "";
-		}
 		Locale locale = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
-		StringBuffer ret = new StringBuffer();
-		ret.append("Patients in ");
+		StringBuilder ret = new StringBuilder();
+		ret.append(mss.getMessage("reporting.patientsIn")).append(" ");
 		ret.append(getConceptName(program.getConcept()));
 		if (onDate != null) {
-			ret.append(" on " + df.format(onDate));
+			ret.append(" ").append(mss.getMessage("reporting.on", new Object[] { df.format(onDate) }, locale));
 		} else {
 			if (fromDate != null) {
-				ret.append(" anytime after " + df.format(fromDate));
+				ret.append(" ").append(
+				    mss.getMessage("reporting.anytimeAfter", new Object[] { df.format(fromDate) }, locale));
 			}
 			if (toDate != null) {
-				ret.append(" anytime before " + df.format(toDate));
+				ret.append(" ")
+				        .append(mss.getMessage("reporting.anytimeBefore", new Object[] { df.format(toDate) }, locale));
 			}
 		}
 		return ret.toString();

@@ -16,6 +16,7 @@ package org.openmrs.reporting;
 import org.openmrs.Cohort;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -44,11 +45,12 @@ public class PersonAttributeFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Patients with ");
-		sb.append(getAttribute() != null ? getAttribute().getName() : " any attribute");
+		sb.append(msa.getMessage("reporting.patientsWith")).append(" ");
+		sb.append(getAttribute() != null ? getAttribute().getName() : " " + msa.getMessage("reporting.anyAttribute"));
 		if (getValue() != null) {
-			sb.append(" equal to ");
+			sb.append(" ").append(msa.getMessage("reporting.equalTo")).append(" ");
 			sb.append(getValue());
 		}
 		return sb.toString();
