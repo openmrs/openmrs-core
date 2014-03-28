@@ -7033,7 +7033,7 @@
             </column>
             <column name="retired_by" type="int" />
             <column name="date_retired" type="datetime" />
-            <column name="retired_reason" type="varchar(255)" />
+            <column name="retire_reason" type="varchar(255)" />
             <column name="uuid" type="char(38)">
                 <constraints nullable="false"/>
             </column>
@@ -7384,6 +7384,26 @@
                       finalColumnType="varchar(255)"
                       joinString=""
                       tableName="drug"/>
+    </changeSet>
+    
+    <changeSet id="20140331-1-TRUNK-4335" author="rkorytkowski">
+    	<preConditions onFail="MARK_RAN">
+    		<not><columnExists tableName="concept_set_derived" columnName="uuid"/></not>
+    	</preConditions>
+    	<comment>Adding uuid to concept_set_derived</comment>
+    	<addColumn tableName="concept_set_derived">
+    		<column name="uuid" type="char(38)" />
+    	</addColumn>
+    </changeSet>
+    
+     <changeSet id="20140331-2-TRUNK-4335" author="rkorytkowski">
+    	<preConditions onFail="MARK_RAN">
+    		<not><columnExists tableName="drug_ingredient" columnName="uuid"/></not>
+    	</preConditions>
+    	<comment>Adding uuid to drug_ingredient</comment>
+    	<addColumn tableName="drug_ingredient">
+    		<column name="uuid" type="char(38)" />
+    	</addColumn>
     </changeSet>
 
 </databaseChangeLog>
