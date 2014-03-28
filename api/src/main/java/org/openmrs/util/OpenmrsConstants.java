@@ -896,6 +896,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ADDRESS_TEMPLATE = "layout.address.format";
 	
+	public static final String GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT = "layout.name.format";
+	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
@@ -1792,7 +1794,7 @@ public final class OpenmrsConstants {
 	 * which type of object to restrict on
 	 * 
 	 * @see org.openmrs.api.ObsService
-	 * @see org.openmrs.api.PersonService
+	 * @see org.openmrs.api.PersonService 
 	 */
 	public static enum PERSON_TYPE {
 		PERSON, PATIENT, USER
@@ -1813,4 +1815,10 @@ public final class OpenmrsConstants {
 	
 	/**Prefix followed by registered component name.*/
 	public static final String REGISTERED_COMPONENT_NAME_PREFIX = "bean:";
+	
+	/** Value for the short person name format */
+	public static final String PERSON_NAME_FORMAT_SHORT = "short";
+	
+	/** Value for the long person name format */
+	public static final String PERSON_NAME_FORMAT_LONG = "long";
 }
