@@ -101,7 +101,15 @@
 			</td>
 		</tr>
 	</c:if>
-	<tr id="voidReasonIdentifierRow-<c:out value="${identifier}" />" <spring:bind path="voided"><c:if test="${status.value == false}">style="display: none"</c:if></spring:bind> >
+	<c:choose>
+		<c:when test="${empty identifier}">
+			<tr id="voidReasonIdentifierRow-<c:out value="${identifier}" />" <spring:bind path="voided"><c:if test="${status.value == false}">style="display: none"</c:if></spring:bind> >
+		</c:when>
+		<c:otherwise>
+			<tr id="voidReasonIdentifierRow-${identifier}" <spring:bind path="voided"><c:if test="${status.value == false}">style="display: none"</c:if></spring:bind> >
+		</c:otherwise>
+	</c:choose>
+	
 		<td><openmrs:message code="general.voidReason"/></td>
 		<spring:bind path="voidReason">
 			<td>
