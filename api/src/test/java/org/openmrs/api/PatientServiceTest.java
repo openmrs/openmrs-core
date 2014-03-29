@@ -625,6 +625,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Visit visit5 = visitService.getVisit(5);
 		
 		List<String> encounterUuidsThatShouldBeMoved = new ArrayList<String>();
+        encounterUuidsThatShouldBeMoved.add(Context.getEncounterService().getEncounter(6).getUuid());
 		for (Visit v : Arrays.asList(visit1, visit2, visit3)) {
 			for (Encounter e : v.getEncounters()) {
 				encounterUuidsThatShouldBeMoved.add(e.getUuid());
@@ -656,7 +657,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertThat(mergeLogData.getMovedVisits().size(), is(4));
 		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid(), visit2.getUuid(), visit3.getUuid(),
 		    visit6.getUuid()));
-		
+        System.out.println("MOVED:"+mergeLogData.getMovedEncounters().size());
+		System.out.println("SHOULD:"+encounterUuidsThatShouldBeMoved.size());
 		assertThat(mergeLogData.getMovedEncounters().size(), is(encounterUuidsThatShouldBeMoved.size()));
 		assertThat(mergeLogData.getMovedEncounters(), containsInAnyOrder(encounterUuidsThatShouldBeMoved.toArray()));
 	}
