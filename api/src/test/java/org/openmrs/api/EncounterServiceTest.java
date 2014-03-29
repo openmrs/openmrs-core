@@ -749,18 +749,18 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// test for a min date long before all dates
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2004-12-31"), null,
 		    null, null, null, false);
-		assertEquals(4, encounters.size());
+		assertEquals(5, encounters.size());
 		assertEquals(1, encounters.get(0).getEncounterId().intValue());
 		
 		// test for exact date search
 		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-01"), null, null, null,
 		    null, false);
-		assertEquals(4, encounters.size());
+		assertEquals(5, encounters.size());
 		
 		// test for one day later
 		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-02"), null, null, null,
 		    null, false);
-		assertEquals(3, encounters.size());
+		assertEquals(4, encounters.size());
 		assertEquals(3, encounters.get(0).getEncounterId().intValue());
 		assertEquals(4, encounters.get(1).getEncounterId().intValue());
 		assertEquals(5, encounters.get(2).getEncounterId().intValue());
@@ -790,7 +790,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		forms.add(new Form(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, null,
 		    true);
-		assertEquals(7, encounters.size());
+		assertEquals(8, encounters.size());
 	}
 	
 	/**
@@ -816,7 +816,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		types.add(new EncounterType(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, null,
 		    true);
-		assertEquals(6, encounters.size());
+		assertEquals(7, encounters.size());
 	}
 	
 	/**
@@ -825,7 +825,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should exclude voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldExcludeVoidedEncounters() throws Exception {
-		assertEquals(5, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, false).size());
+		assertEquals(6, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, false).size());
 	}
 	
 	/**
@@ -834,7 +834,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should include voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldIncludeVoidedEncounters() throws Exception {
-		assertEquals(7, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, true).size());
+		assertEquals(8, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, true).size());
 	}
 	
 	/**
@@ -1362,7 +1362,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("John", false);
-		assertEquals(2, encounters.size());
+		assertEquals(3, encounters.size());
 	}
 	
 	/**

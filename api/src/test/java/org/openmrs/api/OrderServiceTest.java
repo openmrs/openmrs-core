@@ -68,8 +68,6 @@ import org.openmrs.util.PrivilegeConstants;
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
-	private static final String OTHER_ENCOUNTERS_XML = "org/openmrs/api/include/OrderServiceTest-otherEncounters.xml";
-	
 	private static final String OTHER_ORDER_FREQUENCIES_XML = "org/openmrs/api/include/OrderServiceTest-otherOrderFrequencies.xml";
 	
 	private ConceptService conceptService;
@@ -734,12 +732,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldPassIfTheExistingDrugOrderMatchesTheConceptAndDrugOfTheDCOrder() throws Exception {
-		executeDataSet(OTHER_ENCOUNTERS_XML);
 		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(444);
 		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
 		
 		DrugOrder order = new DrugOrder();
-		order.setEncounter(encounterService.getEncounter(7));
 		order.setDrug(orderToDiscontinue.getDrug());
 		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
 		order.setAction(Order.Action.DISCONTINUE);
@@ -843,7 +839,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldNotAllowEditingAnExistingOrder() throws Exception {
-		executeDataSet(OTHER_ENCOUNTERS_XML);
 		final DrugOrder order = (DrugOrder) orderService.getOrder(5);
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot edit an existing order, you need to revise it instead");
@@ -923,11 +918,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldNotAllowRevisingAVoidedOrder() throws Exception {
-		executeDataSet(OTHER_ENCOUNTERS_XML);
 		Order originalOrder = orderService.getOrder(8);
 		assertTrue(originalOrder.isVoided());
 		Order revisedOrder = originalOrder.cloneForRevision();
-		revisedOrder.setEncounter(encounterService.getEncounter(7));
+		revisedOrder.setEncounter(encounterService.getEncounter(6));
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setStartDate(new Date());
@@ -942,12 +936,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldNotAllowRevisingAnExpiredOrder() throws Exception {
-		executeDataSet(OTHER_ENCOUNTERS_XML);
 		Order originalOrder = orderService.getOrder(6);
 		assertNotNull(originalOrder.getAutoExpireDate());
 		assertTrue(originalOrder.getAutoExpireDate().before(new Date()));
 		Order revisedOrder = originalOrder.cloneForRevision();
-		revisedOrder.setEncounter(encounterService.getEncounter(7));
+		revisedOrder.setEncounter(encounterService.getEncounter(6));
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setStartDate(new Date());
@@ -1267,7 +1260,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldSetOrderNumberSpecifiedInTheContextIfSpecified() throws Exception {
-		executeDataSet(OTHER_ENCOUNTERS_XML);
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 		        "orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp);
@@ -1293,12 +1285,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldSetTheOrderNumberReturnedByTheConfiguredGenerator() throws Exception {
-		executeDataSet(OTHER_ENCOUNTERS_XML);
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_ORDER_NUMBER_GENERATOR_BEAN_ID,
 		        "orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		Order order = new TestOrder();
-		order.setEncounter(encounterService.getEncounter(6));
 		order.setPatient(patientService.getPatient(2));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
@@ -1510,7 +1500,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldSetOrderTypeIfNullButMappedToTheConceptClass() throws Exception {
-		executeDataSet(OTHER_ENCOUNTERS_XML);
 		Order order = new Order();
 		order.setPatient(patientService.getPatient(2));
 		order.setConcept(conceptService.getConcept(5497));
@@ -1528,7 +1517,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldFailIfOrderTypeIsNullAndNotMappedToTheConceptClass() throws Exception {
-		executeDataSet(OTHER_ENCOUNTERS_XML);
 		Order order = new Order();
 		order.setPatient(patientService.getPatient(2));
 		order.setConcept(conceptService.getConcept(3));
