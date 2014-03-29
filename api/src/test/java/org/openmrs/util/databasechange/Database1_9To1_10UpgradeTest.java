@@ -291,7 +291,7 @@ public class Database1_9To1_10UpgradeTest {
 		//sanity check that we have some drug order dose units and frequencies in the test dataset
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/UpgradeTest-nonDrugNorTestOrder.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-nonDrugNorTestOrder.xml");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		expectedException.expect(IOException.class);
