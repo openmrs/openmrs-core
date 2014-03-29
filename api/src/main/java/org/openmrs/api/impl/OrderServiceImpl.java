@@ -112,6 +112,30 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			discontinueExistingOrdersIfNecessary(order);
 		}
 		
+		//Check that patient, careSetting, concept and drug if is drug order have not changed
+		if (order.getPreviousOrder() != null) {
+			Order previousOrder = order.getPreviousOrder();
+			//we need to use a SQL query to by pass the hibernate cache
+			String query = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = ";
+			boolean isDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
+			if (isDrugOrder) {
+				query = "SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
+				        + "FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id =";
+			}
+			List<List<Object>> rows = Context.getAdministrationService()
+			        .executeSQL(query + previousOrder.getOrderId(), true);
+			List<Object> rowData = rows.get(0);
+			if (!rowData.get(0).equals(previousOrder.getPatient().getPatientId())) {
+				throw new APIException("Cannot change the patient of an order");
+			} else if (!rowData.get(1).equals(previousOrder.getCareSetting().getCareSettingId())) {
+				throw new APIException("Cannot change the careSetting of an order");
+			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
+				throw new APIException("Cannot change the concept of an order");
+			} else if (isDrugOrder && !rowData.get(3).equals(((DrugOrder) previousOrder).getDrug().getDrugId())) {
+				throw new APIException("Cannot change the drug of a drug order");
+			}
+		}
+		
 		return saveOrderInternal(order, orderContext);
 	}
 	

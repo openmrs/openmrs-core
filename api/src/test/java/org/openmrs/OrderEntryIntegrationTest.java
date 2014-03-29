@@ -193,7 +193,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertTrue(originalActiveOrders.contains(originalOrder));
 		
 		Order revisedOrder = originalOrder.cloneForRevision();
-		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		revisedOrder.setInstructions("Take after a meal");
 		revisedOrder.setStartDate(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));

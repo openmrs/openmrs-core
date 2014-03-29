@@ -1082,7 +1082,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		final OrderFrequency expectedOrderFrequency = orderService.getOrderFrequency(100);
 		assertEquals(expectedOrderFrequency, orderFrequencies.get(0));
 		
-		//Add a new name to the frequency concept so that our search phrase matches on 2 
+		//Add a new name to the frequency concept so that our search phrase matches on 2
 		//concept names for the same frequency concept
 		Concept frequencyConcept = expectedOrderFrequency.getConcept();
 		final String newConceptName = searchPhrase + " A Day";
@@ -1711,5 +1711,83 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotNull(orderType);
 		Assert.assertEquals(2, orderType.getOrderTypeId().intValue());
+	}
+	
+	/**
+	 * @verifies not allow changing the patient of the previous order when revising an order
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldNotAllowChangingThePatientOfThePreviousOrderWhenRevisingAnOrder() throws Exception {
+		Order orderToRevise = orderService.getOrder(7);
+		Patient newPatient = patientService.getPatient(7);
+		assertFalse(orderToRevise.getPatient().equals(newPatient));
+		orderToRevise.setPatient(newPatient);
+		Order order = orderToRevise.cloneForRevision();
+		order.setStartDate(new Date());
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderer(providerService.getProvider(1));
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot change the patient of an order");
+		orderService.saveOrder(order, null);
+	}
+	
+	/**
+	 * @verifies not allow changing the careSetting of the previous order when revising an order
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldNotAllowChangingTheCareSettingOfThePreviousOrderWhenRevisingAnOrder() throws Exception {
+		Order order = orderService.getOrder(7).cloneForRevision();
+		order.setStartDate(new Date());
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		CareSetting newCareSetting = orderService.getCareSetting(2);
+		assertFalse(order.getPreviousOrder().getCareSetting().equals(newCareSetting));
+		order.getPreviousOrder().setCareSetting(newCareSetting);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot change the careSetting of an order");
+		orderService.saveOrder(order, null);
+	}
+	
+	/**
+	 * @verifies not allow changing the concept of the previous order when revising an order
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldNotAllowChangingTheConceptOfThePreviousOrderWhenRevisingAnOrder() throws Exception {
+		Order order = orderService.getOrder(7).cloneForRevision();
+		order.setStartDate(new Date());
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		Concept newConcept = conceptService.getConcept(5089);
+		assertFalse(order.getPreviousOrder().getConcept().equals(newConcept));
+		order.getPreviousOrder().setConcept(newConcept);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot change the concept of an order");
+		orderService.saveOrder(order, null);
+	}
+	
+	/**
+	 * @verifies not allow changing the drug of the previous drug order when revising an order
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldNotAllowChangingTheDrugOfThePreviousDrugOrderWhenRevisingAnOrder() throws Exception {
+		DrugOrder order = (DrugOrder) orderService.getOrder(111).cloneForRevision();
+		order.setStartDate(new Date());
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderer(providerService.getProvider(1));
+		Drug newDrug = conceptService.getDrug(2);
+		DrugOrder previousOrder = (DrugOrder) order.getPreviousOrder();
+		assertFalse(previousOrder.getDrug().equals(newDrug));
+		previousOrder.setDrug(newDrug);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot change the drug of a drug order");
+		orderService.saveOrder(order, null);
 	}
 }

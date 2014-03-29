@@ -72,6 +72,10 @@ public interface OrderService extends OpenmrsService {
 	 * @should set order type if null but mapped to the concept class
 	 * @should fail if order type is null and not mapped to the concept class
 	 * @should default to care setting and order type defined in the order context if null
+	 * @should not allow changing the patient of the previous order when revising an order
+	 * @should not allow changing the careSetting of the previous order when revising an order
+	 * @should not allow changing the concept of the previous order when revising an order
+	 * @should not allow changing the drug of the previous drug order when revising an order
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
@@ -138,7 +142,7 @@ public interface OrderService extends OpenmrsService {
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Get discontinuation order for the given order 
+	 * Get discontinuation order for the given order
 	 * 
 	 * @param order
 	 * @return the discontinuation order or null if none
