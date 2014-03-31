@@ -1249,7 +1249,9 @@ public interface ConceptService extends OpenmrsService {
 	 * @param nameTag the concept name tag to be saved
 	 * @return the newly created or existing concept name tag
 	 * @should save a concept name tag if tag does not exist
-	 * @should not save a concept name tag if tag exists
+	 * @should save an edited concept name tag
+	 * @should not save a concept name tag if tag already exists
+	 * @should not save a concept name tag if tag is null, empty or whitespace
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_NAME_TAGS)
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);

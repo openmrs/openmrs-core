@@ -75,6 +75,7 @@ import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.annotation.ExpectedException;
+import org.springframework.validation.Errors;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -2557,5 +2558,46 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
 		
 		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test(expected = Exception.class)
+	@Verifies(value = "not save a concept name tag if tag is invalid", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldNotSaveATagIfItIsInvalid() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptNameTag faultyNameTag = cs.saveConceptNameTag(cnt);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "save a concept name tag if tag is supplied", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldSaveATagIfItIsSupplied() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		cnt.setTag("abcd");
+		cnt.setId(5);
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptNameTag nameTag = cs.saveConceptNameTag(cnt);
+		Assert.assertNotNull(nameTag);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "save an edited name tag", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldSaveAnEditedNameTag() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		ConceptNameTag cnt = cs.getConceptNameTag(1);
+		cnt.setTag("dcba");
+		
+		ConceptNameTag nameTag = cs.saveConceptNameTag(cnt);
+		Assert.assertNotNull(nameTag);
 	}
 }
