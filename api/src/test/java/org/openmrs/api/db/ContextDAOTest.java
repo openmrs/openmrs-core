@@ -13,6 +13,8 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Properties;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -349,6 +351,15 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// it would be illegal to save this user (with a whitespace username) but we can get it in the db via xml
 		User u = Context.getUserService().getUser(507);
 		dao.authenticate("  ", "password");
+	}
+	
+	@Verifies(value = "should mergeDefaultRuntimeProperties", method = "mergeDefaultRuntimeProperties(Properties runtimeProperties)")
+	@Test
+	public void should_mergeDefaultRuntimeProperties() {
+		Properties propertiesForTest = new Properties();
+		propertiesForTest.setProperty("x", "y"); // adding properties for testing
+		dao.mergeDefaultRuntimeProperties(propertiesForTest);
+		Assert.assertNotNull(propertiesForTest.getProperty("hibernate.x")); // check whether "x" has been converted to "hibernate.x"
 	}
 	
 }
