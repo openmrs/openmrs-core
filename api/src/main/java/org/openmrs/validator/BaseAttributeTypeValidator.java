@@ -43,6 +43,8 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 	 * @should not allow maxOccurs less than 1
 	 * @should not allow maxOccurs less than minOccurs
 	 * @should require datatypeClassname
+	 * @should require DatatypeConfiguration if Datatype equals Regex-Validated Text
+	 * @should pass validation if all required values are set
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {

@@ -81,13 +81,26 @@ public class BaseAttributeTypeValidatorTest {
 	
 	/**
 	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
-	 * @verifies require DatatypeConfiguration if Datatype equals
-	 * Regex-Validated Text
+	 * @verifies require DatatypeConfiguration if Datatype equals Regex-Validated Text
 	 */
 	@Test
-	public void validate_shouldRequireDatatypeConfigurationIfDatatypeRegexValidatedText() throws Exception {
+	public void validate_shouldRequireDatatypeConfigurationIfDatatypeEqualsRegexValidatedText() throws Exception {
 		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
 		validator.validate(attributeType, errors);
 		Assert.assertTrue(errors.getFieldErrors("datatypeConfig").size() > 0);
+	}
+	
+	/**
+	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
+	 * @verifies pass validation if all required values are set
+	 */
+	@Test
+	public void validate_shouldPassValidationIfAllRequiredValuesAreSet() throws Exception {
+		attributeType.setName("name");
+		attributeType.setMinOccurs(1);
+		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
+		attributeType.setDatatypeConfig("[a-z]+");
+		validator.validate(attributeType, errors);
+		Assert.assertFalse(errors.hasErrors());
 	}
 }
