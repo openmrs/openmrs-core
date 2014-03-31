@@ -96,15 +96,19 @@ public class GlobalPropertyController extends SimpleFormController {
 					
 					// try to get an already-used global property for this key
 					GlobalProperty tmpGlobalProperty = formBackingObjectMap.get(key);
-					
-					// if it exists, use that object...just update it
-					if (tmpGlobalProperty != null) {
-						tmpGlobalProperty.setPropertyValue(val);
-						tmpGlobalProperty.setDescription(desc);
-						globalPropList.add(tmpGlobalProperty);
-					} else {
-						// if it doesn't exist, create a new global property
-						globalPropList.add(new GlobalProperty(key, val, desc));
+					try {
+						// if it exists, use that object...just update it
+						if (tmpGlobalProperty != null) {
+							tmpGlobalProperty.setPropertyValue(val);
+							tmpGlobalProperty.setDescription(desc);
+							globalPropList.add(tmpGlobalProperty);
+						} else {
+							// if it doesn't exist, create a new global property
+							globalPropList.add(new GlobalProperty(key, val, desc));
+						}
+					}
+					catch (Exception e) {
+						log.error(e);
 					}
 				}
 				
