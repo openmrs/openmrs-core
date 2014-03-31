@@ -13,12 +13,9 @@
  */
 package org.openmrs.web.controller.patient;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -27,6 +24,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.web.address.AddressTemplate;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.openmrs.validator.PersonAddressValidator;
@@ -143,6 +141,35 @@ public class ShortPatientFormValidator implements Validator {
 				        .toString()
 				        + " is a duplicate address for the same patient");
 			}
+		}
+		
+		//check if all required address fields are filled
+		String xml = Context.getLocationService().getAddressTemplate();
+		List<String> requiredElements = new ArrayList<String>();
+		try {
+			AddressTemplate test = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
+			    AddressTemplate.class);
+			requiredElements = test.getRequiredElements();
+		}
+		catch (Exception e) {
+			errors.reject(Context.getMessageSourceService().getMessage("AddressTemplate.error"));
+			return;
+		}
+		
+		for (String fieldName : requiredElements) {
+			try {
+				Object value = PropertyUtils.getProperty(personAddress, fieldName);
+				if (StringUtils.isBlank((String) value)) {
+					// required field not found
+					errors.reject("Required address field " + fieldName + " is blank.");
+				}
+			}
+			catch (Exception e) {
+				// wrong field declared in the template
+			}
+		}
+		if (errors.hasErrors()) {
+			return;
 		}
 		
 		if (CollectionUtils.isEmpty(shortPatientModel.getIdentifiers())) {

@@ -45,6 +45,8 @@ public abstract class LayoutTemplate {
 	
 	protected List<String> lineByLineFormat;
 	
+	protected List<String> requiredElements;
+	
 	protected int maxTokens = 0; // The largest number of tokens on one given line
 	
 	protected String startDate;
@@ -305,6 +307,20 @@ public abstract class LayoutTemplate {
 	 */
 	public void setLineByLineFormat(List<String> lineByLineFormat) {
 		this.lineByLineFormat = lineByLineFormat;
+	}
+	
+	/**
+	 * @return the requiredElements
+	 */
+	public List<String> getRequiredElements() {
+		return requiredElements;
+	}
+	
+	/**
+	 * @param requiredElements the requiredElements to set
+	 */
+	public void setRequiredElements(List<String> requiredElements) {
+		this.requiredElements = requiredElements;
 	}
 	
 	/**
