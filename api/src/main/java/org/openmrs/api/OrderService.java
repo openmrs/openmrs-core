@@ -147,6 +147,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param order
 	 * @return the discontinuation order or null if none
 	 * @throws APIException
+	 * @since 1.10
+
 	 * @should return discontinuation order if order has been discontinued
 	 * @should return null if order has not been discontinued
 	 */

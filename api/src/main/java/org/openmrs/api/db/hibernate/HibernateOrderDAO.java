@@ -162,14 +162,10 @@ public class HibernateOrderDAO implements OrderDAO {
 	
 	@Override
 	public Order getDiscontinuationOrder(Order order) {
-		Order nextOrder = (Order) sessionFactory.getCurrentSession().createQuery(
-		    "from Order o where o.previousOrder = :orderId").setInteger("orderId", order.getId()).uniqueResult();
+		Order discontinuationOrder = (Order) sessionFactory.getCurrentSession().createCriteria(Order.class).add(
+		    Restrictions.eq("previousOrder", order)).add(Restrictions.eq("action", Order.Action.DISCONTINUE)).uniqueResult();
 		
-		if (nextOrder != null && Order.Action.DISCONTINUE.equals(nextOrder.getAction())) {
-			return nextOrder;
-		} else {
-			return null;
-		}
+		return discontinuationOrder;
 	}
 	
 	/**
