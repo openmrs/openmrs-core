@@ -15,6 +15,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -392,22 +393,18 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		copyCacheToRuntimeProperties(cache, runtimeProperties); // copy the cached changes to runtimeProperties
 		// load in the default hibernate properties from hibernate.default.properties
-		try {
-			cache = new HashMap<String, String>(); // Instantiate a HashMap for do caching
-			Properties props = new Properties();
-			File file = new File(getClass().getClassLoader().getResource("/hibernate.default.properties").getFile());
-			OpenmrsUtil.loadProperties(props, file);
-			
-			// add in all default properties that don't exist in the runtime
-			// properties yet
-			for (Map.Entry<Object, Object> entry : props.entrySet()) {
-				if (!runtimeProperties.containsKey(entry.getKey())) {
-					cache.put((String) entry.getKey(), (String) entry.getValue()); // cache the changes to the HashMap
-				}
+		cache = new HashMap<String, String>(); // Instantiate a HashMap for do caching
+		Properties props = new Properties();
+		URL url = getClass().getResource("/hibernate.default.properties");
+		File file = new File(url.getPath());
+		OpenmrsUtil.loadProperties(props, file);
+		
+		// add in all default properties that don't exist in the runtime
+		// properties yet
+		for (Map.Entry<Object, Object> entry : props.entrySet()) {
+			if (!runtimeProperties.containsKey(entry.getKey())) {
+				cache.put((String) entry.getKey(), (String) entry.getValue()); // cache the changes to the HashMap
 			}
-		}
-		catch (RuntimeException e) {
-			log.error("Unexpected error on loading default hibernate properties from hibernate.default.properties", e);
 		}
 		copyCacheToRuntimeProperties(cache, runtimeProperties); // copy the cached changes to runtimeProperties
 	}
