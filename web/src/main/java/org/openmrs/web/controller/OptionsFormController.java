@@ -79,6 +79,11 @@ public class OptionsFormController extends SimpleFormController {
 			}
 		}
 		
+		if (opts.getSecretQuestionPassword().equals("") && opts.getSecretAnswerNew().isEmpty()
+		        && !opts.getSecretQuestionNew().isEmpty()) {
+			errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
+		}
+		
 		if (!opts.getSecretQuestionPassword().equals("")) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
 				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");

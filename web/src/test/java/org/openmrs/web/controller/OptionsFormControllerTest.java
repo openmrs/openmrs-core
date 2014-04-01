@@ -95,6 +95,23 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	@Test
+	public void shouldRejectEmptySecretAnswerWhenSecretQuestionPasswordIsNotSet() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		request.setParameter("secretQuestionPassword", "");
+		request.setParameter("secretQuestionNew", "test_question");
+		
+		String emptyAnswer = "";
+		request.setParameter("secretAnswerNew", emptyAnswer);
+		request.setParameter("secretAnswerConfirm", emptyAnswer);
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		
+		LoginCredential loginCredential = userDao.getLoginCredential(user);
+		assertNull(loginCredential.getSecretAnswer());
+	}
+	
+	@Test
 	public void shouldRejectEmptySecretQuestion() throws Exception {
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
 		String originalQuestion = loginCredential.getSecretQuestion();
