@@ -76,6 +76,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should not allow changing the careSetting of the previous order when revising an order
 	 * @should not allow changing the concept of the previous order when revising an order
 	 * @should not allow changing the drug of the previous drug order when revising an order
+	 * @should fail if concept in previous order does not match that of the revised order
+	 * @should fail if the existing drug order matches the concept and not drug of the revised order
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;

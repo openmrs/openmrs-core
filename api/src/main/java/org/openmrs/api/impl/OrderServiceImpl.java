@@ -107,14 +107,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (previousOrder == null) {
 				throw new APIException("Previous Order is required for a revised order");
 			}
-			stopOrder(previousOrder, null);
+			stopOrder(previousOrder, order.getStartDate());
 		} else if (Order.Action.DISCONTINUE.equals(order.getAction())) {
 			discontinueExistingOrdersIfNecessary(order);
 		}
 		
-		//Check that patient, careSetting, concept and drug if is drug order have not changed
 		if (order.getPreviousOrder() != null) {
 			Order previousOrder = order.getPreviousOrder();
+			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
 			String query = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = ";
 			boolean isDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
@@ -133,6 +133,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("Cannot change the concept of an order");
 			} else if (isDrugOrder && !rowData.get(3).equals(((DrugOrder) previousOrder).getDrug().getDrugId())) {
 				throw new APIException("Cannot change the drug of a drug order");
+			}
+			
+			//concept should be the same as on previous order, same applies to drug for drug orders
+			boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(order.getClass())
+			        && ((DrugOrder) order).getDrug() != null;
+			if (!order.getConcept().equals(previousOrder.getConcept())) {
+				throw new APIException("The concept of the previous order and the new revised order don't match");
+			} else if (isDrugOrderAndHasADrug) {
+				DrugOrder drugOrder1 = (DrugOrder) order;
+				DrugOrder drugOrder2 = (DrugOrder) previousOrder;
+				if (!OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
+					throw new APIException("The drug of the previous order and the new revised order don't match");
+				}
 			}
 		}
 		
@@ -195,9 +208,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Mark previousOrder as discontinued if it is not already
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null) {
-			if (!previousOrder.getConcept().equals(order.getConcept())) {
-				throw new APIException("Concept of previous order and this order should be the same");
-			}
 			stopOrder(previousOrder, order.getStartDate());
 			return;
 		}
@@ -208,6 +218,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(order.getClass())
 		        && ((DrugOrder) order).getDrug() != null;
 		for (Order activeOrder : orders) {
+			if (!order.getClass().equals(activeOrder.getClass())) {
+				continue;
+			}
 			boolean shouldMarkAsDiscontinued = false;
 			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {

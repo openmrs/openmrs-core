@@ -676,22 +676,22 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	@Verifies(value = "fail if concept in previous order does not match this concept", method = "saveOrder(Order)")
 	public void saveOrder_shouldFailIfConceptInPreviousOrderDoesNotMatchThisConcept() throws Exception {
-		OrderService orderService = Context.getOrderService();
-		//We are trying to discontinue order id 111 in standardTestDataset.xml
-		Order order = new Order();
-		order.setAction(Order.Action.DISCONTINUE);
-		order.setOrderReasonNonCoded("Discontinue this");
-		order.setPatient(Context.getPatientService().getPatient(7));
-		order.setOrderer(Context.getProviderService().getProvider(1));
-		order.setConcept(Context.getConceptService().getConcept(3));
-		order.setCareSetting(orderService.getCareSetting(1));
+		Order previousOrder = orderService.getOrder(7);
+		assertTrue(OrderUtilTest.isActiveOrder(previousOrder, null));
+		Order order = previousOrder.cloneForDiscontinuing();
 		order.setStartDate(new Date());
-		Order previousOrder = orderService.getOrder(111);
-		order.setPreviousOrder(previousOrder);
+		order.setOrderReasonNonCoded("Discontinue this");
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		Concept newConcept = conceptService.getConcept(5089);
+		assertFalse(previousOrder.getConcept().equals(newConcept));
+		order.setConcept(newConcept);
 		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The concept of the previous order and the new revised order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -764,7 +764,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies fail if the existing drug order matches the concept and not drug of the DC order
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void saveOrder_shouldFailIfTheExistingDrugOrderMatchesTheConceptAndNotDrugOfTheDCOrder() throws Exception {
 		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(5);
 		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
@@ -772,25 +772,20 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//create a different test drug
 		Drug discontinuationOrderDrug = new Drug();
 		discontinuationOrderDrug.setConcept(orderToDiscontinue.getConcept());
-		discontinuationOrderDrug = Context.getConceptService().saveDrug(discontinuationOrderDrug);
+		discontinuationOrderDrug = conceptService.saveDrug(discontinuationOrderDrug);
 		assertNotEquals(discontinuationOrderDrug, orderToDiscontinue.getDrug());
 		assertNotNull(orderToDiscontinue.getDrug());
 		
-		DrugOrder order = new DrugOrder();
-		order.setDrug(discontinuationOrderDrug);
-		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
-		order.setAction(Order.Action.DISCONTINUE);
-		order.setOrderReasonNonCoded("Discontinue this");
-		order.setPatient(orderToDiscontinue.getPatient());
-		order.setConcept(orderToDiscontinue.getConcept());
-		order.setOrderer(orderToDiscontinue.getOrderer());
-		order.setCareSetting(orderToDiscontinue.getCareSetting());
-		order.setEncounter(encounterService.getEncounter(3));
+		DrugOrder order = orderToDiscontinue.cloneForRevision();
 		order.setStartDate(new Date());
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setDrug(discontinuationOrderDrug);
+		order.setOrderReasonNonCoded("Discontinue this");
 		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The drug of the previous order and the new revised order don't match");
 		orderService.saveOrder(order, null);
-		
-		Assert.assertNotNull("previous order should be discontinued", orderToDiscontinue.getDateStopped());
 	}
 	
 	/**
@@ -1533,7 +1528,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#saveOrderType(org.openmrs.OrderType)}
 	 */
 	@Test
-	@Verifies(value = "shoud save order type", method = "saveOrderType(org.openmrs.OrderType)")
+	@Verifies(value = "should save order type", method = "saveOrderType(org.openmrs.OrderType)")
 	public void saveOrderType_shouldAddNewOrderTypeToTheDatabase() {
 		OrderService orderService = Context.getOrderService();
 		int orderTypeCount = orderService.getOrderTypes(true).size();
@@ -1566,7 +1561,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#purgeOrderType(org.openmrs.OrderType)}
 	 */
 	@Test
-	@Verifies(value = "shoud purge order type", method = "purgeOrderType(org.openmrs.OrderType)")
+	@Verifies(value = "should purge order type", method = "purgeOrderType(org.openmrs.OrderType)")
 	public void purgeOrderType_shouldNotPurgeOrderTypeIfUse() {
 		OrderService orderService = Context.getOrderService();
 		OrderType orderType = orderService.getOrderType(1);
@@ -1580,7 +1575,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#retireOrderType(org.openmrs.OrderType, String)}
 	 */
 	@Test
-	@Verifies(value = "shoud retire order type", method = "retireOrderType(org.openmrs.OrderType, String)")
+	@Verifies(value = "should retire order type", method = "retireOrderType(org.openmrs.OrderType, String)")
 	public void retireOrderType_shouldRetiredTheGivenUnretiredOrderType() {
 		OrderService orderService = Context.getOrderService();
 		OrderType orderType = orderService.getOrderType(15);
@@ -1600,7 +1595,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#unretireOrderType(org.openmrs.OrderType)}
 	 */
 	@Test
-	@Verifies(value = "shoud unretire order type", method = "unretireOrderType(org.openmrs.OrderType)")
+	@Verifies(value = "should unretire order type", method = "unretireOrderType(org.openmrs.OrderType)")
 	public void unretireOrderType_shouldUnretireTheGivenUnretiredOrderType() {
 		OrderService orderService = Context.getOrderService();
 		OrderType orderType = orderService.getOrderType(16);
@@ -1620,7 +1615,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#getSubtypes(org.openmrs.OrderType, boolean)}
 	 */
 	@Test
-	@Verifies(value = "shoud return all order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
+	@Verifies(value = "should return all order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
 	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithRetiredOrderTypes() {
 		OrderService orderService = Context.getOrderService();
 		List<OrderType> orderTypeList = orderService.getSubtypes(orderService.getOrderType(2), true);
@@ -1631,7 +1626,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#getSubtypes(org.openmrs.OrderType, boolean)}
 	 */
 	@Test
-	@Verifies(value = "shoud return unretired order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
+	@Verifies(value = "should return unretired order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
 	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithoutRetiredOrderTypes() {
 		OrderService orderService = Context.getOrderService();
 		List<OrderType> orderTypeList = orderService.getSubtypes(orderService.getOrderType(2), false);
@@ -1788,6 +1783,53 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot change the drug of a drug order");
+		orderService.saveOrder(order, null);
+	}
+	
+	/**
+	 * @verifies fail if concept in previous order does not match that of the revised order
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfConceptInPreviousOrderDoesNotMatchThatOfTheRevisedOrder() throws Exception {
+		Order previousOrder = orderService.getOrder(7);
+		Order order = previousOrder.cloneForRevision();
+		order.setStartDate(new Date());
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		Concept newConcept = conceptService.getConcept(5089);
+		assertFalse(previousOrder.getConcept().equals(newConcept));
+		order.setConcept(newConcept);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The concept of the previous order and the new revised order don't match");
+		orderService.saveOrder(order, null);
+	}
+	
+	/**
+	 * @verifies fail if the existing drug order matches the concept and not drug of the revised
+	 *           order
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfTheExistingDrugOrderMatchesTheConceptAndNotDrugOfTheRevisedOrder() throws Exception {
+		final DrugOrder orderToDiscontinue = (DrugOrder) orderService.getOrder(5);
+		
+		//create a different test drug
+		Drug discontinuationOrderDrug = new Drug();
+		discontinuationOrderDrug.setConcept(orderToDiscontinue.getConcept());
+		discontinuationOrderDrug = conceptService.saveDrug(discontinuationOrderDrug);
+		assertNotEquals(discontinuationOrderDrug, orderToDiscontinue.getDrug());
+		assertNotNull(orderToDiscontinue.getDrug());
+		
+		DrugOrder order = orderToDiscontinue.cloneForRevision();
+		order.setStartDate(new Date());
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setDrug(discontinuationOrderDrug);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The drug of the previous order and the new revised order don't match");
 		orderService.saveOrder(order, null);
 	}
 }
