@@ -96,7 +96,6 @@ public class GlobalPropertyController extends SimpleFormController {
 					
 					// try to get an already-used global property for this key
 					GlobalProperty tmpGlobalProperty = formBackingObjectMap.get(key);
-					
 					// if it exists, use that object...just update it
 					if (tmpGlobalProperty != null) {
 						tmpGlobalProperty.setPropertyValue(val);
