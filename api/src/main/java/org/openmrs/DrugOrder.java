@@ -426,7 +426,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * @since 1.10
 	 */
 	@Override
-	public Order cloneForDiscontinuing() {
+	public DrugOrder cloneForDiscontinuing() {
 		DrugOrder newOrder = new DrugOrder();
 		newOrder.setCareSetting(this.getCareSetting());
 		newOrder.setConcept(this.getConcept());
@@ -448,7 +448,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * @should set all the relevant fields
 	 */
 	@Override
-	public Order cloneForRevision() {
+	public DrugOrder cloneForRevision() {
 		DrugOrder newOrder = new DrugOrder();
 		newOrder.setCareSetting(this.getCareSetting());
 		newOrder.setConcept(this.getConcept());

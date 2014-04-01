@@ -159,8 +159,8 @@ public class TestOrder extends Order {
 	 * @should set all the relevant fields
 	 */
 	@Override
-	public Order cloneForDiscontinuing() {
-		Order newOrder = new TestOrder();
+	public TestOrder cloneForDiscontinuing() {
+		TestOrder newOrder = new TestOrder();
 		newOrder.setCareSetting(this.getCareSetting());
 		newOrder.setConcept(this.getConcept());
 		newOrder.setAction(Action.DISCONTINUE);
@@ -181,7 +181,7 @@ public class TestOrder extends Order {
 	 * @should set all the relevant fields
 	 */
 	@Override
-	public Order cloneForRevision() {
+	public TestOrder cloneForRevision() {
 		TestOrder newOrder = new TestOrder();
 		newOrder.setCareSetting(this.getCareSetting());
 		newOrder.setConcept(this.getConcept());
