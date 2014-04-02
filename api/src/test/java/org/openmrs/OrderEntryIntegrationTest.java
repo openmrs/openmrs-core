@@ -125,7 +125,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		TestOrder order = new TestOrder();
 		order.setPatient(patient);
 		order.setOrderType(orderService.getOrderTypeByName("Test order"));
-		order.setEncounter(encounterService.getEncounter(3));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(careSetting);

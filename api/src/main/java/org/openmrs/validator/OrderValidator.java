@@ -53,7 +53,6 @@ public class OrderValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if order is null
 	 * @should fail validation if order and encounter have different patients
-	 * @should fail validation if discontinued is null
 	 * @should fail validation if voided is null
 	 * @should fail validation if concept is null
 	 * @should fail validation if patient is null
@@ -61,7 +60,6 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if orderer is null
 	 * @should fail validation if urgency is null
 	 * @should fail validation if action is null
-	 * @should fail validation if startDate is null
 	 * @should fail validation if startDate after dateStopped
 	 * @should fail validation if startDate after autoExpireDate
 	 * @should fail validation if startDate is before encounter's encounterDatetime
@@ -71,13 +69,11 @@ public class OrderValidator implements Validator {
 	 * @should pass validation if the class of the order is a subclass of orderType.javaClass
 	 * @should pass validation if all fields are correct
 	 * @should not allow a future startDate
-	 * @should fail if the order type of the previous order does not match
-	 * @should fail if the java type of the previous order does not match
 	 */
 	public void validate(Object obj, Errors errors) {
 		Order order = (Order) obj;
 		if (order == null) {
-			errors.rejectValue("order", "error.general");
+			errors.reject("error.general");
 		} else {
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");

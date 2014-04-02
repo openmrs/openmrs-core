@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -33,6 +34,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 /**
  * Tests methods on the {@link OrderValidator} class.
@@ -46,7 +48,19 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	@Before
 	public void setup() {
 		orderService = Context.getOrderService();
+	}
+	
+	/**
+	 * @verifies fail validation if order is null
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfOrderIsNull() throws Exception {
+		Errors errors = new BindException(new Order(), "order");
+		new OrderValidator().validate(null, errors);
 		
+		Assert.assertTrue(errors.hasErrors());
+		Assert.assertEquals("error.general", ((List<ObjectError>) errors.getAllErrors()).get(0).getCode());
 	}
 	
 	/**
@@ -223,7 +237,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should fail validation if startDate after dateStopped", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfStartDateAfterDiscontinuedDate() throws Exception {
+	public void validate_shouldFailValidationIfStartDateAfterDateStopped() throws Exception {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
