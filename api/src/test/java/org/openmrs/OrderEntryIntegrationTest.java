@@ -176,6 +176,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setEncounter(encounterService.getEncounter(6));
 		orderService.saveOrder(discontinuationOrder, null);
 		
+		Thread.sleep(1000);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(ordersCount - 3, activeOrders.size());
 		assertFalse(activeOrders.contains(firstOrderToDiscontinue));

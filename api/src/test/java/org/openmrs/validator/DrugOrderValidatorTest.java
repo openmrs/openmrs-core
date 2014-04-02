@@ -13,6 +13,8 @@
  */
 package org.openmrs.validator;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -23,8 +25,10 @@ import org.openmrs.ConceptClass;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
@@ -353,5 +357,29 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
 		Assert.assertTrue(errors.hasFieldErrors("quantityUnits"));
 		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
+	}
+	
+	/**
+	 * @verifies not require all fields for a discontinuation order
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldNotRequireAllFieldsForADiscontinuationOrder() throws Exception {
+		DrugOrder orderToDiscontinue = (DrugOrder) Context.getOrderService().getOrder(111);
+		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
+		DrugOrder discontinuationOrder = new DrugOrder();
+		discontinuationOrder.setCareSetting(orderToDiscontinue.getCareSetting());
+		discontinuationOrder.setConcept(orderToDiscontinue.getConcept());
+		discontinuationOrder.setAction(Order.Action.DISCONTINUE);
+		discontinuationOrder.setPreviousOrder(orderToDiscontinue);
+		discontinuationOrder.setPatient(orderToDiscontinue.getPatient());
+		discontinuationOrder.setDrug(orderToDiscontinue.getDrug());
+		discontinuationOrder.setOrderType(orderToDiscontinue.getOrderType());
+		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
+		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(3));
+		
+		Errors errors = new BindException(discontinuationOrder, "order");
+		new DrugOrderValidator().validate(discontinuationOrder, errors);
+		Assert.assertFalse(errors.hasErrors());
 	}
 }

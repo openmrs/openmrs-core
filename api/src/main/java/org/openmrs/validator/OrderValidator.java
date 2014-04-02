@@ -70,6 +70,9 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if orderType.javaClass does not match order.class
 	 * @should pass validation if the class of the order is a subclass of orderType.javaClass
 	 * @should pass validation if all fields are correct
+	 * @should not allow a future startDate
+	 * @should fail if the order type of the previous order does not match
+	 * @should fail if the java type of the previous order does not match
 	 */
 	public void validate(Object obj, Errors errors) {
 		Order order = (Order) obj;
@@ -83,7 +86,6 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "encounter", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "orderer", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "urgency", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "startDate", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "action", "error.null");
 			
 			validateSamePatientInOrderAndEncounter(order, errors);
@@ -103,6 +105,10 @@ public class OrderValidator implements Validator {
 	private void validateStartDate(Order order, Errors errors) {
 		Date startDate = order.getStartDate();
 		if (startDate != null) {
+			if (startDate.after(new Date())) {
+				errors.rejectValue("startDate", "Order.error.startDateInFuture");
+				return;
+			}
 			Date dateStopped = order.getDateStopped();
 			if (dateStopped != null && startDate.after(dateStopped)) {
 				errors.rejectValue("startDate", "Order.error.startDateAfterDiscontinuedDate");

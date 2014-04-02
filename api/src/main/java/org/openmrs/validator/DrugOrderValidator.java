@@ -19,6 +19,7 @@ import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.DrugOrder;
+import org.openmrs.Order;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -65,8 +66,10 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if doseUnits is null when dose is present
 	 * @should fail validation if quantityUnits is null when quantity is present
 	 * @should fail validation if durationUnits is null when duration is present
-	 * @should fail validation if class of quantityUnits,doseUnits or durationUnits is not Units of Measure Concept class
+	 * @should fail validation if class of quantityUnits,doseUnits or durationUnits is not Units of
+	 *         Measure Concept class
 	 * @should pass validation if all fields are correct
+	 * @should not require all fields for a discontinuation order
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
@@ -88,7 +91,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 					errors.rejectValue("concept", "error.concept");
 				}
 			}
-			if (order.getDosingType() != null) {
+			if (order.getAction() != Order.Action.DISCONTINUE && order.getDosingType() != null) {
 				if (order.getDosingType().equals(DrugOrder.DosingType.SIMPLE)) {
 					ValidationUtils.rejectIfEmpty(errors, "dose", "error.doseIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "doseUnits", "error.doseUnitsIsNullForDosingTypeSimple");
@@ -108,7 +111,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	}
 	
 	private void validateFieldsForOutpatientCareSettingType(DrugOrder order, Errors errors) {
-		if (order.getCareSetting() != null
+		if (order.getAction() != Order.Action.DISCONTINUE && order.getCareSetting() != null
 		        && order.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
 			ValidationUtils.rejectIfEmpty(errors, "quantity", "error.quantityIsNullForOutPatient");
 			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "error.quantityUnitsIsNullForOutPatient");

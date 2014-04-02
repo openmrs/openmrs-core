@@ -19,12 +19,15 @@ import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.CareSetting;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.TestOrder;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -37,6 +40,14 @@ import org.springframework.validation.Errors;
 public class OrderValidatorTest extends BaseContextSensitiveTest {
 	
 	private class SomeDrugOrder extends DrugOrder {}
+	
+	private OrderService orderService;
+	
+	@Before
+	public void setup() {
+		orderService = Context.getOrderService();
+		
+	}
 	
 	/**
 	 * @see {@link OrderValidator#validate(Object,Errors)}
@@ -188,23 +199,6 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("urgency"));
-	}
-	
-	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if startDate is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfStartDateIsNull() throws Exception {
-		Order order = new Order();
-		order.setConcept(Context.getConceptService().getConcept(88));
-		order.setPatient(Context.getPatientService().getPatient(2));
-		order.setStartDate(null);
-		
-		Errors errors = new BindException(order, "order");
-		new OrderValidator().validate(order, errors);
-		
-		Assert.assertTrue(errors.hasFieldErrors("startDate"));
 	}
 	
 	/**
@@ -380,5 +374,30 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @verifies not allow a future startDate
+	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldNotAllowAFutureStartDate() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(7);
+		TestOrder order = new TestOrder();
+		order.setPatient(patient);
+		order.setOrderType(orderService.getOrderTypeByName("Test order"));
+		order.setEncounter(Context.getEncounterService().getEncounter(3));
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.HOUR_OF_DAY, 1);
+		order.setStartDate(cal.getTime());
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("startDate"));
+		Assert.assertEquals("Order.error.startDateInFuture", errors.getFieldError("startDate").getCode());
 	}
 }

@@ -45,9 +45,9 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Save or update the given <code>order</code> in the database. If the OrderType for the order
-	 * is not specified, then it will be set to the one associated to the ConceptClass of the
-	 * ordered concept, if none is found then it will default to the one set on the passed in
-	 * OrderContext if any otherwise the save fails. If the CareSetting field of the order is not
+	 * is not specified, then it will be set to the one set on the OrderContext if any, if none
+	 * exists on the orderContext, then it will be set to the one associated to the ConceptClass of
+	 * the ordered concept otherwise the save fails. If the CareSetting field of the order is not
 	 * specified then it will default to the one set on the passed in OrderContext if any otherwise
 	 * the save fails.
 	 * 
@@ -78,6 +78,9 @@ public interface OrderService extends OpenmrsService {
 	 * @should not allow changing the drug of the previous drug order when revising an order
 	 * @should fail if concept in previous order does not match that of the revised order
 	 * @should fail if the existing drug order matches the concept and not drug of the revised order
+	 * @should fail if the order type of the previous order does not match
+	 * @should fail if the java type of the previous order does not match
+	 * @should fail if the careSetting of the previous order does not match
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
@@ -150,7 +153,6 @@ public interface OrderService extends OpenmrsService {
 	 * @return the discontinuation order or null if none
 	 * @throws APIException
 	 * @since 1.10
-
 	 * @should return discontinuation order if order has been discontinued
 	 * @should return null if order has not been discontinued
 	 */

@@ -167,7 +167,6 @@ public class TestOrder extends Order {
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(this.getPatient());
 		newOrder.setOrderType(getOrderType());
-		newOrder.setStartDate(this.getStartDate());
 		
 		return newOrder;
 	}

@@ -55,6 +55,7 @@ import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
+import org.openmrs.order.OrderUtil;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -82,6 +83,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
+	
+	private class SomeTestOrder extends TestOrder {}
 	
 	@Before
 	public void setup() {
@@ -691,7 +694,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(newConcept);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The concept of the previous order and the new revised order don't match");
+		expectedException.expectMessage("The concept of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -784,7 +787,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderReasonNonCoded("Discontinue this");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The drug of the previous order and the new revised order don't match");
+		expectedException.expectMessage("The drug of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -1520,7 +1523,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setStartDate(new Date());
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("No order type matches the concept class");
+		expectedException.expectMessage("Cannot determine the order type of the order");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -1802,7 +1805,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(newConcept);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The concept of the previous order and the new revised order don't match");
+		expectedException.expectMessage("The concept of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -1829,7 +1832,72 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setDrug(discontinuationOrderDrug);
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("The drug of the previous order and the new revised order don't match");
+		expectedException.expectMessage("The drug of the previous order and the new one order don't match");
 		orderService.saveOrder(order, null);
+	}
+	
+	/**
+	 * @verifies fail if the order type of the previous order does not match
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfTheOrderTypeOfThePreviousOrderDoesNotMatch() throws Exception {
+		Order order = orderService.getOrder(7);
+		assertTrue(OrderUtilTest.isActiveOrder(order, null));
+		Order discontinuationOrder = order.cloneForDiscontinuing();
+		OrderType orderType = orderService.getOrderType(7);
+		assertNotEquals(discontinuationOrder.getOrderType(), orderType);
+		assertTrue(OrderUtil.isType(discontinuationOrder.getOrderType(), orderType));
+		discontinuationOrder.setOrderType(orderType);
+		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
+		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The order type does not match that of the previous order");
+		orderService.saveOrder(discontinuationOrder, null);
+	}
+	
+	/**
+	 * @verifies fail if the java type of the previous order does not match
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfTheJavaTypeOfThePreviousOrderDoesNotMatch() throws Exception {
+		Order order = orderService.getOrder(7);
+		assertTrue(OrderUtilTest.isActiveOrder(order, null));
+		Order discontinuationOrder = new SomeTestOrder();
+		discontinuationOrder.setCareSetting(order.getCareSetting());
+		discontinuationOrder.setConcept(order.getConcept());
+		discontinuationOrder.setAction(Order.Action.DISCONTINUE.DISCONTINUE);
+		discontinuationOrder.setPreviousOrder(order);
+		discontinuationOrder.setPatient(order.getPatient());
+		assertTrue(order.getOrderType().getJavaClass().isAssignableFrom(discontinuationOrder.getClass()));
+		discontinuationOrder.setOrderType(order.getOrderType());
+		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
+		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The class does not match that of the previous order");
+		orderService.saveOrder(discontinuationOrder, null);
+	}
+	
+	/**
+	 * @verifies fail if the careSetting of the previous order does not match
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfTheCareSettingOfThePreviousOrderDoesNotMatch() throws Exception {
+		Order order = orderService.getOrder(7);
+		assertTrue(OrderUtilTest.isActiveOrder(order, null));
+		Order discontinuationOrder = order.cloneForDiscontinuing();
+		CareSetting careSetting = orderService.getCareSetting(2);
+		assertNotEquals(discontinuationOrder.getCareSetting(), careSetting);
+		discontinuationOrder.setCareSetting(careSetting);
+		discontinuationOrder.setOrderer(Context.getProviderService().getProvider(1));
+		discontinuationOrder.setEncounter(Context.getEncounterService().getEncounter(6));
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("The care setting does not match that of the previous order");
+		orderService.saveOrder(discontinuationOrder, null);
 	}
 }
