@@ -53,8 +53,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Integer numRefills;
 	
-	private String administrationInstructions;
-	
 	private String dosingInstructions;
 	
 	private Double duration;
@@ -99,7 +97,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.dosingInstructions = getDosingInstructions();
 		target.duration = getDuration();
 		target.durationUnits = getDurationUnits();
-		target.setAdministrationInstructions(getAdministrationInstructions());
 		target.setNumRefills(getNumRefills());
 		target.route = getRoute();
 		return target;
@@ -345,25 +342,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * Gets the administrationInstructions
-	 * 
-	 * @since 1.10
-	 */
-	public String getAdministrationInstructions() {
-		return administrationInstructions;
-	}
-	
-	/**
-	 * Sets the administrationInstructions
-	 * 
-	 * @param administrationInstructions to set
-	 * @since 1.10
-	 */
-	public void setAdministrationInstructions(String administrationInstructions) {
-		this.administrationInstructions = administrationInstructions;
-	}
-	
-	/**
 	 * Sets the dosingInstructions
 	 * 
 	 * @param dosingInstructions to set
@@ -476,7 +454,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		newOrder.setDuration(this.getDuration());
 		newOrder.setDurationUnits(this.getDurationUnits());
 		newOrder.setRoute(this.getRoute());
-		newOrder.setAdministrationInstructions(this.getAdministrationInstructions());
 		newOrder.setNumRefills(this.getNumRefills());
 		return newOrder;
 	}
