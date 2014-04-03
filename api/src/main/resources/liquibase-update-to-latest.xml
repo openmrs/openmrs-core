@@ -6552,18 +6552,6 @@
         </addColumn>
 	</changeSet>
 	
-	<changeSet id="20131211-TRUNK-4130" author="k-joseph">
-        <preConditions onFail="MARK_RAN">
-            <not><columnExists tableName="drug_order" columnName="administration_instructions"/></not>
-        </preConditions>
-
-        <comment>Adding administration_instructions column to drug_order table</comment>
-        
-        <addColumn tableName="drug_order">
-            <column name="administration_instructions" type="text"/>
-        </addColumn>
-	</changeSet>
-	
 	<changeSet id="201312171559-TRUNK-4159" author="k-joseph">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="order_frequency"/></not>
