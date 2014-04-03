@@ -6598,6 +6598,16 @@
         </insert>
     </changeSet>
 
+    <changeSet id="201403111039-TRUNK-4287-1" author="andras-szell">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="orders" columnName="order_type"/></not>
+        </preConditions>
+        <comment>Add order_type column to orders</comment>
+        <addColumn tableName="orders">
+            <column name="order_type" type="int" />
+        </addColumn>
+    </changeSet>
+
     <changeSet id="201311041510" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="as_needed" /></not>
@@ -7298,16 +7308,6 @@
        <addColumn tableName="orders">
             <column name="scheduled_date" type="datetime"/>
        </addColumn>
-    </changeSet>
-    
-    <changeSet id="201403111039-TRUNK-4287-1" author="andras-szell">
-        <preConditions onFail="MARK_RAN">
-           <not><columnExists tableName="orders" columnName="order_type_id"/></not>
-        </preConditions>
-        <comment>Add order_type column to orders</comment>
-        <addColumn tableName="orders">
-            <column name="order_type" type="int" />
-        </addColumn>
     </changeSet>
 
     <changeSet id="201403111039-TRUNK-4287-2" author="wyclif">
