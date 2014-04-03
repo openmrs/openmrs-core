@@ -20,7 +20,7 @@
 
 		<many-to-one name="conceptReferenceTerm" class="ConceptReferenceTerm" column="term_id" not-null="true"/>
 
-		<many-to-one name="conceptMapType" class="ConceptMapType" column="concept_map_type" not-null="true"/>
+		<many-to-one name="conceptMapType" class="ConceptMapType" column="map_type" not-null="true"/>
 
 		<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 

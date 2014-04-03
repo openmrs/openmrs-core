@@ -6,5 +6,5 @@
     <concept_name concept_name_id="303" concept_id="88" name="ZZZ" locale="en" locale_preferred="0" voided="0" creator="1" date_created="2004-01-01 00:00:00.0"  uuid="ee901f80-eac7-22e0-aadd-00248140a5ed" />
     <drug drug_id="444" concept_id="10001" name="XXXYYYZZZ" combination="0" retired="1" creator="1" date_created="2008-08-15 15:34:03.0" uuid="8e2323fa-0fa0-461f-9b59-6765997d849d" />
     <concept_reference_term concept_reference_term_id="1" code="XXXZZZ" name="demo" concept_source_id="1" retired="0" creator="1" date_created="2004-01-01 00:00:00.0" uuid="aa901f80-eac7-55e0-aadd-00248140a5ft" />
-    <drug_reference_map drug_reference_map_id="1" drug_id="11" term_id="1" concept_map_type="2" creator="1" date_created="2004-01-01 00:00:00.0" uuid="55b6e712-49d8-11e0-8fed-18a905e044dd" />
+    <drug_reference_map drug_reference_map_id="1" drug_id="11" term_id="1" map_type="2" creator="1" date_created="2004-01-01 00:00:00.0" uuid="55b6e712-49d8-11e0-8fed-18a905e044dd" />
 </dataset>

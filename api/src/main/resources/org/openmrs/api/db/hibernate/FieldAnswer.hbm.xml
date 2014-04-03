@@ -16,7 +16,7 @@
 >
 
     <composite-id>
-        <key-many-to-one name="concept" class="org.openmrs.Concept" column="answer_id" />
+        <key-many-to-one name="concept" class="org.openmrs.Concept" column="concept_id" />
         <key-many-to-one name="field" class="org.openmrs.Field" column="field_id" />
     </composite-id>    
 
