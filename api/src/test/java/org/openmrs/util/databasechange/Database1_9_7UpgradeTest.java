@@ -42,8 +42,5 @@ public class Database1_9_7UpgradeTest {
 	@Test
 	public void shouldUpgradeFromClean1_9() throws IOException, SQLException {
 		upgradeTestUtil.upgrade();
-		
-		//Test if the generated schema corresponds to Hibernate mappings
-		upgradeTestUtil.buildSessionFactory();
 	}
 }
