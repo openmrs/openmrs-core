@@ -7677,4 +7677,71 @@
         </comment>
         <addUniqueConstraint tableName="location_attribute_type" columnNames="name" constraintName="location_attribute_type_unique_name"/>
     </changeSet>
+    
+    <changeSet id="20140404-1442-TRUNK-4335" author="rkorytkowski">
+		<comment>Changing type of drug_order.as_needed to boolean</comment>
+		<modifyDataType tableName="drug_order" columnName="as_needed" newDataType="boolean"/>
+	</changeSet>
+	
+	<changeSet id="20140404-1447-TRUNK-4335" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding date_changed column to location table
+		</comment>
+		<addColumn tableName="location">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20140404-1448-TRUNK-4335" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding changed_by column to location table
+		</comment>
+		<addColumn tableName="location">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_changed_by" 
+					baseTableName="location" baseColumnNames="changed_by"
+					referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	
+	<changeSet id="20140404-1449-TRUNK-4335" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location_tag" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding date_changed column to location_tag table
+		</comment>
+		<addColumn tableName="location_tag">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20140404-1451-TRUNK-4335" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location_tag" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding changed_by column to location_tag table
+		</comment>
+		<addColumn tableName="location_tag">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_tag_changed_by" 
+					baseTableName="location_tag" baseColumnNames="changed_by"
+					referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
 </databaseChangeLog>
