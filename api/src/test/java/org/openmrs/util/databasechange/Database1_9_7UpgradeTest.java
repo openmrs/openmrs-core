@@ -37,9 +37,9 @@ import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Tests database upgrade from OpenMRS 1.9.7 to OpenMRS 1.10.
+ * Tests database upgrade from OpenMRS 1.9.7.
  */
-public class Database1_9To1_10UpgradeTest {
+public class Database1_9_7UpgradeTest {
 	
 	public final static String databasePath = "/org/openmrs/util/databasechange/openmrs-1.9.7.h2.db";
 	
