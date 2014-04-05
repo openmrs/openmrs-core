@@ -270,6 +270,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.Boolean)
+	 * @should get by identifier type
+	 * @should get by patients
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
