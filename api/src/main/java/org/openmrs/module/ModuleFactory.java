@@ -465,7 +465,11 @@ public class ModuleFactory {
 			module = new ModuleFileParser(moduleFile).parse();
 		}
 		catch (ModuleException e) {
-			log.error("Error getting module object from file " + moduleFile.getName(), e);
+			if (moduleFile != null) {
+				log.error("Error getting module object from file " + moduleFile.getName(), e);
+			} else {
+				log.error("Module was null.", e);
+			}
 			throw e;
 		}
 		
