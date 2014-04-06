@@ -236,6 +236,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			}
 		}
 		
+		if (type.getFormat() == null) {
+			type.setFormat("java.lang.String");
+		}
+		
 		return dao.savePersonAttributeType(type);
 	}
 	
