@@ -32,6 +32,7 @@ import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
@@ -256,6 +257,34 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		newObs.setValueNumeric(50d);
 		newObs.setLocation(new Location(2));
 		return newObs;
+	}
+	
+	/**
+	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should set date stopped on the original after adding revise order", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldSetDateStoppedOnTheOriginalAfterAddingReviseOrder() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		OrderService os = Context.getOrderService();
+		
+		Order order = Context.getOrderService().getOrder(7);
+		Assert.assertNull(order.getDateStopped());
+		
+		Encounter encounter = es.getEncounter(6);
+		TestOrder reviseOrder = new TestOrder();
+		reviseOrder.setPatient(Context.getPatientService().getPatient(2));
+		reviseOrder.setOrderer(Context.getProviderService().getProvider(1));
+		reviseOrder.setAction(Order.Action.REVISE);
+		reviseOrder.setOrderType(os.getOrderType(2));
+		reviseOrder.setConcept(Context.getConceptService().getConcept(5497));
+		reviseOrder.setCareSetting(os.getCareSetting(1));
+		reviseOrder.setPreviousOrder(order);
+		
+		encounter.addOrder(reviseOrder);
+		es.saveEncounter(encounter);
+		
+		Assert.assertNotNull(order.getDateStopped());
 	}
 	
 	/**
@@ -2058,4 +2087,5 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		encounterService.purgeEncounterType(encounterType);
 	}
+	
 }
