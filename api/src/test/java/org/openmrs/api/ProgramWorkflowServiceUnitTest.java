@@ -38,11 +38,19 @@ public class ProgramWorkflowServiceUnitTest {
 	private ProgramWorkflowService pws;
 	
 	@Before
+	/**
+        * Runs before all test
+        * 
+       */
 	public void setup() {
 		pws = new ProgramWorkflowServiceImpl();
 	}
 	
 	@Test
+	/**
+        * Runs before all test
+        * 
+       */
 	@Verifies(value = "should call the DAO method getProgramsByName", method = "getProgramByName")
 	public void getProgramByName_shouldCallDaoGetProgramsByName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
@@ -53,6 +61,10 @@ public class ProgramWorkflowServiceUnitTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all test
+        * 
+       */
 	@Verifies(value = "should return null when DAO returns an empty list", method = "getProgramByName")
 	public void getProgramByName_shouldReturnNullWhenThereIsNoProgramForGivenName() {
 		ProgramWorkflowDAO mockDao = Mockito.mock(ProgramWorkflowDAO.class);
