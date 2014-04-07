@@ -410,14 +410,19 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		pp = pws.getPatientProgram(patientProgramId);
 		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());
 	}
-	
+	/** 
+	 * The get program by name method gets the program when the name matches
+	 * 
+	 **/
 	@Test
 	@Verifies(value = "should return program when name matches", method = "getProgramByName()")
 	public void getProgramByName_shouldReturnProgramWhenNameMatches() {
 		Program p = pws.getProgramByName("program name");
 		assertNotNull(p);
 	}
-	
+	/**
+	 * This method returns null when the program does not exist with the given name 
+	 **/
 	@Test
 	@Verifies(value = "should return null when program does not exist with given name", method = "getProgramByName()")
 	public void getProgramByName_shouldReturnNullWhenNoProgramForGivenName() {
@@ -426,11 +431,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	/* 
-	* Retires Program
-	*
-	* @throws Exception
-	**/
 	@Verifies(value = "should save the retire program with resaon", method = "retireProgram(Program program,String reason)")
 	public void retireProgram_shouldSaveTheRetiredProgramWithReason() throws APIException {
 		String reason = "Feeling well.";
