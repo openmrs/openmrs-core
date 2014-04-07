@@ -304,7 +304,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @see {@link ProgramWorkflow#getSortedStates()}
 	 */
-	
 	@Test
 	@Verifies(value = "should sort names containing numbers intelligently", method = "getSortedStates()")
 	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() throws Exception {
@@ -337,7 +336,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			x++;
 		}
 	}
-	
+	/**
+	 * This tests for getting possible outcomes for a set
+	 * 
+	 * Asserts if the size is equal to 2.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldGetOutcomesForASet() throws Exception {
@@ -356,11 +361,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, possibleOutcomes.size());
 	}
 	
-        /**
-	 * Gets possible outcomes; Should get no outcomes for a program with no outcome
-         *  
-	 * @throws Exception
-	 */
 	@Test
 	@Verifies(value = "should get no possible outcomes for a program that does not exist", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() throws Exception {
@@ -423,6 +423,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	/** 
 	 * The get program by name method gets the program when the name matches
 	 * 
+	 * Asserts if it is not null
 	 **/
 	@Test
 	@Verifies(value = "should return program when name matches", method = "getProgramByName()")
@@ -431,7 +432,9 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(p);
 	}
 	/**
-	 * This method returns null when the program does not exist with the given name 
+	 * This method asserts if a program is null when the program does not exist with the given name
+	 * 
+	 * Asserts that it is not null
 	 **/
 	@Test
 	@Verifies(value = "should return null when program does not exist with given name", method = "getProgramByName()")
@@ -444,7 +447,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	/*
 	* RetiresProgram;Should save retired program with reason
 	*
-        * @throws	
+        * @throws APIException
 	*/
 	@Verifies(value = "should save the retire program with resaon", method = "retireProgram(Program program,String reason)")
 	public void retireProgram_shouldSaveTheRetiredProgramWithReason() throws APIException {
