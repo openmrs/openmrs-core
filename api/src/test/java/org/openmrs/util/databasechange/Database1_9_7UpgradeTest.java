@@ -176,6 +176,9 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
+		
+		//Test if the generated schema corresponds to Hibernate mappings
+		upgradeTestUtil.buildSessionFactory();
 	}
 	
 	@Test
