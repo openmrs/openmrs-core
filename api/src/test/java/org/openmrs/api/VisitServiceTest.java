@@ -60,11 +60,19 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	private VisitService service;
 	
 	@Before
+	/**
+        * Runs before all tests
+        * 
+        */
 	public void before() {
 		service = Context.getVisitService();
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should get all visit types", method = "getAllVisitTypes()")
 	public void getAllVisitTypes_shouldGetAllVisitTypes() throws Exception {
 		List<VisitType> visitTypes = Context.getVisitService().getAllVisitTypes();
@@ -72,6 +80,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should get correct visit type", method = "getVisitType(Integer)")
 	public void getVisitType_shouldGetCorrectVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(1);
@@ -91,6 +103,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should get correct visit type", method = "getVisitTypeByUuid(String)")
 	public void getVisitTypeByUuid_shouldGetCorrentVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitTypeByUuid("c0c579b0-8e59-401d-8a4a-976a0b183519");
@@ -110,6 +126,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should get correct visit types", method = "getVisitTypes(String)")
 	public void getVisitTypes_shouldGetCorrentVisitTypes() throws Exception {
 		List<VisitType> visitTypes = Context.getVisitService().getVisitTypes("HIV Clinic");
@@ -129,6 +149,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should save new visit type", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldSaveNewVisitType() throws Exception {
 		List<VisitType> visitTypes = Context.getVisitService().getVisitTypes("Some Name");
@@ -145,6 +169,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should save edited visit type", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldSaveEditedVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(1);
@@ -165,6 +193,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should retire given visit type", method = "retireVisitType(VisitType, String)")
 	public void retireVisitType_shouldRetireGivenVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(1);
@@ -184,6 +216,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should unretire given visit type", method = "unretireVisitType(VisitType)")
 	public void unretireVisitType_shouldUnretireGivenVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(3);
@@ -203,6 +239,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Verifies(value = "should delete given visit type", method = "purgeVisitType(VisitType)")
 	public void purgeVisitType_shouldDeleteGivenVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(3);
@@ -450,12 +490,21 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(4, Context.getVisitService().getActiveVisitsByPatient(new Patient(2)).size());
 	}
 	
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Test
 	@Verifies(value = "return all active visits for the specified patient", method = "getVisitsByPatient(Patient, boolean, boolean)")
 	public void getActiveVisitsByPatient_shouldReturnAllActiveVisitsForTheSpecifiedPatient() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		assertEquals(5, Context.getVisitService().getVisitsByPatient(new Patient(2), false, true).size());
 	}
+	
+	/**
+        * Runs before all tests
+        * 
+        */
 	
 	@Test
 	@Verifies(value = "return all unvoided visits for the specified patient", method = "getVisitsByPatient(Patient, boolean, boolean)")
@@ -558,13 +607,19 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(6, Context.getVisitService()
 		        .getVisits(null, null, null, null, null, null, null, null, null, true, true).size());
 	}
-	
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when name is null", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldThrowErrorWhenNameIsNull() throws Exception {
 		Context.getVisitService().saveVisitType(new VisitType());
 	}
-	
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when name is empty string", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldThrowErrorWhenNameIsEmptyString() throws Exception {
@@ -847,6 +902,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(new SimpleDateFormat("yyyy-MM-dd").format(now), attr.getValueReference());
 	}
 	
+	/**
+        * Runs before all tests
+        * 
+        */
 	@Test
 	public void shouldVoidASimpleAttribute() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
