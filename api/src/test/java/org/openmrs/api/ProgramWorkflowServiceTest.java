@@ -304,6 +304,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @see {@link ProgramWorkflow#getSortedStates()}
 	 */
+	
 	@Test
 	@Verifies(value = "should sort names containing numbers intelligently", method = "getSortedStates()")
 	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() throws Exception {
@@ -336,13 +337,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			x++;
 		}
 	}
-	/**
-	 * This tests for getting possible outcomes for a set
-	 * 
-	 * Asserts if the size is equal to 2.
-	 * 
-	 * @throws Exception
-	 */
+	
 	@Test
 	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldGetOutcomesForASet() throws Exception {
@@ -361,6 +356,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, possibleOutcomes.size());
 	}
 	
+        /**
+	 * Gets possible outcomes; Should get no outcomes for a program with no outcome
+         *  
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get no possible outcomes for a program that does not exist", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() throws Exception {
