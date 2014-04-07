@@ -13,23 +13,6 @@
  */
 package org.openmrs.util.databasechange;
 
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dbunit.DatabaseUnitException;
-import org.dbunit.database.DatabaseConfig;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.ext.h2.H2DataTypeFactory;
-import org.dbunit.operation.DatabaseOperation;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,6 +29,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.DatabaseUnitException;
+import org.dbunit.database.DatabaseConfig;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.ext.h2.H2DataTypeFactory;
+import org.dbunit.operation.DatabaseOperation;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+
 /**
  * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2 liqubaseConnection that will
  * be used for upgrade.
@@ -61,6 +65,8 @@ public class DatabaseUpgradeTestUtil {
 	private final File tempDir;
 	
 	private final File tempDBFile;
+	
+	private final String connectionUrl;
 	
 	public DatabaseUpgradeTestUtil(String initialDatabasePath) throws IOException, SQLException {
 		InputStream databaseInputStream = getClass().getResourceAsStream(initialDatabasePath);
@@ -102,8 +108,9 @@ public class DatabaseUpgradeTestUtil {
 		
 		String databaseUrl = tempDir.getAbsolutePath().replace("\\", "/") + "/openmrs";
 		
-		connection = DriverManager.getConnection("jdbc:h2:" + databaseUrl + ";AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1", "sa",
-		    "sa");
+		connectionUrl = "jdbc:h2:" + databaseUrl + ";AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1";
+		
+		connection = DriverManager.getConnection(connectionUrl, "sa", "sa");
 		connection.setAutoCommit(true);
 		
 		try {
@@ -218,5 +225,22 @@ public class DatabaseUpgradeTestUtil {
 		catch (LiquibaseException e) {
 			throw new IOException(e);
 		}
+	}
+	
+	public SessionFactory buildSessionFactory() {
+		Configuration config = new Configuration().configure();
+		//H2 version we use behaves differently from H2Dialect in Hibernate so we provide our implementation
+		config.setProperty(Environment.DIALECT, H2LessStrictDialect.class.getName());
+		config.setProperty(Environment.URL, connectionUrl);
+		config.setProperty(Environment.DRIVER, "org.h2.Driver");
+		config.setProperty(Environment.USER, "sa");
+		config.setProperty(Environment.PASS, "sa");
+		config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
+		config.setProperty(Environment.USE_QUERY_CACHE, "false");
+		
+		//Let's validate HBMs against the actual schema
+		config.setProperty(Environment.HBM2DDL_AUTO, "validate");
+		
+		return config.buildSessionFactory();
 	}
 }
