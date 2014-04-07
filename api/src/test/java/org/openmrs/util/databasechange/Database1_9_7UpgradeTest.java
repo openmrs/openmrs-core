@@ -81,6 +81,9 @@ public class Database1_9_7UpgradeTest {
 		
 		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", "order_id");
 		Assert.assertThat(drugOrderSelect.size(), Matchers.is(0));
+		
+		//Test if the generated schema corresponds to Hibernate mappings
+		upgradeTestUtil.buildSessionFactory();
 	}
 	
 	@Test(expected = Exception.class)
