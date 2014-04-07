@@ -365,6 +365,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertTrue(possibleOutcomes.isEmpty());
 	}
 	
+	/**
+	 * Gets possible outcomes; Should get outcomes for a program with no outcome
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get no possible outcomes for a program with no outcome", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenProgramHasNoOutcome() throws Exception {
