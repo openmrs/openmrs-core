@@ -431,6 +431,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/*
+	* RetiresProgram;Should save retired program with reason
+	*
+        * @throws	
+	*/
 	@Verifies(value = "should save the retire program with resaon", method = "retireProgram(Program program,String reason)")
 	public void retireProgram_shouldSaveTheRetiredProgramWithReason() throws APIException {
 		String reason = "Feeling well.";
