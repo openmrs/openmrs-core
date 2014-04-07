@@ -366,7 +366,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Gets possible outcomes; Should get outcomes for a program with no outcome
+	 * Gets possible outcomes; Should get no outcomes for a program with no outcome
 	 * 
 	 * @throws Exception
 	 */
