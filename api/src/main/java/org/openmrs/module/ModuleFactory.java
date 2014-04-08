@@ -467,9 +467,9 @@ public class ModuleFactory {
 		catch (ModuleException e) {
 			if (moduleFile != null) {
 				log.error("Error getting module object from file " + moduleFile.getName(), e);
-				} else {
-					log.error("Module was null.", e);
-				}
+			} else {
+				log.error("Module was null.", e);
+			}
 			throw e;
 		}
 		
