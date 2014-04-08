@@ -43,7 +43,7 @@
 
         <many-to-one name="careSetting" column="care_setting" class="org.openmrs.CareSetting" not-null="true" />
         
-        <many-to-one name="orderType" column="order_type" class="org.openmrs.OrderType" not-null="true" />
+        <many-to-one name="orderType" column="order_type_id" class="org.openmrs.OrderType" not-null="true" />
 
         <!-- bi-directional many-to-one association to Order -->
 		<many-to-one name="previousOrder" class="org.openmrs.Order">

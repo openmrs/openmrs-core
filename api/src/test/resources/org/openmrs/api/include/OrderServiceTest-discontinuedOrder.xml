@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-    <orders order_id="25" order_type="1" order_number="1" urgency="ROUTINE" order_action="NEW" concept_id="88" orderer="1" instructions="2x daily" start_date="2008-08-08 00:00:00.0" date_stopped="2008-08-15 00:00:00.0" creator="1" date_created="2008-08-19 12:20:22.0" voided="false" patient_id="7" uuid="921de0a3-05c4-444a-be03-e01b4c4b9152" care_setting="1" encounter_id="3" />
-    <orders order_id="26" order_type="1" previous_order_id="1" order_number="111" urgency="ROUTINE" order_action="DISCONTINUE" concept_id="88" orderer="1" creator="1" start_date="2008-08-08 00:00:00.0" date_created="2008-08-15 00:00:00.0" voided="false" patient_id="7" uuid="e1f95924-697a-11e3-bd76-0800271c1b55" care_setting="1" encounter_id="3" />
+    <orders order_id="25" order_type_id="1" order_number="1" urgency="ROUTINE" order_action="NEW" concept_id="88" orderer="1" instructions="2x daily" start_date="2008-08-08 00:00:00.0" date_stopped="2008-08-15 00:00:00.0" creator="1" date_created="2008-08-19 12:20:22.0" voided="false" patient_id="7" uuid="921de0a3-05c4-444a-be03-e01b4c4b9152" care_setting="1" encounter_id="3" />
+    <orders order_id="26" order_type_id="1" previous_order_id="1" order_number="111" urgency="ROUTINE" order_action="DISCONTINUE" concept_id="88" orderer="1" creator="1" start_date="2008-08-08 00:00:00.0" date_created="2008-08-15 00:00:00.0" voided="false" patient_id="7" uuid="e1f95924-697a-11e3-bd76-0800271c1b55" care_setting="1" encounter_id="3" />
 </dataset>
