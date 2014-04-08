@@ -7393,5 +7393,13 @@
      		<column name="uuid" type="char(38)" />
      	</addColumn>
      </changeSet>
+     
+     <changeSet id="20140408-1359" author="rkorytkowski">
+     	<preConditions onFail="MARK_RAN">
+     		<columnExists tableName="orders" columnName="order_type"/>
+     	</preConditions>
+     	<comment>Renaming orders.order_type to order.order_type_id</comment>
+     	<renameColumn tableName="orders" oldColumnName="order_type" newColumnName="order_type_id"/>
+     </changeSet>
 
 </databaseChangeLog>
