@@ -6428,17 +6428,6 @@
         <comment>Checking that all orders have start_date, encounter_id and orderer columns set</comment>
     </changeSet>
 
-    <changeSet id="201403111039-TRUNK-4287" author="andras-szell">
-        <preConditions onFail="HALT" onFailMessage="Cannot determine the order type for orders that are neither drug nor test orders">
-            <sqlCheck expectedResult="0">
-                SELECT COUNT(orders.order_id) FROM orders
-                WHERE (orders.order_id NOT IN (SELECT drug_order.order_id FROM drug_order))
-                AND (orders.order_id NOT IN (SELECT test_order.order_id FROM test_order))
-            </sqlCheck>
-        </preConditions>
-        <comment>Checking if there are any orders that are neither test nor drug orders</comment>
-    </changeSet>
-
     <changeSet id="201403262139-TRUNK-4265" author="wyclif">
         <preConditions onFail="HALT" onFailMessage="Please make sure that all drugs with dose strength have the units specified">
             <sqlCheck expectedResult="0">
@@ -6446,6 +6435,95 @@
             </sqlCheck>
         </preConditions>
         <comment>Checking if there are any drugs with the dose_strength specified but no units</comment>
+    </changeSet>
+
+    <!-- If the order_type table has already been updated(has the new columns added in 1.10),
+        assume the admin has set up things properly, otherwise they should have exactly one order type
+        row which MUST be for drug orders for the scripts to auto update the table for them -->
+    <changeSet id="201404091111" author="wyclif">
+        <preConditions onFail="HALT" onFailMessage="Cannot update order_type table, please use the 1.10 upgrade documentation to modify the order_type table before upgrading">
+            <or>
+                <and>
+                    <columnExists tableName="order_type" columnName="java_class_name" />
+                    <columnExists tableName="order_type" columnName="parent" />
+                </and>
+                <and>
+                    <sqlCheck expectedResult="1">
+                        SELECT COUNT(*) FROM order_type
+                    </sqlCheck>
+                    <sqlCheck expectedResult="1">
+                        SELECT COUNT(*) FROM order_type WHERE uuid = '131168f4-15f5-102d-96e4-000c29c2a5d7';
+                    </sqlCheck>
+                </and>
+            </or>
+        </preConditions>
+        <comment>Checking if order_type table is already up to date or can be updated automatically</comment>
+    </changeSet>
+
+    <changeSet id="201404091112" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="order_type" columnName="name" />
+        </preConditions>
+        <comment>Adding unique key constraint to order_type.name column</comment>
+        <addUniqueConstraint tableName="order_type" columnNames="name" />
+    </changeSet>
+
+    <changeSet id="201404091128" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="order_type" columnName="java_class_name" /></not>
+        </preConditions>
+        <comment>Adding java_class_name column to order_type table</comment>
+        <addColumn tableName="order_type">
+            <column name="java_class_name" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="201404091129" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="order_type" columnName="parent" /></not>
+        </preConditions>
+        <comment>Adding parent column to order_type table</comment>
+        <addColumn tableName="order_type">
+            <column name="parent" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="201404091130" author="wyclif">
+        <preConditions>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM order_type
+                WHERE uuid = '131168f4-15f5-102d-96e4-000c29c2a5d7' AND java_class_name IS NULL
+            </sqlCheck>
+        </preConditions>
+        <comment>Setting java_class_name column for drug order type row</comment>
+        <update tableName="order_type">
+            <column name="java_class_name" value="org.openmrs.DrugOrder" />
+            <where>uuid = '131168f4-15f5-102d-96e4-000c29c2a5d7'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="201404091131" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="order_type" columnName="java_class_name" />
+        </preConditions>
+        <comment>Add not-null constraint on order_type.java_class_name column</comment>
+        <addNotNullConstraint tableName="order_type" columnName="java_class_name" columnDataType="varchar(255)" />
+    </changeSet>
+
+    <changeSet id="201403070132-TRUNK-4286" author="andras-szell">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.TestOrder'</sqlCheck>
+        </preConditions>
+        <comment>Insert order type for test orders</comment>
+        <insert tableName="order_type">
+            <column name="name" value="Test Order" />
+            <column name="description" value="Order type for test orders" />
+            <column name="java_class_name" value="org.openmrs.TestOrder" />
+            <column name="creator" valueNumeric="1" />
+            <column name="date_created" valueDate="2014-03-09" />
+            <column name="retired" valueNumeric="0" />
+            <column name="uuid" value="52a447d3-a64a-11e3-9aeb-50e549534c5e" />
+        </insert>
     </changeSet>
 
     <changeSet id="201402241054" author="Akshika">
@@ -6481,131 +6559,6 @@
                 <constraints nullable="false" />
             </column>
         </ext:modifyColumn>
-    </changeSet>
-
-    <changeSet id="201403011303-TRUNK-4198_1" author="harsha">
-        <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="type_of_order"/>
-        </preConditions>
-        <comment>Dropping foreign key constraint on orders.order_type_id</comment>
-        <dropForeignKeyConstraint baseTableName="orders" constraintName="type_of_order"/>
-    </changeSet>
-
-    <changeSet id="201403011303-TRUNK-4198_2" author="harsha">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="orders" columnName="order_type_id"/>
-        </preConditions>
-        <comment>Remove the order_type_id column from orders table</comment>
-        <dropColumn tableName="orders" columnName="order_type_id"/>
-    </changeSet>
-
-    <changeSet id="201403041701" author="wyclif">
-        <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="type_created_by" />
-        </preConditions>
-        <comment>Dropping foreign key constraint for creator from old order_type table</comment>
-        <dropForeignKeyConstraint baseTableName="order_type" constraintName="type_created_by"/>
-    </changeSet>
-
-    <changeSet id="201403041702" author="wyclif">
-        <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="user_who_retired_order_type" />
-        </preConditions>
-        <comment>Dropping foreign key constraint for retired_by from old order_type table</comment>
-        <dropForeignKeyConstraint baseTableName="order_type" constraintName="user_who_retired_order_type"/>
-    </changeSet>
-
-    <changeSet id="201403041703" author="wyclif">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="order_type" />
-        </preConditions>
-        <comment>Dropping the old order_type table</comment>
-        <dropTable tableName="order_type" />
-    </changeSet>
-
-    <changeSet id="201403052242-TRUNK-4286" author="andras-szell">
-        <preConditions onFail="MARK_RAN">
-            <not><tableExists tableName="order_type"/></not>
-        </preConditions>
-        <comment>Adding new order_type table</comment>
-        <createTable tableName="order_type">
-            <column name="order_type_id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false" unique="true" />
-            </column>
-            <column name="description" type="varchar(1024)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="java_class_name" type="varchar(255)">
-                <constraints nullable="false" />
-            </column>
-            <column name="parent" type="int"/>
-            <column name="creator" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_created" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="retired" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_retired" type="datetime"/>
-            <column name="retired_by" type="int"/>
-            <column name="retire_reason" type="varchar(255)" />
-            <column name="uuid" type="varchar(38)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-        </createTable>
-        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="parent_order_type"
-                                 referencedTableName="order_type" referencedColumnNames="order_type_id"/>
-        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="creator" constraintName="order_type_creator"
-                                 referencedTableName="users" referencedColumnNames="user_id"/>
-        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="retired_by" constraintName="order_type_retired_by"
-                                 referencedTableName="users" referencedColumnNames="user_id"/>
-    </changeSet>
-
-    <changeSet id="201403070131-TRUNK-4286" author="andras-szell">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.DrugOrder'</sqlCheck>
-        </preConditions>
-        <comment>Insert order type for drug orders</comment>
-        <insert tableName="order_type">
-            <column name="name" value="Drug order" />
-            <column name="description" value="Order type for drug orders" />
-            <column name="java_class_name" value="org.openmrs.DrugOrder" />
-            <column name="creator" valueNumeric="1" />
-            <column name="date_created" valueDate="2014-03-09" />
-            <column name="retired" valueNumeric="0" />
-            <column name="uuid" value="2ca568f3-a64a-11e3-9aeb-50e549534c5e" />
-        </insert>
-    </changeSet>
-
-    <changeSet id="201403070132-TRUNK-4286" author="andras-szell">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from order_type where java_class_name = 'org.openmrs.TestOrder'</sqlCheck>
-        </preConditions>
-        <comment>Insert order type for test orders</comment>
-        <insert tableName="order_type">
-            <column name="name" value="Test order" />
-            <column name="description" value="Order type for test orders" />
-            <column name="java_class_name" value="org.openmrs.TestOrder" />
-            <column name="creator" valueNumeric="1" />
-            <column name="date_created" valueDate="2014-03-09" />
-            <column name="retired" valueNumeric="0" />
-            <column name="uuid" value="52a447d3-a64a-11e3-9aeb-50e549534c5e" />
-        </insert>
-    </changeSet>
-
-    <changeSet id="201403111039-TRUNK-4287-1" author="andras-szell">
-        <preConditions onFail="MARK_RAN">
-            <not><columnExists tableName="orders" columnName="order_type"/></not>
-        </preConditions>
-        <comment>Add order_type column to orders</comment>
-        <addColumn tableName="orders">
-            <column name="order_type" type="int" />
-        </addColumn>
     </changeSet>
 
     <changeSet id="201311041510" author="wyclif">
@@ -7298,49 +7251,6 @@
        </addColumn>
     </changeSet>
 
-    <changeSet id="201403111039-TRUNK-4287-2" author="wyclif">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="0">
-                    SELECT COUNT(o.order_id) FROM orders o
-                    WHERE o.order_id IN (SELECT do.order_id FROM drug_order do)
-                    AND o.order_type IS NULL
-                </sqlCheck>
-            </not>
-        </preConditions>
-        <comment>Set order_type for drug orders with no order_type</comment>
-        <update tableName="orders">
-            <column name="order_type" valueNumeric="SELECT order_type_id FROM order_type where java_class_name ='org.openmrs.DrugOrder'" />
-            <where>orders.order_id IN (SELECT drug_order.order_id FROM drug_order)</where>
-        </update>
-    </changeSet>
-
-    <changeSet id="201403111039-TRUNK-4287-3" author="wyclif">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <sqlCheck expectedResult="0">
-                    SELECT COUNT(o.order_id) FROM orders o
-                    WHERE o.order_id IN (SELECT t.order_id FROM test_order t)
-                    AND o.order_type IS NULL
-                </sqlCheck>
-            </not>
-        </preConditions>
-        <comment>Set order_type for test orders with no order_type</comment>
-        <update tableName="orders">
-            <column name="order_type" valueNumeric="SELECT order_type_id FROM order_type where java_class_name ='org.openmrs.TestOrder'" />
-            <where>orders.order_id IN (SELECT test_order.order_id FROM test_order)</where>
-        </update>
-    </changeSet>
-
-    <changeSet id="201403111039-TRUNK-4287-4" author="andras-szell">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="orders" columnName="order_type"/>
-            <not><foreignKeyConstraintExists foreignKeyName="type_of_order" /></not>
-        </preConditions>
-        <comment>Making orders.order_type column not nullable</comment>
-        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="order_type" constraintName="type_of_order"
-                                 referencedTableName="order_type" referencedColumnNames="order_type_id"/>
-    </changeSet>
     <changeSet id="20140313-TRUNK-4288" author="dszafranek">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="order_type_class_map"/></not>
