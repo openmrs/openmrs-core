@@ -6704,12 +6704,15 @@
             <column name="retired_by" type="int" />
             <column name="date_retired" type="datetime"/>
             <column name="retire_reason" type="varchar(255)" />
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime" />
             <column name="uuid" type="char(38)"><constraints nullable="false"/></column>
   		</createTable>
   		
 		<addForeignKeyConstraint constraintName="order_frequency_concept_id_fk" baseTableName="order_frequency" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
 		<addForeignKeyConstraint constraintName="order_frequency_creator_fk" baseTableName="order_frequency" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
 		<addForeignKeyConstraint constraintName="order_frequency_retired_by_fk" baseTableName="order_frequency" baseColumnNames="retired_by" referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="order_frequency_changed_by_fk" baseTableName="order_frequency" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
   		
 	</changeSet>
 	
@@ -6985,6 +6988,8 @@
             <column name="retired_by" type="int" />
             <column name="date_retired" type="datetime" />
             <column name="retire_reason" type="varchar(255)" />
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime" />
             <column name="uuid" type="char(38)">
                 <constraints nullable="false"/>
             </column>
@@ -6995,6 +7000,9 @@
                                  referencedTableName="users" referencedColumnNames="user_id"/>
         <addForeignKeyConstraint constraintName="care_setting_retired_by"
                                  baseTableName="care_setting" baseColumnNames="retired_by"
+                                 referencedTableName="users" referencedColumnNames="user_id"/>
+        <addForeignKeyConstraint constraintName="care_setting_changed_by"
+                                 baseTableName="care_setting" baseColumnNames="changed_by"
                                  referencedTableName="users" referencedColumnNames="user_id"/>
     </changeSet>
 
@@ -7334,7 +7342,8 @@
 			<column name="date_changed" type="datetime" />
 		</addColumn>
 	</changeSet>
-		<changeSet id="201401040440-TRUNK-3919" author="dkithmal">
+
+    <changeSet id="201401040440-TRUNK-3919" author="dkithmal">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="location" columnName="changed_by" />
@@ -7364,5 +7373,27 @@
 			<column name="date_changed" type="datetime" />
 		</addColumn>
 	</changeSet>
+
+    <changeSet id="201404091516" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="order_type" columnName="changed_by" /></not>
+        </preConditions>
+        <comment>Add changed_by column to order_type table</comment>
+        <addColumn tableName="order_type">
+            <column name="changed_by" type="int" />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="order_type_changed_by" baseTableName="order_type" baseColumnNames="changed_by"
+            referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+
+    <changeSet id="201404091517" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="order_type" columnName="date_changed" /></not>
+        </preConditions>
+        <comment>Add date_changed column to order_type table</comment>
+        <addColumn tableName="order_type">
+            <column name="date_changed" type="datetime" />
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

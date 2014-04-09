@@ -37,6 +37,10 @@
 
         <many-to-one name="creator" class="User" not-null="true"/>
 
+        <many-to-one name="changedBy" class="User" column="changed_by" />
+
+        <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+
         <set name="conceptClasses" table="order_type_class_map" lazy="true" cascade="none">
             <key column="order_type_id" />
             <many-to-many column="concept_class_id" class="ConceptClass" unique="true"/>
