@@ -223,7 +223,7 @@ public class ModuleFactory {
 					// as this is probably the first time they are loading it
 					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
 					        || mod.isMandatory() || isCoreToOpenmrs) {
-						if (requiredModulesStarted(mod)) {
+						if (areDependentModulesStarted(mod)) {
 							try {
 								if (log.isDebugEnabled()) {
 									log.debug("starting module: " + mod.getModuleId());
@@ -262,7 +262,7 @@ public class ModuleFactory {
 				List<Module> modulesStartedInThisLoop = new Vector<Module>();
 				
 				for (Module leftoverModule : leftoverModules) {
-					if (requiredModulesStarted(leftoverModule)) {
+					if (areDependentModulesStarted(leftoverModule)) {
 						if (log.isDebugEnabled()) {
 							log.debug("starting leftover module: " + leftoverModule.getModuleId());
 						}
@@ -382,6 +382,23 @@ public class ModuleFactory {
 				ret.add(moduleName + (moduleVersion != null ? " " + moduleVersion : ""));
 			}
 		}
+		
+		if (ret.size() == 0) {
+			//The module failed to start due to start_before_modules conflict
+			for (String moduleName : module.getStartBeforeModules()) {
+				boolean started = false;
+				for (Module mod : getStartedModules()) {
+					if (mod.getPackageName().equals(moduleName)) {
+						started = true;
+					}
+				}
+				
+				if (!started) {
+					ret.add(moduleName);
+				}
+			}
+		}
+		
 		return ret;
 	}
 	
@@ -580,7 +597,7 @@ public class ModuleFactory {
 				ModuleUtil.checkRequiredVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireVersion);
 				
 				// check for required modules
-				if (!requiredModulesStarted(module)) {
+				if (!areDependentModulesStarted(module)) {
 					throw new ModuleException(getFailedToStartModuleMessage(module));
 				}
 				
@@ -1365,7 +1382,8 @@ public class ModuleFactory {
 	 * @param module
 	 * @return true/false boolean whether this module's required modules are all started
 	 */
-	private static boolean requiredModulesStarted(Module module) {
+	private static boolean areDependentModulesStarted(Module module) {
+		//required
 		for (String reqModPackage : module.getRequiredModules()) {
 			boolean started = false;
 			for (Module mod : getStartedModules()) {
@@ -1378,7 +1396,19 @@ public class ModuleFactory {
 				}
 			}
 			
-			if (!started) {
+			if (!started)
+				return false;
+		}
+		
+		//start-before
+		//check if any of loaded (not started) modules must be started before this module
+		for (Module loadedModule : getLoadedModules()) {
+			
+			if (isModuleStarted(loadedModule)) {
+				continue;
+			}
+			//loaded but NOT started
+			if (module.getStartBeforeModules().contains(loadedModule.getPackageName())) {
 				return false;
 			}
 		}
