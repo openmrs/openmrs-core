@@ -32,6 +32,7 @@ import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
@@ -256,6 +257,50 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		newObs.setValueNumeric(50d);
 		newObs.setLocation(new Location(2));
 		return newObs;
+	}
+	
+	/**
+	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should set date stopped on the original after adding revise order", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldSetDateStoppedOnTheOriginalAfterAddingReviseOrder() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		
+		TestOrder order = (TestOrder) Context.getOrderService().getOrder(7);
+		Assert.assertNull(order.getDateStopped());
+		
+		Encounter encounter = es.getEncounter(6);
+		TestOrder reviseOrder = order.cloneForRevision();
+		reviseOrder.setOrderer(Context.getProviderService().getProvider(1));
+		
+		encounter.addOrder(reviseOrder);
+		es.saveEncounter(encounter);
+		
+		Context.flushSession();
+		Context.clearSession();
+		
+		Date dateStopped = Context.getOrderService().getOrder(7).getDateStopped();
+		Assert.assertNotNull(dateStopped);
+	}
+	
+	/**
+	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should not cascade to existing order", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldNotCascadeToExistingOrder() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		
+		TestOrder order = (TestOrder) Context.getOrderService().getOrder(7);
+		order.setVoided(true);
+		
+		Encounter encounter = es.getEncounter(6);
+		es.saveEncounter(encounter);
+		
+		String sql = "SELECT voided FROM orders WHERE order_id=7";
+		Boolean voided = (Boolean) Context.getAdministrationService().executeSQL(sql, true).get(0).get(0);
+		Assert.assertFalse(voided);
 	}
 	
 	/**
@@ -490,7 +535,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		OrderService os = Context.getOrderService();
 		// create and add an order to this encounter
-		Order order = new Order();
+		TestOrder order = new TestOrder();
 		order.setConcept(Context.getConceptService().getConcept(5497));
 		order.setPatient(new Patient(2));
 		order.setStartDate(new Date());
@@ -2058,4 +2103,5 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		encounterService.purgeEncounterType(encounterType);
 	}
+	
 }

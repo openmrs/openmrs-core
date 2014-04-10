@@ -49,7 +49,7 @@
 			<column name="form_id" />
 		</many-to-one>
 		<!-- bi-directional one-to-many association to Order -->
-		<set name="orders" inverse="true" cascade="all">
+		<set name="orders" inverse="true">
 			<key column="encounter_id" />
 			<one-to-many class="Order" />
 		</set>
