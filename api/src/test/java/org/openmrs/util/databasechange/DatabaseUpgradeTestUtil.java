@@ -218,9 +218,6 @@ public class DatabaseUpgradeTestUtil {
 		try {
 			Liquibase liquibase = new Liquibase("liquibase-update-to-latest.xml", new ClassLoaderResourceAccessor(getClass()
 			        .getClassLoader()), liqubaseConnection);
-			
-			liquibase.validate();
-			
 			liquibase.update(null);
 			
 			connection.commit();
