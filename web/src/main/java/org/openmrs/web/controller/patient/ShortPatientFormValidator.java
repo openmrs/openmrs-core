@@ -16,8 +16,8 @@ package org.openmrs.web.controller.patient;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+import java.util.Iterator;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +27,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.controller.person.PersonFormController;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.openmrs.validator.PersonAddressValidator;
@@ -84,7 +85,7 @@ public class ShortPatientFormValidator implements Validator {
 		ShortPatientModel shortPatientModel = (ShortPatientModel) obj;
 		PersonName personName = shortPatientModel.getPersonName();
 		
-		//TODO We should be able to let developers and implementations to specify which person name 
+		//TODO We should be able to let developers and implementations to specify which person name
 		// fields should be used to determine uniqueness
 		
 		//check if this name has a unique givenName, middleName and familyName combination
@@ -144,6 +145,10 @@ public class ShortPatientFormValidator implements Validator {
 				        + " is a duplicate address for the same patient");
 			}
 		}
+		
+		//check if all required address fields are filled
+		if (!PersonFormController.areRequiredAddressFieldsFilled(personAddress, errors))
+			return;
 		
 		if (CollectionUtils.isEmpty(shortPatientModel.getIdentifiers())) {
 			errors.reject("PatientIdentifier.error.insufficientIdentifiers");
