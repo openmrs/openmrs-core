@@ -849,7 +849,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCareSettingByUuid_shouldReturnTheCareSettingWithTheSpecifiedUuid() throws Exception {
-		CareSetting cs = orderService.getCareSettingByUuid("2ed1e57d-9f18-41d3-b067-2eeaf4b30fb1");
+		CareSetting cs = orderService.getCareSettingByUuid("6f0c9a92-6f24-11e3-af88-005056821db0");
 		assertEquals(1, cs.getId().intValue());
 	}
 	

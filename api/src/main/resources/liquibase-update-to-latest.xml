@@ -6991,7 +6991,7 @@
             <column name="changed_by" type="int"/>
             <column name="date_changed" type="datetime" />
             <column name="uuid" type="char(38)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
 
@@ -7036,7 +7036,7 @@
             <column name="care_setting_type" value="INPATIENT"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2013-12-27T00:00:00"/>
-            <column name="uuid" value="6f0c9a92-6f24-11e3-af88-005056821db0"/>
+            <column name="uuid" value="c365e560-c3ec-11e3-9c1a-0800200c9a66"/>
         </insert>
     </changeSet>
 
