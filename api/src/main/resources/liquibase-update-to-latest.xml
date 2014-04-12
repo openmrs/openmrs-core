@@ -7036,7 +7036,7 @@
             <column name="care_setting_type" value="INPATIENT"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2013-12-27T00:00:00"/>
-            <column name="uuid" value="6f0c9a92-6f24-11e3-af88-005056821db0"/>
+            <column name="uuid" value="0a6c8790-c26f-11e3-8a33-0800200c9a66"/>
         </insert>
     </changeSet>
 
