@@ -82,14 +82,14 @@ public class PatientIdentifierValidator implements Validator {
 		// Only validate if the PatientIdentifier is not voided
 		if (!pi.isVoided()) {
 			
+			// Check that this is a identifier is valid
+			validateIdentifier(pi.getIdentifier(), pi.getIdentifierType());
+			
 			// Check is already in use by another patient
 			if (Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
 				throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier()
 				        + " already in use by another patient");
 			}
-			
-			// Check that this is a identifier is valid
-			validateIdentifier(pi.getIdentifier(), pi.getIdentifierType());
 		}
 	}
 	
