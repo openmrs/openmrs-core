@@ -78,7 +78,7 @@ public class ConceptServicePerformanceIT extends BaseContextSensitiveTest {
 	
 	@Test
 	/**
-        * Tests a GetConceptByName
+        * Test a GetConceptByName
         */
 	public void shouldTestGetConceptByName() {
 		Concept concept = conceptService.getConceptByName("hiv positive");
