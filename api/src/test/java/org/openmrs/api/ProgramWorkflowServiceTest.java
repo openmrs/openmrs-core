@@ -351,7 +351,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(4);
 		assertEquals(2, possibleOutcomes.size());
 	}
-	
+	/**
+	 * This tests for getting possible outcomes for a set
+	 * 
+	 * Asserts if the size is equal to 2.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get possible outcomes for a program with outcome questions", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldGetOutcomesForAQuestion() throws Exception {
@@ -360,7 +366,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(5);
 		assertEquals(2, possibleOutcomes.size());
 	}
-	
+	/**
+	 * This tests for getting possible outcomes for a set
+	 * 
+	 * Asserts if the size is equal to 2.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get no possible outcomes for a program that does not exist", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() throws Exception {
