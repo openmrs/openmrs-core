@@ -33,7 +33,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- *
+ * Tests methods in the ActiveListService class
  */
 public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	
@@ -43,15 +43,15 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	
 	protected static ActiveListService activeListService = null;
 	
-	@Before
+	
 	
 	/**
-	 * Runs before all tests
+	 * Runs before all tests. Run this before each unit test in this class
 	 *
-	 *@throws
+	 *@throws Exception
 	 *@see {@link ActiveService}
 	 * /
-	
+	@Before
 	
 	public void runBeforeAllTests() throws Exception {
 		if (patientService == null) {
