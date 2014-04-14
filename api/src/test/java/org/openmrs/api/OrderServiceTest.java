@@ -45,6 +45,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO clean up and test all methods in OrderService
+ * 
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
@@ -609,9 +610,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		history = orderService.getOrderHistoryByOrderNumber("ORD-333");
 		Assert.assertEquals(expectedHistory, history);
-		
 	}
 	
+	/**
+	 * This method asserts that an order and related obs have been purged correctly.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
 		executeDataSet(OBS_THAT_REFERENCE_DATASET_XML);
@@ -640,7 +645,5 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		//Ensure that the related obs got deleted
 		Assert.assertNull(os.getObsByUuid(obsUuid));
-		
 	}
-	
 }
