@@ -69,8 +69,6 @@ public class ConceptServicePerformanceIT extends BaseContextSensitiveTest {
 	@Test
 	/**
         * Tests GetConConceptsByName 
-        * 
-        * @throws Exeception
         */
 	public void shouldTestGetConceptsByName() {
 		List<Concept> concepts = conceptService.getConceptsByName("hiv positive");
@@ -80,9 +78,7 @@ public class ConceptServicePerformanceIT extends BaseContextSensitiveTest {
 	
 	@Test
 	/**
-        * Tests a method.
-        * 
-        * @throws Exeception
+        * Tests a GetConceptByName
         */
 	public void shouldTestGetConceptByName() {
 		Concept concept = conceptService.getConceptByName("hiv positive");
