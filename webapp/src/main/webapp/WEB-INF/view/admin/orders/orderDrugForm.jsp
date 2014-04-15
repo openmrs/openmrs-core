@@ -6,14 +6,14 @@
 <%@ include file="localHeader.jsp" %>
 
 <c:if test="${order.patient != null}">
-	<a href="../../patientDashboard.form?patientId=${order.patient.patientId}"><openmrs:message code="patientDashboard.viewDashboard"/></a>
+	<a href="../../patientDashboard.form?patientId=<c:out value="${order.patient.patientId}" />"><openmrs:message code="patientDashboard.viewDashboard"/></a>
 </c:if>
 
 
 <h2><openmrs:message code="Order.drug.title"/></h2>
 
 <spring:hasBindErrors name="order">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
@@ -22,7 +22,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.voidedBy"/>
-				${order.voidedBy.personName}
+				<c:out value="${order.voidedBy.personName}" />
 				<openmrs:formatDate date="${order.dateVoided}" type="medium" />
 				-
 				${order.voidReason}
@@ -36,7 +36,7 @@
 <form method="post" class="box">
 	<table>
 		<tr>
-			<td valign="top"><openmrs:message code="Order.patient"/></td>
+			<td valign="top"><openmrs:message code="Order.patient"/><span class="required">*</span></td>
 			<td valign="top">
 				<spring:bind path="order.patient">
 					<openmrs:fieldGen type="org.openmrs.Patient" formFieldName="${status.expression}" val="${status.editor.value}" />
@@ -45,7 +45,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><openmrs:message code="Order.concept"/></td>
+			<td valign="top"><openmrs:message code="Order.concept"/><span class="required">*</span></td>
 			<td valign="top">
 				<spring:bind path="order.concept">
 					<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.editor.value}" />
@@ -101,7 +101,7 @@
 		<c:if test="${order.discontinued}">	
 			<tr id="discontinuedBy">
 				<td valign="top"><openmrs:message code="general.discontinuedBy"/></td>
-				<td valign="top">${order.discontinuedBy.personName}</td>
+				<td valign="top"><c:out value="${order.discontinuedBy.personName}" /></td>
 			</tr>
 			<tr id="dateDiscontinued">
 				<td valign="top"><openmrs:message code="general.dateDiscontinued"/></td>
@@ -118,7 +118,7 @@
 			<tr>
 				<td><openmrs:message code="general.createdBy" /></td>
 				<td>
-					${order.creator.personName} - <openmrs:formatDate date="${order.dateCreated}" type="long" />
+					<c:out value="${order.creator.personName}" /> - <openmrs:formatDate date="${order.dateCreated}" type="long" />
 				</td>
 			</tr>
 		</c:if>
@@ -178,7 +178,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><openmrs:message code="DrugOrder.drug"/></td>
+			<td valign="top"><openmrs:message code="DrugOrder.drug"/><span class="required">*</span></td>
 			<td valign="top">
 				<spring:bind path="order.drug">
 					<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="${status.expression}" val="${status.editor.value}" parameters="optionHeader=[blank]" />

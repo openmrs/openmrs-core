@@ -13,7 +13,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.retiredBy"/>
-				${locationTag.retiredBy.personName}
+				<c:out value="${locationTag.retiredBy.personName}" />
 				<openmrs:formatDate date="${locationTag.dateRetired}" type="medium" />
 				-
 				${locationTag.retireReason}
@@ -53,6 +53,12 @@
 					<openmrs:formatDate date="${locationTag.dateCreated}"/>
 				</td>
 			</tr>
+			<tr>
+                <c:if test="${locationTag.locationTagId != null}">
+                    <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+           			<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${locationTag.uuid}</sub></font></td>
+             	</c:if>
+            </tr>
 			<tr>
 				<td></td>
 				<td>

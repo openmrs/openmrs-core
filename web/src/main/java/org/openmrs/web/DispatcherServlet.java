@@ -26,6 +26,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 import org.springframework.beans.BeansException;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
  * This class is only used to get access to the DispatcherServlet. <br/>
@@ -68,9 +69,9 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	public void reInitFrameworkServlet() throws ServletException {
 		log.debug("Framework being REinitialized");
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		((XmlWebApplicationContext) getWebApplicationContext()).setClassLoader(OpenmrsClassLoader.getInstance());
 		
-		// reset bean info and framework servlet
-		init();
+		refresh();
 		
 		// the spring context gets reset by the framework servlet, so we need to 
 		// reload the advice points that were lost when refreshing Spring
@@ -95,4 +96,17 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 		}
 	}
 	
+	/**
+	 * Stops and closes the application context created by this dispatcher servlet.
+	 */
+	public void stopAndCloseApplicationContext() {
+		try {
+			XmlWebApplicationContext ctx = (XmlWebApplicationContext) getWebApplicationContext();
+			ctx.stop();
+			ctx.close();
+		}
+		catch (Exception e) {
+			log.error("Exception while stopping and closing dispatcherServlet context: ", e);
+		}
+	}
 }

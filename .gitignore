@@ -51,6 +51,7 @@ local.properties
 ### Netbeans ###
 nbproject/private/
 build/
+bin/
 nbbuild/
 dist/
 nbdist/

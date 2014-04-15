@@ -89,8 +89,9 @@ public class ConfigureVisitsFormController {
 		
 		ConfigureVisitsForm form = new ConfigureVisitsForm();
 		form.setEnableVisits(Boolean.valueOf(enableVisits));
-		if (closeVisitsTask != null)
+		if (closeVisitsTask != null) {
 			form.setCloseVisitsTaskStarted(closeVisitsTask.getStarted());
+		}
 		for (EncounterVisitHandler visitHandler : getEncounterVisitHandlers()) {
 			if (visitHandler.getClass().getName().equals(visitEncounterHandler)) {
 				form.setVisitEncounterHandler(visitHandler.getClass().getName());
@@ -109,8 +110,9 @@ public class ConfigureVisitsFormController {
 			
 			List<VisitType> allVisitTypes = visitService.getAllVisitTypes();
 			for (VisitType visitType : allVisitTypes) {
-				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase()))
+				if (ArrayUtils.contains(visitTypeNames, visitType.getName().toLowerCase())) {
 					visitTypes.add(visitType);
+				}
 			}
 			form.setVisitTypesToClose(visitTypes);
 		}
@@ -139,32 +141,34 @@ public class ConfigureVisitsFormController {
 			        .getGlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER));
 		}
 		
-		String visitTypeNames = "";
+		StringBuilder visitTypeNames = new StringBuilder();
 		boolean isFirst = true;
 		for (VisitType vt : form.getVisitTypesToClose()) {
 			if (isFirst) {
-				visitTypeNames += vt.getName();
+				visitTypeNames.append(vt.getName());
 				isFirst = false;
 				continue;
 			}
-			visitTypeNames += "," + vt.getName();
+			visitTypeNames.append(",").append(vt.getName());
 		}
 		//save the GP for visit types to close
 		GlobalProperty gpVisitTypesToClose = administrationService
 		        .getGlobalPropertyObject(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
-		if (gpVisitTypesToClose == null)
+		if (gpVisitTypesToClose == null) {
 			gpVisitTypesToClose = new GlobalProperty(OpenmrsConstants.GP_VISIT_TYPES_TO_AUTO_CLOSE);
-		gpVisitTypesToClose.setPropertyValue(visitTypeNames);
+		}
+		gpVisitTypesToClose.setPropertyValue(visitTypeNames.toString());
 		administrationService.saveGlobalProperty(gpVisitTypesToClose);
 		
 		TaskDefinition closeVisitsTask = Context.getSchedulerService().getTaskByName(
 		    OpenmrsConstants.AUTO_CLOSE_VISITS_TASK_NAME);
 		if (closeVisitsTask != null) {
 			try {
-				if (form.getCloseVisitsTaskStarted() && !closeVisitsTask.getStarted())
+				if (form.getCloseVisitsTaskStarted() && !closeVisitsTask.getStarted()) {
 					Context.getSchedulerService().scheduleTask(closeVisitsTask);
-				else if (!form.getCloseVisitsTaskStarted() && closeVisitsTask.getStarted())
+				} else if (!form.getCloseVisitsTaskStarted() && closeVisitsTask.getStarted()) {
 					Context.getSchedulerService().shutdownTask(closeVisitsTask);
+				}
 			}
 			catch (SchedulerException e) {
 				errors.rejectValue("closeVisitsTaskStarted",

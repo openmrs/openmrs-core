@@ -53,10 +53,13 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	@Override
 	public Collection<A> getActiveAttributes() {
 		List<A> ret = new ArrayList<A>();
-		if (getAttributes() != null)
-			for (A attr : getAttributes())
-				if (!attr.isVoided())
+		if (getAttributes() != null) {
+			for (A attr : getAttributes()) {
+				if (!attr.isVoided()) {
 					ret.add(attr);
+				}
+			}
+		}
 		return ret;
 	}
 	
@@ -66,10 +69,13 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	@Override
 	public List<A> getActiveAttributes(CustomValueDescriptor ofType) {
 		List<A> ret = new ArrayList<A>();
-		if (getAttributes() != null)
-			for (A attr : getAttributes())
-				if (attr.getAttributeType().equals(ofType) && !attr.isVoided())
+		if (getAttributes() != null) {
+			for (A attr : getAttributes()) {
+				if (attr.getAttributeType().equals(ofType) && !attr.isVoided()) {
 					ret.add(attr);
+				}
+			}
+		}
 		return ret;
 	}
 	
@@ -78,8 +84,9 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	 */
 	@Override
 	public void addAttribute(A attribute) {
-		if (getAttributes() == null)
+		if (getAttributes() == null) {
 			setAttributes(new LinkedHashSet<A>());
+		}
 		// TODO validate
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
@@ -90,7 +97,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 	 * TODO fail if minOccurs > 1
 	 * TODO decide whether this should require maxOccurs=1
 	 * @should void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
-	 * 
+	 *
 	 * @param attribute
 	 */
 	@SuppressWarnings("unchecked")
@@ -105,21 +112,25 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseOpen
 			if (existing.getValue().equals(attribute.getValue())) {
 				// do nothing, since the value is already as-specified
 			} else {
-				if (existing.getId() != null)
+				if (existing.getId() != null) {
 					existing.setVoided(true);
-				else
+				} else {
 					getAttributes().remove(existing);
+				}
 				getAttributes().add(attribute);
 				attribute.setOwner(this);
 			}
 			
 		} else {
-			for (A existing : getActiveAttributes(attribute.getAttributeType()))
-				if (existing.getAttributeType().equals(attribute.getAttributeType()))
-					if (existing.getId() != null)
+			for (A existing : getActiveAttributes(attribute.getAttributeType())) {
+				if (existing.getAttributeType().equals(attribute.getAttributeType())) {
+					if (existing.getId() != null) {
 						existing.setVoided(true);
-					else
+					} else {
 						getAttributes().remove(existing);
+					}
+				}
+			}
 			getAttributes().add(attribute);
 			attribute.setOwner(this);
 		}

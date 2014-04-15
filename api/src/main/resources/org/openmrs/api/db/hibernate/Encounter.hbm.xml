@@ -16,9 +16,6 @@
 		
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
-
-		<property name="patientId" type="java.lang.Integer" length="11" 
-			column="patient_id" not-null="true" insert="false" update="false" />
 		<property name="encounterDatetime" type="java.util.Date"
 			column="encounter_datetime" not-null="true" length="19" />
 		<property name="dateCreated" type="java.util.Date"
@@ -56,7 +53,7 @@
 			<one-to-many class="Order" />
 		</set>
 		<!-- bi-directional one-to-many association to Ob -->
-		<set name="obs" inverse="true" cascade="all" order-by="concept_id" access="field">
+		<set name="obs" inverse="true" cascade="all" order-by="concept_id" access="field" batch-size="25">
 			<key column="encounter_id" />
 			<one-to-many class="Obs" />
 		</set>

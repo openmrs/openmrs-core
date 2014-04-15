@@ -115,7 +115,7 @@ public class PatientIdentifierValidator implements Validator {
 	 * @throws PatientIdentifierException if the identifier is invalid
 	 * @should fail validation if PatientIdentifierType is null
 	 * @should fail validation if identifier is blank
-	 * @see #checkIdentifierAgainstFormat(String, String)
+	 * @see #checkIdentifierAgainstFormat(String, String, String)
 	 * @see #checkIdentifierAgainstValidator(String, IdentifierValidator)
 	 */
 	public static void validateIdentifier(String identifier, PatientIdentifierType pit) throws PatientIdentifierException {
@@ -130,7 +130,7 @@ public class PatientIdentifierValidator implements Validator {
 			throw new BlankIdentifierException("PatientIdentifier.error.nullOrBlank");
 		}
 		
-		checkIdentifierAgainstFormat(identifier, pit.getFormat());
+		checkIdentifierAgainstFormat(identifier, pit.getFormat(), pit.getFormatDescription());
 		
 		// Check identifier against IdentifierValidator
 		if (pit.hasValidator()) {
@@ -144,15 +144,19 @@ public class PatientIdentifierValidator implements Validator {
 	/**
 	 * Validates that a given identifier string is valid for a given regular expression format
 	 * 
-	 * @param format - the regular expression format to validate against
 	 * @param identifier - the identifier to check against the passed {@link PatientIdentifierType}
+	 * @param format - the regular expression format to validate against
+	 * @param formatDescription - user-friendly way of describing format (may be null)
 	 * @throws PatientIdentifierException if the identifier is does not match the format
 	 * @should fail validation if identifier is blank
 	 * @should fail validation if identifier does not match the format
 	 * @should pass validation if identifier matches the format
 	 * @should pass validation if the format is blank
+	 * @should include format in error message if no formatDescription is specified
+	 * @should include formatDescription in error message if specified
 	 */
-	public static void checkIdentifierAgainstFormat(String identifier, String format) throws PatientIdentifierException {
+	public static void checkIdentifierAgainstFormat(String identifier, String format, String formatDescription)
+	        throws PatientIdentifierException {
 		
 		log.debug("Checking identifier: " + identifier + " against format: " + format);
 		
@@ -169,7 +173,7 @@ public class PatientIdentifierValidator implements Validator {
 		if (!identifier.matches(format)) {
 			log.debug("The two DO NOT match");
 			throw new InvalidIdentifierFormatException(getMessage("PatientIdentifier.error.invalidFormat", identifier,
-			    format));
+			    StringUtils.isNotBlank(formatDescription) ? formatDescription : format));
 		}
 		log.debug("The two match!!");
 	}

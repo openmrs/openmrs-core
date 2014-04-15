@@ -36,8 +36,9 @@ public class FieldGenController implements Controller {
 		
 		// find the field that was identified in the openmrs:fieldGen taglib
 		Object uri = request.getAttribute("javax.servlet.include.servlet_path.fieldGen");
-		if (uri == null)
+		if (uri == null) {
 			uri = request.getAttribute("javax.servlet.include.servlet_path");
+		}
 		String fieldGenPath = "";
 		Map<String, Object> model = new HashMap<String, Object>();
 		
@@ -45,11 +46,12 @@ public class FieldGenController implements Controller {
 			fieldGenPath = uri.toString();
 			
 			// Allowable extensions are '' (no extension) and '.field'
-			if (fieldGenPath.endsWith("field"))
+			if (fieldGenPath.endsWith("field")) {
 				fieldGenPath = fieldGenPath.replace(".field", "");
-			else if (fieldGenPath.endsWith("jsp"))
+			} else if (fieldGenPath.endsWith("jsp")) {
 				throw new ServletException(
 				        "Illegal extension used for fieldGen: '.jsp'. Allowable extensions are '' (no extension) and '.field'");
+			}
 			
 			String type = (String) request.getAttribute("org.openmrs.fieldGen.type");
 			String formFieldName = (String) request.getAttribute("org.openmrs.fieldGen.formFieldName");

@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
@@ -47,7 +45,7 @@ import org.openmrs.util.UserByNameComparator;
 
 /**
  * Hibernate specific database methods for the UserService
- * 
+ *
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.db.UserDAO
  * @see org.openmrs.api.UserService
@@ -63,7 +61,7 @@ public class HibernateUserDAO implements UserDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -115,13 +113,16 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
 	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) {
-		if (username == null || username.length() == 0)
+		if (username == null || username.length() == 0) {
 			username = "-";
-		if (systemId == null || systemId.length() == 0)
+		}
+		if (systemId == null || systemId.length() == 0) {
 			systemId = "-";
+		}
 		
-		if (userId == null)
-			userId = new Integer(-1);
+		if (userId == null) {
+			userId = Integer.valueOf(-1);
+		}
 		
 		String usernameWithCheckDigit = username;
 		try {
@@ -177,7 +178,7 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(Role role) throws DAOException {
 		List<User> users = sessionFactory.getCurrentSession().createCriteria(User.class, "u").createCriteria("roles", "r")
-		        .add(Expression.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
+		        .add(Restrictions.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
 		
 		return users;
 		
@@ -249,8 +250,9 @@ public class HibernateUserDAO implements UserDAO {
 	public void changePassword(User u, String pw) throws DAOException {
 		User authUser = Context.getAuthenticatedUser();
 		
-		if (authUser == null)
+		if (authUser == null) {
 			authUser = u;
+		}
 		
 		log.debug("updating password");
 		//update the user with the new password
@@ -279,10 +281,11 @@ public class HibernateUserDAO implements UserDAO {
 	private void updateUserPassword(String newHashedPassword, String salt, Integer changedBy, Date dateChanged,
 	        Integer userIdToChange) {
 		User changeForUser = getUser(userIdToChange);
-		if (changeForUser == null)
+		if (changeForUser == null) {
 			throw new DAOException("Couldn't find user to set password for userId=" + userIdToChange);
+		}
 		User changedByUser = getUser(changedBy);
-		LoginCredential credentials = new LoginCredential();
+		LoginCredential credentials = getLoginCredential(changeForUser);
 		credentials.setUserId(userIdToChange);
 		credentials.setHashedPassword(newHashedPassword);
 		credentials.setSalt(salt);
@@ -353,8 +356,9 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
 		
-		if (answer == null || answer.equals(""))
+		if (answer == null || answer.equals("")) {
 			return false;
+		}
 		
 		String answerOnRecord = getLoginCredential(u).getSecretAnswer();
 		return (answer.equals(answerOnRecord));
@@ -369,15 +373,18 @@ public class HibernateUserDAO implements UserDAO {
 		String hqlSelectStart = "select distinct user from User as user inner join user.person.names as name ";
 		Query query = createUserSearchQuery(name, roles, includeRetired, hqlSelectStart);
 		
-		if (start != null)
+		if (start != null) {
 			query.setFirstResult(start);
-		if (length != null && length > 0)
+		}
+		if (length != null && length > 0) {
 			query.setMaxResults(length);
+		}
 		
 		List<User> returnList = query.list();
 		
-		if (!CollectionUtils.isEmpty(returnList))
+		if (!CollectionUtils.isEmpty(returnList)) {
 			Collections.sort(returnList, new UserByNameComparator());
+		}
 		
 		return returnList;
 	}
@@ -387,20 +394,16 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	public Integer generateSystemId() {
 		
-		// TODO this algorithm will fail if someone deletes a user that is not the last one.
+		String hql = "select max(userId) from User";
 		
-		String sql = "select count(user_id) as user_id from users";
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		
 		Object object = query.uniqueResult();
 		
 		Integer id = null;
-		if (object instanceof BigInteger)
-			id = ((BigInteger) query.uniqueResult()).intValue() + 1;
-		else if (object instanceof Integer)
-			id = ((Integer) query.uniqueResult()).intValue() + 1;
-		else {
+		if (object instanceof Number) {
+			id = ((Number) query.uniqueResult()).intValue() + 1;
+		} else {
 			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: "
 			        + object.getClass());
 			id = 1;
@@ -412,17 +415,17 @@ public class HibernateUserDAO implements UserDAO {
 	/**
 	 * @see org.openmrs.api.UserService#getUsersByName(java.lang.String, java.lang.String, boolean)
 	 */
-	@SuppressWarnings("unchecked")
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) {
 		List<User> users = new Vector<User>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
 		crit.createAlias("person", "person");
 		crit.createAlias("person.names", "names");
-		crit.add(Expression.eq("names.givenName", givenName));
-		crit.add(Expression.eq("names.familyName", familyName));
+		crit.add(Restrictions.eq("names.givenName", givenName));
+		crit.add(Restrictions.eq("names.familyName", familyName));
 		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		if (!includeRetired)
-			crit.add(Expression.eq("retired", false));
+		if (!includeRetired) {
+			crit.add(Restrictions.eq("retired", false));
+		}
 		for (User u : (List<User>) crit.list()) {
 			users.add(u);
 		}
@@ -471,11 +474,12 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#getLoginCredential(org.openmrs.User)
 	 */
 	public LoginCredential getLoginCredentialByUuid(String uuid) {
-		if (uuid == null)
+		if (uuid == null) {
 			return null;
-		else
+		} else {
 			return (LoginCredential) sessionFactory.getCurrentSession().createQuery(
 			    "from LoginCredential where uuid = :uuid").setString("uuid", uuid.trim()).uniqueResult();
+		}
 	}
 	
 	/**
@@ -491,10 +495,12 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByPerson(Person person, boolean includeRetired) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
-		if (person != null)
+		if (person != null) {
 			crit.add(Restrictions.eq("person", person));
-		if (!includeRetired)
+		}
+		if (!includeRetired) {
 			crit.add(Restrictions.eq("retired", false));
+		}
 		return (List<User>) crit.list();
 	}
 	
@@ -511,7 +517,7 @@ public class HibernateUserDAO implements UserDAO {
 	
 	/**
 	 * Utility methods that creates a hibernate query object from the specified arguments
-	 * 
+	 *
 	 * @param name The name of the user to search against
 	 * @param roles the roles to match against
 	 * @param includeRetired Specifies if retired users should be included or not
@@ -553,38 +559,42 @@ public class HibernateUserDAO implements UserDAO {
 			}
 		}
 		
-		if (includeRetired == false)
+		if (!includeRetired) {
 			criteria.add("user.retired = false");
+		}
 		
 		// build the hql query
-		String hql = hqlSelectStart;
+		StringBuilder hql = new StringBuilder(hqlSelectStart);
 		boolean searchOnRoles = false;
 		
 		if (CollectionUtils.isNotEmpty(roles)) {
-			hql += "inner join user.roles as role ";
+			hql.append("inner join user.roles as role ");
 			searchOnRoles = true;
 		}
 		
-		if (criteria.size() > 0 || searchOnRoles)
-			hql += "where ";
+		if (criteria.size() > 0 || searchOnRoles) {
+			hql.append("where ");
+		}
 		for (Iterator<String> i = criteria.iterator(); i.hasNext();) {
-			hql += i.next() + " ";
-			if (i.hasNext())
-				hql += "and ";
+			hql.append(i.next()).append(" ");
+			if (i.hasNext()) {
+				hql.append("and ");
+			}
 		}
 		
 		//Match against the specified roles
 		if (searchOnRoles) {
 			if (criteria.size() > 0) {
-				hql += " and ";
+				hql.append(" and ");
 			}
-			hql += " role in (:roleList)";
+			hql.append(" role in (:roleList)");
 		}
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		Query query = sessionFactory.getCurrentSession().createQuery(hql.toString());
 		
-		for (Map.Entry<String, String> e : namesMap.entrySet())
+		for (Map.Entry<String, String> e : namesMap.entrySet()) {
 			query.setString(e.getKey(), e.getValue());
+		}
 		
 		if (searchOnRoles) {
 			query.setParameterList("roleList", roles);

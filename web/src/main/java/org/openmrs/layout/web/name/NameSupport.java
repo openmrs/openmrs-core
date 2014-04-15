@@ -25,14 +25,15 @@ public class NameSupport extends LayoutSupport<NameTemplate> {
 	static Log log = LogFactory.getLog(NameSupport.class);
 	
 	public NameSupport() {
-		if (singleton == null)
+		if (singleton == null) {
 			singleton = this;
+		}
 	}
 	
 	public static NameSupport getInstance() {
-		if (singleton == null)
+		if (singleton == null) {
 			throw new RuntimeException("Not Yet Instantiated");
-		else {
+		} else {
 			return singleton;
 		}
 	}

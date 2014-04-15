@@ -3,7 +3,7 @@
 <openmrs:require privilege="View Administration Functions" otherwise="/login.htm" redirect="/admin/index.htm" />
 
 <openmrs:message var="pageTitle" code="admin.titlebar" scope="page"/>
-
+<openmrs:message var="pageTitle" code="admin.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <style>
@@ -25,7 +25,7 @@
 	}
 </style>
 
-<h2><openmrs:message code="admin.title"/></h2>
+<h2><openmrs:message code="admin.header"/></h2>
 
 <table border="0" width="93%">
 	<tbody>
@@ -159,16 +159,7 @@
 							<h4><openmrs:message code="${extension.title}"/></h4>
 							<ul id="menu">
 								<c:forEach items="${extension.links}" var="link">
-									<c:choose>
-										<c:when test="${fn:startsWith(link.key, 'module/')}">
-											<%-- Added for backwards compatibility for most links --%>
-											<li><a href="${pageContext.request.contextPath}/${link.key}"><openmrs:message code="${link.value}"/></a></li>
-										</c:when>
-										<c:otherwise>
-											<%-- Allows for external absolute links  --%>
-											<li><a href='<c:url value="${link.key}"/>'><openmrs:message code='${link.value}'/></a></li>
-										</c:otherwise>
-									</c:choose>
+									<li><a href='<openmrs_tag:url value="${link.key}"/>'><openmrs:message code='${link.value}'/></a></li>
 								</c:forEach>
 							</ul>
 						</div>

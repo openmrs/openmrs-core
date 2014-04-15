@@ -73,7 +73,7 @@ import org.springframework.util.StringUtils;
  * {@link org.openmrs.annotation.Handler} annotation (like
  * "@Handler(supports=YourPojoThatHasUniqueSaveNeeds.class)") to your class so that it is picked up
  * by Spring automatically.
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @see VoidHandler
@@ -91,14 +91,16 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		String methodName = method.getName();
 		
 		// skip out early if there are no arguments
-		if (args == null || args.length == 0)
+		if (args == null || args.length == 0) {
 			return;
+		}
 		
 		Object mainArgument = args[0];
 		
 		// fail early on a null parameter
-		if (mainArgument == null)
+		if (mainArgument == null) {
 			return;
+		}
 		
 		// the "create" is there to cover old deprecated methods since AOP doesn't occur
 		// on method calls within a class, only on calls to methods from external classes to methods
@@ -111,14 +113,16 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			
 			if (reflect.isSuperClass(mainArgument)) {
 				// fail early if the method name is not like saveXyz(Xyz)
-				if (!methodNameEndsWithClassName(method, mainArgument.getClass()))
+				if (!methodNameEndsWithClassName(method, mainArgument.getClass())) {
 					return;
+				}
 				
 				// if a second argument exists, pass that to the save handler as well
 				// (with current code, it means we're either in an obs save or a user save)				
 				String other = null;
-				if (args.length > 1 && args[1] instanceof String)
+				if (args.length > 1 && args[1] instanceof String) {
 					other = (String) args[1];
+				}
 				
 				ValidateUtil.validate(mainArgument);
 				
@@ -133,8 +137,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				// if a second argument exists, pass that to the save handler as well
 				// (with current code, it means we're either in an obs save or a user save)				
 				String other = null;
-				if (args.length > 1)
+				if (args.length > 1) {
 					other = (String) args[1];
+				}
 				
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
@@ -148,8 +153,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		} else {
 			// fail early if the method name is not like retirePatient or retireConcept when dealing
 			// with Patients or Concepts as the first argument
-			if (!methodNameEndsWithClassName(method, mainArgument.getClass()))
+			if (!methodNameEndsWithClassName(method, mainArgument.getClass())) {
 				return;
+			}
 			
 			if (methodName.startsWith("void")) {
 				Voidable voidable = (Voidable) args[0];
@@ -180,7 +186,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * Convenience method to change the given method to make sure it ends with
 	 * the given class name. <br/>
 	 * This will recurse to the super class to check that as well.
-	 * 
+	 *
 	 * @param method
 	 *            the method name (like savePatient, voidEncounter,
 	 *            retireConcept)
@@ -190,13 +196,14 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 *         name
 	 */
 	private boolean methodNameEndsWithClassName(Method method, Class<?> mainArgumentClass) {
-		if (method.getName().endsWith(mainArgumentClass.getSimpleName()))
+		if (method.getName().endsWith(mainArgumentClass.getSimpleName())) {
 			return true;
-		else {
+		} else {
 			mainArgumentClass = mainArgumentClass.getSuperclass();
 			// stop recursing if no super class
-			if (mainArgumentClass != null)
+			if (mainArgumentClass != null) {
 				return methodNameEndsWithClassName(method, mainArgumentClass);
+			}
 		}
 		
 		return false;
@@ -205,7 +212,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	/**
 	 * Convenience method for {@link #recursivelyHandle(Class, OpenmrsObject, User, Date, String)}.
 	 * Calls that method with the current user and the current Date.
-	 * 
+	 *
 	 * @param <H> the type of Handler to get (should extend {@link RequiredDataHandler})
 	 * @param handlerType the type of Handler to get (should extend {@link RequiredDataHandler})
 	 * @param openmrsObject the object that is being acted upon
@@ -222,7 +229,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	/**
 	 * This loops over all declared collections on the given object and all declared collections on
 	 * parent objects to use the given <code>handlerType</code>.
-	 * 
+	 *
 	 * @param <H> the type of Handler to get (should extend {@link RequiredDataHandler})
 	 * @param handlerType the type of Handler to get (should extend {@link RequiredDataHandler})
 	 * @param openmrsObject the object that is being acted upon
@@ -238,8 +245,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	@SuppressWarnings("unchecked")
 	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
 	        User currentUser, Date currentDate, String other, List<OpenmrsObject> alreadyHandled) {
-		if (openmrsObject == null)
+		if (openmrsObject == null) {
 			return;
+		}
 		
 		Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
 		
@@ -283,7 +291,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * This method gets a child attribute off of an OpenmrsObject. It usually uses the getter for
 	 * the attribute, but can use the direct field (even if its private) if told to by the
 	 * {@link #AllowDirectAccess} annotation.
-	 * 
+	 *
 	 * @param openmrsObject the object to get the collection off of
 	 * @param field the name of the field that is the collection
 	 * @return the actual collection of objects that is on the given <code>openmrsObject</code>
@@ -317,11 +325,12 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			}
 		}
 		catch (IllegalAccessException e) {
-			if (field.isAnnotationPresent(AllowDirectAccess.class))
+			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
 				throw new APIException("Unable to get field: " + fieldName + " on " + openmrsObject.getClass());
-			else
+			} else {
 				throw new APIException("Unable to use getter method: " + getterName + " for field: " + fieldName + " on "
 				        + openmrsObject.getClass());
+			}
 		}
 		catch (InvocationTargetException e) {
 			throw new APIException("Unable to run getter method: " + getterName + " for field: " + fieldName + " on "
@@ -336,7 +345,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	/**
 	 * Checks the given {@link Class} to see if it A) is a {@link Collection}/{@link Set}/
 	 * {@link List}, and B) contains {@link OpenmrsObject}s
-	 * 
+	 *
 	 * @param arg the actual object being passed in
 	 * @return true if it is a Collection of some kind of OpenmrsObject
 	 * @should return true if class is openmrsObject list

@@ -92,8 +92,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setConcepts(String concepts) {
-		if (concepts == null || concepts.length() == 0)
+		if (concepts == null || concepts.length() == 0) {
 			return;
+		}
 		this.concepts = concepts;
 	}
 	
@@ -110,8 +111,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setCssClass(String cssClass) {
-		if (cssClass == null || cssClass.length() == 0)
+		if (cssClass == null || cssClass.length() == 0) {
 			return;
+		}
 		this.cssClass = cssClass;
 	}
 	
@@ -120,8 +122,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setId(String id) {
-		if (id == null || id.length() == 0)
+		if (id == null || id.length() == 0) {
 			return;
+		}
 		this.id = id;
 	}
 	
@@ -130,8 +133,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setShowEmptyConcepts(Boolean showEmptyConcepts) {
-		if (showEmptyConcepts == null)
+		if (showEmptyConcepts == null) {
 			return;
+		}
 		this.showEmptyConcepts = showEmptyConcepts;
 	}
 	
@@ -140,8 +144,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setShowConceptHeader(Boolean showHeader) {
-		if (showHeader == null)
+		if (showHeader == null) {
 			return;
+		}
 		this.showConceptHeader = showHeader;
 	}
 	
@@ -150,8 +155,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setShowDateHeader(Boolean showDateHeader) {
-		if (showDateHeader == null)
+		if (showDateHeader == null) {
 			return;
+		}
 		this.showDateHeader = showDateHeader;
 	}
 	
@@ -160,8 +166,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setSort(String sort) {
-		if (sort == null || sort.length() == 0)
+		if (sort == null || sort.length() == 0) {
 			return;
+		}
 		sortDescending = !sort.equals("asc");
 	}
 	
@@ -170,8 +177,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setOrientation(String orientation) {
-		if (orientation == null || orientation.length() == 0)
+		if (orientation == null || orientation.length() == 0) {
 			return;
+		}
 		orientVertical = !orientation.equals("horizontal");
 	}
 	
@@ -188,8 +196,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setFromDate(Date fromDate) {
-		if (fromDate == null)
+		if (fromDate == null) {
 			return;
+		}
 		this.fromDate = fromDate;
 	}
 	
@@ -198,8 +207,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setToDate(Date toDate) {
-		if (toDate == null)
+		if (toDate == null) {
 			return;
+		}
 		this.toDate = toDate;
 	}
 	
@@ -208,8 +218,9 @@ public class ObsTableWidget extends TagSupport {
 	}
 	
 	public void setLimit(Integer limit) {
-		if (limit == null)
+		if (limit == null) {
 			return;
+		}
 		this.limit = limit;
 	}
 	
@@ -234,8 +245,9 @@ public class ObsTableWidget extends TagSupport {
 			String s = st.nextToken().trim();
 			log.debug("looking at " + s);
 			boolean isSet = s.startsWith("set:");
-			if (isSet)
+			if (isSet) {
 				s = s.substring(4).trim();
+			}
 			Concept c = null;
 			if (s.startsWith("name:")) {
 				String name = s.substring(5).trim();
@@ -292,14 +304,16 @@ public class ObsTableWidget extends TagSupport {
 		
 		if (!showEmptyConcepts) {
 			for (Iterator<Concept> i = conceptList.iterator(); i.hasNext();) {
-				if (!conceptsWithObs.contains(i.next().getConceptId()))
+				if (!conceptsWithObs.contains(i.next().getConceptId())) {
 					i.remove();
+				}
 			}
 		}
 		
 		List<Date> dateOrder = new ArrayList<Date>(dates);
-		if (sortDescending)
+		if (sortDescending) {
 			Collections.reverse(dateOrder);
+		}
 		
 		if (limit > 0 && limit < dateOrder.size()) {
 			if (!sortDescending) {
@@ -311,10 +325,12 @@ public class ObsTableWidget extends TagSupport {
 		
 		StringBuilder ret = new StringBuilder();
 		ret.append("<table");
-		if (id != null)
+		if (id != null) {
 			ret.append(" id=\"" + id + "\"");
-		if (cssClass != null)
+		}
+		if (cssClass != null) {
 			ret.append(" class=\"" + cssClass + "\"");
+		}
 		ret.append(">");
 		
 		if (orientVertical) {
@@ -328,8 +344,9 @@ public class ObsTableWidget extends TagSupport {
 			}
 			for (Date date : dateOrder) {
 				ret.append("<tr>");
-				if (showDateHeader)
+				if (showDateHeader) {
 					ret.append("<th>" + df.format(date) + "</th>");
+				}
 				for (Concept c : conceptList) {
 					showConcept(loc, groupedObs, ret, date, c);
 				}
@@ -379,13 +396,16 @@ public class ObsTableWidget extends TagSupport {
 		if (list != null) {
 			if (combineEqualResults) {
 				Collection<String> unique = new LinkedHashSet<String>();
-				for (Obs obs : list)
+				for (Obs obs : list) {
 					unique.add(obs.getValueAsString(loc));
-				for (String s : unique)
+				}
+				for (String s : unique) {
 					ret.append(s).append("<br/>");
+				}
 			} else {
-				for (Obs obs : list)
+				for (Obs obs : list) {
 					ret.append(obs.getValueAsString(loc)).append("<br/>");
+				}
 			}
 		}
 	}

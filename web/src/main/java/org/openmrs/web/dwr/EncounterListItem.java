@@ -59,19 +59,25 @@ public class EncounterListItem {
 			PersonName pn = encounter.getPatient().getPersonName();
 			if (pn != null) {
 				personName = "";
-				if (pn.getGivenName() != null)
+				if (pn.getGivenName() != null) {
 					personName += pn.getGivenName();
-				if (pn.getMiddleName() != null)
+				}
+				if (pn.getMiddleName() != null) {
 					personName += " " + pn.getMiddleName();
-				if (pn.getFamilyName() != null)
+				}
+				if (pn.getFamilyName() != null) {
 					personName += " " + pn.getFamilyName();
+				}
 			}
-			if (encounter.getProvider() != null)
+			if (encounter.getProvider() != null) {
 				providerName = encounter.getProvider().getPersonName().getFullName();
-			if (encounter.getLocation() != null)
+			}
+			if (encounter.getLocation() != null) {
 				location = encounter.getLocation().getName();
-			if (encounter.getEncounterType() != null)
+			}
+			if (encounter.getEncounterType() != null) {
 				encounterType = encounter.getEncounterType().getName();
+			}
 			if (encounter.getForm() != null) {
 				formName = encounter.getForm().getName();
 				formId = encounter.getForm().getFormId();
@@ -81,12 +87,15 @@ public class EncounterListItem {
 				PersonName entererPersonName = encounter.getCreator().getPersonName();
 				if (entererPersonName != null) {
 					entererName = "";
-					if (entererPersonName.getGivenName() != null)
+					if (entererPersonName.getGivenName() != null) {
 						entererName += entererPersonName.getGivenName();
-					if (entererPersonName.getMiddleName() != null)
+					}
+					if (entererPersonName.getMiddleName() != null) {
 						entererName += " " + entererPersonName.getMiddleName();
-					if (entererPersonName.getFamilyName() != null)
+					}
+					if (entererPersonName.getFamilyName() != null) {
 						entererName += " " + entererPersonName.getFamilyName();
+					}
 				}
 			}
 		}

@@ -70,24 +70,24 @@ table#labTestTable th {
 					</c:if>
 				</td>
 			</tr>
-			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptId" varStatus="varStatus">
-				<c:if test="${conceptId != ''}">
+			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptIds" varStatus="varStatus">
+				<c:if test="${conceptIds != ''}">
 					<tr>
 						<td>
-							<div id="conceptBox-${conceptId}" style="text-align: center;">
+							<div id="conceptBox-${conceptIds}" style="text-align: center;">
 								<h1>
 									<span class="conceptGraphTitle"></span>
 									<openmrs:message code="patientDashboard.graphs.title"/>
 								</h1>
-								<a class="graphToggleLink" href="#conceptBox-${conceptId}"><openmrs:message code="patientDashboard.graphs.hide"/></a>
+								<a class="graphToggleLink" href="#conceptBox-${conceptIds}"><openmrs:message code="patientDashboard.graphs.hide"/></a>
 								<div class="conceptBox-body">
-									<div style="margin: 10px auto; height: 300px; width: 600px; align: center;" align="center" id="conceptGraphBox-${conceptId}">
+									<div style="margin: 10px auto; height: 300px; width: 600px; align: center;" align="center" id="conceptGraphBox-${conceptIds}">
 										<openmrs:message code="general.loading" />
 									</div>
 									<div align="center">
 										<div style="width: 750px; overflow: auto; border: 1px solid black;">
 											<openmrs:obsTable observations="${model.patientObs}"
-												concepts="${conceptId}"
+												concepts="${conceptIds}"
 												conceptLink="admin/observations/personObs.form?personId=${model.patientId}&"
 												id="labTestTable" showEmptyConcepts="false"
 												showConceptHeader="true" showDateHeader="true"
@@ -95,14 +95,14 @@ table#labTestTable th {
 												limit="-1" />
 											</div>
 											<div align="center" valign="top" style="font-size: .9em"><a
-												href="?patientId=${patient.patientId}&patientGraphConceptRemove=true&patientGraphConcept=${conceptId}"><openmrs:message
+												href="?patientId=<c:out value="${patient.patientId}" />&patientGraphConceptRemove=true&patientGraphConcept=${conceptIds}"><openmrs:message
 												code="general.remove" /></a> <br />
 											<br />
 										</div>
 									</div>
 								</div>
 							</div>
-							<a id="concept-${conceptId}"></a>
+							<a id="concept-${conceptIds}"></a>
 						</td>
 					</tr>
 					<tr>
@@ -120,7 +120,7 @@ table#labTestTable th {
 					<openmrs_tag:conceptField formFieldName="concept" formFieldId="conceptId" excludeDatatypes="N/A" includeDatatypes="Numeric" onSelectFunction="onConceptSelect" />
 						<script type="text/javascript">
 						function onConceptSelect(concept) {
-							document.location="?patientId=${patient.patientId}&patientGraphConcept=" + concept.conceptId;
+							document.location="?patientId=<c:out value="${patient.patientId}" />&patientGraphConcept=" + concept.conceptId;
 						}
 						</script>
 				</td>
@@ -178,15 +178,15 @@ table#labTestTable th {
 		}
 		
 		function loadGraphs() {
-			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptId">
-			<c:if test="${conceptId != ''}">
+			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptIds">
+			<c:if test="${conceptIds != ''}">
 				<openmrs:globalProperty var="colorAbsolute" key="graph.color.absolute"/>
 				<openmrs:globalProperty var="colorNormal" key="graph.color.normal"/>
 				<openmrs:globalProperty var="colorCritical" key="graph.color.critical"/>			
-		$j.getJSON("patientGraphJson.form?patientId=${patient.patientId}&conceptId=${conceptId}", function(json){
-			  $j("#conceptBox-${conceptId} .conceptGraphTitle").html(json.name);
+		$j.getJSON("patientGraphJson.form?patientId=<c:out value="${patient.patientId}" />&conceptId=${conceptIds}", function(json){
+			  $j("#conceptBox-${conceptIds} .conceptGraphTitle").html(json.name);
 			
-			  var plot = $j.plot($j('#conceptGraphBox-${conceptId}'),
+			  var plot = $j.plot($j('#conceptGraphBox-${conceptIds}'),
 			  [{
 			  	data: json.data, 
 			  	lines:{show:true}, 
@@ -217,7 +217,7 @@ table#labTestTable th {
 			  	  grid: { hoverable: true, clickable: true }
 				});							  
 			
-			  $j("#conceptBox-${conceptId}").bind("plothover", function (event, pos, item) {
+			  $j("#conceptBox-${conceptIds}").bind("plothover", function (event, pos, item) {
 				 $j("#tooltip").remove();
 				 plot.unhighlight();
 				 if (item) {

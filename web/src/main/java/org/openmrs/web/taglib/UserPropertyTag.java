@@ -37,15 +37,17 @@ public class UserPropertyTag extends TagSupport {
 		// If user is logged in
 		if (Context.isAuthenticated()) {
 			String prop = Context.getAuthenticatedUser().getUserProperty(key);
-			if (prop != null && !prop.equals(""))
+			if (prop != null && !prop.equals("")) {
 				value = prop;
+			}
 		}
 		
 		try {
-			if (var != null)
+			if (var != null) {
 				pageContext.setAttribute(var, value);
-			else
+			} else {
 				pageContext.getOut().write(value);
+			}
 			
 		}
 		catch (Exception e) {

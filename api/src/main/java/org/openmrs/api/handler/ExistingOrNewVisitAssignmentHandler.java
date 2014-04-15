@@ -35,7 +35,7 @@ import com.google.common.cache.LoadingCache;
 
 /**
  * This handler assigns an encounter to an existing visit, where appropriate, or creates a new one.
- * 
+ *
  * @see EncounterVisitHandler
  */
 public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignmentHandler implements GlobalPropertyListener {
@@ -51,6 +51,10 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		    locale);
 	}
 	
+	public static void setEncounterVisitMapping(LoadingCache<EncounterType, VisitType> encounterVisitMapping) {
+		ExistingOrNewVisitAssignmentHandler.encounterVisitMapping = encounterVisitMapping;
+	}
+	
 	/**
 	 * @see org.openmrs.api.handler.ExistingVisitAssignmentHandler#beforeCreateEncounter(org.openmrs.Encounter)
 	 * @should assign existing visit if match found
@@ -64,8 +68,9 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		super.beforeCreateEncounter(encounter);
 		
 		//Do nothing if the encounter already belongs to a visit.
-		if (encounter.getVisit() != null)
+		if (encounter.getVisit() != null) {
 			return;
+		}
 		
 		Visit visit = new Visit();
 		visit.setStartDatetime(encounter.getEncounterDatetime());
@@ -76,12 +81,14 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 			
 			if (encounterVisitMapping == null) {
 				// Create cache of mappings encounter type - visit type
-				encounterVisitMapping = CacheBuilder.newBuilder().build(new CacheLoader<EncounterType, VisitType>() {
-					
-					public VisitType load(EncounterType key) throws APIException {
-						return loadVisitType(key);
-					}
-				});
+				LoadingCache<EncounterType, VisitType> temp = CacheBuilder.newBuilder().build(
+				    new CacheLoader<EncounterType, VisitType>() {
+					    
+					    public VisitType load(EncounterType key) throws APIException {
+						    return loadVisitType(key);
+					    }
+				    });
+				setEncounterVisitMapping(temp);
 				Context.getAdministrationService().addGlobalPropertyListener(this);
 			}
 			

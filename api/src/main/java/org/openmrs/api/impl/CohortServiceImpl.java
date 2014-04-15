@@ -59,10 +59,14 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
-	 * 
+	 *
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
+		setCohortDefinitionProvidersToNull();
+	}
+	
+	public static void setCohortDefinitionProvidersToNull() {
 		cohortDefinitionProviders = null;
 	}
 	
@@ -83,8 +87,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			throw new APIException(Context.getMessageSourceService().getMessage("Cohort.save.descriptionRequired", null,
 			    "Cohort description is required", Context.getLocale()));
 		}
-		if (log.isInfoEnabled())
+		if (log.isInfoEnabled()) {
 			log.info("Saving cohort " + cohort);
+		}
 		
 		return dao.saveCohort(cohort);
 	}
@@ -111,7 +116,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Transactional(readOnly = true)
 	public List<Cohort> getCohorts() {
-		return getAllCohorts();
+		return Context.getCohortService().getAllCohorts();
 	}
 	
 	/**
@@ -119,7 +124,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	public Cohort voidCohort(Cohort cohort, String reason) {
 		// other setters done by the save handlers
-		return saveCohort(cohort);
+		return Context.getCohortService().saveCohort(cohort);
 	}
 	
 	/**
@@ -137,7 +142,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	public Cohort addPatientToCohort(Cohort cohort, Patient patient) {
 		if (!cohort.contains(patient)) {
 			cohort.getMemberIds().add(patient.getPatientId());
-			saveCohort(cohort);
+			Context.getCohortService().saveCohort(cohort);
 		}
 		return cohort;
 	}
@@ -149,7 +154,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	public Cohort removePatientFromCohort(Cohort cohort, Patient patient) {
 		if (cohort.contains(patient)) {
 			cohort.getMemberIds().remove(patient.getPatientId());
-			saveCohort(cohort);
+			Context.getCohortService().saveCohort(cohort);
 		}
 		return cohort;
 	}
@@ -188,7 +193,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Transactional(readOnly = true)
 	public List<Cohort> getAllCohorts() throws APIException {
-		return getAllCohorts(false);
+		return Context.getCohortService().getAllCohorts(false);
 	}
 	
 	/**
@@ -216,7 +221,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param definitionClass
 	 * @return
 	 * @deprecated see reportingcompatibility module
@@ -227,10 +232,11 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass)
 	        throws APIException {
 		CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
-		if (ret == null)
+		if (ret == null) {
 			throw new APIException("No CohortDefinitionProvider registered for " + definitionClass);
-		else
+		} else {
 			return ret;
+		}
 	}
 	
 	/**
@@ -282,7 +288,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			Integer id = Integer.parseInt((keyValues[0] != null) ? keyValues[0] : "0");
 			String className = (keyValues[1] != null) ? keyValues[1] : "";
 			Class clazz = Class.forName(className);
-			return getCohortDefinition(clazz, id);
+			return Context.getCohortService().getCohortDefinition(clazz, id);
 		}
 		catch (ClassNotFoundException e) {
 			throw new APIException(e);
@@ -335,8 +341,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders() {
-		if (cohortDefinitionProviders == null)
+		if (cohortDefinitionProviders == null) {
 			cohortDefinitionProviders = new LinkedHashMap<Class<? extends CohortDefinition>, CohortDefinitionProvider>();
+		}
 		
 		return cohortDefinitionProviders;
 	}
@@ -363,8 +370,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		
 		// TODO: should this be looking through the values or the keys?
 		for (Iterator<CohortDefinitionProvider> i = cohortDefinitionProviders.values().iterator(); i.hasNext();) {
-			if (i.next().getClass().equals(providerClass))
+			if (i.next().getClass().equals(providerClass)) {
 				i.remove();
+			}
 		}
 	}
 	

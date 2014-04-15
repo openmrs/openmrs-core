@@ -14,6 +14,7 @@
 package org.openmrs.web.controller.form;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +37,11 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.util.FormUtil;
+import org.openmrs.util.MetadataComparator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -63,7 +66,7 @@ public class FormFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -99,6 +102,10 @@ public class FormFormController extends SimpleFormController {
 						Context.getFormService().purgeForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
 					}
+					catch (DataIntegrityViolationException e) {
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
+						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
+					}
 					catch (Exception e) {
 						log.error("Error while deleting form " + form.getFormId(), e);
 						errors.reject(e.getMessage());
@@ -111,9 +118,10 @@ public class FormFormController extends SimpleFormController {
 					FormService fs = Context.getFormService();
 					
 					TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
-					for (Integer parentFormFieldId : treeMap.keySet()) {
+					for (Map.Entry<Integer, TreeSet<FormField>> entry : treeMap.entrySet()) {
+						Integer parentFormFieldId = entry.getKey();
 						float sortWeight = 0;
-						for (FormField formField : treeMap.get(parentFormFieldId)) {
+						for (FormField formField : entry.getValue()) {
 							formField.setSortWeight(sortWeight);
 							fs.saveFormField(formField);
 							sortWeight += 50;
@@ -143,7 +151,7 @@ public class FormFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -162,6 +170,8 @@ public class FormFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			fieldTypes = Context.getFormService().getAllFieldTypes();
 			encTypes = Context.getEncounterService().getAllEncounterTypes();
+			// Non-retired types first
+			Collections.sort(encTypes, new MetadataComparator(Context.getLocale()));
 		}
 		
 		map.put("fieldTypes", fieldTypes);
@@ -173,7 +183,7 @@ public class FormFormController extends SimpleFormController {
 	
 	/**
 	 * Gets the form for a given http request.
-	 * 
+	 *
 	 * @param request the http request.
 	 * @return the form.
 	 */
@@ -183,24 +193,26 @@ public class FormFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			String formId = request.getParameter("formId");
-			if (formId != null)
+			if (formId != null) {
 				try {
 					form = fs.getForm(Integer.valueOf(formId));
 				}
 				catch (NumberFormatException e) {
 					;
 				} //If formId has no readable value defaults to the case where form==null
+			}
 		}
 		
-		if (form == null)
+		if (form == null) {
 			form = new Form();
+		}
 		
 		return form;
 	}
 	
 	/**
 	 * Checks if a form is a read only basic form installed with demo data.
-	 * 
+	 *
 	 * @param form the form.
 	 * @return true if this is the demo data basic form, else false.
 	 */

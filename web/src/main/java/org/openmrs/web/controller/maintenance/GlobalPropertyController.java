@@ -52,7 +52,7 @@ public class GlobalPropertyController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -64,8 +64,9 @@ public class GlobalPropertyController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		
 		String action = request.getParameter("action");
-		if (action == null)
+		if (action == null) {
 			action = "cancel";
+		}
 		
 		if (action.equals(getMessageSourceAccessor().getMessage("general.save"))) {
 			HttpSession httpSession = request.getSession();
@@ -139,7 +140,7 @@ public class GlobalPropertyController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -148,8 +149,9 @@ public class GlobalPropertyController extends SimpleFormController {
 			// return a non-empty list if the user has authenticated properly
 			AdministrationService as = Context.getAdministrationService();
 			return as.getAllGlobalProperties();
-		} else
+		} else {
 			return new ArrayList<GlobalProperty>();
+		}
 	}
 	
 }

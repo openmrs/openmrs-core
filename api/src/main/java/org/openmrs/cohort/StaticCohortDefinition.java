@@ -23,7 +23,7 @@ import org.simpleframework.xml.Root;
 
 /**
  * This class provides access to org.openmrs.Cohort objects that are saved in the cohort table.
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Root(strict = false)
@@ -38,8 +38,9 @@ public class StaticCohortDefinition implements CohortDefinition {
 	}
 	
 	public StaticCohortDefinition(Cohort cohort) {
-		if (cohort == null)
+		if (cohort == null) {
 			throw new NullPointerException();
+		}
 		this.cohort = cohort;
 	}
 	

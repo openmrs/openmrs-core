@@ -23,7 +23,7 @@ import org.openmrs.PatientIdentifierType;
  * Orders {@link PatientIdentifierType} by retired (true last), required (true first), name and
  * id.
  * 
- * @since 1.10, 1.9.1, 1.8.4
+ * @since 1.9.2, 1.8.5
  */
 public class PatientIdentifierTypeDefaultComparator implements Comparator<PatientIdentifierType> {
 	

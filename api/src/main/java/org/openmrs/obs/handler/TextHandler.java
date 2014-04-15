@@ -127,7 +127,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 			try {
 				fout.close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}

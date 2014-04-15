@@ -28,7 +28,7 @@ import org.openmrs.api.context.Context;
 /**
  * This handler assigns an encounter to an existing visit, where appropriate, but will never create
  * a new visit.
- * 
+ *
  * @see EncounterVisitHandler
  */
 @Handler
@@ -53,8 +53,9 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 	public void beforeCreateEncounter(Encounter encounter) {
 		
 		//Do nothing if the encounter already belongs to a visit.
-		if (encounter.getVisit() != null)
+		if (encounter.getVisit() != null) {
 			return;
+		}
 		
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(encounter.getPatient());
@@ -63,8 +64,9 @@ public class ExistingVisitAssignmentHandler extends BaseEncounterVisitHandler {
 		List<Visit> visits = Context.getVisitService().getVisits(null, patients, null, null, null,
 		    encounter.getEncounterDatetime(), null, null, null, true, false);
 		
-		if (visits == null)
+		if (visits == null) {
 			return;
+		}
 		
 		Date encounterDate = encounter.getEncounterDatetime();
 		

@@ -57,7 +57,7 @@ public class ShortPatientModel {
 	
 	/**
 	 * Constructor that creates a shortPatientModel object from a given patient object
-	 * 
+	 *
 	 * @param patient
 	 */
 	@SuppressWarnings("unchecked")
@@ -89,8 +89,9 @@ public class ShortPatientModel {
 					PersonAttribute formAttribute = new PersonAttribute(personAttributeType, null);
 					
 					//send a clone to the form so that we can use the original to track changes in the values
-					if (persistedAttribute != null)
+					if (persistedAttribute != null) {
 						BeanUtils.copyProperties(persistedAttribute, formAttribute);
+					}
 					
 					personAttributes.add(formAttribute);
 				}

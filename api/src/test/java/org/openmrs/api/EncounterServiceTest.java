@@ -158,17 +158,31 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// First, create a new Encounter
 		Encounter enc = buildEncounter();
-		es.saveEncounter(enc);
 		
-		// Now add an obs to it
-		Obs newObs = new Obs();
-		newObs.setConcept(new Concept(1));
-		newObs.setValueNumeric(50d);
+		//add an obs to the encounter
+		Obs groupObs = new Obs();
+		groupObs.setConcept(new Concept(1));
+		groupObs.setValueNumeric(50d);
 		
-		enc.addObs(newObs);
-		es.saveEncounter(enc);
+		// add an obs to the group
+		Obs childObs = new Obs();
+		childObs.setConcept(new Concept(1));
+		childObs.setValueNumeric(50d);
+		groupObs.addGroupMember(childObs);
+		enc.addObs(groupObs);
 		
-		assertNotNull(newObs.getObsId());
+		//confirm that save and new enc id are cascaded to obs groupMembers
+		//even though childObs aren't directly associated to enc
+		assertNotNull("save succeeds without error", es.saveEncounter(enc));
+		assertTrue("enc save succeeds", enc.getId() > 0);
+		
+		assertNotNull("obs save succeeds", groupObs.getObsId());
+		assertEquals("encounter id propogated", groupObs.getEncounter().getId(), enc.getId());
+		assertEquals("encounter time propogated", groupObs.getObsDatetime(), enc.getEncounterDatetime());
+		assertNotNull("obs save succeeds", childObs.getObsId());
+		assertEquals("encounter id propogated", childObs.getEncounter().getId(), enc.getId());
+		assertEquals("encounter time propogated", childObs.getObsDatetime(), enc.getEncounterDatetime());
+		
 	}
 	
 	/**
@@ -934,42 +948,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * There should be two encounters in the system with the name "Test Enc Type A" and one should
-	 * be retired and one not. Only the non retired one should be returned here
-	 * 
-	 * @see {@link EncounterService#getEncounterType(String)}
-	 */
-	@Test
-	@Verifies(value = "should not get retired types", method = "getEncounterType(String)")
-	public void getEncounterType_shouldNotGetRetiredTypes() throws Exception {
-		EncounterService encounterService = Context.getEncounterService();
-		
-		// loop over retired and nonretired types to make sure
-		// that there are two "Test Enc Type A" types (one retired, one not)
-		boolean foundRetired = false;
-		boolean foundNonRetired = false;
-		int countOfTestEncType2s = 0;
-		for (EncounterType encType : encounterService.getAllEncounterTypes(true)) {
-			if (encType.getName().equals("Test Enc Type A")) {
-				countOfTestEncType2s++;
-				if (encType.isRetired())
-					foundRetired = true;
-				else
-					foundNonRetired = true;
-			}
-		}
-		// check that both were set to true
-		assertEquals("We are only expecting to have two types: one retired, one not", 2, countOfTestEncType2s);
-		assertTrue("No retired type was found in the db", foundRetired);
-		assertTrue("No non-retired type was found in the db", foundNonRetired);
-		
-		// we should not get two types here, the second one is retired
-		EncounterType type = encounterService.getEncounterType("Test Enc Type A");
-		assertEquals(2, type.getEncounterTypeId().intValue());
-		assertFalse(type.isRetired());
-	}
-	
-	/**
 	 * Make sure that the "Some Retired Type" type is not returned because it is retired in
 	 * {@link EncounterService#getEncounterType(String)}
 	 * 
@@ -1130,13 +1108,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure the order is id 2, 3, 1
 		assertEquals(2, types.get(0).getEncounterTypeId().intValue());
-		assertEquals(3, types.get(1).getEncounterTypeId().intValue());
-		assertEquals(1, types.get(2).getEncounterTypeId().intValue());
+		assertEquals(1, types.get(1).getEncounterTypeId().intValue());
+		assertEquals(3, types.get(2).getEncounterTypeId().intValue());
 		
-		// this test expects that id #2 and id #3 have the same name and that
-		// id #3 is retired
-		assertEquals(types.get(0).getName(), types.get(1).getName());
-		assertTrue(types.get(1).isRetired());
 	}
 	
 	/**
@@ -1527,6 +1501,25 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link EncounterService#getEncounterRoleByName(String)}
+	 */
+	@Test
+	@Verifies(value = "find encounter role based on its name", method = "getEncounterRoleByName(String)")
+	public void getEncounterRoleByName_shouldFindEncounterRoleByName() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterRole encounterRole = new EncounterRole();
+		String name = "surgeon role";
+		encounterRole.setDescription("The surgeon");
+		encounterRole.setName(name);
+		encounterRole = encounterService.saveEncounterRole(encounterRole);
+		
+		EncounterRole retrievedEncounterRole = encounterService.getEncounterRoleByName(name);
+		assertNotNull("valid EncounterRole object should be returned", retrievedEncounterRole);
+		assertEquals(encounterRole.getUuid(), retrievedEncounterRole.getUuid());
+		
+	}
+	
+	/**
 	 * @see {@link EncounterService#retireEncounterRole(org.openmrs.EncounterRole, String)}
 	 */
 	@Test
@@ -1856,8 +1849,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Encounter> encs = Context.getEncounterService().getEncountersNotAssignedToAnyVisit(
 		    Context.getPatientService().getPatient(10));
 		Assert.assertEquals(2, encs.size());
-		Assert.assertEquals(17, encs.get(0).getEncounterId().intValue());
-		Assert.assertEquals(18, encs.get(1).getEncounterId().intValue());
+		Assert.assertNull(encs.get(0).getVisit());
+		Assert.assertNull(encs.get(1).getVisit());
 	}
 	
 	/**
@@ -2366,6 +2359,34 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE);
 	}
 	
+	@Test(expected = APIException.class)
+	public void getActiveEncounterVisitHandler_shouldThrowIfBeanWithGivenTypeAndNameNotFound() {
+		
+		String incorrectBeanName = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX + "invalidName";
+		
+		GlobalProperty visitHandlerProperty = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
+		        incorrectBeanName);
+		
+		Context.getAdministrationService().saveGlobalProperty(visitHandlerProperty);
+		
+		Context.getEncounterService().getActiveEncounterVisitHandler();
+	}
+	
+	@Test
+	public void getActiveEncounterVisitHandler_shouldReturnBeanHaveBeenRegisteredWithGivenName() {
+		
+		String correctBeanName = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX + "existingOrNewVisitAssignmentHandler";
+		
+		GlobalProperty visitHandlerProperty = new GlobalProperty(OpenmrsConstants.GP_VISIT_ASSIGNMENT_HANDLER,
+		        correctBeanName);
+		
+		Context.getAdministrationService().saveGlobalProperty(visitHandlerProperty);
+		
+		EncounterVisitHandler activeEncounterVisitHandler = Context.getEncounterService().getActiveEncounterVisitHandler();
+		
+		Assert.assertNotNull(activeEncounterVisitHandler);
+	}
+	
 	/**
 	 * Gets encounter and adds edit privilege to it
 	 * 
@@ -2416,4 +2437,168 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		return encounter;
 	}
 	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should fetch encounters by patient id", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldFetchEncountersByPatientId() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters(null, 3, null, null, false).size());
+		Assert.assertEquals(4, Context.getEncounterService().getEncounters(null, 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match on the location name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheLocationName() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Test Location", 3, null, null, false).size());
+		Assert.assertEquals(4, Context.getEncounterService().getEncounters("Test Location", 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match on the provider name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheProviderName() throws Exception {
+		Assert.assertEquals(1, Context.getEncounterService().getEncounters("phys", 3, null, null, false).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should should match on provider identifier", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldShouldMatchOnProviderIdentifier() throws Exception {
+		Assert.assertEquals(1, Context.getEncounterService().getEncounters("2", 3, null, null, false).size());
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("2", 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match on the provider person name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheProviderPersonName() throws Exception {
+		//Should match on Super User and John3 Doe
+		Assert.assertEquals(1, Context.getEncounterService().getEncounters("er jo", 3, null, null, false).size());
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("er jo", 3, null, null, true).size());
+		Assert.assertEquals(0, Context.getEncounterService().getEncounters("none", 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should include voided encounters if includeVoided is set to true", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldIncludeVoidedEncountersIfIncludeVoidedIsSetToTrue() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("2", 3, null, null, true).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match on the encounter type name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheEncounterTypeName() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Type B", 3, null, null, false).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,Integer,null)}
+	 */
+	@Test
+	@Verifies(value = "should match on the form name", method = "getEncounters(String,Integer,Integer,Integer,null)")
+	public void getEncounters_shouldMatchOnTheFormName() throws Exception {
+		Assert.assertEquals(2, Context.getEncounterService().getEncounters("Basic", 3, null, null, false).size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
+	 * @see {@link EncounterService#checkIfEncounterTypesAreLocked()}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to save encounter type when encounter types are locked", method = "saveEncounterType(EncounterType)")
+	public void saveEncounterType_shouldThrowErrorWhenTryingToSaveEncounterTypeWhenEncounterTypesAreLocked()
+	        throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		
+		Assert.assertNotNull(encounterType);
+		
+		encounterService.saveEncounterType(encounterType);
+	}
+	
+	/**
+	 * @see {@link EncounterService#retireEncounterType(EncounterType, String)}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to retire encounter type when encounter types are locked", method = "retireEncounterType(EncounterType, String)")
+	public void retireEncounterType_shouldThrowErrorWhenTryingToRetireEncounterTypeWhenEncounterTypesAreLocked()
+	        throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		Assert.assertNotNull(encounterType);
+		
+		encounterService.retireEncounterType(encounterType, "reason");
+	}
+	
+	/**
+	 * @see {@link EncounterService#unretireEncounterType(EncounterType)}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to unretire encounter type when encounter types are locked", method = "unretireEncounterType(EncounterType)")
+	public void unretireEncounterType_shouldThrowErrorWhenTryingToUnretireEncounterTypeWhenEncounterTypesAreLocked()
+	        throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(2);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		encounterService.unretireEncounterType(encounterType);
+	}
+	
+	/**
+	 * @see {@link EncounterService#purgeEncounterType(EncounterType)}
+	 */
+	@Test(expected = EncounterTypeLockedException.class)
+	@Verifies(value = "should throw error when trying to delete encounter type when encounter types are locked", method = "purgeEncounterType(EncounterType)")
+	public void purgeEncounterType_shouldThrowErrorWhenTryingToDeleteEncounterTypeWhenEncounterTypesAreLocked()
+	        throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1);
+		
+		Assert.assertNotNull(encounterType);
+		
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED);
+		gp.setPropertyValue("true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		encounterService.purgeEncounterType(encounterType);
+	}
+	
+	@Test
+	@Verifies(value = "find encounter roles based on their name", method = "getEncounterRolesByName(String)")
+	public void getEncounterRolesByName_shouldFindEncounterRolesByName() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		String name = "surgeon";
+		
+		List<EncounterRole> encounterRoles = encounterService.getEncounterRolesByName(name);
+		
+		assertNotNull("valid EncounterROle object should be returned", encounterRoles);
+		assertEquals(encounterRoles.size(), 1);
+		assertEquals(encounterRoles.get(0).getName(), name);
+	}
 }

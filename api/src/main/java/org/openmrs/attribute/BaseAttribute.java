@@ -85,10 +85,11 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	 */
 	@Override
 	public String getValueReference() {
-		if (valueReference == null)
+		if (valueReference == null) {
 			throw new NotYetPersistedException();
-		else
+		} else {
 			return valueReference;
+		}
 	}
 	
 	/**
@@ -105,8 +106,9 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	 */
 	@Override
 	public Object getValue() throws InvalidCustomValueException {
-		if (value == null)
+		if (value == null) {
 			value = CustomDatatypeUtil.getDatatype(getAttributeType()).fromReferenceString(getValueReference());
+		}
 		return value;
 	}
 	
@@ -131,15 +133,19 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	 */
 	@Override
 	public int compareTo(Attribute other) {
-		if (other == null)
+		if (other == null) {
 			return -1;
+		}
 		int retValue = isVoided().compareTo(other.isVoided());
-		if (retValue == 0)
+		if (retValue == 0) {
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType().getId(), other.getAttributeType().getId());
-		if (retValue == 0)
+		}
+		if (retValue == 0) {
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getValueReference(), other.getValueReference());
-		if (retValue == 0)
+		}
+		if (retValue == 0) {
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getId(), other.getId());
+		}
 		return retValue;
 	}
 	

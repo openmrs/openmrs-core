@@ -36,21 +36,22 @@ public class PatientValidator extends PersonValidator {
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
-	 * 
+	 *
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
+		}
 		return Patient.class.isAssignableFrom(c);
 	}
 	
 	/**
 	 * Validates the given Patient. Currently just checks for errors in identifiers. TODO: Check for
 	 * errors in all Patient fields.
-	 * 
+	 *
 	 * @param obj The patient to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
@@ -65,8 +66,9 @@ public class PatientValidator extends PersonValidator {
 	 * @should not fail when patient has only one identifier and its not preferred
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
+		}
 		
 		if (obj == null) {
 			return;
@@ -93,7 +95,7 @@ public class PatientValidator extends PersonValidator {
 		
 		if (!errors.hasErrors()) {
 			// Validate PatientIdentifers
-			if (patient != null && patient.getIdentifiers() != null) {
+			if (patient.getIdentifiers() != null) {
 				for (PatientIdentifier identifier : patient.getIdentifiers()) {
 					patientIdentifierValidator.validate(identifier, errors);
 				}

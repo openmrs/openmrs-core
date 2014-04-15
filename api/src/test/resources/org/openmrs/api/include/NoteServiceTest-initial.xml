@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<patient patient_id="8" creator="1" date_created="2006-01-18 00:00:00.0"
+		changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="false"
+		void_reason="" />
+	<notification_note_type
+		notification_note_type_id="8" name="sample note type" description="" />
+	<notification_note note_id="1" text="sample text1"
+		creator="1" date_created="2013-04-15 16:35:35.0" changed_by="1"
+		date_changed="2013-05-15 17:00:35.0" is_voided="false"
+		uuid="559fa1a8-fe06-11e2-8ebb-f23c91aec05e" patient="8"
+		notification_note_type_id="8" />
+	<notification_note note_id="2" text="sample text2"
+		creator="1" date_created="2013-04-15 16:35:35.0" changed_by="1"
+		date_changed="2013-05-15 17:00:35.0" is_voided="true" date_voided="2013-07-31 13:47:35.0"
+		voided_by="1" void_reason="testing" uuid="559f9fc8-fe06-11e2-8ebb-f23c91aec05e"
+		patient="8" notification_note_type_id="8" />
+	<notification_note note_id="3" text="sample text3"
+		creator="1" date_created="2013-04-15 16:35:35.0" changed_by="1"
+		date_changed="2013-05-15 17:00:35.0" is_voided="true" date_voided="2013-05-15 17:47:35.0"
+		voided_by="1" void_reason="testing" uuid="559f9de8-fe06-11e2-8ebb-f23c91aec05e"
+		patient="8" notification_note_type_id="8" />
+	<notification_note note_id="4" text="sample text4"
+		creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1"
+		date_changed="2013-05-15 17:00:35.0" is_voided="false"
+		uuid="559f9bfe-fe06-11e2-8ebb-f23c91aec05e" patient="8"
+		notification_note_type_id="8" />
+	<notification_note note_id="5" text="sample text5"
+		creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1"
+		date_changed="2013-05-15 17:00:35.0" is_voided="false"
+		uuid="559f9a00-fe06-11e2-8ebb-f23c91aec05e" patient="8"
+		notification_note_type_id="8" />
+	<notification_note note_id="6" text="sample text6"
+		creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1"
+		date_changed="2013-05-15 17:00:35.0" is_voided="false"
+		uuid="559f973a-fe06-11e2-8ebb-f23c91aec05e" patient="8"
+		notification_note_type_id="8" />
+	<notification_note note_id="7" text="sample text7"
+		creator="1" date_created="2013-05-14 16:35:35.0" changed_by="1"
+		date_changed="2013-05-15 17:00:35.0" is_voided="false"
+		uuid="559f9528-fe06-11e2-8ebb-f23c91aec05e" patient="8"
+		notification_note_type_id="8" />
+	<notification_note note_id="8" is_voided="false"
+		text="sample text8" creator="1" date_created="2013-07-31 18:47:35.0"
+		uuid="559f921c-fe06-11e2-8ebb-f23c91aec05e" patient="8"
+		notification_note_type_id="8" />
+</dataset>

@@ -153,7 +153,6 @@ dojo.addOnLoad( function(){
 			
 			fieldSearch.clearSearch();
 			fieldSearch.inputNode.value = "";
-			fieldSearch.inputNode.focus();
 			return false;
 		}
 	);

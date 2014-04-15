@@ -57,7 +57,7 @@ public class PortletController implements Controller {
 	
 	/**
 	 * This method produces a model containing the following mappings:
-	 * 
+	 *
 	 * <pre>
 	 *     (always)
 	 *          (java.util.Date) now
@@ -102,7 +102,7 @@ public class PortletController implements Controller {
 	 *          (Map<Integer, Concept>) conceptMap
 	 *          (Map<String, Concept>) conceptMapByStringIds
 	 * </pre>
-	 * 
+	 *
 	 * @should calculate bmi into patientBmiAsString
 	 * @should not fail with empty height and weight properties
 	 */
@@ -145,11 +145,12 @@ public class PortletController implements Controller {
 			portletPath = uri.toString();
 			
 			// Allowable extensions are '' (no extension) and '.portlet'
-			if (portletPath.endsWith("portlet"))
+			if (portletPath.endsWith("portlet")) {
 				portletPath = portletPath.replace(".portlet", "");
-			else if (portletPath.endsWith("jsp"))
+			} else if (portletPath.endsWith("jsp")) {
 				throw new ServletException(
 				        "Illegal extension used for portlet: '.jsp'. Allowable extensions are '' (no extension) and '.portlet'");
+			}
 			
 			log.debug("Loading portlet: " + portletPath);
 			
@@ -188,12 +189,14 @@ public class PortletController implements Controller {
 					if (Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
 						Patient p = Context.getPatientService().getPatient(patientId);
 						model.put("patient", p);
-						if (p.isDead())
+						if (p.isDead()) {
 							patientVariation = "Dead";
+						}
 						
 						// add encounters if this user can view them
-						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS))
+						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS)) {
 							model.put("patientEncounters", Context.getEncounterService().getEncountersByPatient(p));
+						}
 						
 						// add visits if this user can view them
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_VISITS)) {
@@ -212,48 +215,56 @@ public class PortletController implements Controller {
 							try {
 								String weightString = as.getGlobalProperty("concept.weight");
 								ConceptNumeric weightConcept = null;
-								if (StringUtils.hasLength(weightString))
+								if (StringUtils.hasLength(weightString)) {
 									weightConcept = cs.getConceptNumeric(cs.getConcept(Integer.valueOf(weightString))
 									        .getConceptId());
+								}
 								String heightString = as.getGlobalProperty("concept.height");
 								ConceptNumeric heightConcept = null;
-								if (StringUtils.hasLength(heightString))
+								if (StringUtils.hasLength(heightString)) {
 									heightConcept = cs.getConceptNumeric(cs.getConcept(Integer.valueOf(heightString))
 									        .getConceptId());
+								}
 								for (Obs obs : patientObs) {
 									if (obs.getConcept().equals(weightConcept)) {
 										if (latestWeight == null
-										        || obs.getObsDatetime().compareTo(latestWeight.getObsDatetime()) > 0)
+										        || obs.getObsDatetime().compareTo(latestWeight.getObsDatetime()) > 0) {
 											latestWeight = obs;
+										}
 									} else if (obs.getConcept().equals(heightConcept)) {
 										if (latestHeight == null
-										        || obs.getObsDatetime().compareTo(latestHeight.getObsDatetime()) > 0)
+										        || obs.getObsDatetime().compareTo(latestHeight.getObsDatetime()) > 0) {
 											latestHeight = obs;
+										}
 									}
 								}
-								if (latestWeight != null)
+								if (latestWeight != null) {
 									model.put("patientWeight", latestWeight);
-								if (latestHeight != null)
+								}
+								if (latestHeight != null) {
 									model.put("patientHeight", latestHeight);
+								}
 								if (latestWeight != null && latestHeight != null) {
 									double weightInKg;
 									double heightInM;
-									if (weightConcept.getUnits().equals("kg"))
+									if (weightConcept.getUnits().equals("kg")) {
 										weightInKg = latestWeight.getValueNumeric();
-									else if (weightConcept.getUnits().equals("lb"))
+									} else if (weightConcept.getUnits().equals("lb")) {
 										weightInKg = latestWeight.getValueNumeric() * 0.45359237;
-									else
+									} else {
 										throw new IllegalArgumentException("Can't handle units of weight concept: "
 										        + weightConcept.getUnits());
-									if (heightConcept.getUnits().equals("cm"))
+									}
+									if (heightConcept.getUnits().equals("cm")) {
 										heightInM = latestHeight.getValueNumeric() / 100;
-									else if (heightConcept.getUnits().equals("m"))
+									} else if (heightConcept.getUnits().equals("m")) {
 										heightInM = latestHeight.getValueNumeric();
-									else if (heightConcept.getUnits().equals("in"))
+									} else if (heightConcept.getUnits().equals("in")) {
 										heightInM = latestHeight.getValueNumeric() * 0.0254;
-									else
+									} else {
 										throw new IllegalArgumentException("Can't handle units of height concept: "
 										        + heightConcept.getUnits());
+									}
 									double bmi = weightInKg / (heightInM * heightInM);
 									model.put("patientBmi", bmi);
 									String temp = "" + bmi;
@@ -261,8 +272,9 @@ public class PortletController implements Controller {
 								}
 							}
 							catch (Exception ex) {
-								if (latestWeight != null && latestHeight != null)
+								if (latestWeight != null && latestHeight != null) {
 									log.error("Failed to calculate BMI even though a weight and height were found", ex);
+								}
 							}
 							model.put("patientBmiAsString", bmiAsString);
 						} else {
@@ -306,17 +318,20 @@ public class PortletController implements Controller {
 							Date rightNow = new Date();
 							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext();) {
 								DrugOrder next = iter.next();
-								if (next.isCurrent() || next.isFuture())
+								if (next.isCurrent() || next.isFuture()) {
 									currentDrugOrders.add(next);
-								if (next.isDiscontinued(rightNow))
+								}
+								if (next.isDiscontinued(rightNow)) {
 									discontinuedDrugOrders.add(next);
+								}
 							}
 							model.put("currentDrugOrders", currentDrugOrders);
 							model.put("completedDrugOrders", discontinuedDrugOrders);
 							
 							List<RegimenSuggestion> standardRegimens = Context.getOrderService().getStandardRegimens();
-							if (standardRegimens != null)
+							if (standardRegimens != null) {
 								model.put("standardRegimens", standardRegimens);
+							}
 						}
 						
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_PROGRAMS)
@@ -328,10 +343,8 @@ public class PortletController implements Controller {
 						}
 						
 						model.put("patientId", patientId);
-						if (p != null) {
-							personId = p.getPatientId();
-							model.put("personId", personId);
-						}
+						personId = p.getPatientId();
+						model.put("personId", personId);
 						
 						model.put("patientVariation", patientVariation);
 					}
@@ -350,8 +363,9 @@ public class PortletController implements Controller {
 				Person p = (Person) model.get("person");
 				if (p == null) {
 					p = (Person) model.get("patient");
-					if (p == null)
+					if (p == null) {
 						p = Context.getPersonService().getPerson(personId);
+					}
 					model.put("person", p);
 				}
 				
@@ -382,8 +396,9 @@ public class PortletController implements Controller {
 					if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS)) {
 						Encounter e = Context.getEncounterService().getEncounter((Integer) o);
 						model.put("encounter", e);
-						if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS))
+						if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
 							model.put("encounterObs", e.getObs());
+						}
 					}
 					model.put("encounterId", (Integer) o);
 				}

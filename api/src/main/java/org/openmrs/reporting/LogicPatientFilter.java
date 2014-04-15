@@ -61,8 +61,9 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 			// Assume these results are booleans
 			Cohort matches = new Cohort();
 			for (Map.Entry<Integer, Result> e : results.entrySet()) {
-				if (e.getValue().latest().toBoolean())
+				if (e.getValue().latest().toBoolean()) {
 					matches.addMember(e.getKey());
+				}
 			}
 			return matches;
 		}
@@ -81,8 +82,9 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 			// Assume these results are booleans
 			Cohort matches = new Cohort();
 			for (Map.Entry<Integer, Result> e : results.entrySet()) {
-				if (e.getValue().latest().toBoolean())
+				if (e.getValue().latest().toBoolean()) {
 					matches.addMember(e.getKey());
+				}
 			}
 			return Cohort.subtract(input, matches);
 		}
@@ -109,8 +111,9 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 	 * @see org.openmrs.reporting.AbstractReportObject#getDescription()
 	 */
 	public String getDescription() {
-		if (getCriteria() == null)
+		if (getCriteria() == null) {
 			return "criteria==NULL";
+		}
 		return getCriteria().toString();
 	}
 	

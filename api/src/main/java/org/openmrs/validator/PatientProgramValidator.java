@@ -31,7 +31,7 @@ import org.springframework.validation.Validator;
 
 /**
  * This class validates a {@link PatientProgram} object
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { PatientProgram.class }, order = 50)
@@ -49,7 +49,7 @@ public class PatientProgramValidator implements Validator {
 	
 	/**
 	 * Validates the given PatientProgram.
-	 * 
+	 *
 	 * @param obj The patient program to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
@@ -70,11 +70,13 @@ public class PatientProgramValidator implements Validator {
 	 * @should pass for patient states that have the same start dates in the same work flow
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
+		}
 		
-		if (obj == null)
+		if (obj == null) {
 			throw new IllegalArgumentException("The parameter obj should not be null");
+		}
 		MessageSourceService mss = Context.getMessageSourceService();
 		PatientProgram patientProgram = (PatientProgram) obj;
 		ValidationUtils.rejectIfEmpty(errors, "patient", "error.required",
@@ -82,8 +84,9 @@ public class PatientProgramValidator implements Validator {
 		ValidationUtils.rejectIfEmpty(errors, "program", "error.required",
 		    new Object[] { mss.getMessage("Program.program") });
 		
-		if (errors.hasErrors())
+		if (errors.hasErrors()) {
 			return;
+		}
 		
 		Set<ProgramWorkflow> workFlows = patientProgram.getProgram().getWorkflows();
 		//Patient state validation is specific to a work flow
@@ -96,16 +99,18 @@ public class PatientProgramValidator implements Validator {
 				boolean foundCurrentPatientState = false;
 				boolean foundStateWithNullStartDate = false;
 				for (PatientState patientState : patientStates) {
-					if (patientState.isVoided())
+					if (patientState.isVoided()) {
 						continue;
+					}
 					
 					String missingRequiredFieldCode = null;
 					//only the initial state can have a null start date
 					if (patientState.getStartDate() == null) {
-						if (foundStateWithNullStartDate)
+						if (foundStateWithNullStartDate) {
 							missingRequiredFieldCode = "general.dateStart";
-						else
+						} else {
 							foundStateWithNullStartDate = true;
+						}
 					} else if (patientState.getState() == null) {
 						missingRequiredFieldCode = "State.state";
 					}
@@ -134,13 +139,14 @@ public class PatientProgramValidator implements Validator {
 					}
 					
 					//will validate it with other states in its workflow
-					if (!patientState.getState().getProgramWorkflow().equals(workFlow))
+					if (!patientState.getState().getProgramWorkflow().equals(workFlow)) {
 						continue;
+					}
 					
 					if (OpenmrsUtil.compareWithNullAsLatest(patientState.getEndDate(), patientState.getStartDate()) < 0) {
 						errors.rejectValue("states", "PatientState.error.endDateCannotBeBeforeStartDate");
 						return;
-					} else if (statesAndStartDates.contains(patientState.getState().getId() + ""
+					} else if (statesAndStartDates.contains(patientState.getState().getUuid() + ""
 					        + patientState.getStartDate())) {
 						// we already have a patient state with the same work flow state and start date
 						errors.rejectValue("states", "PatientState.error.duplicatePatientStates");
@@ -148,16 +154,16 @@ public class PatientProgramValidator implements Validator {
 					}
 					
 					//Ensure that the patient is only in one state at a given time
-					if (!foundCurrentPatientState && patientState.getEndDate() == null)
+					if (!foundCurrentPatientState && patientState.getEndDate() == null) {
 						foundCurrentPatientState = true;
-					else if (foundCurrentPatientState && patientState.getEndDate() == null) {
+					} else if (foundCurrentPatientState && patientState.getEndDate() == null) {
 						errors.rejectValue("states", "PatientProgram.error.cannotBeInMultipleStates");
 						return;
 					}
 					
-					if (latestState == null)
+					if (latestState == null) {
 						latestState = patientState;
-					else {
+					} else {
 						if (patientState.compareTo(latestState) > 0) {
 							//patient should have already left this state since it is older
 							if (latestState.getEndDate() == null) {
@@ -185,7 +191,7 @@ public class PatientProgramValidator implements Validator {
 						}
 					}
 					
-					statesAndStartDates.add(patientState.getState().getId() + "" + patientState.getStartDate());
+					statesAndStartDates.add(patientState.getState().getUuid() + "" + patientState.getStartDate());
 				}
 			}
 		}

@@ -36,13 +36,13 @@
 					<c:if test="${order.encounter != null}">
 						<td valign="top">
 							<c:forEach var="name" items="${order.encounter.patient.names}">
-								${name.familyName}, ${name.givenName}<br />
+								<c:out value="${name.familyName}" />, <c:out value="${name.givenName}" /><br />
 							</c:forEach>
 						</td>
 					</c:if>
 					<td valign="top">
 						<a href="orderDrug.form?orderId=${order.orderId}">
-							${order.drug.name}
+							<c:out value="${order.drug.name}" />
 						</a>
 					</td>
 					<td valign="top">

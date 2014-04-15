@@ -62,9 +62,10 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 				int ind = text.indexOf(":");
 				String progIdStr = text.substring(0, ind);
 				text = text.substring(ind + 1);
-				if (program == null)
+				if (program == null) {
 					// if a program wasn't passed in, try to look it up now
 					program = pws.getProgram(Integer.valueOf(progIdStr));
+				}
 			}
 			catch (Exception ex) {}
 			
@@ -73,8 +74,9 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 			Set<Integer> newConceptIds = new HashSet<Integer>();
 			
 			for (String id : conceptIds) {
-				if (id.trim().length() == 0)
+				if (id.trim().length() == 0) {
 					continue;
+				}
 				log.debug("trying " + id);
 				newConceptIds.add(Integer.valueOf(id.trim()));
 			}
@@ -107,7 +109,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	
 	/**
 	 * Convert this program's workflows into "id: wkflowid wkflowid wkflowid"
-	 * 
+	 *
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
 	@SuppressWarnings("unchecked")

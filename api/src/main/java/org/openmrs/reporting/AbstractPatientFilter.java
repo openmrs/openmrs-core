@@ -45,7 +45,7 @@ public abstract class AbstractPatientFilter extends AbstractReportObject impleme
 	 * Basic implementation of filterInverse that delegates to PatientSetService.getAllPatients()
 	 * and this class's filter() method. Subclasses may override this method if they have a way of
 	 * doing so more efficiently (since getAllPatients can be very expensive).
-	 * 
+	 *
 	 * @param input
 	 * @param context
 	 * @return
@@ -64,19 +64,21 @@ public abstract class AbstractPatientFilter extends AbstractReportObject impleme
 	/**
 	 * Find the name from the given concept object. If no name exists, load from the database and
 	 * then return the name
-	 * 
+	 *
 	 * @param concept
 	 * @return name of the concept
 	 */
 	public String getConceptName(Concept concept) {
-		if (concept == null)
+		if (concept == null) {
 			return "[CONCEPT]";
+		}
 		
 		String cName = "";
 		try {
 			ConceptName conceptName = concept.getName();
-			if (conceptName == null)
+			if (conceptName == null) {
 				conceptName = Context.getConceptService().getConcept(concept.getConceptId()).getName();
+			}
 			cName = conceptName.getName();
 		}
 		catch (Exception e) {

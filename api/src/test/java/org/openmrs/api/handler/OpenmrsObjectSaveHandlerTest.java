@@ -138,5 +138,19 @@ public class OpenmrsObjectSaveHandlerTest {
 		public Integer getId() {
 			return id;
 		}
+		
+		/**
+		 * These are included to check that handler ignores deprecated properties
+		 * @return
+		 */
+		@Deprecated
+		public Object getDeprecatedProperty() {
+			throw new UnsupportedOperationException("This should never be called");
+		}
+		
+		@Deprecated
+		public void setDeprecatedProperty(Object property) {
+			throw new UnsupportedOperationException("This should never be called");
+		}
 	}
 }

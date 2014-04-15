@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -30,7 +29,7 @@ import org.openmrs.api.db.DAOException;
 
 /**
  * Hibernate implementation of the CohortDAO
- * 
+ *
  * @see CohortDAO
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.CohortService
@@ -43,7 +42,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -90,7 +89,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	@SuppressWarnings("unchecked")
 	public List<Cohort> getCohorts(String nameFragment) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
-		criteria.add(Expression.ilike("name", nameFragment, MatchMode.ANYWHERE));
+		criteria.add(Restrictions.ilike("name", nameFragment, MatchMode.ANYWHERE));
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
 	}
@@ -104,8 +103,9 @@ public class HibernateCohortDAO implements CohortDAO {
 		
 		criteria.addOrder(Order.asc("name"));
 		
-		if (!includeVoided)
+		if (!includeVoided) {
 			criteria.add(Restrictions.eq("voided", false));
+		}
 		
 		return (List<Cohort>) criteria.list();
 	}

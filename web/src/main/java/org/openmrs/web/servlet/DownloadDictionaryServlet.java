@@ -65,8 +65,9 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			response.setHeader("Content-Type", "text/csv;charset=UTF-8");
 			response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 			
-			String line = "Concept Id,Name,Description,Synonyms,Answers,Set Members,Class,Datatype,Changed By,Creator\n";
-			response.getWriter().write(line);
+			StringBuilder line = new StringBuilder(
+			        "Concept Id,Name,Description,Synonyms,Answers,Set Members,Class,Datatype,Changed By,Creator\n");
+			response.getWriter().write(line.toString());
 			
 			int listIndex = 0;
 			Iterator<Concept> conceptIterator = cs.conceptIterator();
@@ -74,77 +75,96 @@ public class DownloadDictionaryServlet extends HttpServlet {
 				Concept c = conceptIterator.next();
 				if (!c.isRetired()) {
 					
-					line = c.getConceptId() + ",";
+					line.append(c.getConceptId());
+					line.append(",");
 					String name, description;
 					ConceptName cn = c.getName(locale);
-					if (cn == null)
+					if (cn == null) {
 						name = "";
-					else
+					} else {
 						name = cn.getName();
+					}
 					
 					ConceptDescription cd = c.getDescription(locale);
-					if (cd == null)
+					if (cd == null) {
 						description = "";
-					else
+					} else {
 						description = cd.getDescription();
+					}
 					
-					line += '"' + name.replace("\"", "\"\"") + "\",";
+					line.append('"');
+					line.append(name.replace("\"", "\"\""));
+					line.append("\",");
 					
-					if (description == null)
+					if (description == null) {
 						description = "";
-					line = line + '"' + description.replace("\"", "\"\"") + "\",";
+					}
+					line.append('"');
+					line.append(description.replace("\"", "\"\""));
+					line.append("\",");
 					
-					String tmp = "";
+					StringBuilder tmp = new StringBuilder("");
 					for (ConceptName syn : c.getNames()) {
-						tmp += syn + "\n";
+						tmp.append(syn).append("\n");
 					}
-					line += '"' + tmp.trim() + "\",";
+					line.append('"');
+					line.append(tmp.toString().trim());
+					line.append("\",");
 					
-					tmp = "";
+					tmp = new StringBuilder("");
 					for (ConceptAnswer answer : c.getAnswers(false)) {
-						if (answer.getAnswerConcept() != null)
-							tmp += answer.getAnswerConcept().getName() + "\n";
-						else if (answer.getAnswerDrug() != null)
-							tmp += answer.getAnswerDrug().getFullName(Context.getLocale()) + "\n";
+						if (answer.getAnswerConcept() != null) {
+							tmp.append(answer.getAnswerConcept().getName()).append("\n");
+						} else if (answer.getAnswerDrug() != null) {
+							tmp.append(answer.getAnswerDrug().getFullName(Context.getLocale())).append("\n");
+						}
 					}
-					line += '"' + tmp.trim() + "\",";
+					line.append('"');
+					line.append(tmp.toString().trim());
+					line.append("\",");
 					
-					tmp = "";
+					tmp = new StringBuilder("");
 					for (ConceptSet set : c.getConceptSets()) {
 						if (set.getConcept() != null) {
 							name = set.getConcept().getName().toString();
-							tmp += name.replace("\"", "\"\"") + "\n";
+							tmp.append(name.replace("\"", "\"\"")).append("\n");
 						}
 					}
-					line += '"' + tmp.trim() + "\",";
+					line.append('"');
+					line.append(tmp.toString().trim());
+					line.append("\",");
 					
-					line += '"';
-					if (c.getConceptClass() != null)
-						line += c.getConceptClass().getName();
-					line += "\",";
+					line.append('"');
+					if (c.getConceptClass() != null) {
+						line.append(c.getConceptClass().getName());
+					}
+					line.append("\",");
 					
-					line += '"';
-					if (c.getDatatype() != null)
-						line += c.getDatatype().getName();
-					line += "\",";
+					line.append('"');
+					if (c.getDatatype() != null) {
+						line.append(c.getDatatype().getName());
+					}
+					line.append("\",");
 					
-					line += '"';
-					if (c.getChangedBy() != null)
-						line += c.getChangedBy().getPersonName();
-					line += "\",";
+					line.append('"');
+					if (c.getChangedBy() != null) {
+						line.append(c.getChangedBy().getPersonName());
+					}
+					line.append("\",");
 					
-					line += '"';
-					if (c.getCreator() != null)
-						line += c.getCreator().getPersonName();
-					line += "\"\n";
+					line.append('"');
+					if (c.getCreator() != null) {
+						line.append(c.getCreator().getPersonName());
+					}
+					line.append("\"\n");
 					
-					response.getWriter().write(line);
+					response.getWriter().write(line.toString());
 				}
 				
 			}
 		}
-		catch (Throwable t) {
-			log.error("Error while downloading concepts.", t);
+		catch (Exception e) {
+			log.error("Error while downloading concepts.", e);
 		}
 	}
 	

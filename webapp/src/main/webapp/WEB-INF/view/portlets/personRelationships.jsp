@@ -185,6 +185,7 @@
 		$j("#editRelationship #edit_relationship_id").val(relId);
 		$j("#editRelationship #edit_rel_start_date").val(relationships[relId].startDate);
 		$j("#editRelationship #edit_rel_end_date").val(relationships[relId].endDate);
+		$j("#relationship_invalid_Date").hide();
 		$j("#editRelationship").dialog("open");
 	}
 
@@ -192,8 +193,18 @@
 		var relId = $j("#editRelationship #edit_relationship_id").val();
 		var startDate = $j("#editRelationship #edit_rel_start_date").val();
 		var endDate = $j("#editRelationship #edit_rel_end_date").val();
+
+        if(startDate>endDate)
+		{
+			$j("#relationship_invalid_Date").show();
+			$j('#editRelationship #edit_rel_end_date').select();
+		}
+
+       else
+		{
 		$j("#editRelationship").dialog("close");
 		DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, refreshRelationships);
+		}
 	}
 	
 	function voidRelationshipDialog(relId) {
@@ -272,7 +283,7 @@
 		
 		<span id="add_rel_details" style="display: none">
 			<hr/>
-			${model.person.personName}<openmrs:message code="Relationship.possessive"/>
+			<c:out value="${model.person.personName}" /><openmrs:message code="Relationship.possessive"/>
 			<i><span id="add_relationship_name"><openmrs:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<openmrs:message code="Relationship.target"/>
@@ -297,7 +308,12 @@
 			</tr>
 			<tr>
 				<th><openmrs:message code="Relationship.endDateLong"/>:</th>
-				<td><openmrs_tag:dateField formFieldName="edit_rel_end_date" startValue="" /></td>
+				<td>
+				<openmrs_tag:dateField formFieldName="edit_rel_end_date" startValue="" />
+				<span id="relationship_invalid_Date" class="error" >
+				<openmrs:message code="Relationship.InvalidDate.error"/>
+				</span>
+		 	   </td>
 			</tr>
 		</table>
 	</div>

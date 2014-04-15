@@ -35,7 +35,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Contains convenience methods for working with Orders.
- * 
+ *
  * @deprecated get rid of this before we merge back to trunk
  */
 @Deprecated
@@ -45,7 +45,7 @@ public class OrderUtil {
 	
 	/**
 	 * Discontinues all current orders for the given <code>patient</code>
-	 * 
+	 *
 	 * @param patient
 	 * @param discontinueReason
 	 * @param discontinueDate
@@ -56,9 +56,10 @@ public class OrderUtil {
 	 * @should not affect orders that start after the specified date
 	 */
 	public static void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("In discontinueAll with patient " + patient + " and concept " + discontinueReason + " and date "
 			        + discontinueDate);
+		}
 		
 		OrderService orderService = Context.getOrderService();
 		//Shouldn't the type parameter value be Order
@@ -67,11 +68,13 @@ public class OrderUtil {
 		// loop over all of this patient's drug orders to discontinue each
 		if (drugOrders != null) {
 			for (DrugOrder drugOrder : drugOrders) {
-				if (drugOrder.getDiscontinued())
+				if (drugOrder.getDiscontinued()) {
 					continue;
+				}
 				
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("discontinuing order: " + drugOrder);
+				}
 				// do the stuff to the database
 				orderService.discontinueOrder(drugOrder, discontinueReason.getName().getName(), null, discontinueDate);
 			}
@@ -81,7 +84,7 @@ public class OrderUtil {
 	/**
 	 * Void all DrugOrders for drugs whose concepts are in the given set, and that have the given
 	 * status. An end-user would think of this method as "delete all drug orders of the given type".
-	 * 
+	 *
 	 * @param patient
 	 * @param drugSetId
 	 * @param voidReason
@@ -91,19 +94,23 @@ public class OrderUtil {
 	 * @should not affect drug orders that are already voided
 	 */
 	public static void voidDrugSet(Patient patient, String drugSetId, String voidReason) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Voiding drug sets for patient: " + patient + " drugSetId: " + drugSetId + " reason: " + voidReason);
+		}
 		
 		// do some null pointer checks
 		
-		if (Context.isAuthenticated() == false)
+		if (Context.isAuthenticated() == false) {
 			throw new ContextAuthenticationException("Unable to void drugs when no one is logged in");
+		}
 		
-		if (patient == null)
+		if (patient == null) {
 			throw new APIException("Unable to void drugs without a patient being given");
+		}
 		
-		if (drugSetId == null)
+		if (drugSetId == null) {
 			throw new APIException("Unable to void drugs without a drugSetId being given");
+		}
 		
 		OrderService orderService = Context.getOrderService();
 		
@@ -124,7 +131,7 @@ public class OrderUtil {
 	
 	/**
 	 * Discontinue orders for the given patient with the given drug sets ...
-	 * 
+	 *
 	 * @param patient
 	 * @param drugSetId
 	 * @param discontinueReason
@@ -143,14 +150,17 @@ public class OrderUtil {
 		
 		// do some null pointer checks
 		
-		if (Context.isAuthenticated() == false)
+		if (Context.isAuthenticated() == false) {
 			throw new ContextAuthenticationException("Unable to discontinue drugs when no one is logged in");
+		}
 		
-		if (patient == null)
+		if (patient == null) {
 			throw new APIException("Unable to discontinue drugs without a patient being given");
+		}
 		
-		if (drugSetId == null)
+		if (drugSetId == null) {
 			throw new APIException("Unable to discontinue drugs without a drugSetId being given");
+		}
 		
 		OrderService orderService = Context.getOrderService();
 		
@@ -175,7 +185,7 @@ public class OrderUtil {
 	
 	/**
 	 * Associates the concept id of a drug set to a name of the drug set in the current locale
-	 * 
+	 *
 	 * @param drugSetIds a comma separated list with the concept id of the drug sets
 	 * @return <code>Map<String, String></code> of the drug headers for the given drugSetIds
 	 * @should get map from concept id as string to concept name
@@ -183,16 +193,18 @@ public class OrderUtil {
 	public static Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
 		Map<String, String> ret = null;
 		
-		if (drugSetIds == null)
+		if (drugSetIds == null) {
 			throw new APIException("Unable to get drug headers without drugSetIds being given");
+		}
 		
 		Map<String, Concept> concepts = OpenmrsUtil.delimitedStringToConceptMap(drugSetIds, ",");
 		if (concepts != null) {
 			for (Map.Entry<String, Concept> e : concepts.entrySet()) {
 				String id = e.getKey();
 				Concept concept = e.getValue();
-				if (ret == null)
+				if (ret == null) {
 					ret = new HashMap<String, String>();
+				}
 				ret.put(id, concept.getName(Context.getLocale()).getName());
 			}
 		}
@@ -202,7 +214,7 @@ public class OrderUtil {
 	
 	/**
 	 * Gets a map of DrugOrders that belong to a DrugSet concept ID
-	 * 
+	 *
 	 * @param orderList the Drug Order list
 	 * @param drugSetIdList a 'delimiter' separated list of drug sets
 	 * @param delimiter the delimiter of drug sets (defaults to a comma if set to null)
@@ -217,8 +229,9 @@ public class OrderUtil {
 			        + " delimiter: " + delimiter);
 		}
 		
-		if (delimiter == null)
+		if (delimiter == null) {
 			delimiter = ",";
+		}
 		
 		Map<String, List<DrugOrder>> ret = null;
 		
@@ -252,8 +265,9 @@ public class OrderUtil {
 			
 			// first, let's create a list of "others", starting with a full list that we remove from
 			List<DrugOrder> otherOrders = null;
-			if (addOthers)
+			if (addOthers) {
 				otherOrders = orderList;
+			}
 			
 			Map<Concept, List<DrugOrder>> ordersByConcepts = getDrugSetsByConcepts(orderList, drugSetConcepts);
 			if (ordersByConcepts != null) {
@@ -266,8 +280,9 @@ public class OrderUtil {
 					if (addOthers && otherOrders != null) {
 						otherOrders.removeAll(orders);
 					}
-					if (ret == null)
+					if (ret == null) {
 						ret = new HashMap<String, List<DrugOrder>>();
+					}
 					log.debug("putting list of size " + orders.size() + " in string " + idToConceptMappings.get(c));
 					ret.put(idToConceptMappings.get(c), orders);
 				}
@@ -275,8 +290,9 @@ public class OrderUtil {
 			
 			// add the "others" list to the Map
 			if (addOthers && otherOrders != null) {
-				if (ret == null)
+				if (ret == null) {
 					ret = new HashMap<String, List<DrugOrder>>();
+				}
 				ret.put("*", otherOrders);
 			}
 		}
@@ -286,7 +302,7 @@ public class OrderUtil {
 	
 	/**
 	 * Splits the drug orders into sublists based on which drug set the order's drug belongs to
-	 * 
+	 *
 	 * @param drugOrders List of drugOrders
 	 * @param drugSets List of drugSets concept
 	 * @return Map<Concept, List<DrugOrder>> of a sublist of drug orders mapped by the drug set
@@ -306,13 +322,12 @@ public class OrderUtil {
 			log.debug("drugSets is size " + drugSets.size());
 			for (Concept c : drugSets) {
 				List<DrugOrder> ordersForConcept = new ArrayList<DrugOrder>();
-				
 				Collection<ConceptSet> relatedConcepts = c.getConceptSets();
-				log.debug("Concept is " + c.getName(Context.getLocale()) + " and has " + relatedConcepts.size()
-				        + " related concepts");
-				
 				// now we have as a list, let's iterate
+				
 				if (relatedConcepts != null) {
+					log.debug("Concept is " + c.getName(Context.getLocale()) + " and has " + relatedConcepts.size()
+					        + " related concepts");
 					for (ConceptSet cs : relatedConcepts) {
 						Concept csConcept = cs.getConcept();
 						for (DrugOrder currOrder : drugOrders) {
@@ -330,15 +345,17 @@ public class OrderUtil {
 				}
 				
 				if (ordersForConcept.size() > 0) {
-					if (hmRet == null)
+					if (hmRet == null) {
 						hmRet = new HashMap<Concept, List<DrugOrder>>();
+					}
 					hmRet.put(c, ordersForConcept);
 					log.debug("Concept " + c.getName(Context.getLocale()) + " was put to the map with a list of size "
 					        + ordersForConcept.size());
 				}
 			}
-		} else
+		} else {
 			log.debug("drugSets is null");
+		}
 		
 		return hmRet;
 	}

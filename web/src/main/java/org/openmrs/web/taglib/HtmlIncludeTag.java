@@ -58,7 +58,7 @@ public class HtmlIncludeTag extends TagSupport {
 	/**
 	 * If true, will append &locale=en_US to the url for browser caching purposes Should be used on
 	 * files that contain spring message calls and should not be cached across locales
-	 * 
+	 *
 	 * @since 1.8
 	 */
 	private boolean appendLocale;
@@ -71,8 +71,9 @@ public class HtmlIncludeTag extends TagSupport {
 	public synchronized int doStartTag() throws JspException {
 		log.debug("\n\n");
 		
-		if (rewrites.containsKey(file))
+		if (rewrites.containsKey(file)) {
 			file = rewrites.get(file);
+		}
 		
 		// see if this is a JS or CSS file
 		boolean isJs = false;
@@ -82,18 +83,20 @@ public class HtmlIncludeTag extends TagSupport {
 		
 		if (this.type != null) {
 			if (this.type.length() > 0) {
-				if (HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(type) >= 0)
+				if (HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(type) >= 0) {
 					isCss = true;
-				else if (HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(type) >= 0)
+				} else if (HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(type) >= 0) {
 					isJs = true;
+				}
 			}
 		}
 		
 		if (!isCss && !isJs && fileExt.length() > 0) {
-			if (HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(fileExt) >= 0)
+			if (HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(fileExt) >= 0) {
 				isCss = true;
-			else if (HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(fileExt) >= 0)
+			} else if (HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(fileExt) >= 0) {
 				isJs = true;
+			}
 		}
 		
 		if (isJs || isCss) {
@@ -111,8 +114,9 @@ public class HtmlIncludeTag extends TagSupport {
 				String prefix = "";
 				try {
 					prefix = request.getContextPath();
-					if (file.startsWith(prefix + "/"))
+					if (file.startsWith(prefix + "/")) {
 						prefix = "";
+					}
 				}
 				catch (ClassCastException cce) {
 					log.debug("Could not cast request to HttpServletRequest in HtmlIncludeTag");
@@ -122,19 +126,22 @@ public class HtmlIncludeTag extends TagSupport {
 				if (isJs) {
 					output.append("<script src=\"").append(prefix).append(file);
 					output.append("?v=").append(OpenmrsConstants.OPENMRS_VERSION_SHORT);
-					if (appendLocale)
+					if (appendLocale) {
 						output.append("&locale=").append(Context.getLocale());
+					}
 					output.append("\" type=\"text/javascript\" ></script>");
 				} else if (isCss) {
 					output.append("<link href=\"").append(prefix).append(file);
 					output.append("?v=").append(OpenmrsConstants.OPENMRS_VERSION_SHORT);
-					if (appendLocale)
+					if (appendLocale) {
 						output.append("&locale=").append(Context.getLocale());
+					}
 					output.append("\" type=\"text/css\" rel=\"stylesheet\" />");
 				}
 				
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
+				}
 				
 				try {
 					pageContext.getOut().print(output.toString());
@@ -143,8 +150,9 @@ public class HtmlIncludeTag extends TagSupport {
 					log.debug("Could not produce output in HtmlIncludeTag.java");
 				}
 			} else {
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("isAlreadyUsed() is TRUE - suppressing file print for " + this.file + "");
+				}
 			}
 		}
 		
@@ -158,8 +166,9 @@ public class HtmlIncludeTag extends TagSupport {
 		Object attr = pageRequest.getAttribute(WebConstants.INIT_REQ_UNIQUE_ID);
 		if (attr != null) {
 			String uniqueId = (String) attr;
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Returning initial request: " + uniqueId);
+			}
 			return uniqueId;
 		} else {
 			log.error("Could not find value for " + WebConstants.INIT_REQ_UNIQUE_ID + " in pageContext");
@@ -187,8 +196,9 @@ public class HtmlIncludeTag extends TagSupport {
 			if (hmIncludeMap == null || !initialRequestId.equals(lastRequestId)) {
 				log.debug("Creating new hmIncludeMap");
 				hmIncludeMap = new HashMap<String, String>();
-			} else
+			} else {
 				log.debug("Using hmIncludeMap from object");
+			}
 			
 			if (hmIncludeMap.containsKey(fileName)) {
 				log.debug("HTMLINCLUDETAG HAS ALREADY INCLUDED FILE " + fileName);
@@ -239,8 +249,9 @@ public class HtmlIncludeTag extends TagSupport {
 	 */
 	public synchronized void setFile(String file) {
 		this.file = file;
-		if (file != null)
+		if (file != null) {
 			this.file = file.trim();
+		}
 	}
 	
 	public synchronized boolean getAppendLocale() {

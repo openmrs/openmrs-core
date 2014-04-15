@@ -50,22 +50,28 @@ public class CohortColumn implements ExportColumn, Serializable {
 		this.valueIfFalse = StringUtils.hasText(valueIfFalse) ? valueIfFalse : "";
 		if (cohortId != null) {
 			this.cohortId = cohortId;
-			if (!StringUtils.hasText(columnName))
+			if (!StringUtils.hasText(columnName)) {
 				this.columnName = Context.getCohortService().getCohort(cohortId).getName();
-			if (!StringUtils.hasText(valueIfTrue))
+			}
+			if (!StringUtils.hasText(valueIfTrue)) {
 				this.valueIfTrue = Context.getCohortService().getCohort(cohortId).getName();
+			}
 		} else if (filterId != null) {
 			this.filterId = filterId;
-			if (!StringUtils.hasText(columnName))
+			if (!StringUtils.hasText(columnName)) {
 				this.columnName = Context.getReportObjectService().getPatientFilterById(filterId).getName();
-			if (!StringUtils.hasText(valueIfTrue))
+			}
+			if (!StringUtils.hasText(valueIfTrue)) {
 				this.valueIfTrue = Context.getReportObjectService().getPatientFilterById(filterId).getName();
+			}
 		} else { // assert patientSearchId != null
 			this.patientSearchId = patientSearchId;
-			if (!StringUtils.hasText(columnName))
+			if (!StringUtils.hasText(columnName)) {
 				this.columnName = Context.getReportObjectService().getReportObject(patientSearchId).getName();
-			if (!StringUtils.hasText(valueIfTrue))
+			}
+			if (!StringUtils.hasText(valueIfTrue)) {
 				this.valueIfTrue = Context.getReportObjectService().getReportObject(patientSearchId).getName();
+			}
 		}
 	}
 	
@@ -82,13 +88,14 @@ public class CohortColumn implements ExportColumn, Serializable {
 	}
 	
 	public String toTemplateString() {
-		if (cohortId != null)
+		if (cohortId != null) {
 			return "$!{fn.getCohortMembership(" + cohortId + ", '" + valueIfTrue + "', '" + valueIfFalse + "')}";
-		else if (filterId != null)
+		} else if (filterId != null) {
 			return "$!{fn.getCohortDefinitionMembership(" + filterId + ", '" + valueIfTrue + "', '" + valueIfFalse + "')}";
-		else
+		} else {
 			return "$!{fn.getPatientSearchMembership(" + patientSearchId + ", '" + valueIfTrue + "', '" + valueIfFalse
 			        + "')}";
+		}
 	}
 	
 	public Integer getCohortId() {

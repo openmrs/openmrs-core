@@ -34,7 +34,7 @@ public class DWRAlertService {
 	/**
 	 * Calls the corresponding AlertService.getAlertsByUser(null) method to get alerts for the
 	 * current user or for the authenticated role
-	 * 
+	 *
 	 * @return
 	 */
 	public List<AlertListItem> getAlerts() {
@@ -60,7 +60,7 @@ public class DWRAlertService {
 	
 	/**
 	 * Calls the corresponding AlertService.markAlertRead(Alert) method
-	 * 
+	 *
 	 * @param alertId
 	 */
 	public void markAlertRead(Integer alertId) {
@@ -73,15 +73,15 @@ public class DWRAlertService {
 			
 			// fail early and quietly if the current user isn't actually
 			// a recipient on this alert.
-			if (alert.getRecipient(Context.getAuthenticatedUser()) == null)
+			if (alert == null || alert.getRecipient(Context.getAuthenticatedUser()) == null) {
 				return;
+			}
 			
 			// allow this user to save changes to alerts temporarily
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 			
 			// Mark the alert as read and save it
-			if (alert != null)
-				as.saveAlert(alert.markAlertRead());
+			as.saveAlert(alert.markAlertRead());
 			
 		}
 		catch (Exception e) {
@@ -94,7 +94,7 @@ public class DWRAlertService {
 	
 	/**
 	 * Creates and saves a new {@link Alert}
-	 * 
+	 *
 	 * @param text the string to set as the alert text
 	 * @return true if the alert was successfully created and saved otherwise false
 	 */
@@ -122,5 +122,18 @@ public class DWRAlertService {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Marks all alert as read
+	 */
+	public void markAllAlertsRead() {
+		AlertService as = Context.getAlertService();
+		// Get the alert objects
+		List<Alert> alerts = as.getAlertsByUser(Context.getAuthenticatedUser());
+		
+		for (Alert alert : alerts) {
+			markAlertRead(alert.getId());
+		}
 	}
 }

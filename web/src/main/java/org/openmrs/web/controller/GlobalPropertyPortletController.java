@@ -77,8 +77,9 @@ public class GlobalPropertyPortletController extends PortletController {
 			model.put("properties", properties);
 			
 			boolean showHeader = true;
-			if ("false".equals(model.get("showHeader")))
+			if ("false".equals(model.get("showHeader"))) {
 				showHeader = false;
+			}
 			model.put("showHeader", showHeader);
 		}
 	}
@@ -87,7 +88,7 @@ public class GlobalPropertyPortletController extends PortletController {
 	 * Sets propertyPrefix to "${forModule}.", hidePrefix to "true" and excludePrefix to
 	 * excludePrefix + "${forModule}.started;${forModule}.mandatory" if forModule parameter is
 	 * present.
-	 * 
+	 *
 	 * @should change model if forModule is present
 	 * @should not change mode if forModule is not present
 	 * @should not override excludePrefix but concatenate

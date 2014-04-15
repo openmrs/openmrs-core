@@ -25,6 +25,7 @@ import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -102,7 +103,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	@Test(expected = InvalidIdentifierFormatException.class)
 	@Verifies(value = "should fail validation if identifier does not match the format", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierDoesNotMatchTheFormat() throws Exception {
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-222-333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}");
+		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-222-333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}", null);
 	}
 	
 	/**
@@ -111,7 +112,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass validation if identifier matches the format", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldPassValidationIfIdentifierMatchesTheFormat() throws Exception {
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-22-3333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}");
+		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-22-3333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}", null);
 	}
 	
 	/**
@@ -120,7 +121,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass validation if the format is blank", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldPassValidationIfTheFormatIsBlank() throws Exception {
-		PatientIdentifierValidator.checkIdentifierAgainstFormat("abcdefg", "");
+		PatientIdentifierValidator.checkIdentifierAgainstFormat("abcdefg", "", null);
 	}
 	
 	/**
@@ -187,4 +188,27 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		PatientIdentifierValidator.validateIdentifier(pi);
 	}
 	
+	/**
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should pass if locationBehavior is NOT_USED and location is null", method = "validateIdentifier(PatientIdentifier)")
+	public void validateIdentifier_shouldPassIfLocationBehaviorIsNotUsedAndLocationIsNull() throws Exception {
+		PatientIdentifier pi = new PatientIdentifier("1TU-8", new PatientIdentifierType(1), null);
+		PatientIdentifierType idType = pi.getIdentifierType();
+		idType.setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+		PatientIdentifierValidator.validateIdentifier(pi);
+	}
+	
+	/**
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
+	 */
+	@Test(expected = PatientIdentifierException.class)
+	@Verifies(value = "should fail validation if locationBehavior is REQUIRED and location is null", method = "validateIdentifier(PatientIdentifier)")
+	public void validateIdentifier_shouldPassIfLocationBehaviorIsRequiredAndLocationIsNull() throws Exception {
+		PatientIdentifier pi = new PatientIdentifier("1TU-8", new PatientIdentifierType(1), null);
+		PatientIdentifierType idType = pi.getIdentifierType();
+		idType.setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
+		PatientIdentifierValidator.validateIdentifier(pi);
+	}
 }

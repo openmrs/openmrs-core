@@ -48,9 +48,9 @@ var tabCount = 0;
 		dojo.event.topic.subscribe("pSearch/select", 
 			function(msg) {
 				var patient = msg.objs[0];
-				if (patient.patientId != undefined && patient.patientId != "${patient1.patientId}") {
-					if("${patient1.patientId}" != ""){
-						var query = "?patientId=${patient1.patientId}&patientId=" + patient.patientId;
+				if (patient.patientId != undefined && patient.patientId != "<c:out value="${patient1.patientId}" />") {
+					if("<c:out value="${patient1.patientId}" />" != ""){
+						var query = "?patientId=<c:out value="${patient1.patientId}" />&patientId=" + patient.patientId;
 					}else{
 						var query = "?patientId="+patient.patientId;
 					}
@@ -91,7 +91,7 @@ function collectInfo(){
 			patientNames.value = patientNames.value+"#";
 			
 			<c:forEach items="${patient.identifiers}" var="identifier">
-					patientIdentifiers.value = patientIdentifiers.value+"${identifier.identifier} ${identifier.identifierType.name}|";
+					patientIdentifiers.value = patientIdentifiers.value+"<c:out value="${identifier.identifier}" /> <c:out value="${identifier.identifierType.name}" />|";
 			</c:forEach>
 			patientIdentifiers.value = patientIdentifiers.value+"#";
 
@@ -100,7 +100,7 @@ function collectInfo(){
 			</c:forEach>
 			patientAddress.value = patientAddress.value+"#";
 
-			patientInfos.value = patientInfos.value+"${patient.patientId}|${patient.gender}|<openmrs:formatDate date='${patient.birthdate}' type='short' />|<openmrs:formatDate date='${patient.deathDate}' type='short' />|${patient.creator.personName} - <openmrs:formatDate date='${patient.dateCreated}' type='long' />|${patient.changedBy.personName} - <openmrs:formatDate date='${patient.dateChanged}' type='long' />|${patient.voided}#";
+			patientInfos.value = patientInfos.value+"<c:out value="${patient.patientId}" />|${patient.gender}|<openmrs:formatDate date='${patient.birthdate}' type='short' />|<openmrs:formatDate date='${patient.deathDate}' type='short' />|<c:out value="${patient.creator.personName}" /> - <openmrs:formatDate date='${patient.dateCreated}' type='long' />|${patient.changedBy.personName} - <openmrs:formatDate date='${patient.dateChanged}' type='long' />|${patient.voided}#";
 			if(!isPreferred){
 				addPatientTab('${status.index}', notPreferredCount);
 			}
@@ -363,12 +363,12 @@ function generateMergeList(){
 		}else{
 			var preferred = document.getElementById('pref');
 			var nonPreferred = document.getElementById('nonPref');
-			if(document.getElementById("${patient1.patientId}preferred").checked){
-				preferred.value = document.getElementById("${patient1.patientId}preferred").value;
-				nonPreferred.value = document.getElementById("${patient2.patientId}preferred").value;
-			}else if(document.getElementById("${patient2.patientId}preferred").checked){
-				preferred.value = document.getElementById("${patient2.patientId}preferred").value;
-				nonPreferred.value = document.getElementById("${patient1.patientId}preferred").value;
+			if(document.getElementById("<c:out value="${patient1.patientId}" />preferred").checked){
+				preferred.value = document.getElementById("<c:out value="${patient1.patientId}" />preferred").value;
+				nonPreferred.value = document.getElementById("<c:out value="${patient2.patientId}" />preferred").value;
+			}else if(document.getElementById("<c:out value="${patient2.patientId}" />preferred").checked){
+				preferred.value = document.getElementById("<c:out value="${patient2.patientId}" />preferred").value;
+				nonPreferred.value = document.getElementById("<c:out value="${patient1.patientId}" />preferred").value;
 			}else{
 				return false;
 			}
@@ -409,17 +409,12 @@ function generateMergeList(){
 </style>
 
 <spring:hasBindErrors name="patient">
-	<openmrs:message code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <h2><openmrs:message code="Patient.merge.title"/></h2>
 
-<openmrs:message code="Patient.merge.warning" />
+<openmrs:message htmlEscape="false" code="Patient.merge.warning" />
 
 <br/><br/>
 <div id="selectionList" style="display:none">
@@ -431,11 +426,11 @@ function generateMergeList(){
 <tr id="${status.index}tr" class="<c:choose>
 				<c:when test="${status.index % 2 == 0}">evenRow</c:when>
 				<c:otherwise>oddRow</c:otherwise>
-			</c:choose>"><td><input type="radio" id="${status.index}" name="preferred2" value="${patient.patientId}" onclick="display(this, true)" <c:if test="${patient.voided==true}">disabled</c:if>/></td><td>${patient.patientId}</td><td><c:forEach items="${patient.identifiers}" var="identifier" varStatus="entries">
+			</c:choose>"><td><input type="radio" id="${status.index}" name="preferred2" value="<c:out value="${patient.patientId}" />" onclick="display(this, true)" <c:if test="${patient.voided==true}">disabled</c:if>/></td><td><c:out value="${patient.patientId}" /></td><td><c:forEach items="${patient.identifiers}" var="identifier" varStatus="entries">
 							<c:if test="${entries.index==0}">${identifier}</c:if>
 						</c:forEach> </td><c:forEach items="${patient.names}" var="name" varStatus="entries">
 						<c:if test="${entries.index==0}">
-			<td>${name.givenName}</td><td>${name.middleName}</td><td>${name.familyName}</td></c:if></c:forEach>
+			<td><c:out value="${name.givenName}" /></td><td><c:out value="${name.middleName}" /></td><td><c:out value="${name.familyName}" /></td></c:if></c:forEach>
 					<td>${patient.age}</td><td>
 			<c:choose>
 				<c:when test="${patient.gender == 'M'}">
@@ -475,8 +470,8 @@ function generateMergeList(){
 			<tr>
 				<td valign="top">
 					<h4 id="p1">
-						<input type="radio" name="preferred1" id="${patient1.patientId}preferred" value="${patient1.patientId}" onclick="if (this.checked) changePrimary('left')" <c:if test="${!patient1.voided}">checked</c:if><c:if test="${patient1.voided}">disabled</c:if> />
-						<label for="${patient1.patientId}preferred"><openmrs:message code="Patient.merge.preferred" /></label>
+						<input type="radio" name="preferred1" id="<c:out value="${patient1.patientId}" />preferred" value="<c:out value="${patient1.patientId}" />" onclick="if (this.checked) changePrimary('left')" <c:if test="${!patient1.voided}">checked</c:if><c:if test="${patient1.voided}">disabled</c:if> />
+						<label for="<c:out value="${patient1.patientId}" />preferred"><openmrs:message code="Patient.merge.preferred" /></label>
 						<c:if test="${patient1.voided}">
 						<div class="retiredMessage">
 							<div><openmrs:message code="Patient.voided"/></div>
@@ -492,8 +487,8 @@ function generateMergeList(){
 				</td>
 				<td valign="top">
 					<h4 id="p2">
-						<input type="radio" name="preferred1" id="${patient2.patientId}preferred" value="${patient2.patientId}" onclick="if (this.checked) changePrimary('right')" <c:if test="${patient2.voided}">disabled</c:if>/>
-						<label for="${patient2.patientId}preferred"><openmrs:message code="Patient.merge.preferred" /></label>
+						<input type="radio" name="preferred1" id="<c:out value="${patient2.patientId}" />preferred" value="<c:out value="${patient2.patientId}" />" onclick="if (this.checked) changePrimary('right')" <c:if test="${patient2.voided}">disabled</c:if>/>
+						<label for="<c:out value="${patient2.patientId}" />preferred"><openmrs:message code="Patient.merge.preferred" /></label>
 						<c:if test="${patient2.voided}">
 							<div class="retiredMessage">
 								<div><openmrs:message code="Patient.voided"/></div>
@@ -522,7 +517,7 @@ function generateMergeList(){
 				<h4><openmrs:message code="Patient.names"/></h4>
 				<ol id="name1">
 					<c:forEach items="${patient1.names}" var="name">
-							<li>${name.givenName} ${name.middleName} ${name.familyName}
+							<li><c:out value="${name.givenName}" /> <c:out value="${name.middleName}" /> <c:out value="${name.familyName}" /></li>
 						</c:forEach>
 				</ol>
 			</td>
@@ -537,7 +532,7 @@ function generateMergeList(){
 					<h4><openmrs:message code="Patient.names"/></h4>
 					<ol id="name2">
 						<c:forEach items="${patient2.names}" var="name">
-							<li>${name.givenName} ${name.middleName} ${name.familyName}
+                            <li><c:out value="${name.givenName}" /> <c:out value="${name.middleName}" /> <c:out value="${name.familyName}" /></li>
 						</c:forEach>
 					</ol>
 				</td>
@@ -548,7 +543,7 @@ function generateMergeList(){
 				<h4><openmrs:message code="Patient.identifiers"/></h4>
 				<ol id="identifier1">
 					<c:forEach items="${patient1.identifiers}" var="identifier">
-						<li>${identifier.identifier} ${identifier.identifierType.name}
+						<li><c:out value="${identifier.identifier}" /> <c:out value="${identifier.identifierType.name}" />
 					</c:forEach>
 				</ol>
 			</td>
@@ -557,7 +552,7 @@ function generateMergeList(){
 					<h4><openmrs:message code="Patient.identifiers"/></h4>
 					<ol id="identifier2">
 						<c:forEach items="${patient2.identifiers}" var="identifier">
-							<li>${identifier.identifier} ${identifier.identifierType.name}
+							<li><c:out value="${identifier.identifier}" /> <c:out value="${identifier.identifierType.name}" />
 						</c:forEach>
 					</ol>
 				</td>
@@ -592,7 +587,7 @@ function generateMergeList(){
 	<table>
 		<tr>
 			<th align="left"><openmrs:message code="general.id"/></th>
-			<td id="info10">${patient.patientId}</td>
+			<td id="info10"><c:out value="${patient.patientId}" /></td>
 		</tr>
 		<tr>
 			<th align="left"><openmrs:message code="Person.gender"/></th>
@@ -620,14 +615,14 @@ function generateMergeList(){
 		<tr>
 			<th align="left"><openmrs:message code="general.createdBy" /></th>
 			<td id="info14">
-				${patient.creator.personName} -
+				<c:out value="${patient.creator.personName}" /> -
 				<openmrs:formatDate date="${patient.dateCreated}" type="long" />
 			</td>
 		</tr>
 		<tr>
 			<th align="left"><openmrs:message code="general.changedBy" /></th>
 			<td id="info15">
-				${patient.changedBy.personName} -
+				<c:out value="${patient.changedBy.personName}" /> -
 				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
 			</td>
 		</tr>
@@ -655,7 +650,7 @@ function generateMergeList(){
 	<table>
 		<tr>
 			<th align="left"><openmrs:message code="general.id"/></th>
-			<td id="info20">${patient.patientId}</td>
+			<td id="info20"><c:out value="${patient.patientId}" /></td>
 		</tr>
 		<tr>
 			<th align="left"><openmrs:message code="Person.gender"/></th>
@@ -683,14 +678,14 @@ function generateMergeList(){
 		<tr>
 			<th align="left"><openmrs:message code="general.createdBy" /></th>
 			<td id="info24">
-				${patient.creator.personName} -
+				<c:out value="${patient.creator.personName}" /> -
 				<openmrs:formatDate date="${patient.dateCreated}" type="long" />
 			</td>
 		</tr>
 		<tr>
 			<th align="left"><openmrs:message code="general.changedBy" /></th>
 			<td id="info25">
-				${patient.changedBy.personName} -
+				<c:out value="${patient.changedBy.personName}" /> -
 				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
 			</td>
 		</tr>
@@ -746,11 +741,11 @@ function generateMergeList(){
 		</tr>
 		<tr>
 			<td>
-				<a href="patient.form?patientId=${patient1.patientId}" id="edit1"><openmrs:message code="Patient.edit"/></a>
+				<a href="patient.form?patientId=<c:out value="${patient1.patientId}" />" id="edit1"><openmrs:message code="Patient.edit"/></a>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td>
-					<a href="patient.form?patientId=${patient2.patientId}" id="edit2"><openmrs:message code="Patient.edit"/></a>
+					<a href="patient.form?patientId=<c:out value="${patient2.patientId}" />" id="edit2"><openmrs:message code="Patient.edit"/></a>
 				</td>
 			</c:if>
 			</tr>

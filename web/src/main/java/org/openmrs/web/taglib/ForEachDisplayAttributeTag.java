@@ -63,15 +63,17 @@ public class ForEachDisplayAttributeTag extends LoopTagSupport {
 	
 	@Override
 	protected boolean hasNext() throws JspTagException {
-		if (attrTypes == null)
+		if (attrTypes == null) {
 			return false;
+		}
 		return attrTypes.hasNext();
 	}
 	
 	@Override
 	protected Object next() throws JspTagException {
-		if (attrTypes == null)
+		if (attrTypes == null) {
 			throw new JspTagException("The attr iterator is null");
+		}
 		return attrTypes.next();
 	}
 	

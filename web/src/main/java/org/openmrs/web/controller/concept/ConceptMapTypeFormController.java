@@ -60,7 +60,7 @@ public class ConceptMapTypeFormController {
 	
 	/**
 	 * Processes requests to display a list of the current concept map types in the database
-	 * 
+	 *
 	 * @param model the {@link ModelMap} object
 	 * @param request the {@link WebRequest} object
 	 */
@@ -77,18 +77,20 @@ public class ConceptMapTypeFormController {
 	public ConceptMapType getConceptMapType(
 	        @RequestParam(value = "conceptMapTypeId", required = false) Integer conceptMapTypeId) {
 		ConceptMapType conceptMapType = null;
-		if (conceptMapTypeId != null)
+		if (conceptMapTypeId != null) {
 			conceptMapType = Context.getConceptService().getConceptMapType(conceptMapTypeId);
+		}
 		
-		if (conceptMapType == null)
+		if (conceptMapType == null) {
 			conceptMapType = new ConceptMapType();
+		}
 		
 		return conceptMapType;
 	}
 	
 	/**
 	 * Processes requests to save/update a concept map type
-	 * 
+	 *
 	 * @param request the {@link WebRequest} object
 	 * @param conceptMapType the concept map type object to save/update
 	 * @param result the {@link BindingResult} object
@@ -102,8 +104,9 @@ public class ConceptMapTypeFormController {
 		if (!result.hasErrors()) {
 			try {
 				Context.getConceptService().saveConceptMapType(conceptMapType);
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("Saved concept map type: " + conceptMapType.toString());
+				}
 				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptMapType.saved", WebRequest.SCOPE_SESSION);
 				
 				return "redirect:" + CONCEPT_MAP_TYPE_LIST_URL + ".list";
@@ -120,7 +123,7 @@ public class ConceptMapTypeFormController {
 	
 	/**
 	 * Processes requests to retire a concept map type
-	 * 
+	 *
 	 * @param request the {@link WebRequest} object
 	 * @param conceptMapType the concept map type object to retire
 	 * @param retireReason the reason why the concept map type is getting retired
@@ -131,13 +134,15 @@ public class ConceptMapTypeFormController {
 	        @ModelAttribute(value = "conceptMapType") ConceptMapType conceptMapType,
 	        @RequestParam(required = false, value = "retireReason") String retireReason) {
 		
-		if (!StringUtils.hasText(retireReason))
+		if (!StringUtils.hasText(retireReason)) {
 			retireReason = Context.getMessageSourceService().getMessage("general.default.retireReason");
+		}
 		
 		try {
 			Context.getConceptService().retireConceptMapType(conceptMapType, retireReason);
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Retired concept map type with id: " + conceptMapType.getId());
+			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.retired"), WebRequest.SCOPE_SESSION);
 			
@@ -155,7 +160,7 @@ public class ConceptMapTypeFormController {
 	
 	/**
 	 * Processes requests to unretire a concept map type
-	 * 
+	 *
 	 * @param request the {@link WebRequest} object
 	 * @param conceptMapType the concept map type object to unretire
 	 * @return the url to redirect to
@@ -166,8 +171,9 @@ public class ConceptMapTypeFormController {
 		
 		try {
 			Context.getConceptService().unretireConceptMapType(conceptMapType);
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Unretired concept map type with id: " + conceptMapType.getId());
+			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.unretired"), WebRequest.SCOPE_SESSION);
 			
@@ -185,7 +191,7 @@ public class ConceptMapTypeFormController {
 	
 	/**
 	 * Processes requests to purge a concept map type
-	 * 
+	 *
 	 * @param request the {@link WebRequest} object
 	 * @param conceptMapType
 	 * @return the url to forward to
@@ -195,8 +201,9 @@ public class ConceptMapTypeFormController {
 		Integer id = conceptMapType.getId();
 		try {
 			Context.getConceptService().purgeConceptMapType(conceptMapType);
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Purged concept map type with id: " + id);
+			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.purged"), WebRequest.SCOPE_SESSION);
 			return "redirect:" + CONCEPT_MAP_TYPE_LIST_URL + ".list";

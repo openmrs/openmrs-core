@@ -38,6 +38,8 @@ public class InitializationWizardModel {
 	
 	public static final String INSTALL_METHOD_TESTING = "testing";
 	
+	public static final String INSTALL_METHOD_AUTO = "auto";
+	
 	// Default OpenMRS admin password set by the simple installation.
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
 	
@@ -179,7 +181,7 @@ public class InitializationWizardModel {
 	/**
 	 * Password for the admin user if the database was created now
 	 */
-	public String adminUserPassword = "";
+	public String adminUserPassword = ADMIN_DEFAULT_PASSWORD;
 	
 	/**
 	 * Implementation name.

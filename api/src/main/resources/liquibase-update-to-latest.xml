@@ -34,13 +34,6 @@
 			<column name="edit_privilege" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="1-fix" author="sunbiz" dbms="mysql">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="person_attribute_type" columnName="edit_privilege"/>
-		</preConditions>
-		<comment>(Fixed)Modified edit_privilege to correct column size</comment>
-		<modifyDataType tableName="person_attribute_type" columnName="edit_privilege" newDataType="varchar(50)"/>
-	</changeSet>
 	
 	<changeSet id="2" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
@@ -2345,14 +2338,16 @@
 	</changeSet>
 	
 	<changeSet id="200902142213" author="ewolodzko" dbms="mysql">
+		<validCheckSum>3:ace82a1ecb3a0c3246e39f0bebe38423</validCheckSum> <!-- original checksum -->
+		<validCheckSum>3:288804e42d575fe62c852ed9daa9d59d</validCheckSum> <!-- current checksum with TRUNK-4025 fix-->
 		<comment>
 			Add default sortWeights to all current PersonAttributeTypes
 		</comment>
-		<update tableName="person_attribute_type" >
-			<!-- The weird (select * from person_attribute_type) is needed here instead of just (person_attribute_type) to avoid sql ERROR 1093 -->
-			<column name="sort_weight" valueNumeric="((select count(*) from (select * from person_attribute_type) pat where pat.name &lt; person_attribute_type.name))" />
-			<where>sort_weight is null</where>
-		</update>
+		<sql>
+			<![CDATA[
+			UPDATE  person_attribute_type as A JOIN person_attribute_type as B ON A.name = B.name  SET A.sort_weight = (select count(*) from (select * from person_attribute_type) pat where pat.name < A.name) WHERE A.sort_weight is null;
+			]]>
+		</sql>
 	</changeSet>
 	
 	<changeSet id="200906301606" author="bwolfe" dbms="mysql">
@@ -3482,27 +3477,6 @@
 		<dropForeignKeyConstraint baseTableName="concept_name_tag_map" constraintName="mapped_concept_name_tag"/>		
 	</changeSet>
 
-	<changeSet id="20100607-1550e" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<sqlCheck expectedResult="0">
-					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 4
-				</sqlCheck>
-			</not>
-		</preConditions>
-		<comment>Converting preferred names to FULLY_SPECIFIED names</comment>
-		<update tableName="concept_name">
-			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
-			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 4)</where>
-		</update>			
-		<delete tableName="concept_name_tag_map">
-			<where>concept_name_tag_id = 4</where>
-		</delete>	
-		<delete tableName="concept_name_tag">
-			<where>concept_name_tag_id = 4</where>
-		</delete>
-	</changeSet>
-
 	<changeSet id="20100607-1550d" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3527,29 +3501,31 @@
 	<changeSet id="20100607-1550f" author="wyclif">
 		<validCheckSum><comment>After changing to boolean</comment>3:b57c0f651ed477457fd16e503eaf51a4</validCheckSum>
 		<validCheckSum>3:002108aacdf55731f4fd472d5308c5c8</validCheckSum>
+        <validCheckSum>3:6a72bbb390155596e52da4e8d065d1a2</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
-					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred\___'
+					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred%'
 				</sqlCheck>
 			</not>
 		</preConditions>
 		<comment>
-			Converting concept names with country specific concept name tags to preferred names
+			Converting concept names with preferred concept name tags to preferred and fully specified names
 		</comment>    	
 		<update tableName="concept_name">
+            <column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<column name="locale_preferred" valueBoolean="true"/>
 			<where>
 				concept_name_id IN (SELECT concept_name_id FROM concept_name_tag cnt, concept_name_tag_map cntm 
-				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred\___')
+				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred%')
 			</where>
 		</update>
 		<delete tableName="concept_name_tag_map">
 			<where>
-				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred\___') 
+				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred%')
 			</where>
 		</delete>
-		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred\___'</where></delete>
+		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred%'</where></delete>
 	</changeSet>
 
 	<changeSet id="20100607-1550g" author="wyclif">
@@ -5970,20 +5946,21 @@
      	<validCheckSum><comment>Changing now() to CURRENT_TIMESTAMP</comment>3:a70d8897d05364a0a4398f2b90542fd4</validCheckSum>
      	<validCheckSum><comment>Copying user.retired to person.voided so that generated providers for retired users are retired</comment>3:f338c9ea12ce38b0695db335d983b4e1</validCheckSum>
      	<validCheckSum><comment>Correcting checksum</comment>3:216ab5057dca5471de69124e93953d96</validCheckSum>
+     	<validCheckSum><comment>TRUNK-3853 and TRUNK-3414</comment>3:04bc8aa9859f6f8dda065e272ba12e0d</validCheckSum>
      	<preConditions onFail="MARK_RAN">
  			<columnExists tableName="encounter" columnName="provider_id"/>
  		</preConditions>
  		<comment>Creating providers for persons from the encounter table</comment>
  		<sql>
- 			insert into provider(person_id, identifier, creator, date_created, retired, retired_by, date_retired, retire_reason, uuid)
- 				select distinct person.person_id, person.uuid, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, person.uuid 
+ 			insert into provider(person_id, identifier, creator, date_created, retired, uuid)
+ 				select distinct person.person_id, CONCAT('prov', SUBSTRING(person.uuid, 5)), 1, CURRENT_TIMESTAMP, false, CONCAT('prov', SUBSTRING(person.uuid, 5)) 
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
  					left join users as user on user.person_id = person.person_id
  				where user.person_id is null and encounter.provider_id not in (select person_id from provider);
  				
  			insert into provider(person_id, identifier, creator, date_created, retired, retired_by, date_retired, retire_reason, uuid)
- 				select distinct person.person_id, user.system_id, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, person.uuid
+ 				select distinct person.person_id, user.system_id, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, CONCAT('prov', SUBSTRING(person.uuid, 5))
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
  					left join (select max(users.user_id) as user_id, users.system_id, users.person_id, users.retired, users.retired_by, users.date_retired, users.retire_reason 
@@ -6959,31 +6936,46 @@
 	</changeSet>
 	
 	<changeSet id="1-increase-privilege-col-size-privilege" author="dkayiwa">
+        <validCheckSum>3:b5f33650ea723f2304f40fd60fde36df</validCheckSum><!-- old -->
+        <validCheckSum>3:6ecff8787eca17532e310087cfd65a06</validCheckSum><!-- New after fixing bug where we have to first drop constraints -->
         <preConditions onFail="MARK_RAN">
 			<columnExists tableName="privilege" columnName="privilege"/>
 		</preConditions>
 		<comment>
 			Increasing the size of the privilege column in the privilege table
 		</comment>
+        <dropForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" />
+        <dropForeignKeyConstraint constraintName="privilege_definitons" baseTableName="role_privilege" />
 		<ext:modifyColumn tableName="privilege">
 		    <column name="privilege" type="varchar(255)">
 				<constraints nullable="false" />
 			</column>
 		</ext:modifyColumn>
+        <addForeignKeyConstraint baseTableName="person_attribute_type" baseColumnNames="edit_privilege" constraintName="privilege_which_can_edit"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
+        <addForeignKeyConstraint constraintName="privilege_definitions"
+                                 baseTableName="role_privilege" baseColumnNames="privilege"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
 	<changeSet id="2-increase-privilege-col-size-rol-privilege" author="dkayiwa">
+        <validCheckSum>3:96a937a1719f8e7a98ad682a5608f54b</validCheckSum><!-- old -->
+        <validCheckSum>3:6fc0247ae054fedeb32a4af3775046f4</validCheckSum><!-- New after fixing bug where we have to first drop constraints -->
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="role_privilege" columnName="privilege"/>
 		</preConditions>
 		<comment>
 			Increasing the size of the privilege column in the role_privilege table
 		</comment>
+        <dropForeignKeyConstraint constraintName="privilege_definitions" baseTableName="role_privilege" />
 		<ext:modifyColumn tableName="role_privilege">
 		    <column name="privilege" type="varchar(255)">
 				<constraints nullable="false" />
 			</column>
 		</ext:modifyColumn>
+        <addForeignKeyConstraint constraintName="privilege_definitions"
+                                 baseTableName="role_privilege" baseColumnNames="privilege"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
 	<changeSet id="201205241728-1" author="mvorobey">
@@ -7021,15 +7013,19 @@
 	</changeSet>
 	
 	<changeSet id="3-increase-privilege-col-size-person_attribute_type" author="dkayiwa">
+		<validCheckSum>3:f8e6499f5839e64223d9fb7cbe8cdbc6</validCheckSum><!-- TRUNK-3909 -->
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_attribute_type" columnName="edit_privilege"/>
 		</preConditions>
 		<comment>
 			Increasing the size of the edit_privilege column in the person_attribute_type table
 		</comment>
+		<dropForeignKeyConstraint baseTableName="person_attribute_type" constraintName="privilege_which_can_edit"/>
 		<ext:modifyColumn tableName="person_attribute_type">
 		    <column name="edit_privilege" type="varchar(255)" />
 		</ext:modifyColumn>
+		<addForeignKeyConstraint baseTableName="person_attribute_type" baseColumnNames="edit_privilege" constraintName="privilege_which_can_edit"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
 	<changeSet id="20120613-0930" author="wyclif">
@@ -7379,13 +7375,18 @@
     </changeSet>
     
     <changeSet id="20121016-1504" author="wyclif">
+    	<validCheckSum>3:ca4bde46e2fe247d1d4d227a539ff465</validCheckSum><!-- TRUNK-3909 -->
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="test_order" columnName="order_id"/>
 		</preConditions>
 		<comment>Removing auto increment from test_order.order_id column</comment>
+		<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
 		<ext:modifyColumn tableName="test_order">
 		    <column name="order_id" type="int" />
 		</ext:modifyColumn>
+		<addForeignKeyConstraint constraintName="test_order_order_id_fk"
+			baseTableName="test_order" baseColumnNames="order_id"
+			referencedTableName="orders" referencedColumnNames="order_id" />
 	</changeSet>
 
     <changeSet id="20121020-TRUNK-3610" author="lluismf">
@@ -7476,5 +7477,209 @@
 		<dropNotNullConstraint tableName="encounter_type" columnName="description" columnDataType="text" />
 	</changeSet>
 
-</databaseChangeLog>
+	<changeSet id="20121212-TRUNK-2768" author="patandre">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="person" columnName="deathdate_estimated"/></not>
+		</preConditions>
+		<comment>
+			Adding deathdate_estimated column to person.
+		</comment>
+		<addColumn tableName="person">
+                    <column defaultValueBoolean="false" name="deathdate_estimated" type="BOOLEAN">
+                        <constraints nullable="false"/>
+                    </column>
+		</addColumn>
+	</changeSet>
+    <changeSet id="20130626-TRUNK-439" author="jthoenes">
+        <comment>
+            Adding configurability to Patient Header on Dashboard. Therefore the cd4_count property is dropped and
+            replaced with a header.showConcept property.
+        </comment>
+        <update tableName="global_property">
+            <column name="property"
+                    value="dashboard.header.showConcept" />
+            <column name="description"
+                    value="Comma delimited list of concepts ids to show on the patient header overview" />
+            <where>
+                property='concept.cd4_count'
+            </where>
+        </update>
+    </changeSet>
 
+	<changeSet id="201306141103-TRUNK-3884" author="susantan">
+		<comment>Adding 3 foreign key relationships (creator,created_by,voided_by) to encounter_provider table</comment>
+		<addForeignKeyConstraint constraintName="encounter_provider_creator" baseTableName="encounter_provider" baseColumnNames="creator" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="encounter_provider_changed_by" baseTableName="encounter_provider" baseColumnNames="changed_by" referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint constraintName="encounter_provider_voided_by" baseTableName="encounter_provider" baseColumnNames="voided_by" referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+	<changeSet id="20130925-TRUNK-4105" author="hannes">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists indexName="idx_code_concept_reference_term"/></not>
+		</preConditions>
+		<comment>Adding index on concept_reference_term.code column</comment>
+		<createIndex tableName="concept_reference_term" indexName="idx_code_concept_reference_term">
+			<column name="code"/>
+		</createIndex>
+	</changeSet>
+	<changeSet id="20131023-TRUNK-3903" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_numeric" columnName="display_precision"/></not>
+		</preConditions>
+		<comment>Adding "display_precision" column to concept_numeric table</comment>
+		<addColumn tableName="concept_numeric">
+			<column name="display_precision" type="int" />
+		</addColumn>
+	</changeSet>
+	
+ 	<changeSet id="20130809-TRUNK-4044-duplicateEncounterRoleChangeSet" author="surangak">
+		<preConditions onFail="MARK_RAN">
+		<not>
+			<sqlCheck expectedResult = "0">
+				<![CDATA[
+					SELECT count(*) from encounter_role;
+				]]>
+			</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Custom changesets to identify and resolve duplicate EncounterRole names</comment>
+		<customChange class="org.openmrs.util.databasechange.DuplicateEncounterRoleNameChangeSet"></customChange>
+	</changeSet>
+	
+	<changeSet id="20130809-TRUNK-4044-duplicateEncounterTypeChangeSet" author="surangak">
+		<preConditions onFail="MARK_RAN">
+		<not>
+			<sqlCheck expectedResult = "0">
+				<![CDATA[
+					SELECT count(*) from encounter_type;
+				]]>
+			</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Custom changesets to identify and resolve duplicate EncounterType names</comment>
+		<customChange class="org.openmrs.util.databasechange.DuplicateEncounterTypeNameChangeSet"></customChange>
+	</changeSet>
+
+	<changeSet id="20130809-TRUNK-4044-encounter_type_unique_name_constraint" author="surangak">
+			<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="encounter_type_unique_name" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding the unique constraint to the encounter_type.name column 
+		</comment>
+		<addUniqueConstraint tableName="encounter_type" columnNames="name" constraintName="encounter_type_unique_name"/>
+	</changeSet>
+	
+		<changeSet id="20130809-TRUNK-4044-encounter_role_unique_name_constraint" author="surangak">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="encounter_role_unique_name" />
+			</not>
+		</preConditions>
+		<comment>
+			Adding the unique constraint to the encounter_role.name column 
+		</comment>
+		<addUniqueConstraint tableName="encounter_role" columnNames="name" constraintName="encounter_role_unique_name"/>
+	</changeSet>
+
+	<changeSet id="201401040436-TRUNK-3919" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location_tag" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to location_tag table
+		</comment>
+		<addColumn tableName="location_tag">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_tag_changed_by"
+			baseTableName="location_tag" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+		
+	<changeSet id="201401040438-TRUNK-3919" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location_tag" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to location_tag table
+		</comment>
+		<addColumn tableName="location_tag">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+		<changeSet id="201401040440-TRUNK-3919" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to location table
+		</comment>
+		<addColumn tableName="location">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_changed_by"
+			baseTableName="location" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+		
+	<changeSet id="201401040442-TRUNK-3919" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to location table
+		</comment>
+		<addColumn tableName="location">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="201402120720-TRUNK-3902" author="k-joseph">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_numeric" columnName="precise"/></not>
+		</preConditions>
+		<comment>Rename concept_numeric.precise to concept_numeric.allow_decimal</comment>
+		<renameColumn oldColumnName="precise" newColumnName="allow_decimal" tableName="concept_numeric"  columnDataType="BOOLEAN"/>
+	</changeSet>
+
+    <changeSet id="20140304-TRUNK-4170-duplicateLocationAttributeTypeNameChangeSet" author="harsz89">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult = "0">
+                    <![CDATA[
+ 					SELECT count(*) from location_attribute_type;
+				]]>
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Custom changeset to identify and resolve duplicate Location Attribute Type names</comment>
+        <customChange class="org.openmrs.util.databasechange.DuplicateLocationAttributeTypeNameChangeSet"></customChange>
+    </changeSet>
+
+    <changeSet id="20140304-TRUNK-4170-location_attribute_type_unique_name" author="harsz89">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="location_attribute_type_unique_name" />
+            </not>
+        </preConditions>
+        <comment>
+            Adding the unique constraint to the location_attribute_type.name column
+        </comment>
+        <addUniqueConstraint tableName="location_attribute_type" columnNames="name" constraintName="location_attribute_type_unique_name"/>
+    </changeSet>
+    
+    <changeSet id="20140407-1217-TRUNK-4335" author="rkorytkowski">
+		<comment>Changing drug_order.as_needed to boolean</comment>
+		<modifyDataType tableName="drug_order" columnName="as_needed" newDataType="boolean" />
+	</changeSet>
+</databaseChangeLog>

@@ -58,6 +58,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -83,6 +84,14 @@ public class MigrationHelper {
 	public static Document parseXml(String xml) throws ParserConfigurationException {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		try {
+			// Disable resolution of external entities. See TRUNK-3942 
+			builder.setEntityResolver(new EntityResolver() {
+				
+				public InputSource resolveEntity(String publicId, String systemId) {
+					return new InputSource(new StringReader(""));
+				}
+			});
+			
 			return builder.parse(new InputSource(new StringReader(xml)));
 		}
 		catch (IOException ex) {
@@ -194,11 +203,13 @@ public class MigrationHelper {
 		List<Relationship> relsToAdd = new ArrayList<Relationship>();
 		Random rand = new Random();
 		for (String s : relationships) {
-			if (s.indexOf(":") >= 0)
+			if (s.indexOf(":") >= 0) {
 				s = s.substring(s.indexOf(":") + 1);
+			}
 			String[] ss = s.split(",");
-			if (ss.length < 5)
+			if (ss.length < 5) {
 				throw new IllegalArgumentException("The line '" + s + "' is in the wrong format");
+			}
 			String userLastName = ss[0];
 			String userFirstName = ss[1];
 			String username = (userFirstName + userLastName).replaceAll(" ", "");
@@ -208,9 +219,9 @@ public class MigrationHelper {
 			User user = null;
 			{ // first try looking for non-voided users
 				List<User> users = us.getUsersByName(userFirstName, userLastName, false);
-				if (users.size() == 1)
+				if (users.size() == 1) {
 					user = users.get(0);
-				else if (users.size() > 1) {
+				} else if (users.size() > 1) {
 					throw new IllegalArgumentException("Found " + users.size() + " users named '" + userLastName + ", "
 					        + userFirstName + "'");
 				}
@@ -218,9 +229,9 @@ public class MigrationHelper {
 			if (user == null) {
 				// next try looking for voided users
 				List<User> users = us.getUsersByName(userFirstName, userLastName, false);
-				if (users.size() == 1)
+				if (users.size() == 1) {
 					user = users.get(0);
-				else if (users.size() > 1) {
+				} else if (users.size() > 1) {
 					throw new IllegalArgumentException("Found " + users.size() + " voided users named '" + userLastName
 					        + ", " + userFirstName + "'");
 				}
@@ -244,22 +255,25 @@ public class MigrationHelper {
 				}
 				if (autoAddRole) {
 					Role role = us.getRole(relationshipType);
-					if (role != null)
+					if (role != null) {
 						user.addRole(role);
+					}
 				}
 				us.saveUser(user, pass);
 			}
-			if (user == null)
+			if (user == null) {
 				throw new IllegalArgumentException("Can't find user '" + userLastName + ", " + userFirstName + "'");
+			}
 			Person person = personService.getPerson(user.getUserId());
 			
 			RelationshipType relationship = personService.getRelationshipTypeByName(relationshipType);
 			PatientIdentifierType pit = ps.getPatientIdentifierTypeByName(identifierType);
 			List<PatientIdentifier> found = ps.getPatientIdentifiers(identifier, Collections.singletonList(pit), null, null,
 			    null);
-			if (found.size() != 1)
+			if (found.size() != 1) {
 				throw new IllegalArgumentException("Found " + found.size() + " patients with identifier '" + identifier
 				        + "' of type " + identifierType);
+			}
 			Person relative = personService.getPerson(found.get(0).getPatient().getPatientId());
 			Relationship rel = new Relationship();
 			rel.setPersonA(person);
@@ -295,13 +309,15 @@ public class MigrationHelper {
 				String identifier = temp[1];
 				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, Collections.singletonList(pit), null,
 				    null, null);
-				if (pis.size() != 1)
+				if (pis.size() != 1) {
 					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier
 					        + " of type " + pit);
+				}
 				Patient p = pis.get(0).getPatient();
 				Program program = programsByName.get(temp[2]);
-				if (program == null)
+				if (program == null) {
 					throw new RuntimeException("Couldn't find program \"" + temp[2] + "\" in " + programsByName);
+				}
 				Date enrollmentDate = temp.length < 4 ? null : parseDate(temp[3]);
 				Date completionDate = temp.length < 5 ? null : parseDate(temp[4]);
 				PatientProgram pp = new PatientProgram();
@@ -324,18 +340,21 @@ public class MigrationHelper {
 				Patient p = pis.get(0).getPatient();
 				*/
 				Program program = programsByName.get(temp[2]);
-				if (program == null)
+				if (program == null) {
 					throw new RuntimeException("Couldn't find program \"" + temp[2] + "\" in " + programsByName);
+				}
 				//ProgramWorkflow wf = pws.getWorkflow(program, temp[3]);
 				ProgramWorkflow wf = program.getWorkflowByName(temp[3]);
-				if (wf == null)
+				if (wf == null) {
 					throw new RuntimeException("Couldn't find workflow \"" + temp[3] + "\" for program " + program + " (in "
 					        + program.getAllWorkflows() + ")");
+				}
 				//ProgramWorkflowState st = pws.getState(wf, temp[4]);
 				ProgramWorkflowState st = wf.getStateByName(temp[4]);
-				if (st == null)
+				if (st == null) {
 					throw new RuntimeException("Couldn't find state \"" + temp[4] + "\" for workflow " + wf + " (in "
 					        + wf.getStates() + ")");
+				}
 				Date startDate = temp.length < 6 ? null : parseDate(temp[5]);
 				Date endDate = temp.length < 7 ? null : parseDate(temp[6]);
 				PatientState state = new PatientState();

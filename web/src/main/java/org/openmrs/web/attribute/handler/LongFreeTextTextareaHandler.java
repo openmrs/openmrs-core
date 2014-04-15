@@ -45,10 +45,12 @@ public class LongFreeTextTextareaHandler implements WebDatatypeHandler<LongFreeT
 	public void setHandlerConfiguration(String handlerConfig) {
 		if (handlerConfig != null) {
 			Map<String, String> map = CustomDatatypeUtil.deserializeSimpleConfiguration(handlerConfig);
-			if (map.containsKey("rows"))
+			if (map.containsKey("rows")) {
 				rows = Integer.valueOf(map.get("rows"));
-			if (map.containsKey("cols"))
+			}
+			if (map.containsKey("cols")) {
 				cols = Integer.valueOf(map.get("cols"));
+			}
 		}
 	}
 	
@@ -78,8 +80,9 @@ public class LongFreeTextTextareaHandler implements WebDatatypeHandler<LongFreeT
 		StringBuilder sb = new StringBuilder();
 		sb.append("<textarea id=\"" + widgetId + "\" rows=\"" + rows + "\" cols=\"" + cols + "\" name=\"" + formFieldName
 		        + "\">");
-		if (startingValue != null)
+		if (startingValue != null) {
 			sb.append(WebUtil.escapeHTML(startingValue));
+		}
 		sb.append("</textarea>");
 		return sb.toString();
 	}

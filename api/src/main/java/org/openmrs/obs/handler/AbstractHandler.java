@@ -65,7 +65,7 @@ public class AbstractHandler {
 		String t = obs.getComplexData().getTitle();
 		
 		String extension = getExtension(t);
-		String title = obs.getComplexData().getTitle().replace("." + extension, "");
+		String title = obs.getComplexData().getTitle();
 		
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
@@ -76,6 +76,7 @@ public class AbstractHandler {
 			String now = longfmt.format(new Date());
 			outputfile = new File(dir, now);
 		} else {
+			title = title.replace("." + extension, "");
 			outputfile = new File(dir, title + "." + extension);
 			// outputfile = new File(dir, title);
 		}

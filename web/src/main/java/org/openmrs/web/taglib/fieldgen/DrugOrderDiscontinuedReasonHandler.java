@@ -37,20 +37,23 @@ public class DrugOrderDiscontinuedReasonHandler extends AbstractFieldGenHandler 
 			if (this.fieldGenTag.getParameterMap() != null) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
 			}
-			if (optionHeader == null)
+			if (optionHeader == null) {
 				optionHeader = "";
+			}
 			
 			// get global reason for stopping drug property and concept
 			String reasonOrderStopped = Context.getAdministrationService().getGlobalProperty("concept.reasonOrderStopped");
 			Concept reasonStopped = Context.getConceptService().getConcept(reasonOrderStopped);
-			if (reasonStopped == null)
+			if (reasonStopped == null) {
 				log.debug("Could not get even the default reason concept from global properties");
+			}
 			
 			// get override if it's there
 			if (this.fieldGenTag.getParameterMap() != null) {
 				String reasonSetOverride = (String) this.fieldGenTag.getParameterMap().get("reasonSet");
-				if (reasonSetOverride != null)
+				if (reasonSetOverride != null) {
 					reasonStopped = Context.getConceptService().getConcept(reasonSetOverride);
+				}
 			}
 			
 			List<Concept> possibleReasons = null;
@@ -58,8 +61,9 @@ public class DrugOrderDiscontinuedReasonHandler extends AbstractFieldGenHandler 
 			if (reasonStopped != null) {
 				Collection<ConceptAnswer> answers = reasonStopped.getAnswers(false);
 				for (ConceptAnswer answer : answers) {
-					if (possibleReasons == null)
+					if (possibleReasons == null) {
 						possibleReasons = new ArrayList<Concept>();
+					}
 					possibleReasons.add(answer.getAnswerConcept());
 				}
 			} else {

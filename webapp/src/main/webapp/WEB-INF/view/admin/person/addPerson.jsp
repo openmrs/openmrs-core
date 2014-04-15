@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Add People" otherwise="/login.htm" redirect="/admin/person/addPerson.htm"/>
-
+<openmrs:message var="pageTitle" code="person.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <c:choose>
@@ -70,7 +70,7 @@
 		</style>
 		
 		<h2><openmrs:message code="Person.search.similarPerson"/></h2>
-		<b id="similarPeopleInstructions"><openmrs:message code="Person.search.similarPersonInstructions"/></b>
+		<b id="similarPeopleInstructions"><openmrs:message htmlEscape="false" code="Person.search.similarPersonInstructions"/></b>
 		
 		<br/><br/>
 		

@@ -44,6 +44,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return negative if other attribute is voided", method = "compareTo(PersonAttribute)")
 	public void compareTo_shouldReturnNegativeIfOtherAttributeIsVoided() throws Exception {
 		PersonAttribute pa = new PersonAttribute();
+		pa.setAttributeType(new PersonAttributeType(1));
 		PersonAttribute other = new PersonAttribute();
 		other.setVoided(true);
 		Assert.assertTrue(pa.compareTo(other) < 0);
@@ -56,6 +57,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return negative if other attribute has earlier date created", method = "compareTo(PersonAttribute)")
 	public void compareTo_shouldReturnNegativeIfOtherAttributeHasEarlierDateCreated() throws Exception {
 		PersonAttribute pa = new PersonAttribute();
+		pa.setAttributeType(new PersonAttributeType(1));
 		pa.setDateCreated(new Date());
 		PersonAttribute other = new PersonAttribute();
 		pa.setDateCreated(new Date(pa.getDateCreated().getTime() - 1000));
@@ -74,6 +76,15 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		other.setAttributeType(new PersonAttributeType(2));
 		
 		Assert.assertTrue(pa.compareTo(other) < 0);
+	}
+	
+	/**
+	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
+	 */
+	@Test
+	@Verifies(value = "should not throw exception if attribute type is null", method = "compareTo(PersonAttribute)")
+	public void compareTo_shouldNotThrowExceptionIfAttributeTypeIdIsNull() throws Exception {
+		Assert.assertTrue(new PersonAttribute(1).compareTo(new PersonAttribute(1)) == 0);
 	}
 	
 	/**

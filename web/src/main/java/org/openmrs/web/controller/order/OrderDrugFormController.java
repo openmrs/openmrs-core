@@ -41,7 +41,7 @@ public class OrderDrugFormController extends OrderFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -56,7 +56,7 @@ public class OrderDrugFormController extends OrderFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -80,7 +80,7 @@ public class OrderDrugFormController extends OrderFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -91,8 +91,9 @@ public class OrderDrugFormController extends OrderFormController {
 		
 		if (Context.isAuthenticated()) {
 			Integer orderId = ServletRequestUtils.getIntParameter(request, "orderId");
-			if (orderId != null)
+			if (orderId != null) {
 				order = (DrugOrder) os.getOrder(orderId);
+			}
 		}
 		
 		// if this is a new order, let's see if the user has picked a type yet

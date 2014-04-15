@@ -48,13 +48,15 @@ public class DataTable {
 	}
 	
 	public void addColumn(String colName) {
-		if (!columnOrder.contains(colName))
+		if (!columnOrder.contains(colName)) {
 			columnOrder.add(colName);
+		}
 	}
 	
 	public void addColumns(Collection<String> colNames) {
-		for (String colName : colNames)
+		for (String colName : colNames) {
 			addColumn(colName);
+		}
 	}
 	
 	public int getRowCount() {
@@ -100,8 +102,9 @@ public class DataTable {
 	}
 	
 	public String toString() {
-		if (rows.size() == 0)
+		if (rows.size() == 0) {
 			return "DataTable with no rows";
+		}
 		List<String> columns;
 		if (columnOrder.size() > 0) {
 			columns = columnOrder;
@@ -123,8 +126,9 @@ public class DataTable {
 	}
 	
 	public String getHtmlTable() {
-		if (rows.size() == 0)
+		if (rows.size() == 0) {
 			return "DataTable with no rows";
+		}
 		List<String> columns;
 		if (columnOrder.size() > 0) {
 			columns = columnOrder;

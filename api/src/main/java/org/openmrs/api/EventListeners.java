@@ -37,27 +37,29 @@ public class EventListeners {
 	/**
 	 * This setter acts more like an "appender".  If the list already has elements, calling this method
 	 * will <b>add to</b> the list of listeners instead of replacing it.
-	 * 
+	 *
 	 * @param globalPropertyListeners
 	 */
 	public void setGlobalPropertyListeners(List<GlobalPropertyListener> globalPropertyListeners) {
 		if (log.isDebugEnabled()) {
 			StringBuffer sb = new StringBuffer();
 			for (GlobalPropertyListener gpl : globalPropertyListeners) {
-				if (sb.length() > 0)
+				if (sb.length() > 0) {
 					sb.append(", ");
+				}
 				sb.append(gpl.getClass().getName());
 			}
 			log.debug("GlobalPropertyListeners set to: " + sb.toString());
 			
 		}
 		
-		if (EventListeners.globalPropertyListeners == null)
+		if (EventListeners.globalPropertyListeners == null) {
 			EventListeners.globalPropertyListeners = globalPropertyListeners;
-		else {
+		} else {
 			for (GlobalPropertyListener gpl : globalPropertyListeners) {
-				if (!EventListeners.globalPropertyListeners.contains(gpl))
+				if (!EventListeners.globalPropertyListeners.contains(gpl)) {
 					EventListeners.globalPropertyListeners.add(gpl);
+				}
 			}
 		}
 	}
@@ -67,17 +69,18 @@ public class EventListeners {
 	 * listeners.<br/>
 	 * Without this, the event listener list continues to grow with every Spring
 	 * restart. (and is a memory leak)
-	 * 
+	 *
 	 * @param nullList
 	 *            if true, nulls the list instead of just clearing it
-	 * 
+	 *
 	 * @see applicationContext-service.xml
 	 */
 	public void setGlobalPropertyListenersToEmpty(boolean nullList) {
-		if (nullList)
-			EventListeners.globalPropertyListeners = null;
-		else if (EventListeners.globalPropertyListeners != null)
+		if (nullList) {
+			setGlobalPropertyListeners(null);
+		} else if (EventListeners.globalPropertyListeners != null) {
 			EventListeners.globalPropertyListeners.clear();
+		}
 	}
 	
 }

@@ -37,6 +37,10 @@ public class TestTask extends AbstractTask {
 		log.info("Initializing task " + taskDefinition);
 	}
 	
+	public static void setExecutionCount(int executionCount) {
+		TestTask.executionCount = executionCount;
+	}
+	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
@@ -44,8 +48,9 @@ public class TestTask extends AbstractTask {
 	public void execute() {
 		log.info("Executing task at " + new Date());
 		
+		setExecutionCount(executionCount + 1);
 		// Throw a runtime exception once every ten executions
-		if (++executionCount % 10 == 0) {
+		if (executionCount % 10 == 0) {
 			log.info("Throwing a runtime exception in an attempt to break the scheduler");
 			throw new RuntimeException();
 		}

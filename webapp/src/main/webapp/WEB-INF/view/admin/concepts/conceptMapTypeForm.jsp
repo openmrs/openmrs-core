@@ -64,7 +64,7 @@ $j(document).ready( function() {
             <th class="alignRight"><openmrs:message code="general.name"/><span class="required">*</span></th>
             <td>
                 <spring:bind path="name">
-                	<input type="text" name="${status.expression}" value="${status.value}"/>
+                	<input type="text" name="${status.expression}" value="<c:out value="${status.value}" />"/>
                     <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
                 </spring:bind>
             </td>
@@ -73,7 +73,7 @@ $j(document).ready( function() {
        		<th class="alignRight" valign="top"><openmrs:message code="general.description"/></th>
             <td valign="top">
                 <spring:bind path="description">
-                	<textarea name="${status.expression}" rows="3" cols="50">${status.value}</textarea>
+                	<textarea name="${status.expression}" rows="3" cols="50"><c:out value="${status.value}" /></textarea>
                     <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
                 </spring:bind>
             </td>
@@ -94,7 +94,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.createdBy" /></th>
 			<td>
-				${conceptMapType.creator.personName} -
+				<c:out value="${conceptMapType.creator.personName}" /> -
 				<openmrs:formatDate date="${conceptMapType.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -103,7 +103,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.changedBy" /></th>
 			<td>
-				${conceptMapType.changedBy.personName} -
+				<c:out value="${conceptMapType.changedBy.personName}" /> -
 				<openmrs:formatDate date="${conceptMapType.dateChanged}" type="long" />
 			</td>
 		</tr>
@@ -112,7 +112,7 @@ $j(document).ready( function() {
 		<tr>
 			<th class="alignRight"><openmrs:message code="general.retiredBy" /></th>
 			<td>
-				${conceptMapType.retiredBy.personName} -
+				<c:out value="${conceptMapType.retiredBy.personName}" /> -
 				<openmrs:formatDate date="${conceptMapType.dateRetired}" type="long" />
 			</td>
 		</tr>

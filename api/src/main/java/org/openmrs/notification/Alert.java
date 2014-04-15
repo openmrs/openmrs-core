@@ -70,19 +70,20 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	
 	/**
 	 * Convenience constructor to create an alert with the given text and for the given users
-	 * 
+	 *
 	 * @param text String to display for the alert
 	 * @param users Recipients of this alert
 	 */
 	public Alert(String text, Collection<User> users) {
 		setText(text);
-		for (User user : users)
+		for (User user : users) {
 			addRecipient(user);
+		}
 	}
 	
 	/**
 	 * Convenience constructor to create an alert with the given text and for the given users
-	 * 
+	 *
 	 * @param text String to display for the alert
 	 * @param user Recipient of the alert
 	 */
@@ -247,12 +248,13 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	
 	/**
 	 * Convenience method to add the given AlertRecipient to the list of recipients for this alert
-	 * 
+	 *
 	 * @param r AlertRecipient to add
 	 */
 	public void addRecipient(AlertRecipient r) {
-		if (this.recipients == null)
+		if (this.recipients == null) {
 			this.recipients = new HashSet<AlertRecipient>();
+		}
 		r.setAlert(this);
 		// duplicates are avoided by depending on the .equals and .hashcode
 		//  methods of Alert
@@ -261,7 +263,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	
 	/**
 	 * Convenience method to add the given user to this list of recipients for this alert
-	 * 
+	 *
 	 * @param u User to add to list of recipients
 	 */
 	public void addRecipient(User u) {
@@ -270,34 +272,37 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	
 	/**
 	 * Convenience method to remove the given AlertRecipient from this Alert's list of recipients
-	 * 
+	 *
 	 * @param r user to remove from list of recipients
 	 */
 	public void removeRecipient(AlertRecipient r) {
-		if (recipients != null)
+		if (recipients != null) {
 			recipients.remove(r);
+		}
 	}
 	
 	/**
 	 * Convenience method to find the AlertRecipient object within this alert that corresponds to
 	 * the given <code>recipient</code>
-	 * 
+	 *
 	 * @param recipient
 	 * @return AlertRecipient
 	 */
 	public AlertRecipient getRecipient(User recipient) {
-		if (getRecipients() != null)
+		if (getRecipients() != null) {
 			for (AlertRecipient ar : recipients) {
-				if (ar.getRecipient().equals(recipient))
+				if (ar.getRecipient().equals(recipient)) {
 					return ar;
+				}
 			}
+		}
 		return null;
 	}
 	
 	/**
 	 * Convenience method to mark this alert as read. In order to persist this change in the
 	 * database, AlertService.saveAlert(Alert) will need to be called after this method is done.
-	 * 
+	 *
 	 * @return This alert (for chaining and one-liner purposes)
 	 * @see org.openmrs.notification.AlertService#saveAlert(Alert)
 	 */
@@ -307,8 +312,9 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 		if (authUser != null) {
 			AlertRecipient ar = getRecipient(authUser);
 			ar.setAlertRead(true);
-			if (isSatisfiedByAny())
+			if (isSatisfiedByAny()) {
 				setAlertRead(true);
+			}
 		}
 		
 		return this;

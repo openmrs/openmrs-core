@@ -8,7 +8,7 @@
 <h2><openmrs:message code="Program.conversion.manage.title"/></h2>
 
 <spring:hasBindErrors name="conceptStateConversion">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
@@ -19,7 +19,7 @@
 <form method="post" id="theForm">
 <table>
 	<tr>
-		<td><openmrs:message code="Program.conversion.programWorkflow"/>:</td>
+		<td><openmrs:message code="Program.conversion.programWorkflow"/>:<span class="required">*</span></td>
 		<td>
 			<spring:bind path="conversion.programWorkflow">
 				<openmrs:fieldGen type="org.openmrs.ProgramWorkflow" formFieldName="programWorkflow" val="${status.editor.value}" parameters="onChange=updateStates()|optionHeader=[blank]|programPrefix=true" />
@@ -28,7 +28,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Program.conversion.concept"/>:</td>
+		<td><openmrs:message code="Program.conversion.concept"/>:<span class="required">*</span></td>
 		<td>
 			<spring:bind path="conversion.concept">
 				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="concept" val="${status.editor.value}" parameters="" />
@@ -37,7 +37,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Program.conversion.programWorkflowState"/>:</td>
+		<td><openmrs:message code="Program.conversion.programWorkflowState"/>:<span class="required">*</span></td>
 		<td>
 			<spring:bind path="conversion.programWorkflowState">
 				<select name="programWorkflowState" id="programWorkflowState"></select>
@@ -45,6 +45,14 @@
 			</spring:bind>	
 		</td>
 	</tr>
+	<tr>
+     <c:if test="${conversion.id != null}">
+     <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/>:</sub></font></td>
+         <td colspan="${fn:length(locales)}">
+         <font color="#D0D0D0"><sub>
+         ${conversion.uuid}</sub></font></td>
+     </c:if>
+   </tr>
 </table>
 <br />
 

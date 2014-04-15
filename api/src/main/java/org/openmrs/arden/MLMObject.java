@@ -325,7 +325,7 @@ public class MLMObject {
 			
 			/*******************
 			 * Code for implementing If() then in Action
-			 * 
+			 *
 			 */
 			for (String uniqueKey : uniqueKeys) {
 				if (uniqueKey.startsWith("Box") || uniqueKey.startsWith("mode")) // Needs improvement - for now we allow if(variable not like Box1,...
@@ -366,19 +366,19 @@ public class MLMObject {
 			}
 			
 			/*****
-			 * 
+			 *
 			 * End of code for implementing If() then in Action
 			 */
 			
 			/*********** DO NOT NEED THIS because the above code does it
-			if (this.calls.get("action") != null) {
-				w.append("\t\t\t\tString value = null;\n");
-				w.append("\t\t\t\tString variable = null;\n");
-				w.append("\t\t\t\tint varLen = 0;\n");
-				for (Call currCall : this.calls.get("action")) {
-					currCall.write(w);
-				}
-			}
+			 if (this.calls.get("action") != null) {
+			 w.append("\t\t\t\tString value = null;\n");
+			 w.append("\t\t\t\tString variable = null;\n");
+			 w.append("\t\t\t\tint varLen = 0;\n");
+			 for (Call currCall : this.calls.get("action")) {
+			 currCall.write(w);
+			 }
+			 }
 			 **************/
 			
 			w.append("\t\t\t\tfor(String currAction:actions){\n");
@@ -1152,6 +1152,18 @@ public class MLMObject {
 		lastCall.addParameter(parameter);
 	}
 	
+	public static void setCompKeyIdUsed(boolean compKeyIdUsed) {
+		MLMObject.compKeyIdUsed = compKeyIdUsed;
+	}
+	
+	public static void setKeyId(int keyId) {
+		MLMObject.keyId = keyId;
+	}
+	
+	public static void setCompKeyId(int compKeyId) {
+		MLMObject.compKeyId = compKeyId;
+	}
+	
 	public void addCompOperator(String section, Integer operator, String key) {
 		
 		LinkedHashMap<String, Comparison> compBySection = this.comparisons.get(section);
@@ -1167,7 +1179,7 @@ public class MLMObject {
 				// but if key exists, modify it with __number for the hashmap only
 			} else {
 				compBySection.put(key + "__" + compKeyId, new Comparison(key, operator));
-				compKeyIdUsed = true;
+				setCompKeyIdUsed(true);
 			}
 		} else {
 			compBySection.put(key, new Comparison(key, operator));
@@ -1186,8 +1198,8 @@ public class MLMObject {
 		if (compKeyIdUsed == true) {
 			lastComparison = compBySection.get(key + "__" + compKeyId);
 			lastComparison.setAnswer(answer);
-			compKeyIdUsed = false;
-			compKeyId++; // for next use
+			setCompKeyIdUsed(false);
+			setCompKeyId(compKeyId + 1);//for next use
 		} else {
 			lastComparison = compBySection.get(key);
 			lastComparison.setAnswer(answer);
@@ -1256,10 +1268,12 @@ public class MLMObject {
 					compBySection.put(key + "__" + keyId, thisComparison);
 					
 					compBySection.remove("__Temp__" + keyId);
-					if (keyId > 100) // At most 100 Temp Keys
-						keyId = 1;
-					else
-						keyId++;
+					if (keyId > 100) {
+						// At most 100 Temp Keys
+						setKeyId(1);
+					} else {
+						setKeyId(keyId + 1);
+					}
 				}
 			} else if (thisComparison != null) {
 				
@@ -1269,10 +1283,12 @@ public class MLMObject {
 				compBySection.put(key, thisComparison);
 				compBySection.remove("__Temp__" + keyId);
 				retVal = false;
-				if (keyId > 100) // At most 100 Temp Keys
-					keyId = 1;
-				else
-					keyId++;
+				if (keyId > 100) {
+					// At most 100 Temp Keys
+					setKeyId(1);
+				} else {
+					setKeyId(keyId + 1);
+				}
 				
 			}
 		}

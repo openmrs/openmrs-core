@@ -27,7 +27,7 @@
 		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 			<li>
-			<a href="${pageContext.request.contextPath}/${extension.url}"><openmrs:message code="${extension.label}"/></a>
+			<a href="<openmrs_tag:url value="${extension.url}"/>"><openmrs:message code="${extension.label}"/></a>
 			</li>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>

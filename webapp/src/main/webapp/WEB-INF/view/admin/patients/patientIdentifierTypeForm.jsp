@@ -24,10 +24,10 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.retiredBy"/>
-				${patientIdentifierType.retiredBy.personName}
+				<c:out value="${patientIdentifierType.retiredBy.personName}" />
 				<openmrs:formatDate date="${patientIdentifierType.dateRetired}" type="medium" />
 				-
-				${patientIdentifierType.retireReason}
+				<c:out value="${patientIdentifierType.retireReason}" />
 				<input type="submit" value='<openmrs:message code="PatientIdentifierType.unretirePatientIdentifierType"/>' name="unretire"/>
 			</div>
 		</div>
@@ -38,7 +38,7 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="patientIdentifierType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -125,7 +125,7 @@
 					<option value="${piv['class'].name}" 
 						<c:if test="${status.value == piv['class'].name}">selected</c:if> 
 					/>
-					${piv.name}
+					<c:out value="${piv.name}" />
 						<c:if test="${defaultValidatorName == piv.name}"> (default)</c:if>
 					</option>
 				</c:forEach>
@@ -139,11 +139,23 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${patientIdentifierType.creator.personName} -
+				<c:out value="${patientIdentifierType.creator.personName}" /> -
 				<openmrs:formatDate date="${patientIdentifierType.dateCreated}" type="long" />
 			</td>
 		</tr>
 	</c:if>
+	 <tr>
+     <c:if test="${patientIdentifierType.id != null}">
+       <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+         <spring:bind path="patientIdentifierType.uuid">
+             <c:out value="${status.value}"></c:out>
+         </spring:bind>
+           </sub>
+         </font>
+       </td>
+     </c:if>
+   </tr>
 </table>
 <input type="hidden" name="patientIdentifierTypeId:int" value="${patientIdentifierType.patientIdentifierTypeId}">
 <br />

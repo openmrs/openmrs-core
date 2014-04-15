@@ -31,7 +31,7 @@ highlightMissing=true/false (defaults to true)
 		oldId = identifier;
 		oldLocation = identifierLocationId;
 		if (identifierType != null && identifierType != '' && identifier != null && identifier != '')
-			DWRPatientService.addIdentifier(${model.patientId}, identifierType, identifier, identifierLocationId, finishSave);
+			DWRPatientService.addIdentifier(<c:out value="${model.patientId}" />, identifierType, identifier, identifierLocationId, finishSave);
 	}
 	
 	function finishSave(data) {
@@ -104,7 +104,7 @@ highlightMissing=true/false (defaults to true)
 				<td>
 					<input type="hidden" id="identifierType_${iter.index}" value="${idTypeName}" />
 					<c:if test="${found!=null}">
-						<input type="text" id="identifier_${iter.index}" onKeyUp="identifierFieldChanged(${iter.index})" value="${found.identifier}" />
+						<input type="text" id="identifier_${iter.index}" onKeyUp="identifierFieldChanged(${iter.index})" value="<c:out value="${found.identifier}" />" />
 						<openmrs:fieldGen
 							type="org.openmrs.Location"
 							formFieldName="identifierLocationId_${iter.index}"

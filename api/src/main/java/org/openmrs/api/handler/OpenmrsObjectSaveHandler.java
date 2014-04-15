@@ -37,7 +37,7 @@ import org.openmrs.api.APIException;
  * <br/>
  * This class sets the uuid property on the given OpenmrsObject to a randomly generated <a
  * href="http://wikipedia.org/wiki/UUID">UUID</a> if it is non-null.
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @since 1.5
@@ -49,7 +49,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	
 	/**
 	 * This sets the uuid property on the given OpenmrsObject if it is non-null.
-	 * 
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 * @should set empty string properties to null
@@ -59,8 +59,9 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	 * @should trim empty strings for AllowEmptyStrings annotation
 	 */
 	public void handle(OpenmrsObject openmrsObject, User creator, Date dateCreated, String reason) {
-		if (openmrsObject.getUuid() == null)
+		if (openmrsObject.getUuid() == null) {
 			openmrsObject.setUuid(UUID.randomUUID().toString());
+		}
 		
 		//Set all empty string properties, that do not have the AllowEmptyStrings annotation, to null.
 		//And also trim leading and trailing white space for properties that do not have the
@@ -75,6 +76,12 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			// Ignore properties that don't have a getter (e.g. GlobalProperty.valueReferenceInternal) or
 			// don't have a setter (e.g. Patient.familyName)
 			if (property.getWriteMethod() == null || property.getReadMethod() == null) {
+				continue;
+			}
+			
+			// Ignore properties that have a deprecated getter or setter
+			if (property.getWriteMethod().getAnnotation(Deprecated.class) != null
+			        || property.getReadMethod().getAnnotation(Deprecated.class) != null) {
 				continue;
 			}
 			
@@ -113,12 +120,14 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			}
 			catch (UnsupportedOperationException ex) {
 				// there is no need to log this. These should be (mostly) silently skipped over 
-				if (log.isInfoEnabled())
+				if (log.isInfoEnabled()) {
 					log.info("The property " + property.getName() + " is no longer supported and should be ignored.", ex);
+				}
 			}
 			catch (InvocationTargetException ex) {
-				if (log.isWarnEnabled())
+				if (log.isWarnEnabled()) {
 					log.warn("Failed to access property " + property.getName() + "; accessor threw exception.", ex);
+				}
 			}
 			catch (Exception ex) {
 				throw new APIException(

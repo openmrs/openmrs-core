@@ -56,7 +56,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -70,7 +70,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -121,9 +121,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
 					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getPersonAttributeTypeId();
 				}
-			}
-
-			else if (request.getParameter("unretire") != null) {
+			} else if (request.getParameter("unretire") != null) {
 				try {
 					ps.unretirePersonAttributeType(attrType);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PersonAttributeType.unretiredSuccessfully");
@@ -143,7 +141,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -153,12 +151,14 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			PersonService ps = Context.getPersonService();
 			String attrTypeId = request.getParameter("personAttributeTypeId");
-			if (attrTypeId != null)
+			if (attrTypeId != null) {
 				attrType = ps.getPersonAttributeType(Integer.valueOf(attrTypeId));
+			}
 		}
 		
-		if (attrType == null)
+		if (attrType == null) {
 			attrType = new PersonAttributeType();
+		}
 		
 		return attrType;
 	}

@@ -34,7 +34,7 @@ function toggleProviderDetails(){
 <h2><openmrs:message code="Provider.manage.title"/></h2>
 
 <spring:hasBindErrors name="provider">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
@@ -93,7 +93,7 @@ function toggleProviderDetails(){
 						<a href="javascript:void(0)" onclick="toggleProviderDetails()"> <openmrs:message code="Provider.linkToPerson"/></a>
 					</div>
 					<div class="providerDetails" <c:if test="${provider.person == null}">style="display:none"</c:if>>
-						${provider.person.personName} 
+						<c:out value="${provider.person.personName}" />
 						<span <c:if test="${provider.person != null}">style="display:none"</c:if>>
 						<spring:bind path="provider.person">
 						<openmrs_tag:personField formFieldName="${status.expression}" initialValue="${status.value}" />
@@ -128,7 +128,17 @@ function toggleProviderDetails(){
 					<openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ provider }" formFieldNamePrefix="attribute.${ attrType.providerAttributeTypeId }"/>
 				</c:forEach>
 			</c:if>
-
+			<tr>
+         	<c:if test="${provider.providerId != null}">
+           		<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+           		<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+           	<spring:bind path="provider.uuid">
+               <c:out value="${status.value}"></c:out>
+           </spring:bind>
+           </sub></font>
+           </td>
+           </c:if>
+    	   </tr>
 		</table>
 
 		<br/>
@@ -151,7 +161,7 @@ function toggleProviderDetails(){
 					<tr>
 						<th><openmrs:message code="general.createdBy" /></th>
 						<td>
-							<a href="#View User" onclick="return gotoUser(null, '${provider.creator.userId}')">${provider.creator.personName}</a> -
+							<a href="#View User" onclick="return gotoUser(null, '${provider.creator.userId}')"><c:out value="${provider.creator.personName}" /></a> -
 							<openmrs:formatDate date="${provider.dateCreated}" type="medium" />
 						</td>
 					</tr>
@@ -179,7 +189,7 @@ function toggleProviderDetails(){
 						<tr id="retiredBy">
 							<th><openmrs:message code="general.retiredBy" /></th>
 							<td>
-								<a href="#View User" onclick="return gotoUser(null, '${provider.retiredBy.userId}')">${provider.retiredBy.personName}</a> -
+								<a href="#View User" onclick="return gotoUser(null, '${provider.retiredBy.userId}')"><c:out value="${provider.retiredBy.personName}" /></a> -
 								<openmrs:formatDate date="${provider.dateRetired}" type="medium" />
 							</td>
 						</tr>

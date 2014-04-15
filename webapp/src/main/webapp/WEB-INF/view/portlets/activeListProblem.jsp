@@ -74,7 +74,7 @@
 			return;
 		}
 
-		var patientId = ${model.patientId};
+        var patientId = <c:out value="${model.patientId}" />;
 
 		if(currentlyEditingProblemId == null) {
 			DWRPatientService.createProblem(patientId, problem, modifier, startDate, comments, refreshPage);

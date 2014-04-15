@@ -8,8 +8,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -63,9 +63,10 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	@Component("listener1")
 	public static class Listener1 implements PrivilegeListener {
 		
-		public List<String> hasPrivileges = new ArrayList<String>();
+		//We need to preserve order due to the semantics of Assert.assertArrayEquals
+		public Set<String> hasPrivileges = new LinkedHashSet<String>();
 		
-		public List<String> lacksPrivileges = new ArrayList<String>();
+		public Set<String> lacksPrivileges = new LinkedHashSet<String>();
 		
 		@Override
 		public void privilegeChecked(User user, String privilege, boolean hasPrivilege) {

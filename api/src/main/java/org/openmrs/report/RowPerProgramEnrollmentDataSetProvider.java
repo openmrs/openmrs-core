@@ -50,11 +50,12 @@ public class RowPerProgramEnrollmentDataSetProvider implements DataSetProvider {
 		RowPerProgramEnrollmentDataSetDefinition definition = (RowPerProgramEnrollmentDataSetDefinition) dataSetDefinition;
 		Cohort patients = inputCohort;
 		if (definition.getFilter() != null) {
-			if (patients != null)
+			if (patients != null) {
 				patients = Cohort.intersect(patients, Context.getCohortService().evaluate(definition.getFilter(),
 				    evalContext));
-			else
+			} else {
 				patients = Context.getCohortService().evaluate(definition.getFilter(), evalContext);
+			}
 		}
 		
 		RowPerProgramEnrollmentDataSet ret = new RowPerProgramEnrollmentDataSet();

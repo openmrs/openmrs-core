@@ -24,6 +24,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
@@ -39,6 +40,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.test.annotation.DirtiesContext;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -185,6 +187,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link HL7Service#processHL7Message(Message)}
 	 */
 	@Test
+	@Ignore("TRUNK-3945")
 	@Verifies(value = "should parse message type supplied by module", method = "processHL7Message(Message)")
 	public void processHL7Message_shouldParseMessageTypeSuppliedByModule() throws Exception {
 		Properties props = super.getRuntimeProperties();
@@ -234,6 +237,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link HL7Service#processHL7InQueue(HL7InQueue)}
 	 */
 	@Test
+	@Ignore("TRUNK-3945")
 	@Verifies(value = "should parse oru r01 message using overridden parser provided by a module", method = "processHL7InQueue(HL7InQueue)")
 	public void processHL7InQueue_shouldParseOruR01MessageUsingOverriddenParserProvidedByAModule() throws Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");

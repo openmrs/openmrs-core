@@ -37,13 +37,15 @@ public class DWRMessageService {
 				MessageService messageService = Context.getMessageService();
 				
 				String recipients = NotificationConstants.FEEDBACK_EMAIL_ADDRESS;
-				if (subject == null || subject.equals(""))
+				if (subject == null || subject.equals("")) {
 					subject = NotificationConstants.FEEDBACK_EMAIL_SUBJECT;
+				}
 				
 				String referer = request.getPathTranslated();
 				String userName = "an Anonymous User";
-				if (Context.isAuthenticated())
+				if (Context.isAuthenticated()) {
 					userName = Context.getAuthenticatedUser().getPersonName().getFullName();
+				}
 				
 				content += "\n\n This email sent from: " + referer + " by: " + userName;
 				

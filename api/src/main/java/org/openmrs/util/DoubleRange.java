@@ -125,8 +125,11 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	}
 	
 	public boolean equals(Object o) {
-		DoubleRange other = (DoubleRange) o;
-		return low.equals(other.low) && high.equals(other.high);
+		if (o instanceof DoubleRange) {
+			DoubleRange other = (DoubleRange) o;
+			return low.equals(other.low) && high.equals(other.high);
+		}
+		return false;
 	}
 	
 }

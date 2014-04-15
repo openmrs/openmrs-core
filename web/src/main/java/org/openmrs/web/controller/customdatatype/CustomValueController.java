@@ -46,7 +46,7 @@ public class CustomValueController {
 	
 	/**
 	 * Displays a custom value, as HTML, in its own page.
-	 * 
+	 *
 	 * @param handlerClassname
 	 * @param datatypeClassname
 	 * @param valueReference
@@ -74,7 +74,7 @@ public class CustomValueController {
 	
 	/**
 	 * Downloads a custom value
-	 * 
+	 *
 	 * @param response
 	 * @param handlerClassname
 	 * @param datatypeClassname
@@ -104,8 +104,9 @@ public class CustomValueController {
 		response.setHeader("Content-Type", downloadHandler.getContentType(datatype, valueReference));
 		
 		String filename = downloadHandler.getFilename(datatype, valueReference);
-		if (filename == null)
+		if (filename == null) {
 			filename = "openmrs-custom-value_" + valueReference + ".txt";
+		}
 		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 		
 		// write the resource as a string

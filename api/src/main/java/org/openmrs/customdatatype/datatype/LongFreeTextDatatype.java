@@ -100,8 +100,9 @@ public class LongFreeTextDatatype implements CustomDatatype<String> {
 	@Override
 	public void validate(String typedValue) throws InvalidCustomValueException {
 		// any non-null String is legal
-		if (typedValue == null)
+		if (typedValue == null) {
 			throw new InvalidCustomValueException("Cannot be null");
+		}
 	}
 	
 }

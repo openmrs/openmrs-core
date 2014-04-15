@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Manage Locations" otherwise="/login.htm" redirect="/admin/locations/location.form" />
-
+<openmrs:message var="pageTitle" code="location.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
@@ -14,7 +14,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.retiredBy"/>
-				${location.retiredBy.personName}
+				<c:out value="${location.retiredBy.personName}" />
 				<openmrs:formatDate date="${location.dateRetired}" type="medium" />
 				-
 				${location.retireReason}
@@ -25,19 +25,13 @@
 </c:if>
 
 <spring:hasBindErrors name="location">
-	<openmrs:message code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.globalErrors}" var="error">
-			<openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
 	<table class="left-aligned-th">
 		<tr>
-			<th><openmrs:message code="general.name"/></th>
+			<th><openmrs:message code="general.name"/><span class="required">*</span></th>
 			<td colspan="5">
 				<spring:bind path="location.name">
 					<input type="text" name="name" value='<c:out value="${status.value}"/>' size="35" />
@@ -55,7 +49,7 @@
 			</td>
 		</tr>
 		<spring:nestedPath path="location">
-			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false" />
+			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false|isNew=${location.locationId == null}" />
 		</spring:nestedPath>
 		<tr>
 			<th valign="top"><openmrs:message code="Location.parentLocation"/></th>
@@ -89,8 +83,12 @@
 				<spring:bind path="location.tags">
 					<input type="hidden" name="_tags"/>
 					<c:forEach var="t" items="${locationTags}">
-						<input type="checkbox" name="tags" value="${t.id}" <c:if test="${openmrs:collectionContains(status.value, t)}">checked="true"</c:if>/>
-						<openmrs:format locationTag="${t}"/>
+                        <c:if test="${openmrs:collectionContains(status.value, t) || !t.retired}">
+                            <span <c:if test="${t.retired}">class="retired"</c:if>>
+                                <input type="checkbox" name="tags" value="${t.id}" <c:if test="${openmrs:collectionContains(status.value, t)}">checked="true"</c:if>/>
+                                <openmrs:format locationTag="${t}"/>
+                            </span>
+                        </c:if>
 					</c:forEach>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
@@ -100,11 +98,21 @@
 			<tr>
 				<th><openmrs:message code="general.createdBy" /></th>
 				<td colspan="5">
-					${location.creator.personName} -
+					<c:out value="${location.creator.personName}" /> -
 					<openmrs:formatDate date="${location.dateCreated}" type="long" />
 				</td>
 			</tr>
 		</c:if>
+		<tr>
+		 <c:if test="${location.locationId != null}">
+           <th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid" /></sub></font></th>
+           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+           <spring:bind path="location.uuid">
+               <c:out value="${status.value}"></c:out>
+           </spring:bind></sub></font>
+           </td>
+         </c:if>
+        </tr>
 	</table>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationForm.inForm" type="html" parameters="locationId=${location.locationId}" />
 	<br />

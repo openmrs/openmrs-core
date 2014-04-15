@@ -70,7 +70,7 @@ public class MergePatientsFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -81,7 +81,7 @@ public class MergePatientsFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		
 		if (Context.isAuthenticated()) {
-			String view = getSuccessView();
+			StringBuilder view = new StringBuilder(getSuccessView());
 			PatientService ps = Context.getPatientService();
 			
 			String pref = request.getParameter("preferred");
@@ -92,10 +92,10 @@ public class MergePatientsFormController extends SimpleFormController {
 			Patient preferred = ps.getPatient(Integer.valueOf(pref));
 			List<Patient> notPreferred = new ArrayList<Patient>();
 			
-			view = view + "?patientId=" + preferred.getPatientId();
+			view.append("?patientId=").append(preferred.getPatientId());
 			for (int i = 0; i < nonPreferred.length; i++) {
 				notPreferred.add(ps.getPatient(Integer.valueOf(nonPreferred[i])));
-				view = view + "&patientId=" + nonPreferred[i];
+				view.append("&patientId=").append(nonPreferred[i]);
 			}
 			
 			try {
@@ -116,10 +116,12 @@ public class MergePatientsFormController extends SimpleFormController {
 			int index = redirectURL.indexOf(request.getContextPath(), 2);
 			if (index != -1) {
 				redirectURL = redirectURL.substring(index);
-				if (redirectURL.contains(getSuccessView()))
+				if (redirectURL.contains(getSuccessView())) {
 					redirectURL = "findDuplicatePatients.htm";
-			} else
-				redirectURL = view;
+				}
+			} else {
+				redirectURL = view.toString();
+			}
 			
 			return new ModelAndView(new RedirectView(redirectURL));
 		}
@@ -130,7 +132,7 @@ public class MergePatientsFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -152,7 +154,7 @@ public class MergePatientsFormController extends SimpleFormController {
 	
 	/**
 	 * Called prior to form display. Allows for data to be put in the request to be used in the view
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -171,12 +173,13 @@ public class MergePatientsFormController extends SimpleFormController {
 			patient1Encounters = es.getEncountersByPatient(p1);
 			
 			String[] patientIds = request.getParameterValues("patientId");
-			if (patientIds != null)
+			if (patientIds != null) {
 				for (String patient : patientIds) {
 					patientList.add(Context.getPatientService().getPatient(Integer.valueOf(patient)));
 					encounterList.add(es.getEncountersByPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(patient))));
 				}
+			}
 			if (patientIds != null && patientIds.length > 1 && !patientIds[0].equals(patientIds[1])) {
 				String patientId = patientIds[1];
 				Integer pId = Integer.valueOf(patientId);

@@ -23,7 +23,7 @@ import org.simpleframework.xml.stream.NodeMap;
 
 /**
  * This label logic will convert hibernate proxy class names to their equivalent pojo class names
- * 
+ *
  * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
  */
 @Deprecated
@@ -47,23 +47,26 @@ public class OpenmrsLabelLogic implements LabelLogic {
 			String realClassName = real.getName();
 			
 			// if its a hibernate set, get the real object's type
-			if (value instanceof PersistentCollection)
+			if (value instanceof PersistentCollection) {
 				realClassName = getHibernateInstanceClass(type.getName());
+			}
 			
 			// if we're cglib enhanced, ignore putting this class on the node
 			if (!realClassName.contains("CGLIB")) {
 				
 				// don't have to return the classes for basic things
-				if (type != field)
+				if (type != field) {
 					return realClassName;
+				}
 			} else {
 				// check for each of the overriding pojo types
 				for (String objectName : new String[] { "User", "Patient", "ComplexObs", "ConceptNumeric" }) {
 					String className = "org.openmrs." + objectName;
 					if (realClassName.startsWith(className)) {
 						
-						if (!field.getName().equals(className))
+						if (!field.getName().equals(className)) {
 							return className;
+						}
 					}
 				}
 				
@@ -78,21 +81,23 @@ public class OpenmrsLabelLogic implements LabelLogic {
 	/**
 	 * Convenience method to alter the name of hibernate collections to their normal non-proxied
 	 * equivalents
-	 * 
+	 *
 	 * @param typename classname of the object
 	 * @return deproxied classname
 	 */
 	private String getHibernateInstanceClass(String typename) {
-		if (typename.equals("org.hibernate.collection.PersistentSet"))
+		if (typename.equals("org.hibernate.collection.PersistentSet")) {
 			return "java.util.HashSet";
-		if (typename.equals("org.hibernate.collection.PersistentSortedSet"))
+		}
+		if (typename.equals("org.hibernate.collection.PersistentSortedSet")) {
 			return "java.util.TreeSet";
-		else if (typename.equals("org.hibernate.collection.PersistentList"))
+		} else if (typename.equals("org.hibernate.collection.PersistentList")) {
 			return "java.util.ArrayList";
-		else if (typename.equals("org.hibernate.collection.PersistentMap"))
+		} else if (typename.equals("org.hibernate.collection.PersistentMap")) {
 			return "java.util.Map";
-		else if (typename.contains("hibernate"))
+		} else if (typename.contains("hibernate")) {
 			log.warn("Unknown possible invalid serialized object type: " + typename);
+		}
 		
 		return typename;
 	}

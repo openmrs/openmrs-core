@@ -15,40 +15,40 @@
 	<openmrs:htmlInclude file="/dwr/util.js" />
 
 	<table>
-	<c:forTokens var="conceptId" items="${model.conceptIds}" delims="," >
+	<c:forTokens var="conceptIds" items="${model.conceptIds}" delims="," >
 		<tr>
-			<td><openmrs_tag:concept conceptId="${conceptId}"/>:</td>
+			<td><openmrs_tag:concept conceptId="${conceptIds}"/>:</td>
 			<td>
 				<b>
-				<openmrs_tag:mostRecentObs concept="${conceptId}" observations="${model.patientObs}" locale="${model.locale}" labelIfNone="general.none" showDate="true" showEditLink="true"/>
+				<openmrs_tag:mostRecentObs concept="${conceptIds}" observations="${model.patientObs}" locale="${model.locale}" labelIfNone="general.none" showDate="true" showEditLink="true"/>
 				</b>
 			</td>
 			<c:if test="${allowNew}">
 				<td>
 					<c:set var="thisConcept" value="${model.conceptMapByStringIds[conceptId]}"/>
-					<a href="javascript:showHideDiv('newCustomObs_${conceptId}')">
+					<a href="javascript:showHideDiv('newCustomObs_${conceptIds}')">
 						<openmrs:message code="general.new"/>
 					</a>
 				</td>
-				<td class="dashedAndHighlighted" id="newCustomObs_${conceptId}" style="display:none">
+				<td class="dashedAndHighlighted" id="newCustomObs_${conceptIds}" style="display:none">
 				
-				<openmrs:format conceptId="${conceptId}"/>
+				<openmrs:format conceptId="${conceptIds}"/>
 				<c:choose>
 					<c:when test="${thisConcept.datatype.hl7Abbreviation == 'DT'}">		
-				 		<input type="text" size="10" value="" onfocus="showCalendar(this)" id="value_${conceptId}" />
+				 		<input type="text" size="10" value="" onfocus="showCalendar(this)" id="value_${conceptIds}" />
 					</c:when>
 					<c:when test="${thisConcept.datatype.hl7Abbreviation == 'CWE'}">
-						<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="value_${conceptId}" val="" parameters="noBind=true|showAnswers=${conceptId}" />
+						<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="value_${conceptIds}" val="" parameters="noBind=true|showAnswers=${conceptIds}" />
 					</c:when>
 					<c:otherwise>
-						<input type="text" id="value_${conceptId}"/>	
+						<input type="text" id="value_${conceptIds}"/>
 					</c:otherwise>
 				</c:choose>	
 				
 					<openmrs:message code="general.onDate"/>
-					<openmrs:fieldGen type="java.util.Date" formFieldName="date_${conceptId}" val="" parameters="noBind=true" />
-					<input type="button" value="<openmrs:message code="general.save"/>" onClick="handleAddCustomObs(${conceptId})"/>
-					<input type="button" value="<openmrs:message code="general.cancel"/>" onClick="showHideDiv('newCustomObs_${conceptId}')"/>
+					<openmrs:fieldGen type="java.util.Date" formFieldName="date_${conceptIds}" val="" parameters="noBind=true" />
+					<input type="button" value="<openmrs:message code="general.save"/>" onClick="handleAddCustomObs(${conceptIds})"/>
+					<input type="button" value="<openmrs:message code="general.cancel"/>" onClick="showHideDiv('newCustomObs_${conceptIds}')"/>
 				</td>
 			</c:if>
 		</tr>
@@ -61,7 +61,7 @@
 			var encounterId = null;
 			var valueText = dwr.util.getValue(document.getElementById('value_' + conceptId));
 			var obsDate = dwr.util.getValue(document.getElementById('date_' + conceptId));
-			var patientId = ${model.patient.patientId};
+            var patientId = <c:out value="${model.patient.patientId}" />;
 			DWRObsService.createObs(patientId, encounterId, conceptId, valueText, obsDate, refreshPage);
 		}
 </script>

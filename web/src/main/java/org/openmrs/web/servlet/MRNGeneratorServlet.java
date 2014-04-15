@@ -42,8 +42,9 @@ public class MRNGeneratorServlet extends HttpServlet {
 		String count = request.getParameter("mrn_count");
 		HttpSession session = request.getSession();
 		
-		if (prefix == null)
+		if (prefix == null) {
 			prefix = "";
+		}
 		
 		if (site == null || first == null || count == null || site.length() == 0 || first.length() == 0
 		        || count.length() == 0) {
@@ -68,17 +69,17 @@ public class MRNGeneratorServlet extends HttpServlet {
 		Integer end = mrnCount + mrnFirst;
 		while (mrnFirst < end) {
 			
-			String line = prefix + mrnFirst + site;
+			StringBuilder line = new StringBuilder(prefix).append(mrnFirst).append(site);
 			int checkdigit;
 			try {
-				checkdigit = OpenmrsUtil.getCheckDigit(line);
+				checkdigit = OpenmrsUtil.getCheckDigit(line.toString());
 			}
 			catch (Exception e) {
 				throw new ServletException(e);
 			}
-			line = line + "-" + checkdigit;
+			line.append("-").append(checkdigit);
 			
-			response.getOutputStream().println(line);
+			response.getOutputStream().println(line.toString());
 			
 			mrnFirst++;
 		}

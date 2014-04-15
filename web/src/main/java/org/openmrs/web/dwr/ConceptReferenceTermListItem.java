@@ -39,7 +39,7 @@ public class ConceptReferenceTermListItem {
 	
 	/**
 	 * Most common constructor
-	 * 
+	 *
 	 * @param conceptReferenceTerm the search to use to construct this conceptReferenceTermListItem
 	 */
 	public ConceptReferenceTermListItem(ConceptReferenceTerm conceptReferenceTerm) {
@@ -156,9 +156,10 @@ public class ConceptReferenceTermListItem {
 	 */
 	@Override
 	public int hashCode() {
-		if (conceptReferenceTermId != null)
+		if (conceptReferenceTermId != null) {
 			return 31 * conceptReferenceTermId.hashCode();
-		else
+		} else {
 			return super.hashCode();
+		}
 	}
 }

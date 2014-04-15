@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <encounter encounter_id="2" encounter_type="2" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="8382158d-401e-4190-a75d-347b5f04a893"/>
+  <encounter_provider encounter_provider_id="1" encounter_id="2" provider_id="1" encounter_role_id="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="363fe09b-c1e8-4bdf-aa7d-dd212632f295"/>
+  <obs obs_id="13" person_id="6" concept_id="5089" encounter_id="2" obs_datetime="2008-07-01 00:00:00.0" location_id="1" value_numeric="50.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false" uuid="4db1b07d-2fc5-46ad-8aa1-ac8357f88457"/>
+</dataset>

@@ -45,7 +45,7 @@ public class MailMessageSender implements MessageSender {
 	
 	/**
 	 * Public constructor.
-	 * 
+	 *
 	 * @param session
 	 */
 	public MailMessageSender(Session session) {
@@ -54,7 +54,7 @@ public class MailMessageSender implements MessageSender {
 	
 	/**
 	 * Set javamail session.
-	 * 
+	 *
 	 * @param session
 	 */
 	public void setMailSession(Session session) {
@@ -63,7 +63,7 @@ public class MailMessageSender implements MessageSender {
 	
 	/**
 	 * Send the message.
-	 * 
+	 *
 	 * @param message the message to be sent
 	 */
 	public void send(Message message) throws MessageException {
@@ -81,14 +81,15 @@ public class MailMessageSender implements MessageSender {
 	
 	/**
 	 * Converts the message object to a mime message in order to prepare it to be sent.
-	 * 
+	 *
 	 * @param message
 	 * @return MimeMessage
 	 */
 	public MimeMessage createMimeMessage(Message message) throws Exception {
 		
-		if (message.getRecipients() == null)
+		if (message.getRecipients() == null) {
 			throw new MessageException("Message must contain at least one recipient");
+		}
 		
 		// set the content-type to the default if it isn't defined in Message
 		if (!StringUtils.hasText(message.getContentType())) {
@@ -100,24 +101,26 @@ public class MailMessageSender implements MessageSender {
 		
 		// TODO Need to test the null case.  
 		// Transport should use default mail.from value defined in properties.
-		if (message.getSender() != null)
+		if (message.getSender() != null) {
 			mimeMessage.setSender(new InternetAddress(message.getSender()));
+		}
 		
 		mimeMessage
 		        .setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(message.getRecipients(), false));
 		mimeMessage.setSubject(message.getSubject());
 		
-		if (!message.hasAttachment())
+		if (!message.hasAttachment()) {
 			mimeMessage.setContent(message.getContent(), message.getContentType());
-		else
+		} else {
 			mimeMessage.setContent(createMultipart(message));
+		}
 		
 		return mimeMessage;
 	}
 	
 	/**
 	 * Creates a MimeMultipart, so that we can have an attachment.
-	 * 
+	 *
 	 * @param message
 	 * @return
 	 */

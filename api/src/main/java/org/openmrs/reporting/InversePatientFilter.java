@@ -15,8 +15,9 @@ package org.openmrs.reporting;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.openmrs.Cohort;
+import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.Parameter;
 import org.openmrs.report.Parameterizable;
@@ -77,7 +78,9 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 	}
 	
 	public String getDescription() {
-		return "NOT " + (baseFilter == null ? "?" : baseFilter.getDescription());
+		MessageSourceService msa = Context.getMessageSourceService();
+		return msa.getMessage("reporting.not").toUpperCase() + " "
+		        + (baseFilter == null ? "?" : baseFilter.getDescription());
 	}
 	
 	/**

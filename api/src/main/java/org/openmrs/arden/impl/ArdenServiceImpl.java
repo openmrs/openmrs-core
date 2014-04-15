@@ -39,7 +39,7 @@ import antlr.BaseAST;
 
 /**
  * Arden-related services
- * 
+ *
  * @author Vibha Anand
  * @version 1.0
  */
@@ -110,8 +110,9 @@ public class ArdenServiceImpl implements ArdenService {
 			String cfn;
 			
 			String packagePrefix = Context.getAdministrationService().getGlobalProperty("logic.default.packageName");
-			if (StringUtils.isEmpty(packagePrefix))
+			if (StringUtils.isEmpty(packagePrefix)) {
 				packagePrefix = "org.openmrs.logic.rule";
+			}
 			
 			MLMObject ardObj = new MLMObject(Context.getLocale(), null);
 			
@@ -125,9 +126,10 @@ public class ArdenServiceImpl implements ArdenService {
 			parser.startRule();
 			BaseAST t = (BaseAST) parser.getAST();
 			
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug(t.toStringTree()); // prints maintenance
-				
+			}
+			
 			ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
 			
 			String maintenance = treeParser.maintenance(t, ardObj);
@@ -136,8 +138,9 @@ public class ArdenServiceImpl implements ArdenService {
 			
 			String packageFolderName = packagePrefix.replace('.', File.separatorChar);
 			File packageFolder = new File(outFolder, packageFolderName);
-			if (!packageFolder.exists())
+			if (!packageFolder.exists()) {
 				packageFolder.mkdirs();
+			}
 			
 			// make sure that the file is stored in the correct folder based on the package
 			OutputStream os = new FileOutputStream(new File(packageFolder, cfn + ".java"));
@@ -151,8 +154,9 @@ public class ArdenServiceImpl implements ArdenService {
 			
 			t = (BaseAST) t.getNextSibling(); // Move to library
 			
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug(t.toStringTree()); // prints library
+			}
 			String library = treeParser.library(t, ardObj);
 			w.write(library);
 			w.write("\n********************************************************************/\n");
@@ -326,8 +330,6 @@ public class ArdenServiceImpl implements ArdenService {
 			
 			t = (BaseAST) t.getNextSibling(); // Move to Knowledge
 			log.debug(t.toStringTree()); // prints knowledge
-			@SuppressWarnings("unused")
-			String knowledge_text = treeParser.knowledge_text(t, ardObj);
 			
 			/**************************************************Write Knowledge dependent section**********************************************/
 			Integer p = ardObj.getPriority();
@@ -458,8 +460,6 @@ public class ArdenServiceImpl implements ArdenService {
 			t = (BaseAST) t.getNextSibling().getNextSibling(); // Move to
 			// Knowledge
 			log.debug(t.toStringTree()); // prints knowledge
-			@SuppressWarnings("unused")
-			String knowledge = treeParser.knowledge(t, ardObj);
 			
 			/** *********************************************************************************** */
 			

@@ -25,7 +25,7 @@ import org.openmrs.cohort.CohortDefinition;
 
 /**
  * The logic that evaluates a {@link CohortDataSetDefinition} and produces a {@link CohortDataSet}
- * 
+ *
  * @see CohortDataSetDefinition
  * @see CohortDataSet
  * @deprecated see reportingcompatibility module
@@ -62,8 +62,9 @@ public class CohortDataSetProvider implements DataSetProvider {
 		CohortService cs = Context.getCohortService();
 		for (Map.Entry<String, CohortDefinition> e : def.getStrategies().entrySet()) {
 			Cohort temp = cs.evaluate(e.getValue(), evalContext);
-			if (inputCohort != null)
+			if (inputCohort != null) {
 				temp = Cohort.intersect(temp, inputCohort);
+			}
 			results.put(e.getKey(), temp);
 		}
 		data.setCohortData(results);

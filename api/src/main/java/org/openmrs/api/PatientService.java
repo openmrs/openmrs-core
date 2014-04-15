@@ -77,6 +77,9 @@ public interface PatientService extends OpenmrsService {
 	 * @should update an existing patient
 	 * @should fail when patient does not have required patient identifiers
 	 * @should update the date changed and changed by on update of the person address
+	 * @should set the preferred name address and identifier if none is specified
+	 * @should not set the preferred name address and identifier if they already exist
+	 * @should not set a voided name or address or identifier as preferred
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PATIENTS, PrivilegeConstants.EDIT_PATIENTS })
 	public Patient savePatient(Patient patient) throws APIException;
@@ -304,7 +307,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should return only non voided patients and patient identifiers
 	 * @throws APIException
 	 * @should fetch patient identifiers that exactly matches given identifier
-	 * @should fetch patient identifiers that partially matches given identifier
+	 * @should not fetch patient identifiers that partially matches given identifier
 	 * @should fetch patient identifiers that match given patient identifier types
 	 * @should fetch patient identifiers that match given locations
 	 * @should fetch patient identifiers that match given patients
@@ -554,8 +557,8 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Generic search on patients based on the given string and returns a specific number of them
 	 * from the specified starting position. Implementations can use this string to search on name,
-	 * identifier, etc Voided patients are not returned in search results If start is 0 and length
-	 * is not specified, then all matches are returned
+	 * identifier, searchable person attributes etc. Voided patients are not returned in search results.
+	 * If start is 0 and length is not specified, then all matches are returned
 	 * 
 	 * @param query the string to search on
 	 * @param start the starting index
@@ -563,6 +566,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return a list of matching Patients
 	 * @throws APIException
 	 * @since 1.8
+	 * @should find a patients with a matching identifier with no digits
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;
@@ -961,13 +965,14 @@ public interface PatientService extends OpenmrsService {
 	public void voidAllergy(Allergy allergy, String reason) throws APIException;
 	
 	/**
-	 * Return the number of unvoided patients with names or patient identifiers starting with or
-	 * equal to the specified text
+	 * Return the number of unvoided patients with names or patient identifiers or searchable person attributes
+	 * starting with or equal to the specified text
 	 * 
 	 * @param query the string to search on
 	 * @return the number of patients matching the given search phrase
 	 * @since 1.8
 	 * @should return the right count when a patient has multiple matching person names
+	 * @should return the right count of patients with a matching identifier with no digits
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public Integer getCountOfPatients(String query);

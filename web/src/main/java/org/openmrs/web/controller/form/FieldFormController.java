@@ -13,7 +13,10 @@
  */
 package org.openmrs.web.controller.form;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,7 +27,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.EncounterType;
 import org.openmrs.Field;
+import org.openmrs.Form;
+import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -63,7 +69,7 @@ public class FieldFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -104,7 +110,7 @@ public class FieldFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
@@ -115,12 +121,14 @@ public class FieldFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			String fieldId = request.getParameter("fieldId");
-			if (fieldId != null)
+			if (fieldId != null) {
 				field = fs.getField(Integer.valueOf(fieldId));
+			}
 		}
 		
-		if (field == null)
+		if (field == null) {
 			field = new Field();
+		}
 		
 		return field;
 	}
@@ -130,22 +138,38 @@ public class FieldFormController extends SimpleFormController {
 		
 		Field field = (Field) obj;
 		Locale locale = Context.getLocale();
+		FormService fs = Context.getFormService();
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
 		
 		if (Context.isAuthenticated()) {
-			FormService fs = Context.getFormService();
 			//map.put("fieldTypes", es.getFieldTypes());
 			map.put("fieldTypes", fs.getAllFieldTypes());
-			if (field.getConcept() != null)
+			if (field.getConcept() != null) {
 				map.put("conceptName", field.getConcept().getName(locale));
-			else
+			} else {
 				map.put("conceptName", "");
+			}
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
-		
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
+		
+		Collection<EncounterType> encounterTypes = new ArrayList<EncounterType>();
+		Collection<FormField> containingAnyFormField = new ArrayList<FormField>();
+		Collection<FormField> containingAllFormFields = new ArrayList<FormField>();
+		Collection<Field> fields = new ArrayList<Field>();
+		fields.add(field); // add the field to the fields collection                                                      	
+		List<Form> formsReturned = null;
+		try {
+			formsReturned = fs.getForms(null, null, encounterTypes, null, containingAnyFormField, containingAllFormFields,
+			    fields); // Retrieving forms which contain this particular field
+		}
+		catch (Exception e) {
+			// When Object parameter doesn't contain a valid Form object, getFroms() throws an Exception
+		}
+		
+		map.put("formList", formsReturned); // add the returned forms to the ma
 		
 		return map;
 	}
@@ -154,10 +178,11 @@ public class FieldFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			String conceptId = request.getParameter("conceptId");
-			if (conceptId != null && conceptId.length() > 0)
+			if (conceptId != null && conceptId.length() > 0) {
 				field.setConcept(Context.getConceptService().getConcept(Integer.valueOf(conceptId)));
-			else
+			} else {
 				field.setConcept(null);
+			}
 			
 			field.setFieldType(Context.getFormService().getFieldType(Integer.valueOf(request.getParameter("fieldTypeId"))));
 		}

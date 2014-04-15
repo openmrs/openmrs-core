@@ -17,6 +17,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.scheduler.Task;
 
 /**
  * Implementation of a task that writes "Hello World" to a log file.
@@ -30,11 +31,16 @@ public class HelloWorldTask extends AbstractTask {
 	 * Public constructor.
 	 */
 	public HelloWorldTask() {
-		log.debug(" *** HelloWorldThread Constructor called");
-		log.debug("HelloWorldThread was created at " + new Date());
+		log.debug("hello world task created at " + new Date());
 	}
 	
 	public void execute() {
-		
+		log.debug("executing hello world task");
+		super.startExecuting();
+	}
+	
+	public void shutdown() {
+		log.debug("shutting down hello world task");
+		this.stopExecuting();
 	}
 }

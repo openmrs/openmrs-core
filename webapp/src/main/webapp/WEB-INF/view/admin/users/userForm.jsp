@@ -64,13 +64,7 @@
 </c:if>
 
 <spring:hasBindErrors name="user">
-	<openmrs:message code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <form id="thisUserForm" method="post" action="user.form" autocomplete="off">
@@ -97,7 +91,7 @@
 				<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
 			</spring:nestedPath>
 			<tr>
-				<td><openmrs:message code="Person.gender"/></td>
+				<td><openmrs:message code="Person.gender"/><span class="required">*</span></td>
 				<td><spring:bind path="user.person.gender">
 						<openmrs:forEachRecord name="gender">
 							<input type="radio" name="${status.expression}" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
@@ -143,12 +137,31 @@
 			</tr>
 			<c:if test="${modifyPasswords == true}">
 				<tr>
-				<td><openmrs:message code="User.usersPassword" /></td>
-					<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/></td>
-		
+				<td><openmrs:message code="User.usersPassword" /><span class="required">*</span></td>
+					<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/>
+                    
+                    <openmrs:globalProperty key="security.passwordMinimumLength" var="passwordMinimumLength"/>
+                    <openmrs:globalProperty key="security.passwordRequiresDigit" var="passwordRequiresDigit"/>
+                    <openmrs:globalProperty key="security.passwordRequiresNonDigit" var="passwordRequiresNonDigit"/>
+                    <openmrs:globalProperty key="security.passwordRequiresUpperAndLowerCase" var="passwordRequiresUpperAndLowerCase"/>
+                    
+                    <i><openmrs:message code="general.passwordLength" arguments="${passwordMinimumLength}" />                    
+					
+					<% boolean prevCondition=false; %>
+                    
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true || passwordRequiresDigit == true || passwordRequiresNonDigit == true}"> <openmrs:message code="general.shouldHave" /></c:if>
+                    
+                    <c:if test="${passwordRequiresUpperAndLowerCase == true}" > <openmrs:message code="changePassword.hint.password.bothCasesRequired" /><% prevCondition=true; %></c:if>
+                    
+                    <c:if test="${passwordRequiresDigit == true}" ><% if(prevCondition==true) out.print(","); %> <openmrs:message code="changePassword.hint.password.digitRequired" /><% prevCondition=true; %></c:if>
+                    
+                    <c:if test="${passwordRequiresNonDigit == true}" ><% if(prevCondition==true) out.print(","); %> <openmrs:message code="changePassword.hint.password.nonDigitRequired" /></c:if>
+                    
+                    </i> 
+                    </td>
 				</tr>
 				<tr>
-					<td><openmrs:message code="User.confirm" /></td>
+					<td><openmrs:message code="User.confirm" /><span class="required">*</span></td>
 					<td>
 						<input type="password" name="confirm" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off" />
 						<i><openmrs:message code="User.confirm.description" /></i>
@@ -162,7 +175,6 @@
 					</td>
 				</tr>
 			</c:if>
-			
 			<tr><td colspan="2">&nbsp;</td></tr>
 			
 			<tr>
@@ -188,7 +200,12 @@
 						<td><input type="password" autocomplete="off" name="secretAnswer" size="50" value=""/> <i><openmrs:message code="general.optional"/></i></td>
 					</tr>
 				</c:if>
-			
+			<tr>
+         	   <c:if test="${user.userId != null}">
+           		<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid" /></sub></font></td>
+           		<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${user.uuid}</sub></font></td>
+      		   </c:if>
+ 	        </tr> 
 			<c:if test="${fn:length(user.userProperties) > 0}" >
 				<tr>
 					<td valign="top" colspan="2"><openmrs:message code="User.userProperties" /></td>

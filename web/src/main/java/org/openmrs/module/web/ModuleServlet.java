@@ -41,8 +41,9 @@ public class ModuleServlet extends HttpServlet {
 		int end = servletName.indexOf("/", 1);
 		
 		String moduleId = null;
-		if (end > 0)
+		if (end > 0) {
 			moduleId = servletName.substring(1, end);
+		}
 		
 		log.debug("ModuleId: " + moduleId);
 		Module mod = ModuleFactory.getModuleById(moduleId);
@@ -55,8 +56,9 @@ public class ModuleServlet extends HttpServlet {
 		}
 		
 		end = servletName.indexOf("/", start);
-		if (end == -1 || end > servletName.length())
+		if (end == -1 || end > servletName.length()) {
 			end = servletName.length();
+		}
 		servletName = servletName.substring(start, end);
 		
 		log.debug("Servlet name: " + servletName);

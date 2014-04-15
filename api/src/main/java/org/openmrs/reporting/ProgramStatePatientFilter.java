@@ -18,15 +18,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -59,8 +60,9 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 	public String getCacheKey() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getName()).append(".");
-		if (getProgram() != null)
+		if (getProgram() != null) {
 			sb.append(getProgram().getProgramId());
+		}
 		sb.append(".");
 		sb.append(
 		    OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
@@ -68,25 +70,29 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		sb.append(
 		    OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
 		        untilDate)).append(".");
-		if (getStateList() != null)
-			for (ProgramWorkflowState s : getStateList())
+		if (getStateList() != null) {
+			for (ProgramWorkflowState s : getStateList()) {
 				sb.append(s.getProgramWorkflowStateId()).append(",");
+			}
+		}
 		return sb.toString();
 	}
 	
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
+		Locale locale = Context.getLocale();
 		StringBuilder ret = new StringBuilder();
 		
 		//boolean currentlyCase = withinLastDays != null && withinLastDays == 0
 		//       && (withinLastMonths == null || withinLastMonths == 0);
 		
-		ret.append("Patients in program ");
+		ret.append(msa.getMessage("reporting.patientsInProgram")).append(" ");
 		
 		if (getProgram() != null) {
-			if (getProgram().getConcept() == null)
-				ret.append(" <CONCEPT> ");
-			else {
-				ret.append(getConceptName(program.getConcept()) + " ");
+			if (getProgram().getConcept() == null) {
+				ret.append(" <").append(msa.getMessage("reporting.concept")).append("> ");
+			} else {
+				ret.append(getConceptName(program.getConcept())).append(" ");
 			}
 		}
 		
@@ -98,39 +104,48 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 			}
 			boolean first = true;
 			for (Map.Entry<ProgramWorkflow, Set<ProgramWorkflowState>> e : map.entrySet()) {
-				ret.append(first ? "with " : "or ");
+				ret.append(first ? msa.getMessage("reporting.with") + " " : msa.getMessage("reporting.or") + " ");
 				first = false;
 				try {
 					ret.append(e.getKey().getConcept().getName().getName());
 				}
 				catch (NullPointerException ex) {
-					ret.append("CONCEPT?");
+					ret.append(msa.getMessage("reporting.concept")).append("?");
 				}
-				if (e.getValue().size() == 1)
-					ret.append(" of " + e.getValue().iterator().next().getConcept().getName().getName());
-				else {
-					ret.append(" in [ ");
+				if (e.getValue().size() == 1) {
+					ret.append(" ").append(msa.getMessage("reporting.of")).append(" ").append(
+					    e.getValue().iterator().next().getConcept().getName().getName());
+				} else {
+					ret.append(" ").append(msa.getMessage("reporting.in")).append(" [ ");
 					for (Iterator<ProgramWorkflowState> i = e.getValue().iterator(); i.hasNext();) {
 						ret.append(i.next().getConcept().getName().getName());
-						if (i.hasNext())
+						if (i.hasNext()) {
 							ret.append(" , ");
+						}
 					}
 					ret.append(" ]");
 				}
 			}
 		}
 		if (withinLastMonths != null || withinLastDays != null) {
-			ret.append("within the last ");
-			if (withinLastMonths != null)
-				ret.append(withinLastMonths + " month(s) ");
-			if (withinLastDays != null)
-				ret.append(withinLastDays + " day(s) ");
+			if (withinLastMonths != null) {
+				ret.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastMonths", new Object[] { withinLastMonths }, locale));
+			}
+			if (withinLastDays != null) {
+				ret.append(" ").append(
+				    msa.getMessage("reporting.withinTheLastDays", new Object[] { withinLastDays }, locale));
+			}
 		}
 		// TODO untilDaysAgo untilMonthsAgo
-		if (sinceDate != null)
-			ret.append("on or after " + Context.getDateFormat().format(sinceDate) + " ");
-		if (untilDate != null)
-			ret.append("on or before " + Context.getDateFormat().format(untilDate) + " ");
+		if (sinceDate != null) {
+			ret.append(msa.getMessage("reporting.onOrAfter", new Object[] { Context.getDateFormat().format(sinceDate) },
+			    locale));
+		}
+		if (untilDate != null) {
+			ret.append(msa.getMessage("reporting.onOrBefore", new Object[] { Context.getDateFormat().format(untilDate) },
+			    locale));
+		}
 		
 		return ret.toString();
 	}
@@ -149,14 +164,17 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		Date ret = null;
 		if (withinLastDays != null || withinLastMonths != null) {
 			Calendar gc = Calendar.getInstance();
-			if (withinLastDays != null)
+			if (withinLastDays != null) {
 				gc.add(Calendar.DAY_OF_MONTH, -withinLastDays);
-			if (withinLastMonths != null)
+			}
+			if (withinLastMonths != null) {
 				gc.add(Calendar.MONTH, -withinLastMonths);
+			}
 			ret = gc.getTime();
 		}
-		if (sinceDate != null && (ret == null || sinceDate.after(ret)))
+		if (sinceDate != null && (ret == null || sinceDate.after(ret))) {
 			ret = sinceDate;
+		}
 		return ret;
 	}
 	
@@ -164,14 +182,17 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 		Date ret = null;
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
 			Calendar gc = Calendar.getInstance();
-			if (untilDaysAgo != null)
+			if (untilDaysAgo != null) {
 				gc.add(Calendar.DAY_OF_MONTH, -untilDaysAgo);
-			if (untilMonthsAgo != null)
+			}
+			if (untilMonthsAgo != null) {
 				gc.add(Calendar.MONTH, -untilMonthsAgo);
+			}
 			ret = gc.getTime();
 		}
-		if (untilDate != null && (ret == null || untilDate.before(ret)))
+		if (untilDate != null && (ret == null || untilDate.before(ret))) {
 			ret = untilDate;
+		}
 		return ret;
 	}
 	

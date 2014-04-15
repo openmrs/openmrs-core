@@ -51,10 +51,11 @@ public class DateColumnClassifier implements TableRowClassifier {
 	
 	public String classify(TableRow row) {
 		Object value = row.get(columnName);
-		if (value == null)
+		if (value == null) {
 			return valueIfNull;
-		else
+		} else {
 			return combineMethod.getDateFormat().format((Date) value);
+		}
 	}
 	
 }

@@ -17,7 +17,7 @@ package org.openmrs;
  * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
  * have many 0 to n fields associated with it in a hierarchical manor. This FormField object governs
  * what/how that takes place
- * 
+ *
  * @see org.openmrs.Form
  * @see org.openmrs.Field
  */
@@ -63,58 +63,74 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	/**
 	 * Sort order for the form fields in the schema. Attempts: 1) sortWeight 2) fieldNumber 3)
 	 * fieldPart 4) fieldName
-	 * 
+	 *
 	 * @param f FormField to compare this object to
 	 * @return -1, 0, or +1 depending on the difference between the FormFields
 	 */
 	public int compareTo(FormField f) {
 		if (getSortWeight() != null || f.getSortWeight() != null) {
-			if (getSortWeight() == null)
+			if (getSortWeight() == null) {
 				return -1;
-			if (f.getSortWeight() == null)
+			}
+			if (f.getSortWeight() == null) {
 				return 1;
+			}
 			int c = getSortWeight().compareTo(f.getSortWeight());
-			if (c != 0)
+			if (c != 0) {
 				return c;
+			}
 		}
 		if (getPageNumber() != null || f.getPageNumber() != null) {
-			if (getPageNumber() == null)
+			if (getPageNumber() == null) {
 				return -1;
-			if (f.getPageNumber() == null)
+			}
+			if (f.getPageNumber() == null) {
 				return 1;
+			}
 			int c = getPageNumber().compareTo(f.getPageNumber());
-			if (c != 0)
+			if (c != 0) {
 				return c;
+			}
 		}
 		if (getFieldNumber() != null || f.getFieldNumber() != null) {
-			if (getFieldNumber() == null)
+			if (getFieldNumber() == null) {
 				return -1;
-			if (f.getFieldNumber() == null)
+			}
+			if (f.getFieldNumber() == null) {
 				return 1;
+			}
 			int c = getFieldNumber().compareTo(f.getFieldNumber());
-			if (c != 0)
+			if (c != 0) {
 				return c;
+			}
 		}
 		if (getFieldPart() != null || f.getFieldPart() != null) {
-			if (getFieldPart() == null)
+			if (getFieldPart() == null) {
 				return -1;
-			if (f.getFieldPart() == null)
+			}
+			if (f.getFieldPart() == null) {
 				return 1;
+			}
 			int c = getFieldPart().compareTo(f.getFieldPart());
-			if (c != 0)
+			if (c != 0) {
 				return c;
+			}
 		}
 		if (getField() != null && f.getField() != null) {
 			int c = getField().getName().compareTo(f.getField().getName());
-			if (c != 0)
+			if (c != 0) {
 				return c;
+			}
 		}
-		if (getFormFieldId() == null && f.getFormFieldId() != null)
+		if (getFormFieldId() == null && f.getFormFieldId() != null) {
 			return -1;
-		if (getFormFieldId() != null && f.getFormFieldId() == null)
+		}
+		if (getFormFieldId() != null && f.getFormFieldId() == null) {
 			return 1;
-		if (getFormFieldId() == null && f.getFormFieldId() == null)
+		}
+		if (getFormFieldId() == null && f.getFormFieldId() == null) {
 			return 1;
+		}
 		
 		return getFormFieldId().compareTo(f.getFormFieldId());
 		
@@ -287,8 +303,9 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		if (formFieldId == null)
+		if (formFieldId == null) {
 			return "null";
+		}
 		
 		return this.formFieldId.toString();
 	}

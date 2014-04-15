@@ -26,12 +26,13 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the User object
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { User.class }, order = 50)
@@ -45,7 +46,7 @@ public class UserValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
@@ -55,48 +56,63 @@ public class UserValidator implements Validator {
 	
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if retired and retireReason is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 * @should fail validation if email as username enabled and email invalid
 	 * @should fail validation if email as username disabled and email provided
+	 * @should not throw NPE when user is null
 	 */
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
 		if (user == null) {
-			errors.rejectValue("user", "error.general");
+			errors.reject("error.general");
 		} else {
-			if (user.isRetired() && StringUtils.isBlank(user.getRetireReason()))
+			if (user.isRetired() && StringUtils.isBlank(user.getRetireReason())) {
 				errors.rejectValue("retireReason", "error.null");
+			}
 			if (user.getPerson() == null) {
 				errors.rejectValue("person", "error.null");
 			} else {
 				// check that required person details are filled out
 				Person person = user.getPerson();
-				if (person.getGender() == null)
+				if (person.getGender() == null) {
 					errors.rejectValue("person.gender", "error.null");
-				if (person.getDead() == null)
+				}
+				if (person.getDead() == null) {
 					errors.rejectValue("person.dead", "error.null");
-				if (person.getVoided() == null)
+				}
+				if (person.getVoided() == null) {
 					errors.rejectValue("person.voided", "error.null");
-				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().getFullName()))
+				}
+				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().getFullName())) {
 					errors.rejectValue("person", "Person.names.length");
+				}
 			}
-		}
-		AdministrationService as = Context.getAdministrationService();
-		boolean emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
-		if (emailAsUsername) {
-			boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
-			if (!isValidUserName) {
-				errors.rejectValue("username", "error.username.email");
+			
+			AdministrationService as = Context.getAdministrationService();
+			boolean emailAsUsername = false;
+			try {
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				emailAsUsername = Boolean.parseBoolean(as.getGlobalProperty(
+				    OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false"));
 			}
-		} else {
-			boolean isValidUserName = isUserNameValid(user.getUsername());
-			if (!isValidUserName) {
-				errors.rejectValue("username", "error.username.pattern");
+			finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			}
+			
+			if (emailAsUsername) {
+				boolean isValidUserName = isUserNameAsEmailValid(user.getUsername());
+				if (!isValidUserName) {
+					errors.rejectValue("username", "error.username.email");
+				}
+			} else {
+				boolean isValidUserName = isUserNameValid(user.getUsername());
+				if (!isValidUserName) {
+					errors.rejectValue("username", "error.username.pattern");
+				}
 			}
 		}
 	}
@@ -108,7 +124,7 @@ public class UserValidator implements Validator {
 	 * followed by more alphanumeric characters (may include . - _) <li>can be at most 50 characters
 	 * <li>minimum 2 chars case-insensitive Examples: <li>The following username will pass
 	 * validation: A123_.-XYZ9
-	 * 
+	 *
 	 * @param username the username string to check
 	 * @return true if the username is ok
 	 * @should validate username with only alpha numerics
@@ -131,8 +147,9 @@ public class UserValidator implements Validator {
 		// complete meaning = 2-50 characters, the first must be a letter, digit, or _, and the rest may also be - or .
 		String expression = "^[\\w][\\Q_\\E\\w-\\.]{1,49}$";
 		// empty usernames are allowed
-		if (StringUtils.isEmpty(username))
+		if (StringUtils.isEmpty(username)) {
 			return true;
+		}
 		
 		try {
 			//Make the comparison case-insensitive.
@@ -148,10 +165,10 @@ public class UserValidator implements Validator {
 	
 	/**
 	 * Returns true if the given username is a valid e-mail.
-	 * 
+	 *
 	 * @param username
 	 * @return true if valid
-	 * 
+	 *
 	 * @should return false if email invalid
 	 * @should return true if email valid
 	 */

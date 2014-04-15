@@ -24,7 +24,7 @@ import org.openmrs.api.PatientService;
  * needs to be serialized. This data represents the details of a merge. It is also used for
  * abstracting the serialization outside of the PatientService and to allow storing the
  * deserialized form of the merged data
- * 
+ *
  * @see PersonMergeLog
  * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
  * @since 1.9
@@ -115,6 +115,12 @@ public class PersonMergeLogData {
 	private Date priorDateOfDeath;
 	
 	/**
+	 * Whether the date of death of preferred person was an estimated value before the merge
+	 * occurred
+	 */
+	private Boolean priorDateOfDeathEstimated;
+	
+	/**
 	 * Value of cause of death of preferred person as it was before the merge occurred
 	 */
 	private String priorCauseOfDeath;
@@ -135,8 +141,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addMovedEncounter(String uuid) {
-		if (movedEncounters == null)
+		if (movedEncounters == null) {
 			movedEncounters = new ArrayList<String>();
+		}
 		movedEncounters.add(uuid);
 	}
 	
@@ -145,8 +152,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addCreatedProgram(String uuid) {
-		if (createdPrograms == null)
+		if (createdPrograms == null) {
 			createdPrograms = new ArrayList<String>();
+		}
 		createdPrograms.add(uuid);
 	}
 	
@@ -155,8 +163,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addVoidedRelationship(String uuid) {
-		if (voidedRelationships == null)
+		if (voidedRelationships == null) {
 			voidedRelationships = new ArrayList<String>();
+		}
 		voidedRelationships.add(uuid);
 	}
 	
@@ -165,8 +174,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addCreatedRelationship(String uuid) {
-		if (createdRelationships == null)
+		if (createdRelationships == null) {
 			createdRelationships = new ArrayList<String>();
+		}
 		createdRelationships.add(uuid);
 	}
 	
@@ -175,8 +185,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addMovedIndependentObservation(String uuid) {
-		if (movedIndependentObservations == null)
+		if (movedIndependentObservations == null) {
 			movedIndependentObservations = new ArrayList<String>();
+		}
 		movedIndependentObservations.add(uuid);
 	}
 	
@@ -185,8 +196,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addCreatedOrder(String uuid) {
-		if (createdOrders == null)
+		if (createdOrders == null) {
 			createdOrders = new ArrayList<String>();
+		}
 		createdOrders.add(uuid);
 	}
 	
@@ -195,8 +207,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addCreatedIdentifier(String uuid) {
-		if (createdIdentifiers == null)
+		if (createdIdentifiers == null) {
 			createdIdentifiers = new ArrayList<String>();
+		}
 		createdIdentifiers.add(uuid);
 	}
 	
@@ -205,8 +218,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addCreatedAddress(String uuid) {
-		if (createdAddresses == null)
+		if (createdAddresses == null) {
 			createdAddresses = new ArrayList<String>();
+		}
 		createdAddresses.add(uuid);
 	}
 	
@@ -215,8 +229,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addCreatedName(String uuid) {
-		if (createdNames == null)
+		if (createdNames == null) {
 			createdNames = new ArrayList<String>();
+		}
 		createdNames.add(uuid);
 	}
 	
@@ -225,8 +240,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addCreatedAttribute(String uuid) {
-		if (createdAttributes == null)
+		if (createdAttributes == null) {
 			createdAttributes = new ArrayList<String>();
+		}
 		createdAttributes.add(uuid);
 	}
 	
@@ -235,8 +251,9 @@ public class PersonMergeLogData {
 	}
 	
 	public void addMovedUser(String uuid) {
-		if (movedUsers == null)
+		if (movedUsers == null) {
 			movedUsers = new ArrayList<String>();
+		}
 		movedUsers.add(uuid);
 	}
 	
@@ -272,6 +289,15 @@ public class PersonMergeLogData {
 		this.priorDateOfDeath = priorDateOfDeath;
 	}
 	
+	public Boolean getPriorDateOfDeathEstimated() {
+		return priorDateOfDeathEstimated;
+	}
+	
+	//public void setPriorDateOfDeathEstimated(boolean priorDateOfDeathEstimated) {
+	public void setPriorDateOfDeathEstimated(Boolean priorDateOfDeathEstimated) {
+		this.priorDateOfDeathEstimated = priorDateOfDeathEstimated;
+	}
+	
 	public String getPriorCauseOfDeath() {
 		return priorCauseOfDeath;
 	}
@@ -282,35 +308,47 @@ public class PersonMergeLogData {
 	
 	/**
 	 * Computes a unique hash value representing the object
-	 * 
+	 *
 	 * @return hash value
 	 */
 	public int computeHashValue() {
 		String str = "";
-		if (getCreatedAddresses() != null)
+		if (getCreatedAddresses() != null) {
 			str += getCreatedAddresses().toString();
-		if (getCreatedAttributes() != null)
+		}
+		if (getCreatedAttributes() != null) {
 			str += getCreatedAttributes().toString();
-		if (getCreatedIdentifiers() != null)
+		}
+		if (getCreatedIdentifiers() != null) {
 			str += getCreatedIdentifiers().toString();
-		if (getCreatedNames() != null)
+		}
+		if (getCreatedNames() != null) {
 			str += getCreatedNames().toString();
-		if (getCreatedOrders() != null)
+		}
+		if (getCreatedOrders() != null) {
 			str += getCreatedOrders().toString();
-		if (getCreatedPrograms() != null)
+		}
+		if (getCreatedPrograms() != null) {
 			str += getCreatedPrograms().toString();
-		if (getCreatedRelationships() != null)
+		}
+		if (getCreatedRelationships() != null) {
 			str += getCreatedRelationships().toString();
-		if (getVoidedRelationships() != null)
+		}
+		if (getVoidedRelationships() != null) {
 			str += getVoidedRelationships().toString();
-		if (getMovedVisits() != null)
+		}
+		if (getMovedVisits() != null) {
 			str += getMovedVisits().toString();
-		if (getMovedEncounters() != null)
+		}
+		if (getMovedEncounters() != null) {
 			str += getMovedEncounters().toString();
-		if (getMovedIndependentObservations() != null)
+		}
+		if (getMovedIndependentObservations() != null) {
 			str += getMovedIndependentObservations().toString();
-		if (getMovedUsers() != null)
+		}
+		if (getMovedUsers() != null) {
 			str += getMovedUsers().toString();
+		}
 		str += getPriorCauseOfDeath();
 		str += getPriorGender();
 		str += (getPriorDateOfBirth() != null) ? getPriorDateOfBirth().toString() : getPriorDateOfBirth();

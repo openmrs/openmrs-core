@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the data set service.
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
@@ -52,11 +52,11 @@ public class DataSetServiceImpl implements DataSetService {
 	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
-	 * 
+	 *
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
-		providers = null;
+		setProviders(null);
 	}
 	
 	/**
@@ -72,8 +72,9 @@ public class DataSetServiceImpl implements DataSetService {
 	 * @see org.openmrs.api.DataSetService#getProviders()
 	 */
 	public List<DataSetProvider> getProviders() {
-		if (providers == null)
+		if (providers == null) {
 			providers = new Vector<DataSetProvider>();
+		}
 		
 		return providers;
 	}
@@ -83,8 +84,9 @@ public class DataSetServiceImpl implements DataSetService {
 	 */
 	public void registerProvider(DataSetProvider newProvider) {
 		for (DataSetProvider currentProvider : getProviders()) {
-			if (currentProvider.getClass().equals(newProvider.getClass()))
+			if (currentProvider.getClass().equals(newProvider.getClass())) {
 				return;
+			}
 		}
 		
 		// we only get here if there isn't already a provider registered for this class
@@ -102,9 +104,11 @@ public class DataSetServiceImpl implements DataSetService {
 	 * @see org.openmrs.api.DataSetService#getProvider(org.openmrs.report.DataSetDefinition)
 	 */
 	public DataSetProvider getProvider(DataSetDefinition definition) {
-		for (DataSetProvider p : getProviders())
-			if (p.canEvaluate(definition))
+		for (DataSetProvider p : getProviders()) {
+			if (p.canEvaluate(definition)) {
 				return p;
+			}
+		}
 		return null;
 	}
 	
@@ -115,8 +119,9 @@ public class DataSetServiceImpl implements DataSetService {
 	@SuppressWarnings("unchecked")
 	public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext) {
 		DataSetProvider provider = getProvider(definition);
-		if (provider == null)
+		if (provider == null) {
 			throw new APIException("No DataSetProvider found for (" + definition.getClass() + ") " + definition.getName());
+		}
 		return provider.evaluate(definition, inputCohort, evalContext);
 	}
 	

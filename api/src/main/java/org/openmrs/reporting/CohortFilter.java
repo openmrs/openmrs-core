@@ -32,23 +32,26 @@ public class CohortFilter extends AbstractPatientFilter implements PatientFilter
 	}
 	
 	public String getName() {
-		if (getCohort() != null)
+		if (getCohort() != null) {
 			return cohort.getName();
-		else
+		} else {
 			return super.getName();
+		}
 	}
 	
 	public String getDescription() {
-		if (getCohort() != null)
+		if (getCohort() != null) {
 			return cohort.getDescription();
-		else
+		} else {
 			return super.getDescription();
+		}
 	}
 	
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		Cohort temp = new Cohort();
-		if (getCohort() != null)
+		if (getCohort() != null) {
 			temp = getCohort();
+		}
 		return input == null ? temp : Cohort.intersect(input, temp);
 	}
 	

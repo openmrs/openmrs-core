@@ -114,23 +114,27 @@ public class ForEachRecordTag extends BodyTagSupport {
 		} else if (name.equals("civilStatus")) {
 			ConceptService cs = Context.getConceptService();
 			Concept civilStatus = cs.getConcept(OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID);
-			if (civilStatus == null)
+			if (civilStatus == null) {
 				log.error("OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID is defined incorrectly.");
-			
-			records = civilStatus.getAnswers(false).iterator();
-			
-			Map<String, String> opts = new HashMap<String, String>();
-			for (ConceptAnswer a : civilStatus.getAnswers(false)) {
-				opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getBestName(locale).getName());
+			} else {
+				records = civilStatus.getAnswers(false).iterator();
+				
+				Map<String, String> opts = new HashMap<String, String>();
+				for (ConceptAnswer a : civilStatus.getAnswers(false)) {
+					opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getBestName(locale)
+					        .getName());
+				}
+				records = opts.entrySet().iterator();
+				if (select != null) {
+					select = select.toString() + "=" + opts.get(select);
+				}
 			}
-			records = opts.entrySet().iterator();
-			if (select != null)
-				select = select.toString() + "=" + opts.get(select);
 		} else if (name.equals("gender")) {
 			Map<String, String> opts = OpenmrsConstants.GENDER();
 			records = opts.entrySet().iterator();
-			if (select != null)
+			if (select != null) {
 				select = select.toString() + "=" + opts.get(select);
+			}
 		} else if (name.equals("workflowStatus")) {
 			List<ProgramWorkflowState> ret = Context.getProgramWorkflowService().getStates();
 			records = ret.iterator();
@@ -141,24 +145,28 @@ public class ForEachRecordTag extends BodyTagSupport {
 			List<Role> ret = Context.getUserService().getAllRoles();
 			records = ret.iterator();
 		} else if (name.equals("conceptSet")) {
-			if (conceptSet == null)
+			if (conceptSet == null) {
 				throw new IllegalArgumentException("Must specify conceptSet");
+			}
 			Concept c = OpenmrsUtil.getConceptByIdOrName(conceptSet);
-			if (c == null)
+			if (c == null) {
 				throw new IllegalArgumentException("Can't find conceptSet " + conceptSet);
+			}
 			List<Concept> list = Context.getConceptService().getConceptsByConceptSet(c);
 			records = list.iterator();
 		} else if (name.equals("answer")) {
-			if (concept == null)
+			if (concept == null) {
 				throw new IllegalArgumentException("Must specify concept");
+			}
 			Concept c = OpenmrsUtil.getConceptByIdOrName(concept);
 			if (c == null) {
 				log.error("Can't find concept with name or id of: " + concept + " and so no answers will be returned");
 				records = null;
-			} else if (c.getAnswers(false) != null)
+			} else if (c.getAnswers(false) != null) {
 				records = c.getAnswers(false).iterator();
-			else
+			} else {
 				records = new ArrayList<Concept>().iterator();
+			}
 		} else {
 			try {
 				Class<?> cls = Context.loadClass(name);
@@ -175,8 +183,9 @@ public class ForEachRecordTag extends BodyTagSupport {
 		if (records == null || records.hasNext() == false) {
 			records = null;
 			return SKIP_BODY;
-		} else
+		} else {
 			return EVAL_BODY_BUFFERED;
+		}
 		
 	}
 	
@@ -198,8 +207,9 @@ public class ForEachRecordTag extends BodyTagSupport {
 			Object obj = records.next();
 			iterate(obj);
 			return EVAL_BODY_BUFFERED;
-		} else
+		} else {
 			return SKIP_BODY;
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -243,8 +253,9 @@ public class ForEachRecordTag extends BodyTagSupport {
 	 */
 	public int doEndTag() throws JspException {
 		try {
-			if (getBodyContent() != null && records != null)
+			if (getBodyContent() != null && records != null) {
 				getBodyContent().writeOut(getBodyContent().getEnclosingWriter());
+			}
 		}
 		catch (java.io.IOException e) {
 			throw new JspTagException("IO Error: " + e.getMessage());

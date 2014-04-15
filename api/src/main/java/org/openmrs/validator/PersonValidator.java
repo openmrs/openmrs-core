@@ -28,7 +28,7 @@ import org.springframework.validation.Validator;
 
 /**
  * This class validates a Person object.
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { Person.class }, order = 50)
@@ -58,8 +58,9 @@ public class PersonValidator implements Validator {
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
+		}
 		
 		if (target == null) {
 			return;
@@ -95,22 +96,24 @@ public class PersonValidator implements Validator {
 		
 		// check birth date against future dates and really old dates
 		if (person.getBirthdate() != null) {
-			if (person.getBirthdate().after(new Date()))
+			if (person.getBirthdate().after(new Date())) {
 				errors.rejectValue("birthdate", "error.date.future");
-			else {
+			} else {
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
-				c.add(Calendar.YEAR, -120); // person cannot be older than 120 years old 
+				c.add(Calendar.YEAR, -120); // person cannot be older than 120 years old
 				if (person.getBirthdate().before(c.getTime())) {
 					errors.rejectValue("birthdate", "error.date.nonsensical");
 				}
 			}
 		}
 		
-		if (person.isVoided())
+		if (person.isVoided()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-		if (person.isDead())
+		}
+		if (person.isDead()) {
 			ValidationUtils.rejectIfEmpty(errors, "causeOfDeath", "Person.dead.causeOfDeathNull");
+		}
 		
 		ValidateUtil.validateFieldLengths(errors, Person.class, "gender");
 	}

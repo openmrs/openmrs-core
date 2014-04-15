@@ -26,7 +26,7 @@ import org.openmrs.api.context.Context;
 /**
  * This class deals with {@link User} objects when they are saved via a save* method in an Openmrs
  * Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP class. <br/>
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @see User
@@ -41,8 +41,9 @@ public class UserSaveHandler implements SaveHandler<User> {
 	 */
 	public void handle(User user, User creator, Date dateCreated, String other) {
 		// if the user doesn't have a system id, generate one
-		if (user.getSystemId() == null || user.getSystemId().equals(""))
+		if (user.getSystemId() == null || user.getSystemId().equals("")) {
 			user.setSystemId(Context.getUserService().generateSystemId());
+		}
 		
 		// the framework only automatically recurses on properties that are Collection<OpenmrsObject>
 		// so we need to do this manually
@@ -54,8 +55,9 @@ public class UserSaveHandler implements SaveHandler<User> {
 	}
 	
 	private void loadLazyHibernateCollections(User user) {
-		if (user.getPerson() instanceof Patient)
+		if (user.getPerson() instanceof Patient) {
 			((Patient) user.getPerson()).getPatientIdentifier();
+		}
 	}
 	
 }

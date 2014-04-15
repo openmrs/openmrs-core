@@ -43,8 +43,9 @@ public class ConceptRedirectServlet extends HttpServlet {
 		if (path != null) {
 			path = path.substring(1); // remove first slash
 			Integer nextSlash = path.indexOf("/");
-			if (nextSlash != -1)
+			if (nextSlash != -1) {
 				path = path.substring(0, nextSlash);
+			}
 			log.debug("new concept id: " + path);
 			try {
 				Integer i = new Integer(path);

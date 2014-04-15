@@ -9,7 +9,7 @@
 		<c:when test="${obs.obsGrouping}">
 			<tr class="<c:if test="${obs.voided}">voided </c:if>obsGroupHeader">
 				<td>${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
-				<td colspan="4" style="padding-left: ${padding}">${field.field.concept.name.name}</td>
+				<td colspan="4" style="padding-left: ${padding}"><c:out value="${field.field.concept.name.name}" /></td>
 			</tr>
 			<tr class="<c:if test="${obs.voided}">voided </c:if>">
 				<td colspan="5"><%-- this is the empty row to mimic the description row--%></td>
@@ -23,7 +23,7 @@
 			<tr class='${count % 2 == 0 ? "evenRow" : "oddRow"} ${obs.voided ? "voided" : ""}'
 				onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
 				<td class="fieldNumber">${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
-				<td class="obsConceptName" style="padding-left: ${padding}"><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')">${obs.concept.name.name}</a></td>
+				<td class="obsConceptName" style="padding-left: ${padding}"><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')"><c:out value="${obs.concept.name.name}" /></a></td>
 				<td class="obsValue"><openmrs:format obsValue="${obs}" /></td>
 				<td class="obsAlerts" valign="middle" align="right">
 					<c:choose>
@@ -33,7 +33,7 @@
 					<span class="obsComment"><c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if></span>
 				</td>
 				<td class="obsCreator" style="white-space: nowrap;">
-					${obs.creator.personName} -
+					<c:out value="${obs.creator.personName}" /> -
 					<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
 				</td>
 			</tr>

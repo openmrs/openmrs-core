@@ -47,7 +47,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	
 	/**
 	 * Default internal locale.
-	 * 
+	 *
 	 * @deprecated use {@link #getDefaultLocale()} now
 	 */
 	@Deprecated
@@ -55,7 +55,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	
 	/**
 	 * Gets the default locale specified as a global property.
-	 * 
+	 *
 	 * @return default locale object.
 	 * @since 1.5
 	 * @should not return null if global property does not exist
@@ -80,16 +80,17 @@ public class LocaleUtility implements GlobalPropertyListener {
 						}
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception e) {
 					// swallow most of the stack trace for most users
-					log.warn("Unable to get locale global property value. " + t.getMessage());
-					log.trace("Unable to get locale global property value", t);
+					log.warn("Unable to get locale global property value. " + e.getMessage());
+					log.trace("Unable to get locale global property value", e);
 				}
 				
 				// if we weren't able to load the locale from the global property,
 				// use the default one
-				if (defaultLocaleCache == null)
+				if (defaultLocaleCache == null) {
 					defaultLocaleCache = fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
+				}
 			} else {
 				// if session is not open, return the default locale without caching
 				return fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
@@ -104,7 +105,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * Compatible is a looser matching than that provided by Locale.equals(). Two locales are
 	 * considered equal if they are equal, or if either does not have a country specified and the
 	 * languages match.
-	 * 
+	 *
 	 * @param lhs left hand side Locale
 	 * @param rhs right hand side Locale
 	 * @return true if the two locales are compatible, false otherwise
@@ -137,7 +138,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * </ul>
 	 * For example: en_US_Traditional_WIN ...represents English language in the United States with
 	 * the traditional collation for windows.
-	 * 
+	 *
 	 * @param localeSpecification encoded locale specification
 	 * @return the representative Locale, or null if the specification is invalid
 	 * @should get locale from two character language code
@@ -168,7 +169,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * current logged in user's preferred locale if any is set, the default locale, allowed locales
 	 * in the order they are specified in the 'allowed.locale.list' global property and 'en' at the
 	 * very end of the set if it isn't yet among them.
-	 * 
+	 *
 	 * @returns a collection of all specified and allowed locales with no duplicates.
 	 * @should return a set of locales with a predictable order
 	 * @should return a set of locales with no duplicates
@@ -183,11 +184,13 @@ public class LocaleUtility implements GlobalPropertyListener {
 		Set<Locale> locales = new LinkedHashSet<Locale>();
 		locales.add(Context.getLocale());
 		locales.add(getDefaultLocale());
-		if (localesAllowedListCache == null)
+		if (localesAllowedListCache == null) {
 			localesAllowedListCache = Context.getAdministrationService().getAllowedLocales();
+		}
 		
-		if (localesAllowedListCache != null)
+		if (localesAllowedListCache != null) {
 			locales.addAll(localesAllowedListCache);
+		}
 		
 		locales.add(Locale.ENGLISH);
 		locales.add(fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE));
@@ -195,18 +198,26 @@ public class LocaleUtility implements GlobalPropertyListener {
 		return locales;
 	}
 	
+	public static void setDefaultLocaleCache(Locale defaultLocaleCache) {
+		LocaleUtility.defaultLocaleCache = defaultLocaleCache;
+	}
+	
+	public static void setLocalesAllowedListCache(List<Locale> localesAllowedListCache) {
+		LocaleUtility.localesAllowedListCache = localesAllowedListCache;
+	}
+	
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		// reset the value
-		defaultLocaleCache = null;
-		localesAllowedListCache = null;
+		setDefaultLocaleCache(null);
+		setLocalesAllowedListCache(null);
 	}
 	
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
 		// reset the value
-		defaultLocaleCache = null;
-		localesAllowedListCache = null;
+		setDefaultLocaleCache(null);
+		setLocalesAllowedListCache(null);
 	}
 	
 	@Override
@@ -218,7 +229,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	
 	/**
 	 * Checks if specified locale object is valid
-	 * 
+	 *
 	 * @param locale
 	 *            object for validation
 	 * @return true if locale is available

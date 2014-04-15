@@ -248,4 +248,16 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("username"));
 	}
+	
+	/**
+	 * @see UserValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value = "not throw NPE when user is null", method = "validate(Object,Errors)")
+	public void validate_shouldNotThrowNPEWhenUserIsNull() throws Exception {
+		UserValidator userValidator = new UserValidator();
+		Errors errors = new BindException(new User(), "user");
+		userValidator.validate(null, errors);
+		Assert.assertTrue(true);
+	}
 }

@@ -33,7 +33,7 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail if the concept map type name is a duplicate", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTheConceptMapTypeNameIsADuplicate() throws Exception {
 		ConceptMapType mapType = new ConceptMapType();
-		mapType.setName("is-a");
+		mapType.setName("is a");
 		Errors errors = new BindException(mapType, "mapType");
 		new ConceptMapTypeValidator().validate(mapType, errors);
 		Assert.assertEquals(true, errors.hasFieldErrors("name"));

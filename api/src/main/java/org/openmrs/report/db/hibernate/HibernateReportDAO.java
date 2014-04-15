@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.report.ReportSchemaXml;
 import org.openmrs.report.db.ReportDAO;
 
@@ -62,7 +62,7 @@ public class HibernateReportDAO implements ReportDAO {
 		//                                       .get(ReportSchemaXml.class, reportSchemaXmlId);
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ReportSchemaXml.class, "rsx").add(
-		    Expression.eq("rsx.reportSchemaId", reportSchemaXmlId));
+		    Restrictions.eq("rsx.reportSchemaId", reportSchemaXmlId));
 		return (ReportSchemaXml) criteria.uniqueResult();
 	}
 	

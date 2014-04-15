@@ -83,8 +83,9 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements Pati
 		if (operator == BooleanOperator.AND) {
 			// NOT(AND(x, y)) -> OR(NOT x, NOT y)
 			Set<Integer> ptIds = new HashSet<Integer>();
-			for (PatientFilter pf : filters)
+			for (PatientFilter pf : filters) {
 				ptIds.addAll(pf.filterInverse(input, context).getMemberIds());
+			}
 			Cohort ret = new Cohort();
 			ret.setMemberIds(ptIds);
 			return ret;
@@ -99,15 +100,16 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements Pati
 	}
 	
 	public String getDescription() {
-		if (super.getDescription() != null)
+		if (super.getDescription() != null) {
 			return super.getDescription();
-		else {
+		} else {
 			StringBuilder ret = new StringBuilder();
 			for (Iterator<PatientFilter> i = filters.iterator(); i.hasNext();) {
 				PatientFilter pf = i.next();
 				ret.append("[").append(pf.getName() == null ? pf.getDescription() : pf.getName()).append("]");
-				if (i.hasNext())
+				if (i.hasNext()) {
 					ret.append(" " + operator + " ");
+				}
 			}
 			return ret.toString();
 		}

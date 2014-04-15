@@ -69,13 +69,15 @@ public class ConceptStatsFormController extends SimpleFormController {
 		String jumpAction = request.getParameter("jumpAction");
 		if (jumpAction != null) {
 			Concept newConcept = null;
-			if ("previous".equals(jumpAction))
+			if ("previous".equals(jumpAction)) {
 				newConcept = cs.getPrevConcept(concept);
-			else if ("next".equals(jumpAction))
+			} else if ("next".equals(jumpAction)) {
 				newConcept = cs.getNextConcept(concept);
+			}
 			
-			if (newConcept != null)
+			if (newConcept != null) {
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + newConcept.getConceptId()));
+			}
 			
 		}
 		
@@ -85,7 +87,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -98,22 +100,24 @@ public class ConceptStatsFormController extends SimpleFormController {
 			concept = cs.getConcept(Integer.valueOf(conceptId));
 		}
 		
-		if (concept == null)
+		if (concept == null) {
 			concept = new Concept();
+		}
 		
 		return concept;
 	}
 	
 	/**
 	 * Called prior to form display. Allows for data to be put in the request to be used in the view
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		if (!Context.hasPrivilege("View Observations"))
+		if (!Context.hasPrivilege("View Observations")) {
 			return map;
+		}
 		
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		Locale locale = Context.getLocale();
@@ -215,16 +219,18 @@ public class ConceptStatsFormController extends SimpleFormController {
 							// removing lower quartile outliers
 							for (i = 0; i < size - xpercentile; i++) {
 								Obs possibleOutlier = numericAnswers.get(i);
-								if (possibleOutlier.getValueNumeric() >= lowerQuartileLimit)
+								if (possibleOutlier.getValueNumeric() >= lowerQuartileLimit) {
 									break; // quit if this value is greater than the lower limit
+								}
 								outliers.add(possibleOutlier);
 							}
 							
 							// removing upper quartile outliers
 							for (i = size.intValue() - 1; i >= xpercentile; i--) {
 								Obs possibleOutlier = numericAnswers.get(i);
-								if (possibleOutlier.getValueNumeric() <= upperQuartileLimit)
+								if (possibleOutlier.getValueNumeric() <= upperQuartileLimit) {
 									break; // quit if this value is less than the upper limit
+								}
 								outliers.add(possibleOutlier);
 							}
 							numericAnswers.removeAll(outliers);
@@ -274,16 +280,18 @@ public class ConceptStatsFormController extends SimpleFormController {
 					Map<String, Integer> counts = new HashMap<String, Integer>();
 					for (Obs o : obs) {
 						Boolean answer = o.getValueAsBoolean();
-						if (answer == null)
+						if (answer == null) {
 							answer = false;
+						}
 						String name = answer.toString();
 						Integer count = counts.get(name);
 						counts.put(name, count == null ? 1 : count + 1);
 					}
 					
 					// put the counts into the dataset
-					for (Map.Entry<String, Integer> entry : counts.entrySet())
+					for (Map.Entry<String, Integer> entry : counts.entrySet()) {
 						pieDataset.setValue(entry.getKey(), entry.getValue());
+					}
 					
 					JFreeChart pieChart = ChartFactory.createPieChart(concept.getName().getName(), pieDataset, true, true,
 					    false);
@@ -304,17 +312,19 @@ public class ConceptStatsFormController extends SimpleFormController {
 					for (Obs o : obs) {
 						Concept value = o.getValueCoded();
 						String name;
-						if (value == null)
+						if (value == null) {
 							name = "[value_coded is null]";
-						else
+						} else {
 							name = value.getName().getName();
+						}
 						Integer count = counts.get(name);
 						counts.put(name, count == null ? 1 : count + 1);
 					}
 					
 					// put the counts into the dataset
-					for (Map.Entry<String, Integer> entry : counts.entrySet())
+					for (Map.Entry<String, Integer> entry : counts.entrySet()) {
 						pieDataset.setValue(entry.getKey(), entry.getValue());
+					}
 					
 					JFreeChart pieChart = ChartFactory.createPieChart(concept.getName().getName(), pieDataset, true, true,
 					    false);

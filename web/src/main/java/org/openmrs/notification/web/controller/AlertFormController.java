@@ -34,6 +34,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.AlertValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -52,7 +53,7 @@ public class AlertFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -77,12 +78,14 @@ public class AlertFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		
 		Alert alert = (Alert) obj;
+		new AlertValidator().validate(obj, errors);
 		
 		try {
 			// check that the user has the right privileges here because
 			// we are giving them a proxy privilege in the line following this
-			if (Context.hasPrivilege(PrivilegeConstants.MANAGE_ALERTS) == false)
+			if (Context.hasPrivilege(PrivilegeConstants.MANAGE_ALERTS) == false) {
 				throw new APIAuthenticationException("Must be logged in as user with alerts privileges");
+			}
 			
 			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 			
@@ -95,30 +98,36 @@ public class AlertFormController extends SimpleFormController {
 				List<String> roles = new Vector<String>();
 				
 				// create user list
-				if (userIdValues != null)
+				if (userIdValues != null) {
 					for (String userId : userIdValues) {
-						if (!userId.trim().equals(""))
+						if (!userId.trim().equals("")) {
 							userIds.add(Integer.valueOf(userId.trim()));
+						}
 					}
+				}
 				
 				// create role list
-				if (roleValues != null)
+				if (roleValues != null) {
 					for (String role : roleValues) {
-						if (!role.trim().equals(""))
+						if (!role.trim().equals("")) {
 							roles.add(role.trim());
+						}
 					}
+				}
 				
 				// remove all recipients not in the userIds list
 				List<AlertRecipient> recipientsToRemove = new Vector<AlertRecipient>();
 				if (alert.getRecipients() != null) {
 					for (AlertRecipient recipient : alert.getRecipients()) {
 						Integer userId = recipient.getRecipient().getUserId();
-						if (!userIds.contains(userId))
+						if (!userIds.contains(userId)) {
 							recipientsToRemove.add(recipient);
+						}
 					}
 				}
-				for (AlertRecipient ar : recipientsToRemove)
+				for (AlertRecipient ar : recipientsToRemove) {
 					alert.removeRecipient(ar);
+				}
 				
 				// add all new users
 				if (userIds != null) {
@@ -131,14 +140,15 @@ public class AlertFormController extends SimpleFormController {
 				if (roles != null) {
 					for (String roleStr : roles) {
 						List<User> users = us.getUsersByRole(new Role(roleStr));
-						for (User user : users)
+						for (User user : users) {
 							alert.addRecipient(user);
+						}
 					}
 				}
 			}
 			
 			if ((alert.getRecipients() == null || alert.getRecipients().size() == 0)) {
-				errors.rejectValue("users", "Alert.recipientRequired");
+				errors.rejectValue("recipients", "Alert.recipientRequired");
 			}
 			
 		}
@@ -156,7 +166,7 @@ public class AlertFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -180,7 +190,7 @@ public class AlertFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -189,12 +199,14 @@ public class AlertFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			String a = request.getParameter("alertId");
-			if (a != null)
+			if (a != null) {
 				alert = Context.getAlertService().getAlert(Integer.valueOf(a));
+			}
 		}
 		
-		if (alert == null)
+		if (alert == null) {
 			alert = new Alert();
+		}
 		
 		return alert;
 	}

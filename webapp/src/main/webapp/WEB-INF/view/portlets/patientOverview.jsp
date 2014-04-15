@@ -29,7 +29,7 @@
 		<tr class="patientActionsRow">
 			<td id="patientActionsPatientSummary">
 				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.patientSummary" parameters="patientId=${model.patient.patientId}">
-					<a href="javascript:window.open('${extension.url}?patientId=${model.patient.patientId}', 'summaryWindow', 'toolbar=no,width=660,height=600,resizable=yes,scrollbars=yes').focus()">${extension.label}</a>
+					<a href="javascript:window.open('<openmrs_tag:url value="${extension.url}"/>?patientId=<c:out value="${model.patient.patientId}" />', 'summaryWindow', 'toolbar=no,width=660,height=600,resizable=yes,scrollbars=yes').focus()"><c:out value="${extension.label}" /></a>
 				</openmrs:extensionPoint>
 			</td>
 		</tr>
@@ -121,7 +121,7 @@
 								var exitTypeText = exitTypeSelect[exitTypeSelect.selectedIndex].text;
 								var answer = confirm("<openmrs:message code="Patient.outcome.readyToSubmit" />" + "\n<openmrs:message code="Patient.outcome.exitType" />: " + exitTypeText + "\n<openmrs:message code="Patient.outcome.exitDate" />: " + outcomeDate);
 								if ( answer ) {
-									DWRPatientService.exitPatientFromCare( ${model.patient.patientId}, outcomeType, outcomeDate, outcomeCauseOfDeath, outcomeCauseOther, confirmExit );
+									DWRPatientService.exitPatientFromCare( <c:out value="${model.patient.patientId}" />, outcomeType, outcomeDate, outcomeCauseOfDeath, outcomeCauseOther, confirmExit );
 								}
 							}
 						}

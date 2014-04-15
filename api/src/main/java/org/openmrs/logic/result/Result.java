@@ -95,7 +95,7 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * Builds result upon another result &mdash; the first step in create a result that contains a
 	 * list of other results.
-	 * 
+	 *
 	 * @param result the result that will be the sole member of the new result
 	 * @should not fail with null result
 	 */
@@ -107,19 +107,20 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a result from a list of results
-	 * 
+	 *
 	 * @param list a list of results
 	 * @should not fail with null list
 	 * @should not fail with empty list
 	 */
 	public Result(List<Result> list) {
-		if (!(list == null || list.size() < 1))
+		if (!(list == null || list.size() < 1)) {
 			this.addAll(list);
+		}
 	}
 	
 	/**
 	 * Builds a boolean result with a result date of today
-	 * 
+	 *
 	 * @param valueBoolean
 	 */
 	public Result(Boolean valueBoolean) {
@@ -128,7 +129,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a boolean result with a specific result date
-	 * 
+	 *
 	 * @param resultDate
 	 * @param valueBoolean
 	 */
@@ -138,7 +139,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a coded result with a result date of today
-	 * 
+	 *
 	 * @param valueCoded
 	 */
 	public Result(Concept valueCoded) {
@@ -147,7 +148,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a coded result with a specific result date
-	 * 
+	 *
 	 * @param resultDate
 	 * @param valueCoded
 	 */
@@ -157,7 +158,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a coded result from an observation
-	 * 
+	 *
 	 * @param obs
 	 */
 	public Result(Obs obs) {
@@ -173,22 +174,23 @@ public class Result extends ArrayList<Result> {
 			if (conceptDatatype == null) {
 				return;
 			}
-			if (conceptDatatype.isCoded())
+			if (conceptDatatype.isCoded()) {
 				this.datatype = Datatype.CODED;
-			else if (conceptDatatype.isNumeric())
+			} else if (conceptDatatype.isNumeric()) {
 				this.datatype = Datatype.NUMERIC;
-			else if (conceptDatatype.isDate())
+			} else if (conceptDatatype.isDate()) {
 				this.datatype = Datatype.DATETIME;
-			else if (conceptDatatype.isText())
+			} else if (conceptDatatype.isText()) {
 				this.datatype = Datatype.TEXT;
-			else if (conceptDatatype.isBoolean())
+			} else if (conceptDatatype.isBoolean()) {
 				this.datatype = Datatype.BOOLEAN;
+			}
 		}
 	}
 	
 	/**
 	 * Builds a datetime result with a result date of today
-	 * 
+	 *
 	 * @param valueDatetime
 	 */
 	public Result(Date valueDatetime) {
@@ -197,7 +199,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a datetime result with a specific result date
-	 * 
+	 *
 	 * @param resultDate
 	 * @param valueDatetime
 	 */
@@ -207,7 +209,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a numeric result with a result date of today
-	 * 
+	 *
 	 * @param valueNumeric
 	 */
 	public Result(Double valueNumeric) {
@@ -216,7 +218,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a numeric result with a specific result date
-	 * 
+	 *
 	 * @param resultDate
 	 * @param valueNumeric
 	 */
@@ -226,7 +228,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a numeric result with a result date of today
-	 * 
+	 *
 	 * @param valueNumeric
 	 */
 	public Result(Integer valueNumeric) {
@@ -235,7 +237,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a numeric result with a specific result date
-	 * 
+	 *
 	 * @param resultDate
 	 * @param valueNumeric
 	 */
@@ -245,7 +247,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a text result with a result date of today
-	 * 
+	 *
 	 * @param valueText
 	 */
 	public Result(String valueText) {
@@ -254,7 +256,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a text result with a specific result date
-	 * 
+	 *
 	 * @param resultDate
 	 * @param valueText
 	 */
@@ -268,11 +270,11 @@ public class Result extends ArrayList<Result> {
 	 * automatically into string format), this contructor allows the various datatype
 	 * representations of the result to be individually controlled. Any values set to <em>null</em>
 	 * will yield the natural translation of the default datatype. For example,
-	 * 
+	 *
 	 * <pre>
 	 * Result result = new Result(new Date(), 2.5);
 	 * assertEqualtes(&quot;2.5&quot;, result.toString());
-	 * 
+	 *
 	 * Result result = new Result(new Date(),
 	 *                            Result.Datatype.NUMERIC,
 	 *                            2.5,
@@ -282,7 +284,7 @@ public class Result extends ArrayList<Result> {
 	 *                            null);
 	 * assertEquals(&quot;Two and a half&quot;, result.toString());
 	 * </pre>
-	 * 
+	 *
 	 * @param resultDate
 	 * @param datatype
 	 * @param valueBoolean
@@ -319,12 +321,13 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * Returns the datatype of the result. If the result is a list of other results, then the
 	 * datatype of the first element is returned
-	 * 
+	 *
 	 * @return datatype of the result
 	 */
 	public Datatype getDatatype() {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return this.datatype;
+		}
 		// TODO: better option than defaulting to first element's datatype?
 		return this.get(0).getDatatype();
 	}
@@ -332,7 +335,7 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * Changes the result date time &mdash; not to be confused with a value that is a date. The
 	 * result date time is typically the datetime that the observation was recorded.
-	 * 
+	 *
 	 * @param resultDatetime
 	 */
 	public void setResultDate(Date resultDatetime) {
@@ -341,7 +344,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Changes the default datatype of the result
-	 * 
+	 *
 	 * @param datatype
 	 */
 	public void setDatatype(Datatype datatype) {
@@ -350,7 +353,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the boolean representation of ths result without changing the default datatype
-	 * 
+	 *
 	 * @param valueBoolean
 	 */
 	public void setValueBoolean(Boolean valueBoolean) {
@@ -359,7 +362,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the coded representation of ths result without changing the default datatype
-	 * 
+	 *
 	 * @param valueCoded
 	 */
 	public void setValueCoded(Concept valueCoded) {
@@ -368,7 +371,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the datetime representation of ths result without changing the default datatype
-	 * 
+	 *
 	 * @param valueDatetime
 	 */
 	public void setValueDatetime(Date valueDatetime) {
@@ -377,7 +380,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the numeric representation of ths result without changing the default datatype
-	 * 
+	 *
 	 * @param valueNumeric
 	 */
 	public void setValueNumeric(Integer valueNumeric) {
@@ -386,7 +389,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the numeric representation of ths result without changing the default datatype
-	 * 
+	 *
 	 * @param valueNumeric
 	 */
 	public void setValueNumeric(Double valueNumeric) {
@@ -395,7 +398,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the text representation of ths result without changing the default datatype
-	 * 
+	 *
 	 * @param valueText
 	 */
 	public void setValueText(String valueText) {
@@ -408,19 +411,20 @@ public class Result extends ArrayList<Result> {
 	 * (returned by this method) would be the date the observation was recorded while the
 	 * <em>toDatetime()</em> method would be used to get the actual answer (when the patient started
 	 * their treatment).
-	 * 
+	 *
 	 * @return date of the result (usually the date the result was recorded or observed)
 	 * @see #toDatetime()
 	 */
 	public Date getResultDate() {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return resultDatetime;
+		}
 		return this.get(0).getResultDate();
 	}
 	
 	/**
 	 * Get the result object
-	 * 
+	 *
 	 * @return the underlying result object
 	 */
 	public Object getResultObject() {
@@ -429,7 +433,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Set the result object
-	 * 
+	 *
 	 * @param object
 	 */
 	public void setResultObject(Object object) {
@@ -492,9 +496,11 @@ public class Result extends ArrayList<Result> {
 					return valueBoolean;
 			}
 		}
-		for (Result r : this)
-			if (!r.toBoolean())
+		for (Result r : this) {
+			if (!r.toBoolean()) {
 				return false;
+			}
+		}
 		return true;
 	}
 	
@@ -504,8 +510,9 @@ public class Result extends ArrayList<Result> {
 	 *         the result is a list, then the concept for the first member is returned.
 	 */
 	public Concept toConcept() {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return valueCoded;
+		}
 		return this.get(0).toConcept();
 	}
 	
@@ -540,8 +547,9 @@ public class Result extends ArrayList<Result> {
 	 */
 	public Date toDatetime() {
 		if (isSingleResult()) {
-			if (valueDatetime != null)
+			if (valueDatetime != null) {
 				return valueDatetime;
+			}
 			if (datatype == Datatype.TEXT && valueText != null) {
 				try {
 					return Context.getDateFormat().parse(valueText);
@@ -593,7 +601,7 @@ public class Result extends ArrayList<Result> {
 				case CODED:
 					return 0D;
 				case DATETIME:
-					return (valueDatetime == null ? 0 : new Long(valueDatetime.getTime()).doubleValue());
+					return (valueDatetime == null ? 0 : Long.valueOf(valueDatetime.getTime()).doubleValue());
 				case NUMERIC:
 					return (valueNumeric == null ? 0D : valueNumeric);
 				case TEXT:
@@ -639,8 +647,9 @@ public class Result extends ArrayList<Result> {
 		}
 		StringBuffer s = new StringBuffer();
 		for (Result r : this) {
-			if (s.length() > 0)
+			if (s.length() > 0) {
 				s.append(",");
+			}
 			s.append(r.toString());
 		}
 		return s.toString();
@@ -653,10 +662,12 @@ public class Result extends ArrayList<Result> {
 	 * @should return all results for result list
 	 */
 	public Object toObject() {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return resultObject;
-		if (this.size() == 1)
+		}
+		if (this.size() == 1) {
 			return this.get(0).toObject();
+		}
 		throw new LogicException("This result represents more than one result, you cannot call toObject on multiple results");
 	}
 	
@@ -677,8 +688,9 @@ public class Result extends ArrayList<Result> {
 			        || (valueNumeric != null && valueNumeric != 0) || (valueText != null && valueText.length() > 0));
 		}
 		for (Result r : this) {
-			if (r.exists())
+			if (r.exists()) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -692,17 +704,20 @@ public class Result extends ArrayList<Result> {
 	 */
 	public Result gt(Integer value) {
 		if (isSingleResult()) {
-			if (valueNumeric == null || valueNumeric <= value)
+			if (valueNumeric == null || valueNumeric <= value) {
 				return emptyResult;
+			}
 			return this;
 		}
 		List<Result> matches = new ArrayList<Result>();
 		for (Result r : this) {
-			if (!r.gt(value).isEmpty())
+			if (!r.gt(value).isEmpty()) {
 				matches.add(r);
+			}
 		}
-		if (matches.size() < 1)
+		if (matches.size() < 1) {
 			return emptyResult;
+		}
 		return new Result(matches);
 	}
 	
@@ -711,11 +726,13 @@ public class Result extends ArrayList<Result> {
 	 *         list, then returns true if <em>any</em> member has a matching coded value)
 	 */
 	public boolean containsConcept(Integer conceptId) {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return (valueCoded != null && valueCoded.getConceptId().equals(conceptId));
+		}
 		for (Result r : this) {
-			if (r.containsConcept(conceptId))
+			if (r.containsConcept(conceptId)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -725,11 +742,13 @@ public class Result extends ArrayList<Result> {
 	 *         equal to the given result
 	 */
 	public boolean contains(Result result) {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return this.equals(result);
+		}
 		for (Result r : this) {
-			if (r.contains(result))
+			if (r.contains(result)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -738,12 +757,14 @@ public class Result extends ArrayList<Result> {
 	 * @return a result with all duplicates removed
 	 */
 	public Result unique() {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return this;
-		Integer something = new Integer(1);
+		}
+		Integer something = Integer.valueOf(1);
 		HashMap<Result, Integer> map = new HashMap<Result, Integer>();
-		for (Result r : this)
+		for (Result r : this) {
 			map.put(r, something);
+		}
 		List<Result> uniqueList = new ArrayList<Result>(map.keySet());
 		return new Result(uniqueList);
 	}
@@ -765,8 +786,9 @@ public class Result extends ArrayList<Result> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Result))
+		if (obj == null || !(obj instanceof Result)) {
 			return false;
+		}
 		Result r = (Result) obj;
 		
 		if (EmptyResult.class.isAssignableFrom(r.getClass()) && this.isEmpty()) {
@@ -798,17 +820,20 @@ public class Result extends ArrayList<Result> {
 					return false;
 			}
 		}
-		if (isSingleResult() || r.isSingleResult())
+		if (isSingleResult() || r.isSingleResult()) {
 			// we already know they're not both single results, so if one is
 			// single, it's not a match
 			return false;
-		if (this.size() != r.size())
+		}
+		if (this.size() != r.size()) {
 			return false;
+		}
 		// at this point, we have two results that are lists, so members must
 		// match exactly
 		for (int i = 0; i < this.size(); i++) {
-			if (!this.get(i).equals(r.get(i)))
+			if (!this.get(i).equals(r.get(i))) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -822,8 +847,9 @@ public class Result extends ArrayList<Result> {
 	 */
 	@Override
 	public Result get(int index) {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return (index == 0 ? this : emptyResult);
+		}
 		
 		if (index >= this.size()) {
 			return emptyResult;
@@ -840,15 +866,17 @@ public class Result extends ArrayList<Result> {
 	 * @should get one result with null result dates for all results
 	 */
 	public Result earliest() {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return this;
+		}
 		
 		Result first = emptyResult();
 		
 		// default the returned result to the first item
 		// in case all resultDates are null
-		if (size() > 0)
+		if (size() > 0) {
 			first = get(0);
+		}
 		
 		for (Result r : this) {
 			if (r != null && r.getResultDate() != null
@@ -867,14 +895,16 @@ public class Result extends ArrayList<Result> {
 	 * @should get the result with null result date
 	 */
 	public Result latest() {
-		if (isSingleResult())
+		if (isSingleResult()) {
 			return this;
+		}
 		Result last = emptyResult();
 		
 		// default the returned result to the first item
 		// in case all resultDates are null
-		if (size() > 0)
+		if (size() > 0) {
 			last = get(0);
+		}
 		
 		for (Result r : this) {
 			if ((last.getResultDate() == null || (r.getResultDate() != null && r.getResultDate().after(last.getResultDate())))) {
@@ -886,7 +916,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Convenience method to know if this Result represents multiple results or not
-	 * 
+	 *
 	 * @return true/false whether this is just one Result or more than one
 	 */
 	private boolean isSingleResult() {

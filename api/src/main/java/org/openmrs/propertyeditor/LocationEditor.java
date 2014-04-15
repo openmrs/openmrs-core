@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  * an object back and forth through an html form or other medium. <br/>
  * <br/>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see Location
  */
 public class LocationEditor extends PropertyEditorSupport {
@@ -65,7 +65,11 @@ public class LocationEditor extends PropertyEditorSupport {
 		if (t == null && Context.isAuthenticated()) {
 			return null; //return Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
 		} else {
-			return t.getLocationId().toString();
+			if (t != null) {
+				return t.getLocationId().toString();
+			} else {
+				return null;
+			}
 		}
 	}
 	

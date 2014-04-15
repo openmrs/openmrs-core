@@ -33,8 +33,9 @@ public class RedirectController implements Controller {
 	        IOException {
 		
 		// default to the current path
-		if (redirectView == null)
+		if (redirectView == null) {
 			redirectView = request.getServletPath();
+		}
 		
 		return new ModelAndView(redirectView);
 	}

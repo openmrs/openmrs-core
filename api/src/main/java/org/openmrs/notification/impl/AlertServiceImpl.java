@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This class should not be instantiated by itself.
- * 
+ *
  * @see org.openmrs.notification.AlertService
  */
 @Transactional
@@ -74,10 +74,12 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	public Alert saveAlert(Alert alert) throws APIException {
 		log.debug("Create a alert " + alert);
 		
-		if (alert.getCreator() == null)
+		if (alert.getCreator() == null) {
 			alert.setCreator(Context.getAuthenticatedUser());
-		if (alert.getDateCreated() == null)
+		}
+		if (alert.getDateCreated() == null) {
 			alert.setDateCreated(new Date());
+		}
 		
 		if (alert.getAlertId() != null) {
 			alert.setChangedBy(Context.getAuthenticatedUser());
@@ -87,8 +89,9 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		// Make sure all recipients are assigned to this alert
 		if (alert.getRecipients() != null) {
 			for (AlertRecipient recipient : alert.getRecipients()) {
-				if (!alert.equals(recipient.getAlert()))
+				if (!alert.equals(recipient.getAlert())) {
 					recipient.setAlert(alert);
+				}
 			}
 		}
 		
@@ -155,7 +158,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(User user) throws APIException {
 		log.debug("Getting all alerts for user " + user);
-		return getAlerts(user, true, true);
+		return Context.getAlertService().getAlerts(user, true, true);
 	}
 	
 	/**
@@ -164,7 +167,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAllActiveAlerts(User user) throws APIException {
 		log.debug("Getting all active alerts for user " + user);
-		return getAlerts(user, true, false);
+		return Context.getAlertService().getAlerts(user, true, false);
 	}
 	
 	/**
@@ -175,7 +178,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user) throws APIException {
 		log.debug("Getting unread alerts for user " + user);
-		return getAlertsByUser(user);
+		return Context.getAlertService().getAlertsByUser(user);
 	}
 	
 	/**
@@ -186,13 +189,14 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		log.debug("Getting unread alerts for user " + user);
 		
 		if (user == null) {
-			if (Context.isAuthenticated())
+			if (Context.isAuthenticated()) {
 				user = Context.getAuthenticatedUser();
-			else
+			} else {
 				user = new User();
+			}
 		}
 		
-		return getAlerts(user, false, false);
+		return Context.getAlertService().getAlerts(user, false, false);
 	}
 	
 	/**
@@ -202,7 +206,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Alert> getAlerts() throws APIException {
-		return getAlertsByUser(null);
+		return Context.getAlertService().getAlertsByUser(null);
 	}
 	
 	/**
@@ -220,7 +224,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts() throws APIException {
 		log.debug("Getting alerts for all users");
-		return getAllAlerts(false);
+		return Context.getAlertService().getAllAlerts(false);
 	}
 	
 	/**
@@ -233,7 +237,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	}
 	
 	/**
-	 * @see org.openmrs.notification.AlertService#notifySuperUsers(java.lang.String,java.lang.Exception,java.lang.String[])
+	 * @see org.openmrs.notification.AlertService#notifySuperUsers(java.lang.String, java.lang.Exception, java.lang.String[])
 	 */
 	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments) {
 		

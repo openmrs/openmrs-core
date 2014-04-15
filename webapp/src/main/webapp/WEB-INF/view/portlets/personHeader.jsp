@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <div id="personHeader" class="boxHeader">
-	<div id="patientHeaderPatientName">${model.person.personName}</div>
+	<div id="patientHeaderPatientName"><c:out value="${model.person.personName}" /></div>
 	<table id="patientHeaderGeneralInfo">
 		<tr>
 			<td id="patientHeaderPatientGender">

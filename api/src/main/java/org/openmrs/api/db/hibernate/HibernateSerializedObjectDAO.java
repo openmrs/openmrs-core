@@ -21,8 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsData;
 import org.openmrs.OpenmrsMetadata;
@@ -93,7 +93,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		SerializedObject ret = null;
 		if (uuid != null) {
 			Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-			c.add(Expression.eq("uuid", uuid));
+			c.add(Restrictions.eq("uuid", uuid));
 			ret = (SerializedObject) c.uniqueResult();
 		}
 		return ret;
@@ -117,11 +117,11 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	public List<SerializedObject> getAllSerializedObjectsByName(Class<?> type, String name, boolean exactMatchOnly)
 	        throws DAOException {
 		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-		c.add(Expression.or(Expression.eq("type", type.getName()), Expression.eq("subtype", type.getName())));
+		c.add(Restrictions.or(Restrictions.eq("type", type.getName()), Restrictions.eq("subtype", type.getName())));
 		if (exactMatchOnly) {
-			c.add(Expression.eq("name", name));
+			c.add(Restrictions.eq("name", name));
 		} else {
-			c.add(Expression.ilike("name", name, MatchMode.ANYWHERE));
+			c.add(Restrictions.ilike("name", name, MatchMode.ANYWHERE));
 		}
 		return (List<SerializedObject>) c.list();
 	}
@@ -145,9 +145,9 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	@SuppressWarnings("unchecked")
 	public List<SerializedObject> getAllSerializedObjects(Class<?> type, boolean includeRetired) throws DAOException {
 		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-		c.add(Expression.or(Expression.eq("type", type.getName()), Expression.eq("subtype", type.getName())));
+		c.add(Restrictions.or(Restrictions.eq("type", type.getName()), Restrictions.eq("subtype", type.getName())));
 		if (!includeRetired) {
-			c.add(Expression.like("retired", false));
+			c.add(Restrictions.like("retired", false));
 		}
 		return (List<SerializedObject>) c.list();
 	}

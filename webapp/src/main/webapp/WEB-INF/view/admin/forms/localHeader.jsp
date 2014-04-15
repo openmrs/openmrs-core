@@ -6,14 +6,14 @@
 	</li>
 	<openmrs:hasPrivilege privilege="<%= PrivilegeConstants.MANAGE_FORMS %>">
 		<li <c:if test='<%= request.getRequestURI().contains("forms/form") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/forms/form.list" class="retired">
+			<a href="${pageContext.request.contextPath}/admin/forms/form.list">
 				<openmrs:message code="Form.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Edit Forms">
 		<li <c:if test='<%= request.getRequestURI().contains("fieldForm") || request.getRequestURI().contains("fieldList") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/forms/field.list" class="retired">
+			<a href="${pageContext.request.contextPath}/admin/forms/field.list">
 				<openmrs:message code="Field.manage"/>
 			</a>
 		</li>
@@ -42,7 +42,7 @@
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
-					<a href="${pageContext.request.contextPath}/${link.key}"><openmrs:message code="${link.value}"/></a>
+					<a href="<openmrs_tag:url value="${link.key}"/>"><openmrs:message code="${link.value}"/></a>
 				</li>
 			</c:forEach>
 	</openmrs:extensionPoint>

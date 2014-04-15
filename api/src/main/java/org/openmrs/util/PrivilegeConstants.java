@@ -47,6 +47,9 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to get patient observations")
 	public static final String GET_OBS = "Get Observations";
 	
+	@AddOnStartup(description = "Able to get patient notes")
+	public static final String GET_NOTE = "Get Notes";
+	
 	@AddOnStartup(description = "Able to get patients")
 	public static final String GET_PATIENTS = "Get Patients";
 	
@@ -121,6 +124,11 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to get allergies")
 	public static final String GET_ALLERGIES = "Get Allergies";
+	
+	@AddOnStartup(description = "Able to add/edit/delete HL7 messages")
+	public static final String MANAGE_HL7_MESSAGES = "Manage HL7 Messages";
+	
+	public static final String PURGE_HL7_MESSAGES = "Purge HL7 Messages";
 	
 	@AddOnStartup(description = "Able to get an HL7 Source")
 	public static final String GET_HL7_SOURCE = "Get HL7 Source";
@@ -276,6 +284,12 @@ public class PrivilegeConstants {
 	public static final String DELETE_OBS = "Delete Observations";
 	
 	public static final String PURGE_OBS = "Purge Observations";
+	
+	@AddOnStartup(description = "Able to edit patient notes")
+	public static final String EDIT_NOTE = "Edit Notes";
+	
+	@AddOnStartup(description = "Able to delete patient notes")
+	public static final String DELETE_NOTE = "Delete Notes";
 	
 	/**
 	 * @deprecated Use org.openmrs.util.PrivilegeConstants.GET_PATIENTS
@@ -859,4 +873,7 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to add/edit/retire encounter roles")
 	public static final String MANAGE_ENCOUNTER_ROLES = "Manage Encounter Roles";
+	
+	@AddOnStartup(description = "Able to assign System Developer role")
+	public static final String ASSIGN_SYSTEM_DEVELOPER_ROLE = "Assign System Developer Role";
 }

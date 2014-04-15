@@ -38,7 +38,7 @@ public class Tribe implements java.io.Serializable {
 	
 	/**
 	 * default constructor
-	 * 
+	 *
 	 * @deprecated use the Tribe module
 	 */
 	public Tribe() {
@@ -47,7 +47,7 @@ public class Tribe implements java.io.Serializable {
 	
 	/**
 	 * constructor with id
-	 * 
+	 *
 	 * @deprecated use the Tribe module
 	 */
 	public Tribe(Integer tribeId) {
@@ -57,8 +57,9 @@ public class Tribe implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof Tribe) {
 			Tribe t = (Tribe) obj;
-			if (this.getTribeId() != null && t.getTribeId() != null)
+			if (this.getTribeId() != null && t.getTribeId() != null) {
 				return (this.getTribeId().equals(t.getTribeId()));
+			}
 			/*return (this.getName().matches(t.getName()) &&
 					this.isRetired() == t.isRetired()); */
 		}
@@ -66,8 +67,9 @@ public class Tribe implements java.io.Serializable {
 	}
 	
 	public int hashCode() {
-		if (this.getTribeId() == null)
+		if (this.getTribeId() == null) {
 			return super.hashCode();
+		}
 		return this.getTribeId().hashCode();
 	}
 	
@@ -91,8 +93,9 @@ public class Tribe implements java.io.Serializable {
 	 * @return Returns the retired status.
 	 */
 	public Boolean isRetired() {
-		if (retired == null)
+		if (retired == null) {
 			return false;
+		}
 		return retired;
 	}
 	

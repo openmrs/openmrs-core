@@ -78,7 +78,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Append a simple column
-	 * 
+	 *
 	 * @param columnName
 	 * @param columnValue
 	 */
@@ -88,7 +88,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Append a concept based column
-	 * 
+	 *
 	 * @param columnName
 	 * @param modifier
 	 * @param modifierNum
@@ -101,7 +101,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Append a calculated column
-	 * 
+	 *
 	 * @param columnName
 	 * @param columnValue
 	 */
@@ -111,7 +111,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Append a cohort column
-	 * 
+	 *
 	 * @param columnName
 	 * @param cohortId only one of this or filterId should be non-null
 	 * @param filterId only one of this or cohortId should be non-null
@@ -123,7 +123,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Add a patient to the list to be run on
-	 * 
+	 *
 	 * @param p
 	 */
 	public void addPatientId(Integer p) {
@@ -133,7 +133,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	/**
 	 * Generate a template according to this reports columns Assumes there is a patientSet object
 	 * available
-	 * 
+	 *
 	 * @return template string to be evaluated
 	 */
 	public String generateTemplate() {
@@ -165,8 +165,9 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 				sb.append("$!{fn.getSeparator()}");
 				sb.append(columns.get(i).toTemplateString());
 			}
-		} else
+		} else {
 			log.warn("Report has column size less than 1");
+		}
 		
 		// closing inner loop
 		sb.append("\n#end");
@@ -180,7 +181,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Generate the patientSet according to this report's characteristics
-	 * 
+	 *
 	 * @return patientSet to be used with report template
 	 */
 	public Cohort generatePatientSet(EvaluationContext context) {
@@ -192,15 +193,16 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 			cohort = new Cohort(getPatientIds());
 		}
 		
-		if (location != null && !location.equals("")) {
+		if (location != null) {
 			cohort = intersectFast(cohort, pss.getPatientsHavingLocation(getLocation()));
 		}
 		
 		if (cohortId != null) {
 			// hack to hydrate this
 			Cohort loadedCohort = Context.getCohortService().getCohort(cohortId);
-			if (loadedCohort != null)
+			if (loadedCohort != null) {
 				cohort = intersectFast(cohort, loadedCohort);
+			}
 		}
 		
 		if (cohortDefinitionId != null) {
@@ -228,16 +230,18 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Quickly intersects two cohorts, possibly mutating the inputs. Treats null as "all patients".
-	 * 
+	 *
 	 * @param a The first Cohort
 	 * @param b The second Cohort
 	 * @return Cohort
 	 */
 	private Cohort intersectFast(Cohort a, Cohort b) {
-		if (a == null)
+		if (a == null) {
 			return b;
-		if (b == null)
+		}
+		if (b == null) {
 			return a;
+		}
 		a.getMemberIds().retainAll(b.getMemberIds());
 		a.setName(null);
 		return a;

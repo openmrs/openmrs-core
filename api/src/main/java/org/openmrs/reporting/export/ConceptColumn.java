@@ -14,6 +14,7 @@
 package org.openmrs.reporting.export;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.Concept;
@@ -55,104 +56,105 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		catch (NumberFormatException e) {
 			this.conceptName = conceptId; // for backwards compatibility to pre 1.0.43
 		}
-		this.extras = extras;
+		if (extras == null) {
+			this.extras = new String[0];
+		} else {
+			this.extras = Arrays.copyOf(extras, extras.length);
+		}
 	}
 	
 	private String toSingleTemplateString(int conceptId) {
-		String s = "";
-		if (extras == null)
+		StringBuilder s = new StringBuilder("");
+		if (extras == null) {
 			extras = new String[] {};
+		}
 		
 		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)
 		        || DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
 			Integer num = modifierNum == null ? 1 : modifierNum;
 			
-			s += "#set($arr = [";
+			s.append("#set($arr = [");
 			for (Integer x = 0; x < extras.length; x++) {
-				s += "'" + extras[x] + "'";
-				if (!x.equals(extras.length - 1))
-					s += ",";
+				s.append("'");
+				s.append(extras[x]);
+				s.append("'");
+				if (!x.equals(extras.length - 1)) {
+					s.append(",");
+				}
 			}
-			s += "])";
+			s.append("])");
 			
-			if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier))
-				s += "#set($obsValues = $fn.getLastNObsWithValues(" + num + ", '" + conceptId + "', $arr))";
-			else if (DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier))
-				s += "#set($obsValues = $fn.getFirstNObsWithValues(" + num + ", '" + conceptId + "', $arr))";
-			s += "#foreach($vals in $obsValues)";
-			s += "#if($velocityCount > 1)";
-			s += "$!{fn.getSeparator()}";
-			s += "#end";
-			s += "#foreach($val in $vals)";
-			s += "#if($velocityCount > 1)";
-			s += "$!{fn.getSeparator()}";
-			s += "#end";
-			s += "$!{fn.getValueAsString($val)}";
-			s += "#end";
-			s += "#end\n";
+			if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
+				s.append("#set($obsValues = $fn.getLastNObsWithValues(").append(num).append(", '").append(conceptId).append(
+				    "', $arr))");
+			} else if (DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
+				s.append("#set($obsValues = $fn.getFirstNObsWithValues(").append(num).append(", '").append(conceptId)
+				        .append("', $arr))");
+			}
+			s.append("#foreach($vals in $obsValues)").append("#if($velocityCount > 1)").append("$!{fn.getSeparator()}")
+			        .append("#end").append("#foreach($val in $vals)").append("#if($velocityCount > 1)").append(
+			            "$!{fn.getSeparator()}").append("#end").append("$!{fn.getValueAsString($val)}").append("#end")
+			        .append("#end\n");
 		} else {
 			String function = " ";
-			if (DataExportReportObject.MODIFIER_ANY.equals(modifier))
+			if (DataExportReportObject.MODIFIER_ANY.equals(modifier)) {
 				function += "$fn.getLastObs";
-			else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier))
+			} else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier)) {
 				function += "$fn.getFirstObs";
-			else if (DataExportReportObject.MODIFIER_LAST.equals(modifier))
+			} else if (DataExportReportObject.MODIFIER_LAST.equals(modifier)) {
 				function += "$fn.getLastObs";
-			else
+			} else {
 				throw new APIException("Unknown modifier: " + modifier);
+			}
 			
 			if (extras.length < 1) {
 				function = "$!{fn.getValueAsString(" + function;
 				function += "('" + conceptId + "'))}";
-				s += function; // if we don't have extras, just call the normal function and print it
+				s.append(function); // if we don't have extras, just call the normal function and print it
 			} else {
 				
-				s += "#set($arr = [";
+				s.append("#set($arr = [");
 				for (Integer x = 0; x < extras.length; x++) {
-					s += "'" + extras[x] + "'";
-					if (!x.equals(extras.length - 1))
-						s += ",";
+					s.append("'").append(extras[x]).append("'");
+					if (!x.equals(extras.length - 1)) {
+						s.append(",");
+					}
 				}
-				s += "])";
+				s.append("])");
 				
 				function += "WithValues('" + conceptId + "', $arr)";
 				
-				s += "#set($obsRow =" + function + ")";
-				s += "#foreach($val in $obsRow)";
-				s += "#if($velocityCount > 1)";
-				s += "$!{fn.getSeparator()}";
-				s += "#end";
-				s += "$!{fn.getValueAsString($val)}";
-				s += "#end\n";
+				s.append("#set($obsRow =" + function + ")").append("#foreach($val in $obsRow)").append(
+				    "#if($velocityCount > 1)").append("$!{fn.getSeparator()}").append("#end").append(
+				    "$!{fn.getValueAsString($val)}").append("#end\n");
 			}
 		}
 		
-		return s;
+		return s.toString();
 	}
 	
 	public String toTemplateString() {
 		Concept concept = Context.getConceptService().getConcept(conceptId);
-		String toReturn;
+		StringBuilder toReturn;
 		
 		if (!concept.isSet()) {
-			toReturn = toSingleTemplateString(concept.getConceptId());
+			toReturn = new StringBuilder(toSingleTemplateString(concept.getConceptId()));
 		} else {
 			List<Concept> setMembers = Context.getConceptService().getConceptsByConceptSet(concept);
-			toReturn = "";
+			toReturn = new StringBuilder("");
 			boolean firstMember = true;
 			for (Concept setMember : setMembers) {
 				if (firstMember) {
-					toReturn += toSingleTemplateString(setMember.getConceptId());
+					toReturn.append(toSingleTemplateString(setMember.getConceptId()));
 					firstMember = false;
 				} else {
-					toReturn += "$!{fn.getSeparator()}";
-					toReturn += toSingleTemplateString(setMember.getConceptId());
+					toReturn.append("$!{fn.getSeparator()}");
+					toReturn.append(toSingleTemplateString(setMember.getConceptId()));
 				}
 			}
 		}
 		
-		return toReturn;
-		
+		return toReturn.toString();
 	}
 	
 	public String getColumnType() {
@@ -170,7 +172,7 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	/**
 	 * Convenience method used by {@link #getTemplateColumnName()} to print out for just the given
 	 * concept. This is used for all normal columns and then for the each set member of a column
-	 * 
+	 *
 	 * @param columnName the conceptName to act on
 	 * @return string for this one concept
 	 */
@@ -181,10 +183,11 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)
 		        || DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
 			
-			if (modifierNum == null || modifierNum < 2)
+			if (modifierNum == null || modifierNum < 2) {
 				s += "#foreach($o in []) ";
-			else
+			} else {
 				s += "#foreach($o in [1.." + (modifierNum - 1) + "]) ";
+			}
 			s += "$!{fn.getSeparator()}";
 			s += "\"";
 			s += columnName + "_($velocityCount)";
@@ -201,47 +204,46 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	 */
 	public String getTemplateColumnName() {
 		Concept concept = Context.getConceptService().getConcept(conceptId);
-		String toReturn;
+		StringBuilder toReturn;
 		if (!concept.isSet()) {
-			toReturn = getTemplateSingleConceptColumnName(columnName);
+			toReturn = new StringBuilder(getTemplateSingleConceptColumnName(columnName));
 		} else {
 			List<Concept> setMembers = Context.getConceptService().getConceptsByConceptSet(concept);
-			toReturn = "";
+			toReturn = new StringBuilder("");
 			boolean firstMember = true;
 			for (Concept setMember : setMembers) {
 				if (firstMember) {
-					toReturn += getTemplateSingleConceptColumnName(setMember.getName().getName());
+					toReturn.append(getTemplateSingleConceptColumnName(setMember.getName().getName()));
 					firstMember = false;
 				} else {
-					toReturn += "$!{fn.getSeparator()}";
-					toReturn += getTemplateSingleConceptColumnName(setMember.getName().getName());
+					toReturn.append("$!{fn.getSeparator()}").append(
+					    getTemplateSingleConceptColumnName(setMember.getName().getName()));
 				}
 			}
 		}
 		
-		return toReturn;
+		return toReturn.toString();
 	}
 	
 	/**
 	 * Get the extras template for the given conceptName
-	 * 
+	 *
 	 * @param columnName optional column name to use instead of conceptName
 	 * @param appendCount the extra label to append to the name
 	 * @return template column string for this concept
 	 */
 	private String getExtrasTemplateColumnNames(String columnName, boolean appendCount) {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		if (extras != null) {
 			for (String ext : extras) {
-				s += "$!{fn.getSeparator()}";
-				s += "\"";
-				s += columnName + "_" + ext;
-				if (appendCount)
-					s += "_($velocityCount)";
-				s += "\"";
+				s.append("$!{fn.getSeparator()}").append("\"").append(columnName).append("_").append(ext);
+				if (appendCount) {
+					s.append("_($velocityCount)");
+				}
+				s.append("\"");
 			}
 		}
-		return s;
+		return s.toString();
 	}
 	
 	//// left for backwards compatibility to pre 1.0.43
@@ -280,7 +282,11 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	}
 	
 	public void setExtras(String[] extras) {
-		this.extras = extras;
+		if (extras == null) {
+			this.extras = new String[0];
+		} else {
+			this.extras = Arrays.copyOf(extras, extras.length);
+		}
 	}
 	
 	public Integer getModifierNum() {
@@ -294,10 +300,11 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	// returns conceptId if not null, conceptName otherwise
 	// convenience method for backwards compatibility to pre 1.0.43
 	public String getConceptIdOrName() {
-		if (conceptId != null)
+		if (conceptId != null) {
 			return conceptId.toString();
-		else
+		} else {
 			return conceptName;
+		}
 	}
 	
 }

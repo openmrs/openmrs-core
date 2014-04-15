@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
@@ -211,10 +213,12 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	@Override
 	public String toString() {
-		if (getName() != null)
+		if (getName() != null) {
 			return getName();
-		if (getId() != null)
+		}
+		if (getId() != null) {
 			return getId().toString();
+		}
 		return "";
 	}
 	
@@ -290,10 +294,11 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @see org.openmrs.Attributable#serialize()
 	 */
 	public String serialize() {
-		if (getLocationId() != null)
+		if (getLocationId() != null) {
 			return "" + getLocationId();
-		else
+		} else {
 			return "";
+		}
 	}
 	
 	/**
@@ -383,7 +388,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	/**
 	 * Returns all childLocations where child.locationId = this.locationId.
-	 * 
+	 *
 	 * @param includeRetired specifies whether or not to include voided childLocations
 	 * @return Returns a Set<Location> of all the childLocations.
 	 * @since 1.5
@@ -391,15 +396,35 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 */
 	public Set<Location> getChildLocations(boolean includeRetired) {
 		Set<Location> ret = new HashSet<Location>();
-		if (includeRetired)
+		if (includeRetired) {
 			ret = getChildLocations();
-		else if (getChildLocations() != null) {
+		} else if (getChildLocations() != null) {
 			for (Location l : getChildLocations()) {
-				if (!l.isRetired())
+				if (!l.isRetired()) {
 					ret.add(l);
+				}
 			}
 		}
 		return ret;
+	}
+	
+	/**
+	 * Returns the descendant locations.
+	 *
+	 * @param includeRetired specifies whether or not to include voided childLocations
+	 * @return Returns a Set<Location> of the descendant location.
+	 * @since 1.10
+	 */
+	public Set<Location> getDescendantLocations(boolean includeRetired) {
+		Set<Location> result = new HashSet<Location>();
+		
+		for (Location childLocation : getChildLocations()) {
+			if (!childLocation.isRetired() || includeRetired) {
+				result.add(childLocation);
+				result.addAll(childLocation.getDescendantLocations(includeRetired));
+			}
+		}
+		return result;
 	}
 	
 	/**
@@ -418,25 +443,30 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @should throw APIException if child already in hierarchy
 	 */
 	public void addChildLocation(Location child) {
-		if (child == null)
+		if (child == null) {
 			return;
+		}
 		
-		if (getChildLocations() == null)
+		if (getChildLocations() == null) {
 			childLocations = new HashSet<Location>();
+		}
 		
-		if (child.equals(this))
+		if (child.equals(this)) {
 			throw new APIException("A location cannot be its own child!");
+		}
 		
 		// Traverse all the way up (down?) to the root, then check whether the child is already
 		// anywhere in the tree
 		Location root = this;
-		while (root.getParentLocation() != null)
+		while (root.getParentLocation() != null) {
 			root = root.getParentLocation();
+		}
 		
-		if (isInHierarchy(child, root))
+		if (isInHierarchy(child, root)) {
 			throw new APIException("Location hierarchy loop detected! You cannot add: '" + child + "' to the parent: '"
 			        + this
 			        + "' because it is in the parent hierarchy somewhere already and a location cannot be its own parent.");
+		}
 		
 		child.setParentLocation(this);
 		childLocations.add(child);
@@ -444,7 +474,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	/**
 	 * Checks whether 'location' is a member of the tree starting at 'root'.
-	 * 
+	 *
 	 * @param location The location to be tested.
 	 * @param root Location node from which to start the testing (down in the hierarchy).
 	 * @since 1.5
@@ -455,13 +485,15 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @should should find location in hierarchy
 	 */
 	public static Boolean isInHierarchy(Location location, Location root) {
-		if (root == null)
+		if (root == null) {
 			return false;
+		}
 		while (true) {
-			if (location == null)
+			if (location == null) {
 				return false;
-			else if (root.equals(location))
+			} else if (root.equals(location)) {
 				return true;
+			}
 			location = location.getParentLocation();
 		}
 	}
@@ -471,8 +503,9 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 */
 	public void removeChildLocation(Location child) {
-		if (getChildLocations() != null)
+		if (getChildLocations() != null) {
 			childLocations.remove(child);
+		}
 	}
 	
 	/**
@@ -485,7 +518,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	/**
 	 * Set the tags which are attached to this Location.
-	 * 
+	 *
 	 * @param tags The tags to set.
 	 * @since 1.5
 	 */
@@ -495,31 +528,34 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	/**
 	 * Attaches a tag to the Location.
-	 * 
+	 *
 	 * @param tag The tag to add.
 	 * @since 1.5
 	 */
 	public void addTag(LocationTag tag) {
-		if (getTags() == null)
+		if (getTags() == null) {
 			tags = new HashSet<LocationTag>();
-		if (tag != null && !tags.contains(tag))
+		}
+		if (tag != null && !tags.contains(tag)) {
 			tags.add(tag);
+		}
 	}
 	
 	/**
 	 * Remove the tag from the Location.
-	 * 
+	 *
 	 * @param tag The tag to remove.
 	 * @since 1.5
 	 */
 	public void removeTag(LocationTag tag) {
-		if (getTags() != null)
+		if (getTags() != null) {
 			tags.remove(tag);
+		}
 	}
 	
 	/**
 	 * Checks whether the Location has a particular tag.
-	 * 
+	 *
 	 * @param tagToFind the string of the tag for which to check
 	 * @return true if the tags include the specified tag, false otherwise
 	 * @since 1.5
@@ -544,6 +580,47 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 */
 	public String getAddress3() {
 		return address3;
+	}
+	
+	/**
+	 * Checks and fixes for XSS.
+	 *
+	 * @since 1.9
+	 */
+	public void validateXSS() {
+		setName(escapeXSS(getName()));
+		address1 = escapeXSS(address1);
+		address2 = escapeXSS(address2);
+		address3 = escapeXSS(address3);
+		address4 = escapeXSS(address4);
+		address5 = escapeXSS(address5);
+		address6 = escapeXSS(address6);
+		cityVillage = escapeXSS(cityVillage);
+		stateProvince = escapeXSS(stateProvince);
+		country = escapeXSS(country);
+		latitude = escapeXSS(latitude);
+		longitude = escapeXSS(longitude);
+		countyDistrict = escapeXSS(countyDistrict);
+		postalCode = escapeXSS(postalCode);
+		
+	}
+	
+	/**
+	 * Checks and fixes XSS.
+	 * @param text the string of text to escape
+	 * @return the escaped text
+	 * @since 1.9
+	 * @should not fail given null parameter
+	 */
+	private String escapeXSS(String text) {
+		if (StringUtils.isNotEmpty(text)) {
+			String escapeText;
+			escapeText = StringEscapeUtils.escapeHtml(text);
+			escapeText = StringEscapeUtils.escapeJavaScript(escapeText);
+			return escapeText;
+		}
+		return text;
+		
 	}
 	
 	/**

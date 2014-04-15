@@ -48,8 +48,9 @@ public class RegimenPortletController extends PortletController {
 						}
 						Concept drugSet = Context.getConceptService().getConcept(setId);
 						Collection<Concept> members = new ArrayList<Concept>();
-						if (drugSet != null)
+						if (drugSet != null) {
 							members = Context.getConceptService().getConceptsByConceptSet(drugSet);
+						}
 						drugConceptsBySetId.put(setId, members);
 					}
 				}
@@ -66,14 +67,16 @@ public class RegimenPortletController extends PortletController {
 								}
 							}
 						}
-						if (setIdToUse == null && includeOther)
+						if (setIdToUse == null && includeOther) {
 							setIdToUse = "*";
+						}
 						if (setIdToUse != null) {
 							helper(patientDrugOrderSets, setIdToUse, order);
-							if (order.isCurrent() || order.isFuture())
+							if (order.isCurrent() || order.isFuture()) {
 								helper(currentDrugOrderSets, setIdToUse, order);
-							else
+							} else {
 								helper(completedDrugOrderSets, setIdToUse, order);
+							}
 						}
 					}
 				}

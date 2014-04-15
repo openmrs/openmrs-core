@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import static junit.framework.Assert.assertEquals;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -146,22 +148,6 @@ public class BaseOpenmrsObjectTest {
 		o.hashCode();
 	}
 	
-	/**
-	 * @see BaseOpenmrsObject#toString()
-	 * @verifies not fail if uuid is null
-	 */
-	@Test
-	public void toString_shouldNotFailIfUuidIsNull() throws Exception {
-		//given
-		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
-		
-		//when
-		o.setUuid(null);
-		
-		//then
-		o.toString();
-	}
-	
 	@Test
 	public void shouldNotBeEqualWhenDifferentClassesAndSameId() throws Exception {
 		Encounter encounter = new Encounter(2);
@@ -174,5 +160,32 @@ public class BaseOpenmrsObjectTest {
 	public void shouldNotBeEqualWhenFirstIsNull() throws Exception {
 		Encounter encounter = new Encounter(2);
 		Assert.assertFalse(encounter.equals(null));
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#toString()
+	 * @verifies include uuid if not null
+	 */
+	@Test
+	public void toString_shouldIncludeUuidIfNotNull() throws Exception {
+		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
+		
+		assertEquals("BaseOpenmrsObjectMock{hashCode=" + Integer.toHexString(o.hashCode()) + ", uuid=" + o.getUuid() + "}",
+		    o.toString());
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#toString()
+	 * @verifies include hashCode if uuid is null
+	 */
+	@Test
+	public void toString_shouldIncludeHashCodeIfUuidIsNull() throws Exception {
+		//given
+		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
+		o.setUuid(null);
+		
+		//when
+		//then
+		assertEquals("BaseOpenmrsObjectMock{hashCode=" + Integer.toHexString(o.hashCode()) + "}", o.toString());
 	}
 }

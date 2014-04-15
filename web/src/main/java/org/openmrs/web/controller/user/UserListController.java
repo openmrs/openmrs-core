@@ -76,14 +76,17 @@ public class UserListController {
 	protected List<User> getUsers(String action, String name, Role role, Boolean includeDisabled) {
 		// only do the search if there are search parameters or 
 		if (action != null || StringUtils.hasText(name) || role != null) {
-			if (includeDisabled == null)
+			if (includeDisabled == null) {
 				includeDisabled = false;
+			}
 			List<Role> roles = null;
-			if (role != null && StringUtils.hasText(role.getRole()))
+			if (role != null && StringUtils.hasText(role.getRole())) {
 				roles = Collections.singletonList(role);
+			}
 			
-			if (!StringUtils.hasText(name))
+			if (!StringUtils.hasText(name)) {
 				name = null;
+			}
 			
 			return Context.getUserService().getUsers(name, roles, includeDisabled);
 		}

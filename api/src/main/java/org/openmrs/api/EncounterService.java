@@ -267,9 +267,10 @@ public interface EncounterService extends OpenmrsService {
 	 * @should not overwrite creator or date created
 	 * @should not overwrite date created
 	 * @should update an existing encounter type name
+	 * @should throw error when trying to save encounter type when encounter types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
-	public EncounterType saveEncounterType(EncounterType encounterType);
+	public EncounterType saveEncounterType(EncounterType encounterType) throws APIException;
 	
 	/**
 	 * Get encounterType by internal identifier
@@ -354,6 +355,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @should retire type and set attributes
 	 * @should throw error if given null reason parameter
+	 * @should should throw error when trying to retire encounter type when encounter types are
+	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException;
@@ -365,6 +368,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType the encounter type to unretire
 	 * @throws APIException
 	 * @should unretire type and unmark attributes
+	 * @should should throw error when trying to unretire encounter type when encounter types are
+	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException;
@@ -375,6 +380,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType
 	 * @throws APIException
 	 * @should purge type
+	 * @should should throw error when trying to delete encounter type when encounter types are
+	 *         locked
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
 	public void purgeEncounterType(EncounterType encounterType) throws APIException;
@@ -629,6 +636,32 @@ public interface EncounterService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
+	 * Searches for encounters by patient id, provider identifier, location, encounter type,
+	 * provider, form or provider name. It returns a specific number of them from the specified
+	 * starting position. If start and length are not specified, then all matches are returned
+	 * 
+	 * @param query provider identifier, location, encounter type, provider, form or provider name
+	 * @param patientId the patient id
+	 * @param start beginning index for the batch
+	 * @param length number of encounters to return in the batch
+	 * @param includeVoided Specifies whether voided encounters should be included
+	 * @return list of encounters for the given patient based on batch settings
+	 * @throws APIException
+	 * @since 1.10
+	 * @should fetch encounters by patient id
+	 * @should include voided encounters if includeVoided is set to true
+	 * @should should match on provider identifier
+	 * @should match on the provider name
+	 * @should match on the location name
+	 * @should match on the provider person name
+	 * @should match on the encounter type name
+	 * @should match on the form name
+	 */
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
+	        boolean includeVoided) throws APIException;
+	
+	/**
 	 * Get all encounters for a cohort of patients
 	 * 
 	 * @param patients Cohort of patients to search
@@ -743,6 +776,17 @@ public interface EncounterService extends OpenmrsService {
 	public EncounterRole getEncounterRoleByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Get EncounterRole by name
+	 * 
+	 * @param name
+	 * @return EncounterRole object by name
+	 * @since 1.10
+	 * @should find an encounter role identified by its name
+	 */
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	public EncounterRole getEncounterRoleByName(String name);
+	
+	/**
 	 * Retire an EncounterRole. This essentially marks the given encounter role as a non-current
 	 * type that shouldn't be used anymore.
 	 * 
@@ -823,7 +867,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @param user the user instance to filter "visible" encounters for
 	 * @return list, that does not include encounters, which can not be shown to given user due to
 	 *         permissions check
-	 *         
 	 * @should filter encounters if user is not allowed to see some encounters
 	 * @should not filter all encounters when the encounter type's view privilege column is null
 	 */
@@ -832,9 +875,9 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Determines whether given user is granted to view all encounter types or not
+	 * 
 	 * @param subject the user whose permission to view all encounter types will be checked
 	 * @return true if user has access to view all types of encounters
-	 * 
 	 * @should return true if user is granted to view all encounters
 	 * @should return true when the encounter type's view privilege column is null
 	 */
@@ -842,9 +885,9 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Determines whether given user is granted to edit all encounter types or not
+	 * 
 	 * @param subject the user whose permission to edit all encounter types will be checked
 	 * @return true if user has access to edit all types of encounters
-	 * 
 	 * @should return true if user is granted to edit all encounters
 	 * @should return true when the encounter type's edit privilege column is null
 	 */
@@ -857,7 +900,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests edit access
 	 * @return true if user has privilege denoted by <em>editPrivilege</em> given on encounter type
-	 * 
 	 * @should return true if user can edit encounter
 	 * @should return false if user can not edit encounter
 	 * @should fail if encounter is null
@@ -871,10 +913,29 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests view access
 	 * @return true if user has privilege denoted by <em>viewPrivilege</em> given on encounter type
-	 * 
 	 * @should return true if user can view encounter
 	 * @should return false if user can not view encounter
 	 * @should fail if encounter is null
 	 */
 	public boolean canViewEncounter(Encounter encounter, User subject);
+	
+	/**
+	 * Check if the encounter types are locked, and if so, throw exception during manipulation of
+	 * encounter type
+	 * 
+	 * @throws EncounterTypeLockedException
+	 */
+	public void checkIfEncounterTypesAreLocked() throws EncounterTypeLockedException;
+	
+	/**
+	 * Get EncounterRoles by name
+	 * 
+	 * @param name
+	 * @return List of EncounterRole objects
+	 * @since 1.11
+	 * @should find encounter roles based on their name
+	 */
+	
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
+	public List<EncounterRole> getEncounterRolesByName(String name);
 }

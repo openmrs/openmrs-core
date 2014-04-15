@@ -524,15 +524,29 @@ public interface AdministrationService extends OpenmrsService {
 	public void deleteGlobalProperty(String propertyName);
 	
 	/**
-	 * Use
+	 * Save the given global property to the database. If the global property already exists,
+	 * then it will be overwritten
 	 * 
-	 * <pre>
-	 * saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
-	 * </pre>
-	 * 
-	 * @deprecated use #saveGlobalProperty(GlobalProperty)
+	 * @param propertyName the name of the global property to save
+	 * @param propertyValue the value of the global property to save
+	 * @should create global property in database
+	 * @should overwrite global property if exists
+	 * @should save a global property whose typed value is handled by a custom datatype
 	 */
 	public void setGlobalProperty(String propertyName, String propertyValue);
+	
+	/**
+	 * Overwrites the value of the global property if it already exists. If the global property does
+	 * not exist, an exception will be thrown
+	 * @since 1.10
+	 * @param propertyName  the name of the global property to overwrite
+	 * @param propertyValue  the value of the global property to overwrite
+	 * @throws IllegalStateException
+	 * @should update global property in database
+	 * @should fail if global property being updated does not already exist
+	 * @should update a global property whose typed value is handled by a custom datatype
+	 */
+	public void updateGlobalProperty(String propertyName, String propertyValue) throws IllegalStateException;
 	
 	/**
 	 * Save the given global property to the database

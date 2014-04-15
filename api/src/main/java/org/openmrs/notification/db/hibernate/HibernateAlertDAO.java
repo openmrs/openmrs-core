@@ -21,8 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.notification.Alert;
@@ -45,7 +45,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -82,8 +82,9 @@ public class HibernateAlertDAO implements AlertDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Alert.class);
 		
 		// exclude the expired alerts unless requested
-		if (includeExpired == false)
-			crit.add(Expression.or(Expression.isNull("dateToExpire"), Expression.gt("dateToExpire", new Date())));
+		if (!includeExpired) {
+			crit.add(Restrictions.or(Restrictions.isNull("dateToExpire"), Restrictions.gt("dateToExpire", new Date())));
+		}
 		
 		return crit.list();
 	}
@@ -99,7 +100,7 @@ public class HibernateAlertDAO implements AlertDAO {
 		
 		if (user != null && user.getUserId() != null) {
 			crit.createCriteria("recipients", "recipient");
-			crit.add(Expression.eq("recipient.recipient", user));
+			crit.add(Restrictions.eq("recipient.recipient", user));
 		} else {
 			// getting here means we passed in no user or a blank user.
 			// a null recipient column means get stuff for the anonymous user
@@ -111,13 +112,14 @@ public class HibernateAlertDAO implements AlertDAO {
 		}
 		
 		// exclude the expired alerts unless requested
-		if (includeExpired == false)
-			crit.add(Expression.or(Expression.isNull("dateToExpire"), Expression.gt("dateToExpire", new Date())));
+		if (!includeExpired) {
+			crit.add(Restrictions.or(Restrictions.isNull("dateToExpire"), Restrictions.gt("dateToExpire", new Date())));
+		}
 		
 		// exclude the read alerts unless requested
-		if (includeRead == false && (user != null && user.getUserId() != null)) {
-			crit.add(Expression.eq("alertRead", false));
-			crit.add(Expression.eq("recipient.alertRead", false));
+		if (!includeRead && user.getUserId() != null) {
+			crit.add(Restrictions.eq("alertRead", false));
+			crit.add(Restrictions.eq("recipient.alertRead", false));
 		}
 		
 		crit.addOrder(Order.desc("dateChanged"));

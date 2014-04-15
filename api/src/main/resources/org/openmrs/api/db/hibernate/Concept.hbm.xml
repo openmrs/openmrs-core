@@ -51,19 +51,19 @@
 			<column name="datatype_id" />
 		</many-to-one>
 
-		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" access="field">
+		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" access="field" batch-size="25">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptName" />
 		</set>
 
 		<set name="descriptions" lazy="true" inverse="true" cascade="all" 
-			order-by="concept_description_id">
+			order-by="concept_description_id" batch-size="25">
 			<key column="concept_id" />
 			<one-to-many class="ConceptDescription" />
 		</set>
 		
 		<set name="answers" lazy="true" cascade="all,delete-orphan"
-				table="concept_answer" order-by="sort_weight asc, concept_answer_id asc" access="field" inverse="true">
+				table="concept_answer" order-by="sort_weight asc, concept_answer_id asc" access="field" inverse="true" batch-size="25">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptAnswer"/>
 		</set>
@@ -71,14 +71,14 @@
 		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
 		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have child concepts (aka, are not sets) -->
 		<set name="conceptSets" table="concept_set" lazy="true"
-				cascade="all,delete-orphan" order-by="sort_weight asc" inverse="true">
+				cascade="all,delete-orphan" order-by="sort_weight asc" inverse="true" batch-size="25">
 			<key not-null="true">
 				<column name="concept_set" />
 			</key>
 			<one-to-many class="ConceptSet"/>
 		</set>
 		
-		<set name="conceptMappings" inverse="true" cascade="all,delete-orphan,evict">
+		<set name="conceptMappings" inverse="true" cascade="all,delete-orphan,evict" batch-size="25">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptMap" />
 		</set>
@@ -108,7 +108,8 @@
 			<property name="lowCritical" type="java.lang.Double" column="low_critical" length="22" />
 			<property name="lowNormal" type="java.lang.Double" column="low_normal" length="22" />
 			<property name="units" type="java.lang.String" column="units" length="50" />
-			<property name="precise" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
+			<property name="allowDecimal" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
+			<property name="displayPrecision" type="java.lang.Integer" column="display_precision" not-null="false"/>
 		</joined-subclass>
 	
 	   <joined-subclass name="org.openmrs.ConceptComplex" table="concept_complex" extends="org.openmrs.Concept" lazy="false">

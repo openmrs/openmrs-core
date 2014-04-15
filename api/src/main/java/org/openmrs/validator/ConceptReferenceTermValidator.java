@@ -29,7 +29,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates {@link ConceptReferenceTerm} objects.
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { ConceptReferenceTerm.class }, order = 50)
@@ -37,7 +37,7 @@ public class ConceptReferenceTermValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -47,7 +47,7 @@ public class ConceptReferenceTermValidator implements Validator {
 	
 	/**
 	 * Checks that a given concept reference term object is valid.
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the concept reference term object is null
@@ -67,9 +67,10 @@ public class ConceptReferenceTermValidator implements Validator {
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		
-		if (obj == null || !(obj instanceof ConceptReferenceTerm))
+		if (obj == null || !(obj instanceof ConceptReferenceTerm)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
 			        + ConceptReferenceTerm.class);
+		}
 		
 		ConceptReferenceTerm conceptReferenceTerm = (ConceptReferenceTerm) obj;
 		
@@ -90,7 +91,7 @@ public class ConceptReferenceTermValidator implements Validator {
 		ConceptReferenceTerm termWithDuplicateCode = Context.getConceptService().getConceptReferenceTermByCode(code,
 		    conceptReferenceTerm.getConceptSource());
 		if (termWithDuplicateCode != null) {
-			if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getId(), conceptReferenceTerm.getId())) {
+			if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getUuid(), conceptReferenceTerm.getUuid())) {
 				errors.rejectValue("code", "ConceptReferenceTerm.duplicate.code",
 				    "Duplicate concept reference term code in its concept source: " + code);
 			}
@@ -101,8 +102,9 @@ public class ConceptReferenceTermValidator implements Validator {
 			int index = 0;
 			Set<String> mappedTermUuids = null;
 			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps()) {
-				if (map == null)
+				if (map == null) {
 					throw new APIException("Cannot add a null concept reference term map");
+				}
 				
 				if (map.getConceptMapType() == null) {
 					errors.rejectValue("conceptReferenceTermMaps[" + index + "].conceptMapType",
@@ -116,11 +118,13 @@ public class ConceptReferenceTermValidator implements Validator {
 				}
 				
 				//don't proceed to the next map
-				if (errors.hasErrors())
+				if (errors.hasErrors()) {
 					return;
+				}
 				
-				if (mappedTermUuids == null)
+				if (mappedTermUuids == null) {
 					mappedTermUuids = new HashSet<String>();
+				}
 				
 				//if we already have a mapping to this term, reject it this map
 				if (!mappedTermUuids.add(map.getTermB().getUuid())) {

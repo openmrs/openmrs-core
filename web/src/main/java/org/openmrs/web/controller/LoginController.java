@@ -32,7 +32,7 @@ public class LoginController {
 	
 	/**
 	 * Generates an appropriate alert message and send it to users with the system developer role
-	 * 
+	 *
 	 * @param webRequest the {@link WebRequest} object
 	 * @param model the {@link ModelMap} object
 	 * @return the view name
@@ -62,30 +62,34 @@ public class LoginController {
 				String deniedPageTemp = webRequest.getAttribute(WebConstants.DENIED_PAGE, WebRequest.SCOPE_SESSION)
 				        .toString();
 				webRequest.removeAttribute(WebConstants.DENIED_PAGE, WebRequest.SCOPE_SESSION);
-				if (StringUtils.isNotBlank(deniedPageTemp))
+				if (StringUtils.isNotBlank(deniedPageTemp)) {
 					deniedPage = deniedPageTemp;
+				}
 				
 			}
 			if (webRequest.getAttribute(WebConstants.REQUIRED_PRIVILEGES, WebRequest.SCOPE_SESSION) != null) {
 				String requiredPrivilegesTemp = webRequest.getAttribute(WebConstants.REQUIRED_PRIVILEGES,
 				    WebRequest.SCOPE_SESSION).toString();
 				webRequest.removeAttribute(WebConstants.REQUIRED_PRIVILEGES, WebRequest.SCOPE_SESSION);
-				if (StringUtils.isNotBlank(requiredPrivilegesTemp))
+				if (StringUtils.isNotBlank(requiredPrivilegesTemp)) {
 					requiredPrivileges = requiredPrivilegesTemp;
+				}
 			}
 			if (webRequest.getAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE, WebRequest.SCOPE_SESSION) != null) {
 				String exceptionMsgTemp = webRequest.getAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE,
 				    WebRequest.SCOPE_SESSION).toString();
 				webRequest.removeAttribute(WebConstants.UNCAUGHT_EXCEPTION_MESSAGE, WebRequest.SCOPE_SESSION);
-				if (StringUtils.isNotBlank(exceptionMsgTemp))
+				if (StringUtils.isNotBlank(exceptionMsgTemp)) {
 					exceptionMsg = exceptionMsgTemp;
+				}
 			}
 			if (webRequest.getAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION) != null) {
 				String refererUrlTemp = webRequest.getAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION)
 				        .toString();
 				webRequest.removeAttribute(WebConstants.REFERER_URL, WebRequest.SCOPE_SESSION);
-				if (StringUtils.isNotBlank(refererUrlTemp) && !refererUrlTemp.contains("login."))
+				if (StringUtils.isNotBlank(refererUrlTemp) && !refererUrlTemp.contains("login.")) {
 					refererUrl = refererUrlTemp;
+				}
 			}
 			
 			String alertMessage = null;

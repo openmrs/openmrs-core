@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="org.openmrs.notification">
+	<class name="org.openmrs.notification.NoteType" table="notification_note_type"
+		batch-size="25">
+		<id name="id" type="int" column="notification_note_type_id" unsaved-value="0">
+			<generator class="native">
+				<param name="sequence">notification_note_notification_note_type_id_seq</param>
+			</generator>
+		</id>
+		<discriminator column="notification_note_type_id" insert="false" />
+
+		<property name="name" type="java.lang.String" column="name"
+			length="50" />
+		<property name="description" type="java.lang.String" column="description"
+			length="2147483647" />
+	</class>
+</hibernate-mapping>

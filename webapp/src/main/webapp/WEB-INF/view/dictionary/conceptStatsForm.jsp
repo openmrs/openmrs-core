@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
 <openmrs:require privilege="View Observations" otherwise="/login.htm" redirect="/dictionary/conceptStats.form" />
-
+<openmrs:message var="pageTitle" code="Concept.stats.title" scope="page" arguments="${concept.name}"/>	
 <openmrs:message var="pageTitle" code="Concept.stats.titlebar" scope="page" arguments="${concept.name}"/>	
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
@@ -65,7 +65,7 @@
 
 <openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><openmrs:message code="general.new"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
 
-<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" parameters="conceptId=${command.concept.conceptId}" />
 
 <form class="inlineForm" action="index.htm" method="get">
   &nbsp; &nbsp; &nbsp;

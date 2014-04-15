@@ -51,7 +51,7 @@ public class LocationQueryController {
 	
 	/**
 	 * Gets JSON formatted for jstree jquery plugin [ { data: ..., children: ...}, ... ]
-	 * 
+	 *
 	 * @return
 	 * @throws IOException
 	 */
@@ -81,7 +81,7 @@ public class LocationQueryController {
 	
 	/**
 	 * { data: "Location's name (tags)", children: [ recursive calls to this method, ... ] }
-	 * 
+	 *
 	 * @param loc
 	 * @return
 	 */
@@ -114,16 +114,18 @@ public class LocationQueryController {
 				for (Iterator<LocationTag> i = loc.getTags().iterator(); i.hasNext();) {
 					LocationTag t = i.next();
 					sb.append(t.getName());
-					if (i.hasNext())
+					if (i.hasNext()) {
 						sb.append(", ");
+					}
 				}
 				sb.append(")");
 			}
 			ret.put("data", sb.toString());
 			if (loc.getChildLocations() != null && loc.getChildLocations().size() > 0) {
 				List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
-				for (Location child : loc.getChildLocations())
+				for (Location child : loc.getChildLocations()) {
 					children.add(toJsonHelper(child, options));
+				}
 				ret.put("children", children);
 			}
 			return ret;
@@ -134,12 +136,15 @@ public class LocationQueryController {
 	 * Can this node be selected given the specified options?
 	 */
 	private boolean isSelectable(Location loc, HierarchyOptions options) {
-		if (options.selectOnlyLeaves && loc.getChildLocations() != null && loc.getChildLocations().size() > 0)
+		if (options.selectOnlyLeaves && loc.getChildLocations() != null && loc.getChildLocations().size() > 0) {
 			return false;
+		}
 		if (options.selectableTags != null && options.selectableTags.size() > 0) {
-			for (String tag : options.selectableTags)
-				if (loc.hasTag(tag))
+			for (String tag : options.selectableTags) {
+				if (loc.hasTag(tag)) {
 					return true;
+				}
+			}
 			return false;
 		}
 		return true;

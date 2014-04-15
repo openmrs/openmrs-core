@@ -22,13 +22,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
@@ -300,6 +303,78 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return empty list when no location match the name fragment", method = "getLocations(String)")
 	public void getLocations_shouldReturnEmptyListWhenNoLocationMatchTheNameFragment() throws Exception {
 		Assert.assertEquals(0, Context.getLocationService().getLocations("Mansion").size());
+	}
+	
+	/**
+	 * @see LocationService#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)
+	 */
+	@Test
+	@Verifies(value = "should return empty list when no location has matching attribute values", method = "getLocations(String,Location,Map,boolean,Integer,Integer)")
+	public void getLocations_shouldNotFindAnyLocationsIfNoneHaveGivenAttributeValues() {
+		// Save new phone number attribute type
+		LocationAttributeType phoneAttrType = new LocationAttributeType();
+		phoneAttrType.setName("Facility Phone");
+		phoneAttrType.setMinOccurs(0);
+		phoneAttrType.setMaxOccurs(1);
+		phoneAttrType.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
+		Context.getLocationService().saveLocationAttributeType(phoneAttrType);
+		
+		Map<LocationAttributeType, Object> attrValues = new HashMap<LocationAttributeType, Object>();
+		attrValues.put(phoneAttrType, "xxxxxx");
+		Assert.assertEquals(0, Context.getLocationService().getLocations(null, null, attrValues, true, null, null).size());
+	}
+	
+	/**
+	 * @see LocationService#getLocations(String, org.openmrs.Location, java.util.Map, boolean, Integer, Integer)
+	 */
+	@Test
+	@Verifies(value = "should get locations having all matching attribute values", method = "getLocations(String,Location,Map,boolean,Integer,Integer)")
+	public void getLocations_shouldGetLocationsHavingAllMatchingAttributeValues() {
+		// Save new phone number attribute type
+		LocationAttributeType phoneAttrType = new LocationAttributeType();
+		phoneAttrType.setName("Facility Phone");
+		phoneAttrType.setMinOccurs(0);
+		phoneAttrType.setMaxOccurs(1);
+		phoneAttrType.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
+		Context.getLocationService().saveLocationAttributeType(phoneAttrType);
+		
+		// Save new email address attribute type
+		LocationAttributeType emailAttrType = new LocationAttributeType();
+		emailAttrType.setName("Facility Email");
+		emailAttrType.setMinOccurs(0);
+		emailAttrType.setMaxOccurs(1);
+		emailAttrType.setDatatypeClassname("org.openmrs.customdatatype.datatype.FreeTextDatatype");
+		Context.getLocationService().saveLocationAttributeType(emailAttrType);
+		
+		// Assign phone number 0123456789 and email address admin@facility.com to location #1
+		Location location1 = Context.getLocationService().getLocation(1);
+		LocationAttribute la1a = new LocationAttribute();
+		la1a.setAttributeType(phoneAttrType);
+		la1a.setValue("0123456789");
+		location1.addAttribute(la1a);
+		LocationAttribute la1b = new LocationAttribute();
+		la1b.setAttributeType(emailAttrType);
+		la1b.setValue("admin@facility.com");
+		location1.addAttribute(la1b);
+		Context.getLocationService().saveLocation(location1);
+		
+		// Assign same phone number 0123456789 to location #2
+		Location location2 = Context.getLocationService().getLocation(2);
+		LocationAttribute la2 = new LocationAttribute();
+		la2.setAttributeType(phoneAttrType);
+		la2.setValue("0123456789");
+		location2.addAttribute(la2);
+		Context.getLocationService().saveLocation(location2);
+		
+		// Search for location #1 by phone number AND email address
+		Map<LocationAttributeType, Object> attrValues = new HashMap<LocationAttributeType, Object>();
+		attrValues.put(phoneAttrType, "0123456789");
+		attrValues.put(emailAttrType, "admin@facility.com");
+		
+		// Check that only location #1 is returned
+		List<Location> locations = Context.getLocationService().getLocations(null, null, attrValues, false, null, null);
+		Assert.assertEquals(1, locations.size());
+		Assert.assertEquals(location1, locations.get(0));
 	}
 	
 	/**
@@ -1129,6 +1204,80 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationService service = Context.getLocationService();
 		Assert.assertNull(service.getLocationAttributeByUuid("not-a-uuid"));
+	}
+	
+	/**
+	 * should set audit info if any item in the location is edited
+	 * 
+	 * @see {@link LocationService#saveLocation(Location)}
+	 */
+	@Test
+	@Verifies(value = "should set audit info if any item in the location is edited", method = "saveLocation(Location)")
+	public void saveLocation_shouldSetAuditInfoIfAnyItemInTheLocationIsEdited() throws Exception {
+		LocationService ls = Context.getLocationService();
+		
+		Location location = ls.getLocation(1);
+		Assert.assertNotNull(location);
+		Assert.assertNull(location.getDateChanged());
+		Assert.assertNull(location.getChangedBy());
+		
+		location.setName("edited name");
+		ls.saveLocation(location);
+		
+		Location editedLocation = Context.getLocationService().saveLocation(location);
+		Context.flushSession();
+		
+		Assert.assertNotNull(editedLocation.getDateChanged());
+		Assert.assertNotNull(editedLocation.getChangedBy());
+		
+	}
+	
+	/**
+	 * should set audit info if any item in the location tag is edited
+	 * 
+	 * @see {@link LocationService#saveLocationTag(LocationTag)}
+	 */
+	@Test
+	@Verifies(value = "should set audit info if any item in the location tag is edited", method = "saveLocationTag(LocationTag)")
+	public void saveLocationTag_shouldSetAuditInfoIfAnyItemInTheLocationTagIsEdited() throws Exception {
+		LocationService ls = Context.getLocationService();
+		LocationTag tag = ls.getLocationTag(1);
+		
+		Assert.assertNull(tag.getDateChanged());
+		Assert.assertNull(tag.getChangedBy());
+		
+		tag.setName("testing");
+		tag.setDescription("desc");
+		
+		LocationTag editedTag = Context.getLocationService().saveLocationTag(tag);
+		Context.flushSession();
+		
+		Assert.assertNotNull(editedTag.getDateChanged());
+		Assert.assertNotNull(editedTag.getChangedBy());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByName(String)
+	 * @verifies return the location attribute type with the specified name
+	 */
+	@Test
+	public void getLocationAttributeTypeByName_shouldReturnTheLocationAttributeTypeWithTheSpecifiedName() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationAttributeType locationAttributeType = Context.getLocationService().getLocationAttributeTypeByName(
+		    "Audit Date");
+		Assert.assertNotNull(locationAttributeType);
+		Assert.assertEquals("Audit Date", locationAttributeType.getName());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByName(String)
+	 * @verifies return null if no location attribute type exists with the specified name
+	+	 */
+	@Test
+	public void getLocationAttributeTypeByName_shouldReturnNullIfNoLocationAttributeTypeExistsWithTheSpecifiedName()
+	        throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertNull(Context.getLocationService().getLocationAttributeTypeByName("not-a-name"));
 	}
 	
 }

@@ -33,15 +33,18 @@ public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHand
 			String initialValue = "";
 			checkEmptyVal((Drug) null);
 			Drug d = (Drug) this.fieldGenTag.getVal();
-			if (d != null)
-				if (d.getDrugId() != null)
+			if (d != null) {
+				if (d.getDrugId() != null) {
 					initialValue = d.getDrugId().toString();
+				}
+			}
 			String optionHeader = "";
 			if (this.fieldGenTag.getParameterMap() != null) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
 			}
-			if (optionHeader == null)
+			if (optionHeader == null) {
 				optionHeader = "";
+			}
 			
 			//HttpServletRequest request = (HttpServletRequest)this.fieldGenTag.getPageContext().getRequest();
 			
@@ -49,8 +52,9 @@ public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHand
 			List<Drug> drugs = cs.getAllDrugs();
 			Collections.sort(drugs, new DrugsByNameComparator());
 			
-			if (drugs == null)
+			if (drugs == null) {
 				drugs = new ArrayList<Drug>();
+			}
 			
 			setParameter("initialValue", initialValue);
 			setParameter("optionHeader", optionHeader);

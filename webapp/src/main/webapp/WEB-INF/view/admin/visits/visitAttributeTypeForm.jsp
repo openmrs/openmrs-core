@@ -41,14 +41,14 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.visits.visitForm.belowTitle" type="html" parameters="visitAttributeTypeId=${visitAttributeType.visitAttributeTypeId}" />
 
 <spring:hasBindErrors name="visitAttributeType">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="visitAttributeType.name">
 				<input type="text" name="name" value="${status.value}" size="50" />
@@ -84,7 +84,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="AttributeType.datatypeClassname"/></td>
+		<td><openmrs:message code="AttributeType.datatypeClassname"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="visitAttributeType.datatypeClassname">
 				<select name="datatypeClassname">

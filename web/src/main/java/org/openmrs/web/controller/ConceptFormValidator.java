@@ -37,7 +37,7 @@ public class ConceptFormValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -47,7 +47,7 @@ public class ConceptFormValidator implements Validator {
 	
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 */
@@ -61,10 +61,12 @@ public class ConceptFormValidator implements Validator {
 			for (int x = 0; x < backingObject.getConceptMappings().size(); x++) {
 				ConceptMap map = backingObject.getConceptMappings().get(x);
 				//this mapping has been removed or is new with no term selected, so ignore it
-				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null)
+				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
 					continue;
-				if (map.getConceptMapType() == null)
+				}
+				if (map.getConceptMapType() == null) {
 					errors.rejectValue("conceptMappings[" + x + "].conceptMapType", "Concept.map.typeRequired");
+				}
 			}
 			
 			boolean foundAtLeastOneFullySpecifiedName = false;
@@ -102,8 +104,9 @@ public class ConceptFormValidator implements Validator {
 				}
 			}
 			
-			if (!foundAtLeastOneFullySpecifiedName)
+			if (!foundAtLeastOneFullySpecifiedName) {
 				errors.reject("Concept.name.atLeastOneRequired");
+			}
 			
 		}
 		

@@ -62,7 +62,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	
 	/**
 	 * Does the work of adding UUIDs to all rows.
-	 * 
+	 *
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
 	public void execute(Database database) throws CustomChangeException {
@@ -71,7 +71,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	
 	/**
 	 * Executes all the changes to the concept names as a batch update.
-	 * 
+	 *
 	 * @param connection The database connection
 	 */
 	private void runBatchInsert(JdbcConnection connection) throws CustomChangeException {
@@ -85,8 +85,9 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			if (userId == null || userId < 1) {
 				userId = getInt(connection, "SELECT min(user_id) FROM users");
 				//leave it as null rather than setting it to 0
-				if (userId < 1)
+				if (userId < 1) {
 					userId = null;
+				}
 			}
 			
 			//userId is not a param, because it's easier this way if it's null
@@ -205,7 +206,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	
 	/**
 	 * returns an integer resulting from the execution of an sql statement
-	 * 
+	 *
 	 * @param connection a DatabaseConnection
 	 * @param sql the sql statement to execute
 	 * @return integer resulting from the execution of the sql statement
@@ -217,10 +218,11 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 			stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			
-			if (rs.next())
+			if (rs.next()) {
 				result = rs.getInt(1);
-			else
+			} else {
 				log.warn("No row returned by getInt() method");
+			}
 			
 			if (rs.next()) {
 				log.warn("Multiple rows returned by getInt() method");
@@ -251,7 +253,7 @@ public class AddConceptMapTypesChangeset implements CustomTaskChange {
 	/**
 	 * Get the comma separated value of the concept map types names passed in as values for
 	 * parameters
-	 * 
+	 *
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	public void setUp() throws SetupException {

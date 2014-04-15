@@ -1,7 +1,7 @@
 <table>
 	<tr>
 		<td valign="top">
-			<openmrs:message code="Field.name" />
+			<openmrs:message code="Field.name" /><span class="required">*</span>
 		</td>
 		<td>
 			<spring:bind path="field.name">
@@ -39,7 +39,7 @@
 					<c:forEach items="${fieldTypes}" var="ft">
 						<option value="${ft.fieldTypeId}"
 							<c:if test="${ft.fieldTypeId == status.value.fieldTypeId}">selected</c:if>>
-							${ft.name}
+							<c:out value="${ft.name}"/>
 						</option>
 					</c:forEach>
 				</select>
@@ -142,7 +142,7 @@
 				<openmrs:message code="general.createdBy" />
 			</td>
 			<td>
-				${field.creator.personName} -
+				<c:out value="${field.creator.personName}" /> -
 				<openmrs:formatDate date="${field.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -153,9 +153,17 @@
 				<openmrs:message code="general.changedBy" />
 			</td>
 			<td>
-				${field.changedBy.personName} -
+				<c:out value="${field.changedBy.personName}" /> -
 				<openmrs:formatDate date="${field.dateChanged}" type="long" />
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+         <c:if test="${field.fieldId != null}">
+          <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+          <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub><spring:bind path="field.uuid">
+          <c:out value="${status.value}"></c:out>
+      </spring:bind>M</sub></font></td>
+        </c:if>
+  </tr>
 </table>

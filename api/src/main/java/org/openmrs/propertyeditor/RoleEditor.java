@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  * an object back and forth through an html form or other medium. <br/>
  * <br/>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see Role
  */
 public class RoleEditor extends PropertyEditorSupport {
@@ -48,8 +48,9 @@ public class RoleEditor extends PropertyEditorSupport {
 				Role r = es.getRole(text);
 				setValue(r);
 				//when a role is not found, no exception is generated. throw one to execute the catch block
-				if (r == null)
+				if (r == null) {
 					throw new Exception();
+				}
 			}
 			catch (Exception ex) {
 				Role r = es.getRoleByUuid(text);
@@ -66,10 +67,11 @@ public class RoleEditor extends PropertyEditorSupport {
 	
 	public String getAsText() {
 		Role r = (Role) getValue();
-		if (r == null)
+		if (r == null) {
 			return "";
-		else
+		} else {
 			return r.getRole();
+		}
 	}
 	
 }

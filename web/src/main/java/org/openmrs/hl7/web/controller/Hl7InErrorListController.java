@@ -44,7 +44,7 @@ public class Hl7InErrorListController {
 	
 	/**
 	 * Render the HL7 error queue messages page
-	 * 
+	 *
 	 * @param modelMap
 	 * @return
 	 */
@@ -55,7 +55,7 @@ public class Hl7InErrorListController {
 	
 	/**
 	 * submits an HL7InError back to the HL7 queue
-	 * 
+	 *
 	 * @param id HL7InErrorId for identifying the HL7 message
 	 * @return formatted success or failure message for display
 	 * @throws Exception
@@ -103,7 +103,7 @@ public class Hl7InErrorListController {
 	/**
 	 * method for returning a batch of HL7s from the queue based on datatable parameters; sorting is
 	 * unavailable at this time
-	 * 
+	 *
 	 * @param iDisplayStart start index for search
 	 * @param iDisplayLength amount of terms to return
 	 * @param sSearch search term(s)
@@ -122,8 +122,9 @@ public class Hl7InErrorListController {
 		
 		// form the results dataset
 		List<Object> results = new ArrayList<Object>();
-		for (HL7InError hl7 : hl7s)
+		for (HL7InError hl7 : hl7s) {
 			results.add(splitHL7InError(hl7));
+		}
 		
 		// build the response
 		Map<String, Object> response = new HashMap<String, Object>();
@@ -138,7 +139,7 @@ public class Hl7InErrorListController {
 	
 	/**
 	 * create an object array for a given HL7InError
-	 * 
+	 *
 	 * @param q HL7InError object
 	 * @return object array for use with datatables
 	 */

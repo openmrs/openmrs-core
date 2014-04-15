@@ -50,14 +50,14 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationAttributeType.belowTitle" type="html" parameters="id=${ attributeType.id }" />
 
 <spring:hasBindErrors name="attributeType">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="attributeType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -93,7 +93,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="AttributeType.datatypeClassname"/></td>
+		<td><openmrs:message code="AttributeType.datatypeClassname"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="attributeType.datatypeClassname">
 				<select name="datatypeClassname">
@@ -146,11 +146,22 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${attributeType.creator.personName} -
+				<c:out value="${attributeType.creator.personName}" /> -
 				<openmrs:formatDate date="${attributeType.dateCreated}" type="long" />
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+    <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+     <td colspan="${fn:length(locales)}">
+       <font color="#D0D0D0"><sub>
+       <c:if test="${attributeType.locationAttributeTypeId != null}">
+       <spring:bind path="attributeType.uuid">
+           <c:out value="${status.value}"></c:out>
+       </spring:bind></c:if>
+       </sub></font>
+     </td>
+   </tr>
 </table>
 <br />
 

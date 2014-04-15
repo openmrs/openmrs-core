@@ -33,7 +33,7 @@ import org.simpleframework.xml.Root;
  * <p>
  * The "filter" represents an (optional) extra filter that is applied to the input cohort before the
  * DataSetDefinitions ever see it.
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Root(strict = false)
@@ -54,8 +54,9 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	}
 	
 	public void addDataSetDefinition(DataSetDefinition definition) {
-		if (getDataSetDefinitions() == null)
+		if (getDataSetDefinitions() == null) {
 			setDataSetDefinitions(new Vector<DataSetDefinition>());
+		}
 		getDataSetDefinitions().add(definition);
 	}
 	
@@ -75,7 +76,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Set the Report Schema Id
-	 * 
+	 *
 	 * @param reportSchemaId
 	 */
 	@Attribute(required = false)
@@ -85,7 +86,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Returns the ReportSchema Id
-	 * 
+	 *
 	 * @return the Integer Report Schema Id
 	 */
 	@Attribute(required = false)
@@ -95,7 +96,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Set a name for the ReportSchema
-	 * 
+	 *
 	 * @param name <code>String</code> name to set
 	 */
 	@Element(data = true, required = true)
@@ -105,7 +106,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Returns the name of the ReportSchema
-	 * 
+	 *
 	 * @return the name of the ReportSchema
 	 */
 	@Element(data = true, required = true)
@@ -115,7 +116,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Set a description for this ReportSchema
-	 * 
+	 *
 	 * @param description
 	 */
 	@Element(data = true, required = true)
@@ -125,7 +126,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Returns the description of this ReportSchema
-	 * 
+	 *
 	 * @return the <code>String</code> description of the ReportSchema
 	 */
 	@Element(data = true, required = true)
@@ -135,7 +136,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Set the filter
-	 * 
+	 *
 	 * @param filter
 	 */
 	@Element(required = false)
@@ -145,7 +146,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Returns the filter
-	 * 
+	 *
 	 * @return the filter as a <code>CohortDefinition</code>
 	 */
 	@Element(required = false)
@@ -155,7 +156,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Sets List<Parameter> reportParameters
-	 * 
+	 *
 	 * @param reportParameters this schema's defined parameters
 	 */
 	@ElementList(required = false, name = "parameters")
@@ -166,7 +167,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	/**
 	 * Get all ReportParameters defined for this schema. This method does not recurse through the
 	 * sub objects to find _all_ parameters. Use {@link #getParameters()} for that.
-	 * 
+	 *
 	 * @return this schema's defined parameters
 	 */
 	@ElementList(required = false, name = "parameters")
@@ -176,7 +177,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Set List<DataSetDefinition> dataSetDefinitions
-	 * 
+	 *
 	 * @param definitions
 	 */
 	@ElementList(required = true, name = "dataSets")
@@ -186,7 +187,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Returns List<DataSetDefinition> dataSetDefinitions
-	 * 
+	 *
 	 * @return List<DataSetDefinition> a list with the DataSet Definitions
 	 */
 	@ElementList(required = true, name = "dataSets")
@@ -196,7 +197,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	
 	/**
 	 * Looks through the datasetdefinitions and cohorts to get the rquired parameters TODO
-	 * 
+	 *
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
 	public List<Parameter> getParameters() {
@@ -204,8 +205,9 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 		List<Parameter> parameters = new Vector<Parameter>();
 		
 		// loop over cohorts and get parameters
-		if (getFilter() != null)
+		if (getFilter() != null) {
 			parameters.addAll(getFilter().getParameters());
+		}
 		
 		// loop over datasetdefinitions and get the parameters
 		if (getDataSetDefinitions() != null) {

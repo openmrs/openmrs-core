@@ -64,7 +64,7 @@ import org.springframework.web.util.JavaScriptUtils;
 
 /**
  * Abstract class used when a small wizard is needed before Spring, jsp, etc has been started up.
- * 
+ *
  * @see UpdateFilter
  * @see InitializationFilter
  */
@@ -99,7 +99,7 @@ public abstract class StartupFilter implements Filter {
 	
 	/**
 	 * The web.xml file sets this {@link StartupFilter} to be the first filter for all requests.
-	 * 
+	 *
 	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
 	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
@@ -120,16 +120,27 @@ public abstract class StartupFilter implements Filter {
 				servletPath = servletPath.replaceFirst("/initfilter", "/WEB-INF/view"); // strip out the /initfilter part
 				// writes the actual image file path to the response
 				File file = new File(filterConfig.getServletContext().getRealPath(servletPath));
-				if (httpRequest.getPathInfo() != null)
+				if (httpRequest.getPathInfo() != null) {
 					file = new File(file, httpRequest.getPathInfo());
+				}
 				
+				InputStream imageFileInputStream = null;
 				try {
-					InputStream imageFileInputStream = new FileInputStream(file);
+					imageFileInputStream = new FileInputStream(file);
 					OpenmrsUtil.copyFile(imageFileInputStream, httpResponse.getOutputStream());
-					imageFileInputStream.close();
 				}
 				catch (FileNotFoundException e) {
 					log.error("Unable to find file: " + file.getAbsolutePath());
+				}
+				finally {
+					if (imageFileInputStream != null) {
+						try {
+							imageFileInputStream.close();
+						}
+						catch (IOException io) {
+							log.warn("Couldn't close imageFileInputStream: " + io);
+						}
+					}
 				}
 			} else if (servletPath.startsWith("/scripts")) {
 				log
@@ -190,7 +201,7 @@ public abstract class StartupFilter implements Filter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
@@ -199,7 +210,7 @@ public abstract class StartupFilter implements Filter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param httpResponse
 	 * @throws Exception
@@ -210,7 +221,7 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * All private attributes on this class are returned to the template via the velocity context
 	 * and reflection
-	 * 
+	 *
 	 * @param templateName the name of the velocity file to render. This name is prepended with
 	 *            {@link #getTemplatePrefix()}
 	 * @param referenceMap
@@ -220,14 +231,17 @@ public abstract class StartupFilter implements Filter {
 	        throws IOException {
 		// first we should get velocity tools context for current client request (within
 		// his http session) and merge that tools context with basic velocity context
+		if (referenceMap == null) {
+			return;
+		}
+		
 		Object locale = referenceMap.get(FilterUtil.LOCALE_ATTRIBUTE);
 		ToolContext toolContext = getToolContext(locale != null ? locale.toString() : Context.getLocale().toString());
 		VelocityContext velocityContext = new VelocityContext(toolContext);
+		;
 		
-		if (referenceMap != null) {
-			for (Map.Entry<String, Object> entry : referenceMap.entrySet()) {
-				velocityContext.put(entry.getKey(), entry.getValue());
-			}
+		for (Map.Entry<String, Object> entry : referenceMap.entrySet()) {
+			velocityContext.put(entry.getKey(), entry.getValue());
 		}
 		
 		Object model = getModel();
@@ -283,7 +297,7 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * This string is prepended to all templateNames passed to
 	 * {@link #renderTemplate(String, Map, HttpServletResponse)}
-	 * 
+	 *
 	 * @return string to prepend as the path for the templates
 	 */
 	protected String getTemplatePrefix() {
@@ -293,7 +307,7 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * The model that is used as the backer for all pages in this startup wizard. Should never
 	 * return null.
-	 * 
+	 *
 	 * @return the stored formbacking/model object
 	 */
 	protected abstract Object getModel();
@@ -301,14 +315,14 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * If this returns true, this filter fails early and quickly. All logic is skipped and startup
 	 * and usage continue normally.
-	 * 
+	 *
 	 * @return true if this filter can be skipped
 	 */
 	public abstract boolean skipFilter(HttpServletRequest request);
 	
 	/**
 	 * Convert a map of strings to objects to json
-	 * 
+	 *
 	 * @param map object to convert
 	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 * @param sb StringBuffer to append to
@@ -318,19 +332,21 @@ public abstract class StartupFilter implements Filter {
 		
 		sb.append('{');
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			if (first)
+			if (first) {
 				first = false;
-			else
+			} else {
 				sb.append(',');
+			}
 			
 			sb.append('"');
-			if (entry.getKey() == null)
+			if (entry.getKey() == null) {
 				sb.append("null");
-			else {
-				if (escapeJavascript)
+			} else {
+				if (escapeJavascript) {
 					sb.append(JavaScriptUtils.javaScriptEscape(entry.getKey()));
-				else
+				} else {
 					sb.append(WebUtil.escapeQuotesAndNewlines(entry.getKey()));
+				}
 			}
 			sb.append('"').append(':');
 			
@@ -342,7 +358,7 @@ public abstract class StartupFilter implements Filter {
 	
 	/**
 	 * Convert a list of objects to json
-	 * 
+	 *
 	 * @param list object to convert
 	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 * @param sb StringBuffer to append to
@@ -352,10 +368,11 @@ public abstract class StartupFilter implements Filter {
 		
 		sb.append('[');
 		for (Object listItem : list) {
-			if (first)
+			if (first) {
 				first = false;
-			else
+			} else {
 				sb.append(',');
+			}
 			
 			sb.append(toJSONString(listItem, escapeJavascript));
 		}
@@ -364,26 +381,27 @@ public abstract class StartupFilter implements Filter {
 	
 	/**
 	 * Convert all other objects to json
-	 * 
+	 *
 	 * @param object object to convert
 	 * @param sb StringBuffer to append to
 	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 */
 	private void toJSONString(Object object, StringBuffer sb, boolean escapeJavascript) {
-		if (object == null)
+		if (object == null) {
 			sb.append("null");
-		else {
-			if (escapeJavascript)
+		} else {
+			if (escapeJavascript) {
 				sb.append('"').append(JavaScriptUtils.javaScriptEscape(object.toString())).append('"');
-			else
+			} else {
 				sb.append('"').append(WebUtil.escapeQuotesAndNewlines(object.toString())).append('"');
+			}
 		}
 	}
 	
 	/**
 	 * Convenience method to convert the given object to a JSON string. Supports Maps, Lists,
 	 * Strings, Boolean, Double
-	 * 
+	 *
 	 * @param object object to convert to json
 	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 * @return JSON string to be eval'd in javascript
@@ -391,14 +409,15 @@ public abstract class StartupFilter implements Filter {
 	protected String toJSONString(Object object, boolean escapeJavascript) {
 		StringBuffer sb = new StringBuffer();
 		
-		if (object instanceof Map)
+		if (object instanceof Map) {
 			toJSONString((Map<String, Object>) object, sb, escapeJavascript);
-		else if (object instanceof List)
+		} else if (object instanceof List) {
 			toJSONString((List) object, sb, escapeJavascript);
-		else if (object instanceof Boolean)
+		} else if (object instanceof Boolean) {
 			sb.append(object.toString());
-		else
+		} else {
 			toJSONString(object, sb, escapeJavascript);
+		}
 		
 		return sb.toString();
 	}
@@ -407,15 +426,16 @@ public abstract class StartupFilter implements Filter {
 	 * Gets tool context for specified locale parameter. If context does not exists, it creates new
 	 * context, configured for that locale. Otherwise, it changes locale property of
 	 * {@link LocalizationTool} object, that is being contained in tools context
-	 * 
+	 *
 	 * @param locale the string with locale parameter for configuring tools context
 	 * @return the tool context object
 	 */
 	public ToolContext getToolContext(String locale) {
 		Locale systemLocale = LocaleUtility.fromSpecification(locale);
 		//Defaults to en if systemLocale is null or invalid e.g en_GBs
-		if (systemLocale == null || !ArrayUtils.contains(Locale.getAvailableLocales(), systemLocale))
+		if (systemLocale == null || !ArrayUtils.contains(Locale.getAvailableLocales(), systemLocale)) {
 			systemLocale = Locale.ENGLISH;
+		}
 		// If tool context has not been configured yet
 		if (toolContext == null) {
 			// first we are creating manager for tools, factory for configuring tools 

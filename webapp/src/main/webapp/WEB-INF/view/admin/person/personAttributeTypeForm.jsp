@@ -28,7 +28,7 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="personAttributeType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -54,7 +54,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				<c:if test="${isJavaUtilDate != ''}">
 					<br/>
-					<span class="error"><openmrs:message code="PersonAttributeType.java.util.Date.warning"/></span>
+					<span class="error"><openmrs:message htmlEscape="false" code="PersonAttributeType.java.util.Date.warning"/></span>
 				</c:if>
 			</spring:bind>
 		</td>
@@ -111,7 +111,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${personAttributeType.creator.personName} -
+				<c:out value="${personAttributeType.creator.personName}" /> -
 				<openmrs:formatDate date="${personAttributeType.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -120,11 +120,17 @@
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
 			<td>
-				${personAttributeType.changedBy.personName} -
+				<c:out value="${personAttributeType.changedBy.personName}" /> -
 				<openmrs:formatDate date="${personAttributeType.dateChanged}" type="long" />
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+     <c:if test="${personAttributeType.personAttributeTypeId != null}">
+       <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${personAttributeType.uuid}</sub></font></td>
+     </c:if>
+   </tr>
 </table>
 <input type="hidden" name="personAttributeTypeId:int" value="${personAttributeType.personAttributeTypeId}">
 <br />

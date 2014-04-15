@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  * The name of the concept associated with that id is treated as the name of the program to fetch.
  * <br/>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see Program
  */
 public class ProgramEditor extends PropertyEditorSupport {
@@ -63,8 +63,9 @@ public class ProgramEditor extends PropertyEditorSupport {
 				if (text.startsWith("concept.")) {
 					Concept c = Context.getConceptService().getConceptByUuid(text.substring(text.indexOf('.') + 1));
 					p = Context.getProgramWorkflowService().getProgramByName(c.getName().getName());
-				} else
+				} else {
 					p = Context.getProgramWorkflowService().getProgramByUuid(text);
+				}
 				
 				setValue(p);
 				if (p == null) {

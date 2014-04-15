@@ -32,7 +32,7 @@ import org.hibernate.type.Type;
  * Used by the {@link HibernateSessionFactoryBean} to keep track of multiple interceptors <br/>
  * Each of the methods in {@link Interceptor} are called for each interceptor that is added to this
  * class
- * 
+ *
  * @since 1.9
  */
 public class ChainingInterceptor implements Interceptor {
@@ -45,7 +45,7 @@ public class ChainingInterceptor implements Interceptor {
 	/**
 	 * Adds the given interceptor to the list of interceptors to be applied to hibernate sessions.
 	 * Interceptors are called in the added order, with core interceptors being called first
-	 * 
+	 *
 	 * @param interceptor the interceptor to add to the queue
 	 */
 	public void addInterceptor(Interceptor interceptor) {
@@ -57,15 +57,17 @@ public class ChainingInterceptor implements Interceptor {
 		
 		log.debug("Adding " + interceptor + " to interceptor chain");
 		
-		if (interceptors == null)
+		if (interceptors == null) {
 			interceptors = new LinkedHashSet<Interceptor>();
+		}
 		
 		interceptors.add(interceptor);
 	}
 	
 	public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.onDelete(entity, id, state, propertyNames, types);
+		}
 	}
 	
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
@@ -73,8 +75,10 @@ public class ChainingInterceptor implements Interceptor {
 		boolean objectChanged = false;
 		
 		for (Interceptor i : interceptors)
-			// must be in this order so that java doesn't skip the method call for optimizations
+		// must be in this order so that java doesn't skip the method call for optimizations
+		{
 			objectChanged = i.onFlushDirty(entity, id, currentState, previousState, propertyNames, types) || objectChanged;
+		}
 		
 		return objectChanged;
 	}
@@ -82,9 +86,10 @@ public class ChainingInterceptor implements Interceptor {
 	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			// must be in this order so that java doesn't skip the method call for optimizations
 			objectChanged = i.onLoad(entity, id, state, propertyNames, types) || objectChanged;
+		}
 		
 		return objectChanged;
 	}
@@ -92,23 +97,26 @@ public class ChainingInterceptor implements Interceptor {
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			// must be in this order so that java doesn't skip the method call for optimizations
 			objectChanged = i.onSave(entity, id, state, propertyNames, types) || objectChanged;
+		}
 		
 		return objectChanged;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void postFlush(Iterator entities) {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.postFlush(entities);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void preFlush(Iterator entities) {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.preFlush(entities);
+		}
 	}
 	
 	public Boolean isTransient(Object entity) {
@@ -119,10 +127,11 @@ public class ChainingInterceptor implements Interceptor {
 			
 			// 
 			if (tmpReturnValue != null) {
-				if (returnValue == null)
+				if (returnValue == null) {
 					returnValue = tmpReturnValue;
-				else
+				} else {
 					returnValue = returnValue && tmpReturnValue;
+				}
 			}
 		}
 		
@@ -133,8 +142,9 @@ public class ChainingInterceptor implements Interceptor {
 	public Object instantiate(String entityName, EntityMode entityMode, Serializable id) {
 		for (Interceptor i : interceptors) {
 			Object o = i.instantiate(entityName, entityMode, id);
-			if (o != null)
+			if (o != null) {
 				return o;
+			}
 		}
 		
 		return null;
@@ -149,21 +159,24 @@ public class ChainingInterceptor implements Interceptor {
 			int[] indices = i.findDirty(entity, id, currentState, previousState, propertyNames, types);
 			if (indices != null) {
 				for (int index : indices) {
-					if (!uniqueIndices.contains(index))
+					if (!uniqueIndices.contains(index)) {
 						uniqueIndices.add(index);
+					}
 				}
 			}
 		}
 		
-		if (uniqueIndices.isEmpty())
+		if (uniqueIndices.isEmpty()) {
 			return null;
+		}
 		
 		// turn it back into an array and return it
 		
 		int[] uniquePrimitiveIndices = new int[uniqueIndices.size()];
 		
-		for (int x = 0; x < uniqueIndices.size(); x++)
+		for (int x = 0; x < uniqueIndices.size(); x++) {
 			uniquePrimitiveIndices[x] = uniqueIndices.get(x).intValue();
+		}
 		
 		return uniquePrimitiveIndices;
 	}
@@ -172,8 +185,9 @@ public class ChainingInterceptor implements Interceptor {
 	public String getEntityName(Object object) {
 		for (Interceptor i : interceptors) {
 			String name = i.getEntityName(object);
-			if (name != null)
+			if (name != null) {
 				return name;
+			}
 		}
 		
 		return null;
@@ -182,26 +196,30 @@ public class ChainingInterceptor implements Interceptor {
 	public Object getEntity(String entityName, Serializable id) {
 		for (Interceptor i : interceptors) {
 			Object o = i.getEntity(entityName, id);
-			if (o != null)
+			if (o != null) {
 				return o;
+			}
 		}
 		
 		return null;
 	}
 	
 	public void afterTransactionBegin(Transaction tx) {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.afterTransactionBegin(tx);
+		}
 	}
 	
 	public void afterTransactionCompletion(Transaction tx) {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.afterTransactionCompletion(tx);
+		}
 	}
 	
 	public void beforeTransactionCompletion(Transaction tx) {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.beforeTransactionCompletion(tx);
+		}
 	}
 	
 	// passes the sql returned from each previous onPrepareStatement onto the next
@@ -214,18 +232,21 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.onCollectionRemove(collection, key);
+		}
 	}
 	
 	public void onCollectionRecreate(Object collection, Serializable key) throws CallbackException {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.onCollectionRecreate(collection, key);
+		}
 	}
 	
 	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
-		for (Interceptor i : interceptors)
+		for (Interceptor i : interceptors) {
 			i.onCollectionUpdate(collection, key);
+		}
 	}
 	
 }

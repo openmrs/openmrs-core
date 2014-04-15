@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Update 1.1//EN" "http://resources.openmrs.org/doctype/update-1.1.dtd">
+<updates configVersion="1.1" moduleId="test1">
+	<update>
+		 <currentVersion>2.0-SNAPSHOT</currentVersion>
+		 <requireOpenMRSVersion>1.6.0</requireOpenMRSVersion>
+		 <downloadURL>http://modules.openmrs.org/modules/download/test1/test1-2.0-SNAPSHOT.omod</downloadURL>
+	</update>
+</updates>

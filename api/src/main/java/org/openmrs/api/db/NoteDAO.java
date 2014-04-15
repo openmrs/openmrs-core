@@ -15,6 +15,7 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
+import org.openmrs.api.APIException;
 import org.openmrs.notification.Note;
 
 /**
@@ -66,4 +67,10 @@ public interface NoteDAO {
 	 */
 	public void deleteNote(Note note) throws DAOException;
 	
+	/**
+	 * @param note <code>Note</code> to be voided
+	 * @param reason <code>Reason</code> for having <code>Note</code> void
+	 * @throws APIException
+	 */
+	public Note voidNote(Note note, String reason) throws APIException;
 }

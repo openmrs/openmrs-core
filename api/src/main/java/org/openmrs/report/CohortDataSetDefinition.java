@@ -34,7 +34,7 @@ import org.simpleframework.xml.Root;
  * "1.b. Female Adults" -> (CohortDefinition) Female AND Adult<br/>
  * "1.c. Male Children" -> (CohortDefinition) Male AND NOT Adult<br/>
  * "1.d. Female Children" -> (CohortDefinition) Female AND NOT Adult ...
- * 
+ *
  * @see CohortDataSet
  * @see CohortDataSetProvider
  * @deprecated see reportingcompatibility module
@@ -63,7 +63,7 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	/**
 	 * Add the given cohort as a "column" to this definition with the given key. The name is also
 	 * added as the description.
-	 * 
+	 *
 	 * @param name key to refer by which to refer to this cohort
 	 * @param cohortDefinition The patients for this column
 	 */
@@ -74,7 +74,7 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	/**
 	 * Add the given cohort as a "column" to this definition with the given key and the given
 	 * description.
-	 * 
+	 *
 	 * @param name
 	 * @param description
 	 * @param cohortDefinition
@@ -98,8 +98,9 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	public List<Class> getColumnDatatypes() {
 		//return (List<Class>) Collections.nCopies(strategies.size(), Cohort.class);
 		List<Class> ret = new ArrayList<Class>();
-		for (int i = strategies.size(); i > 0; --i)
+		for (int i = strategies.size(); i > 0; --i) {
 			ret.add(Cohort.class);
+		}
 		return ret;
 	}
 	
@@ -122,16 +123,18 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	 */
 	public List<Parameter> getParameters() {
 		List<Parameter> ret = new Vector<Parameter>();
-		if (strategies != null)
-			for (CohortDefinition c : strategies.values())
+		if (strategies != null) {
+			for (CohortDefinition c : strategies.values()) {
 				ret.addAll(c.getParameters());
+			}
+		}
 		return ret;
 	}
 	
 	/**
 	 * Sets a description for the cohort name if it exists. Returns true if a cohort exists with the
 	 * specified name else returns false.
-	 * 
+	 *
 	 * @param name
 	 * @param description
 	 * @return true if a cohort exists with the specified name, false otherwise
@@ -146,7 +149,7 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	
 	/**
 	 * Returns a description for the given cohort strategy name.
-	 * 
+	 *
 	 * @param name
 	 * @return a <code>String</code> description
 	 */
@@ -156,7 +159,7 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	
 	/**
 	 * Returns the map of cohort strategy names, descriptions.
-	 * 
+	 *
 	 * @return a <code>Map<String, String></code> of the strategy names and descriptions
 	 */
 	@ElementMap(required = false, keyType = String.class, valueType = String.class)
@@ -174,7 +177,7 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	
 	/**
 	 * Set the key-value pairs of names to cohorts
-	 * 
+	 *
 	 * @param strategies
 	 */
 	@ElementMap(required = true, keyType = String.class, valueType = CohortDefinition.class)
@@ -184,7 +187,7 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	
 	/**
 	 * Set the key-value pairs of names to cohort descriptions
-	 * 
+	 *
 	 * @param descriptions
 	 */
 	@ElementMap(required = false, keyType = String.class, valueType = String.class)

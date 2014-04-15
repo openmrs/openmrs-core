@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Utility class that provides database related methods
- * 
+ *
  * @since 1.6
  */
 public class DatabaseUtil {
@@ -39,7 +39,7 @@ public class DatabaseUtil {
 	 * Load the jdbc driver class for the database which is specified by the connectionUrl parameter <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
-	 * 
+	 *
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @throws ClassNotFoundException
@@ -56,7 +56,7 @@ public class DatabaseUtil {
 	 * <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
-	 * 
+	 *
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @param connectionDriver the database driver class name, such as "com.mysql.jdbc.Driver"
@@ -105,8 +105,9 @@ public class DatabaseUtil {
 			dataManipulation = true;
 		}
 		
-		if (selectOnly && dataManipulation)
+		if (selectOnly && dataManipulation) {
 			throw new IllegalArgumentException("Illegal command(s) found in query string");
+		}
 		
 		PreparedStatement ps = null;
 		List<List<Object>> results = new Vector<List<Object>>();

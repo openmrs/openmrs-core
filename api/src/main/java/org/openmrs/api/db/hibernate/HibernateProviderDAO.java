@@ -13,10 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
@@ -24,7 +20,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -37,10 +32,14 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProviderDAO;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls
  * should go through the {@link org.openmrs.api.ProviderService} methods.
- * 
+ *
  * @since 1.9
  */
 public class HibernateProviderDAO implements ProviderDAO {
@@ -102,7 +101,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired) {
 		Criteria criteria = getSession().createCriteria(Provider.class);
 		if (!includeRetired) {
-			criteria.add(Expression.eq("retired", true));
+			criteria.add(Restrictions.eq("retired", false));
 		} else {
 			//push retired Provider to the end of the returned list
 			criteria.addOrder(Order.asc("retired"));
@@ -138,15 +137,15 @@ public class HibernateProviderDAO implements ProviderDAO {
 	@Override
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
 	        Integer start, Integer length, boolean includeRetired) {
-		Criteria criteria = prepareProviderCriteria(name);
-		if (start != null)
+		Criteria criteria = prepareProviderCriteria(name, includeRetired);
+		if (start != null) {
 			criteria.setFirstResult(start);
-		if (length != null)
+		}
+		if (length != null) {
 			criteria.setMaxResults(length);
+		}
 		
-		if (!includeRetired) {
-			criteria.add(Expression.eq("retired", false));
-		} else {
+		if (includeRetired) {
 			//push retired Provider to the end of the returned list
 			criteria.addOrder(Order.asc("retired"));
 		}
@@ -161,17 +160,21 @@ public class HibernateProviderDAO implements ProviderDAO {
 	
 	/**
 	 * Creates a Provider Criteria based on name
-	 * 
+	 *
 	 * @param name represents provider name
+	 * @param includeRetired
 	 * @return Criteria represents the hibernate criteria to search
 	 */
-	private Criteria prepareProviderCriteria(String name) {
+	private Criteria prepareProviderCriteria(String name, boolean includeRetired) {
 		if (StringUtils.isBlank(name)) {
 			name = "%";
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Provider.class).createAlias("person", "p",
 		    Criteria.LEFT_JOIN);
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
+		}
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
@@ -196,7 +199,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	
 	/**
 	 * Creates or that matches the input name with Provider-Person-Names (not voided)
-	 * 
+	 *
 	 * @param name
 	 * @return Junction
 	 */
@@ -221,8 +224,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 	 * @see org.openmrs.api.db.ProviderDAO#getCountOfProviders(java.lang.String)
 	 */
 	@Override
-	public Long getCountOfProviders(String name) {
-		Criteria criteria = prepareProviderCriteria(name);
+	public Long getCountOfProviders(String name, boolean includeRetired) {
+		Criteria criteria = prepareProviderCriteria(name, includeRetired);
 		criteria.setProjection(Projections.countDistinct("providerId"));
 		return (Long) criteria.uniqueResult();
 	}
@@ -238,7 +241,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	private <T> List<T> getAll(boolean includeRetired, Class<T> clazz) {
 		Criteria criteria = getSession().createCriteria(clazz);
 		if (!includeRetired) {
-			criteria.add(Expression.eq("retired", false));
+			criteria.add(Restrictions.eq("retired", false));
 		} else {
 			//push retired Provider to the end of the returned list
 			criteria.addOrder(Order.asc("retired"));
@@ -294,8 +297,9 @@ public class HibernateProviderDAO implements ProviderDAO {
 		
 		Criteria criteria = getSession().createCriteria(Provider.class);
 		criteria.add(Restrictions.eq("identifier", provider.getIdentifier()));
-		if (provider.getProviderId() != null)
+		if (provider.getProviderId() != null) {
 			criteria.add(Restrictions.not(Restrictions.eq("providerId", provider.getProviderId())));
+		}
 		criteria.setProjection(Projections.countDistinct("providerId"));
 		
 		return (Long) criteria.uniqueResult() == 0L;

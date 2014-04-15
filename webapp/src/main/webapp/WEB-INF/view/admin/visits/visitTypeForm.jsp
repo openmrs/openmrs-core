@@ -17,27 +17,19 @@
 	
 </script>
 
-<script type="text/javascript">
-   function forceMaxLength(object, maxLength) {
-      if( object.value.length >= maxLength) {
-         object.value = object.value.substring(0, maxLength); 
-      }
-   }
-</script>
-
 <h2><openmrs:message code="VisitType.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.visits.visitForm.belowTitle" type="html" parameters="visitTypeId=${visitType.visitTypeId}" />
 
 <spring:hasBindErrors name="visitType">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="visitType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -60,6 +52,16 @@
 			<td><openmrs:format user="${ visitType.creator }"/></td>
 		</tr>
 	</c:if>
+	<tr>
+        <c:if test="${visitType.visitTypeId != null}">
+           	<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+           	<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+           	<spring:bind path="visitType.uuid">
+            <c:out value="${status.value}"></c:out>
+           	</spring:bind></sub></font>
+           	</td>
+         </c:if>
+    </tr>
 </table>
 <br />
 

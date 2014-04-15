@@ -15,6 +15,8 @@ package org.openmrs;
 
 import java.util.UUID;
 
+import com.google.common.base.Objects;
+
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br/>
  * It implements the uuid variable that all objects are expected to have.
@@ -42,14 +44,15 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	 * <p>
 	 * If the <code>uuid</code> field is <code>null</code>, it delegates to
 	 * {@link Object#hashCode()}.
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 * @should not fail if uuid is null
 	 */
 	@Override
 	public int hashCode() {
-		if (getUuid() == null)
+		if (getUuid() == null) {
 			return super.hashCode();
+		}
 		return getUuid().hashCode();
 	}
 	
@@ -58,7 +61,7 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	 * object (<code>x == y</code> has the value <code>true</code>) or both have the same
 	 * <code>uuid</code> (<code>((x.uuid != null) && x.uuid.equals(y.uuid))</code> has the value
 	 * <code>true</code>).
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 * @should return false if given obj is not instance of BaseOpenmrsObject
 	 * @should return false if given obj is null
@@ -69,41 +72,34 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!(obj instanceof BaseOpenmrsObject))
+		}
+		if (!(obj instanceof BaseOpenmrsObject)) {
 			return false;
+		}
 		BaseOpenmrsObject other = (BaseOpenmrsObject) obj;
 		// Need to call getUuid to make sure the hibernate proxy objects return the correct uuid.
 		// The private member may not be set for a hibernate proxy.
-		if (getUuid() == null)
+		if (getUuid() == null) {
 			return false;
+		}
 		return getUuid().equals(other.getUuid());
 	}
 	
 	/**
-	 * Returns a string consisting of the name of the class of which the object is an instance and
-	 * the <code>uuid</code> field surrounded by <code>[</code> and <code>]</code>. In other words,
-	 * this method returns a string equal to the value of: <blockquote>
-	 * 
-	 * <pre>
-	 * getClass().getName() + '[' + uuid + ']'
-	 * </pre>
-	 * 
-	 * </blockquote>
+	 * Returns a string equal to the value of: <blockquote>ClassName{hashCode=...,
+	 * uuid=...}</blockquote>
 	 * <p>
-	 * If the <code>uuid</code> field is <code>null</code>, it delegates to
-	 * {@link Object#toString()}
-	 * 
-	 * @see java.lang.Object#toString()
-	 * @should not fail if uuid is null
+	 * If the <code>uuid</code> field is <code>null</code>, it returns: <blockquote>
+	 * ClassName{hashCode=...} </blockquote>
+	 *
+	 * @should include hashCode if uuid is null
+	 * @should include uuid if not null
 	 */
 	@Override
 	public String toString() {
-		if (getUuid() != null) {
-			return getClass().getName() + "[" + getUuid() + "]";
-		} else {
-			return super.toString();
-		}
+		return Objects.toStringHelper(this).add("hashCode", Integer.toHexString(hashCode())).add("uuid", getUuid())
+		        .omitNullValues().toString();
 	}
 }

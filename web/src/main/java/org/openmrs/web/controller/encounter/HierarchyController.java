@@ -54,7 +54,7 @@ public class HierarchyController {
 	
 	/**
 	 * Gets JSON formatted for jstree jquery plugin [ { data: ..., children: ...}, ... ]
-	 * 
+	 *
 	 * @return
 	 * @throws IOException
 	 */
@@ -77,7 +77,7 @@ public class HierarchyController {
 	
 	/**
 	 * { data: "Location's name (tags)", children: [ recursive calls to this method, ... ] }
-	 * 
+	 *
 	 * @param loc
 	 * @return
 	 */
@@ -89,16 +89,18 @@ public class HierarchyController {
 			for (Iterator<LocationTag> i = loc.getTags().iterator(); i.hasNext();) {
 				LocationTag t = i.next();
 				sb.append(t.getName());
-				if (i.hasNext())
+				if (i.hasNext()) {
 					sb.append(", ");
+				}
 			}
 			sb.append(")");
 		}
 		ret.put("data", sb.toString());
 		if (loc.getChildLocations() != null && loc.getChildLocations().size() > 0) {
 			List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
-			for (Location child : loc.getChildLocations())
+			for (Location child : loc.getChildLocations()) {
 				children.add(toJsonHelper(child));
+			}
 			ret.put("children", children);
 		}
 		return ret;

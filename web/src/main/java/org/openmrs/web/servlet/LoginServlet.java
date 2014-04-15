@@ -43,7 +43,7 @@ import org.openmrs.web.user.UserProperties;
 /**
  * This servlet accepts the username and password from the login form and authenticates the user to
  * OpenMRS
- * 
+ *
  * @see org.openmrs.api.context.Context#authenticate(String, String)
  */
 public class LoginServlet extends HttpServlet {
@@ -72,8 +72,9 @@ public class LoginServlet extends HttpServlet {
 		
 		String ipAddress = request.getRemoteAddr();
 		Integer loginAttempts = loginAttemptsByIP.get(ipAddress);
-		if (loginAttempts == null)
+		if (loginAttempts == null) {
 			loginAttempts = 1;
+		}
 		
 		loginAttempts++;
 		
@@ -121,8 +122,9 @@ public class LoginServlet extends HttpServlet {
 				String password = request.getParameter("pw");
 				
 				// only try to authenticate if they actually typed in a username
-				if (username == null || username.length() == 0)
+				if (username == null || username.length() == 0) {
 					throw new ContextAuthenticationException("Unable to authenticate with an empty username");
+				}
 				
 				Context.authenticate(username, password);
 				
@@ -191,7 +193,7 @@ public class LoginServlet extends HttpServlet {
 	
 	/**
 	 * Convenience method for pulling the correct page to redirect to out of the request
-	 * 
+	 *
 	 * @param request the current request
 	 * @return the page to redirect to as determined by parameters in the request
 	 */
@@ -207,9 +209,9 @@ public class LoginServlet extends HttpServlet {
 				Integer requestURLLength = request.getRequestURL().length();
 				StringBuffer domainAndPort = request.getRequestURL();
 				domainAndPort.delete(requestURLLength - request.getRequestURI().length(), requestURLLength);
-				if (!redirect.startsWith(domainAndPort.toString()))
+				if (!redirect.startsWith(domainAndPort.toString())) {
 					redirect = null; // send them to the homepage
-				else {
+				} else {
 					// now cut out everything but the path
 					// get the first slash after https:// or http://
 					redirect = redirect.substring(redirect.indexOf("/", 9));
@@ -238,9 +240,7 @@ public class LoginServlet extends HttpServlet {
 		else if (redirect.endsWith(WebConstants.SETUP_PAGE_URL)) {
 			log.debug("redirect is back to the setup page because this is their first ever login");
 			redirect = request.getContextPath();
-		}
-
-		else if (redirect.contains("/options.form") || redirect.contains("/changePassword.form")
+		} else if (redirect.contains("/options.form") || redirect.contains("/changePassword.form")
 		        || redirect.contains("/forgotPassword.form")) {
 			log
 			        .debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");

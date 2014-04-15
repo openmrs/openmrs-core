@@ -48,7 +48,7 @@ public class DWRFormService {
 	
 	/**
 	 * Finds forms based on search text.
-	 * 
+	 *
 	 * @param text the string to search on
 	 * @param includeUnpublished true/false whether to include unpublished forms
 	 * @return list of {@link FormListItem}s
@@ -66,7 +66,7 @@ public class DWRFormService {
 	/**
 	 * Gets a list of FormListItems that correspond to forms. If includueUnpublished is true, all
 	 * forms are returned. If false, only published forms are returned.
-	 * 
+	 *
 	 * @param includeUnpublished true/false to include unpublished forms
 	 * @return list of {@link FormListItem}s
 	 */
@@ -84,14 +84,14 @@ public class DWRFormService {
 	}
 	
 	public Field getField(Integer fieldId) {
-		Field f = new Field();
+		Field f;
 		FormService fs = Context.getFormService();
 		f = fs.getField(fieldId);
 		return f;
 	}
 	
 	public FormFieldListItem getFormField(Integer formFieldId) {
-		FormField f = new FormField();
+		FormField f;
 		FormService fs = Context.getFormService();
 		f = fs.getFormField(formFieldId);
 		return new FormFieldListItem(f, Context.getLocale());
@@ -100,16 +100,18 @@ public class DWRFormService {
 	public List<FormFieldListItem> getFormFields(Integer formId) {
 		List<FormFieldListItem> formFields = new Vector<FormFieldListItem>();
 		Form form = Context.getFormService().getForm(formId);
-		for (FormField ff : form.getFormFields())
+		for (FormField ff : form.getFormFields()) {
 			formFields.add(new FormFieldListItem(ff, Context.getLocale()));
+		}
 		return formFields;
 	}
 	
 	public List<FieldListItem> findFields(String txt) {
 		List<FieldListItem> fields = new Vector<FieldListItem>();
 		
-		for (Field field : Context.getFormService().getFields(txt))
+		for (Field field : Context.getFormService().getFields(txt)) {
 			fields.add(new FieldListItem(field, Context.getLocale()));
+		}
 		
 		return fields;
 	}
@@ -132,8 +134,9 @@ public class DWRFormService {
 		if (concept != null) {
 			for (Field field : Context.getFormService().getFieldsByConcept(concept)) {
 				FieldListItem fli = new FieldListItem(field, locale);
-				if (!objects.contains(fli))
+				if (!objects.contains(fli)) {
 					objects.add(fli);
+				}
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 			if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
@@ -149,8 +152,9 @@ public class DWRFormService {
 			if (!objects.contains(fi)) {
 				objects.add(fi);
 				concept = field.getConcept();
-				if (concept != null)
+				if (concept != null) {
 					fieldForConceptAdded.put(concept.getConceptId(), true);
+				}
 			}
 			
 		}
@@ -160,8 +164,9 @@ public class DWRFormService {
 			concept = searchResult.getConcept();
 			for (Field field : Context.getFormService().getFieldsByConcept(concept)) {
 				FieldListItem fli = new FieldListItem(field, locale);
-				if (!objects.contains(fli))
+				if (!objects.contains(fli)) {
 					objects.add(fli);
+				}
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 			if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
@@ -192,16 +197,18 @@ public class DWRFormService {
 		FormService fs = Context.getFormService();
 		ConceptService cs = Context.getConceptService();
 		
-		if (formFieldId != null && formFieldId != 0)
+		if (formFieldId != null && formFieldId != 0) {
 			ff = fs.getFormField(formFieldId);
-		else
+		} else {
 			ff = new FormField(formFieldId);
+		}
 		
 		ff.setForm(fs.getForm(formId));
-		if (parent == null)
+		if (parent == null) {
 			ff.setParent(null);
-		else if (!parent.equals(ff.getFormFieldId()))
+		} else if (!parent.equals(ff.getFormFieldId())) {
 			ff.setParent(fs.getFormField(parent));
+		}
 		ff.setFieldNumber(number);
 		ff.setFieldPart(part);
 		ff.setPageNumber(page);
@@ -215,26 +222,28 @@ public class DWRFormService {
 		log.debug("parentId: " + parent);
 		log.debug("parent: " + ff.getParent());
 		
-		if (fieldId != null && fieldId != 0)
+		if (fieldId != null && fieldId != 0) {
 			field = fs.getField(fieldId);
-		else
+		} else {
 			field = new Field(fieldId);
+		}
 		
 		if (field == null) {
 			log.error("Field is null. Field Id: " + fieldId);
+		} else {
+			field.setName(name);
+			field.setDescription(fieldDesc);
+			field.setFieldType(fs.getFieldType(fieldTypeId));
+			if (conceptId != null && conceptId != 0) {
+				field.setConcept(cs.getConcept(conceptId));
+			} else {
+				field.setConcept(null);
+			}
+			field.setTableName(table);
+			field.setAttributeName(attr);
+			field.setDefaultValue(defaultValue);
+			field.setSelectMultiple(multiple);
 		}
-		
-		field.setName(name);
-		field.setDescription(fieldDesc);
-		field.setFieldType(fs.getFieldType(fieldTypeId));
-		if (conceptId != null && conceptId != 0)
-			field.setConcept(cs.getConcept(conceptId));
-		else
-			field.setConcept(null);
-		field.setTableName(table);
-		field.setAttributeName(attr);
-		field.setDefaultValue(defaultValue);
-		field.setSelectMultiple(multiple);
 		
 		ff.setField(field);
 		fs.saveFormField(ff);
@@ -255,26 +264,27 @@ public class DWRFormService {
 	}
 	
 	private String generateJSTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Locale locale) {
-		String s = "";
+		StringBuilder s = new StringBuilder("");
 		
 		if (formFields.containsKey(current)) {
 			TreeSet<FormField> set = formFields.get(current);
 			for (FormField ff : set) {
-				s += generateFormFieldJavascript(ff, locale);
+				s.append(generateFormFieldJavascript(ff, locale));
 				if (formFields.containsKey(ff.getFormFieldId())) {
-					s += generateJSTree(formFields, ff.getFormFieldId(), locale);
+					s.append(generateJSTree(formFields, ff.getFormFieldId(), locale));
 				}
 			}
 		}
 		
-		return s;
+		return s.toString();
 	}
 	
 	private String generateFormFieldJavascript(FormField ff, Locale locale) {
 		
 		String parent = "''";
-		if (ff.getParent() != null)
+		if (ff.getParent() != null) {
 			parent = ff.getParent().getFormFieldId().toString();
+		}
 		
 		Field field = ff.getField();
 		Concept concept = new Concept();
@@ -286,8 +296,9 @@ public class DWRFormService {
 			isSet = concept.isSet();
 		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("ff.getFormFieldId: " + ff.getFormFieldId());
+		}
 		
 		List<Field> fields = new Vector<Field>();
 		fields.add(field);
@@ -314,7 +325,7 @@ public class DWRFormService {
 	/**
 	 * Sorts loosely on: FieldListItems first, then concepts FieldListItems with higher number of
 	 * forms first, then lower Concepts with shorter names before longer names
-	 * 
+	 *
 	 * @param <Obj>
 	 */
 	
@@ -342,9 +353,10 @@ public class DWRFormService {
 				ConceptListItem c2 = (ConceptListItem) o2;
 				int length1 = c1.getName().length();
 				int length2 = c2.getName().length();
-				return new Integer(length1).compareTo(new Integer(length2));
-			} else
+				return Integer.valueOf(length1).compareTo(Integer.valueOf(length2));
+			} else {
 				return 0;
+			}
 		}
 	}
 }

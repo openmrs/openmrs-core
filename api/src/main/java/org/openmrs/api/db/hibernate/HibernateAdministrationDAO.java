@@ -56,7 +56,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Hibernate specific database methods for the AdministrationService
- * 
+ *
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.db.AdministrationDAO
  * @see org.openmrs.api.AdministrationService
@@ -79,7 +79,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -103,9 +103,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@Deprecated
 	public void updateReport(Report r) throws DAOException {
-		if (r.getReportId() == null)
+		if (r.getReportId() == null) {
 			createReport(r);
-		else {
+		} else {
 			sessionFactory.getCurrentSession().saveOrUpdate(r);
 		}
 	}
@@ -120,7 +120,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,java.lang.Integer,java.lang.Integer)
+	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String, java.lang.Integer, java.lang.Integer)
 	 */
 	public void mrnGeneratorLog(String site, Integer start, Integer count) {
 		PreparedStatement ps = null;
@@ -217,9 +217,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@Deprecated
 	public void updateReportObject(AbstractReportObject ro) throws DAOException {
-		if (ro.getReportObjectId() == null)
+		if (ro.getReportObjectId() == null) {
 			createReportObject(ro);
-		else {
+		} else {
 			sessionFactory.getCurrentSession().clear();
 			ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
 			User user = Context.getAuthenticatedUser();
@@ -236,9 +236,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws DAOException {
-		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
-		wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,
-		    reportObjectId);
+		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(
+		    ReportObjectWrapper.class, reportObjectId);
 		
 		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
@@ -250,8 +249,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		GlobalProperty gp = getGlobalPropertyObject(propertyName);
 		
 		// if no gp exists, return a null value
-		if (gp == null)
+		if (gp == null) {
 			return null;
+		}
 		
 		return gp.getPropertyValue();
 	}
@@ -349,8 +349,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 		
 		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
-		if (persistentClass == null)
+		if (persistentClass == null) {
 			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
+		}
 		
 		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
 	}
@@ -379,7 +380,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	
 	/**
 	 * Fetches all validators that are registered
-	 * 
+	 *
 	 * @param obj the object that will be validated
 	 * @return list of compatibile validators
 	 */

@@ -76,7 +76,7 @@ public class EncounterRoleFormControllerTest extends BaseWebContextSensitiveTest
 		EncounterRoleFormController controller = new EncounterRoleFormController();
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		HttpSession session = request.getSession();
-		EncounterRole encounterRole = Context.getEncounterService().getEncounterRole(1);
+		EncounterRole encounterRole = Context.getEncounterService().getEncounterRole(2);
 		String roleName = "surgeon";
 		String description = "person who did the operation";
 		encounterRole.setName(roleName);

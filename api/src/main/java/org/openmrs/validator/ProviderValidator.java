@@ -26,7 +26,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validator for {@link Encounter} class
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { Provider.class }, order = 50)
@@ -36,14 +36,15 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
-	 * 
+	 *
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
+		}
 		return Provider.class.isAssignableFrom(c);
 	}
 	
@@ -51,7 +52,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * Validates the given Provider. checks to see if a provider is valid (Either of Person or
 	 * Provider name should be set and not both) Checks to see if there is a retired Reason in case
 	 * a provider is retired
-	 * 
+	 *
 	 * @param obj The encounter to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
@@ -74,11 +75,13 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should fail if the provider we are validating has a duplicate identifier and is retired
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
+		}
 		
-		if (obj == null || !(obj instanceof Provider))
+		if (obj == null || !(obj instanceof Provider)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Provider.class);
+		}
 		
 		Provider provider = (Provider) obj;
 		

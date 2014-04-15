@@ -2,7 +2,7 @@
    <parent>
       <groupId>org.openmrs</groupId>
       <artifactId>openmrs</artifactId>
-      <version>1.10.0-SNAPSHOT</version>
+      <version>1.11.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.web</groupId>
@@ -103,6 +103,12 @@
                   <scanTarget>../api/target/classes</scanTarget>
                   <scanTarget>../web/target/classes</scanTarget>
                </scanTargets>
+               <systemProperties>
+                   <systemProperty>
+                       <name>OPENMRS_INSTALLATION_SCRIPT</name>
+                       <value>${OPENMRS_INSTALLATION_SCRIPT}</value>
+                   </systemProperty>
+               </systemProperties>
             </configuration>
          </plugin>
          <plugin>
@@ -209,7 +215,7 @@
                 <dependency>
                     <groupId>mysql</groupId>
                     <artifactId>mysql-connector-java</artifactId>
-                    <version>5.1.8</version>
+                    <version>5.1.28</version>
                     <scope>runtime</scope>
                 </dependency>
 
@@ -245,6 +251,29 @@
 				</plugins>
 			</build>
 		</profile>
+
+        <profile>
+            <id>h2</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>install-h2</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+            </dependencies>
+            <properties>
+                <OPENMRS_INSTALLATION_SCRIPT>classpath:installation.h2.properties</OPENMRS_INSTALLATION_SCRIPT>
+            </properties>
+        </profile>
    </profiles>
 
    <properties>

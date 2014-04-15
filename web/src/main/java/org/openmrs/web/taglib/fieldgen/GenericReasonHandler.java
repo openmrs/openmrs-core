@@ -37,33 +37,38 @@ public class GenericReasonHandler extends AbstractFieldGenHandler implements Fie
 			if (this.fieldGenTag.getParameterMap() != null) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
 			}
-			if (optionHeader == null)
+			if (optionHeader == null) {
 				optionHeader = "";
+			}
 			
 			String onChange = "";
 			if (this.fieldGenTag.getParameterMap() != null) {
 				onChange = (String) this.fieldGenTag.getParameterMap().get("onChange");
 			}
-			if (onChange == null)
+			if (onChange == null) {
 				onChange = "";
+			}
 			
 			// get global reason for stopping drug property and concept
 			String reasonProperty = "";
 			if (this.fieldGenTag.getParameterMap() != null) {
 				reasonProperty = (String) this.fieldGenTag.getParameterMap().get("globalProp");
 			}
-			if (reasonProperty == null)
+			if (reasonProperty == null) {
 				reasonProperty = "";
+			}
 			String reasonConceptId = Context.getAdministrationService().getGlobalProperty(reasonProperty);
 			Concept reasonConcept = Context.getConceptService().getConcept(reasonConceptId);
-			if (reasonConcept == null)
+			if (reasonConcept == null) {
 				log.debug("Could not get even the default reason concept from global properties");
+			}
 			
 			// get override if it's there - not sure if there's a good reason for this anymore
 			if (this.fieldGenTag.getParameterMap() != null) {
 				String reasonSetOverride = (String) this.fieldGenTag.getParameterMap().get("reasonSet");
-				if (reasonSetOverride != null)
+				if (reasonSetOverride != null) {
 					reasonConcept = Context.getConceptService().getConcept(reasonSetOverride);
+				}
 			}
 			
 			List<Concept> possibleReasons = null;
@@ -71,8 +76,9 @@ public class GenericReasonHandler extends AbstractFieldGenHandler implements Fie
 			if (reasonConcept != null) {
 				Collection<ConceptAnswer> answers = reasonConcept.getAnswers(false);
 				for (ConceptAnswer answer : answers) {
-					if (possibleReasons == null)
+					if (possibleReasons == null) {
 						possibleReasons = new ArrayList<Concept>();
+					}
 					possibleReasons.add(answer.getAnswerConcept());
 				}
 			} else {

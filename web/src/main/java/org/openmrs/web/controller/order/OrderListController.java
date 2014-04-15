@@ -48,7 +48,7 @@ public class OrderListController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -63,8 +63,8 @@ public class OrderListController extends SimpleFormController {
 			String[] orderList = ServletRequestUtils.getStringParameters(request, "orderId");
 			OrderService os = Context.getOrderService();
 			
-			String success = "";
-			String error = "";
+			StringBuilder success = new StringBuilder("");
+			StringBuilder error = new StringBuilder("");
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
@@ -78,23 +78,27 @@ public class OrderListController extends SimpleFormController {
 			for (String p : orderList) {
 				try {
 					os.voidOrder(os.getOrder(Integer.valueOf(p)), voidReason);
-					if (!success.equals(""))
-						success += "<br/>";
-					success += ord + " " + p + " " + deleted;
+					if (!success.equals("")) {
+						success.append("<br/>");
+					}
+					success.append(ord).append(" ").append(p).append(" ").append(deleted);
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order", e);
-					if (!error.equals(""))
-						error += "<br/>";
-					error += ord + " " + p + " " + notDeleted;
+					if (!error.equals("")) {
+						error.append("<br/>");
+					}
+					error.append(ord).append(" ").append(p).append(" ").append(notDeleted);
 				}
 			}
 			
 			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+			if (!success.equals("")) {
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
+			}
+			if (!error.equals("")) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -103,7 +107,7 @@ public class OrderListController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {

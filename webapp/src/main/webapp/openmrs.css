@@ -21,7 +21,9 @@ body {
 .barsmall {
 	background-image:url(images/openmrs_green_bar_repeat.gif);
 	background-repeat:repeat-x;
-	height:27px;
+	background-size:auto 100%;
+	height:auto;
+	min-height:27px;
 	margin-left: 0px;
     font-family: Verdana,Arial,Helvetica,sans-serif;
     color: #ffffff;
@@ -368,9 +370,6 @@ tr td#patientHeaderObsWeight{
 tr td#patientHeaderObsRegimen{
 	border-right: 0px solid white;	
 }
-tr td#patientHeaderObsReturnVisit {
-	display: none;
-}
 
 #patientHeader a.offColor, #patientHeader a.offColor:link, #patientHeader a.offColor:active, #patientHeader a.offColor:visited, #patientHeader a.offColor:hover {
 	color: #ffffff;
@@ -587,7 +586,7 @@ table.patientTreatmentPrograms td {
 		font-size: 1.03em;
 	}
 
-.retired, .voided, .retired *, .voided * {
+.retired, .voided, .retired *, .voided *, a.retired {
 	text-decoration: line-through;
 }
 
@@ -837,6 +836,9 @@ fieldset {
 	#alertBar img {
 		vertical-align: middle;
 	}
+	#alertBar a {
+		float: right;
+	}
 .markAlertRead, .markAlertRead:link, .markAlertRead:visited {
 	float: right;
 	padding: 0 3px 0 3px;
@@ -1053,6 +1055,12 @@ table#obs td.obsValue {
 	.listItemChecked { 
 		background-color: #8FABC7;
 		color: white;
+	}
+	
+	.listItemSelectAll { 
+		background-color: #EFEFEF;
+		float: none;
+		margin: 5px 0 0;
 	}
 	
 .instructions {

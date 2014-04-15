@@ -715,6 +715,9 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 * @should create new object when person id is null
 	 * @should update existing object when person id is not null
+	 * @should set the preferred name and address if none is specified
+	 * @should not set the preferred name and address if they already exist
+	 * @should not set a voided name or address as preferred
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PERSONS, PrivilegeConstants.EDIT_PERSONS })
 	public Person savePerson(Person person) throws APIException;
@@ -1065,5 +1068,4 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public PersonAddress savePersonAddress(PersonAddress personAddress);
-	
 }

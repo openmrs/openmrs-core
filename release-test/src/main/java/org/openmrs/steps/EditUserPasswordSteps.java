@@ -59,11 +59,12 @@ public class EditUserPasswordSteps extends Steps {
 
 	@When("I chose to edit the user")
 	public void editUser() {
-    //TODO currently the user to edit is hard coded to the first row of the users search result. Need to change this.
-        WebElement openmrsSearchTable = driver.findElement(By.className("openmrsSearchTable"));
-        List<WebElement> trList = openmrsSearchTable.findElements(By.tagName("tr"));
-        if(trList.size() > 0)
-            trList.get(1).findElement(By.tagName("td")).findElement(By.tagName("a")).click();
+		//TODO currently the user to edit is hard coded to the first row of the users search result. Need to change this.
+		WebElement openmrsSearchTable = driver.findElement(By.className("openmrsSearchTable"));
+		List<WebElement> trList = openmrsSearchTable.findElements(By.tagName("tr"));
+		if (trList.size() > 0) {
+			trList.get(1).findElement(By.tagName("td")).findElement(By.tagName("a")).click();
+		}
 	}
 
 	@When("I changed the $password, $confirmPassword")

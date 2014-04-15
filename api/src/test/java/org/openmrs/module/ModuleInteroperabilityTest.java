@@ -37,7 +37,6 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAllowModuleAToLoadModuleBIfARequiresB() throws Exception {
-		
 		OpenmrsClassLoader loader = OpenmrsClassLoader.getInstance();
 		Class<?> atdServiceClass = loader.loadClass("org.openmrs.module.atdproducer.service.ATDService");
 		Class<?> dssServiceClass = loader.loadClass("org.openmrs.module.dssmodule.DssService");
@@ -60,7 +59,6 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 		Class<?> dssServiceClass2 = atdClassLoader.loadClass("org.openmrs.module.dssmodule.DssService");
 		ModuleClassLoader dssServiceClassLoader = (ModuleClassLoader) dssServiceClass2.getClassLoader();
 		assertEquals("dssmodule", dssServiceClassLoader.getModule().getModuleId());
-		
 	}
 	
 }

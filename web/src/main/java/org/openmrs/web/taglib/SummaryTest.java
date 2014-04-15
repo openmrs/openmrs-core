@@ -57,10 +57,12 @@ public class SummaryTest extends TagSupport {
 		if ((ifTrue == null || ifTrue.length() == 0) && (ifFalse == null || ifFalse.length() == 0)) {
 			ret = true;
 		} else {
-			if (ifTrue != null && ifTrue.length() > 0)
+			if (ifTrue != null && ifTrue.length() > 0) {
 				ret |= evaluate(ifTrue);
-			if (ifFalse != null && ifFalse.length() > 0)
+			}
+			if (ifFalse != null && ifFalse.length() > 0) {
 				ret |= !evaluate(ifFalse);
+			}
 		}
 		
 		pageContext.setAttribute(var, ret);
@@ -92,8 +94,9 @@ public class SummaryTest extends TagSupport {
 				command.append(line.trim());
 				command.append("\n");
 			}
-			if (command.length() > 0)
+			if (command.length() > 0) {
 				commands.add(command.toString());
+			}
 		}
 		boolean andMode = true;
 		List<Boolean> commandResults = new ArrayList<Boolean>();
@@ -113,10 +116,11 @@ public class SummaryTest extends TagSupport {
 		
 		boolean ret = andMode ? true : false;
 		for (Boolean b : commandResults) {
-			if (andMode)
+			if (andMode) {
 				ret &= b;
-			else
+			} else {
 				ret |= b;
+			}
 		}
 		return ret;
 	}
@@ -124,8 +128,9 @@ public class SummaryTest extends TagSupport {
 	private boolean handleObsCheck(String expr) {
 		log.debug("handleObsCheck(" + expr + ")");
 		expr = expr.trim();
-		if (expr.length() == 0)
+		if (expr.length() == 0) {
 			return true;
+		}
 		
 		Map<String, String> args = new HashMap<String, String>();
 		String[] lines = expr.split("\n");
@@ -142,24 +147,28 @@ public class SummaryTest extends TagSupport {
 		Set<Concept> conceptsOfInterest = new HashSet<Concept>();
 		Date fromDate = null;
 		Date toDate = null;
-		if (args.containsKey("test"))
+		if (args.containsKey("test")) {
 			test = PatientSetService.TimeModifier.valueOf(args.get("test").trim().toUpperCase());
+		}
 		String conceptName = args.get("concept");
-		if (conceptName == null)
+		if (conceptName == null) {
 			throw new IllegalArgumentException("You must specify a concept");
+		}
 		{
 			ConceptService cs = Context.getConceptService();
 			boolean isSet = conceptName.startsWith("set:");
-			if (isSet)
+			if (isSet) {
 				conceptName = conceptName.substring("set:".length());
+			}
 			Concept c = cs.getConceptByName(conceptName);
 			if (c == null) {
 				log.warn("Can't find concept " + conceptName);
 			} else {
-				if (isSet)
+				if (isSet) {
 					conceptsOfInterest.addAll(cs.getConceptsByConceptSet(c));
-				else
+				} else {
 					conceptsOfInterest.add(c);
+				}
 			}
 		}
 		
@@ -171,27 +180,30 @@ public class SummaryTest extends TagSupport {
 			String ts = args.get("timespan");
 			String[] s = ts.split(" ");
 			for (String str : s) {
-				if (str.length() == 0)
+				if (str.length() == 0) {
 					continue;
-				if (str.startsWith("l"))
+				}
+				if (str.startsWith("l")) {
 					inPast = true;
-				else if (str.startsWith("n"))
+				} else if (str.startsWith("n")) {
 					inPast = false;
-				else if (str.startsWith("m"))
+				} else if (str.startsWith("m")) {
 					timeUnit = Calendar.MONTH;
-				else if (str.startsWith("d"))
+				} else if (str.startsWith("d")) {
 					timeUnit = Calendar.DAY_OF_MONTH;
-				else if (str.startsWith("y"))
+				} else if (str.startsWith("y")) {
 					timeUnit = Calendar.YEAR;
-				else
+				} else {
 					time = Integer.valueOf(str);
+				}
 			}
 			Calendar c = Calendar.getInstance();
 			c.add(timeUnit, (inPast ? -1 : 1) * time);
-			if (inPast)
+			if (inPast) {
 				fromDate = c.getTime();
-			else
+			} else {
 				toDate = c.getTime();
+			}
 		}
 		
 		log.debug("test:" + test);

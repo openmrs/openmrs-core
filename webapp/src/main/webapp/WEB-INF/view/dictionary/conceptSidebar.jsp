@@ -18,7 +18,7 @@
 
 <fieldset>
 	<legend><openmrs:message code="Concept.usage" /></legend>
-
+	<c:if test="${command.concept.conceptId!=null}">
 	<h4><openmrs:message code="dictionary.numobs" arguments="${command.numberOfObsUsingThisConcept}" /></h4>
 
 	<c:if test="${fn:length(command.questionsAnswered) > 0}">
@@ -58,10 +58,10 @@
 		<c:if test="${fn:length(extension.conceptUsage) > 0}">
 			<h4>${extension.header}</h4>
 			<ul><c:forEach items="${extension.conceptUsage}" var="usage">
-			<li><a href="${pageContext.request.contextPath}${usage.url}">${usage.label}</a></br></li>
+			<li><a href="<openmrs_tag:url value="${usage.url}"/>">${usage.label}</a></br></li>
 			</c:forEach></ul>
 		</c:if>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>
-
+	</c:if>
 </fieldset>

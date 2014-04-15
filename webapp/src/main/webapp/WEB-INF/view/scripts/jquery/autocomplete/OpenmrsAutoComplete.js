@@ -142,7 +142,7 @@ function CreateCallback(options) {
 		
 		// do NOT return false if no text given, instead should return all answers
 		thisObject.searchCounter += 1;
-		DWREncounterService.findEncounters(q, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayEncounter));
+		DWREncounterService.findBatchOfEncounters(q, options.patientId, false, null, maxresults, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayEncounter));
 	}}
 	
 	/**

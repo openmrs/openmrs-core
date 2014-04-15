@@ -32,7 +32,7 @@ import org.springframework.web.context.request.WebRequest;
 
 /**
  * Controller for creating/editing a location attribute type.
- * 
+ *
  * @since 1.9
  */
 @Controller
@@ -54,8 +54,9 @@ public class LocationAttributeTypeFormController {
 	@ModelAttribute("attributeType")
 	public LocationAttributeType formBackingObject(
 	        @RequestParam(value = "id", required = false) LocationAttributeType attrType) {
-		if (attrType == null)
+		if (attrType == null) {
 			attrType = new LocationAttributeType();
+		}
 		return attrType;
 	}
 	

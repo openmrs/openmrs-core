@@ -20,7 +20,7 @@ import org.openmrs.obs.ComplexObsHandler;
 
 /**
  * Child class of Concept that has a {@link ComplexObsHandler} associated with the Concept.
- * 
+ *
  * @since 1.5
  */
 @Indexed
@@ -45,7 +45,7 @@ public class ConceptComplex extends Concept implements Serializable {
 	
 	/**
 	 * Constructor with conceptId and ConceptComplexHandler
-	 * 
+	 *
 	 * @param conceptId
 	 * @param handler
 	 */
@@ -56,7 +56,7 @@ public class ConceptComplex extends Concept implements Serializable {
 	
 	/**
 	 * Constructor from Concept.
-	 * 
+	 *
 	 * @param c
 	 */
 	public ConceptComplex(Concept c) {
@@ -82,20 +82,21 @@ public class ConceptComplex extends Concept implements Serializable {
 	
 	/**
 	 * Overrides parent method and returns true if this Concept.getDatatype() equals "Complex"..
-	 * 
+	 *
 	 * @see org.openmrs.Concept#isComplex()
 	 */
 	@Override
 	public boolean isComplex() {
-		if (getDatatype() == null || getDatatype().getHl7Abbreviation() == null)
+		if (getDatatype() == null || getDatatype().getHl7Abbreviation() == null) {
 			return false;
+		}
 		
 		return getDatatype().getHl7Abbreviation().equals("ED");
 	}
 	
 	/**
 	 * Set the ConceptComplexHandler. This should be the ComplexObsHandler key
-	 * 
+	 *
 	 * @param handler
 	 */
 	public void setHandler(String handler) {

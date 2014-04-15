@@ -47,7 +47,7 @@ public class LogicTransform {
 	
 	/**
 	 * Get the {@link TransformOperator} in this LogicTransform object
-	 * 
+	 *
 	 * @return the current TransformOperator
 	 */
 	public Operator getTransformOperator() {
@@ -86,7 +86,7 @@ public class LogicTransform {
 	/**
 	 * Set number of {@link Result} object should be returned by the current criteria. <br>
 	 * Only for {@link First} and {@link Last}
-	 * 
+	 *
 	 * @param numResults the total Result expected from this criteria
 	 */
 	public void setNumResults(Integer numResults) {
@@ -121,10 +121,12 @@ public class LogicTransform {
 	}
 	
 	private boolean safeEquals(Object a, Object b) {
-		if (a == null && b == null)
+		if (a == null && b == null) {
 			return true;
-		if (a == null || b == null)
+		}
+		if (a == null || b == null) {
 			return false;
+		}
 		return a.equals(b);
 	}
 	

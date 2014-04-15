@@ -81,7 +81,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
-	 * 
+	 *
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
@@ -188,7 +188,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	/**
 	 * Returns a PatientSet of patient who had drug orders for a set of drugs active on a certain
 	 * date. Can also be used to find patient with no drug orders on that date.
-	 * 
+	 *
 	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
 	 * @param takingIds Collection of drugIds the patient is taking. (Or the empty set to mean
 	 *            "any drug" or NULL to mean "no drugs")
@@ -227,8 +227,9 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, fromDate, toDate);
 		Set<Integer> ret = new HashSet<Integer>();
 		
-		if (drugIds == null)
+		if (drugIds == null) {
 			drugIds = new ArrayList<Integer>();
+		}
 		
 		if (drugIds.size() == 0) {
 			if (groupMethod == GroupMethod.NONE) {
@@ -252,21 +253,27 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 				ret.removeAll(activeDrugs.keySet());
 				
 				// next get all patients taking drugs, but not the specified ones
-				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet())
-					if (!OpenmrsUtil.containsAny(e.getValue(), drugIds))
+				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet()) {
+					if (!OpenmrsUtil.containsAny(e.getValue(), drugIds)) {
 						ret.add(e.getKey());
+					}
+				}
 				
 			} else if (groupMethod == GroupMethod.ALL) {
 				// Patients taking all of the specified drugs
-				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet())
-					if (e.getValue().containsAll(drugIds))
+				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet()) {
+					if (e.getValue().containsAll(drugIds)) {
 						ret.add(e.getKey());
+					}
+				}
 				
 			} else { // groupMethod == GroupMethod.ANY
 				// Patients taking any of the specified drugs
-				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet())
-					if (OpenmrsUtil.containsAny(e.getValue(), drugIds))
+				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet()) {
+					if (OpenmrsUtil.containsAny(e.getValue(), drugIds)) {
 						ret.add(e.getKey());
+					}
+				}
 			}
 		}
 		Cohort ps = new Cohort("Cohort from drug orders", "", ret);
@@ -288,8 +295,9 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	}
 	
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept) {
-		if (patients == null || patients.size() == 0)
+		if (patients == null || patients.size() == 0) {
 			return new HashMap<Integer, List<Obs>>();
+		}
 		return getPatientSetDAO().getObservations(patients, concept, null, null);
 	}
 	
@@ -297,8 +305,9 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	 * Date range is inclusive of both endpoints
 	 */
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate) {
-		if (patients == null || patients.size() == 0)
+		if (patients == null || patients.size() == 0) {
 			return new HashMap<Integer, List<Obs>>();
+		}
 		return getPatientSetDAO().getObservations(patients, concept, fromDate, toDate);
 	}
 	
@@ -313,26 +322,30 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
 	        Integer limit, boolean showMostRecentFirst) {
-		if (attributes == null)
+		if (attributes == null) {
 			attributes = new Vector<String>();
+		}
 		
 		// add null for the actual obs value
-		if (attributes.size() < 1 || attributes.get(0) != null)
+		if (attributes.size() < 1 || attributes.get(0) != null) {
 			attributes.add(0, null);
+		}
 		
 		return getPatientSetDAO().getObservationsValues(patients, c, attributes, limit, showMostRecentFirst);
 	}
 	
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType) {
 		List<EncounterType> types = new Vector<EncounterType>();
-		if (encType != null)
+		if (encType != null) {
 			types.add(encType);
+		}
 		return getPatientSetDAO().getEncountersByType(patients, types);
 	}
 	
 	public Map<Integer, Object> getEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr) {
-		if (encTypes == null)
+		if (encTypes == null) {
 			encTypes = new Vector<EncounterType>();
+		}
 		
 		return getPatientSetDAO().getEncounterAttrsByType(patients, encTypes, attr, false);
 	}
@@ -347,14 +360,16 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType) {
 		List<EncounterType> types = new Vector<EncounterType>();
-		if (encType != null)
+		if (encType != null) {
 			types.add(encType);
+		}
 		return getPatientSetDAO().getFirstEncountersByType(patients, types);
 	}
 	
 	public Map<Integer, Object> getFirstEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr) {
-		if (encTypes == null)
+		if (encTypes == null) {
 			encTypes = new Vector<EncounterType>();
+		}
 		
 		return getPatientSetDAO().getEncounterAttrsByType(patients, encTypes, attr, true);
 	}
@@ -391,8 +406,9 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	
 	public Map<Integer, String> getPatientIdentifierStringsByType(Cohort patients, PatientIdentifierType type) {
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
-		if (type != null)
+		if (type != null) {
 			types.add(type);
+		}
 		return getPatientSetDAO().getPatientIdentifierByType(patients, types);
 	}
 	
@@ -473,7 +489,7 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 	
 	/**
 	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
-	 * 
+	 *
 	 * @param patients the patients to filter by (null will return all encounters for all patients)
 	 * @param forms the forms to filter by
 	 */

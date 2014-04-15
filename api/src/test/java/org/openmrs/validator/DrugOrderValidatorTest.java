@@ -118,4 +118,36 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertFalse(errors.hasErrors());
 	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if order concept is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfOrderConceptIsNull() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setConcept(null);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("concept"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if drug concept is different from order concept", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDrugConceptIsDifferentFromOrderConcept() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setConcept(Context.getConceptService().getConcept(792)); // the actual concept which matches with drug is "88"
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		Assert.assertTrue(errors.hasFieldErrors("drug"));
+	}
 }

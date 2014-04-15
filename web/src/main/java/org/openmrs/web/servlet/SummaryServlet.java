@@ -60,7 +60,7 @@ public class SummaryServlet extends HttpServlet {
 	
 	/**
 	 * Run both Post and Get
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @throws ServletException
@@ -106,7 +106,7 @@ public class SummaryServlet extends HttpServlet {
 	
 	/**
 	 * Churn through the request object and return a conglomerated patientSet
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @return
@@ -116,7 +116,6 @@ public class SummaryServlet extends HttpServlet {
 	private Cohort getPatientSet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 	        IOException {
 		
-		Locale locale = Context.getLocale();
 		DateFormat dateFormat = Context.getDateFormat();
 		String startDateString = ServletRequestUtils.getStringParameter(request, "startDate", "");
 		String endDateString = ServletRequestUtils.getStringParameter(request, "endDate", "");
@@ -139,8 +138,9 @@ public class SummaryServlet extends HttpServlet {
 				catch (ParseException e) {
 					throw new ServletException("Error parsing 'Start Date'", e);
 				}
-			} else
+			} else {
 				cal.setTime(new Date());
+			}
 			
 			// if they don't input an end date, assume they meant "this week"
 			if (endDateString.equals("")) {
@@ -178,8 +178,9 @@ public class SummaryServlet extends HttpServlet {
 			String[] stringArr = identifierStrings.split("\\s");
 			for (int x = 0; x < stringArr.length; x++) {
 				String s = stringArr[x].trim();
-				if (s.length() > 0)
+				if (s.length() > 0) {
 					identifiers.add(s);
+				}
 			}
 		}
 		

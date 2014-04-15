@@ -45,6 +45,7 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonValidator#validate(Object,Errors)
 	 * @verifies fail validation if birthdate is a future date
 	 */
+	
 	@Test
 	@Verifies(value = "should fail validation if birthdate is a future date", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfBirthdateIsAFutureDate() throws Exception {

@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.validator.EmailValidator;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -39,6 +40,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
@@ -51,7 +53,7 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * This is the controller for the "My Profile" page. This lets logged in users set personal
  * preferences, update their own information, etc.
- * 
+ *
  * @see OptionsForm
  */
 public class OptionsFormController extends SimpleFormController {
@@ -68,25 +70,19 @@ public class OptionsFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		OptionsForm opts = (OptionsForm) object;
 		
-		if (opts.getUsername().length() > 0) {
-			if (opts.getUsername().length() < 3) {
-				errors.rejectValue("username", "error.username.weak");
+		if (!opts.getOldPassword().equals("")) {
+			if (opts.getNewPassword().equals("")) {
+				errors.rejectValue("newPassword", "error.password.weak");
+			} else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
+				errors.rejectValue("newPassword", "error.password.match");
+				errors.rejectValue("confirmPassword", "error.password.match");
 			}
-			if (opts.getUsername().charAt(0) < 'A' || opts.getUsername().charAt(0) > 'z') {
-				errors.rejectValue("username", "error.username.invalid");
-			}
-			
 		}
-		if (opts.getUsername().length() > 0)
-			
-			if (!opts.getOldPassword().equals("")) {
-				if (opts.getNewPassword().equals(""))
-					errors.rejectValue("newPassword", "error.password.weak");
-				else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
-					errors.rejectValue("newPassword", "error.password.match");
-					errors.rejectValue("confirmPassword", "error.password.match");
-				}
-			}
+		
+		if (opts.getSecretQuestionPassword().equals("") && opts.getSecretAnswerNew().isEmpty()
+		        && !opts.getSecretQuestionNew().isEmpty()) {
+			errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
+		}
 		
 		if (!opts.getSecretQuestionPassword().equals("")) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
@@ -107,10 +103,14 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should accept 2 characters as username
+	 * @should accept email address as username if enabled
+	 * @should reject 1 character as username
+	 * @should reject invalid email address as username if enabled
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
@@ -138,8 +138,9 @@ public class OptionsFormController extends SimpleFormController {
 			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, opts.getDefaultLocation());
 			
 			Locale locale = WebUtil.normalizeLocale(opts.getDefaultLocale());
-			if (locale != null)
+			if (locale != null) {
 				properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, locale.toString());
+			}
 			
 			properties.put(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, WebUtil.sanitizeLocales(opts
 			        .getProficientLocales()));
@@ -162,11 +163,13 @@ public class OptionsFormController extends SimpleFormController {
 						catch (PasswordException e) {
 							errors.reject(e.getMessage());
 						}
-						if (password.equals(opts.getOldPassword()) && !errors.hasErrors())
+						if (password.equals(opts.getOldPassword()) && !errors.hasErrors()) {
 							errors.reject("error.password.different");
+						}
 						
-						if (!password.equals(opts.getConfirmPassword()))
+						if (!password.equals(opts.getConfirmPassword())) {
 							errors.reject("error.password.match");
+						}
 					}
 					
 					if (!errors.hasErrors()) {
@@ -203,6 +206,17 @@ public class OptionsFormController extends SimpleFormController {
 				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 			}
 			
+			String notifyType = opts.getNotification();
+			if (notifyType != null) {
+				if (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email")) {
+					if (opts.getNotificationAddress().isEmpty()) {
+						errors.reject("error.options.notificationAddress.empty");
+					} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
+						errors.reject("error.options.notificationAddress.invalid");
+					}
+				}
+			}
+			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
 				try {
 					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
@@ -216,7 +230,6 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			if (!errors.hasErrors()) {
-				
 				user.setUsername(opts.getUsername());
 				user.setUserProperties(properties);
 				
@@ -239,9 +252,16 @@ public class OptionsFormController extends SimpleFormController {
 					user.addName(newPersonName);
 				}
 				
+				ValidateUtil.validate(user, errors);
+				
+				if (errors.hasErrors()) {
+					return super.processFormSubmission(request, response, opts, errors);
+				}
+				
 				try {
 					Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+					
 					us.saveUser(user, null);
 					//trigger updating of the javascript file cache
 					PseudoStaticContentController.invalidateCachedResources(properties);
@@ -267,7 +287,7 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -292,9 +312,10 @@ public class OptionsFormController extends SimpleFormController {
 				// they are separate objects
 				personName = PersonName.newInstance(user.getPersonName());
 				personName.setPersonNameId(null);
-			} else
+			} else {
 				// use blank person name
 				personName = new PersonName();
+			}
 			opts.setPersonName(personName);
 			opts.setNotification(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION));
 			opts.setNotificationAddress(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
@@ -305,7 +326,7 @@ public class OptionsFormController extends SimpleFormController {
 	
 	/**
 	 * Called prior to form display. Allows for data to be put in the request to be used in the view
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
@@ -327,10 +348,11 @@ public class OptionsFormController extends SimpleFormController {
 			map.put("languages", as.getPresentationLocales());
 			
 			String resetPassword = (String) httpSession.getAttribute("resetPassword");
-			if (resetPassword == null)
+			if (resetPassword == null) {
 				resetPassword = "";
-			else
+			} else {
 				httpSession.removeAttribute("resetPassword");
+			}
 			map.put("resetPassword", resetPassword);
 			
 			//generate the password hint depending on the security GP settings
@@ -339,10 +361,12 @@ public class OptionsFormController extends SimpleFormController {
 			MessageSourceService mss = Context.getMessageSourceService();
 			try {
 				String minCharStr = as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH);
-				if (StringUtils.isNotBlank(minCharStr))
+				if (StringUtils.isNotBlank(minCharStr)) {
 					minChar = Integer.valueOf(minCharStr);
-				if (minChar < 1)
+				}
+				if (minChar < 1) {
 					minChar = 1;
+				}
 			}
 			catch (NumberFormatException e) {
 				//ignore
@@ -358,18 +382,18 @@ public class OptionsFormController extends SimpleFormController {
 			addHint(hints, as.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT), mss
 			        .getMessage("options.login.password.containNonNumber"));
 			
-			String passwordHint = "";
+			StringBuilder passwordHint = new StringBuilder("");
 			for (int i = 0; i < hints.size(); i++) {
 				if (i == 0) {
-					passwordHint += hints.get(i);
+					passwordHint.append(hints.get(i));
 				} else if (i < (hints.size() - 1)) {
-					passwordHint += ", " + hints.get(i);
+					passwordHint.append(", ").append(hints.get(i));
 				} else {
-					passwordHint += " and " + hints.get(i);
+					passwordHint.append(" and ").append(hints.get(i));
 				}
 			}
 			
-			map.put("passwordHint", passwordHint);
+			map.put("passwordHint", passwordHint.toString());
 			
 		}
 		
@@ -379,15 +403,16 @@ public class OptionsFormController extends SimpleFormController {
 	/**
 	 * Utility method that check if a security property with boolean values is enabled and adds hint
 	 * message for it if it is not blank
-	 * 
+	 *
 	 * @param hints
 	 * @param gpValue the value of the global property
 	 * @param message the localized message to add
 	 */
 	private void addHint(ArrayList<String> hints, String gpValue, String message) {
 		if (Boolean.valueOf(gpValue)) {
-			if (!StringUtils.isBlank(message))
+			if (!StringUtils.isBlank(message)) {
 				hints.add(message);
+			}
 		}
 	}
 }

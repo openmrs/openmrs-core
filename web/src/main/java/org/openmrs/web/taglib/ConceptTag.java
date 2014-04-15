@@ -43,7 +43,7 @@ public class ConceptTag extends BodyTagSupport {
 	
 	private String nameVar;
 	
-	private String shortNameVar;
+	private String shortestNameVar;
 	
 	private String numericVar;
 	
@@ -61,10 +61,12 @@ public class ConceptTag extends BodyTagSupport {
 			c = cs.getConceptByName(conceptName);
 		}
 		if (c == null) {
-			if (conceptId != null && conceptId > 0)
+			if (conceptId != null && conceptId > 0) {
 				log.warn("ConceptTag is unable to find a concept with conceptId '" + conceptId + "'");
-			if (conceptName != null)
+			}
+			if (conceptName != null) {
 				log.warn("ConceptTag is unable to find a concept with conceptName '" + conceptName + "'");
+			}
 			return SKIP_BODY;
 		}
 		pageContext.setAttribute(var, c);
@@ -87,11 +89,9 @@ public class ConceptTag extends BodyTagSupport {
 			log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
 		}
 		
-		/**
-		 * ABK - no short name attribute exists in openmrs.tld ConceptName shortName =
-		 * c.getShortName(loc); if (shortNameVar != null && shortName != null)
-		 * pageContext.setAttribute(shortNameVar, shortName);
-		 */
+		if (shortestNameVar != null) {
+			pageContext.setAttribute(shortestNameVar, c.getShortestName(loc, false));
+		}
 		
 		if (numericVar != null) {
 			pageContext.setAttribute(numericVar, cs.getConceptNumeric(conceptId));
@@ -115,8 +115,9 @@ public class ConceptTag extends BodyTagSupport {
 	 */
 	public int doEndTag() throws JspException {
 		try {
-			if (bodyContent != null)
+			if (bodyContent != null) {
 				bodyContent.writeOut(bodyContent.getEnclosingWriter());
+			}
 		}
 		catch (java.io.IOException e) {
 			throw new JspTagException("IO Error: " + e.getMessage());
@@ -199,6 +200,14 @@ public class ConceptTag extends BodyTagSupport {
 	 */
 	public String getSetMemberVar() {
 		return setMemberVar;
+	}
+	
+	public String getShortestNameVar() {
+		return shortestNameVar;
+	}
+	
+	public void setShortestNameVar(String shortestNameVar) {
+		this.shortestNameVar = shortestNameVar;
 	}
 	
 	/**

@@ -70,7 +70,7 @@ public class ObsFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -106,10 +106,11 @@ public class ObsFormController extends SimpleFormController {
 			obs.setValueCoded(obs.getValueCodedName().getConcept());
 		}
 		
-		//Set the complex obs value before we validate. See TRUNK-3353
-		if (obs.getConcept().isComplex()) {
+		if (obs.getConcept() != null && obs.getConcept().isComplex()) {
 			InputStream complexDataInputStream = setComplexData(obs, request);
-			complexDataInputStream.close();
+			if (complexDataInputStream != null) {
+				complexDataInputStream.close();
+			}
 		}
 		
 		super.onBind(request, command);
@@ -118,7 +119,7 @@ public class ObsFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -149,7 +150,9 @@ public class ObsFormController extends SimpleFormController {
 							// the handler on the obs.concept is called with the given complex data
 							newlySavedObs = os.saveObs(obs, reason);
 							
-							complexDataInputStream.close();
+							if (complexDataInputStream != null) {
+								complexDataInputStream.close();
+							}
 						}
 					} else {
 						newlySavedObs = os.saveObs(obs, reason);
@@ -177,6 +180,10 @@ public class ObsFormController extends SimpleFormController {
 				}
 				
 			}
+			catch (IllegalArgumentException e) {
+				errors.reject("invalidImage", "Obs.invalidImage");
+				return showForm(request, response, errors);
+			}
 			catch (APIException e) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 				return showForm(request, response, errors);
@@ -187,8 +194,9 @@ public class ObsFormController extends SimpleFormController {
 				String view = getSuccessView() + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase="
 				        + request.getParameter("phrase");
 				return new ModelAndView(new RedirectView(view));
-			} else
+			} else {
 				return new ModelAndView(new RedirectView("obs.form?obsId=" + newlySavedObs.getObsId()));
+			}
 		}
 		
 		return showForm(request, response, errors);
@@ -197,7 +205,7 @@ public class ObsFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -211,9 +219,9 @@ public class ObsFormController extends SimpleFormController {
 			String obsId = request.getParameter("obsId");
 			String encounterId = request.getParameter("encounterId");
 			
-			if (obsId != null)
+			if (obsId != null) {
 				obs = os.getObs(Integer.valueOf(obsId));
-			else if (StringUtils.hasText(encounterId)) {
+			} else if (StringUtils.hasText(encounterId)) {
 				Encounter e = es.getEncounter(Integer.valueOf(encounterId));
 				obs = new Obs();
 				obs.setEncounter(e);
@@ -223,15 +231,16 @@ public class ObsFormController extends SimpleFormController {
 			}
 		}
 		
-		if (obs == null)
+		if (obs == null) {
 			obs = new Obs();
+		}
 		
 		return obs;
 	}
 	
 	/**
 	 * The other things shown on the obs form that are in the database
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
@@ -269,8 +278,9 @@ public class ObsFormController extends SimpleFormController {
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		String editReason = request.getParameter("editReason");
-		if (editReason == null)
+		if (editReason == null) {
 			editReason = "";
+		}
 		
 		map.put("editReason", editReason);
 		
@@ -279,7 +289,7 @@ public class ObsFormController extends SimpleFormController {
 	
 	/**
 	 * Sets the value of a complex obs from an http request.
-	 * 
+	 *
 	 * @param obs the complex obs whose value to set.
 	 * @param request the http request.
 	 * @return the complex data input stream.

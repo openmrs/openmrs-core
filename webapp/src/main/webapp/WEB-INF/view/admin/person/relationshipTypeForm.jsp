@@ -23,7 +23,7 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="RelationshipType.aIsToB"/></td>
+		<td><openmrs:message code="RelationshipType.aIsToB"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="relationshipType.aIsToB">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -32,7 +32,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="RelationshipType.bIsToA"/></td>
+		<td><openmrs:message code="RelationshipType.bIsToA"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="relationshipType.bIsToA">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -41,7 +41,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/><span class="required">*</span></td>
 		<td valign="top">
 			<spring:bind path="relationshipType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
@@ -53,11 +53,17 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${relationshipType.creator.personName} -
+				<c:out value="${relationshipType.creator.personName}" /> -
 				<openmrs:formatDate date="${relationshipType.dateCreated}" type="long" />
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+     <c:if test="${relationshipType.relationshipTypeId != null}">
+         <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+         <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${relationshipType.uuid}</sub></font></td>
+     </c:if>
+   </tr>
 </table>
 <br />
 <input type="submit" value="<openmrs:message code="RelationshipType.save"/>" name="save">

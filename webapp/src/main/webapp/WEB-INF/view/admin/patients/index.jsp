@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/admin/patients/index.htm" />
-
+<openmrs:message var="pageTitle" code="patient.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
@@ -21,7 +21,7 @@
 					{fieldName:"familyName", header:omsgs.familyName},
 					{fieldName:"age", header:omsgs.age},
 					{fieldName:"gender", header:omsgs.gender},
-					{fieldName:"birthdateString", header:omsgs.birthdate},
+					{fieldName:"birthdateString", header:omsgs.birthdate}
 				],
 				{
                     searchLabel: '<openmrs:message code="Patient.searchBox" javaScriptEscape="true"/>',

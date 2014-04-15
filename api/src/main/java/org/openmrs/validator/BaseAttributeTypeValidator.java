@@ -21,13 +21,14 @@ import org.openmrs.attribute.AttributeType;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
  * Abstract class which handles basic validation common to all attribute types
- * 
+ *
  * @since 1.9
  */
 public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> implements Validator {
@@ -42,6 +43,8 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 	 * @should not allow maxOccurs less than 1
 	 * @should not allow maxOccurs less than minOccurs
 	 * @should require datatypeClassname
+	 * @should require DatatypeConfiguration if Datatype equals Regex-Validated Text
+	 * @should pass validation if all required values are set
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -75,7 +78,11 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 				errors.rejectValue("datatypeClassname", "error.null");
 			} else {
 				try {
-					CustomDatatypeUtil.getDatatype(attributeType);
+					CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(attributeType);
+					if (datatype instanceof RegexValidatedTextDatatype
+					        && StringUtils.isBlank(attributeType.getDatatypeConfig())) {
+						errors.rejectValue("datatypeConfig", "error.null");
+					}
 				}
 				catch (Exception ex) {
 					errors.rejectValue("datatypeConfig", "AttributeType.datatypeConfig.invalid", new Object[] { ex
@@ -88,9 +95,10 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 				try {
 					CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(attributeType);
 					CustomDatatypeHandler<?, ?> handler = CustomDatatypeUtil.getHandler(attributeType);
-					if (!CustomDatatypeUtil.isCompatibleHandler(handler, datatype))
+					if (!CustomDatatypeUtil.isCompatibleHandler(handler, datatype)) {
 						errors.rejectValue("preferredHandlerClassname",
 						    "AttributeType.preferredHandlerClassname.wrongDatatype");
+					}
 				}
 				catch (Exception ex) {
 					errors.rejectValue("handlerConfig", "AttributeType.handlerConfig.invalid", new Object[] { ex

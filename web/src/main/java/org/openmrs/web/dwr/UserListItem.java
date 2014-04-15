@@ -18,6 +18,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
 
+import java.util.Arrays;
+
 public class UserListItem extends PersonListItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
@@ -36,7 +38,7 @@ public class UserListItem extends PersonListItem {
 	}
 	
 	public UserListItem(User user) {
-		super(user.getPerson());
+		super((user == null) ? null : user.getPerson());
 		
 		if (user != null) {
 			userId = user.getUserId();
@@ -73,7 +75,12 @@ public class UserListItem extends PersonListItem {
 	}
 	
 	public void setRoles(String[] roles) {
-		this.roles = roles;
+		if (roles == null) {
+			this.roles = new String[0];
+		} else {
+			this.roles = Arrays.copyOf(roles, roles.length);
+		}
+		
 	}
 	
 	public String getUsername() {

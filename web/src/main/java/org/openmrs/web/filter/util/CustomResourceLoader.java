@@ -73,7 +73,7 @@ public class CustomResourceLoader {
 	
 	/**
 	 * Returns singleton instance of custom resource loader
-	 * 
+	 *
 	 * @param basedir <b>(optional)</b> the absolute path to directory, that contains resources to
 	 *            be loaded. If this isn't specified then <code>${CONTEXT-ROOT}/WEB-INF/</code> will
 	 *            be used
@@ -89,7 +89,7 @@ public class CustomResourceLoader {
 	/**
 	 * This method is intended to load resource bundle from the file system by specified messages
 	 * properties file path and for specified locale
-	 * 
+	 *
 	 * @param path location of the resource on the file system
 	 * @param basename the name prefix for resource file
 	 * @param locale the location parameter
@@ -116,7 +116,7 @@ public class CustomResourceLoader {
 	 * messages properties. Then, if file is suitable, it parses the locale from its name. And
 	 * finally, it loads resource bundle for that file and associates it with locale, derived from
 	 * the file's name.
-	 * 
+	 *
 	 * @param basedir the absolute path of base directory to search files (e.g. $CONTEXT_ROOT +
 	 *            /WEB_INF/)
 	 */
@@ -139,15 +139,16 @@ public class CustomResourceLoader {
 	
 	/**
 	 * Utility method for deriving a locale from a filename.
-	 * 
+	 *
 	 * @param filename the name to parse
 	 * @return Locale derived from the given string
 	 */
 	private Locale parseLocaleFrom(String filename, String basename) {
 		Locale result = null;
 		
-		if (filename.startsWith(basename))
+		if (filename.startsWith(basename)) {
 			filename = filename.substring(basename.length());
+		}
 		
 		String localespec = filename.substring(0, filename.indexOf('.'));
 		

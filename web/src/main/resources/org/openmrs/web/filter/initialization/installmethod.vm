@@ -46,8 +46,6 @@
                             	<br><b>$l10n.get("install.testing.note"):</b>
                             	<ul>
 									<li>$l10n.get("install.testing.list.supportedServer")</li>
-                            		<li>$l10n.get("install.testing.list.avoidOverriting")</li>
-                            		<li>$l10n.get("install.testing.list.ensurePath")</li>
                             		<li>$l10n.get("install.testing.list.ensureConnection")</li>
                             	</ul>
                             </td>

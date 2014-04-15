@@ -47,17 +47,20 @@ public class PersonFormEntryPortletController extends PortletController {
 			return;
 		}
 		Person person = (Person) model.get("person");
-		if (person == null)
+		if (person == null) {
 			throw new IllegalArgumentException("This portlet may only be used in the context of a Person");
+		}
 		FormEntryContext fec = new FormEntryContext(person);
 		Map<Form, FormEntryHandler> entryUrlMap = new TreeMap<Form, FormEntryHandler>(new Comparator<Form>() {
 			
 			public int compare(Form left, Form right) {
 				int temp = left.getName().toLowerCase().compareTo(right.getName().toLowerCase());
-				if (temp == 0)
+				if (temp == 0) {
 					temp = OpenmrsUtil.compareWithNullAsLowest(left.getVersion(), right.getVersion());
-				if (temp == 0)
+				}
+				if (temp == 0) {
 					temp = OpenmrsUtil.compareWithNullAsGreatest(left.getId(), right.getId());
+				}
 				return temp;
 			}
 		});

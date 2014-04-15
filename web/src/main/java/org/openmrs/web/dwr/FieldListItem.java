@@ -27,7 +27,7 @@ import org.openmrs.api.context.Context;
  * A mini/simplified Field object. Used as the return object from DWR methods to allow javascript
  * and other consumers to easily use all methods. This class guarantees that all objects in this
  * class will be initialized (copied) off of the Person object.
- * 
+ *
  * @see Field
  * @see DWRFormService
  */
@@ -95,18 +95,20 @@ public class FieldListItem {
 	public boolean equals(Object obj) {
 		if (obj instanceof FieldListItem) {
 			FieldListItem f2 = (FieldListItem) obj;
-			if (fieldId != null)
+			if (fieldId != null) {
 				return fieldId.equals(f2.getFieldId());
+			}
 		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		if (fieldId != null)
+		if (fieldId != null) {
 			return 57 * fieldId.hashCode();
-		else
+		} else {
 			return super.hashCode();
+		}
 	}
 	
 	/*

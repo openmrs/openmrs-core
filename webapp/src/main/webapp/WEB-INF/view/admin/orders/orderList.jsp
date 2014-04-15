@@ -57,13 +57,13 @@
 					<c:if test="${order.encounter != null}">
 						<td valign="top">
 							<c:forEach var="name" items="${order.encounter.patient.names}">
-								${name.familyName}, ${name.givenName}<br />
+								<c:out value="${name.familyName}" />, <c:out value="${name.givenName}" /><br />
 							</c:forEach>
 						</td>
 					</c:if>
-					<td valign="top">${conceptNames[order.concept.conceptId]}</td>
+					<td valign="top"><c:out value="${conceptNames[order.concept.conceptId]}" /></td>
 					<td valign="top">
-					   ${order.instructions}
+					   <c:out value="${order.instructions}" />
 					</td>
 					<td valign="top">
 						<a href="<c:choose><c:when test="${order.class.name=='org.openmrs.DrugOrder'}">orderDrug</c:when><c:otherwise>order</c:otherwise></c:choose>.form?orderId=${order.orderId}">

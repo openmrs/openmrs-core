@@ -24,7 +24,7 @@
 				
 				<table>
 					<tr>
-						<td><openmrs:message code="Person.name"/></td>
+						<td><openmrs:message code="Person.name"/><span class="required">*</span></td>
 						<td>
 							<input type="text" name="addName" id="personName" size="40" onKeyUp="hideError('nameError'); hideError('invalidNameError');" />
 							<span class="error" id="nameError"><openmrs:message code="Person.name.required"/></span>
@@ -32,7 +32,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td><openmrs:message code="Person.birthdate"/><br/><i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i></td>
+						<td><openmrs:message code="Person.birthdate"/><span class="required">*</span><br/><i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i></td>
 						<td valign="top">
 							<input type="text" name="addBirthdate" id="birthdate" size="11" value="" onfocus="showCalendar(this,60)" onChange="hideError('birthdateError')" />
 							<openmrs:message code="Person.age.or"/>
@@ -41,7 +41,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td><openmrs:message code="Person.gender"/></td>
+						<td><openmrs:message code="Person.gender"/><span class="required">*</span></td>
 						<td>
 							<openmrs:forEachRecord name="gender">
 								<input type="radio" name="addGender" id="gender-${record.key}" value="${record.key}"  onClick="hideError('genderError')" /><label for="gender-${record.key}"> <openmrs:message code="Person.gender.${record.value}"/> </label>

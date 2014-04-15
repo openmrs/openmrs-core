@@ -24,7 +24,7 @@ import org.openmrs.api.context.Context;
 /**
  * This class deals with {@link Order} objects when they are saved via a save* method in an Openmrs
  * Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP class. <br/>
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @see Order
@@ -40,8 +40,9 @@ public class OrderSaveHandler implements SaveHandler<Order> {
 	 * @should not assign an new order number to an existing order
 	 */
 	public void handle(Order order, User creator, Date dateCreated, String other) {
-		if (order.getPatient() == null && order.getEncounter() != null)
+		if (order.getPatient() == null && order.getEncounter() != null) {
 			order.setPatient(order.getEncounter().getPatient());
+		}
 		if (order.getOrderNumber() == null) {
 			order.setOrderNumber(Context.getOrderService().getNewOrderNumber());
 		}

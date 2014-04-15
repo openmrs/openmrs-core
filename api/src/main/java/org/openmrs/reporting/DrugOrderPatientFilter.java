@@ -16,10 +16,10 @@ package org.openmrs.reporting;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -28,6 +28,7 @@ import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -63,11 +64,12 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 	}
 	
 	private Integer compareHelper() {
-		if (groupMethod == GroupMethod.NONE)
+		if (groupMethod == GroupMethod.NONE) {
 			return -1;
-		else
+		} else {
 			return (drugId == null ? 0 : drugId)
 			        + (onDate == null ? 0 : (int) (System.currentTimeMillis() - onDate.getTime()));
+		}
 	}
 	
 	public GroupMethod getGroupMethod() {
@@ -107,13 +109,16 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
 			drugIds = null;
 		} else {
-			if (drugId != null)
+			if (drugId != null) {
 				drugIds.add(drugId);
+			}
 			if (drugConcept != null) {
 				List<Drug> drugs = Context.getConceptService().getDrugs();
-				for (Drug drug : drugs)
-					if (drug.getConcept().equals(drugConcept))
+				for (Drug drug : drugs) {
+					if (drug.getConcept().equals(drugConcept)) {
 						drugIds.add(drug.getDrugId());
+					}
+				}
 			}
 		}
 		PatientSetService service = Context.getPatientSetService();
@@ -122,27 +127,33 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 	
 	public String getDescription() {
 		// TODO: internationalize this
+		MessageSourceService mss = Context.getMessageSourceService();
+		Locale locale = Context.getLocale();
 		StringBuilder sb = new StringBuilder();
-		if (groupMethod != null && groupMethod == GroupMethod.NONE)
-			sb.append("No drug orders");
-		else if (drugId != null || drugConcept != null) {
-			sb.append("Taking ");
+		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
+			sb.append(mss.getMessage("reporting.noDrugOrders"));
+		} else if (drugId != null || drugConcept != null) {
+			sb.append(mss.getMessage("reporting.taking")).append(" ");
 			SortedSet<String> names = new TreeSet<String>();
 			if (drugId != null) {
 				Drug drug = Context.getConceptService().getDrug(drugId);
 				if (drug == null) {
 					log.error("Can't find drug with id " + drugId);
-					names.add("MISSING DRUG " + drugId);
-				} else
+					names.add(mss.getMessage("reporting.missingDrug") + " " + drugId);
+				} else {
 					names.add(drug.getName());
+				}
 			}
-			if (drugConcept != null)
+			if (drugConcept != null) {
 				names.add(drugConcept.getName(Context.getLocale(), false).getName());
-			sb.append(OpenmrsUtil.join(names, " or "));
-		} else
-			sb.append("Any Drug Order");
-		if (getOnDate() != null)
-			sb.append(" on " + getOnDate());
+			}
+			sb.append(OpenmrsUtil.join(names, " " + mss.getMessage("reporting.or") + " "));
+		} else {
+			sb.append(mss.getMessage("reporting.anyDrugOrder"));
+		}
+		if (getOnDate() != null) {
+			sb.append(" ").append(mss.getMessage("reporting.on", new Object[] { getOnDate() }, locale));
+		}
 		return sb.toString();
 	}
 	

@@ -192,12 +192,17 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 * @should return positive if startDates equal and this endDate null
 	 * @should return negative if this startDate null
+	 * @should pass if two states have the same start date, end date and uuid
+	 * @should return positive or negative if two states have the same start date and end date but different uuids
 	 */
 	@Override
 	public int compareTo(PatientState o) {
 		int result = OpenmrsUtil.compareWithNullAsEarliest(getStartDate(), o.getStartDate());
 		if (result == 0) {
 			result = OpenmrsUtil.compareWithNullAsLatest(getEndDate(), o.getEndDate());
+		}
+		if (result == 0) {
+			result = OpenmrsUtil.compareWithNullAsGreatest(getUuid(), o.getUuid());
 		}
 		return result;
 	}

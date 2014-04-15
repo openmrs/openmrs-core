@@ -89,15 +89,18 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		BufferedImage img = null;
 		
 		Object data = obs.getComplexData().getData();
-		if (BufferedImage.class.isAssignableFrom(data.getClass())) {
+		if (data instanceof BufferedImage) {
 			img = (BufferedImage) obs.getComplexData().getData();
-		} else if (InputStream.class.isAssignableFrom(data.getClass())) {
+		} else if (data instanceof InputStream) {
 			try {
 				img = ImageIO.read((InputStream) data);
+				if (img == null) {
+					throw new IllegalArgumentException("Invalid image file");
+				}
 			}
 			catch (IOException e) {
 				throw new APIException(
-				        "Unable to convert complex data to a valid input stream and then read it into a buffered image");
+				        "Unable to convert complex data to a valid input stream and then read it into a buffered image", e);
 			}
 		}
 		

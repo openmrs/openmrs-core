@@ -24,7 +24,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validator for {@link Field} class
- * 
+ *
  * @since 1.10
  */
 @Handler(supports = { Field.class }, order = 50)
@@ -34,21 +34,22 @@ public class FieldValidator implements Validator {
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
-	 * 
+	 *
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
+		}
 		return Field.class.isAssignableFrom(c);
 	}
 	
 	/**
 	 * Validates the given Field. 
 	 * Ensures that the field name is present and valid
-	 * 
+	 *
 	 * @param obj The Field to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
@@ -62,18 +63,22 @@ public class FieldValidator implements Validator {
 	 * should not fail if fieldType is null
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");
+		}
 		
-		if (obj == null || !(obj instanceof Field))
+		if (obj == null || !(obj instanceof Field)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Field.class);
+		}
 		
 		Field field = (Field) obj;
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.null", "Field name is required");
-		if (field.getSelectMultiple() == null)
+		if (field.getSelectMultiple() == null) {
 			errors.rejectValue("selectMultiple", "error.general");
-		if (field.getRetired() == null)
+		}
+		if (field.getRetired() == null) {
 			errors.rejectValue("retired", "error.general");
+		}
 	}
 }

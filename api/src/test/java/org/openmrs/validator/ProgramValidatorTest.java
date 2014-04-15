@@ -6,13 +6,18 @@ import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
 /**
  * Tests methods on the {@link ProgramValidator} class.
  */
 public class ProgramValidatorTest extends BaseContextSensitiveTest {
+	
+	@Autowired
+	protected Validator programValidator;
 	
 	/**
 	 * @see {@link ProgramValidator#validate(Object,Errors)}
@@ -25,17 +30,17 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
-		new ProgramValidator().validate(prog, errors);
+		programValidator.validate(prog, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
 		
 		prog.setName("");
 		errors = new BindException(prog, "prog");
-		new ProgramValidator().validate(prog, errors);
+		programValidator.validate(prog, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
 		
 		prog.setName(" ");
 		errors = new BindException(prog, "prog");
-		new ProgramValidator().validate(prog, errors);
+		programValidator.validate(prog, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
 	}
 	
@@ -50,7 +55,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
-		new ProgramValidator().validate(prog, errors);
+		programValidator.validate(prog, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
 	}
 	
@@ -58,15 +63,26 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProgramValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+		
 		Program prog = new Program();
-		prog.setName("Hypochondriasis program");
+		prog.setDescription(null);
 		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
-		new ProgramValidator().validate(prog, errors);
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		programValidator.validate(prog, errors);
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		
+		prog.setDescription("");
+		errors = new BindException(prog, "prog");
+		programValidator.validate(prog, errors);
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		
+		prog.setDescription(" ");
+		errors = new BindException(prog, "prog");
+		programValidator.validate(prog, errors);
+		Assert.assertTrue(errors.hasFieldErrors("description"));
 	}
 	
 	/**
@@ -80,7 +96,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		prog.setConcept(null);
 		
 		Errors errors = new BindException(prog, "prog");
-		new ProgramValidator().validate(prog, errors);
+		programValidator.validate(prog, errors);
 		Assert.assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
@@ -96,7 +112,7 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
-		new ProgramValidator().validate(prog, errors);
+		programValidator.validate(prog, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
 	}

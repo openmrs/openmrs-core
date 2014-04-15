@@ -40,7 +40,7 @@ public class ConceptProposalListController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -61,24 +61,27 @@ public class ConceptProposalListController extends SimpleFormController {
 		// create map of distinct OriginalText->#occurences
 		for (ConceptProposal cp : cpList) {
 			List<ConceptProposal> matchingProposals = origText.get(cp.getOriginalText());
-			if (matchingProposals == null)
+			if (matchingProposals == null) {
 				matchingProposals = new Vector<ConceptProposal>();
+			}
 			matchingProposals.add(cp);
 			origText.put(cp.getOriginalText(), matchingProposals);
 		}
 		
 		boolean asc = new Boolean("asc".equals(request.getParameter("sortOrder")));
 		String sortOn = request.getParameter("sortOn");
-		if (sortOn == null)
+		if (sortOn == null) {
 			sortOn = "occurences";
+		}
 		
 		TreeMap<List<ConceptProposal>, Integer> cpMap = new TreeMap<List<ConceptProposal>, Integer>();
 		
-		if (sortOn.equals("occurences"))
+		if (sortOn.equals("occurences")) {
 			cpMap = new TreeMap<List<ConceptProposal>, Integer>(new CompareListSize(asc));
-		else
+		} else {
 			//if (sortOn.equals("text"))
 			cpMap = new TreeMap<List<ConceptProposal>, Integer>(new CompareListText(asc));
+		}
 		
 		// loop over that map to sort on size or text
 		for (List<ConceptProposal> matchingProposals : origText.values()) {
@@ -116,11 +119,13 @@ public class ConceptProposalListController extends SimpleFormController {
 			int value = list2.size() - list1.size();
 			
 			// no items are equal
-			if (value == 0)
+			if (value == 0) {
 				value = -1;
+			}
 			
-			if (asc)
+			if (asc) {
 				value = value * -1;
+			}
 			
 			return value;
 		}
@@ -142,11 +147,13 @@ public class ConceptProposalListController extends SimpleFormController {
 			int value = cp2.getOriginalText().compareToIgnoreCase(cp1.getOriginalText());
 			
 			// no items are equal
-			if (value == 0)
+			if (value == 0) {
 				value = -1;
+			}
 			
-			if (asc)
+			if (asc) {
 				value = value * -1;
+			}
 			
 			return value;
 		}

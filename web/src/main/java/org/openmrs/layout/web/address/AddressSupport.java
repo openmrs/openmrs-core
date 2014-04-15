@@ -127,8 +127,9 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		if (!OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE.equals(newValue.getProperty()))
+		if (!OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE.equals(newValue.getProperty())) {
 			return;
+		}
 		try {
 			setAddressTemplate(newValue.getPropertyValue());
 		}
@@ -160,8 +161,9 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		if (!OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE.equals(propertyName))
+		if (!OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE.equals(propertyName)) {
 			return;
+		}
 		setAddressTemplate(new Vector<AddressTemplate>());
 	}
 	

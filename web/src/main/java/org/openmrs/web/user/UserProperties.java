@@ -19,7 +19,7 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * An abstraction over user properties
- * 
+ *
  * @see org.openmrs.User#getUserProperties()
  */
 public class UserProperties {
@@ -36,7 +36,7 @@ public class UserProperties {
 	/**
 	 * Sets the user property which determines if a new user should change his password upon logging
 	 * in the first time.
-	 * 
+	 *
 	 * @param change decides if the user should be forced to change the password
 	 * @should add forcePassword property in user properties map when value is set to true
 	 * @should do not add forcePassword property in user properties when set to false
@@ -61,17 +61,18 @@ public class UserProperties {
 	
 	/**
 	 * Utility method. Removes the given property from the user's properties
-	 * 
+	 *
 	 * @param property to be removed.
 	 */
 	private void removeProperty(String property) {
-		if (getProperties().containsKey(property))
+		if (getProperties().containsKey(property)) {
 			getProperties().remove(property);
+		}
 	}
 	
 	/**
 	 * Utility method. Adds the given property to the user's properties
-	 * 
+	 *
 	 * @param key of the property
 	 * @param property value
 	 */
@@ -81,7 +82,7 @@ public class UserProperties {
 	
 	/**
 	 * Method to read the value of forcePassword property
-	 * 
+	 *
 	 * @return true or false based on the value of forcePassword property
 	 * @should "return true or false depending on the presence or absence of forcePassword key in the user properties"
 	 */

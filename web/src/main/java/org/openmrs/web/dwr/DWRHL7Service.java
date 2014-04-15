@@ -30,22 +30,27 @@ public class DWRHL7Service {
 	
 	private static Hl7InArchivesMigrateThread hl7MigrationThread = null;
 	
+	public static void setHl7MigrationThread(Hl7InArchivesMigrateThread hl7MigrationThread) {
+		DWRHL7Service.hl7MigrationThread = hl7MigrationThread;
+	}
+	
 	/**
 	 * Handles the ajax call for starting the migration of hl7 in archives to the file system
-	 * 
+	 *
 	 * @return an object array with a boolean value at index 0 indicating if the migration was
 	 *         started or not, at the second index is an optional descriptive message.
 	 */
 	public Object[] startHl7ArchiveMigration(Integer daysToKeep) {
-		if (Hl7InArchivesMigrateThread.isActive())
+		if (Hl7InArchivesMigrateThread.isActive()) {
 			return new Object[] { false,
 			        Context.getMessageSourceService().getMessage("Hl7InArchive.migrate.already.running") };
+		}
 		
 		try {
 			// create a new thread and get it started
 			Hl7InArchivesMigrateThread.setDaysKept(daysToKeep);
 			Hl7InArchivesMigrateThread.setActive(true);
-			hl7MigrationThread = new Hl7InArchivesMigrateThread();
+			setHl7MigrationThread(new Hl7InArchivesMigrateThread());
 			hl7MigrationThread.setName("HL7 Archive Migration Thread");
 			hl7MigrationThread.start();
 			return new Object[] { true };
@@ -58,18 +63,18 @@ public class DWRHL7Service {
 	
 	/**
 	 * Handles the ajax call to stop hl7 migration process
-	 * 
+	 *
 	 * @return a descriptive message
 	 */
 	public String stopHl7ArchiveMigration() {
 		Hl7InArchivesMigrateThread.stopMigration();
-		hl7MigrationThread = null;
+		setHl7MigrationThread(null);
 		return Context.getMessageSourceService().getMessage("Hl7InArchive.migrate.stop.success");
 	}
 	
 	/**
 	 * Processes the ajax call for retrieving the progress and status
-	 * 
+	 *
 	 * @return a map containing the number migrated, the state of the migrate thread at a given time
 	 *         when it is running and a message string.
 	 */
@@ -80,10 +85,11 @@ public class DWRHL7Service {
 		statusMap.put("status", status.toString());
 		
 		if (status == Status.COMPLETED) {
-			if (Hl7InArchivesMigrateThread.getNumberOfFailedTransfers() > 0)
+			if (Hl7InArchivesMigrateThread.getNumberOfFailedTransfers() > 0) {
 				statusMap.put("areAllTransferred", false);
-			else
+			} else {
 				statusMap.put("areAllTransferred", true);
+			}
 		}
 		
 		return statusMap;

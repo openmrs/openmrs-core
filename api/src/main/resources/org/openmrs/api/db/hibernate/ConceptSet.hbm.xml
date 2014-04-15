@@ -4,7 +4,7 @@
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.openmrs">
 
-	<class name="ConceptSet" table="concept_set">
+	<class name="ConceptSet" table="concept_set" batch-size="25">
 
 		<id name="conceptSetId" type="java.lang.Integer" column="concept_set_id">
 			<generator class="native">

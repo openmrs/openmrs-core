@@ -57,7 +57,7 @@ import org.openmrs.util.OpenmrsConstants;
 /**
  * DWR patient methods. The methods in here are used in the webapp to get data from the database via
  * javascript calls.
- * 
+ *
  * @see PatientService
  */
 public class DWRPatientService implements GlobalPropertyListener {
@@ -69,7 +69,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	/**
 	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
 	 * search. Else, do a name search
-	 * 
+	 *
 	 * @param searchValue string to be looked for
 	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return Collection<Object> of PatientListItem or String
@@ -86,10 +86,14 @@ public class DWRPatientService implements GlobalPropertyListener {
 		return findBatchOfPatients(searchValue, includeVoided, null, null);
 	}
 	
+	public static void setMaximumResults(Integer maximumResults) {
+		DWRPatientService.maximumResults = maximumResults;
+	}
+	
 	/**
 	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
 	 * search. Else, do a name search
-	 * 
+	 *
 	 * @see PatientService#getPatients(String, String, List, boolean, int, Integer)
 	 * @param searchValue string to be looked for
 	 * @param includeVoided true/false whether or not to included voided patients
@@ -99,10 +103,12 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @since 1.8
 	 */
 	public Collection<Object> findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length) {
-		if (maximumResults == null)
-			maximumResults = getMaximumSearchResults();
-		if (length != null && length > maximumResults)
+		if (maximumResults == null) {
+			setMaximumResults(getMaximumSearchResults());
+		}
+		if (length != null && length > maximumResults) {
 			length = maximumResults;
+		}
 		
 		// the list to return
 		List<Object> patientList = new Vector<Object>();
@@ -119,8 +125,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 		}
 		
 		patientList = new Vector<Object>(patients.size());
-		for (Patient p : patients)
+		for (Patient p : patients) {
 			patientList.add(new PatientListItem(p, searchValue));
+		}
 		//no results found and a number was in the search --
 		//should check whether the check digit is correct.
 		if (patients.size() == 0 && searchValue.matches(".*\\d+.*")) {
@@ -148,12 +155,13 @@ public class DWRPatientService implements GlobalPropertyListener {
 			}
 			
 			if (identifierMatchesValidationScheme) {
-				if (shouldWarnUser)
+				if (shouldWarnUser) {
 					patientList
 					        .add("<p style=\"color:red; font-size:big;\"><b>WARNING: Identifier has been typed incorrectly!  Please double check the identifier.</b></p>");
-				else if (validCheckDigit)
+				} else if (validCheckDigit) {
 					patientList
 					        .add("<p style=\"color:green; font-size:big;\"><b>This identifier has been entered correctly, but still no patients have been found.</b></p>");
+				}
 			}
 		}
 		
@@ -165,7 +173,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * matching patients (depending on values of start and length parameters) while the keys are are
 	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
 	 * matches will be returned from the start index if specified.
-	 * 
+	 *
 	 * @param searchValue patient name or identifier
 	 * @param start the beginning index
 	 * @param length the number of matching patients to return
@@ -176,6 +184,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @should signal for a new search if the new search value has matches and is a first call
 	 * @should not signal for a new search if it is not the first ajax call
 	 * @should not signal for a new search if the new search value has no matches
+	 * @should match patient with identifiers that contain no digit
 	 */
 	public Map<String, Object> findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount)
 	        throws APIException {
@@ -195,22 +204,22 @@ public class DWRPatientService implements GlobalPropertyListener {
 				//trim each word down to the first three characters and search again				
 				if (patientCount == 0 && start == 0 && !searchValue.matches(".*\\d+.*")) {
 					String[] names = searchValue.split(" ");
-					String newSearch = "";
+					StringBuilder newSearch = new StringBuilder("");
 					for (String name : names) {
-						if (name.length() > 3)
+						if (name.length() > 3) {
 							name = name.substring(0, 3);
-						newSearch += " " + name;
+						}
+						newSearch.append(" ").append(name);
 					}
 					
-					newSearch = newSearch.trim();
-					if (!newSearch.equals(searchValue)) {
-						newSearch = newSearch.trim();
-						int newPatientCount = ps.getCountOfPatients(newSearch);
+					String newSearchStr = newSearch.toString().trim();
+					if (!newSearchStr.equals(searchValue)) {
+						int newPatientCount = ps.getCountOfPatients(newSearchStr);
 						if (newPatientCount > 0) {
 							// Send a signal to the core search widget to search again against newSearch
-							resultsMap.put("searchAgain", newSearch);
+							resultsMap.put("searchAgain", newSearchStr);
 							resultsMap.put("notification", Context.getMessageSourceService().getMessage(
-							    "searchWidget.noResultsFoundFor", new Object[] { searchValue, newSearch },
+							    "searchWidget.noResultsFoundFor", new Object[] { searchValue, newSearchStr },
 							    Context.getLocale()));
 						}
 					}
@@ -243,27 +252,31 @@ public class DWRPatientService implements GlobalPropertyListener {
 					}
 					
 					if (identifierMatchesValidationScheme) {
-						if (shouldWarnUser)
+						if (shouldWarnUser) {
 							resultsMap.put("notification", "<b>"
 							        + Context.getMessageSourceService().getMessage("Patient.warning.inValidIdentifier")
 							        + "<b/>");
-						else if (validCheckDigit)
+						} else if (validCheckDigit) {
 							resultsMap.put("notification", "<b style=\"color:green;\">"
 							        + Context.getMessageSourceService().getMessage("Patient.message.validIdentifier")
 							        + "<b/>");
+						}
 					}
 				} else {
 					//ensure that count never exceeds this value because the API's service layer would never
 					//return more than it since it is limited in the DAO layer
-					if (maximumResults == null)
-						maximumResults = getMaximumSearchResults();
-					if (length != null && length > maximumResults)
+					if (maximumResults == null) {
+						setMaximumResults(getMaximumSearchResults());
+					}
+					if (length != null && length > maximumResults) {
 						length = maximumResults;
+					}
 					
 					if (patientCount > maximumResults) {
 						patientCount = maximumResults;
-						if (log.isDebugEnabled())
+						if (log.isDebugEnabled()) {
 							log.debug("Limitng the size of matching patients to " + maximumResults);
+						}
 					}
 				}
 				
@@ -271,8 +284,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 			
 			//if we have any matches or this isn't the first ajax call when the caller
 			//requests for the count
-			if (patientCount > 0 || !getMatchCount)
+			if (patientCount > 0 || !getMatchCount) {
 				objectList = findBatchOfPatients(searchValue, false, start, length);
+			}
 			
 			resultsMap.put("count", patientCount);
 			resultsMap.put("objectList", objectList);
@@ -290,7 +304,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	/**
 	 * Convenience method for dwr/javascript to convert a patient id into a Patient object (or at
 	 * least into data about the patient)
-	 * 
+	 *
 	 * @param patientId the {@link Patient#getPatientId()} to match on
 	 * @return a truncated Patient object in the form of a PatientListItem
 	 */
@@ -308,7 +322,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * find all patients with duplicate attributes (searchOn)
-	 * 
+	 *
 	 * @param searchOn
 	 * @return list of patientListItems
 	 */
@@ -317,16 +331,19 @@ public class DWRPatientService implements GlobalPropertyListener {
 		
 		try {
 			List<String> options = new Vector<String>(searchOn.length);
-			for (String s : searchOn)
+			for (String s : searchOn) {
 				options.add(s);
+			}
 			
 			List<Patient> patients = Context.getPatientService().getDuplicatePatientsByAttributes(options);
 			
-			if (patients.size() > 200)
+			if (patients.size() > 200) {
 				patients.subList(0, 200);
+			}
 			
-			for (Patient p : patients)
+			for (Patient p : patients) {
 				patientList.add(new PatientListItem(p));
+			}
 		}
 		catch (Exception e) {
 			log.error(e);
@@ -338,7 +355,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param patientId
 	 * @param identifierType
 	 * @param identifier
@@ -349,8 +366,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 		
 		String ret = "";
 		
-		if (identifier == null || identifier.length() == 0)
+		if (identifier == null || identifier.length() == 0) {
 			return "PatientIdentifier.error.general";
+		}
 		PatientService ps = Context.getPatientService();
 		LocationService ls = Context.getLocationService();
 		Patient p = ps.getPatient(patientId);
@@ -371,9 +389,10 @@ public class DWRPatientService implements GlobalPropertyListener {
 				        + "], about to remove");
 				p.removeIdentifier(previousId);
 			} else {
-				if (!previousId.getIdentifierType().equals(idType))
+				if (!previousId.getIdentifierType().equals(idType)) {
 					log.debug("Previous ID id type does not match: [" + previousId.getIdentifierType().getName() + "]["
 					        + previousId.getIdentifier() + "]");
+				}
 				if (!previousId.getLocation().equals(location)) {
 					log.debug("Previous ID location is: " + previousId.getLocation());
 					log.debug("New location is: " + location);
@@ -416,7 +435,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param patientId
 	 * @param reasonForExitId
 	 * @param dateOfExit
@@ -549,7 +568,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param patientId
 	 * @param locationId
 	 * @return
@@ -577,7 +596,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Creates an Allergy Item
-	 * 
+	 *
 	 * @param patientId
 	 * @param allergenId
 	 * @param type
@@ -601,7 +620,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Save an Allergy
-	 * 
+	 *
 	 * @param activeListItemId
 	 * @param allergenId Concept ID
 	 * @param type
@@ -623,7 +642,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Resolve an allergy
-	 * 
+	 *
 	 * @param activeListId
 	 * @param resolved
 	 * @param reason
@@ -636,7 +655,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Voids the Allergy
-	 * 
+	 *
 	 * @param activeListId
 	 * @param reason
 	 */
@@ -650,7 +669,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Creates a Problem Item
-	 * 
+	 *
 	 * @param patientId
 	 * @param problemId
 	 * @param status
@@ -668,7 +687,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Saves the Problem
-	 * 
+	 *
 	 * @param activeListId
 	 * @param problemId
 	 * @param status
@@ -687,7 +706,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Remove a problem, sets the end date
-	 * 
+	 *
 	 * @param activeListId
 	 * @param resolved
 	 * @param reason
@@ -702,7 +721,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Voids the Problem
-	 * 
+	 *
 	 * @param activeListId
 	 * @param reason
 	 */
@@ -716,7 +735,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Simple utility method to parse the date object into the correct, local format
-	 * 
+	 *
 	 * @param date
 	 * @return
 	 */
@@ -739,21 +758,21 @@ public class DWRPatientService implements GlobalPropertyListener {
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		try {
-			maximumResults = Integer.valueOf(newValue.getPropertyValue());
+			setMaximumResults(Integer.valueOf(newValue.getPropertyValue()));
 		}
 		catch (NumberFormatException e) {
-			maximumResults = OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
+			setMaximumResults(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
 		}
 	}
 	
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		maximumResults = OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
+		setMaximumResults(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
 	}
 	
 	/**
 	 * Fetch the max results value from the global properties table
-	 * 
+	 *
 	 * @return Integer value for the person search max results global property
 	 */
 	private static Integer getMaximumSearchResults() {

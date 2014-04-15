@@ -15,6 +15,7 @@ package org.openmrs.web.dwr;
 
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -49,7 +50,7 @@ public class ConceptListItem {
 	/**
 	 * Synonyms don't exist. All synonyms are names with different tags. If the name hit is not the
 	 * preferred name, preferredName will be non-null
-	 * 
+	 *
 	 * @deprecated not used anymore
 	 */
 	@Deprecated
@@ -84,7 +85,7 @@ public class ConceptListItem {
 	
 	/**
 	 * Most common constructor
-	 * 
+	 *
 	 * @param searchResult the search to use to construct this conceptListItem
 	 */
 	public ConceptListItem(ConceptSearchResult searchResult) {
@@ -93,8 +94,9 @@ public class ConceptListItem {
 			Concept concept = searchResult.getConcept();
 			ConceptName conceptName = searchResult.getConceptName();
 			//associate an index term to a concrete name which is fully specified or a synonym if any is found
-			if (conceptName.isIndexTerm() && conceptName.getConcept().getName() != null)
+			if (conceptName.isIndexTerm() && conceptName.getConcept().getName() != null) {
 				conceptName = concept.getName();
+			}
 			Locale locale = conceptName.getLocale();
 			initialize(concept, conceptName, locale);
 		}
@@ -111,7 +113,7 @@ public class ConceptListItem {
 	
 	/**
 	 * Populate all of the attributes of this class
-	 * 
+	 *
 	 * @param concept
 	 * @param conceptName
 	 * @param locale
@@ -125,17 +127,24 @@ public class ConceptListItem {
 			description = "";
 			if (conceptName != null) {
 				conceptNameId = conceptName.getConceptNameId();
-				if (conceptName.isIndexTerm() && concept.getName() == null)
+				if (conceptName.isIndexTerm() && concept.getName() == null) {
 					name = WebUtil.escapeHTML(conceptName.getName())
 					        + Context.getMessageSourceService().getMessage("Concept.no.fullySpecifiedName.found");
-				else
+				} else {
 					name = WebUtil.escapeHTML(conceptName.getName());
+				}
 				
 				// if the name hit is not the preferred or fully specified one, put the fully specified one here
-				if (!conceptName.isPreferred() && !conceptName.isFullySpecifiedName()) {
-					ConceptName preferredNameObj = concept.getName(locale, false);
-					if (preferredNameObj != null)
+				if (!conceptName.isPreferred()) {
+					ConceptName preferredNameObj = concept.getPreferredName(locale);
+					if (preferredNameObj == null) {
+						if (!StringUtils.isBlank(locale.getCountry()) || !StringUtils.isBlank(locale.getVariant())) {
+							preferredNameObj = concept.getPreferredName(new Locale(locale.getLanguage()));
+						}
+					}
+					if (preferredNameObj != null) {
 						preferredName = preferredNameObj.getName();
+					}
 				}
 			}
 			if (conceptShortName != null) {
@@ -171,8 +180,9 @@ public class ConceptListItem {
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptListItem) {
 			ConceptListItem c2 = (ConceptListItem) obj;
-			if (conceptId != null)
+			if (conceptId != null) {
 				return conceptId.equals(c2.getConceptId());
+			}
 		}
 		return false;
 	}
@@ -182,10 +192,11 @@ public class ConceptListItem {
 	 */
 	@Override
 	public int hashCode() {
-		if (conceptId != null)
+		if (conceptId != null) {
 			return 31 * conceptId.hashCode();
-		else
+		} else {
 			return super.hashCode();
+		}
 	}
 	
 	public Integer getConceptId() {

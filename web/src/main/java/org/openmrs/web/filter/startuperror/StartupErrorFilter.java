@@ -57,17 +57,18 @@ public class StartupErrorFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
 		
-		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException)
+		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
 			renderTemplate("coremoduleerror.vm", new HashMap<String, Object>(), httpResponse);
-		else
+		} else {
 			renderTemplate(DEFAULT_PAGE, new HashMap<String, Object>(), httpResponse);
+		}
 	}
 	
 	/**
@@ -80,8 +81,9 @@ public class StartupErrorFilter extends StartupFilter {
 		// if they are uploading modules
 		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
 			RequestContext requestContext = new ServletRequestContext(httpRequest);
-			if (!ServletFileUpload.isMultipartContent(requestContext))
+			if (!ServletFileUpload.isMultipartContent(requestContext)) {
 				throw new ServletException("The request is not a valid multipart/form-data upload request");
+			}
 			
 			FileItemFactory factory = new DiskFileItemFactory();
 			ServletFileUpload upload = new ServletFileUpload(factory);

@@ -21,7 +21,7 @@ import org.openmrs.OpenmrsMetadata;
 /**
  * A comparator that sorts first based on non-retired, and second based on name. (Locale is
  * currently not used, but will be when we add the ability to localize metadata.)
- * 
+ *
  * @since 1.7
  */
 public class MetadataComparator implements Comparator<OpenmrsMetadata> {
@@ -39,8 +39,9 @@ public class MetadataComparator implements Comparator<OpenmrsMetadata> {
 	@Override
 	public int compare(OpenmrsMetadata left, OpenmrsMetadata right) {
 		int temp = OpenmrsUtil.compareWithNullAsLowest(left.isRetired(), right.isRetired());
-		if (temp == 0)
+		if (temp == 0) {
 			temp = OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName());
+		}
 		return temp;
 	}
 	

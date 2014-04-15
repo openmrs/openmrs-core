@@ -667,6 +667,7 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @should propagate save to the Field property on the given FormField
 	 * @should save given formField successfully
+	 * @should inject form fields from serializable complex obs handlers
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public FormField saveFormField(FormField formField) throws APIException;

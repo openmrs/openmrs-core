@@ -82,10 +82,12 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 			}
 			
 			// cleanup
-			if (insertStatement != null)
+			if (insertStatement != null) {
 				insertStatement.close();
-			if (deleteStatement != null)
+			}
+			if (deleteStatement != null) {
 				deleteStatement.close();
+			}
 			
 		}
 		catch (SQLException e) {

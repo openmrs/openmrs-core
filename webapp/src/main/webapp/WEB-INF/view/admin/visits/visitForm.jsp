@@ -41,11 +41,11 @@ function addEncounter() {
 	row.parentNode.insertBefore(newrow, row);
 	numberOfClonedElements++;
 	// set up the autocomplete for selecting encounters to add
-	new AutoComplete('visitEncounters[' + index + ']-display', new CreateCallback({maxresults:100}).encounterCallback(), {
+	new AutoComplete('visitEncounters[' + index + ']-display', new CreateCallback({maxresults:100, patientId:<c:out value="${param.patientId}" />}).encounterCallback(), {
 		select: function(event, ui) {
 			jquerySelectEscaped('visitEncounters[' + index + ']').val(ui.item.object.encounterId);
 		},
-        placeholder:'<openmrs:message code="Encounter.search.placeholder" javaScriptEscape="true"/>'
+        placeholder:'<openmrs:message code="Visit.encounter.search.placeholder" javaScriptEscape="true"/>'
 	});
 }
 
@@ -104,13 +104,7 @@ $j(document).ready( function() {
 </style>
 
 <spring:hasBindErrors name="visit">
-	<openmrs:message code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/>
-		</c:forEach>
-	</div>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <h2>
@@ -123,7 +117,7 @@ $j(document).ready( function() {
 <c:if test="${visit.visitId != null && visit.voided}">
 	<form:form action="unvoidVisit.htm" method="post" modelAttribute="visit">
 		<input type="hidden" name="visitId" value="${visit.visitId}"/>
-		<input type="hidden" name="patientId" value="${visit.patient.patientId}"/>
+		<input type="hidden" name="patientId" value="<c:out value="${visit.patient.patientId}" />"/>
 		<div class="voidedMessage">
 			<div>
 				<openmrs:message code="Visit.voidedMessage"/>
@@ -139,14 +133,14 @@ $j(document).ready( function() {
 
 <form:form method="post" action="visit.form" modelAttribute="visit">
 	<c:if test="${visit.patient.patientId != null}">
-	<a href="<openmrs:contextPath/>/patientDashboard.form?patientId=${visit.patient.patientId}">
+	<a href="<openmrs:contextPath/>/patientDashboard.form?patientId=<c:out value="${visit.patient.patientId}" />">
 		<openmrs:message code="PatientDashboard.backToPatientDashboard"/>
 	</a>
 	<c:if test="${param.visitId != null}">
 		<input type="hidden" name="visitId" value="${param.visitId}"/>
 	</c:if>
 	<c:if test="${param.patientId != null}">
-		<input type="hidden" name="patientId" value="${param.patientId}"/>
+		<input type="hidden" name="patientId" value="<c:out value="${param.patientId}" />"/>
 	</c:if>
 	<br/><br/>
 	</c:if>
@@ -190,7 +184,7 @@ $j(document).ready( function() {
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 					</spring:bind>
 					</c:when>
-					<c:otherwise>${visit.patient.personName}</c:otherwise>
+					<c:otherwise><c:out value="${visit.patient.personName}" /></c:otherwise>
 				</c:choose>
 			</td>
 		</tr>
@@ -198,13 +192,21 @@ $j(document).ready( function() {
 			<th><openmrs:message code="Visit.visitType"/><span class="required"> *</span></th>
 			<td>
 			<spring:bind path="visitType">
+			<c:set var="groupOpen" value="false" />
 				<select name="${status.expression}">
 				   <option value=""></option>
 				<c:forEach items="${visitTypes}" var="visitType">
+				<c:if test="${visitType.retired && !groupOpen}">
+					<optgroup label="<openmrs:message code="Visit.type.retired"/>">
+					<c:set var="groupOpen" value="true" />
+				</c:if>
 					<option value="${visitType.visitTypeId}" <c:if test="${visitType.visitTypeId == status.value}">selected="selected"</c:if>>
 						${visitType.name}
 					</option>
 				</c:forEach>
+				<c:if test="${groupOpen}">
+					</optgroup>
+					</c:if>
 				</select>
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
@@ -268,7 +270,7 @@ $j(document).ready( function() {
 		<tr>
 			<th><openmrs:message code="general.createdBy" /></th>
 			<td>
-				${visit.creator.personName} - <openmrs:formatDate date="${visit.dateCreated}" type="long" />
+				<c:out value="${visit.creator.personName}" /> - <openmrs:formatDate date="${visit.dateCreated}" type="long" />
 			</td>
 		</tr>
 		</c:if>
@@ -276,7 +278,7 @@ $j(document).ready( function() {
 		<tr>
 			<th><openmrs:message code="general.changedBy" /></th>
 			<td>
-				${visit.changedBy.personName} - <openmrs:formatDate date="${visit.dateChanged}" type="long" />
+				<c:out value="${visit.changedBy.personName}" /> - <openmrs:formatDate date="${visit.dateChanged}" type="long" />
 			</td>
 		</tr>
 		</c:if>
@@ -337,7 +339,7 @@ $j(document).ready( function() {
 	<div id="delete-dialog" title="<openmrs:message code="general.void"/> <openmrs:message code="Visit"/>">
 		<form action="voidVisit.htm" method="post">
 			<input type="hidden" name="visitId" value="${visit.visitId}"/>
-			<input type="hidden" name="patientId" value="${visit.patient.patientId}"/>
+			<input type="hidden" name="patientId" value="<c:out value="${visit.patient.patientId}" />"/>
 			<p><openmrs:message code="Visit.delete.info" arguments="${encounterCount}, ${observationCount}"/></p>
 			<table cellpadding="3" cellspacing="3" align="center">
 				<tr>
@@ -366,7 +368,7 @@ $j(document).ready( function() {
 				<input type="hidden" name="visitId" value="${param.visitId}"/>
 			</c:if>
 			<c:if test="${param.patientId != null}">
-				<input type="hidden" name="patientId" value="${param.patientId}"/>
+				<input type="hidden" name="patientId" value="<c:out value="${param.patientId}" />"/>
 			</c:if>
 			<br/>
 			<openmrs:message code="Visit.confirm.purgeMessage"/>

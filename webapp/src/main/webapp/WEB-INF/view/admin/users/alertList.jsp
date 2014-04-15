@@ -2,12 +2,11 @@
 
 <openmrs:require privilege="Manage Alerts" otherwise="/login.htm" redirect="/admin/users/alert.list" />
 <openmrs:message var="pageTitle" code="Alert.manage.titlebar" scope="page"/>
-	
+<openmrs:message var="pageTitle" code="Alert.manage.title" scope="page"/>	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><openmrs:message code="Alert.manage.title"/></h2>
-
+<h2><openmrs:message code="Alert.manage.header"/></h2>	
 <a href="alert.form"><openmrs:message code="Alert.add"/></a>
 <br/><br/>
 

@@ -25,7 +25,7 @@ import org.openmrs.util.OpenmrsUtil;
  * are anything from medical record numbers, to social security numbers, to driver's licenses. The
  * type of identifier is defined by the PatientIdentifierType. A PatientIdentifier also contains a
  * Location.
- * 
+ *
  * @see org.openmrs.PatientIdentifierType
  */
 public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serializable, Comparable<PatientIdentifier> {
@@ -57,7 +57,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	
 	/**
 	 * Convenience constructor for creating a basic identifier
-	 * 
+	 *
 	 * @param identifier String identifier
 	 * @param type PatientIdentifierType
 	 * @param location Location of the identifier
@@ -73,7 +73,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * {@link #equals(Object)} in that this method compares the inner fields of each identifier for
 	 * equality. Note: Null/empty fields on <code>otherIdentifier</code> /will not/ cause a false
 	 * value to be returned
-	 * 
+	 *
 	 * @param otherIdentifier PatientiIdentifier with which to compare
 	 * @return boolean true/false whether or not they are the same names
 	 */
@@ -93,8 +93,9 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 				Object thisValue = method.invoke(this);
 				Object otherValue = method.invoke(otherIdentifier);
 				
-				if (otherValue != null)
+				if (otherValue != null) {
 					returnValue &= otherValue.equals(thisValue);
+				}
 				
 			}
 			catch (NoSuchMethodException e) {
@@ -203,21 +204,26 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 		int retValue = 0;
 		if (other != null) {
 			retValue = isVoided().compareTo(other.isVoided());
-			if (retValue == 0)
+			if (retValue == 0) {
 				retValue = other.isPreferred().compareTo(isPreferred());
-			if (retValue == 0)
+			}
+			if (retValue == 0) {
 				retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-			if (retValue == 0)
+			}
+			if (retValue == 0) {
 				retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifierType().getPatientIdentifierTypeId(), other
 				        .getIdentifierType().getPatientIdentifierTypeId());
-			if (retValue == 0)
+			}
+			if (retValue == 0) {
 				retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifier(), other.getIdentifier());
+			}
 			
 			// if we've gotten this far, just check all identifier values.  If they are
 			// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1
 			// and return that (they are not equal).
-			if (retValue == 0 && !equalsContent(other))
+			if (retValue == 0 && !equalsContent(other)) {
 				retValue = 1;
+			}
 		}
 		
 		return retValue;

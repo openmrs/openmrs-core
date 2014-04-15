@@ -17,6 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 
+import java.util.Arrays;
+
 /**
  * A cohort, including list its member list, for use with DWR.
  */
@@ -68,7 +70,11 @@ public class CohortListItem {
 	}
 	
 	public void setMembers(Integer[] members) {
-		this.members = members;
+		if (members == null) {
+			this.members = new Integer[0];
+		} else {
+			this.members = Arrays.copyOf(members, members.length);
+		}
 	}
 	
 }

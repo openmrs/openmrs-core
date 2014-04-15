@@ -75,25 +75,29 @@ public class ActiveListWidget extends TagSupport {
 		
 		boolean doObsGroups = otherConceptList.size() > 0;
 		
-		if (onDate == null)
+		if (onDate == null) {
 			onDate = new Date();
+		}
 		
 		// maps Concept to the date that became active
 		Map<Concept, Obs> activeList = new HashMap<Concept, Obs>();
 		for (Obs o : observations) {
 			// skip observations in the future
-			if (OpenmrsUtil.compare(o.getObsDatetime(), onDate) > 0)
+			if (OpenmrsUtil.compare(o.getObsDatetime(), onDate) > 0) {
 				continue;
+			}
 			Concept c = o.getConcept();
 			Concept toDo = o.getValueCoded();
-			if (toDo == null)
+			if (toDo == null) {
 				toDo = c;
+			}
 			if (addConceptList.contains(o.getConcept())) {
 				Date newActiveDate = o.getObsDatetime();
 				Obs tmp = activeList.get(c);
 				Date currentActiveDate = tmp == null ? null : tmp.getObsDatetime();
-				if (currentActiveDate == null || newActiveDate.compareTo(currentActiveDate) < 0)
+				if (currentActiveDate == null || newActiveDate.compareTo(currentActiveDate) < 0) {
 					activeList.put(toDo, o);
+				}
 			} else if (removeConceptList.contains(o.getConcept())) {
 				activeList.remove(toDo);
 			}
@@ -109,9 +113,11 @@ public class ActiveListWidget extends TagSupport {
 		Map<Obs, Collection<Obs>> obsGroups = new HashMap<Obs, Collection<Obs>>();
 		if (doObsGroups) {
 			ObsService os = Context.getObsService();
-			for (Obs o : activeList.values())
-				if (o.isObsGrouping())
+			for (Obs o : activeList.values()) {
+				if (o.isObsGrouping()) {
 					obsGroups.put(o, o.getGroupMembers());
+				}
+			}
 		}
 		
 		StringBuilder sb = new StringBuilder();
@@ -160,8 +166,9 @@ public class ActiveListWidget extends TagSupport {
 			for (Map.Entry<Concept, Obs> e : ordered) {
 				sb.append(beforeItem);
 				sb.append(e.getKey().getName(loc, false).getName());
-				if (showDate)
+				if (showDate) {
 					sb.append(" ").append(df.format(e.getValue().getObsDatetime()));
+				}
 				if (doObsGroups) {
 					Collection<Obs> obsGroup = obsGroups.get(e.getValue());
 					for (Concept c : otherConceptList) {
@@ -226,8 +233,9 @@ public class ActiveListWidget extends TagSupport {
 	}
 	
 	public void setDisplayStyle(String displayStyle) {
-		if (displayStyle == null || displayStyle.length() == 0)
+		if (displayStyle == null || displayStyle.length() == 0) {
 			return;
+		}
 		this.displayStyle = displayStyle;
 	}
 	
@@ -244,8 +252,9 @@ public class ActiveListWidget extends TagSupport {
 	}
 	
 	public void setShowDate(Boolean showDate) {
-		if (showDate == null)
+		if (showDate == null) {
 			return;
+		}
 		this.showDate = showDate;
 	}
 	
@@ -254,8 +263,9 @@ public class ActiveListWidget extends TagSupport {
 	}
 	
 	public void setOnDate(Date onDate) {
-		if (onDate == null)
+		if (onDate == null) {
 			return;
+		}
 		this.onDate = onDate;
 	}
 	
@@ -264,8 +274,9 @@ public class ActiveListWidget extends TagSupport {
 	}
 	
 	public void setOtherGroupedConcepts(String otherGroupedConcepts) {
-		if (otherGroupedConcepts == null || otherGroupedConcepts.length() == 0)
+		if (otherGroupedConcepts == null || otherGroupedConcepts.length() == 0) {
 			return;
+		}
 		this.otherGroupedConcepts = otherGroupedConcepts;
 	}
 	

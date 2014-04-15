@@ -32,15 +32,17 @@ public class CompoundClassifier implements TableRowClassifier {
 	}
 	
 	public void addClassifiers(TableRowClassifier... args) {
-		for (TableRowClassifier c : args)
+		for (TableRowClassifier c : args) {
 			classifiers.add(c);
+		}
 	}
 	
 	public String classify(TableRow row) {
 		StringBuilder sb = new StringBuilder();
 		for (TableRowClassifier classifier : classifiers) {
-			if (sb.length() > 0)
+			if (sb.length() > 0) {
 				sb.append(separator);
+			}
 			sb.append(classifier.classify(row));
 		}
 		

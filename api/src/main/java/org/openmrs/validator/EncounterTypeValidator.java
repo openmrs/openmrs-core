@@ -17,6 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -48,6 +50,7 @@ public class EncounterTypeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null or empty or whitespace
+	 * @should fail validation if name is duplicate
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
@@ -57,7 +60,17 @@ public class EncounterTypeValidator implements Validator {
 			errors.rejectValue("encounterType", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			
+			if (!errors.hasErrors()) {
+				EncounterType duplicate = Context.getEncounterService().getEncounterType(encounterType.getName().trim());
+				if (duplicate != null) {
+					if (duplicate.getUuid() != null
+					        && !OpenmrsUtil.nullSafeEquals(encounterType.getUuid(), duplicate.getUuid())) {
+						errors.rejectValue("name", "encounterType.duplicate.name",
+						    "Specified Encounter Type name already exists, please specify another ");
+					}
+				}
+			}
 		}
 	}
-	
 }

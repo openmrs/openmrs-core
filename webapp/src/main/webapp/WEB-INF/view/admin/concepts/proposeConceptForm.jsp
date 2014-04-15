@@ -56,7 +56,7 @@
 				<spring:bind path="conceptProposal.obsConcept">
 					<c:choose>
 						<c:when test="${conceptProposal.obsConcept != null}">
-							<div id="conceptName">${conceptName}</div>
+							<div id="conceptName"><c:out value="${conceptName}" /></div>
 						</c:when>
 						<c:otherwise>
 							<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true"></div>
@@ -64,7 +64,7 @@
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</c:otherwise>
 					</c:choose>
-					<div class="description" style="clear: left;" id="conceptDescription">${conceptName.description}</div>
+					<div class="description" style="clear: left;" id="conceptDescription"><c:out value="${conceptName.description}" /></div>
 				</spring:bind>
 			</td>
 		</tr>
@@ -74,7 +74,7 @@
 <openmrs:message code="ConceptProposal.proposeWarning"/> <br/>
 <openmrs:message code="ConceptProposal.proposeInfo"/>
 <spring:bind path="conceptProposal.originalText">
-	<input type="text" name="${status.expression}" id="originalText" value="" size="60" />
+	<input type="text" name="${status.expression}" id="originalText" value="" size="60" /><span class="required">*</span>
 	<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 </spring:bind>
 

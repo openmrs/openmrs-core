@@ -29,8 +29,9 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		Locale locale;
 		
 		locale = Context.getLocale();
-		if (locale != null)
+		if (locale != null) {
 			return locale;
+		}
 		
 		//fall back to cookie that was set
 		return super.resolveLocale(request);

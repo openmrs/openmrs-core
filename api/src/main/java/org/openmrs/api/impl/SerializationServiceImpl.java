@@ -92,8 +92,8 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		try {
 			return serializer.serialize(o);
 		}
-		catch (Throwable t) {
-			throw new SerializationException("An error occurred during serialization of object <" + o + ">", t);
+		catch (Exception e) {
+			throw new SerializationException("An error occurred during serialization of object <" + o + ">", e);
 		}
 	}
 	
@@ -114,9 +114,9 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		try {
 			return (T) serializer.deserialize(serializedObject, objectClass);
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			String msg = "An error occurred during deserialization of data <" + serializedObject + ">";
-			throw new SerializationException(msg, t);
+			throw new SerializationException(msg, e);
 		}
 	}
 	
@@ -132,13 +132,17 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		return new ArrayList<OpenmrsSerializer>(serializerMap.values());
 	}
 	
+	public static void setSerializerMap(Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap) {
+		SerializationServiceImpl.serializerMap = serializerMap;
+	}
+	
 	/**
 	 * @param serializers the serializers to set
 	 * @should not reset serializers list when called multiple times
 	 */
 	public void setSerializers(List<? extends OpenmrsSerializer> serializers) {
 		if (serializers == null || serializerMap == null) {
-			serializerMap = new LinkedHashMap<Class<? extends OpenmrsSerializer>, OpenmrsSerializer>();
+			setSerializerMap(new LinkedHashMap<Class<? extends OpenmrsSerializer>, OpenmrsSerializer>());
 		}
 		if (serializers != null) {
 			for (OpenmrsSerializer s : serializers) {

@@ -45,7 +45,7 @@ public class FilterUtil {
 	 * parameter as user's property. And next, if user's property is empty it tries to retrieve
 	 * default system locale (i.e system global property). If it also is empty it uses default value
 	 * for system locale
-	 * 
+	 *
 	 * @param username the name of the administrative user whose default locale property will be
 	 *            restored
 	 * @return string with stored location parameter or default OpenMRS locale property's value
@@ -67,8 +67,9 @@ public class FilterUtil {
 					statement.setString(2, OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 					if (statement.execute()) {
 						ResultSet results = statement.getResultSet();
-						if (results.next())
+						if (results.next()) {
 							currentLocale = results.getString(1);
+						}
 					}
 				}
 				
@@ -77,8 +78,8 @@ public class FilterUtil {
 					currentLocale = readSystemDefaultLocale(connection);
 				}
 			}
-			catch (Throwable t) {
-				log.error("Error while retriving locale property", t);
+			catch (Exception e) {
+				log.error("Error while retriving locale property", e);
 			}
 			finally {
 				if (connection != null) {
@@ -92,8 +93,9 @@ public class FilterUtil {
 			}
 		}
 		// if locale is still null we just simply using default locale value (i.e. en_GB)
-		if (currentLocale == null)
+		if (currentLocale == null) {
 			currentLocale = OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE;
+		}
 		
 		return currentLocale;
 	}
@@ -101,7 +103,7 @@ public class FilterUtil {
 	/**
 	 * This method uses passed in connection to load system default locale. If connection is passed
 	 * as null it creates separate connection that should be closed before return from method
-	 * 
+	 *
 	 * @param connection (optional) the jdbc connection to be used for extracting default locale
 	 * @return the string that contains system default locale or null
 	 */
@@ -118,22 +120,24 @@ public class FilterUtil {
 			statement.setString(1, OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
 			if (statement.execute()) {
 				ResultSet results = statement.getResultSet();
-				if (results.next())
+				if (results.next()) {
 					systemDefaultLocale = results.getString(1);
+				}
 			}
 		}
-		catch (Throwable t) {
-			log.error("Error while retrieving system default locale", t);
+		catch (Exception e) {
+			log.error("Error while retrieving system default locale", e);
 		}
 		finally {
 			if (needToCloseConection) {
-				if (connection != null)
+				if (connection != null) {
 					try {
 						connection.close();
 					}
 					catch (SQLException e) {
 						log.debug("Error while closing the database", e);
 					}
+				}
 			}
 		}
 		return systemDefaultLocale;
@@ -141,7 +145,7 @@ public class FilterUtil {
 	
 	/**
 	 * Stores selected by user locale into DB as admin's user property and as system default locale
-	 * 
+	 *
 	 * @param locale the selected by user language
 	 * @return true if locale was stored successfully
 	 */
@@ -177,8 +181,8 @@ public class FilterUtil {
 					log.warn("Unable to set system default locale property.");
 				}
 			}
-			catch (Throwable t) {
-				log.warn("Locale " + locale + " could not be set for user with id " + userId + " .", t);
+			catch (Exception e) {
+				log.warn("Locale " + locale + " could not be set for user with id " + userId + " .", e);
 				return false;
 			}
 			finally {
@@ -199,7 +203,7 @@ public class FilterUtil {
 	/**
 	 * This is a utility method that can be used for retrieving user id by given user name and sql
 	 * connection
-	 * 
+	 *
 	 * @param userNameOrSystemId the name of user
 	 * @param connection the java sql connection to use
 	 * @return not null id of given user in case of success or null otherwise
@@ -214,8 +218,9 @@ public class FilterUtil {
 		Integer userId = null;
 		if (statement.execute()) {
 			ResultSet results = statement.getResultSet();
-			if (results.next())
+			if (results.next()) {
 				userId = results.getInt(1);
+			}
 		}
 		return userId;
 	}
@@ -224,7 +229,7 @@ public class FilterUtil {
 	 * Gets the value of a global Property as a string from the database using sql, this method is
 	 * useful when you want to get a value of a global property before the application context has
 	 * been setup
-	 * 
+	 *
 	 * @param globalPropertyName the name of the global property
 	 * @return the global property value
 	 */
@@ -236,20 +241,22 @@ public class FilterUtil {
 			connection = DatabaseUpdater.getConnection();
 			List<List<Object>> results = DatabaseUtil.executeSQL(connection,
 			    "select property_value from global_property where property = '" + globalPropertyName + "'", true);
-			if (results.size() == 1 && results.get(0).size() == 1)
+			if (results.size() == 1 && results.get(0).size() == 1) {
 				propertyValue = results.get(0).get(0).toString();
+			}
 		}
 		catch (Exception e) {
 			log.error("Error while retrieving value for global property:" + globalPropertyName, e);
 		}
 		finally {
-			if (connection != null)
+			if (connection != null) {
 				try {
 					connection.close();
 				}
 				catch (SQLException e) {
 					log.debug("Error while closing the database connection", e);
 				}
+			}
 		}
 		
 		return propertyValue;

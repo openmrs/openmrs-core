@@ -14,11 +14,12 @@
 package org.openmrs.web;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.ModuleException;
+import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.InputRequiredException;
 
 /**
  * This class provides {@link Daemon} functionality in a web context.
@@ -32,7 +33,8 @@ public class WebDaemon extends Daemon {
 	 * 
 	 * @param servletContext the servlet context.
 	 */
-	public static void startOpenmrs(final ServletContext servletContext) throws ServletException {
+	public static void startOpenmrs(final ServletContext servletContext) throws DatabaseUpdateException,
+	        InputRequiredException {
 		
 		// create a new thread and start openmrs in it.
 		DaemonThread startOpenmrsThread = new DaemonThread() {
@@ -43,8 +45,8 @@ public class WebDaemon extends Daemon {
 				try {
 					Listener.startOpenmrs(servletContext);
 				}
-				catch (Throwable t) {
-					exceptionThrown = t;
+				catch (Exception e) {
+					exceptionThrown = e;
 				}
 				finally {
 					Context.closeSession();

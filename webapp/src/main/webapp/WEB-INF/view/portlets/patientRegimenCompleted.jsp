@@ -46,10 +46,10 @@
 							<tr class="regimenCompletedOtherRow">
 								<td nowrap class="regimenCompletedOtherData">&nbsp;&nbsp;&nbsp;&nbsp;
 									<c:if test="${!empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.drug.name}" /></a>
 									</c:if>
 									<c:if test="${empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.concept.name.name}" /></a>
 									</c:if>
 								</td>
 								<td class="regimenCompletedOtherDrugOrder" >${drugOrder.dose} ${drugOrder.units}</td>
@@ -124,10 +124,10 @@
 							<tr class="patientRegimenDrugOrderRow">
 								<td class="patientRegimenDrugNameData">&nbsp;&nbsp;&nbsp;&nbsp;
 									<c:if test="${!empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.drug.name}" /></a>
 									</c:if>
 									<c:if test="${empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.concept.name.name}" /></a>
 									</c:if>
 								</td>	
 								<td class="patientRegimenDrugDoseData">${drugOrder.dose} ${drugOrder.units}</td>
@@ -186,10 +186,10 @@
 							<tr id="regimenTableCompletedRow">
 								<td class="patientRegimenDrugNameData">
 									<c:if test="${!empty drugOrder.drug}">
-										<span class="patientRegimenDrugName">${drugOrder.drug.name}</span>
+										<span class="patientRegimenDrugName"><c:out value="${drugOrder.drug.name}" /></span>
 									</c:if>
 									<c:if test="${empty drugOrder.drug}">
-										<span class="patientRegimenDrugName">${drugOrder.concept.name.name}</span>
+										<span class="patientRegimenDrugName"><c:out value="${drugOrder.concept.name.name}" /></span>
 									</c:if>
 								</td>
 								<td class="patientRegimenDrugDoseData">${drugOrder.dose} ${drugOrder.units}</td>
@@ -242,7 +242,7 @@
 </c:choose>
 			</table>
 			<script>
-				setPatientId("${model.patientId}");
+				setPatientId("<c:out value="${model.patientId}" />");
 				setDisplayDrugSetIds("${model.displayDrugSetIds}");
 				setRegimenMode("${model.completedRegimenMode}");
 			</script>

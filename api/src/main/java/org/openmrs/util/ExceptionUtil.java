@@ -24,20 +24,21 @@ public class ExceptionUtil {
 	
 	/**
 	 * If any cause in the exception chain is an instance of causeType, then rethrow that exception 
-	 * 
+	 *
 	 * @param thrown
 	 * @param causeType must be a {@link RuntimeException} so that we can throw it
 	 * @should allow an intermediate exception to be rethrown
 	 */
 	public static void rethrowIfCause(Throwable thrown, Class<? extends RuntimeException> causeType) {
 		int index = ExceptionUtils.indexOfType(thrown, causeType);
-		if (index >= 0)
+		if (index >= 0) {
 			throw (RuntimeException) ExceptionUtils.getThrowables(thrown)[index];
+		}
 	}
 	
 	/**
 	 * If any cause in the given exception chain is an APIAuthenticationException, rethrow that 
-	 * 
+	 *
 	 * @param thrown
 	 */
 	public static void rethrowAPIAuthenticationException(Throwable thrown) {

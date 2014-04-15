@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.bean;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -157,7 +158,11 @@ public class DatatableRequest {
 	 * @param bSearchableCol the bSearchable to set
 	 */
 	public void setbSearchableCol(Boolean[] bSearchableCol) {
-		this.bSearchableCol = bSearchableCol;
+		if (bSearchableCol == null) {
+			this.bSearchableCol = new Boolean[0];
+		} else {
+			this.bSearchableCol = Arrays.copyOf(bSearchableCol, bSearchableCol.length);
+		}
 	}
 	
 	/**
@@ -174,7 +179,11 @@ public class DatatableRequest {
 	 * @param sSearchCol the sSearchColumn to set
 	 */
 	public void setsSearchCol(String[] sSearchCol) {
-		this.sSearchCol = sSearchCol;
+		if (sSearchCol == null) {
+			this.sSearchCol = new String[0];
+		} else {
+			this.sSearchCol = Arrays.copyOf(sSearchCol, sSearchCol.length);
+		}
 	}
 	
 	/**
@@ -192,7 +201,11 @@ public class DatatableRequest {
 	 * @param bRegexCol the bRegexColumn to set
 	 */
 	public void setbRegexCol(Boolean[] bRegexCol) {
-		this.bRegexCol = bRegexCol;
+		if (bRegexCol == null) {
+			this.bRegexCol = new Boolean[0];
+		} else {
+			this.bRegexCol = Arrays.copyOf(bRegexCol, bRegexCol.length);
+		}
 	}
 	
 	/**
@@ -209,7 +222,11 @@ public class DatatableRequest {
 	 * @param bSortableCol the bSortable to set
 	 */
 	public void setbSortableCol(Boolean[] bSortableCol) {
-		this.bSortableCol = bSortableCol;
+		if (bSortableCol == null) {
+			this.bSortableCol = new Boolean[0];
+		} else {
+			this.bSortableCol = Arrays.copyOf(bSortableCol, bSortableCol.length);
+		}
 	}
 	
 	/**
@@ -243,7 +260,11 @@ public class DatatableRequest {
 	 * @param iSortCol the iSortCol to set
 	 */
 	public void setiSortCol(Integer[] iSortCol) {
-		this.iSortCol = iSortCol;
+		if (iSortCol == null) {
+			this.iSortCol = new Integer[0];
+		} else {
+			this.iSortCol = Arrays.copyOf(iSortCol, iSortCol.length);
+		}
 	}
 	
 	/**
@@ -260,7 +281,11 @@ public class DatatableRequest {
 	 * @param sSortDirCol the sSortDir to set
 	 */
 	public void setsSortDirCol(String[] sSortDirCol) {
-		this.sSortDirCol = sSortDirCol;
+		if (sSortDirCol == null) {
+			this.sSortDirCol = new String[0];
+		} else {
+			this.sSortDirCol = Arrays.copyOf(sSortDirCol, sSortDirCol.length);
+		}
 	}
 	
 	/**
@@ -278,7 +303,11 @@ public class DatatableRequest {
 	 * @param mDataPropCol the mDataProp to set
 	 */
 	public void setmDataPropCol(String[] mDataPropCol) {
-		this.mDataPropCol = mDataPropCol;
+		if (mDataPropCol == null) {
+			this.mDataPropCol = new String[0];
+		} else {
+			this.mDataPropCol = Arrays.copyOf(mDataPropCol, mDataPropCol.length);
+		}
 	}
 	
 	/**

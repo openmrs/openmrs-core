@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.api.APIException;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
@@ -33,14 +33,14 @@ import org.springframework.validation.Validator;
  * The validators are added to this class in the spring applicationContext-service.xml file. <br/>
  * <br/>
  * Example usage:
- * 
+ *
  * <pre>
  *  public Order saveOrder(order) {
  *  	ValidateUtil.validate(order);
  *  	dao.saveOrder(order);
  *  }
  * </pre>
- * 
+ *
  * @since 1.5
  */
 public class ValidateUtil {
@@ -57,13 +57,13 @@ public class ValidateUtil {
 	/**
 	 * Test the given object against all validators that are registered as compatible with the
 	 * object class
-	 * 
+	 *
 	 * @param obj the object to validate
-	 * @throws APIException thrown if a binding exception occurs
+	 * @throws ValidationException thrown if a binding exception occurs
 	 * @should throw APIException if errors occur during validation
 	 */
-	public static void validate(Object obj) throws APIException {
-		BindException errors = new BindException(obj, "");
+	public static void validate(Object obj) throws ValidationException {
+		Errors errors = new BindException(obj, "");
 		
 		Context.getAdministrationService().validate(obj, errors);
 		
@@ -80,14 +80,14 @@ public class ValidateUtil {
 			
 			String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
 			exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
-			throw new APIException(exceptionMessage, errors.getCause());
+			throw new ValidationException(exceptionMessage, errors);
 		}
 	}
 	
 	/**
 	 * Test the given object against all validators that are registered as compatible with the
 	 * object class
-	 * 
+	 *
 	 * @param obj the object to validate
 	 * @param errors the validation errors found
 	 * @since 1.9
@@ -99,7 +99,7 @@ public class ValidateUtil {
 	
 	/**
 	 * Test the field lengths are valid
-	 * 
+	 *
 	 * @param errors
 	 * @param aClass the class of the object being tested
 	 * @param fields a var args that contains all of the fields from the model
@@ -112,8 +112,9 @@ public class ValidateUtil {
 		Assert.notNull(errors, "Errors object must not be null");
 		for (String field : fields) {
 			Object value = errors.getFieldValue(field);
-			if (value == null || !(value instanceof String))
+			if (value == null || !(value instanceof String)) {
 				return;
+			}
 			int length = Context.getAdministrationService().getMaximumPropertyLength(aClass, field);
 			if (((String) value).length() > length) {
 				errors.rejectValue(field, "error.exceededMaxLengthOfField", new Object[] { length }, null);

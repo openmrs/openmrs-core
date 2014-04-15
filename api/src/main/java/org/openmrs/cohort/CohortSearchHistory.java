@@ -247,16 +247,18 @@ public class CohortSearchHistory extends AbstractReportObject {
 				cachedFilters.set(i, null); // this actually only needs to happen if the filter is affected
 				// note that i is zero-based, but in a composition filter it would be one-based
 				boolean removeMeToo = ps.removeFromHistoryNotify(i + 1);
-				if (removeMeToo)
+				if (removeMeToo) {
 					ret.add(j - 1);
+				}
 			}
 		}
 		return ret;
 	}
 	
 	public synchronized PatientFilter ensureCachedFilter(int i) {
-		if (cachedFilters.get(i) == null)
+		if (cachedFilters.get(i) == null) {
 			cachedFilters.set(i, OpenmrsUtil.toPatientFilter(searchHistory.get(i), this));
+		}
 		return cachedFilters.get(i);
 	}
 	
@@ -271,7 +273,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	
 	/**
 	 * TODO: Implement {@link org.openmrs.api.impl.CohortServiceImpl#getAllCohorts()}
-	 * 
+	 *
 	 * @param i
 	 * @param useCache whether to use a cached result, if available
 	 * @return patient set resulting from the i_th filter in the search history
@@ -296,24 +298,26 @@ public class CohortSearchHistory extends AbstractReportObject {
 	}
 	
 	public Cohort getLastPatientSet(EvaluationContext context) {
-		if (searchHistory.size() > 0)
+		if (searchHistory.size() > 0) {
 			return getPatientSet(searchHistory.size() - 1, context);
-		else
+		} else {
 			return new Cohort();
+		}
 	}
 	
 	public Cohort getPatientSetCombineWithAnd(EvaluationContext context) {
 		Set<Integer> current = null;
 		for (int i = 0; i < searchHistory.size(); ++i) {
 			Cohort ps = getPatientSet(i, context);
-			if (current == null)
+			if (current == null) {
 				current = new HashSet<Integer>(ps.getMemberIds());
-			else
+			} else {
 				current.retainAll(ps.getMemberIds());
+			}
 		}
-		if (current == null)
+		if (current == null) {
 			return Context.getPatientSetService().getAllPatients();
-		else {
+		} else {
 			return new Cohort("Cohort anded together", "", current);
 		}
 	}
@@ -330,18 +334,24 @@ public class CohortSearchHistory extends AbstractReportObject {
 	// TODO: this isn't actually good enough. Use the unmodifiable list method instead
 	private synchronized void checkArrayLengths() {
 		int n = searchHistory.size();
-		while (cachedFilters.size() > n)
+		while (cachedFilters.size() > n) {
 			cachedFilters.remove(n);
-		while (cachedResults.size() > n)
+		}
+		while (cachedResults.size() > n) {
 			cachedResults.remove(n);
-		while (cachedResultDates.size() > n)
+		}
+		while (cachedResultDates.size() > n) {
 			cachedResultDates.remove(n);
-		while (cachedFilters.size() < n)
+		}
+		while (cachedFilters.size() < n) {
 			cachedFilters.add(null);
-		while (cachedResults.size() < n)
+		}
+		while (cachedResults.size() < n) {
 			cachedResults.add(null);
-		while (cachedResultDates.size() < n)
+		}
+		while (cachedResultDates.size() < n) {
 			cachedResultDates.add(null);
+		}
 	}
 	
 	public PatientSearch createCompositionFilter(String description) {
@@ -366,7 +376,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 			Stack<List<Object>> stack = new Stack<List<Object>>();
 			while (st.nextToken() != StreamTokenizer.TT_EOF) {
 				if (st.ttype == StreamTokenizer.TT_NUMBER) {
-					Integer thisInt = new Integer((int) st.nval);
+					Integer thisInt = Integer.valueOf((int) st.nval);
 					if (thisInt < 1 || thisInt > searchHistory.size()) {
 						log.error("number < 1 or > search history size");
 						return null;
@@ -381,14 +391,15 @@ public class CohortSearchHistory extends AbstractReportObject {
 					currentLine = l;
 				} else if (st.ttype == StreamTokenizer.TT_WORD) {
 					String str = st.sval.toLowerCase();
-					if (andWords.contains(str))
+					if (andWords.contains(str)) {
 						currentLine.add(PatientSetService.BooleanOperator.AND);
-					else if (orWords.contains(str))
+					} else if (orWords.contains(str)) {
 						currentLine.add(PatientSetService.BooleanOperator.OR);
-					else if (notWords.contains(str))
+					} else if (notWords.contains(str)) {
 						currentLine.add(PatientSetService.BooleanOperator.NOT);
-					else
+					} else {
 						throw new IllegalArgumentException("Don't recognize " + st.sval);
+					}
 				}
 			}
 		}
@@ -424,8 +435,9 @@ public class CohortSearchHistory extends AbstractReportObject {
 				childrenOkay &= testCompositionList((List<Object>) o);
 				anyNonOperator = true;
 			} else if (o instanceof BooleanOperator) {
-				if (lastIsOperator && (BooleanOperator) o != BooleanOperator.NOT)
+				if (lastIsOperator && (BooleanOperator) o != BooleanOperator.NOT) {
 					return false;
+				}
 				anyOperator = true;
 			} else if (o instanceof Integer) {
 				anyNonOperator = true;
@@ -435,12 +447,15 @@ public class CohortSearchHistory extends AbstractReportObject {
 			lastIsNot = ((o instanceof BooleanOperator) && (((BooleanOperator) o) == BooleanOperator.NOT));
 			lastIsOperator = o instanceof BooleanOperator;
 		}
-		if (list.size() > 2 && !anyOperator)
+		if (list.size() > 2 && !anyOperator) {
 			return false;
-		if (lastIsNot)
+		}
+		if (lastIsNot) {
 			return false;
-		if (!anyNonOperator)
+		}
+		if (!anyNonOperator) {
 			return false;
+		}
 		return true;
 	}
 	

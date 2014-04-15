@@ -49,10 +49,11 @@ public class TsvReportRenderer extends DelimitedTextReportRenderer {
 	}
 	
 	public String escape(String text) {
-		if (text == null)
+		if (text == null) {
 			return null;
-		else
+		} else {
 			return text.replaceAll("\"", "\\\"");
+		}
 	}
 	
 	/**

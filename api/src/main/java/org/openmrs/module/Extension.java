@@ -42,7 +42,7 @@ public abstract class Extension {
 	
 	/**
 	 * String separating the pointId and media type in an extension id
-	 * 
+	 *
 	 * @see #toExtensionId(String, MEDIA_TYPE)
 	 */
 	public static final String extensionIdSeparator = "|";
@@ -64,7 +64,7 @@ public abstract class Extension {
 	
 	/**
 	 * Called before being displayed each time
-	 * 
+	 *
 	 * @param parameterMap
 	 */
 	public void initialize(Map<String, String> parameterMap) {
@@ -75,7 +75,7 @@ public abstract class Extension {
 	
 	/**
 	 * Get the point id
-	 * 
+	 *
 	 * @return the <code>String</code> Point Id
 	 */
 	public String getPointId() {
@@ -84,7 +84,7 @@ public abstract class Extension {
 	
 	/**
 	 * Set the point id
-	 * 
+	 *
 	 * @param pointId
 	 */
 	public void setPointId(String pointId) {
@@ -93,7 +93,7 @@ public abstract class Extension {
 	
 	/**
 	 * Get all of the parameters given to this extension point
-	 * 
+	 *
 	 * @return key-value parameter map
 	 */
 	public Map<String, String> getParameterMap() {
@@ -103,7 +103,7 @@ public abstract class Extension {
 	/**
 	 * Parameters given at the extension point This method is usually called only during extension
 	 * initialization
-	 * 
+	 *
 	 * @param parameterMap key-value parameter map
 	 */
 	public void setParameterMap(Map<String, String> parameterMap) {
@@ -113,14 +113,14 @@ public abstract class Extension {
 	/**
 	 * Sets the content type of this extension. If null is returned this extension should work
 	 * across all medium types
-	 * 
+	 *
 	 * @return type of the medium that this extension works for
 	 */
 	public abstract Extension.MEDIA_TYPE getMediaType();
 	
 	/**
 	 * Get the extension point id
-	 * 
+	 *
 	 * @return the <code>String</code> Extension Id
 	 */
 	public String getExtensionId() {
@@ -130,7 +130,7 @@ public abstract class Extension {
 	/**
 	 * If this method returns a non-null value then the return value will be used as the default
 	 * content for this extension at this extension point
-	 * 
+	 *
 	 * @return override content
 	 */
 	public String getOverrideContent(String bodyContent) {
@@ -139,7 +139,7 @@ public abstract class Extension {
 	
 	/**
 	 * Get this extension's module id
-	 * 
+	 *
 	 * @return the <code>String</code> Module Id
 	 */
 	public final String getModuleId() {
@@ -148,7 +148,7 @@ public abstract class Extension {
 	
 	/**
 	 * Set the module id of this extension
-	 * 
+	 *
 	 * @param moduleId
 	 */
 	public final void setModuleId(String moduleId) {
@@ -159,7 +159,7 @@ public abstract class Extension {
 	 * If multiple extensions are added to the same extension point, set the order
 	 * of those extensions by overriding this property.  Lower order numbers will generally 
 	 * appear first within the extension point.
-	 * 
+	 *
 	 * @return 0
 	 */
 	public int getOrder() {
@@ -168,7 +168,7 @@ public abstract class Extension {
 	
 	/**
 	 * Get the string representation of this extension
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	public final String toString() {
@@ -178,15 +178,16 @@ public abstract class Extension {
 	/**
 	 * Convert the given pointId and mediaType to an extensionId. The extension id is usually
 	 * pointid|mediaType if mediatype is null, extension id is just point id
-	 * 
+	 *
 	 * @param pointId
 	 * @param mediaType
 	 * @return string extension id
 	 */
 	public static final String toExtensionId(String pointId, MEDIA_TYPE mediaType) {
-		if (mediaType != null)
+		if (mediaType != null) {
 			return new StringBuffer(pointId).append(Extension.extensionIdSeparator).append(mediaType).toString();
-		else
+		} else {
 			return pointId;
+		}
 	}
 }

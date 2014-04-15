@@ -54,10 +54,11 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
+	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
@@ -83,11 +84,13 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		Map<String, String> properties = new HashMap<String, String>();
 		
-		if (names != null)
+		if (names != null) {
 			for (int x = 0; x < names.length; x++) {
-				if (names[x].length() > 0)
+				if (names[x].length() > 0) {
 					properties.put(names[x], values[x]);
+				}
 			}
+		}
 		
 		task.setProperties(properties);
 		
@@ -111,14 +114,16 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 * @should reschedule a currently scheduled task
 	 * @should not reschedule a task that is not currently scheduled
 	 * @should not reschedule a task if the start time has passed
+	 * @should not reschedule an executing task
 	 */
+	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	        BindException errors) throws Exception {
 		
@@ -152,9 +157,10 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
+	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		TaskDefinition task = new TaskDefinition();
@@ -165,8 +171,9 @@ public class SchedulerFormController extends SimpleFormController {
 		}
 		
 		// Date format pattern for new and existing (currently disabled, but visible)
-		if (task.getStartTimePattern() == null)
+		if (task.getStartTimePattern() == null) {
 			task.setStartTimePattern(DEFAULT_DATE_PATTERN);
+		}
 		
 		return task;
 	}
@@ -183,20 +190,25 @@ public class SchedulerFormController extends SimpleFormController {
 		TaskDefinition task = (TaskDefinition) command;
 		
 		Long interval = task.getRepeatInterval();
-		
-		if (interval == null || interval < 60)
+		if (interval == null) {
+			interval = (long) 60;
+		}
+		Long repeatInterval;
+		if (interval < 60) {
 			map.put("units", "seconds");
-		else if (interval < 3600) {
+			repeatInterval = interval;
+		} else if (interval < 3600) {
 			map.put("units", "minutes");
-			task.setRepeatInterval(interval / 60);
+			repeatInterval = interval / 60;
 		} else if (interval < 86400) {
 			map.put("units", "hours");
-			task.setRepeatInterval(interval / 3600);
+			repeatInterval = interval / 3600;
 		} else {
 			map.put("units", "days");
-			task.setRepeatInterval(interval / 86400);
+			repeatInterval = interval / 86400;
 		}
 		
+		map.put("repeatInterval", repeatInterval.toString());
 		return map;
 	}
 	

@@ -11,7 +11,7 @@
 
 </script>
 
-<h2><openmrs:message code="Scheduler.header" /></h2>	
+<h2><openmrs:message code="Scheduler.header" /></h2>
 
 <a href="scheduler.form"><openmrs:message code="Scheduler.taskList.add" /></a> |
 <a href="scheduler.list"><openmrs:message code="Scheduler.taskList.refresh" /></a>
@@ -69,10 +69,10 @@
 								<a href="scheduler.form?taskId=${task.id}"><strong>${task.name}</strong></a> 
 									<br/>${task.taskClass}
 							</td>
-							<td class="left"><openmrs:message code="Scheduler.list.runsEvery" arguments="${intervals[task]}"/> 
+							<td class="left"><openmrs:message htmlEscape="false" code="Scheduler.list.runsEvery" arguments="${intervals[task]}"/>
 								<c:if test="${task.startTime!=null}">								 	
-								 	<br/><openmrs:message code="Scheduler.list.from" arguments="${taskStartTime}"/> , 
-								 	<br/><openmrs:message code="Scheduler.list.startingOn" arguments="${taskStartDate}"/>
+								 	<br/><openmrs:message htmlEscape="false" code="Scheduler.list.from" arguments="${taskStartTime}"/> ,
+								 	<br/><openmrs:message htmlEscape="false" code="Scheduler.list.startingOn" arguments="${taskStartDate}"/>
 								</c:if>							
 							</td>
 							<td class="left">

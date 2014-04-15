@@ -69,7 +69,7 @@ public class SchedulerUtil {
 		try {
 			service = Context.getSchedulerService();
 		}
-		catch (Throwable t) {
+		catch (Exception e) {
 			// pass
 		}
 		
@@ -110,20 +110,20 @@ public class SchedulerUtil {
 					// TODO need to use the default sender for the application 
 					String sender = SchedulerConstants.SCHEDULER_DEFAULT_FROM;
 					String subject = SchedulerConstants.SCHEDULER_DEFAULT_SUBJECT + " : " + throwable.getClass().getName();
-					String message = new String();
-					message += "\n\nStacktrace\n============================================\n";
-					message += SchedulerUtil.getExceptionAsString(throwable);
-					message += "\n\nSystem Variables\n============================================\n";
+					StringBuilder message = new StringBuilder();
+					message.append("\n\nStacktrace\n============================================\n");
+					message.append(SchedulerUtil.getExceptionAsString(throwable));
+					message.append("\n\nSystem Variables\n============================================\n");
 					for (Map.Entry<String, String> entry : Context.getAdministrationService().getSystemVariables()
 					        .entrySet()) {
-						message += entry.getKey() + " = " + entry.getValue() + "\n";
+						message.append(entry.getKey()).append(" = ").append(entry.getValue()).append("\n");
 					}
 					
 					// TODO need to the send the IP information for the server instance that is running this task
 					
 					log.debug("Sending scheduler error email to [" + recipients + "] from [" + sender + "] with subject ["
 					        + subject + "]:\n" + message);
-					Context.getMessageService().sendMessage(recipients, sender, subject, message);
+					Context.getMessageService().sendMessage(recipients, sender, subject, message.toString());
 				}
 				
 			}

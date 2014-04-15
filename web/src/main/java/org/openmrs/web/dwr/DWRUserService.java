@@ -41,7 +41,7 @@ public class DWRUserService {
 	
 	/**
 	 * Find users in the database that match the given search values.
-	 * 
+	 *
 	 * @see UserService#getUsers(String, List, boolean)
 	 * @param searchValue a query string like 'john doe'
 	 * @param rolesStrings list of role names to restrict to like '[Provider, Manager]'
@@ -56,15 +56,17 @@ public class DWRUserService {
 		try {
 			UserService userService = Context.getUserService();
 			
-			if (rolesStrings == null)
+			if (rolesStrings == null) {
 				rolesStrings = new Vector<String>();
+			}
 			
 			List<Role> roles = new Vector<Role>();
 			for (String r : rolesStrings) {
 				if (!"".equals(r)) {
 					Role role = userService.getRole(r);
-					if (role != null)
+					if (role != null) {
 						roles.add(role);
+					}
 				}
 			}
 			
@@ -102,15 +104,17 @@ public class DWRUserService {
 				UserService us = Context.getUserService();
 				Set<User> users = new TreeSet<User>(new UserComparator());
 				
-				if (roleStrings == null)
+				if (roleStrings == null) {
 					roleStrings = new Vector<String>();
+				}
 				
 				List<Role> roles = new Vector<Role>();
 				for (String r : roleStrings) {
 					if (!"".equals(r)) {
 						Role role = us.getRole(r);
-						if (role != null)
+						if (role != null) {
 							roles.add(role);
+						}
 					}
 				}
 				
@@ -133,7 +137,7 @@ public class DWRUserService {
 	
 	/**
 	 * Get the user identified by <code>userId</code>
-	 * 
+	 *
 	 * @param userId
 	 * @return
 	 */

@@ -93,17 +93,19 @@ public class SettingsProperty implements Comparable<SettingsProperty> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!(obj instanceof SettingsProperty))
+		}
+		if (!(obj instanceof SettingsProperty)) {
 			return false;
+		}
 		SettingsProperty other = (SettingsProperty) obj;
 		return compareTo(other) == 0;
 	}
 	
 	/**
 	 * Beautifies string
-	 * 
+	 *
 	 * @param section
 	 * @return
 	 */

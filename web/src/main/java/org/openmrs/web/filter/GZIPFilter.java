@@ -61,7 +61,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 	
 	/**
 	 * Convenience method to test for GZIP capabilities
-	 * 
+	 *
 	 * @param req The current user request
 	 * @return boolean indicating GZIP support
 	 */
@@ -85,8 +85,9 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 * Returns global property gzip.enabled as boolean
 	 */
 	private boolean isGZIPEnabled() {
-		if (cachedGZipEnabledFlag != null)
+		if (cachedGZipEnabledFlag != null) {
 			return cachedGZipEnabledFlag;
+		}
 		
 		try {
 			String gzipEnabled = Context.getAdministrationService().getGlobalProperty(
@@ -96,8 +97,8 @@ public class GZIPFilter extends OncePerRequestFilter {
 			cachedGZipEnabledFlag = isEnabled;
 			return cachedGZipEnabledFlag;
 		}
-		catch (Throwable t) {
-			log.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, t);
+		catch (Exception e) {
+			log.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, e);
 			// not caching the enabled flag here in case it becomes available 
 			// before the next request
 			

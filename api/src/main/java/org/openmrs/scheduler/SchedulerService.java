@@ -161,4 +161,12 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param memento
 	 */
 	public void restoreFromMemento(OpenmrsMemento memento);
+	
+	/**
+	 * Schedules a task for execution if not already running
+	 * @param taskDef
+	 * @since 1.10
+	 */
+	public void scheduleIfNotRunning(TaskDefinition taskDef);
+	
 }

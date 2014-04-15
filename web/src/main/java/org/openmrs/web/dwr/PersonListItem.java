@@ -25,12 +25,13 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.util.Format;
+import org.openmrs.web.WebUtil;
 
 /**
  * A mini/simplified Person object. Used as the return object from DWR methods to allow javascript
  * and other consumers to easily use all methods. This class guarantees that all objects in this
  * class will be initialized (copied) off of the Person object.
- * 
+ *
  * @see Person
  * @see DWRPersonService
  */
@@ -60,6 +61,8 @@ public class PersonListItem {
 	
 	private String deathDateString;
 	
+	private Boolean deathdateEstimated = false;
+	
 	private Integer age;
 	
 	private String address1;
@@ -74,7 +77,7 @@ public class PersonListItem {
 	 * Creates an instance of a subclass of PersonListItem which is best suited for the parameter.
 	 * If a {@link Patient} is passed in, a {@link PatientListItem} is returned, otherwise a
 	 * {@link PersonListItem} is returned.
-	 * 
+	 *
 	 * @param person the {@link Person} object to covert to a {@link PersonListItem}
 	 * @return a {@link PersonListItem} or subclass thereof
 	 * @should return PatientListItem given patient parameter
@@ -96,7 +99,7 @@ public class PersonListItem {
 	
 	/**
 	 * Convenience constructor to create a PersonListItem that has only this personId
-	 * 
+	 *
 	 * @param personId the person id to assign
 	 */
 	public PersonListItem(Integer personId) {
@@ -106,7 +109,7 @@ public class PersonListItem {
 	/**
 	 * Convenience constructor that creates a PersonListItem from the given Person. All relevant
 	 * attributes are pulled off of the Person object and copied to this PersonListItem
-	 * 
+	 *
 	 * @param person the Person to turn into a PersonListItem
 	 * @should put attribute toString value into attributes map
 	 */
@@ -125,22 +128,24 @@ public class PersonListItem {
 					givenName = pn.getGivenName();
 					first = false;
 				} else {
-					if (!StringUtils.isBlank(otherNames))
+					if (!StringUtils.isBlank(otherNames)) {
 						otherNames += ",";
+					}
 					otherNames += " " + pn.getGivenName() + " " + pn.getMiddleName() + " " + pn.getFamilyName();
 				}
 			}
 			
 			gender = person.getGender();
 			birthdate = person.getBirthdate();
-			birthdateString = Format.format(person.getBirthdate());
+			birthdateString = WebUtil.formatDate(person.getBirthdate());
 			birthdateEstimated = person.isBirthdateEstimated();
 			age = person.getAge();
 			voided = person.isPersonVoided();
 			
 			if (person.getDeathDate() != null) {
-				this.deathDateString = Format.format(person.getDeathDate());
+				this.deathDateString = WebUtil.formatDate(person.getDeathDate());
 			}
+			deathdateEstimated = person.getDeathdateEstimated();
 			
 			// add in the person attributes
 			for (PersonAttribute attribute : person.getActiveAttributes()) {
@@ -179,8 +184,9 @@ public class PersonListItem {
 					foundABestMatch = true;
 					continue; // process the next name
 				}
-				if (!StringUtils.isBlank(otherNames))
+				if (!StringUtils.isBlank(otherNames)) {
 					otherNames += ",";
+				}
 				otherNames += " " + fullName;
 			}
 		}
@@ -210,8 +216,9 @@ public class PersonListItem {
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonListItem) {
 			PersonListItem pi = (PersonListItem) obj;
-			if (pi.getPersonId() == null || personId == null)
+			if (pi.getPersonId() == null || personId == null) {
 				return false;
+			}
 			return pi.getPersonId().equals(personId);
 		}
 		return false;
@@ -221,8 +228,9 @@ public class PersonListItem {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (personId == null)
+		if (personId == null) {
 			return super.hashCode();
+		}
 		return personId.hashCode();
 	}
 	
@@ -236,7 +244,7 @@ public class PersonListItem {
 	
 	/**
 	 * Returns a formatted birthdate value
-	 * 
+	 *
 	 * @since 1.8
 	 */
 	public String getBirthdateString() {
@@ -266,9 +274,18 @@ public class PersonListItem {
 		this.deathDateString = deathDateString;
 	}
 	
+	public Boolean getDeathdateEstimated() {
+		return deathdateEstimated;
+	}
+	
+	public void setDeathdateEstimated(Boolean deathdateEstimated) {
+		this.deathdateEstimated = deathdateEstimated;
+	}
+	
 	public String getFamilyName() {
-		if (familyName == null)
+		if (familyName == null) {
 			familyName = "";
+		}
 		return familyName;
 	}
 	
@@ -277,8 +294,9 @@ public class PersonListItem {
 	}
 	
 	public String getMiddleName() {
-		if (middleName == null)
+		if (middleName == null) {
 			middleName = "";
+		}
 		return middleName;
 	}
 	
@@ -295,8 +313,9 @@ public class PersonListItem {
 	}
 	
 	public String getGivenName() {
-		if (givenName == null)
+		if (givenName == null) {
 			givenName = "";
+		}
 		return givenName;
 	}
 	
@@ -306,20 +325,23 @@ public class PersonListItem {
 	
 	/**
 	 * Convenience method to retrieve the givenName middleName familyName
-	 * 
+	 *
 	 * @return String this person's name
 	 */
 	public String getPersonName() {
 		String name = "";
 		
-		if (!StringUtils.isBlank(givenName))
+		if (!StringUtils.isBlank(givenName)) {
 			name = givenName;
+		}
 		
-		if (!StringUtils.isBlank(middleName))
+		if (!StringUtils.isBlank(middleName)) {
 			name = name + (name.length() > 0 ? " " : "") + middleName;
+		}
 		
-		if (!StringUtils.isBlank(familyName))
+		if (!StringUtils.isBlank(familyName)) {
 			name = name + (name.length() > 0 ? " " : "") + familyName;
+		}
 		
 		return name;
 	}
@@ -379,8 +401,9 @@ public class PersonListItem {
 	}
 	
 	public String getUuid() {
-		if (uuid == null)
+		if (uuid == null) {
 			return "";
+		}
 		return uuid;
 	}
 	

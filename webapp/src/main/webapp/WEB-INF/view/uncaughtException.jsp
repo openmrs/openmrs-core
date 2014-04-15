@@ -34,6 +34,36 @@
 			trace.style.display = "none";
 		}
 	}
+
+    function submitErrorReport() {
+        var issue_subject = document.getElementById("issue_subject").value;
+        var submitter_name = document.getElementById("submitter_name").value;
+        var submitter_email = document.getElementById("submitter_email").value;
+        var recent_steps = document.getElementById("recent_steps").value;
+
+        if(issue_subject === ""){
+            alert("Subject is Mandatory.");
+            return false;
+        }
+
+        //Assign subject to errorMessageElement since that is the field that JIRA picks up for Subject & Summary
+        document.getElementById("errorMessageElement").value = issue_subject;
+
+        //Construct a bulk string with remaining user data
+        var user_inputted_data = "";
+        user_inputted_data += "Name: "+ submitter_name + "\n";
+        user_inputted_data += "Email: "+ submitter_email + "\n";
+        user_inputted_data += "Recent Steps:"+ "\n"+ recent_steps + "\n";
+
+        //Attach all user data to the start of the stack-trace so that it shows up in Description Section of JIRA
+        var stackTraceElement = document.getElementById("stackTraceElement");
+        var fullDescription = user_inputted_data + "\n\n"+ stackTraceElement.value;
+        stackTraceElement.value = fullDescription;
+
+        document.forms["errorSubmitForm"].submit();
+
+    }
+
 </script>	
 
 <% 
@@ -159,8 +189,34 @@ try {
 <br/>
 <openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
 
+
+<br/>
+ <b> Found a bug? Please fill out and submit the form below - help us make OpenMRS better software -- Thanks! </b>
+<br/> <br/>
+<table bgcolor="#fafad2" width="70%">
+    <tr>
+        <td width="10%" align="right"> Subject:  </td>
+        <td><input type="text" id="issue_subject" size="40" /> </td>
+    </tr>
+    <tr>
+        <td align="right">Your Name: </td>
+        <td><input type="text" id="submitter_name" size="40"/> </td>
+    </tr>
+    <tr>
+        <td align="right">Your Email: </td>
+        <td><input type="text" id="submitter_email" size="40"/></td>
+    </tr>
+    <tr>
+        <td align="right" valign="top"> Please describe what you were doing when this error occurred:  </td>
+        <td><textarea rows="10" cols="80" id="recent_steps"></textarea> </td>
+    </tr>
+
+</table>
+
+<br/> <br/>
+
 <div>
-The following data will be submitted with the report to enable the team to resolve the problem.
+The following data will also be submitted with the report to enable the team to resolve the problem.
 <ul>
 <li>The error message and stack trace</li>
 <li>OpenMRS version</li>
@@ -173,16 +229,18 @@ The following data will be submitted with the report to enable the team to resol
 
 <div>
 
-<form action="${reportBugUrl}" target="_blank" method="POST">
+<form action="${reportBugUrl}" target="_blank" method="POST" name="errorSubmitForm">
 	<input type="hidden" name="openmrs_version" value="${openmrs_version}" />
 	<input type="hidden" name="server_info" value="${server_info}" />
 	<input type="hidden" name="username" value="${username}" />
 	<input type="hidden" name="implementationId" value="${implementationId}" />
 	<input type="hidden" name="startedModules" value="${startedModules}" />
-	<input type="hidden" name="errorMessage" value="${errorMessage}" />
-	<input type="hidden" name="stackTrace" value="${stackTrace}" />
-	<br/>
-	<input type="submit" value="Report Problem">
+	<input type="hidden" name="errorMessage" id="errorMessageElement" value="${errorMessage}" />
+	<input type="hidden" name="stackTrace" id="stackTraceElement" value="${stackTrace}" />
+
+    <br/>
+
+    <input type="button" onclick="javascript:submitErrorReport()" value="Report Problem">
 </form>
 
 </div>

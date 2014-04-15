@@ -28,7 +28,7 @@ import org.openmrs.scheduler.TaskDefinition;
 
 /**
  * Generates a data export
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
@@ -66,8 +66,9 @@ public class GenerateDataExportTask extends AbstractTask {
 		try {
 			log.debug("Generating data exports...");
 			
-			if (!Context.isAuthenticated())
+			if (!Context.isAuthenticated()) {
 				authenticate();
+			}
 			
 			if (idString != null && idString.length() > 0) {
 				idString = idString.replace(",", " ");

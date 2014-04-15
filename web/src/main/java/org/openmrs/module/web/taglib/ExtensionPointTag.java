@@ -35,7 +35,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Extension point tag. Loops over all extensions defined for point "pointId". Makes the variable
  * "extension" Usage:
- * 
+ *
  * <pre>
  *  &lt;openmrs:extensionPoint pointId=&quot;org.openmrs.cohortbuilder.links&quot; type=&quot;html&quot; varStatus=&quot;stat&quot;&gt;
  *     &lt;c:if test=&quot;${stat.first}&quot;&gt;
@@ -56,7 +56,7 @@ import org.openmrs.util.OpenmrsUtil;
  *    &lt;/c:if&gt;
  *  &lt;/openmrs:extensionPoint&gt;
  * </pre>
- * 
+ *
  * @see org.openmrs.module.Extension available in the loop.
  */
 public class ExtensionPointTag extends TagSupport implements BodyTag {
@@ -214,10 +214,12 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	public int doEndTag() throws JspException {
 		try {
 			if (getBodyContent() != null) {
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("Ending tag: " + bodyContent.getString());
-				if (extensions != null)
+				}
+				if (extensions != null) {
 					getBodyContent().writeOut(bodyContent.getEnclosingWriter());
+				}
 				bodyContent.clearBody();
 			} else {
 				// the tag doesn't have a body, so initBody and doAfterBody have
@@ -226,8 +228,9 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 					Extension ext = extensions.next();
 					ext.initialize(parameterMap);
 					String overrideContent = ext.getOverrideContent("");
-					if (overrideContent != null)
+					if (overrideContent != null) {
 						pageContext.getOut().write(overrideContent);
+					}
 				}
 			}
 		}
@@ -244,8 +247,9 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		pointId = null;
 		requiredClass = null;
 		type = null;
-		if (bodyContent != null)
+		if (bodyContent != null) {
 			bodyContent.clearBody();
+		}
 		bodyContent = null;
 		super.release();
 	}
@@ -283,10 +287,11 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	}
 	
 	public String getBodyContentString() {
-		if (bodyContent == null)
+		if (bodyContent == null) {
 			return "";
-		else
+		} else {
 			return bodyContent.getString();
+		}
 	}
 	
 	/**

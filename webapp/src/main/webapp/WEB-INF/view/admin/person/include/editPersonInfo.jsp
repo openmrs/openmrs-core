@@ -155,7 +155,19 @@
 			<i style="font-weight: normal; font-size: 0.8em;">(<openmrs:message code="general.format"/>: <openmrs:datePattern />)</i>
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 		</spring:bind>
-		&nbsp; &nbsp; 
+		&nbsp; &nbsp;
+
+    	<openmrs:message code="Person.deathdateEstimated"/>
+			<spring:bind path="deathdateEstimated">
+				<input type="hidden" name="_${status.expression}"> 
+                   <input type="checkbox" name="${status.expression}" value="true" 
+					<c:if test="${status.value == true}">checked</c:if> 
+					   id="deathdateEstimatedInput" 
+				 />					
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+			&nbsp; 
+		 
 		<openmrs:message code="Person.causeOfDeath"/>
 		<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
 		<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
@@ -176,7 +188,7 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${status.value.personName} -
+				<c:out value="${status.value.personName}" /> -
 				<openmrs:formatDate path="dateCreated" type="long" />
 			</td>
 		</tr>
@@ -188,7 +200,7 @@
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
 			<td colspan="2">
-				${status.value.personName} -
+				<c:out value="${status.value.personName}" /> -
 				<openmrs:formatDate path="dateChanged" type="long" />
 			</td>
 		</tr>
@@ -204,13 +216,22 @@
 	<td><openmrs:message code="general.voidReason"/></td>
 	<td>${patient.voidReason}</td>
 </tr>
-
+<tr>
+  	  <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+      <td colspan="${fn:length(locales)}">
+      <font color="#D0D0D0"><sub>
+       <spring:bind path="person.uuid">
+           <c:out value="${status.value}"></c:out>
+       </spring:bind>
+       </sub></font>
+     </td>
+    </tr>
 <spring:bind path="voidedBy">
 	<c:if test="${status.value != null}" >
 		<tr>
 			<td><openmrs:message code="general.voidedBy"/></td>
 			<td>
-				${status.value.personName} -
+				<c:out value="${status.value.personName}" /> -
 				<openmrs:formatDate path="dateVoided" type="long" />
 			</td>
 		</tr>

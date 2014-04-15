@@ -37,11 +37,11 @@ import org.springframework.web.util.ExpressionEvaluationUtils;
 /**
  * Formats a date object in the desired type:<br/>
  * e.g:
- * 
+ *
  * <pre>
  *   &lt;openmrs:formatDate date="${dateObj}" type="textbox"/&gt;
  * </pre>
- * 
+ *
  * becomes a string like: "20/11/2009" in the user's current locale. <br/>
  * <br/>
  * Options for "type" are:
@@ -90,10 +90,10 @@ public class FormatDateTag extends TagSupport {
 				
 				if (status.getValue() != null) {
 					log.debug("status.value: " + status.getValue());
-					if (status.getValue().getClass() == Date.class)
+					if (status.getValue().getClass() == Date.class) {
 						// if no editor was registered all will go well here
 						date = (Date) status.getValue();
-					else {
+					} else {
 						// if a "Date" property editor was registerd for the form, the status.getValue()
 						// object will be a java.lang.String.  This is useless.  Try getting the original
 						// value from the troublesome editor
@@ -115,8 +115,9 @@ public class FormatDateTag extends TagSupport {
 			return SKIP_BODY;
 		}
 		
-		if (type == null)
+		if (type == null) {
 			type = "";
+		}
 		
 		DateFormat dateFormat = null;
 		
@@ -131,15 +132,14 @@ public class FormatDateTag extends TagSupport {
 				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Context.getLocale());
 			} else if (type.equals("medium")) {
 				dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, Context.getLocale());
-			} else if (type.equals("textbox")) {
-				dateFormat = Context.getDateFormat();
 			} else {
 				dateFormat = Context.getDateFormat();
 			}
 		}
 		
-		if (dateFormat == null)
+		if (dateFormat == null) {
 			dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+		}
 		
 		String datestr = "";
 		
@@ -153,14 +153,16 @@ public class FormatDateTag extends TagSupport {
 						//print only time of day but maintaining the format(24 Vs 12) if any was specified
 						String timeFormatString = (format != null && !format.contains("a")) ? "HH:mm" : "h:mm a";
 						dateFormat = new SimpleDateFormat(timeFormatString);
-						if (DateUtils.isSameDay(Calendar.getInstance().getTime(), date))
+						if (DateUtils.isSameDay(Calendar.getInstance().getTime(), date)) {
 							datestr = Context.getMessageSourceService().getMessage("general.today") + " "
 							        + dateFormat.format(date);
-						else
+						} else {
 							datestr = Context.getMessageSourceService().getMessage("general.yesterday") + " "
 							        + dateFormat.format(date);
-					} else
+						}
+					} else {
 						datestr = dateFormat.format(date);
+					}
 				}
 			}
 		}

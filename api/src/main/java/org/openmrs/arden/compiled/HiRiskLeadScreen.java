@@ -183,7 +183,8 @@ public class HiRiskLeadScreen implements ArdenRule {
 	
 	public String doAction() {
 		int index = 0, nindex = 0, endindex = 0, startindex = 0;
-		String tempstr, variable, outStr = "";
+		String tempstr, variable;
+		StringBuilder outStr = new StringBuilder("");
 		String inStr = userVarMap.get("ActionStr");
 		
 		tempstr = inStr;
@@ -195,31 +196,31 @@ public class HiRiskLeadScreen implements ArdenRule {
 				startindex = index + 2;
 				endindex = nindex;
 				variable = inStr.substring(startindex, endindex).trim();
-				outStr += userVarMap.get(variable);
+				outStr.append(userVarMap.get(variable));
 				index = tempstr.indexOf("||", nindex + 2);
 			}
 			while (index > 0) {
 				if (nindex == 0) { // Are we starting now
 					startindex = nindex;
 					endindex = index;
-					outStr += tempstr.substring(startindex, endindex);
+					outStr.append(tempstr.substring(startindex, endindex));
 				} else {
 					startindex = nindex + 2;
 					endindex = index;
-					outStr += tempstr.substring(startindex, endindex);
+					outStr.append(tempstr.substring(startindex, endindex));
 				}
 				nindex = tempstr.indexOf("||", index + 2);
 				startindex = index + 2;
 				endindex = nindex;
 				variable = inStr.substring(startindex, endindex).trim();
-				outStr += userVarMap.get(variable);
+				outStr.append(userVarMap.get(variable));
 				index = tempstr.indexOf("||", nindex + 2);
 			}
-			outStr += tempstr.substring(nindex + 2);
+			outStr.append(tempstr.substring(nindex + 2));
 		} else {
-			outStr += tempstr;
+			outStr.append(tempstr);
 		}
-		return outStr;
+		return outStr.toString();
 	}
 	
 	public void printDebug() {

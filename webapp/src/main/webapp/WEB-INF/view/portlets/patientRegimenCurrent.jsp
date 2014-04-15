@@ -45,10 +45,10 @@
 							<tr class="regimenCurrentDrugRow">
 								<td class="regimenCurrentDrugEmptyData">&nbsp;&nbsp;&nbsp;&nbsp;
 									<c:if test="${!empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.drug.name}" /></a>
 									</c:if>
 									<c:if test="${empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.concept.name.name}" /></a>
 									</c:if>
 								</td>
 								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.doseUnits}</td>
@@ -167,10 +167,10 @@
 							<tr class="regimenCurrentDrugOrderRow">
 								<td class="regimenCurrentDrugEmptyData">&nbsp;&nbsp;&nbsp;&nbsp;
 									<c:if test="${!empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.drug.name}" /></a>
 									</c:if>
 									<c:if test="${empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.concept.name.name}" /></a>
 									</c:if>
 								</td>
 								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.doseUnits}</td>
@@ -238,10 +238,10 @@
 							<tr class="regimenTableCurrentRow">
 								<td class="regimenCurrentDrugNameData">
 									<c:if test="${!empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.drug.name}" /></a>
 									</c:if>
 									<c:if test="${empty drugOrder.drug}">
-										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}"><c:out value="${drugOrder.concept.name.name}" /></a>
 									</c:if>
 								</td>
 								<td class="regimenCurrentDrugDoseData">${drugOrder.dose} ${drugOrder.doseUnits}</td>
@@ -303,7 +303,7 @@
 </c:choose>
 			</table>
 			<script>
-				setPatientId("${model.patientId}");
+				setPatientId("<c:out value="${model.patientId}" />");
 				setDisplayDrugSetIds("${model.displayDrugSetIds}");
 				setRegimenMode("${model.currentRegimenMode}");
 			</script>

@@ -46,7 +46,7 @@ public class ShortPatientFormValidator implements Validator {
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
-	 * 
+	 *
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -56,7 +56,7 @@ public class ShortPatientFormValidator implements Validator {
 	
 	/**
 	 * Validates the given Patient.
-	 * 
+	 *
 	 * @param obj The patient to validate.
 	 * @param errors The patient to validate.
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
@@ -77,8 +77,9 @@ public class ShortPatientFormValidator implements Validator {
 	 * @should reject a duplicate address
 	 */
 	public void validate(Object obj, Errors errors) {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ": Validating patient data from the short patient form....");
+		}
 		
 		ShortPatientModel shortPatientModel = (ShortPatientModel) obj;
 		PersonName personName = shortPatientModel.getPersonName();
@@ -89,8 +90,9 @@ public class ShortPatientFormValidator implements Validator {
 		//check if this name has a unique givenName, middleName and familyName combination
 		for (PersonName possibleDuplicate : shortPatientModel.getPatient().getNames()) {
 			//don't compare the name to itself
-			if (OpenmrsUtil.nullSafeEquals(possibleDuplicate.getId(), personName.getId()))
+			if (OpenmrsUtil.nullSafeEquals(possibleDuplicate.getId(), personName.getId())) {
 				continue;
+			}
 			
 			if (OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getGivenName(), personName.getGivenName())
 			        && OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getMiddleName(), personName.getMiddleName())
@@ -115,8 +117,9 @@ public class ShortPatientFormValidator implements Validator {
 				        && (!errorCodesWithNoArguments.contains(error.getCode()) || (error.getArguments() != null && error
 				                .getArguments().length > 0))) {
 					errors.reject(error.getCode(), error.getArguments(), "");
-					if (error.getArguments() == null || error.getArguments().length == 0)
+					if (error.getArguments() == null || error.getArguments().length == 0) {
 						errorCodesWithNoArguments.add(error.getCode());
+					}
 				}
 			}
 			// drop the collection
@@ -130,8 +133,9 @@ public class ShortPatientFormValidator implements Validator {
 		PersonAddress personAddress = shortPatientModel.getPersonAddress();
 		for (PersonAddress possibleDuplicate : shortPatientModel.getPatient().getAddresses()) {
 			//don't compare the address to itself
-			if (OpenmrsUtil.nullSafeEquals(possibleDuplicate.getId(), personAddress.getId()))
+			if (OpenmrsUtil.nullSafeEquals(possibleDuplicate.getId(), personAddress.getId())) {
 				continue;
+			}
 			
 			if (!possibleDuplicate.isBlank() && !personAddress.isBlank()
 			        && possibleDuplicate.toString().equalsIgnoreCase(personAddress.toString())) {
@@ -141,35 +145,39 @@ public class ShortPatientFormValidator implements Validator {
 			}
 		}
 		
-		if (CollectionUtils.isEmpty(shortPatientModel.getIdentifiers()))
+		if (CollectionUtils.isEmpty(shortPatientModel.getIdentifiers())) {
 			errors.reject("PatientIdentifier.error.insufficientIdentifiers");
-		else {
+		} else {
 			boolean nonVoidedIdentifierFound = false;
 			for (PatientIdentifier pId : shortPatientModel.getIdentifiers()) {
 				//no need to validate unsaved identifiers that have been removed
-				if (pId.getPatientIdentifierId() == null && pId.isVoided())
+				if (pId.getPatientIdentifierId() == null && pId.isVoided()) {
 					continue;
+				}
 				
-				if (!pId.isVoided())
+				if (!pId.isVoided()) {
 					nonVoidedIdentifierFound = true;
+				}
 				
 				new PatientIdentifierValidator().validate(pId, errors);
 			}
 			// if all the names are voided
-			if (!nonVoidedIdentifierFound)
+			if (!nonVoidedIdentifierFound) {
 				errors.reject("PatientIdentifier.error.insufficientIdentifiers");
+			}
 			
 		}
 		
 		// Make sure they chose a gender
-		if (StringUtils.isBlank(shortPatientModel.getPatient().getGender()))
+		if (StringUtils.isBlank(shortPatientModel.getPatient().getGender())) {
 			errors.rejectValue("patient.gender", "Person.gender.required");
+		}
 		
 		// check patients birthdate against future dates and really old dates
 		if (shortPatientModel.getPatient().getBirthdate() != null) {
-			if (shortPatientModel.getPatient().getBirthdate().after(new Date()))
+			if (shortPatientModel.getPatient().getBirthdate().after(new Date())) {
 				errors.rejectValue("patient.birthdate", "error.date.future");
-			else {
+			} else {
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
 				c.add(Calendar.YEAR, -120); // patient cannot be older than 120
@@ -195,17 +203,20 @@ public class ShortPatientFormValidator implements Validator {
 		}
 		
 		if (shortPatientModel.getPatient().getDead()) {
-			if (shortPatientModel.getPatient().getCauseOfDeath() == null)
+			if (shortPatientModel.getPatient().getCauseOfDeath() == null) {
 				errors.rejectValue("patient.causeOfDeath", "Person.dead.causeOfDeathNull");
+			}
 			
 			if (shortPatientModel.getPatient().getDeathDate() != null) {
-				if (shortPatientModel.getPatient().getDeathDate().after(new Date()))
+				if (shortPatientModel.getPatient().getDeathDate().after(new Date())) {
 					errors.rejectValue("patient.deathDate", "error.date.future");
+				}
 				// death date has to be after birthdate if both are specified
 				if (shortPatientModel.getPatient().getBirthdate() != null
 				        && shortPatientModel.getPatient().getDeathDate().before(
-				            shortPatientModel.getPatient().getBirthdate()))
+				            shortPatientModel.getPatient().getBirthdate())) {
 					errors.rejectValue("patient.deathDate", "error.deathdate.before.birthdate");
+				}
 			}
 		}
 	}

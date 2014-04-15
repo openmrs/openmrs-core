@@ -13,10 +13,10 @@
  */
 package org.openmrs.util;
 
-import java.util.Comparator;
-
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+
+import java.util.Comparator;
 
 /**
  * A simple person comparator for sorting persons by name. Sorts names based on the following
@@ -40,6 +40,7 @@ public class PersonByNameComparator implements Comparator<Person> {
 	 * @should return negative if personName for person1 comes before that of person2
 	 * @should return positive if personName for person1 comes after that of person2
 	 * @should return zero if the givenName middleName and familyName match
+	 * @should be case insensitive
 	 * @since 1.8
 	 */
 	public static int comparePersonsByName(Person person1, Person person2) {
@@ -55,26 +56,34 @@ public class PersonByNameComparator implements Comparator<Person> {
 		PersonName name1 = person1.getPersonName();
 		PersonName name2 = person2.getPersonName();
 		
-		int ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getFamilyName(), name2.getFamilyName());
+		int ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getFamilyName() != null ? name1.getFamilyName().toLowerCase()
+		        : null, name2.getFamilyName() != null ? name2.getFamilyName().toLowerCase() : null);
 		
 		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getFamilyName2(), name2.getFamilyName2());
+			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getFamilyName2() != null ? name1.getFamilyName().toLowerCase()
+			        : null, name2.getFamilyName2() != null ? name2.getFamilyName2().toLowerCase() : null);
 		}
 		
 		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getGivenName(), name2.getGivenName());
+			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getGivenName() != null ? name1.getGivenName().toLowerCase()
+			        : null, name2.getGivenName() != null ? name2.getGivenName().toLowerCase() : null);
 		}
 		
 		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getMiddleName(), name2.getMiddleName());
+			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getMiddleName() != null ? name1.getMiddleName().toLowerCase()
+			        : null, name2.getMiddleName() != null ? name2.getMiddleName().toLowerCase() : null);
 		}
 		
 		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getFamilyNamePrefix(), name2.getFamilyNamePrefix());
+			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getFamilyNamePrefix() != null ? name1.getFamilyNamePrefix()
+			        .toLowerCase() : null, name2.getFamilyNamePrefix() != null ? name2.getFamilyNamePrefix().toLowerCase()
+			        : null);
 		}
 		
 		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getFamilyNameSuffix(), name2.getFamilyNameSuffix());
+			ret = OpenmrsUtil.compareWithNullAsGreatest(name1.getFamilyNameSuffix() != null ? name1.getFamilyNameSuffix()
+			        .toLowerCase() : null, name2.getFamilyNameSuffix() != null ? name2.getFamilyNameSuffix().toLowerCase()
+			        : null);
 		}
 		
 		return ret;

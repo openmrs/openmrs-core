@@ -55,20 +55,27 @@ import org.dbunit.dataset.DefaultDataSet;
 import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.stream.StreamingDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlProducer;
 import org.dbunit.dataset.xml.XmlDataSet;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -78,6 +85,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import org.xml.sax.InputSource;
 
 /**
  * This is the base for spring/context tests. Tests that NEED to use calls to the Context class and
@@ -144,6 +152,12 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	private User authenticatedUser;
 	
 	/**
+	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
+	 */
+	@InjectMocks
+	protected ContextMockHelper contextMockHelper;
+	
+	/**
 	 * Basic constructor for the super class to all openmrs api unit tests. This constructor sets up
 	 * the classloader and the properties file so that by the type spring gets around to finally
 	 * starting, the openmrs runtime properties are already in place A static load count is kept to
@@ -163,6 +177,24 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		Context.setRuntimeProperties(props);
 		
 		loadCount++;
+	}
+	
+	/**
+	 * Initializes fields annotated with {@link Mock}.
+	 * 
+	 * @since 1.10
+	 */
+	@Before
+	public void initMocks() {
+		MockitoAnnotations.initMocks(this);
+	}
+	
+	/**
+	 * @since 1.10
+	 */
+	@After
+	public void revertContextMocks() {
+		contextMockHelper.revertMocks();
 	}
 	
 	/**
@@ -548,6 +580,41 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * Runs the large flat xml dataset. It does not cache the file as opposed to
+	 * {@link #executeDataSet(String)}.
+	 * 
+	 * @param datasetFilename
+	 * @throws Exception
+	 * @since 1.10
+	 */
+	public void executeLargeDataSet(String datasetFilename) throws Exception {
+		InputStream inputStream = null;
+		try {
+			final File file = new File(datasetFilename);
+			if (file.exists()) {
+				inputStream = new FileInputStream(datasetFilename);
+			} else {
+				inputStream = getClass().getClassLoader().getResourceAsStream(datasetFilename);
+				if (inputStream == null)
+					throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+			}
+			
+			final FlatXmlProducer flatXmlProducer = new FlatXmlProducer(new InputSource(inputStream));
+			final StreamingDataSet streamingDataSet = new StreamingDataSet(flatXmlProducer);
+			
+			final ReplacementDataSet replacementDataSet = new ReplacementDataSet(streamingDataSet);
+			replacementDataSet.addReplacementObject("[NULL]", null);
+			
+			executeDataSet(replacementDataSet);
+			
+			inputStream.close();
+		}
+		finally {
+			IOUtils.closeQuietly(inputStream);
+		}
+	}
+	
+	/**
 	 * Runs the xml data file at the classpath location specified by <code>datasetFilename</code>
 	 * using XmlDataSet. It simply creates an {@link IDataSet} and calls
 	 * {@link #executeDataSet(IDataSet)}. <br/>
@@ -739,6 +806,12 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		return new Class<?>[] { Concept.class, Drug.class };
 	}
 	
+	/**
+	 * It needs to be call if you want to do a concept search after you modify a concept in a test.
+	 * 
+	 * It is because index is automatically updated only after transaction is committed, which happens
+	 * only at the end of a test in our transactional tests.
+	 */
 	public void updateSearchIndex() {
 		for (Class<?> indexType : getIndexedTypes()) {
 			Context.updateSearchIndexForType(indexType);

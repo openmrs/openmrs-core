@@ -46,8 +46,9 @@ public class DateDatatype extends SerializingCustomDatatype<Date> {
 	 */
 	@Override
 	public Date deserialize(String serializedValue) {
-		if (StringUtils.isBlank(serializedValue))
+		if (StringUtils.isBlank(serializedValue)) {
 			return null;
+		}
 		try {
 			return new SimpleDateFormat(dateFormat).parse(serializedValue);
 		}

@@ -35,7 +35,7 @@ public class CohortUtil {
 	 * treated as saved PatientSearch objects with that name. Parameter values for those loaded
 	 * searches are specified after a | The following are handled like they would be in a cohort
 	 * builder composition search: ( ) and or not
-	 * 
+	 *
 	 * @param spec
 	 * @return A CohortDefinition (currently always a PatientSearch) parsed from the spec string.
 	 * @should parse specification with and in it
@@ -58,18 +58,21 @@ public class CohortUtil {
 					case ' ':
 					case '\t':
 					case '\n':
-						if (thisElement != null)
+						if (thisElement != null) {
 							thisElement.append(c);
+						}
 						break;
 					case '[':
-						if (thisElement != null)
+						if (thisElement != null) {
 							tokens.add(thisElement.toString().trim());
+						}
 						thisElement = new StringBuilder();
 						thisElement.append(c);
 						break;
 					default:
-						if (thisElement == null)
+						if (thisElement == null) {
 							thisElement = new StringBuilder();
+						}
 						thisElement.append(c);
 						if (c == ']') {
 							tokens.add(thisElement.toString().trim());
@@ -78,8 +81,9 @@ public class CohortUtil {
 						break;
 				}
 			}
-			if (thisElement != null)
+			if (thisElement != null) {
 				tokens.add(thisElement.toString().trim());
+			}
 		}
 		for (ListIterator<Object> i = tokens.listIterator(); i.hasNext();) {
 			Object o = i.next();
@@ -96,16 +100,19 @@ public class CohortUtil {
 							name = t;
 						} else {
 							int ind = t.indexOf('=');
-							if (ind < 0)
+							if (ind < 0) {
 								throw new IllegalArgumentException("The fragment '" + t + "' in " + s + " has no =");
+							}
 							paramValues.put(t.substring(0, ind), t.substring(ind + 1));
 						}
 					}
-					if (name == null)
+					if (name == null) {
 						throw new IllegalArgumentException("Could not find a cohort name in " + s);
+					}
 					PatientSearch search = Context.getReportObjectService().getPatientSearch(name);
-					if (search == null)
+					if (search == null) {
 						throw new IllegalArgumentException("Could not load a cohort named " + name);
+					}
 					for (Map.Entry<String, String> e : paramValues.entrySet()) {
 						search.setParameterValue(e.getKey(), e.getValue());
 					}

@@ -28,7 +28,7 @@ import org.apache.commons.collections.comparators.ComparableComparator;
  * Functions used within taglibs in a webapp jsp page. <br/>
  * <br/>
  * Example:
- * 
+ *
  * <pre>
  * &lt;c:forEach items="${openmrs:sort(someListObject)}" var="o" end="0">
  *   ....
@@ -40,7 +40,7 @@ public class Sort {
 	
 	/**
 	 * This method will sort a collection based on the natural order of it's elements
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -50,7 +50,7 @@ public class Sort {
 	
 	/**
 	 * This method will sort a collection based on the natural order of it's elements
-	 * 
+	 *
 	 * @param c
 	 * @param isDescending
 	 * @return
@@ -63,7 +63,7 @@ public class Sort {
 	
 	/**
 	 * This method will sort a passed Collection
-	 * 
+	 *
 	 * @param c: The collection to sort
 	 * @param sortProperty: The javabean property to sort the elements of the Collection by
 	 * @param isDescending: Boolean indicating whether or not to reverse the order of the collection
@@ -74,12 +74,14 @@ public class Sort {
 			throw new IllegalArgumentException("sortProperty = " + sortProperty);
 		}
 		// fail early if the passed collection is null
-		if (c == null)
+		if (c == null) {
 			return null;
+		}
 		
 		// fail early if the passed collection is empty
-		if (c.size() == 0)
+		if (c.size() == 0) {
 			return Collections.emptyList();
+		}
 		
 		List<T> l = new ArrayList<T>(c);
 		Comparator comp = new BeanComparator(sortProperty, new ComparableComparator());

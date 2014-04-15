@@ -15,10 +15,12 @@ package org.openmrs.web.controller.person;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -53,21 +55,6 @@ public class AddPersonController extends SimpleFormController {
 	
 	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
 	
-	/** Parameters passed in view request object **/
-	private String name = "";
-	
-	private String birthdate = "";
-	
-	private String age = "";
-	
-	private String gender = "";
-	
-	private String personType = "patient";
-	
-	private String personId = "";
-	
-	private String viewType = "view";
-	
 	private boolean invalidAgeFormat = false;
 	
 	/**
@@ -79,14 +66,19 @@ public class AddPersonController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	        BindException errors) throws Exception {
 		
-		getParametersFromRequest(request);
+		HashMap<String, String> person = getParametersFromRequest(request);
+		
+		String personId = person.get("personId");
+		String viewType = person.get("viewType");
+		String personType = person.get("personType");
 		
 		if ("".equals(personId)) {
 			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
-			if ("view".equals(viewType) || "shortEdit".equals(viewType))
+			if ("view".equals(viewType) || "shortEdit".equals(viewType)) {
 				viewType = "shortEdit";
-			else
+			} else {
 				viewType = "edit";
+			}
 			
 			return new ModelAndView(new RedirectView(getPersonURL("", personType, viewType, request)));
 		} else {
@@ -98,8 +90,9 @@ public class AddPersonController extends SimpleFormController {
 				// dashboard or jumping them to the short edit screen to make (potential) adjustments
 				if ("patient".equals(personType)) {
 					try {
-						if (Context.getPatientService().getPatient(Integer.valueOf(personId)) == null)
+						if (Context.getPatientService().getPatient(Integer.valueOf(personId)) == null) {
 							viewType = "shortEdit";
+						}
 					}
 					catch (Exception noPatientEx) {
 						// if there is no patient yet, they must go through those motions
@@ -116,8 +109,10 @@ public class AddPersonController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+	 * @should catch an invalid birthdate
+	 * @should catch pass for a valid birthdate
 	 */
 	@Override
 	protected List<PersonListItem> formBackingObject(HttpServletRequest request) throws ServletException {
@@ -132,7 +127,12 @@ public class AddPersonController extends SimpleFormController {
 			Integer userId = Context.getAuthenticatedUser().getUserId();
 			
 			invalidAgeFormat = false;
-			getParametersFromRequest(request);
+			HashMap<String, String> person = getParametersFromRequest(request);
+			
+			String gender = person.get("gender");
+			String name = person.get("name");
+			String birthdate = person.get("birthdate");
+			String age = person.get("age");
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
@@ -142,16 +142,31 @@ public class AddPersonController extends SimpleFormController {
 				
 				Integer d = null;
 				birthdate = birthdate.trim();
-				
-				String birthyear = "";
-				if (birthdate.length() > 6)
-					birthyear = birthdate.substring(6); //parse out the year. assuming XX-XX-XXXX
-					
 				age = age.trim();
+				int birthyear = -1;
 				
-				if (birthyear.length() > 3)
+				try {
+					//Do these if there's a value in the birthdate string
+					if (birthdate.length() > 0) {
+						Date birthdateFormatted = (Date) Context.getDateFormat().parse(birthdate);
+						Calendar calender = Calendar.getInstance();
+						calender.setTime(birthdateFormatted);
+						birthyear = calender.get(Calendar.YEAR);
+					}
+				}
+				catch (ParseException e) {
+					// In theory, this should never happen -- the date selector should never allowed the
+					// user set an invalid date, but never know the scripts could be broken
+					if (log.isDebugEnabled()) {
+						log.debug("Parse exception occurred : " + e);
+					}
+					invalidAgeFormat = true;
+				}
+				
+				// -1 means the birth-year has not defined.
+				if (birthyear != -1) {
 					d = Integer.valueOf(birthyear);
-				else if (age.length() > 0) {
+				} else if (age.length() > 0) {
 					Calendar c = Calendar.getInstance();
 					c.setTime(new Date());
 					d = c.get(Calendar.YEAR);
@@ -164,8 +179,9 @@ public class AddPersonController extends SimpleFormController {
 					}
 				}
 				
-				if (gender.length() < 1)
-					gender = null;
+				if (gender.length() < 1) {
+					person.put("gender", null);
+				}
 				
 				personList = new Vector<PersonListItem>();
 				for (Person p : ps.getSimilarPeople(name, d, gender)) {
@@ -205,9 +221,18 @@ public class AddPersonController extends SimpleFormController {
 		log.debug("Found list of size: " + personList.size());
 		
 		if (personList.size() < 1 && Context.isAuthenticated()) {
-			getParametersFromRequest(request);
-			if (viewType == null)
+			HashMap<String, String> person = getParametersFromRequest(request);
+			
+			String name = person.get("name");
+			String birthdate = person.get("birthdate");
+			String age = person.get("age");
+			String gender = person.get("gender");
+			String viewType = person.get("viewType");
+			String personType = person.get("personType");
+			
+			if (viewType == null) {
 				viewType = "edit";
+			}
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
@@ -222,7 +247,7 @@ public class AddPersonController extends SimpleFormController {
 	
 	/**
 	 * Returns the url string for the given personType and viewType
-	 * 
+	 *
 	 * @param personId
 	 * @param personType
 	 * @param viewType
@@ -233,56 +258,70 @@ public class AddPersonController extends SimpleFormController {
 	 */
 	private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request)
 	        throws ServletException, UnsupportedEncodingException {
+		
+		HashMap<String, String> person = getParametersFromRequest(request);
+		
 		if ("patient".equals(personType)) {
-			if ("edit".equals(viewType))
-				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(personId, personType);
-			if ("shortEdit".equals(viewType))
-				return request.getContextPath() + PATIENT_SHORT_EDIT_URL + getParametersForURL(personId, personType);
-			else if ("view".equals(viewType))
-				return request.getContextPath() + PATIENT_VIEW_URL + getParametersForURL(personId, personType);
+			if ("edit".equals(viewType)) {
+				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(person);
+			}
+			if ("shortEdit".equals(viewType)) {
+				return request.getContextPath() + PATIENT_SHORT_EDIT_URL + getParametersForURL(person);
+			} else if ("view".equals(viewType)) {
+				return request.getContextPath() + PATIENT_VIEW_URL + getParametersForURL(person);
+			}
 		} else if ("user".equals(personType)) {
-			return request.getContextPath() + USER_EDIT_URL + getParametersForURL(personId, personType);
+			return request.getContextPath() + USER_EDIT_URL + getParametersForURL(person);
 		} else {
 			if ("edit".equals(viewType)) {
-				return request.getContextPath() + PERSON_EDIT_URL + getParametersForURL(personId, personType);
+				return request.getContextPath() + PERSON_EDIT_URL + getParametersForURL(person);
 			}
 		}
-		throw new ServletException("Undefined personType/viewType combo: " + personType + "/" + viewType);
+		throw new ServletException(
+		        "You entered viewType = \""
+		                + viewType
+		                + "\" and personType = \""
+		                + personType
+		                + "\" which is an invalid viewType/personType combination.\n"
+		                + "Valid viewType/personType combinations are edit/patient, edit/user, shortEdit/patient, view/patient. The viewType edit is valid without any personType. Also, the personType user is valid without any viewType. \n");
 	}
 	
 	/**
 	 * Returns the appropriate ?patientId/?userId/?name&age&birthyear etc
-	 * 
-	 * @param personId
-	 * @param personType
-	 * @return
+	 *
+	 *
+	 * @param person@return
 	 * @throws UnsupportedEncodingException
 	 */
-	private String getParametersForURL(String personId, String personType) throws UnsupportedEncodingException {
-		if ("".equals(personId))
-			return "?addName=" + URLEncoder.encode(name, "UTF-8") + "&addBirthdate=" + birthdate + "&addAge=" + age
-			        + "&addGender=" + gender;
-		else {
-			if ("patient".equals(personType))
-				return "?patientId=" + personId;
-			else if ("user".equals(personType))
-				return "?userId=" + personId;
-			else
-				return "?personId=" + personId;
+	private String getParametersForURL(HashMap<String, String> person) throws UnsupportedEncodingException {
+		
+		if ("".equals(person.get("personId"))) {
+			return "?addName=" + URLEncoder.encode(person.get("name"), "UTF-8") + "&addBirthdate=" + person.get("birthdate")
+			        + "&addAge=" + person.get("age") + "&addGender=" + person.get("gender");
+		} else {
+			if ("patient".equals(person.get("personType"))) {
+				return "?patientId=" + person.get("personId");
+			} else if ("user".equals(person.get("personType"))) {
+				return "?userId=" + person.get("personId");
+			} else {
+				return "?personId=" + person.get("personId");
+			}
 		}
 	}
 	
 	/**
 	 * @param request
 	 */
-	private void getParametersFromRequest(HttpServletRequest request) {
-		name = ServletRequestUtils.getStringParameter(request, "addName", "");
-		birthdate = ServletRequestUtils.getStringParameter(request, "addBirthdate", "");
-		age = ServletRequestUtils.getStringParameter(request, "addAge", "");
-		gender = ServletRequestUtils.getStringParameter(request, "addGender", "");
+	private HashMap<String, String> getParametersFromRequest(HttpServletRequest request) {
+		HashMap<String, String> person = new HashMap<String, String>();
+		person.put("name", ServletRequestUtils.getStringParameter(request, "addName", ""));
+		person.put("birthdate", ServletRequestUtils.getStringParameter(request, "addBirthdate", ""));
+		person.put("age", ServletRequestUtils.getStringParameter(request, "addAge", ""));
+		person.put("gender", ServletRequestUtils.getStringParameter(request, "addGender", ""));
+		person.put("personType", ServletRequestUtils.getStringParameter(request, "personType", "patient"));
+		person.put("personId", ServletRequestUtils.getStringParameter(request, "personId", ""));
+		person.put("viewType", ServletRequestUtils.getStringParameter(request, "viewType", ""));
 		
-		personType = ServletRequestUtils.getStringParameter(request, "personType", "patient");
-		personId = ServletRequestUtils.getStringParameter(request, "personId", "");
-		viewType = ServletRequestUtils.getStringParameter(request, "viewType", "");
+		return person;
 	}
 }

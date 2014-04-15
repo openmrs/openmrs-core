@@ -172,8 +172,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public void purgeProgram(Program program, boolean cascade) throws APIException;
 	
 	/**
-	 * Retires the given program
-	 * 
+	 * Retires the given program 
+	 * @deprecated use {@link retireProgram(Program program,String reason)} 
 	 * @param program Program to be retired
 	 * @return the Program which has been retired
 	 * @throws APIException
@@ -181,8 +181,37 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should retire workflows associated with given program
 	 * @should retire states associated with given program
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program retireProgram(Program program) throws APIException;
+	
+	/**
+	 * Retires the given program	
+	 * @param program Program to be retired
+	 * @param reason String for retiring the program
+	 * @return the Program which has been retired
+	 * @throws APIException
+	 * @should retire program successfully
+	 * @should retire workflows associated with given program
+	 * @should retire states associated with given program
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
+	public Program retireProgram(Program program, String reason) throws APIException;
+	
+	/**
+	 * Unretires the given program
+	 * 
+	 * @deprecated use {@link unretireProgram(Program program)} 
+	 * @param program Program to be unretired
+	 * @return the Program which has been unretired
+	 * @throws APIException
+	 * @should unretire program successfully
+	 * @should unretire workflows associated with given program
+	 * @should unretire states associated with given program
+	 */
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
+	@Deprecated
+	public Program unRetireProgram(Program program) throws APIException;
 	
 	/**
 	 * Unretires the given program
@@ -195,7 +224,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should unretire states associated with given program
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
-	public Program unRetireProgram(Program program) throws APIException;
+	public Program unretireProgram(Program program) throws APIException;
 	
 	// **************************
 	// PATIENT PROGRAM 

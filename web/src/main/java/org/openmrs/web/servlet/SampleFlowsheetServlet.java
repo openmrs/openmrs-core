@@ -114,8 +114,9 @@ public class SampleFlowsheetServlet extends HttpServlet {
 			foundName = shortName.getName();
 		} else {
 			ConceptName name = concept.getName(locale);
-			if (name != null)
+			if (name != null) {
 				foundName = name.getName();
+			}
 		}
 		return foundName;
 	}

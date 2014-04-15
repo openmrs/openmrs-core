@@ -61,7 +61,7 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * This class controls the generic person properties (address, name, attributes). The Patient and
  * User form controllers extend this class.
- * 
+ *
  * @see org.openmrs.web.controller.patient.PatientFormController
  */
 public class PersonFormController extends SimpleFormController {
@@ -72,7 +72,7 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
 	 * are expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -126,7 +126,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Redirects to the patient form if the given personId points to a patient.
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException)
 	 */
@@ -147,7 +147,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Redirects to the patient form if the given personId points to a patient.
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException,
 	 *      java.util.Map)
@@ -195,8 +195,9 @@ public class PersonFormController extends SimpleFormController {
 			updatePersonAttributes(request, errors, person);
 		}
 		
-		if (errors.hasErrors())
+		if (errors.hasErrors()) {
 			return showForm(request, response, errors);
+		}
 		
 		return super.processFormSubmission(request, response, person, errors);
 	}
@@ -235,9 +236,10 @@ public class PersonFormController extends SimpleFormController {
 			}
 		} else if (action.equals(msa.getMessage("Person.void"))) {
 			String voidReason = request.getParameter("voidReason");
-			if (StringUtils.isBlank(voidReason))
+			if (StringUtils.isBlank(voidReason)) {
 				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
 				        .getLocale());
+			}
 			ps.voidPerson(person, voidReason);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
 			
@@ -280,10 +282,11 @@ public class PersonFormController extends SimpleFormController {
 								obsDeath.setConcept(causeOfDeath);
 								Location location = Context.getLocationService().getDefaultLocation();
 								// TODO person healthcenter //if ( loc == null ) loc = patient.getHealthCenter();
-								if (location != null)
+								if (location != null) {
 									obsDeath.setLocation(location);
-								else
+								} else {
 									log.error("Could not find a suitable location for which to create this new Obs");
+								}
 							}
 							
 							// put the right concept and (maybe) text in this obs
@@ -301,8 +304,10 @@ public class PersonFormController extends SimpleFormController {
 								obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 								
 								Date dateDeath = person.getDeathDate();
-								if (dateDeath == null)
+								if (dateDeath == null) {
 									dateDeath = new Date();
+								}
+								
 								obsDeath.setObsDatetime(dateDeath);
 								
 								// check if this is an "other" concept - if so, then we need to add value_text
@@ -330,8 +335,9 @@ public class PersonFormController extends SimpleFormController {
 								}
 								boolean shouldSaveObs = (null == obsDeath.getId()) || deathReasonChanged;
 								if (shouldSaveObs) {
-									if (null == obsDeath.getVoidReason())
+									if (null == obsDeath.getVoidReason()) {
 										obsDeath.setVoidReason("Changed in patient demographics editor");
+									}
 									Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
 								}
 							} else {
@@ -369,7 +375,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person attributes based on request parameters
-	 * 
+	 *
 	 * @param request
 	 * @param errors
 	 * @param person
@@ -390,10 +396,11 @@ public class PersonFormController extends SimpleFormController {
 						attribute.setValue("");
 					} else if (hydratedObject instanceof Attributable) {
 						attribute.setValue(((Attributable) hydratedObject).serialize());
-					} else if (!hydratedObject.getClass().getName().equals(type.getFormat()))
+					} else if (!hydratedObject.getClass().getName().equals(type.getFormat())) {
 						// if the classes doesn't match the format, the hydration failed somehow
 						// TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
 						throw new APIException();
+					}
 				}
 				catch (APIException e) {
 					errors.rejectValue("attributes", "Invalid value for " + type.getName() + ": '" + value + "'");
@@ -407,13 +414,14 @@ public class PersonFormController extends SimpleFormController {
 			}
 		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("Person Attributes: \n" + person.printAttributes());
+		}
 	}
 	
 	/**
 	 * Updates person names based on request parameters
-	 * 
+	 *
 	 * @param request
 	 * @param person
 	 */
@@ -421,8 +429,9 @@ public class PersonFormController extends SimpleFormController {
 		Object[] objs = null;
 		objs = person.getNames().toArray();
 		for (int i = 0; i < objs.length; i++) {
-			if (request.getParameter("names[" + i + "].givenName") == null)
+			if (request.getParameter("names[" + i + "].givenName") == null) {
 				person.removeName((PersonName) objs[i]);
+			}
 		}
 		
 		//String[] prefs = request.getParameterValues("preferred");  (unreliable form info)
@@ -439,22 +448,30 @@ public class PersonFormController extends SimpleFormController {
 			for (int i = 0; i < gNames.length; i++) {
 				if (!"".equals(gNames[i])) { //skips invalid and blank address data box
 					PersonName pn = new PersonName();
-					if (namePrefStatus != null && namePrefStatus.length > i)
+					if (namePrefStatus != null && namePrefStatus.length > i) {
 						pn.setPreferred(new Boolean(namePrefStatus[i]));
-					if (gNames.length >= i + 1)
+					}
+					if (gNames.length >= i + 1) {
 						pn.setGivenName(gNames[i]);
-					if (mNames.length >= i + 1)
+					}
+					if (mNames.length >= i + 1) {
 						pn.setMiddleName(mNames[i]);
-					if (fNamePrefixes.length >= i + 1)
+					}
+					if (fNamePrefixes.length >= i + 1) {
 						pn.setFamilyNamePrefix(fNamePrefixes[i]);
-					if (fNames.length >= i + 1)
+					}
+					if (fNames.length >= i + 1) {
 						pn.setFamilyName(fNames[i]);
-					if (fName2s.length >= i + 1)
+					}
+					if (fName2s.length >= i + 1) {
 						pn.setFamilyName2(fName2s[i]);
-					if (fNameSuffixes.length >= i + 1)
+					}
+					if (fNameSuffixes.length >= i + 1) {
 						pn.setFamilyNameSuffix(fNameSuffixes[i]);
-					if (degrees.length >= i + 1)
+					}
+					if (degrees.length >= i + 1) {
 						pn.setDegree(degrees[i]);
+					}
 					person.addName(pn);
 				}
 			}
@@ -478,7 +495,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person addresses based on request parameters
-	 * 
+	 *
 	 * @param request
 	 * @param person
 	 * @throws ParseException
@@ -506,88 +523,134 @@ public class PersonFormController extends SimpleFormController {
 		        || add4s != null || startDates != null || endDates != null) {
 			int maxAddrs = 0;
 			
-			if (add1s != null)
-				if (add1s.length > maxAddrs)
+			if (add1s != null) {
+				if (add1s.length > maxAddrs) {
 					maxAddrs = add1s.length;
-			if (add2s != null)
-				if (add2s.length > maxAddrs)
+				}
+			}
+			if (add2s != null) {
+				if (add2s.length > maxAddrs) {
 					maxAddrs = add2s.length;
-			if (cities != null)
-				if (cities.length > maxAddrs)
+				}
+			}
+			if (cities != null) {
+				if (cities.length > maxAddrs) {
 					maxAddrs = cities.length;
-			if (states != null)
-				if (states.length > maxAddrs)
+				}
+			}
+			if (states != null) {
+				if (states.length > maxAddrs) {
 					maxAddrs = states.length;
-			if (countries != null)
-				if (countries.length > maxAddrs)
+				}
+			}
+			if (countries != null) {
+				if (countries.length > maxAddrs) {
 					maxAddrs = countries.length;
-			if (lats != null)
-				if (lats.length > maxAddrs)
+				}
+			}
+			if (lats != null) {
+				if (lats.length > maxAddrs) {
 					maxAddrs = lats.length;
-			if (longs != null)
-				if (longs.length > maxAddrs)
+				}
+			}
+			if (longs != null) {
+				if (longs.length > maxAddrs) {
 					maxAddrs = longs.length;
-			if (pCodes != null)
-				if (pCodes.length > maxAddrs)
+				}
+			}
+			if (pCodes != null) {
+				if (pCodes.length > maxAddrs) {
 					maxAddrs = pCodes.length;
-			if (counties != null)
-				if (counties.length > maxAddrs)
+				}
+			}
+			if (counties != null) {
+				if (counties.length > maxAddrs) {
 					maxAddrs = counties.length;
-			if (add3s != null)
-				if (add3s.length > maxAddrs)
+				}
+			}
+			if (add3s != null) {
+				if (add3s.length > maxAddrs) {
 					maxAddrs = add3s.length;
-			if (add6s != null)
-				if (add6s.length > maxAddrs)
+				}
+			}
+			if (add6s != null) {
+				if (add6s.length > maxAddrs) {
 					maxAddrs = add6s.length;
-			if (add5s != null)
-				if (add5s.length > maxAddrs)
+				}
+			}
+			if (add5s != null) {
+				if (add5s.length > maxAddrs) {
 					maxAddrs = add5s.length;
-			if (add4s != null)
-				if (add4s.length > maxAddrs)
+				}
+			}
+			if (add4s != null) {
+				if (add4s.length > maxAddrs) {
 					maxAddrs = add4s.length;
-			if (startDates != null)
-				if (startDates.length > maxAddrs)
+				}
+			}
+			if (startDates != null) {
+				if (startDates.length > maxAddrs) {
 					maxAddrs = startDates.length;
-			if (endDates != null)
-				if (endDates.length > maxAddrs)
+				}
+			}
+			if (endDates != null) {
+				if (endDates.length > maxAddrs) {
 					maxAddrs = endDates.length;
+				}
+			}
 			
 			log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
 			
 			for (int i = 0; i < maxAddrs; i++) {
 				PersonAddress pa = new PersonAddress();
-				if (add1s.length >= i + 1)
+				if (add1s.length >= i + 1) {
 					pa.setAddress1(add1s[i]);
-				if (add2s.length >= i + 1)
+				}
+				if (add2s.length >= i + 1) {
 					pa.setAddress2(add2s[i]);
-				if (cities.length >= i + 1)
+				}
+				if (cities.length >= i + 1) {
 					pa.setCityVillage(cities[i]);
-				if (states.length >= i + 1)
+				}
+				if (states.length >= i + 1) {
 					pa.setStateProvince(states[i]);
-				if (countries.length >= i + 1)
+				}
+				if (countries.length >= i + 1) {
 					pa.setCountry(countries[i]);
-				if (lats.length >= i + 1)
+				}
+				if (lats.length >= i + 1) {
 					pa.setLatitude(lats[i]);
-				if (longs.length >= i + 1)
+				}
+				if (longs.length >= i + 1) {
 					pa.setLongitude(longs[i]);
-				if (pCodes.length >= i + 1)
+				}
+				if (pCodes.length >= i + 1) {
 					pa.setPostalCode(pCodes[i]);
-				if (counties.length >= i + 1)
+				}
+				if (counties.length >= i + 1) {
 					pa.setCountyDistrict(counties[i]);
-				if (add3s.length >= i + 1)
+				}
+				if (add3s.length >= i + 1) {
 					pa.setAddress3(add3s[i]);
-				if (addPrefStatus != null && addPrefStatus.length > i)
+				}
+				if (addPrefStatus != null && addPrefStatus.length > i) {
 					pa.setPreferred(new Boolean(addPrefStatus[i]));
-				if (add6s.length >= i + 1)
+				}
+				if (add6s.length >= i + 1) {
 					pa.setAddress6(add6s[i]);
-				if (add5s.length >= i + 1)
+				}
+				if (add5s.length >= i + 1) {
 					pa.setAddress5(add5s[i]);
-				if (add4s.length >= i + 1)
+				}
+				if (add4s.length >= i + 1) {
 					pa.setAddress4(add4s[i]);
-				if (startDates.length >= i + 1 && StringUtils.isNotBlank(startDates[i]))
+				}
+				if (startDates.length >= i + 1 && StringUtils.isNotBlank(startDates[i])) {
 					pa.setStartDate(Context.getDateFormat().parse(startDates[i]));
-				if (endDates.length >= i + 1 && StringUtils.isNotBlank(endDates[i]))
+				}
+				if (endDates.length >= i + 1 && StringUtils.isNotBlank(endDates[i])) {
 					pa.setEndDate(Context.getDateFormat().parse(endDates[i]));
+				}
 				
 				person.addAddress(pa);
 			}
@@ -612,18 +675,20 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Setup the person object. Should be called by the
 	 * PersonFormController.formBackingObject(request)
-	 * 
+	 *
 	 * @param person
 	 * @return
 	 */
 	protected Person setupFormBackingObject(Person person) {
 		
 		// set a default name and address for the person.  This allows us to use person.names[0] binding in the jsp
-		if (person.getNames().size() < 1)
+		if (person.getNames().size() < 1) {
 			person.addName(new PersonName());
+		}
 		
-		if (person.getAddresses().size() < 1)
+		if (person.getAddresses().size() < 1) {
 			person.addAddress(new PersonAddress());
+		}
 		
 		// initialize the user/person sets
 		// hibernate seems to have an issue with empty lists/sets if they aren't initialized
@@ -636,7 +701,7 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Setup the reference map object. Should be called by the
 	 * PersonFormController.referenceData(...)
-	 * 
+	 *
 	 * @param person
 	 * @return
 	 */
@@ -678,7 +743,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Add the given name, gender, and birthdate/age to the given Person
-	 * 
+	 *
 	 * @param <P> Should be a Patient or User object
 	 * @param person
 	 * @param name
@@ -726,8 +791,9 @@ public class PersonFormController extends SimpleFormController {
 				log.debug("Error getting date from age", e);
 			}
 		}
-		if (birthdate != null)
+		if (birthdate != null) {
 			person.setBirthdate(birthdate);
+		}
 		person.setBirthdateEstimated(birthdateEstimated);
 		
 	}

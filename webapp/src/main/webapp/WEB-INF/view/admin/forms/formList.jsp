@@ -14,7 +14,7 @@
 	<select name="duplicateFormId" id="duplicateFormId">
 		<option value=""><openmrs:message code="general.choose"/>...</option>
 		<c:forEach var="form" items="${formList}">
-			<option value="${form.formId}">${form.name} (v. ${form.version}.${form.build})</option>
+			<option value="${form.formId}"><c:out value="${form.name}"/> (v. ${form.version}.${form.build})</option>
 		</c:forEach>
 	</select>
 	<input type="button" value="<openmrs:message code="Form.duplicate"/>" onclick="return duplicate()" />
@@ -22,7 +22,7 @@
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.forms.formListHeader" type="html">
 	<c:forEach items="${extension.links}" var="link">
-		| <a href="${pageContext.request.contextPath}/${link.key}"><openmrs:message code="${link.value}"/></a>
+		| <a href="<openmrs_tag:url value="${link.key}"/>"><openmrs:message code="${link.value}"/></a>
 	</c:forEach>
 </openmrs:extensionPoint>
 
@@ -46,10 +46,10 @@
 		</tr>
 		<c:forEach var="form" items="${formList}" varStatus="status">
 			<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"} ${form.retired ? "voided" : ""}'>
-				<td valign="top" style="white-space: nowrap"><a href="formEdit.form?formId=${form.formId}">${form.name}</a></td>
+				<td valign="top" style="white-space: nowrap"><a href="formEdit.form?formId=${form.formId}"><c:out value="${form.name}"/></a></td>
 				<td valign="top">${form.version}</td>
 				<td valign="top">${form.build}</td>
-				<td valign="top">${form.description}</td>
+				<td valign="top"><c:out value="${form.description}"/></td>
 				<td valign="top"><c:if test="${form.published == true}"><openmrs:message code="general.yes"/></c:if></td>
 			</tr>
 		</c:forEach>

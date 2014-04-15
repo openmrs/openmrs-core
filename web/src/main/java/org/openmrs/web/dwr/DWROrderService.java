@@ -51,8 +51,9 @@ public class DWROrderService {
 		DrugOrder drugOrder = new DrugOrder();
 		Patient patient = Context.getPatientService().getPatient(patientId);
 		Drug drug = Context.getConceptService().getDrugByNameOrId(drugId);
-		if (drug == null)
+		if (drug == null) {
 			throw new APIException("There is no drug with the name or drugId of: " + drugId);
+		}
 		
 		drugOrder.setDrug(drug);
 		Concept concept = drug.getConcept();
@@ -141,8 +142,9 @@ public class DWROrderService {
 		Drug drug = Context.getConceptService().getDrug(drugId);
 		if (drug != null) {
 			String drugUnits = drug.getUnits();
-			if (drugUnits != null)
+			if (drugUnits != null) {
 				ret = drugUnits;
+			}
 		}
 		
 		return ret;
@@ -206,7 +208,7 @@ public class DWROrderService {
 	
 	/**
 	 * Find orderables in the database that match the given search values.
-	 * 
+	 *
 	 * @see OrderService#getOrderables(String)
 	 * @param searchValue a query string like 'ampicil'
 	 * @return list of {@link OrderableListItem}s (or String warning message if none found)

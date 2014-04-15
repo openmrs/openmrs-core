@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 /**
  * This class deals with {@link Person} objects when they are saved via a save* method in an Openmrs
  * Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP class. <br/>
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @see Person
@@ -42,28 +42,6 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 	 *      java.util.Date, java.lang.String)
 	 */
 	public void handle(Person person, User creator, Date dateCreated, String other) {
-		
-		// only set the creator and date created if they weren't set by the developer already
-		if (person.getPersonCreator() == null) {
-			person.setPersonCreator(creator);
-		}
-		
-		if (person.getPersonDateCreated() == null) {
-			person.setPersonDateCreated(dateCreated);
-		}
-		
-		// if there is an id already, we assume its been saved before and so set personChanged*
-		boolean hasId;
-		try {
-			hasId = person.getId() != null;
-		}
-		catch (UnsupportedOperationException e) {
-			hasId = true; // if no "id" to check, just go ahead and set them
-		}
-		if (hasId) {
-			person.setPersonChangedBy(creator);
-			person.setPersonDateChanged(dateCreated);
-		}
 		
 		// address collection
 		if (person.getAddresses() != null && person.getAddresses().size() > 0) {
@@ -87,15 +65,17 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 		}
 		
 		//if the patient was marked as dead and reversed, drop the cause of death
-		if (!person.isDead() && person.getCauseOfDeath() != null)
+		if (!person.isDead() && person.getCauseOfDeath() != null) {
 			person.setCauseOfDeath(null);
+		}
 		
 		// do the checks for voided attributes (also in PersonVoidHandler)
 		if (person.isPersonVoided()) {
 			
-			if (!StringUtils.hasLength(person.getPersonVoidReason()))
+			if (!StringUtils.hasLength(person.getPersonVoidReason())) {
 				throw new APIException(
 				        "The voided bit was set to true, so a void reason is required at save time for person: " + person);
+			}
 			
 			if (person.getPersonVoidedBy() == null) {
 				person.setPersonVoidedBy(creator);

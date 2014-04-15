@@ -13,24 +13,28 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.SimpleExpression;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * The PatientSearchCriteria class. It has API to return a criteria from the Patient Name and
@@ -38,9 +42,13 @@ import org.springframework.util.StringUtils;
  */
 public class PatientSearchCriteria {
 	
+	private final static Log log = LogFactory.getLog(PatientSearchCriteria.class);
+	
 	private final SessionFactory sessionFactory;
 	
 	private final Criteria criteria;
+	
+	private PersonSearchCriteria personSearchCriteria;
 	
 	/**
 	 * @param sessionFactory
@@ -49,70 +57,172 @@ public class PatientSearchCriteria {
 	public PatientSearchCriteria(SessionFactory sessionFactory, Criteria criteria) {
 		this.sessionFactory = sessionFactory;
 		this.criteria = criteria;
+		this.personSearchCriteria = new PersonSearchCriteria();
 	}
 	
 	/**
-	 * Prepare a hibernate criteria using the patient identifier.
-	 * 
+	 * Prepare a hibernate criteria for searching patients by name and/or identifier.
+	 *
+	 * The visibility of this method remains public in order not to break OpenMRS modules that use this method.
+	 *
+	 * Instead of calling this method consider using {@link org.openmrs.api.PatientService} or
+	 * {@link org.openmrs.api.db.PatientDAO}.
+	 *
 	 * @param name
 	 * @param identifier
 	 * @param identifierTypes
 	 * @param matchIdentifierExactly
+	 * @param searchOnNamesOrIdentifiers specifies if the logic should find patients that match the
+	 *            name or identifier otherwise find patients that match both the name and identifier
 	 * @return {@link Criteria}
 	 */
 	public Criteria prepareCriteria(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly, boolean orderByNames) {
-		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
-		identifier = HibernateUtil.escapeSqlWildcards(identifier, sessionFactory);
+	        boolean matchIdentifierExactly, boolean orderByNames, boolean searchOnNamesOrIdentifiers) {
 		
+		PatientSearchMode patientSearchMode = getSearchMode(name, identifier, identifierTypes, searchOnNamesOrIdentifiers);
+		
+		switch (patientSearchMode) {
+			case PATIENT_SEARCH_BY_NAME:
+				addAliasForName(criteria, orderByNames);
+				criteria.add(prepareCriterionForName(name));
+				break;
+			
+			case PATIENT_SEARCH_BY_IDENTIFIER:
+				addAliasForIdentifiers(criteria);
+				criteria.add(prepareCriterionForIdentifier(identifier, identifierTypes, matchIdentifierExactly));
+				break;
+			
+			case PATIENT_SEARCH_BY_NAME_OR_IDENTIFIER:
+
+				// If only name *or* identifier is provided as a search parameter,
+				// the respective value is copied to the empty search parameter.
+				//
+				// As a consequence, the *single* parameter is used to search for both names and identifiers.
+				//
+				name = copySearchParameter(identifier, name);
+				identifier = copySearchParameter(name, identifier);
+				
+				addAliasForName(criteria, orderByNames);
+				addAliasForIdentifiers(criteria);
+				criteria.add(Restrictions.disjunction().add(prepareCriterionForName(name)).add(
+				    prepareCriterionForIdentifier(identifier, identifierTypes, matchIdentifierExactly)));
+				break;
+			
+			case PATIENT_SEARCH_BY_NAME_AND_IDENTIFIER:
+				addAliasForName(criteria, orderByNames);
+				addAliasForIdentifiers(criteria);
+				criteria.add(prepareCriterionForName(name));
+				criteria.add(prepareCriterionForIdentifier(identifier, identifierTypes, matchIdentifierExactly));
+				break;
+			
+		}
+		
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		
+		log.debug(criteria.toString());
+		
+		return criteria;
+	}
+	
+	/**
+	 * Provides a Hibernate criteria object for searching patients by name, identifier or searchable attribute.
+	 *
+	 * The visibility of this method is "default" as this method should NOT be called directly by classes other
+	 * than org.openmrs.api.db.hibernate.HibernatePatientDAO.
+	 *
+	 * Instead of calling this method consider using {@link org.openmrs.api.PatientService} or
+	 * {@link org.openmrs.api.db.PatientDAO}.
+	 *
+	 * @param query defines search parameters
+	 * @return criteria for searching by name OR identifier OR searchable attributes
+	 */
+	Criteria prepareCriteria(String query) {
+		addAliasForName(criteria, true);
+		personSearchCriteria.addAliasForAttribute(criteria);
+		addAliasForIdentifiers(criteria);
+		
+		criteria.add(Restrictions.disjunction().add(prepareCriterionForName(query)).add(prepareCriterionForAttribute(query))
+		        .add(prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false)));
+		
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		
+		log.debug(criteria.toString());
+		
+		return criteria;
+	}
+	
+	/**
+	 * @should return source value when target is blank
+	 * @should return target value when target is non-blank
+	 */
+	String copySearchParameter(String source, String target) {
+		if (!StringUtils.isBlank(source) && StringUtils.isBlank(target)) {
+			return source;
+		}
+		return target;
+	}
+	
+	/**
+	 * @should identify search by name
+	 * @should identify search by identifier
+	 * @should identify search by identifier type list
+	 * @should identify search by identifier and identifier type list
+	 * @should identify search by name or identifier
+	 * @should identify search by name and identifier
+	 */
+	PatientSearchMode getSearchMode(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean searchOnNamesOrIdentifiers) {
+		if (searchOnNamesOrIdentifiers) {
+			return PatientSearchMode.PATIENT_SEARCH_BY_NAME_OR_IDENTIFIER;
+		}
+		
+		if (!StringUtils.isBlank(name) && StringUtils.isBlank(identifier) && CollectionUtils.isEmpty(identifierTypes)) {
+			return PatientSearchMode.PATIENT_SEARCH_BY_NAME;
+		}
+		
+		// de Morgan's law coming to fruition: (!A||!B) <=> !(A&&B)
+		//
+		if (StringUtils.isBlank(name) && !(StringUtils.isBlank(identifier) && CollectionUtils.isEmpty(identifierTypes))) {
+			return PatientSearchMode.PATIENT_SEARCH_BY_IDENTIFIER;
+		}
+		
+		return PatientSearchMode.PATIENT_SEARCH_BY_NAME_AND_IDENTIFIER;
+	}
+	
+	private void addAliasForName(Criteria criteria, boolean orderByNames) {
 		criteria.createAlias("names", "name");
 		if (orderByNames) {
 			criteria.addOrder(Order.asc("name.givenName"));
 			criteria.addOrder(Order.asc("name.middleName"));
 			criteria.addOrder(Order.asc("name.familyName"));
 		}
-		
-		// get only distinct patients
-		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		
-		if (name != null) {
-			addNameCriterias(criteria, name);
-		}
-		
-		// do the restriction on either identifier string or types
-		if (identifier != null || identifierTypes.size() > 0) {
-			addIdentifierCriterias(criteria, identifier, identifierTypes, matchIdentifierExactly);
-		}
-		
-		// TODO add junit test for searching on voided patients
-		
-		// make sure the patient object isn't voided
-		criteria.add(Expression.eq("voided", false));
-		
-		return criteria;
+	}
+	
+	private void addAliasForIdentifiers(Criteria criteria) {
+		criteria.createAlias("identifiers", "ids", CriteriaSpecification.LEFT_JOIN);
 	}
 	
 	/**
 	 * Utility method to add identifier expression to an existing criteria
-	 * 
-	 * @param criteria
+	 *
 	 * @param identifier
 	 * @param identifierTypes
 	 * @param matchIdentifierExactly
 	 */
-	private void addIdentifierCriterias(Criteria criteria, String identifier, List<PatientIdentifierType> identifierTypes,
+	private Criterion prepareCriterionForIdentifier(String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) {
-		// TODO add junit test for searching on voided identifiers
 		
-		// add the join on the identifiers table
-		criteria.createAlias("identifiers", "ids");
-		criteria.add(Expression.eq("ids.voided", false));
+		identifier = HibernateUtil.escapeSqlWildcards(identifier, sessionFactory);
+		Conjunction conjunction = Restrictions.conjunction();
 		
+		conjunction.add(Restrictions.eq("ids.voided", false));
 		// do the identifier restriction
 		if (identifier != null) {
 			// if the user wants an exact search, match on that.
 			if (matchIdentifierExactly) {
-				criteria.add(Expression.eq("ids.identifier", identifier));
+				conjunction.add(Restrictions.eq("ids.identifier", identifier).ignoreCase());
 			} else {
 				AdministrationService adminService = Context.getAdministrationService();
 				String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
@@ -124,19 +234,19 @@ public class PatientSearchCriteria {
 					identifier = removePadding(identifier, regex);
 				}
 				
-				if (StringUtils.hasLength(patternSearch)) {
-					splitAndAddSearchPattern(criteria, identifier, patternSearch);
+				if (org.springframework.util.StringUtils.hasLength(patternSearch)) {
+					conjunction.add(splitAndGetSearchPattern(identifier, patternSearch));
 				}
 				// if the regex is empty, default to a simple "like" search or if
 				// we're in hsql world, also only do the simple like search (because
 				// hsql doesn't know how to deal with 'regexp'
 				else if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
-					addCriterionForSimpleSearch(criteria, identifier, adminService);
+					conjunction.add(getCriterionForSimpleSearch(identifier, adminService));
 				}
 				// if the regex is present, search on that
 				else {
 					regex = replaceSearchString(regex, identifier);
-					criteria.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
+					conjunction.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
 				}
 			}
 		}
@@ -144,45 +254,45 @@ public class PatientSearchCriteria {
 		// TODO add a junit test for patientIdentifierType restrictions
 		
 		// do the type restriction
-		if (identifierTypes.size() > 0) {
-			criteria.add(Expression.in("ids.identifierType", identifierTypes));
+		if (!CollectionUtils.isEmpty(identifierTypes)) {
+			criteria.add(Restrictions.in("ids.identifierType", identifierTypes));
 		}
 		
+		return conjunction;
 	}
 	
 	/**
 	 * Utility method to add prefix and suffix like expression
-	 * 
-	 * @param criteria
+	 *
 	 * @param identifier
 	 * @param adminService
 	 */
-	private void addCriterionForSimpleSearch(Criteria criteria, String identifier, AdministrationService adminService) {
+	private Criterion getCriterionForSimpleSearch(String identifier, AdministrationService adminService) {
 		String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
 		String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "");
 		StringBuffer likeString = new StringBuffer(prefix).append(identifier).append(suffix);
-		criteria.add(Expression.like("ids.identifier", likeString.toString()));
+		return Restrictions.ilike("ids.identifier", likeString.toString());
 	}
 	
 	/**
 	 * Utility method to add search pattern expression to identifier.
-	 * 
-	 * @param criteria
+	 *
 	 * @param identifier
 	 * @param patternSearch
 	 */
-	private void splitAndAddSearchPattern(Criteria criteria, String identifier, String patternSearch) {
+	private Criterion splitAndGetSearchPattern(String identifier, String patternSearch) {
 		// split the pattern before replacing in case the user searched on a comma
 		List<String> searchPatterns = new ArrayList<String>();
 		// replace the @SEARCH@, etc in all elements
-		for (String pattern : patternSearch.split(","))
+		for (String pattern : patternSearch.split(",")) {
 			searchPatterns.add(replaceSearchString(pattern, identifier));
-		criteria.add(Expression.in("ids.identifier", searchPatterns));
+		}
+		return Restrictions.in("ids.identifier", searchPatterns);
 	}
 	
 	/**
 	 * Utility method to remove padding from the identifier.
-	 * 
+	 *
 	 * @param identifier
 	 * @param regex
 	 * @return identifier without the padding.
@@ -196,36 +306,63 @@ public class PatientSearchCriteria {
 	
 	/**
 	 * Utility method to add name expressions to criteria.
-	 * 
-	 * @param criteria
+	 *
 	 * @param name
 	 */
-	private void addNameCriterias(Criteria criteria, String name) {
-		// TODO simple name search to start testing, will need to make "real"
-		// name search
-		// i.e. split on whitespace, guess at first/last name, etc
+	private Criterion prepareCriterionForName(String name) {
 		
-		name = name.replaceAll("  ", " ");
-		name = name.replace(", ", " ");
-		String[] names = name.split(" ");
+		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
 		
-		// TODO add junit test for searching on voided patient names
-		if (names.length > 0) {
-			String nameSoFar = names[0];
-			for (int i = 0; i < names.length; i++) {
-				String n = names[i];
-				if (n != null && n.length() > 0) {
-					LogicalExpression oneNameSearch = getNameSearch(n);
-					LogicalExpression searchExpression = oneNameSearch;
+		Conjunction conjunction = Restrictions.conjunction();
+		String[] nameParts = getQueryParts(name);
+		if (nameParts.length > 0) {
+			StringBuilder multiName = new StringBuilder(nameParts[0]);
+			
+			for (int i = 0; i < nameParts.length; i++) {
+				String singleName = nameParts[i];
+				
+				if (singleName != null && singleName.length() > 0) {
+					Criterion singleNameCriterion = getCriterionForName(singleName);
+					Criterion criterion = singleNameCriterion;
+					
 					if (i > 0) {
-						nameSoFar += " " + n;
-						LogicalExpression fullNameSearch = getNameSearch(nameSoFar);
-						searchExpression = Expression.or(oneNameSearch, fullNameSearch);
+						multiName.append(" ");
+						multiName.append(singleName);
+						Criterion multiNameCriterion = getCriterionForName(multiName.toString());
+						criterion = Restrictions.or(singleNameCriterion, multiNameCriterion);
 					}
-					criteria.add(searchExpression);
+					
+					conjunction.add(criterion);
 				}
 			}
 		}
+		
+		return conjunction;
+	}
+	
+	/**
+	 * @should process simple space as separator
+	 * @should process comma as separator
+	 * @should process mixed separators
+	 * @should not return empty name parts
+	 * @should reject null as name
+	 **/
+	String[] getQueryParts(String query) {
+		if (query == null) {
+			throw new IllegalArgumentException("query must not be null");
+		}
+		
+		query = query.replace(",", " ");
+		String[] queryPartArray = query.split(" ");
+		
+		List<String> queryPartList = new ArrayList<String>();
+		for (String queryPart : queryPartArray) {
+			if (queryPart.trim().length() > 0) {
+				queryPartList.add(queryPart);
+			}
+		}
+		
+		return queryPartList.toArray(new String[0]);
 	}
 	
 	/**
@@ -233,57 +370,78 @@ public class PatientSearchCriteria {
 	 * <br/>
 	 * This criteria is essentially:
 	 * <p/>
-	 * 
+	 *
 	 * <pre>
 	 * ... where voided = false &amp;&amp; name in (familyName2, familyName, middleName, givenName)
 	 * </pre>
+	 *
 	 * Except when the name provided is less than min characters (usually 3) then we will look for
 	 * an EXACT match by default
-	 * 
+	 *
 	 * @param name
 	 * @return {@link LogicalExpression}
 	 */
-	private LogicalExpression getNameSearch(String name) {
-		String givenNameProperty = "name.givenName";
-		String middleNameProperty = "name.middleName";
-		String familyNameProperty = "name.familyName";
-		String familyName2Property = "name.familyName2";
-		
-		SimpleExpression givenName;
-		SimpleExpression middleName;
-		SimpleExpression familyName;
-		SimpleExpression familyName2;
-		
+	private Criterion getCriterionForName(String name) {
+		if (isShortName(name)) {
+			return getCriterionForShortName(name);
+		}
+		return getCriterionForLongName(name);
+	}
+	
+	/**
+	 * @should recognise short name
+	 * @should recognise long name
+	 */
+	Boolean isShortName(String name) {
 		Integer minChars = Context.getAdministrationService().getGlobalPropertyValue(
 		    OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS,
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS);
-		if (name != null && name.length() < minChars) {
-			givenName = Expression.eq(givenNameProperty, name).ignoreCase();
-			middleName = Expression.eq(middleNameProperty, name).ignoreCase();
-			familyName = Expression.eq(familyNameProperty, name).ignoreCase();
-			familyName2 = Expression.eq(familyName2Property, name).ignoreCase();
-		} else {
-			MatchMode mode = MatchMode.START;
-			String matchModeConstant = OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE;
-			String modeGp = Context.getAdministrationService().getGlobalProperty(matchModeConstant);
-			
-			if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equalsIgnoreCase(modeGp)) {
-				mode = MatchMode.ANYWHERE;
-			}
-			
-			givenName = Expression.like(givenNameProperty, name, mode);
-			middleName = Expression.like(middleNameProperty, name, mode);
-			familyName = Expression.like(familyNameProperty, name, mode);
-			familyName2 = Expression.like(familyName2Property, name, mode);
-		}
 		
-		return Expression.and(Expression.eq("name.voided", false), Expression.or(familyName2, Expression.or(familyName,
-		    Expression.or(middleName, givenName))));
+		if (name != null && name.length() < minChars) {
+			return Boolean.TRUE;
+			
+		} else {
+			return Boolean.FALSE;
+		}
+	}
+	
+	private Criterion getCriterionForShortName(String name) {
+		return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
+		    Restrictions.disjunction().add(Restrictions.eq("name.givenName", name).ignoreCase()).add(
+		        Restrictions.eq("name.middleName", name).ignoreCase()).add(
+		        Restrictions.eq("name.familyName", name).ignoreCase()).add(
+		        Restrictions.eq("name.familyName2", name).ignoreCase()));
+	}
+	
+	private Criterion getCriterionForLongName(String name) {
+		MatchMode matchMode = getMatchMode();
+		
+		return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
+		    Restrictions.disjunction().add(Restrictions.like("name.givenName", name, matchMode)).add(
+		        Restrictions.like("name.middleName", name, matchMode)).add(
+		        Restrictions.like("name.familyName", name, matchMode)).add(
+		        Restrictions.like("name.familyName2", name, matchMode)));
+	}
+	
+	/**
+	 * @should return start as default match mode
+	 * @should return start as configured match mode
+	 * @should return anywhere as configured match mode
+	 */
+	MatchMode getMatchMode() {
+		String matchMode = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START);
+		
+		if (matchMode.equalsIgnoreCase(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE)) {
+			return MatchMode.ANYWHERE;
+		}
+		return MatchMode.START;
 	}
 	
 	/**
 	 * Puts @SEARCH@, @SEARCH-1@, and @CHECKDIGIT@ into the search string
-	 * 
+	 *
 	 * @param regex the admin-defined search string containing the @..@'s to be replaced
 	 * @param identifierSearched the user entered search string
 	 * @return substituted search strings.
@@ -301,5 +459,17 @@ public class PatientSearchCriteria {
 			returnString = returnString.replaceAll("@CHECKDIGIT@", "");
 		}
 		return returnString;
+	}
+	
+	private Criterion prepareCriterionForAttribute(String query) {
+		query = HibernateUtil.escapeSqlWildcards(query, sessionFactory);
+		Conjunction conjunction = Restrictions.conjunction();
+		
+		String[] queryParts = getQueryParts(query);
+		for (String queryPart : queryParts) {
+			conjunction.add(personSearchCriteria.prepareCriterionForAttribute(queryPart));
+		}
+		
+		return conjunction;
 	}
 }

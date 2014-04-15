@@ -37,11 +37,11 @@ import org.springframework.util.StringUtils;
  * view to currently logged in (or anonymous) users that have the given privileges. <br/>
  * <br/>
  * Example use case:
- * 
+ *
  * <pre>
  * &lt;openmrs:require privilege="Manage Concept Classes" otherwise="/login.htm" redirect="/admin/concepts/conceptClass.form" />
  * </pre>
- * 
+ *
  * This will demand that the user have the "Manage Concept Classes" privilege. If they don't, kick
  * the user back to the "/login.htm" page. Then, after they log in on that page, send the user to
  * "/admin/concepts/conceptClass.form".
@@ -72,7 +72,7 @@ public class RequireTag extends TagSupport {
 	 * need be. <br/>
 	 * <br/>
 	 * Returns SKIP_PAGE if the user doesn't have the privilege and SKIP_BODY if it does.
-	 * 
+	 *
 	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
 	 * @should allow user with the privilege
 	 * @should allow user to have any privilege
@@ -110,8 +110,9 @@ public class RequireTag extends TagSupport {
 			errorOccurred = true;
 			if (userContext.isAuthenticated()) {
 				httpSession.setAttribute(WebConstants.INSUFFICIENT_PRIVILEGES, true);
-				if (missingPrivilegesBuffer != null)
+				if (missingPrivilegesBuffer != null) {
 					httpSession.setAttribute(WebConstants.REQUIRED_PRIVILEGES, missingPrivilegesBuffer.toString());
+				}
 				
 				String referer = request.getHeader("Referer");
 				httpSession.setAttribute(WebConstants.REFERER_URL, referer);
@@ -125,8 +126,9 @@ public class RequireTag extends TagSupport {
 				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
 				        + " which requires privilege: " + privilege + " or one of: " + allPrivileges + " or any of "
 				        + anyPrivilege);
-			} else
+			} else {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
+			}
 		} else if (hasPrivilege && userContext.isAuthenticated()) {
 			// redirect users to password change form
 			User user = userContext.getAuthenticatedUser();
@@ -162,13 +164,15 @@ public class RequireTag extends TagSupport {
 		
 		if (errorOccurred) {
 			String url = "";
-			if (redirect != null && !redirect.equals(""))
+			if (redirect != null && !redirect.equals("")) {
 				url = request.getContextPath() + redirect;
-			else
+			} else {
 				url = request.getRequestURI();
+			}
 			
-			if (request.getQueryString() != null)
+			if (request.getQueryString() != null) {
 				url = url + "?" + request.getQueryString();
+			}
 			httpSession.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, url);
 			try {
 				httpResponse.sendRedirect(request.getContextPath() + otherwise);
@@ -185,14 +189,15 @@ public class RequireTag extends TagSupport {
 	
 	/**
 	 * Determines if the given ip addresses are the same.
-	 * 
+	 *
 	 * @param session_ip_addr
 	 * @param request_ip_addr
 	 * @return true/false whether these IPs are different
 	 */
 	private boolean differentIpAddresses(String sessionIpAddr, String requestIpAddr) {
-		if (sessionIpAddr == null || requestIpAddr == null)
+		if (sessionIpAddr == null || requestIpAddr == null) {
 			return false;
+		}
 		
 		// IE7 and firefox store "localhost" IP addresses differently.
 		// To accomodate switching from firefox browing to IE taskpane,
@@ -202,8 +207,9 @@ public class RequireTag extends TagSupport {
 		equivalentAddresses.add("0.0.0.0");
 		
 		// if the addresses are equal, all is well
-		if (sessionIpAddr.equals(requestIpAddr))
+		if (sessionIpAddr.equals(requestIpAddr)) {
 			return false;
+		}
 		// if they aren't equal, but we consider them to be, also all is well
 		else if (equivalentAddresses.contains(sessionIpAddr) && equivalentAddresses.contains(requestIpAddr)) {
 			return false;
@@ -220,7 +226,7 @@ public class RequireTag extends TagSupport {
 	 * <li>allPrivileges is not defined OR user has every privilege in allPrivileges</li>
 	 * <li>anyPrivilege is not defined OR user has at least one of the privileges in anyPrivileges</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param userContext current user context
 	 * @param privilege a single required privilege
 	 * @param allPrivilegesArray an array of required privileges
@@ -233,49 +239,54 @@ public class RequireTag extends TagSupport {
 			addMissingPrivilege(privilege);
 			return false;
 		}
-		if (allPrivilegesArray.length > 0 && !hasAllPrivileges(userContext, allPrivilegesArray))
+		if (allPrivilegesArray.length > 0 && !hasAllPrivileges(userContext, allPrivilegesArray)) {
 			return false;
-		if (anyPrivilegeArray.length > 0 && !hasAnyPrivilege(userContext, anyPrivilegeArray))
+		}
+		if (anyPrivilegeArray.length > 0 && !hasAnyPrivilege(userContext, anyPrivilegeArray)) {
 			return false;
+		}
 		return true;
 	}
 	
 	/**
 	 * Returns true if user has all privileges
-	 * 
+	 *
 	 * @param userContext current user context
 	 * @param allPrivilegesArray list of privileges
 	 * @return true if user has all of the privileges
 	 */
 	private boolean hasAllPrivileges(UserContext userContext, String[] allPrivilegesArray) {
-		for (String p : allPrivilegesArray)
+		for (String p : allPrivilegesArray) {
 			if (!userContext.hasPrivilege(p.trim())) {
 				addMissingPrivilege(p);
 				return false;
 			}
+		}
 		return true;
 	}
 	
 	/**
 	 * Returns true if user has any of the privileges
-	 * 
+	 *
 	 * @param userContext current user context
 	 * @param anyPriviegeArray list of privileges
 	 * @return true if user has at least one of the privileges
 	 */
 	private boolean hasAnyPrivilege(UserContext userContext, String[] anyPriviegeArray) {
 		for (String p : anyPriviegeArray) {
-			if (userContext.hasPrivilege(p.trim()))
+			if (userContext.hasPrivilege(p.trim())) {
 				return true;
-			else
+			} else {
 				addMissingPrivilege(p);
+			}
 		}
 		return false;
 	}
 	
 	private void addMissingPrivilege(String p) {
-		if (!StringUtils.hasText(p))
+		if (!StringUtils.hasText(p)) {
 			return;
+		}
 		
 		if (missingPrivilegesBuffer == null) {
 			missingPrivilegesBuffer = new StringBuffer();
@@ -290,10 +301,11 @@ public class RequireTag extends TagSupport {
 	 */
 	public int doEndTag() {
 		missingPrivilegesBuffer = null;
-		if (errorOccurred)
+		if (errorOccurred) {
 			return SKIP_PAGE;
-		else
+		} else {
 			return EVAL_PAGE;
+		}
 	}
 	
 	public String getPrivilege() {

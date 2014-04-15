@@ -78,11 +78,8 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Assert.assertTrue(errors.hasErrors());
 	}
 	
-	/**
-	 * @see PatientValidator#validate(Object,Errors)
-	 * @verifies not fail when patient has only one identifier and its not preferred
-	 */
 	@Test
+	@Verifies(value = "should not fail validation if patient that is not preferred only has one identifier", method = "validate(Object,Errors)")
 	public void validate_shouldNotFailWhenPatientHasOnlyOneIdentifierAndItsNotPreferred() throws Exception {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
 		Patient patient = new Patient();
@@ -108,7 +105,10 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		patientIdentifier1.setIdentifierType(patientIdentifierType);
 		patient.addIdentifier(patientIdentifier1);
 		
-		Context.getPatientService().savePatient(patient);
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
 	}
 	
 }

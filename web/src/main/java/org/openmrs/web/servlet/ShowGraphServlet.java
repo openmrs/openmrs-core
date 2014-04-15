@@ -96,19 +96,22 @@ public class ShowGraphServlet extends HttpServlet {
 			
 			Integer width;
 			Integer height;
-			if (widthString != null && widthString.length() > 0)
+			if (widthString != null && widthString.length() > 0) {
 				width = Integer.parseInt(widthString);
-			else
+			} else {
 				width = 500;
-			if (heightString != null && heightString.length() > 0)
+			}
+			if (heightString != null && heightString.length() > 0) {
 				height = Integer.parseInt(heightString);
-			else
+			} else {
 				height = 300;
+			}
 			
 			// get the requested mime type of the graph
 			String mimeType = request.getParameter("mimeType");
-			if (mimeType == null)
+			if (mimeType == null) {
 				mimeType = PNG_MIME_TYPE;
+			}
 			
 			// Modify response to disable caching
 			response.setHeader("Pragma", "No-cache");
@@ -146,7 +149,7 @@ public class ShowGraphServlet extends HttpServlet {
 	/**
 	 * The main method for this class. It will create a JFreeChart object to be written to the
 	 * response.
-	 * 
+	 *
 	 * @param request the current request will all the parameters needed
 	 * @return JFreeChart object to be rendered
 	 * @should set value axis label to given units
@@ -158,8 +161,6 @@ public class ShowGraphServlet extends HttpServlet {
 		String conceptId1 = request.getParameter("conceptId"); // required
 		String conceptId2 = request.getParameter("conceptId2");
 		String chartTitle = request.getParameter("chartTitle");
-		String seriesTitle1 = request.getParameter("seriesTitle1");
-		String seriesTitle2 = request.getParameter("seriesTitle2");
 		String units = request.getParameter("units");
 		
 		String minRangeString = request.getParameter("minRange");
@@ -197,10 +198,12 @@ public class ShowGraphServlet extends HttpServlet {
 		List<Obs> observations1 = new ArrayList<Obs>();
 		List<Obs> observations2 = new ArrayList<Obs>();
 		Concept concept1 = null, concept2 = null;
-		if (conceptId1 != null)
+		if (conceptId1 != null) {
 			concept1 = Context.getConceptService().getConcept(Integer.parseInt(conceptId1));
-		if (conceptId2 != null)
+		}
+		if (conceptId2 != null) {
 			concept2 = Context.getConceptService().getConcept(Integer.parseInt(conceptId2));
+		}
 		if (concept1 != null) {
 			observations1 = Context.getObsService().getObservationsByPersonAndConcept(patient, concept1);
 			chartTitle = concept1.getName().getName();
@@ -219,11 +222,13 @@ public class ShowGraphServlet extends HttpServlet {
 					observations2 = Context.getObsService().getObservationsByPersonAndConcept(patient, concept2);
 					chartTitle += " + " + concept2.getName().getName();
 					if (((ConceptNumeric) concept2).getHiAbsolute() != null
-					        && ((ConceptNumeric) concept2).getHiAbsolute() > maxRange)
+					        && ((ConceptNumeric) concept2).getHiAbsolute() > maxRange) {
 						maxRange = ((ConceptNumeric) concept2).getHiAbsolute();
+					}
 					if (((ConceptNumeric) concept2).getLowAbsolute() != null
-					        && ((ConceptNumeric) concept2).getLowAbsolute() < minRange)
+					        && ((ConceptNumeric) concept2).getLowAbsolute() < minRange) {
 						minRange = ((ConceptNumeric) concept2).getLowAbsolute();
+					}
 				} else {
 					log.warn("Units for concept id: " + conceptId2 + " don't match units for concept id: " + conceptId1
 					        + ". Only displaying " + conceptId1);
@@ -236,8 +241,9 @@ public class ShowGraphServlet extends HttpServlet {
 		}
 		
 		// Overwrite with user-specified values, otherwise use default values
-		if (units != null && units.length() > 0)
+		if (units != null && units.length() > 0) {
 			rangeAxisTitle = units;
+		}
 		if (minRangeString != null) {
 			minRange = Double.parseDouble(minRangeString);
 			userSpecifiedMinRange = true;
@@ -246,18 +252,18 @@ public class ShowGraphServlet extends HttpServlet {
 			maxRange = Double.parseDouble(maxRangeString);
 			userSpecifiedMaxRange = true;
 		}
-		if (chartTitle == null)
+		if (chartTitle == null) {
 			chartTitle = "";
-		if (rangeAxisTitle == null)
+		}
+		if (rangeAxisTitle == null) {
 			rangeAxisTitle = "";
-		if (seriesTitle1 == null)
-			seriesTitle1 = chartTitle;
-		if (seriesTitle2 == null)
-			seriesTitle2 = chartTitle;
-		if (minRange == null)
+		}
+		if (minRange == null) {
 			minRange = 0.0;
-		if (maxRange == null)
+		}
+		if (maxRange == null) {
 			maxRange = 200.0;
+		}
 		
 		// Create data set
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
@@ -277,11 +283,16 @@ public class ShowGraphServlet extends HttpServlet {
 			timeScale = Day.class;
 			timeAxisTitle = "Date";
 		}
-		series1 = new TimeSeries(concept1.getName().getName(), timeScale);
-		if (concept2 == null)
+		if (concept1 == null) {
+			series1 = new TimeSeries("NULL", Hour.class);
+		} else {
+			series1 = new TimeSeries(concept1.getName().getName(), timeScale);
+		}
+		if (concept2 == null) {
 			series2 = new TimeSeries("NULL", Hour.class);
-		else
+		} else {
 			series2 = new TimeSeries(concept2.getName().getName(), timeScale);
+		}
 		
 		// Add data points for concept1
 		for (Obs obs : observations1) {
@@ -325,8 +336,9 @@ public class ShowGraphServlet extends HttpServlet {
 		
 		// Add series to dataset
 		dataset.addSeries(series1);
-		if (!series2.isEmpty())
+		if (!series2.isEmpty()) {
 			dataset.addSeries(series2);
+		}
 		
 		// As of JFreeChart 1.0.11 the default background color is dark grey instead of white.
 		// This line restores the original white background.
@@ -335,12 +347,13 @@ public class ShowGraphServlet extends HttpServlet {
 		JFreeChart chart = null;
 		
 		// Show legend only if more than one series
-		if (concept2 == null)
+		if (concept2 == null) {
 			chart = ChartFactory.createTimeSeriesChart(chartTitle, timeAxisTitle, rangeAxisTitle, dataset, false, false,
 			    false);
-		else
+		} else {
 			chart = ChartFactory.createTimeSeriesChart(chartTitle, timeAxisTitle, rangeAxisTitle, dataset, true, false,
 			    false);
+		}
 		
 		// Customize title font
 		Font font = new Font("Arial", Font.BOLD, 12);
@@ -403,8 +416,9 @@ public class ShowGraphServlet extends HttpServlet {
 		
 		// Modify x-axis (datetime)
 		DateAxis timeAxis = (DateAxis) plot.getDomainAxis();
-		if (timeScale == Day.class)
+		if (timeScale == Day.class) {
 			timeAxis.setDateFormatOverride(new SimpleDateFormat("dd-MMM-yyyy"));
+		}
 		
 		timeAxis.setRange(fromDate, toDate);
 		
@@ -412,11 +426,14 @@ public class ShowGraphServlet extends HttpServlet {
 		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		
-		if (userSpecifiedMinRange)
+		if (userSpecifiedMinRange) {
 			minRange = (rangeAxis.getLowerBound() < minRange) ? rangeAxis.getLowerBound() : minRange;
+		}
 		
-		if (userSpecifiedMaxRange) // otherwise we just use default range
+		if (userSpecifiedMaxRange) {
+			// otherwise we just use default range
 			maxRange = (rangeAxis.getUpperBound() > maxRange) ? rangeAxis.getUpperBound() : maxRange;
+		}
 		
 		rangeAxis.setRange(minRange, maxRange);
 		
@@ -426,7 +443,7 @@ public class ShowGraphServlet extends HttpServlet {
 	/**
 	 * Get the FromDate object from the given string that is the time in milliseconds. If
 	 * dateFromRequest is null, return 1 year ago from today.
-	 * 
+	 *
 	 * @param dateFromRequest String that was passed into this servlet
 	 * @return Date parsed from dateFromRequest string
 	 * @should return one year previous to today if parameter is null
@@ -435,9 +452,9 @@ public class ShowGraphServlet extends HttpServlet {
 	protected Date getFromDate(String dateFromRequest) {
 		Date returnedDate = new Date(); // default to right now
 		
-		if (dateFromRequest != null && dateFromRequest.length() > 0)
+		if (dateFromRequest != null && dateFromRequest.length() > 0) {
 			returnedDate.setTime(Long.parseLong(dateFromRequest));
-		else {
+		} else {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(returnedDate);
 			cal.set(cal.get(Calendar.YEAR) - 1, cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
@@ -450,7 +467,7 @@ public class ShowGraphServlet extends HttpServlet {
 	/**
 	 * Get the toDate object from the given string that is the time in milliseconds. If
 	 * dateFromRequest is null, return tomorrow's date.
-	 * 
+	 *
 	 * @param dateFromRequest String that was passed into this servlet
 	 * @return Date parsed from dateFromRequest string
 	 * @should return next months date if parameter is null
@@ -462,10 +479,11 @@ public class ShowGraphServlet extends HttpServlet {
 		
 		Date toDate = new Date();
 		
-		if (dateFromRequest != null && dateFromRequest.length() > 0)
+		if (dateFromRequest != null && dateFromRequest.length() > 0) {
 			cal.setTimeInMillis(Long.parseLong(dateFromRequest));
-		else
+		} else {
 			cal.setTime(toDate);
+		}
 		// set +1 day so the selected toDate is fully included in the interval
 		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH) + 1, 0, 0, 0);
 		toDate = cal.getTime();

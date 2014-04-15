@@ -9,6 +9,23 @@
 <openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
 
 <script type="text/javascript">
+	$j(document).ready( function() {
+	// set up the autocomplete for the drug field
+		new AutoComplete("valueDrugDisplay", new CreateCallback().drugCallback(), {
+			select: function(event, ui) {
+				jquerySelectEscaped("valueDrug").val(ui.item.object.drugId);
+			},
+			placeholder:'<openmrs:message code="Obs.drug.search.placeholder" javaScriptEscape="true"/>'
+		});
+		
+		//Clear hidden value on losing focus with no valid entry
+		$j("#valueDrugDisplay").autocomplete().blur(function(event, ui) {
+			if (!event.target.value) {
+				jquerySelectEscaped('valueDrug').val('');
+			}
+		});
+	
+	});
 
 	// on concept select:
 	function onQuestionSelect(concept) {
@@ -35,13 +52,17 @@
 	}
 	
 	function updateObsValues(tmpConcept) {
-		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueDateRow', 'valueTimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow', 'valueComplex'];
+		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueDateRow', 'valueTimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow', 'valueComplex', 'valueDrugRow'];
 		$j.each(values, function(x, val) { $j("#" + val).hide() });
 		
 		if (tmpConcept != null) {
 			var datatype = tmpConcept.hl7Abbreviation;
 			if (typeof datatype != 'string')
 				datatype = tmpConcept.datatype.hl7Abbreviation;
+			
+			//always clear value drug on selection of a question
+			$j('#valueDrug').val("");
+			$j('#valueDrugDisplay').val("");
 			
 			if (datatype == 'BIT') {
 				$j('#valueBooleanRow').show();
@@ -52,6 +73,7 @@
 			}
 			else if (datatype == 'CWE') {
 				$j('#valueCodedRow').show();
+				$j('#valueDrugRow').show();
 				
 				// clear any old values:
 				$j("#valueCoded").val("");
@@ -195,13 +217,7 @@
 <h2><openmrs:message code="Obs.title"/></h2>
 
 <spring:hasBindErrors name="obs">
-	<openmrs:message code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.globalErrors}" var="error">
-			<openmrs:message code="${error.defaultMessage}" text="${error.defaultMessage}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
-	<br/>
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <c:if test="${obs.voided}">
@@ -209,7 +225,7 @@
 		<div class="retiredMessage">
 			<div>
 				<openmrs:message code="general.voidedBy"/>
-				${obs.voidedBy.personName}
+				<c:out value="${obs.voidedBy.personName}" />
 				<openmrs:formatDate date="${obs.dateVoided}" type="medium" />
 				-
 				${obs.voidReason}
@@ -237,11 +253,18 @@
 		</tr>
 	</c:if>
 	<tr>
-		<th><openmrs:message code="Obs.person"/></th>
+		<th><openmrs:message code="Obs.person"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="person">
-				<openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+<c:choose>
+                    <c:when test="${obs.encounter != null}">
+                        <input type="text" name="person" id="person" value="${status.editor.value.personName}" size="20" disabled="disabled" />
+                    </c:when>
+                    <c:otherwise>
+                        <openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
+                </c:otherwise>
+                </c:choose>
+                <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -281,7 +304,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="Obs.datetime"/></th>
+		<th><openmrs:message code="Obs.datetime"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="obsDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
@@ -292,7 +315,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="Obs.concept"/></th>
+		<th><openmrs:message code="Obs.concept"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="obs.concept">
 				<openmrs_tag:conceptField formFieldName="concept" formFieldId="conceptId" excludeDatatypes="N/A" initialValue="${status.editor.value.conceptId}" onSelectFunction="onQuestionSelect" />
@@ -335,7 +358,6 @@
 		</spring:bind>
 	</tr>
 	<tr id="valueCodedRow" class="obsValue">
-		<%-- TODO: add switch on drug search here. <drugId="${obs.valueDrug.drugId}" showVerboseListing="true" includeDrugConcepts="true"></div> --%>
 		<th valign="top"><openmrs:message code="Obs.codedAnswer"/></th>
 		<td>
 			<spring:bind path="valueCoded">
@@ -343,8 +365,15 @@
 				<div class="description" id="codedDescription"></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
+		</td>
+	</tr>
+	<tr id="valueDrugRow" class="obsValue">
+		<th valign="top"><openmrs:message code="Obs.answer.drug"/></th>
+		<td>
 			<spring:bind path="valueDrug">
-				<input type="hidden" id="valueDrugId" value="${status.editor.value.drugId}" name="valueDrug" />
+				<input type="text" id="valueDrugDisplay" size="45" 
+					<c:if test="${not empty status.editor.value}">value="${status.editor.value.displayName}"</c:if> />
+				<input type="hidden" id="valueDrug" name="valueDrug" value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -383,7 +412,7 @@
 		</td>
 	</tr>
 	<tr id="valueNumericRow" class="obsValue">
-		<th><openmrs:message code="Obs.numericAnswer"/></th>
+		<th><openmrs:message code="Obs.numericAnswer"/><span class="required">*</span></th>
 		<spring:bind path="valueNumeric">
 			<td>
 				<input type="text" name="${status.expression}" value="${status.value}" size="10" onKeyUp="validateNumericRange(this.value)"/>
@@ -412,7 +441,7 @@
 		</spring:bind>
 	</tr>
 	<tr id="valueComplex" class="obsValue">
-		<th><openmrs:message code="Obs.complexAnswer"/></th>
+		<th><openmrs:message code="Obs.complexAnswer"/><span class="required">*</span></th>
 		<spring:bind path="valueComplex">
 			<td>
 				${status.value}<br/>
@@ -433,30 +462,7 @@
 	</tr>
 	
 	<openmrs:extensionPoint pointId="org.openmrs.admin.observations.belowValueRow" type="html" parameters="obsId=${obs.obsId}"></openmrs:extensionPoint>
-	
-	<%--
-		<tr>
-			<th><openmrs:message code="Obs.dateStarted"/></th>
-			<td>
-				<spring:bind path="dateStarted">			
-					<input type="text" name="${status.expression}" size="10" 
-						   value="${status.value}" onClick="showCalendar(this)" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<th><openmrs:message code="Obs.dateStopped"/></th>
-			<td>
-				<spring:bind path="dateStopped">			
-					<input type="text" name="${status.expression}" size="10" 
-						   value="${status.value}" onClick="showCalendar(this)" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-				</spring:bind>
-			</td>
-		</tr>
-	--%>
-	
+
 	<tr>
 		<th><openmrs:message code="Obs.comment"/></th>
 		<spring:bind path="comment">
@@ -470,7 +476,7 @@
 		<tr>
 			<th><openmrs:message code="general.createdBy" /></th>
 			<td>
-				${obs.creator.personName} -
+				<c:out value="${obs.creator.personName}" /> -
 				<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
 			</td>
 		</tr>

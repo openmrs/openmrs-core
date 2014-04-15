@@ -42,7 +42,7 @@ public class StateConversionListController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -57,8 +57,8 @@ public class StateConversionListController extends SimpleFormController {
 			String[] conversionIdList = request.getParameterValues("conceptStateConversionId");
 			ProgramWorkflowService pws = Context.getProgramWorkflowService();
 			
-			String success = "";
-			String error = "";
+			StringBuilder success = new StringBuilder("");
+			StringBuilder error = new StringBuilder("");
 			int numDeleted = 0;
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -70,29 +70,34 @@ public class StateConversionListController extends SimpleFormController {
 				for (String id : conversionIdList) {
 					try {
 						pws.purgeConceptStateConversion(pws.getConceptStateConversion(Integer.valueOf(id)));
-						if (!success.equals(""))
-							success += "<br/>";
-						success += textConversion + " " + id + " " + deleted;
+						if (!success.equals("")) {
+							success.append("<br/>");
+						}
+						success.append(textConversion).append(" ").append(id).append(" ").append(deleted);
 						numDeleted++;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting concept state conversion", e);
-						if (!error.equals(""))
-							error += "<br/>";
-						error += textConversion + " " + id + " " + notDeleted;
+						if (!error.equals("")) {
+							error.append("<br/>");
+						}
+						error.append(textConversion).append(" ").append(id).append(" ").append(notDeleted);
 					}
 				}
 				
-				if (numDeleted > 3)
-					success = numDeleted + " " + deleted;
+				if (numDeleted > 3) {
+					success = new StringBuilder(numDeleted).append(" ").append(deleted);
+				}
 			} else {
-				success += noneDeleted;
+				success.append(noneDeleted);
 			}
 			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+			if (!success.equals("")) {
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
+			}
+			if (!error.equals("")) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -101,7 +106,7 @@ public class StateConversionListController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {

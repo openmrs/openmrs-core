@@ -9,7 +9,7 @@
 <h2><openmrs:message code="AddressTemplate.Manage"/></h2>
 
 <div class="boxHeader">
-    <openmrs:message code="AddressTemplate.add"/>
+    <openmrs:message code="AddressTemplate.Manage"/>
 </div>
 <div class="box">
     <form method="post" action="addressTemplateAdd.form">
@@ -17,10 +17,10 @@
 
             <tr>
                 <td valign="top">
-                    <textarea name="xml" rows="20" cols="60">${addressTemplateXml}</textarea>
+                    <textarea name="xml" rows="20" cols="60">${addressTemplateXml}</textarea><span class="required">*</span>
                 </td>
                 <td valign="top">
-                    <span class="description"> <p><openmrs:message code="AddressTemplate.copy.form.wiki"/>: <a
+                    <span class="description"> <p><openmrs:message htmlEscape="false" code="AddressTemplate.copy.form.wiki"/>: <a
                             href="http://wiki.openmrs.org/display/docs/Administering+Address+Templates" TARGET="_blank"><openmrs:message
                             code="AddressTemplate.wiki.title"/></a></p> </span>
                 </td>

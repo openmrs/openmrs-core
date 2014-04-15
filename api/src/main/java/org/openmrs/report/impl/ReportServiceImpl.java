@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Methods specific to objects in the report package. These methods render reports or save them to
  * the database
- * 
+ *
  * @see org.openmrs.api.ReportService
  * @see org.openmrs.api.context.Context
  * @deprecated see reportingcompatibility module
@@ -78,7 +78,7 @@ public class ReportServiceImpl implements ReportService {
 	
 	/**
 	 * Method used by Spring injection to set the ReportDAO implementation to use in this service
-	 * 
+	 *
 	 * @param dao The ReportDAO to use in this service
 	 */
 	public void setReportDAO(ReportDAO dao) {
@@ -88,11 +88,11 @@ public class ReportServiceImpl implements ReportService {
 	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
-	 * 
+	 *
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
-		renderers = null;
+		setRenderers(null);
 	}
 	
 	/**
@@ -116,10 +116,11 @@ public class ReportServiceImpl implements ReportService {
 		ret.setEvaluationContext(evalContext);
 		DataSetService dss = Context.getDataSetService();
 		
-		if (reportSchema.getDataSetDefinitions() != null)
+		if (reportSchema.getDataSetDefinitions() != null) {
 			for (DataSetDefinition dataSetDefinition : reportSchema.getDataSetDefinitions()) {
 				data.put(dataSetDefinition.getName(), dss.evaluate(dataSetDefinition, inputCohort, evalContext));
 			}
+		}
 		
 		return ret;
 	}
@@ -168,8 +169,9 @@ public class ReportServiceImpl implements ReportService {
 		List<RenderingMode> ret = new Vector<RenderingMode>();
 		for (ReportRenderer r : getReportRenderers()) {
 			Collection<RenderingMode> modes = r.getRenderingModes(schema);
-			if (modes != null)
+			if (modes != null) {
 				ret.addAll(modes);
+			}
 		}
 		Collections.sort(ret);
 		return ret;
@@ -218,7 +220,7 @@ public class ReportServiceImpl implements ReportService {
 	
 	/**
 	 * ADDs renderers...doesn't replace them.
-	 * 
+	 *
 	 * @see org.openmrs.api.ReportService#setRenderers(java.util.Map)
 	 */
 	public void setRenderers(Map<Class<? extends ReportRenderer>, ReportRenderer> newRenderers) throws APIException {
@@ -232,8 +234,9 @@ public class ReportServiceImpl implements ReportService {
 	 */
 	@Transactional(readOnly = true)
 	public Map<Class<? extends ReportRenderer>, ReportRenderer> getRenderers() throws APIException {
-		if (renderers == null)
+		if (renderers == null) {
 			renderers = new LinkedHashMap<Class<? extends ReportRenderer>, ReportRenderer>();
+		}
 		
 		return renderers;
 	}

@@ -70,8 +70,9 @@ public class ProposeConceptFormController extends SimpleFormController {
 			cp.setEncounter(e);
 		}
 		
-		if (cp.getOriginalText().equals(""))
+		if (cp.getOriginalText().equals("")) {
 			errors.rejectValue("originalText", "error.null");
+		}
 		
 		return super.processFormSubmission(request, response, cp, errors);
 	}
@@ -79,7 +80,7 @@ public class ProposeConceptFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -113,7 +114,7 @@ public class ProposeConceptFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -124,12 +125,14 @@ public class ProposeConceptFormController extends SimpleFormController {
 			ConceptService cs = Context.getConceptService();
 			EncounterService es = Context.getEncounterService();
 			String id = ServletRequestUtils.getStringParameter(request, "encounterId");
-			if (id != null)
+			if (id != null) {
 				cp.setEncounter(es.getEncounter(Integer.valueOf(id)));
+			}
 			
 			id = ServletRequestUtils.getStringParameter(request, "obsConceptId");
-			if (id != null)
+			if (id != null) {
 				cp.setObsConcept(cs.getConcept(Integer.valueOf(id)));
+			}
 			
 		}
 		
@@ -152,8 +155,9 @@ public class ProposeConceptFormController extends SimpleFormController {
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 			
 			// preemptively get the obs concept name
-			if (cp.getObsConcept() != null)
+			if (cp.getObsConcept() != null) {
 				map.put("conceptName", cp.getObsConcept().getName(locale));
+			}
 		}
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		

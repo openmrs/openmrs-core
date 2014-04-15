@@ -27,11 +27,11 @@
 				<td valign="top"><input type="checkbox" name="fieldTypeId" value="${fieldType.fieldTypeId}"></td>
 				<td valign="top">
 					<a href="fieldType.form?fieldTypeId=${fieldType.fieldTypeId}">
-					   ${fieldType.name}
+						<c:out value="${fieldType.name}"/>
 					</a>
 				</td>
 				<td valign="top" align="center"><c:if test="${fieldType.isSet == true}"><openmrs:message code="general.yes"/></c:if></td>
-				<td valign="top">${fieldType.description}</td>
+				<td valign="top"><c:out value="${fieldType.description}"/></td>
 			</tr>
 		</c:forEach>
 	</table>

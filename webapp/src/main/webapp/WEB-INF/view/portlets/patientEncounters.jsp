@@ -91,7 +91,7 @@ Parameters
 	<c:if test="${enableFormEntryInEncounters && !model.hideFormEntry}">
 		<openmrs:hasPrivilege privilege="Form Entry">
 			<div id="formEntryDialog">
-				<openmrs:portlet url="personFormEntry" personId="${patient.personId}" id="encounterTabFormEntryPopup" parameters="showLastThreeEncounters=false|returnUrl=${model.formEntryReturnUrl}"/>
+				<openmrs:portlet url="personFormEntry" personId="${patient.personId}" id="encounterTabFormEntryPopup" parameters="showDefinedNumberOfEncounters=false|returnUrl=${model.formEntryReturnUrl}"/>
 			</div>
 
 			<button class="showFormEntryDialog" style="margin-left: 2em; margin-bottom: 0.5em"><openmrs:message code="FormEntry.fillOutForm"/></button>
@@ -117,7 +117,7 @@ Parameters
 
 	<openmrs:hasPrivilege privilege="View Encounters">
 		<div id="encounters">
-			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><openmrs:message code="Encounter.header"/></c:when><c:otherwise><openmrs:message code="${model.title}"/></c:otherwise></c:choose></div>
+			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><openmrs:message code="Encounter.header"/></c:when><c:otherwise><openmrs:message code="${model.title}" arguments="${model.num}"/></c:otherwise></c:choose></div>
 			<div class="box${model.patientVariation}">
 				<div>
 					<table cellspacing="0" cellpadding="2" id="patientEncountersTable">
@@ -180,7 +180,7 @@ Parameters
 					 				<td class="encounterProvider"><openmrs:format encounterProviders="${enc.providersByRoles}"/></td>
 					 				<td class="encounterForm">${enc.form.name}</td>
 					 				<td class="encounterLocation"><openmrs:format location="${enc.location}"/></td>
-					 				<td class="encounterEnterer">${enc.creator.personName}</td>
+					 				<td class="encounterEnterer"><c:out value="${enc.creator.personName}" /></td>
 								</tr>
 							</openmrs:forEachEncounter>
 						</tbody>
@@ -191,7 +191,7 @@ Parameters
 		
 		<c:if test="${model.showPagination != 'true'}">
 			<script type="text/javascript">
-				// hide the columns in the above table if datatable isn't doing it already 
+				// hide the columns in the above table if datatable isn't doing it already
 				$j(".hidden").hide();
 			</script>
 		</c:if>
@@ -204,42 +204,9 @@ Parameters
 	<script type="text/javascript">
 		<!-- // begin
 
-		<%--
-		var obsTableCellFunctions = [
-			function(data) { return "" + data.encounter; },
-			function(data) { return "" + data.conceptName; },
-			function(data) { return "" + data.value; },
-			function(data) { return "" + data.datetime; }
-		];
-		--%>
-
-
 		function handleGetObservations(encounterId) { 
-			<%--
-			DWRObsService.getObservations(encounterId, handleRefreshObsData);
-			document.getElementById("encounterId").value = encounterId;
-			<c:choose>
-				<c:when test="${viewEncounterWhere == 'newWindow'}">
-					var formWindow = window.open('${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId, '${enc.encounterId}', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
-					formWindow.focus();
-				</c:when>
-				<c:when test="${viewEncounterWhere == 'oneNewWindow'}">
-					var formWindow = window.open('${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
-					formWindow.focus();
-				</c:when>
-				<c:otherwise>
-					window.location = '${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId;
-				</c:otherwise>
-			</c:choose>
-			--%>
 			loadUrlIntoEncounterPopup('Test title', '${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId);
 		}
-
-		<%--
-		function handleRefreshObsData(data) {
-  			handleRefreshTable('obsTable', data, obsTableCellFunctions);
-		}
-		--%>
 
 		function handleRefreshTable(id, data, func) {
 			dwr.util.removeAllRows(id);
@@ -268,17 +235,13 @@ Parameters
 			var conceptId = dwr.util.getValue($(conceptField));
 			var valueText = dwr.util.getValue($(valueTextField));
 			var obsDate = dwr.util.getValue($(obsDateField));
-			var patientId = ${model.patient.patientId};			
-			//alert("Adding obs for encounter (" + encounterId + "): " + conceptId + " = " + valueText + " " + obsDate);  
+			var patientId = <c:out value="${model.patient.patientId}" />;
 			DWRObsService.createObs(patientId, encounterId, conceptId, valueText, obsDate);
 			handleGetObservations(encounterId);
 		}
-			
-	
-		//refreshObsTable();
 
 		// end -->
-		
+
 	</script>
 </div>
 </div>

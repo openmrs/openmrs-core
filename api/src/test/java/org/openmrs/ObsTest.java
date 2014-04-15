@@ -38,6 +38,8 @@ import org.openmrs.test.Verifies;
  */
 public class ObsTest {
 	
+	private static final String VERO = "Vero";
+	
 	/**
 	 * Tests the addToGroup method in ObsGroup
 	 * 
@@ -53,7 +55,7 @@ public class ObsTest {
 		// These methods should not fail even with null attributes on the obs
 		assertFalse(obsGroup.isObsGrouping());
 		assertFalse(obsGroup.hasGroupMembers(false));
-		assertFalse(obsGroup.hasGroupMembers(true)); //Check both flags for false
+		assertFalse(obsGroup.hasGroupMembers(true)); // Check both flags for false
 		
 		// adding an obs when the obs group has no other obs
 		// should not throw an error
@@ -102,7 +104,7 @@ public class ObsTest {
 		o.setPerson(new Patient(2));
 		o.setValueText("childObs");
 		
-		//create its sibling
+		// create its sibling
 		Obs oSibling = new Obs();
 		oSibling.setDateCreated(new Date());
 		oSibling.setLocation(new Location(1));
@@ -110,7 +112,7 @@ public class ObsTest {
 		oSibling.setValueText("childObs2");
 		oSibling.setPerson(new Patient(2));
 		
-		//create a parent Obs
+		// create a parent Obs
 		Obs oParent = new Obs();
 		oParent.setDateCreated(new Date());
 		oParent.setLocation(new Location(1));
@@ -118,7 +120,7 @@ public class ObsTest {
 		oSibling.setValueText("parentObs");
 		oParent.setPerson(new Patient(2));
 		
-		//create a grandparent obs
+		// create a grandparent obs
 		Obs oGrandparent = new Obs();
 		oGrandparent.setDateCreated(new Date());
 		oGrandparent.setLocation(new Location(1));
@@ -130,7 +132,7 @@ public class ObsTest {
 		oParent.addGroupMember(oSibling);
 		oGrandparent.addGroupMember(oParent);
 		
-		//create a leaf observation at the grandparent level
+		// create a leaf observation at the grandparent level
 		Obs o2 = new Obs();
 		o2.setDateCreated(new Date());
 		o2.setLocation(new Location(1));
@@ -151,7 +153,7 @@ public class ObsTest {
 		assertEquals(o.getRelatedObservations().size(), 2);
 		assertEquals(oParent.getRelatedObservations().size(), 3);
 		
-		// create  a great-grandparent obs
+		// create a great-grandparent obs
 		Obs oGGP = new Obs();
 		oGGP.setDateCreated(new Date());
 		oGGP.setLocation(new Location(1));
@@ -160,7 +162,7 @@ public class ObsTest {
 		oGGP.setValueText("grandParentObs");
 		oGGP.addGroupMember(oGrandparent);
 		
-		//create a leaf great-grandparent obs
+		// create a leaf great-grandparent obs
 		Obs oGGPleaf = new Obs();
 		oGGPleaf.setDateCreated(new Date());
 		oGGPleaf.setLocation(new Location(1));
@@ -177,11 +179,11 @@ public class ObsTest {
 		assertEquals(o.getRelatedObservations().size(), 2);
 		assertEquals(oParent.getRelatedObservations().size(), 4);
 		
-		//remove the grandparent leaf observation:
+		// remove the grandparent leaf observation:
 		
 		oGrandparent.removeGroupMember(o2);
 		
-		//now the there is only one ancestor leaf obs:
+		// now the there is only one ancestor leaf obs:
 		assertEquals(o.getRelatedObservations().size(), 2);
 		assertEquals(oParent.getRelatedObservations().size(), 3);
 		
@@ -272,6 +274,15 @@ public class ObsTest {
 	}
 	
 	@Test
+	@Verifies(value = "should not return long decimal numbers as scientific notation", method = "getValueAsString(Locale)")
+	public void getValueAsString_shouldNotReturnLongDecimalNumbersAsScientificNotation() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(123456789.0);
+		String str = "123456789.0";
+		Assert.assertEquals(str, obs.getValueAsString(Locale.US));
+	}
+	
+	@Test
 	@Verifies(value = "should return proper DateFormat", method = "getValueAsString()")
 	public void getValueAsString_shouldReturnProperDateFormat() throws Exception {
 		Obs obs = new Obs();
@@ -317,7 +328,7 @@ public class ObsTest {
 		assertEquals("set of all members should have length of 3", 3, members.size());
 		members = parent.getGroupMembers(false);
 		assertEquals("set of non-voided should have length of 2", 2, members.size());
-		members = parent.getGroupMembers(); //should be same as false
+		members = parent.getGroupMembers(); // should be same as false
 		assertEquals("default should return non-voided with length of 2", 2, members.size());
 	}
 	
@@ -330,7 +341,7 @@ public class ObsTest {
 		Obs parent = new Obs(5);
 		Obs child = new Obs(33);
 		child.setVoided(true);
-		parent.addGroupMember(child); //Only contains 1 voided child
+		parent.addGroupMember(child); // Only contains 1 voided child
 		assertTrue("When checking for all members, should return true", parent.hasGroupMembers(true));
 		assertFalse("When checking for non-voided, should return false", parent.hasGroupMembers(false));
 		assertFalse("Default should check for non-voided", parent.hasGroupMembers());
@@ -347,5 +358,71 @@ public class ObsTest {
 		child.setVoided(true);
 		parent.addGroupMember(child);
 		assertTrue("When checking for Obs grouping, should include voided Obs", parent.isObsGrouping());
+	}
+	
+	/**
+	 * @see Obs#getValueAsString(Locale)
+	 * @verifies use commas or decimal places depending on locale
+	 */
+	@Test
+	public void getValueAsString_shouldUseCommasOrDecimalPlacesDependingOnLocale() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(123456789.3);
+		String str = "123456789,3";
+		Assert.assertEquals(str, obs.getValueAsString(Locale.GERMAN));
+	}
+	
+	/**
+	 * @see Obs#getValueAsString(Locale)
+	 * @verifies not use thousand separator
+	 */
+	@Test
+	public void getValueAsString_shouldNotUseThousandSeparator() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(123456789.0);
+		String str = "123456789.0";
+		Assert.assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
+	}
+	
+	/**
+	 * @see Obs#getValueAsString(Locale)
+	 * @verifies return regular number for size of zero to or greater than ten digits
+	 */
+	@Test
+	public void getValueAsString_shouldReturnRegularNumberForSizeOfZeroToOrGreaterThanTenDigits() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(1234567890.0);
+		String str = "1234567890.0";
+		Assert.assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
+	}
+	
+	/**
+	 * @see Obs#getValueAsString(Locale)
+	 * @verifies return regular number if decimal places are as high as six
+	 */
+	@Test
+	public void getValueAsString_shouldReturnRegularNumberIfDecimalPlacesAreAsHighAsSix() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(123456789.012345);
+		String str = "123456789.012345";
+		Assert.assertEquals(str, obs.getValueAsString(Locale.ENGLISH));
+	}
+	
+	@Test
+	@Verifies(value = "should return localized name of the value coded concept", method = "getValueAsString(Locale)")
+	public void getValueAsString_shouldReturnLocalizedCodedConcept() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("CWE");
+		
+		Concept cn = new Concept();
+		cn.setDatatype(cdt);
+		cn.addName(new ConceptName(VERO, Locale.ITALIAN));
+		
+		Obs obs = new Obs();
+		obs.setValueCoded(cn);
+		obs.setConcept(cn);
+		obs.setValueCodedName(new ConceptName("True", Locale.US));
+		
+		Assert.assertEquals(VERO, obs.getValueAsString(Locale.ITALIAN));
 	}
 }

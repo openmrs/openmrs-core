@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,8 +25,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
@@ -51,7 +51,7 @@ import org.openmrs.util.OpenmrsConstants;
  *   PersonService ps = Context.getPersonService();
  *   ps.getPeople("name", false);
  * </code>
- * 
+ *
  * @see org.openmrs.api.db.PersonDAO
  * @see org.openmrs.api.PersonService
  * @see org.openmrs.api.context.Context
@@ -67,7 +67,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -75,13 +75,14 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String)
-	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String)
+	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer, java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String gender)
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException {
-		if (birthyear == null)
+		if (birthyear == null) {
 			birthyear = 0;
+		}
 		
 		Set<Person> people = new LinkedHashSet<Person>();
 		
@@ -89,129 +90,75 @@ public class HibernatePersonDAO implements PersonDAO {
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
-		String q = "select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ";
+		StringBuilder q = new StringBuilder(
+		        "select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ");
 		
 		if (names.length == 1) {
-			q += "(";
-			q += " soundex(pname.givenName) = soundex(:n1)";
-			q += " or soundex(pname.middleName) = soundex(:n1)";
-			q += " or soundex(pname.familyName) = soundex(:n1) ";
-			q += " or soundex(pname.familyName2) = soundex(:n1) ";
-			q += ")";
+			q.append("(").append(" soundex(pname.givenName) = soundex(:n1)").append(
+			    " or soundex(pname.middleName) = soundex(:n1)").append(" or soundex(pname.familyName) = soundex(:n1) ")
+			        .append(" or soundex(pname.familyName2) = soundex(:n1) ").append(")");
 		} else if (names.length == 2) {
-			q += "(";
-			q += " case";
-			q += "  when pname.givenName is null then 1";
-			q += "  when pname.givenName = '' then 1";
-			q += "  when soundex(pname.givenName) = soundex(:n1) then 4";
-			q += "  when soundex(pname.givenName) = soundex(:n2) then 3";
-			q += "  else 0 ";
-			q += " end";
-			q += " + ";
-			q += " case";
-			q += "  when pname.middleName is null then 1";
-			q += "  when pname.middleName = '' then 1";
-			q += "  when soundex(pname.middleName) = soundex(:n1) then 3";
-			q += "  when soundex(pname.middleName) = soundex(:n2) then 4";
-			q += "  else 0 ";
-			q += " end";
-			q += " + ";
-			q += " case";
-			q += "  when pname.familyName is null then 1";
-			q += "  when pname.familyName = '' then 1";
-			q += "  when soundex(pname.familyName) = soundex(:n1) then 3";
-			q += "  when soundex(pname.familyName) = soundex(:n2) then 4";
-			q += "  else 0 ";
-			q += " end";
-			q += " +";
-			q += " case";
-			q += "  when pname.familyName2 is null then 1";
-			q += "  when pname.familyName2 = '' then 1";
-			q += "  when soundex(pname.familyName2) = soundex(:n1) then 3";
-			q += "  when soundex(pname.familyName2) = soundex(:n2) then 4";
-			q += "  else 0 ";
-			q += " end";
-			q += ") > 6";
+			q.append("(").append(" case").append("  when pname.givenName is null then 1").append(
+			    "  when pname.givenName = '' then 1").append("  when soundex(pname.givenName) = soundex(:n1) then 4")
+			        .append("  when soundex(pname.givenName) = soundex(:n2) then 3").append("  else 0 ").append(" end")
+			        .append(" + ").append(" case").append("  when pname.middleName is null then 1").append(
+			            "  when pname.middleName = '' then 1").append(
+			            "  when soundex(pname.middleName) = soundex(:n1) then 3").append(
+			            "  when soundex(pname.middleName) = soundex(:n2) then 4").append("  else 0 ").append(" end").append(
+			            " + ").append(" case").append("  when pname.familyName is null then 1").append(
+			            "  when pname.familyName = '' then 1").append(
+			            "  when soundex(pname.familyName) = soundex(:n1) then 3").append(
+			            "  when soundex(pname.familyName) = soundex(:n2) then 4").append("  else 0 ").append(" end").append(
+			            " +").append(" case").append("  when pname.familyName2 is null then 1").append(
+			            "  when pname.familyName2 = '' then 1").append(
+			            "  when soundex(pname.familyName2) = soundex(:n1) then 3").append(
+			            "  when soundex(pname.familyName2) = soundex(:n2) then 4").append("  else 0 ").append(" end")
+			        .append(") > 6");
 		} else if (names.length == 3) {
-			q += "(";
-			q += " case";
-			q += "  when pname.givenName is null then 0";
-			q += "  when soundex(pname.givenName) = soundex(:n1) then 3";
-			q += "  when soundex(pname.givenName) = soundex(:n2) then 2";
-			q += "  when soundex(pname.givenName) = soundex(:n3) then 1";
-			q += "  else 0 ";
-			q += " end";
-			q += " + ";
-			q += " case";
-			q += "  when pname.middleName is null then 0";
-			q += "  when soundex(pname.middleName) = soundex(:n1) then 2";
-			q += "  when soundex(pname.middleName) = soundex(:n2) then 3";
-			q += "  when soundex(pname.middleName) = soundex(:n3) then 1";
-			q += "  else 0";
-			q += " end";
-			q += " + ";
-			q += " case";
-			q += "  when pname.familyName is null then 0";
-			q += "  when soundex(pname.familyName) = soundex(:n1) then 1";
-			q += "  when soundex(pname.familyName) = soundex(:n2) then 2";
-			q += "  when soundex(pname.familyName) = soundex(:n3) then 3";
-			q += "  else 0";
-			q += " end";
-			q += " +";
-			q += " case";
-			q += "  when pname.familyName2 is null then 0";
-			q += "  when soundex(pname.familyName2) = soundex(:n1) then 1";
-			q += "  when soundex(pname.familyName2) = soundex(:n2) then 2";
-			q += "  when soundex(pname.familyName2) = soundex(:n3) then 3";
-			q += "  else 0";
-			q += " end";
-			q += ") >= 5";
+			q.append("(").append(" case").append("  when pname.givenName is null then 0").append(
+			    "  when soundex(pname.givenName) = soundex(:n1) then 3").append(
+			    "  when soundex(pname.givenName) = soundex(:n2) then 2").append(
+			    "  when soundex(pname.givenName) = soundex(:n3) then 1").append("  else 0 ").append(" end").append(" + ")
+			        .append(" case").append("  when pname.middleName is null then 0").append(
+			            "  when soundex(pname.middleName) = soundex(:n1) then 2").append(
+			            "  when soundex(pname.middleName) = soundex(:n2) then 3").append(
+			            "  when soundex(pname.middleName) = soundex(:n3) then 1").append("  else 0").append(" end").append(
+			            " + ").append(" case").append("  when pname.familyName is null then 0").append(
+			            "  when soundex(pname.familyName) = soundex(:n1) then 1").append(
+			            "  when soundex(pname.familyName) = soundex(:n2) then 2").append(
+			            "  when soundex(pname.familyName) = soundex(:n3) then 3").append("  else 0").append(" end").append(
+			            " +").append(" case").append("  when pname.familyName2 is null then 0").append(
+			            "  when soundex(pname.familyName2) = soundex(:n1) then 1").append(
+			            "  when soundex(pname.familyName2) = soundex(:n2) then 2").append(
+			            "  when soundex(pname.familyName2) = soundex(:n3) then 3").append("  else 0").append(" end").append(
+			            ") >= 5");
 		} else {
 			
 			// This is simply an alternative method of name matching which scales better
-			// for large names, although it is hard to imagine getting names with more than 
-			// six or so tokens.  This can be easily updated to attain more desirable 
+			// for large names, although it is hard to imagine getting names with more than
+			// six or so tokens.  This can be easily updated to attain more desirable
 			// results; it is just a working alternative to throwing an exception.
 			
-			q += "(";
-			q += " case";
-			q += "  when pname.givenName is null then 0";
+			q.append("(").append(" case").append("  when pname.givenName is null then 0");
 			for (int i = 0; i < names.length; i++) {
-				q += "  when soundex(pname.givenName) = soundex(:n" + (i + 1) + ") then 1";
+				q.append("  when soundex(pname.givenName) = soundex(:n").append(i + 1).append(") then 1");
 			}
-			q += "  else 0";
-			q += " end";
-			q += ")";
-			q += "+";
-			q += "(";
-			q += " case";
-			q += "  when pname.middleName is null then 0";
+			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
+			    "  when pname.middleName is null then 0");
 			for (int i = 0; i < names.length; i++) {
-				q += "  when soundex(pname.middleName) = soundex(:n" + (i + 1) + ") then 1";
+				q.append("  when soundex(pname.middleName) = soundex(:n").append(i + 1).append(") then 1");
 			}
-			q += "  else 0";
-			q += " end";
-			q += ")";
-			q += "+";
-			q += "(";
-			q += " case";
-			q += "  when pname.familyName is null then 0";
+			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
+			    "  when pname.familyName is null then 0");
 			for (int i = 0; i < names.length; i++) {
-				q += "  when soundex(pname.familyName) = soundex(:n" + (i + 1) + ") then 1";
+				q.append("  when soundex(pname.familyName) = soundex(:n").append(i + 1).append(") then 1");
 			}
-			q += "  else 0";
-			q += " end";
-			q += ")";
-			q += "+";
-			q += "(";
-			q += " case";
-			q += "  when pname.familyName2 is null then 0";
+			q.append("  else 0").append(" end").append(")").append("+").append("(").append(" case").append(
+			    "  when pname.familyName2 is null then 0");
 			for (int i = 0; i < names.length; i++) {
-				q += "  when soundex(pname.familyName2) = soundex(:n" + (i + 1) + ") then 1";
+				q.append("  when soundex(pname.familyName2) = soundex(:n").append(i + 1).append(") then 1");
 			}
-			q += "  else 0";
-			q += " end";
-			q += ") >= " + (int) (names.length * .75); // if most of the names have at least a hit somewhere
+			q.append("  else 0").append(" end").append(") >= ").append((int) (names.length * .75)); // if most of the names have at least a hit somewhere
 		}
 		
 		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)
@@ -220,26 +167,26 @@ public class HibernatePersonDAO implements PersonDAO {
 		String genderMatch = " (p.gender = :gender or p.gender = '') ";
 		
 		if (birthyear != 0 && gender != null) {
-			q += " and (" + birthdayMatch + "and " + genderMatch + ") ";
+			q.append(" and (" + birthdayMatch + "and " + genderMatch + ") ");
 		} else if (birthyear != 0) {
-			q += " and " + birthdayMatch;
+			q.append(" and " + birthdayMatch);
 		} else if (gender != null) {
-			q += " and " + genderMatch;
+			q.append(" and " + genderMatch);
 		}
 		
-		q += " order by pname.givenName asc,";
-		q += " pname.middleName asc,";
-		q += " pname.familyName asc";
-		q += " pname.familyName2 asc";
+		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc").append(
+		    " pname.familyName2 asc");
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(q);
+		String qStr = q.toString();
+		Query query = sessionFactory.getCurrentSession().createQuery(qStr);
 		
 		for (int nameIndex = 0; nameIndex < names.length; nameIndex++) {
 			query.setString("n" + (nameIndex + 1), names[nameIndex]);
 		}
 		
-		if (q.contains(":gender"))
+		if (qStr.contains(":gender")) {
 			query.setString("gender", gender);
+		}
 		
 		people.addAll(query.list());
 		
@@ -248,37 +195,101 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPeople(java.lang.String, java.lang.Boolean)
+	 *
+	 * @should get no one by null
+	 * @should get every one by empty string
+	 *
+	 * @should get no one by non-existing attribute
+	 * @should get no one by non-searchable attribute
+	 * @should get no one by voided attribute
+	 * @should get one person by attribute
+	 * @should get one person by random case attribute
+	 * @should get one person by searching for a mix of attribute and voided attribute
+	 * @should get multiple people by single attribute
+	 * @should get multiple people by multiple attributes
+	 *
+	 * @should get no one by non-existing name
+	 * @should get one person by name
+	 * @should get one person by random case name
+	 * @should get multiple people by single name
+	 * @should get multiple people by multiple names
+	 *
+	 * @should get no one by non-existing name and non-existing attribute
+	 * @should get no one by non-existing name and non-searchable attribute
+	 * @should get no one by non-existing name and voided attribute
+	 * @should get one person by name and attribute
+	 * @should get one person by name and voided attribute
+	 * @should get multiple people by name and attribute
+	 *
+	 * @should get one person by given name
+	 * @should get multiple people by given name
+	 *
+	 * @should get one person by middle name
+	 * @should get multiple people by middle name
+	 *
+	 * @should get one person by family name
+	 * @should get multiple people by family name
+	 *
+	 * @should get one person by family name2
+	 * @should get multiple people by family name2
+	 *
+	 * @should get one person by multiple name parts
+	 * @should get multiple people by multiple name parts
+	 *
+	 * @should get no one by voided name
+	 * @should not get voided person
+	 *
+	 * @should not get dead person
+	 * @should get single dead person
+	 * @should get multiple dead people
 	 */
+	
 	@SuppressWarnings("unchecked")
-	public List<Person> getPeople(String name, Boolean dead) {
-		name = name.replace(", ", " ");
-		String[] names = name.split(" ");
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
-		criteria.createAlias("names", "name");
-		for (String n : names) {
-			if (n != null && n.length() > 0) {
-				criteria.add(Expression.or(Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression
-				        .like("name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
-				    MatchMode.START), Expression.like("name.familyName2", n, MatchMode.START)))));
-			}
+	public List<Person> getPeople(String searchString, Boolean dead) {
+		if (searchString == null) {
+			return new ArrayList<Person>();
 		}
 		
-		criteria.add(Expression.eq("personVoided", false));
-		if (dead != null)
-			criteria.add(Expression.eq("dead", dead));
+		PersonSearchCriteria personSearchCriteria = new PersonSearchCriteria();
+		
+		searchString = searchString.replace(", ", " ");
+		String[] values = searchString.split(" ");
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
+		
+		personSearchCriteria.addAliasForName(criteria);
+		personSearchCriteria.addAliasForAttribute(criteria);
+		
+		criteria.add(Restrictions.eq("personVoided", false));
+		if (dead != null) {
+			criteria.add(Restrictions.eq("dead", dead));
+		}
+		
+		Disjunction disjunction = Restrictions.disjunction();
+		for (String value : values) {
+			if (value != null && value.length() > 0) {
+				disjunction.add(personSearchCriteria.prepareCriterionForName(value)).add(
+				    personSearchCriteria.prepareCriterionForAttribute(value));
+			}
+		}
+		criteria.add(disjunction);
+		
 		criteria.addOrder(Order.asc("personId"));
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		criteria.setMaxResults(getMaximumSearchResults());
+		
+		// TODO - remove
+		log.debug(criteria.toString());
+		
 		return criteria.list();
 	}
 	
 	/**
 	 * Fetch the max results value from the global properties table
-	 * 
+	 *
 	 * @return Integer value for the person search max results global property
 	 */
-	protected static Integer getMaximumSearchResults() {
+	public static Integer getMaximumSearchResults() {
 		try {
 			return Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
 			    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS,
@@ -343,7 +354,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
 		if (!includeRetired) {
-			criteria.add(Expression.eq("retired", false));
+			criteria.add(Restrictions.eq("retired", false));
 		}
 		
 		criteria.addOrder(Order.asc("sortWeight"));
@@ -355,22 +366,27 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getPersonAttributeTypes(java.lang.String, java.lang.String,
 	 *      java.lang.Integer, java.lang.Boolean)
 	 */
+	// TODO - PersonServiceTest fails here
 	@SuppressWarnings("unchecked")
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	        Boolean searchable) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
-		if (exactName != null)
-			criteria.add(Expression.eq("name", exactName));
+		if (exactName != null) {
+			criteria.add(Restrictions.eq("name", exactName));
+		}
 		
-		if (format != null)
-			criteria.add(Expression.eq("format", format));
+		if (format != null) {
+			criteria.add(Restrictions.eq("format", format));
+		}
 		
-		if (foreignKey != null)
-			criteria.add(Expression.eq("foreignKey", foreignKey));
+		if (foreignKey != null) {
+			criteria.add(Restrictions.eq("foreignKey", foreignKey));
+		}
 		
-		if (searchable != null)
-			criteria.add(Expression.eq("searchable", searchable));
+		if (searchable != null) {
+			criteria.add(Restrictions.eq("searchable", searchable));
+		}
 		
 		return criteria.list();
 	}
@@ -395,7 +411,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
 		if (!includeVoided) {
-			criteria.add(Expression.eq("voided", false));
+			criteria.add(Restrictions.eq("voided", false));
 		}
 		
 		return criteria.list();
@@ -411,14 +427,17 @@ public class HibernatePersonDAO implements PersonDAO {
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
-		if (fromPerson != null)
-			criteria.add(Expression.eq("personA", fromPerson));
-		if (toPerson != null)
-			criteria.add(Expression.eq("personB", toPerson));
-		if (relType != null)
-			criteria.add(Expression.eq("relationshipType", relType));
+		if (fromPerson != null) {
+			criteria.add(Restrictions.eq("personA", fromPerson));
+		}
+		if (toPerson != null) {
+			criteria.add(Restrictions.eq("personB", toPerson));
+		}
+		if (relType != null) {
+			criteria.add(Restrictions.eq("relationshipType", relType));
+		}
 		
-		criteria.add(Expression.eq("voided", false));
+		criteria.add(Restrictions.eq("voided", false));
 		
 		return criteria.list();
 	}
@@ -434,28 +453,32 @@ public class HibernatePersonDAO implements PersonDAO {
 	        Date startEffectiveDate, Date endEffectiveDate) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
 		
-		if (fromPerson != null)
-			criteria.add(Expression.eq("personA", fromPerson));
-		if (toPerson != null)
-			criteria.add(Expression.eq("personB", toPerson));
-		if (relType != null)
-			criteria.add(Expression.eq("relationshipType", relType));
+		if (fromPerson != null) {
+			criteria.add(Restrictions.eq("personA", fromPerson));
+		}
+		if (toPerson != null) {
+			criteria.add(Restrictions.eq("personB", toPerson));
+		}
+		if (relType != null) {
+			criteria.add(Restrictions.eq("relationshipType", relType));
+		}
 		if (startEffectiveDate != null) {
 			criteria.add(Restrictions.disjunction().add(
-			    Restrictions.and(Expression.le("startDate", startEffectiveDate), Expression
-			            .ge("endDate", startEffectiveDate))).add(
-			    Restrictions.and(Expression.le("startDate", startEffectiveDate), Restrictions.isNull("endDate"))).add(
-			    Restrictions.and(Restrictions.isNull("startDate"), Expression.ge("endDate", startEffectiveDate))).add(
+			    Restrictions.and(Restrictions.le("startDate", startEffectiveDate), Restrictions.ge("endDate",
+			        startEffectiveDate))).add(
+			    Restrictions.and(Restrictions.le("startDate", startEffectiveDate), Restrictions.isNull("endDate"))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.ge("endDate", startEffectiveDate))).add(
 			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
 		}
 		if (endEffectiveDate != null) {
 			criteria.add(Restrictions.disjunction().add(
-			    Restrictions.and(Expression.le("startDate", endEffectiveDate), Expression.ge("endDate", endEffectiveDate)))
-			        .add(Restrictions.and(Expression.le("startDate", endEffectiveDate), Restrictions.isNull("endDate")))
-			        .add(Restrictions.and(Restrictions.isNull("startDate"), Expression.ge("endDate", endEffectiveDate)))
-			        .add(Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
+			    Restrictions.and(Restrictions.le("startDate", endEffectiveDate), Restrictions
+			            .ge("endDate", endEffectiveDate))).add(
+			    Restrictions.and(Restrictions.le("startDate", endEffectiveDate), Restrictions.isNull("endDate"))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.ge("endDate", endEffectiveDate))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
 		}
-		criteria.add(Expression.eq("voided", false));
+		criteria.add(Restrictions.eq("voided", false));
 		
 		return criteria.list();
 	}
@@ -465,9 +488,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getRelationshipType(java.lang.Integer)
 	 */
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
-		RelationshipType relationshipType = new RelationshipType();
-		relationshipType = (RelationshipType) sessionFactory.getCurrentSession().get(RelationshipType.class,
-		    relationshipTypeId);
+		RelationshipType relationshipType = (RelationshipType) sessionFactory.getCurrentSession().get(
+		    RelationshipType.class, relationshipTypeId);
 		
 		return relationshipType;
 	}
@@ -483,8 +505,9 @@ public class HibernatePersonDAO implements PersonDAO {
 		criteria.add(Restrictions.sqlRestriction("CONCAT(a_Is_To_B, CONCAT('/', b_Is_To_A)) like (?)", relationshipTypeName,
 		    new StringType()));
 		
-		if (preferred != null)
-			criteria.add(Expression.eq("preferred", preferred));
+		if (preferred != null) {
+			criteria.add(Restrictions.eq("preferred", preferred));
+		}
 		
 		return criteria.list();
 	}
@@ -543,7 +566,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * Used by deletePerson, deletePatient, and deleteUser to remove all properties of a person
 	 * before deleting them.
-	 * 
+	 *
 	 * @param sessionFactory the session factory from which to pull the current session
 	 * @param person the person to delete
 	 */
@@ -553,26 +576,29 @@ public class HibernatePersonDAO implements PersonDAO {
 			if (address.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(address);
 				address = null;
-			} else
+			} else {
 				sessionFactory.getCurrentSession().delete(address);
+			}
 		}
 		sessionFactory.getCurrentSession().evict(person.getAddresses());
 		person.setAddresses(null);
 		
 		for (PersonAttribute attribute : person.getAttributes()) {
-			if (attribute.getDateCreated() == null)
+			if (attribute.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(attribute);
-			else
+			} else {
 				sessionFactory.getCurrentSession().delete(attribute);
+			}
 		}
 		sessionFactory.getCurrentSession().evict(person.getAttributes());
 		person.setAttributes(null);
 		
 		for (PersonName name : person.getNames()) {
-			if (name.getDateCreated() == null)
+			if (name.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(name);
-			else
+			} else {
 				sessionFactory.getCurrentSession().delete(name);
+			}
 		}
 		sessionFactory.getCurrentSession().evict(person.getNames());
 		person.setNames(null);
@@ -658,7 +684,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PersonDAO#getPersonMergeLogsByWinner(Person)
+	 * @see org.openmrs.api.db.PersonDAO#getAllPersonMergeLogs()
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -711,8 +737,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
 		criteria.addOrder(Order.asc("weight"));
 		
-		if (includeRetired == false) {
-			criteria.add(Expression.eq("retired", false));
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired", false));
 		}
 		
 		return criteria.list();

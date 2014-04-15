@@ -55,7 +55,7 @@
 						
 						<td valign="top" align="right" class="patientRegimeDataFlexible">
 							<div id="regimenPortletAddFlexible">
-								<form method="post" id="orderForm" onSubmit="handleAddDrugOrder(${model.patientId}, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
+								<form method="post" id="orderForm" onSubmit="handleAddDrugOrder(<c:out value="${model.patientId}" />, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
 								<table class="patientAddFlexibleTable">
 									<tr class="patientAddFlexibleRow">
 										<td colspan="2" class="patientAddFlexibleData"><strong><openmrs:message code="DrugOrder.regimens.addCustom"/></strong></td>
@@ -137,7 +137,6 @@
 											<span id="replaceNew" style="display:none"><input type="button" value="<openmrs:message code="DrugOrder.regimen.addAndReplace" />" onClick="addNewDrugOrder();"></span>
 											<span id="addNew" style="display:none"><input type="button" value="<openmrs:message code="general.add" />" onClick="addNewDrugOrder();"></span>
 											<span id="cancelNew" style="display:none"><input type="button" value="<openmrs:message code="general.cancel" />" onClick="cancelNewOrder();"></span>
-											<%--<td><input type="button" value="<openmrs:message code="general.add"/>" onClick="handleAddDrugOrder(${model.patientId}, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>--%>									
 										</td>
 									</tr>
 								</table>
@@ -254,13 +253,11 @@
 							dwr.util.setValue('actionSelect${standardRegimen.codeName}', '');
 							dwr.util.setValue('reason${standardRegimen.codeName}', '');
 							if ( action == 'void' ) {
-								//alert('voiding with [${model.patientId}] [${standardRegimen.canReplace}] [' + reason + ']');
-								DWROrderService.voidCurrentDrugSet(${model.patientId}, '${standardRegimen.canReplace}', reason, addComponents${standardRegimen.codeName});
+								DWROrderService.voidCurrentDrugSet(<c:out value="${model.patientId}" />, '${standardRegimen.canReplace}', reason, addComponents${standardRegimen.codeName});
 								showHideDiv('reas${standardRegimen.codeName}');
 								showHideDiv('replace${standardRegimen.codeName}');
 							} else if ( action == 'discontinue' ) {
-								//alert('discontinuing with [${model.patientId}] [${standardRegimen.canReplace}] [' + reason + ']');
-								DWROrderService.discontinueDrugSet(${model.patientId}, '${standardRegimen.canReplace}', reason, startDate, addComponents${standardRegimen.codeName});
+								DWROrderService.discontinueDrugSet(<c:out value="${model.patientId}" />, '${standardRegimen.canReplace}', reason, startDate, addComponents${standardRegimen.codeName});
 								showHideDiv('reas${standardRegimen.codeName}');
 								showHideDiv('replace${standardRegimen.codeName}');
 							} else if ( action == 'add') {
@@ -284,14 +281,12 @@
 					<c:forEach var="drugComponent" items="${standardRegimen.drugComponents}">
 						addStandardDrug('${drugComponent.drugId}', brandName, '${drugComponent.dose}', '${drugComponent.units}', '${drugComponent.frequency}', '${drugComponent.instructions}', startDate);
 					</c:forEach>
-					//alert('and now here');
-					//waitToRefreshRegimenTables();
 					selectStandard('${standardRegimen.codeName}');
 				}
 			</c:forEach>
 
 			function addStandardDrug(drugId, brandName, dose, units, frequency, instructions, startDate) {
-				DWROrderService.createDrugOrder(${model.patientId}, drugId, brandName, dose, units, frequency, startDate, instructions, dwrOrderNotifyComplete);
+				DWROrderService.createDrugOrder(<c:out value="${model.patientId}" />, drugId, brandName, dose, units, frequency, startDate, instructions, dwrOrderNotifyComplete);
 			}
 
 			function doNothing() {
@@ -338,11 +333,11 @@
 				dwr.util.setValue('actionSelectNew', '');
 				dwr.util.setValue('reasonNew', '');
 				if ( action == 'void' ) {
-					DWROrderService.voidCurrentDrugOrders(${model.patientId}, reason, addNewComponent);
+					DWROrderService.voidCurrentDrugOrders(<c:out value="${model.patientId}" />, reason, addNewComponent);
 					showHideDiv('reasNew');
 					showHideDiv('replaceNew');
 				} else if ( action == 'discontinue' ) {
-					DWROrderService.discontinueCurrentDrugOrders(${model.patientId}, reason, startDate, addNewComponent);
+					DWROrderService.discontinueCurrentDrugOrders(<c:out value="${model.patientId}" />, reason, startDate, addNewComponent);
 					showHideDiv('reasNew');
 					showHideDiv('replaceNew');
 				} else if ( action == 'add') {
@@ -373,7 +368,7 @@
 		}
 		
 		function addNewComponent() {
-			handleAddDrugOrder(${model.patientId}, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate');
+			handleAddDrugOrder(<c:out value="${model.patientId}" />, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate');
 		}
 		
 		//register an autocomplete feature to the drug input test field

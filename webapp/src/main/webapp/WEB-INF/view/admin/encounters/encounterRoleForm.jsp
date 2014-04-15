@@ -31,14 +31,14 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterRoleForm.belowTitle" type="html" parameters="encounterRoleId=${encounterRole.encounterRoleId}"/>
 
 <spring:hasBindErrors name="encounterRole">
-    <openmrs:message code="fix.error"/>
+    <openmrs:message htmlEscape="false" code="fix.error"/>
     <br/>
 </spring:hasBindErrors>
 <form method="post">
     <fieldset>
         <table>
             <tr>
-                <td><openmrs:message code="general.name"/></td>
+                <td><openmrs:message code="general.name"/><span class="required">*</span></td>
                 <td colspan="5">
                     <spring:bind path="encounterRole.name">
                         <input type="text" name="name" value='<c:out value="${status.value}"/>' size="35"/>
@@ -63,6 +63,16 @@
                     </td>
                 </tr>
             </c:if>
+            <tr>
+         		<c:if test="${encounterRole.encounterRoleId != null}">
+           			<td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+           			<td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>
+           			<spring:bind path="encounterRole.uuid">
+               			<c:out value="${status.value}"></c:out>
+           			</spring:bind></sub></font>
+           			</td>
+           		</c:if>
+    	   </tr>
         </table>
         <br/>
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterRoleForm.inForm" type="html" parameters="encounterRoleId=${encounterRole.encounterRoleId}" />

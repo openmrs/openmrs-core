@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
@@ -44,7 +43,7 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 /**
  * Hibernate specific Observation related functions This class should not be used directly. All
  * calls should go through the {@link org.openmrs.api.ObsService} methods.
- * 
+ *
  * @see org.openmrs.api.db.ObsDAO
  * @see org.openmrs.api.ObsService
  */
@@ -56,7 +55,7 @@ public class HibernateObsDAO implements ObsDAO {
 	
 	/**
 	 * Set session factory that allows us to connect to the database that Hibernate knows about.
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -95,8 +94,9 @@ public class HibernateObsDAO implements ObsDAO {
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(MimeType.class);
 		
-		if (includeRetired == false)
-			crit.add(Expression.eq("retired", Boolean.FALSE));
+		if (!includeRetired) {
+			crit.add(Restrictions.eq("retired", Boolean.FALSE));
+		}
 		
 		return crit.list();
 	}
@@ -128,9 +128,11 @@ public class HibernateObsDAO implements ObsDAO {
 			// hibernate has a problem updating child collections
 			// if the parent object was already saved so we do it
 			// explicitly here
-			for (Obs member : obs.getGroupMembers())
-				if (member.getObsId() == null)
+			for (Obs member : obs.getGroupMembers()) {
+				if (member.getObsId() == null) {
 					saveObs(member);
+				}
+			}
 		}
 		
 		sessionFactory.getCurrentSession().saveOrUpdate(obs);
@@ -171,14 +173,14 @@ public class HibernateObsDAO implements ObsDAO {
 	
 	/**
 	 * A utility method for creating a criteria based on parameters (which are optional)
-	 * 
+	 *
 	 * @param whom
 	 * @param encounters
 	 * @param questions
 	 * @param answers
 	 * @param personTypes
 	 * @param locations
-	 * @param sortList
+	 * @param sortList If a field needs to be in <i>asc</i> order, <code>" asc"</code> has to be appended to the field name. For example: <code>fieldname asc</code>
 	 * @param mostRecentN
 	 * @param obsGroupId
 	 * @param fromDate
@@ -192,58 +194,79 @@ public class HibernateObsDAO implements ObsDAO {
 	        boolean includeVoidedObs) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class, "obs");
 		
-		if (CollectionUtils.isNotEmpty(whom))
+		if (CollectionUtils.isNotEmpty(whom)) {
 			criteria.add(Restrictions.in("person", whom));
+		}
 		
-		if (CollectionUtils.isNotEmpty(encounters))
+		if (CollectionUtils.isNotEmpty(encounters)) {
 			criteria.add(Restrictions.in("encounter", encounters));
+		}
 		
-		if (CollectionUtils.isNotEmpty(questions))
+		if (CollectionUtils.isNotEmpty(questions)) {
 			criteria.add(Restrictions.in("concept", questions));
+		}
 		
-		if (CollectionUtils.isNotEmpty(answers))
+		if (CollectionUtils.isNotEmpty(answers)) {
 			criteria.add(Restrictions.in("valueCoded", answers));
+		}
 		
-		if (CollectionUtils.isNotEmpty(personTypes))
+		if (CollectionUtils.isNotEmpty(personTypes)) {
 			getCriteriaPersonModifier(criteria, personTypes);
+		}
 		
-		if (CollectionUtils.isNotEmpty(locations))
+		if (CollectionUtils.isNotEmpty(locations)) {
 			criteria.add(Restrictions.in("location", locations));
+		}
 		
-		// TODO add an option for each sort item to be asc/desc
 		if (CollectionUtils.isNotEmpty(sortList)) {
 			for (String sort : sortList) {
-				if (sort != null && !"".equals(sort))
-					criteria.addOrder(Order.desc(sort));
+				if (sort != null && !"".equals(sort)) {
+					// Split the sort, the field name shouldn't contain space char, so it's safe
+					String[] split = sort.split(" ", 2);
+					String fieldName = split[0];
+					
+					if (split.length == 2 && "asc".equals(split[1])) {
+						/* If asc is specified */
+						criteria.addOrder(Order.asc(fieldName));
+					} else {
+						/* If the field hasn't got ordering or desc is specified */
+						criteria.addOrder(Order.desc(fieldName));
+					}
+				}
 			}
 		}
 		
-		if (mostRecentN != null && mostRecentN > 0)
+		if (mostRecentN != null && mostRecentN > 0) {
 			criteria.setMaxResults(mostRecentN);
+		}
 		
 		if (obsGroupId != null) {
 			criteria.createAlias("obsGroup", "og");
 			criteria.add(Restrictions.eq("og.obsId", obsGroupId));
 		}
 		
-		if (fromDate != null)
+		if (fromDate != null) {
 			criteria.add(Restrictions.ge("obsDatetime", fromDate));
+		}
 		
-		if (toDate != null)
+		if (toDate != null) {
 			criteria.add(Restrictions.le("obsDatetime", toDate));
+		}
 		
-		if (CollectionUtils.isNotEmpty(valueCodedNameAnswers))
+		if (CollectionUtils.isNotEmpty(valueCodedNameAnswers)) {
 			criteria.add(Restrictions.in("valueCodedName", valueCodedNameAnswers));
+		}
 		
-		if (includeVoidedObs == false)
+		if (!includeVoidedObs) {
 			criteria.add(Restrictions.eq("voided", false));
+		}
 		return criteria;
 	}
 	
 	/**
 	 * Convenience method that adds an expression to the given <code>criteria</code> according to
 	 * what types of person objects is wanted
-	 * 
+	 *
 	 * @param criteria
 	 * @param personType
 	 * @return the given criteria (for chaining)

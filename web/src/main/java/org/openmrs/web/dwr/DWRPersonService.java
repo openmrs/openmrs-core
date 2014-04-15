@@ -50,7 +50,7 @@ public class DWRPersonService {
 	 * method contains a non-backwards-compatible change between 1.5 and 1.6, since DWR has trouble
 	 * with method overloading. The String personType parameter was removed, since User no longer
 	 * extends Person
-	 * 
+	 *
 	 * @param name
 	 * @param birthyear
 	 * @param age
@@ -58,7 +58,7 @@ public class DWRPersonService {
 	 * @return
 	 */
 	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender) {
-		Vector<Object> personList = new Vector<Object>();
+		Vector<Object> personList;
 		
 		Integer userId = Context.getAuthenticatedUser().getUserId();
 		log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
@@ -90,8 +90,9 @@ public class DWRPersonService {
 			d = d - Integer.parseInt(age);
 		}
 		
-		if (gender.length() < 1)
+		if (gender.length() < 1) {
 			gender = null;
+		}
 		
 		Set<Person> persons = ps.getSimilarPeople(name, d, gender);
 		
@@ -115,7 +116,7 @@ public class DWRPersonService {
 	
 	/**
 	 * Find Person objects based on the given searchPhrase
-	 * 
+	 *
 	 * @param searchPhrase partial name or partial identifier
 	 * @param includeVoided true/false whether to include the voided objects
 	 * @param roles if not null, restricts search to only users and only users with these roles
@@ -132,7 +133,7 @@ public class DWRPersonService {
 	
 	/**
 	 * Creates a new person stub.
-	 * 
+	 *
 	 * @param given
 	 * @param middle
 	 * @param family
@@ -154,11 +155,11 @@ public class DWRPersonService {
 		if (StringUtils.isEmpty(gender)) {
 			log.error("Gender cannot be null.");
 			return new String("Gender cannot be null.");
-		} else if (gender.toUpperCase().contains("M"))
+		} else if (gender.toUpperCase().contains("M")) {
 			p.setGender("M");
-		else if (gender.toUpperCase().contains("F"))
+		} else if (gender.toUpperCase().contains("F")) {
 			p.setGender("F");
-		else {
+		} else {
 			log.error("Gender must be 'M' or 'F'.");
 			return new String("Gender must be 'M' or 'F'.");
 		}
@@ -196,7 +197,7 @@ public class DWRPersonService {
 	
 	/**
 	 * Private method to handle birth date and age input.
-	 * 
+	 *
 	 * @param birthdate
 	 * @param dateformat
 	 * @param age
@@ -207,8 +208,9 @@ public class DWRPersonService {
 		SimpleDateFormat df = new SimpleDateFormat();
 		if (!"".equals(dateformat)) {
 			dateformat = dateformat.toLowerCase().replaceAll("m", "M");
-		} else
+		} else {
 			dateformat = new String("MM/dd/yyyy");
+		}
 		df.applyPattern(dateformat);
 		Calendar cal = Calendar.getInstance();
 		cal.clear(Calendar.HOUR);
@@ -216,21 +218,23 @@ public class DWRPersonService {
 		cal.clear(Calendar.SECOND);
 		cal.clear(Calendar.MILLISECOND);
 		if ("".equals(birthdate)) {
-			if ("".equals(age))
+			if ("".equals(age)) {
 				return cal.getTime();
+			}
 			try {
 				cal.add(Calendar.YEAR, -(Integer.parseInt(age)));
 			}
 			catch (NumberFormatException nfe) {}
 			return cal.getTime();
-		} else
+		} else {
 			cal.setTime(df.parse(birthdate));
+		}
 		return cal.getTime();
 	}
 	
 	/**
 	 * Find Person objects based on the given searchPhrase
-	 * 
+	 *
 	 * @param searchPhrase partial name or partial identifier
 	 * @param includeRetired true/false whether to include the voided objects
 	 * @param roles if not null, restricts search to only users and only users with these roles
@@ -292,7 +296,7 @@ public class DWRPersonService {
 	 * matching people (depending on values of start and length parameters) while the keys are are
 	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
 	 * matches will be returned from the start index if specified.
-	 * 
+	 *
 	 * @param phrase is the string used to search for people
 	 * @param includeRetired Specifies if retired people should be included or not
 	 * @param roles If not null, restricts search to only users and only users with these roles
@@ -332,8 +336,9 @@ public class DWRPersonService {
 			
 			//if we have any matches or this isn't the first ajax call when the caller
 			//requests for the count
-			if (personCount > 0 || !getMatchCount)
+			if (personCount > 0 || !getMatchCount) {
 				objectList = findBatchOfPeopleByRoles(phrase, includeRetired, roles, start, length);
+			}
 			
 			resultsMap.put("count", personCount);
 			resultsMap.put("objectList", objectList);

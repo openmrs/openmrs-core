@@ -120,7 +120,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			try {
 				fout.close();
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				// pass
 			}
 		}

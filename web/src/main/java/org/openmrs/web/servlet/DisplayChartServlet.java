@@ -43,8 +43,9 @@ public class DisplayChartServlet extends AbstractGraphServlet {
 		HttpSession session = request.getSession();
 		Object o = session.getAttribute(key);
 		
-		if (o == null)
+		if (o == null) {
 			log.error("Unable to find chart in session with key: " + key);
+		}
 		
 		return (JFreeChart) o;
 		

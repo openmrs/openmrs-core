@@ -42,14 +42,14 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.provider.providerForm.belowTitle" type="html" parameters="providerAttributeTypeId=${providerAttributeType.providerAttributeTypeId}" />
 
 <spring:hasBindErrors name="providerAttributeType">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="providerAttributeType.name">
 				<input type="text" name="name" value="${status.value}" size="50" />
@@ -85,7 +85,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="AttributeType.datatypeClassname"/></td>
+		<td><openmrs:message code="AttributeType.datatypeClassname"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="providerAttributeType.datatypeClassname">
 				<select name="datatypeClassname">
@@ -140,6 +140,12 @@
 			<td><openmrs:format user="${ providerAttributeType.creator }"/></td>
 		</tr>
 	</c:if>
+	<tr>
+         <c:if test="${providerAttributeType.providerAttributeTypeId != null}">
+           <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${providerAttributeType.uuid}</sub></font></td>
+         </c:if>
+   </tr>
 </table>
 <br />
 

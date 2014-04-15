@@ -39,7 +39,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Controller for editing visit attribute types.
- * 
+ *
  * @since 1.9
  */
 public class ProviderAttributeTypeFormController extends SimpleFormController {
@@ -50,7 +50,7 @@ public class ProviderAttributeTypeFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -104,9 +104,7 @@ public class ProviderAttributeTypeFormController extends SimpleFormController {
 					view = "providerAttributeType.form?providerAttributeTypeId="
 					        + providerAttributeType.getProviderAttributeTypeId();
 				}
-			}
-
-			else if (request.getParameter("unretire") != null) {
+			} else if (request.getParameter("unretire") != null) {
 				try {
 					providerService.unretireProviderAttributeType(providerAttributeType);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ProviderAttributeType.unretiredSuccessfully");
@@ -126,7 +124,7 @@ public class ProviderAttributeTypeFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -136,12 +134,14 @@ public class ProviderAttributeTypeFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			ProviderService os = Context.getProviderService();
 			String providerAttributeTypeId = request.getParameter("providerAttributeTypeId");
-			if (providerAttributeTypeId != null)
+			if (providerAttributeTypeId != null) {
 				providerAttributeType = os.getProviderAttributeType(Integer.valueOf(providerAttributeTypeId));
+			}
 		}
 		
-		if (providerAttributeType == null)
+		if (providerAttributeType == null) {
 			providerAttributeType = new ProviderAttributeType();
+		}
 		
 		return providerAttributeType;
 	}

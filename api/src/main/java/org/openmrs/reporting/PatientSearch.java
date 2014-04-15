@@ -65,7 +65,7 @@ import org.simpleframework.xml.Root;
  * OpenmrsUtil.toPatientFilter(PatientSearch). But it can also be left as-is for better
  * version-compatibility if PatientFilter classes change, or to avoid issues with xml-encoding
  * hibernate proxies.
- * 
+ *
  * @deprecated see reportingcompatibility module
  */
 @Root(strict = false)
@@ -85,6 +85,7 @@ public class PatientSearch implements CohortDefinition {
 	private static Set<String> openParenthesesWords = new HashSet<String>();
 	
 	private static Set<String> closeParenthesesWords = new HashSet<String>();
+	
 	static {
 		andWords.add("and");
 		andWords.add("intersection");
@@ -146,7 +147,7 @@ public class PatientSearch implements CohortDefinition {
 			st.ordinaryChar(')');
 			while (st.nextToken() != StreamTokenizer.TT_EOF) {
 				if (st.ttype == StreamTokenizer.TT_NUMBER) {
-					Integer thisInt = new Integer((int) st.nval);
+					Integer thisInt = Integer.valueOf((int) st.nval);
 					if (thisInt < 1) {
 						log.error("number < 1");
 						return null;
@@ -236,26 +237,34 @@ public class PatientSearch implements CohortDefinition {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("PatientSearch");
-		if (getSavedCohortId() != null)
+		if (getSavedCohortId() != null) {
 			sb.append(" savedCohortId=" + getSavedCohortId());
-		if (getSavedFilterId() != null)
+		}
+		if (getSavedFilterId() != null) {
 			sb.append(" savedFilterId=" + getSavedFilterId());
-		if (getSavedSearchId() != null)
+		}
+		if (getSavedSearchId() != null) {
 			sb.append(" savedSearchId=" + getSavedSearchId());
+		}
 		if (getFilterClass() != null) {
 			sb.append(" filterClass=" + getFilterClass());
-			if (getArguments() != null)
-				for (SearchArgument sa : getArguments())
+			if (getArguments() != null) {
+				for (SearchArgument sa : getArguments()) {
 					sb.append(" (" + sa.getPropertyClass() + ")" + sa.getName() + "=" + sa.getValue());
+				}
+			}
 		}
 		if (getParsedComposition() != null) {
 			sb.append(" parsedComposition=");
-			for (Object o : getParsedComposition())
+			for (Object o : getParsedComposition()) {
 				sb.append("\n" + o);
+			}
 		}
-		if (parameterValues != null)
-			for (Map.Entry<String, String> e : parameterValues.entrySet())
+		if (parameterValues != null) {
+			for (Map.Entry<String, String> e : parameterValues.entrySet()) {
 				sb.append(" paramValue:" + e.getKey() + "=" + e.getValue());
+			}
+		}
 		return sb.toString();
 	}
 	
@@ -264,32 +273,35 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	public String getCompositionString() {
-		if (parsedComposition == null)
+		if (parsedComposition == null) {
 			return null;
-		else
+		} else {
 			return compositionStringHelper(parsedComposition);
+		}
 	}
 	
 	/**
 	 * Convenience method so that a PatientSearch object can be created from a string of
 	 * compositions
-	 * 
+	 *
 	 * @param specification
 	 */
 	@Element(data = true, name = "specification", required = false)
 	public void setSpecificationString(String specification) {
 		PatientSearch temp = (PatientSearch) CohortUtil.parse(specification);
-		if (temp == null)
+		if (temp == null) {
 			throw new IllegalArgumentException("Couldn't parse: " + specification);
+		}
 		this.setParsedComposition(temp.getParsedComposition());
 		this.setSavedSearchId(temp.getSavedSearchId());
 		this.setSavedFilterId(temp.getSavedFilterId());
 		this.setSavedCohortId(temp.getSavedCohortId());
 		this.setFilterClass(temp.getFilterClass());
-		if (temp.getArguments() != null)
+		if (temp.getArguments() != null) {
 			this.setArguments(new ArrayList<SearchArgument>(temp.getArguments()));
-		else
+		} else {
 			this.setArguments(null);
+		}
 	}
 	
 	@Element(data = true, name = "specification", required = false)
@@ -301,12 +313,14 @@ public class PatientSearch implements CohortDefinition {
 	private String compositionStringHelper(List list) {
 		StringBuilder ret = new StringBuilder();
 		for (Object o : list) {
-			if (ret.length() > 0)
+			if (ret.length() > 0) {
 				ret.append(" ");
-			if (o instanceof List)
+			}
+			if (o instanceof List) {
 				ret.append("(" + compositionStringHelper((List) o) + ")");
-			else
+			} else {
 				ret.append(o);
+			}
 		}
 		return ret.toString();
 	}
@@ -317,19 +331,21 @@ public class PatientSearch implements CohortDefinition {
 	public boolean requiresHistory() {
 		if (isComposition()) {
 			return requiresHistoryHelper(parsedComposition);
-		} else
+		} else {
 			return false;
+		}
 	}
 	
 	private boolean requiresHistoryHelper(List<Object> list) {
 		for (Object o : list) {
-			if (o instanceof Integer)
+			if (o instanceof Integer) {
 				return true;
-			else if (o instanceof PatientSearch)
+			} else if (o instanceof PatientSearch) {
 				return ((PatientSearch) o).requiresHistory();
-			else if (o instanceof List) {
-				if (requiresHistoryHelper((List<Object>) o))
+			} else if (o instanceof List) {
+				if (requiresHistoryHelper((List<Object>) o)) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -346,8 +362,9 @@ public class PatientSearch implements CohortDefinition {
 			PatientSearch copy = new PatientSearch();
 			copy.setParsedComposition(copyAndDetachHelper(parsedComposition, history));
 			return copy;
-		} else
+		} else {
 			return this;
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -361,8 +378,9 @@ public class PatientSearch implements CohortDefinition {
 				ret.add(ps.copyAndDetachFromHistory(history));
 			} else if (o instanceof List) {
 				ret.add(copyAndDetachHelper((List) o, history));
-			} else
+			} else {
 				ret.add(o);
+			}
 		}
 		return ret;
 	}
@@ -389,18 +407,19 @@ public class PatientSearch implements CohortDefinition {
 	private List<Object> cloneCompositionHelper(List<Object> list, CohortSearchHistory history, EvaluationContext evalContext) {
 		List<Object> ret = new ArrayList<Object>();
 		for (Object o : list) {
-			if (o instanceof List)
+			if (o instanceof List) {
 				ret.add(cloneCompositionHelper((List) o, history, evalContext));
-			else if (o instanceof Integer)
+			} else if (o instanceof Integer) {
 				ret.add(history.ensureCachedFilter((Integer) o - 1));
-			else if (o instanceof BooleanOperator)
+			} else if (o instanceof BooleanOperator) {
 				ret.add(o);
-			else if (o instanceof PatientFilter)
+			} else if (o instanceof PatientFilter) {
 				ret.add(o);
-			else if (o instanceof PatientSearch)
+			} else if (o instanceof PatientSearch) {
 				ret.add(OpenmrsUtil.toPatientFilter((PatientSearch) o, history, evalContext));
-			else
+			} else {
 				throw new RuntimeException("Programming Error: forgot to handle: " + o.getClass());
+			}
 		}
 		return ret;
 	}
@@ -429,13 +448,14 @@ public class PatientSearch implements CohortDefinition {
 	 * return false * removeFromHistoryNotify(3) -> This search becomes invalid, and the method
 	 * returns true * removeFromHistoryNotify(9) -> This search is unaffected, and the method
 	 * returns false
-	 * 
+	 *
 	 * @return whether or not this search itself should be removed (because it directly references
 	 *         the removed history element
 	 */
 	public boolean removeFromHistoryNotify(int i) {
-		if (!isComposition())
+		if (!isComposition()) {
 			throw new IllegalArgumentException("Can only call this method on a composition search");
+		}
 		return removeHelper(parsedComposition, i);
 	}
 	
@@ -444,15 +464,16 @@ public class PatientSearch implements CohortDefinition {
 		boolean ret = false;
 		for (ListIterator<Object> iter = list.listIterator(); iter.hasNext();) {
 			Object o = iter.next();
-			if (o instanceof List)
+			if (o instanceof List) {
 				ret |= removeHelper((List<Object>) o, i);
-			else if (o instanceof Integer) {
+			} else if (o instanceof Integer) {
 				Integer ref = (Integer) o;
 				if (ref == i) {
 					ret = true;
 					iter.set("-1");
-				} else if (ref > i)
+				} else if (ref > i) {
 					iter.set(ref - 1);
+				}
 			}
 		}
 		return ret;
@@ -460,16 +481,19 @@ public class PatientSearch implements CohortDefinition {
 	
 	/**
 	 * Looks up an argument value, accounting for parameterValues
-	 * 
+	 *
 	 * @param name
 	 * @return the <code>String</code> value for the specified argument
 	 */
 	public String getArgumentValue(String name) {
-		if (parameterValues.containsKey(name))
+		if (parameterValues.containsKey(name)) {
 			return parameterValues.get(name);
-		for (SearchArgument sa : arguments)
-			if (sa.getName().equals(name))
+		}
+		for (SearchArgument sa : arguments) {
+			if (sa.getName().equals(name)) {
 				return sa.getValue();
+			}
+		}
 		return null;
 	}
 	
@@ -486,7 +510,7 @@ public class PatientSearch implements CohortDefinition {
 	/**
 	 * Returns all SearchArgument values that match
 	 * {@link org.openmrs.report.EvaluationContext#parameterValues}
-	 * 
+	 *
 	 * @return <code>List&lt;Parameter></code> of all parameters in the arguments
 	 */
 	public List<Parameter> getParameters() {
@@ -494,8 +518,9 @@ public class PatientSearch implements CohortDefinition {
 		if (arguments != null) {
 			for (SearchArgument a : arguments) {
 				String value = parameterValues.get(a.getName());
-				if (value == null)
+				if (value == null) {
 					value = a.getValue();
+				}
 				if (EvaluationContext.isExpression(value)) {
 					parameters.add(new Parameter(a.getName(), a.getName(), a.getPropertyClass(), value));
 				}
@@ -513,8 +538,9 @@ public class PatientSearch implements CohortDefinition {
 	@SuppressWarnings("unchecked")
 	@Attribute(required = false)
 	public void setFilterClass(Class clazz) {
-		if (clazz != null && !PatientFilter.class.isAssignableFrom(clazz))
+		if (clazz != null && !PatientFilter.class.isAssignableFrom(clazz)) {
 			throw new IllegalArgumentException(clazz + " is not an org.openmrs.PatientFilter");
+		}
 		this.filterClass = clazz;
 	}
 	
@@ -524,8 +550,9 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	public void addArgument(SearchArgument sa) {
-		if (arguments == null)
+		if (arguments == null) {
 			arguments = new ArrayList<SearchArgument>();
+		}
 		arguments.add(sa);
 	}
 	
@@ -533,7 +560,7 @@ public class PatientSearch implements CohortDefinition {
 	 * Adds a SearchArgument as a Parameter where the SearchArgument name is set to the Parameter
 	 * label and SearchArgument value is set to the Parameter name and SearchArgument propertyClass
 	 * is set to the Parameter clazz
-	 * 
+	 *
 	 * @param parameter
 	 */
 	public void addParameter(Parameter parameter) {

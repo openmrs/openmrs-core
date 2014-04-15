@@ -68,10 +68,12 @@ public class ConceptReferenceTermFormController {
 	        @RequestParam(value = "conceptReferenceTermId", required = false) Integer conceptReferenceTermId) {
 		
 		ConceptReferenceTerm conceptReferenceTerm = null;
-		if (conceptReferenceTermId != null)
+		if (conceptReferenceTermId != null) {
 			conceptReferenceTerm = Context.getConceptService().getConceptReferenceTerm(conceptReferenceTermId);
-		if (conceptReferenceTerm == null)
+		}
+		if (conceptReferenceTerm == null) {
 			conceptReferenceTerm = new ConceptReferenceTerm();
+		}
 		
 		return new ConceptReferenceTermModel(conceptReferenceTerm);
 	}
@@ -80,15 +82,16 @@ public class ConceptReferenceTermFormController {
 	@ModelAttribute("referenceTermMappingsToThisTerm")
 	public List<ConceptReferenceTermMap> getConceptMappingsToThisTerm(
 	        @ModelAttribute ConceptReferenceTerm conceptReferenceTerm) {
-		if (conceptReferenceTerm.getConceptReferenceTermId() != null)
+		if (conceptReferenceTerm.getConceptReferenceTermId() != null) {
 			return Context.getConceptService().getReferenceTermMappingsTo(conceptReferenceTerm);
+		}
 		
 		return ListUtils.EMPTY_LIST;
 	}
 	
 	/**
 	 * Processes requests to save/update a concept reference term
-	 * 
+	 *
 	 * @param request the {@link WebRequest} object
 	 * @param conceptReferenceTermModel the concept reference term object to save/update
 	 * @param result the {@link BindingResult} object
@@ -104,15 +107,17 @@ public class ConceptReferenceTermFormController {
 		//store ids of already mapped terms so that we don't map a term multiple times
 		Set<Integer> mappedTermIds = null;
 		for (int x = 0; x < conceptReferenceTermModel.getTermMaps().size(); x++) {
-			if (mappedTermIds == null)
+			if (mappedTermIds == null) {
 				mappedTermIds = new HashSet<Integer>();
+			}
 			ConceptReferenceTermMap map = conceptReferenceTermModel.getTermMaps().get(x);
 			
-			//skip past this mapping because its term is already in use by another mapping for this term
-			if (map.getTermB() != null && !mappedTermIds.add(map.getTermB().getConceptReferenceTermId()))
-				continue;
-			
 			if (map != null && map.getTermB() != null) {
+				//skip past this mapping because its term is already in use by another mapping for this term
+				if (!mappedTermIds.add(map.getTermB().getConceptReferenceTermId())) {
+					continue;
+				}
+				
 				if (request.getParameter("_termMaps[" + x + "].exists") == null) {
 					// because of the _termMap[x].exists input name in the jsp, the value will be null for
 					// deleted maps, remove the map.
@@ -150,8 +155,9 @@ public class ConceptReferenceTermFormController {
 		if (!result.hasErrors()) {
 			try {
 				conceptReferenceTerm = Context.getConceptService().saveConceptReferenceTerm(conceptReferenceTerm);
-				if (log.isDebugEnabled())
+				if (log.isDebugEnabled()) {
 					log.debug("Saved concept reference term: " + conceptReferenceTerm.toString());
+				}
 				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptReferenceTerm.saved", WebRequest.SCOPE_SESSION);
 				return "redirect:" + CONCEPT_REFERENCE_TERM_FORM_URL + ".form?conceptReferenceTermId="
 				        + conceptReferenceTerm.getConceptReferenceTermId();
@@ -168,7 +174,7 @@ public class ConceptReferenceTermFormController {
 	
 	/**
 	 * Processes requests to retire concept reference terms
-	 * 
+	 *
 	 * @param request the {@link WebRequest} object
 	 * @param conceptReferenceTermModel the concept reference term model for the term to retire
 	 * @param retireReason the reason why the concept reference term is being retired
@@ -179,14 +185,16 @@ public class ConceptReferenceTermFormController {
 	        @ModelAttribute(value = "conceptReferenceTermModel") ConceptReferenceTermModel conceptReferenceTermModel,
 	        @RequestParam(required = false, value = "retireReason") String retireReason) {
 		
-		if (!StringUtils.hasText(retireReason))
+		if (!StringUtils.hasText(retireReason)) {
 			retireReason = Context.getMessageSourceService().getMessage("general.default.retireReason");
+		}
 		
 		try {
 			ConceptReferenceTerm conceptReferenceTerm = conceptReferenceTermModel.getConceptReferenceTerm();
 			Context.getConceptService().retireConceptReferenceTerm(conceptReferenceTerm, retireReason);
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Retired concept reference term with id: " + conceptReferenceTerm.getId());
+			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptReferenceTerm.retired"), WebRequest.SCOPE_SESSION);
 			
@@ -204,7 +212,7 @@ public class ConceptReferenceTermFormController {
 	
 	/**
 	 * Processes requests to unretire concept reference terms
-	 * 
+	 *
 	 * @param request the {@link WebRequest} object
 	 * @param conceptReferenceTermModel the concept reference term model object for the term to
 	 *            unretire
@@ -218,8 +226,9 @@ public class ConceptReferenceTermFormController {
 		try {
 			ConceptReferenceTerm conceptReferenceTerm = conceptReferenceTermModel.getConceptReferenceTerm();
 			Context.getConceptService().unretireConceptReferenceTerm(conceptReferenceTerm);
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Unretired concept reference term with id: " + conceptReferenceTerm.getId());
+			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptReferenceTerm.unretired"), WebRequest.SCOPE_SESSION);
 			
@@ -238,7 +247,7 @@ public class ConceptReferenceTermFormController {
 	
 	/**
 	 * Processes requests to purge a concept reference term
-	 * 
+	 *
 	 * @param request the {@link WebRequest} object
 	 * @param conceptReferenceTermModel
 	 * @return the url to forward to
@@ -249,8 +258,9 @@ public class ConceptReferenceTermFormController {
 		Integer id = conceptReferenceTermModel.getConceptReferenceTerm().getId();
 		try {
 			Context.getConceptService().purgeConceptReferenceTerm(conceptReferenceTermModel.getConceptReferenceTerm());
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("Purged concept reference term with id: " + id);
+			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptReferenceTerm.purged"), WebRequest.SCOPE_SESSION);
 			return "redirect:" + FIND_CONCEPT_REFERENCE_TERM_URL;
@@ -276,7 +286,7 @@ public class ConceptReferenceTermFormController {
 		
 		/**
 		 * Constructor that creates a concept reference term model object from the specified term
-		 * 
+		 *
 		 * @param conceptReferenceTerm
 		 */
 		@SuppressWarnings("unchecked")
@@ -286,8 +296,9 @@ public class ConceptReferenceTermFormController {
 			if (conceptReferenceTerm.getConceptReferenceTermMaps().size() == 0) {
 				maps = new ArrayList<ConceptReferenceTermMap>();
 				maps.add(new ConceptReferenceTermMap(null, null));
-			} else
+			} else {
 				maps = new ArrayList<ConceptReferenceTermMap>(conceptReferenceTerm.getConceptReferenceTermMaps());
+			}
 			
 			termMaps = ListUtils.lazyList(maps, FactoryUtils.instantiateFactory(ConceptReferenceTermMap.class));
 		}

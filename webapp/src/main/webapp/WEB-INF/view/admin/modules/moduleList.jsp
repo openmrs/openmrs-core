@@ -11,6 +11,66 @@
 <script type="text/javascript">
 	var oTable;
 	
+	 function escapeSpecialCharacters(moduleId){
+		 var segments = moduleId.split(".");
+         if(segments.length > 1){
+         moduleId = segments[0] + ('\\.') + segments[1];
+         }
+        return moduleId;
+	 }
+	
+	 function getDependencies(module, isUnloadFlag){
+		 var moduleId = module.parentNode.parentNode.id;
+	     var path = "${pageContext.request.contextPath}/admin/modules/manage/checkdependencies.form";
+   		 path = path + "?moduleId=" + moduleId;
+	$j.ajax({
+		async : false,
+		type : "GET",
+		url : path,
+		dataType : "text",
+		success : function(data) {
+			if(data != ""){
+				var message;
+				message = '<openmrs:message code="Module.dependencyShutdownNotice" javaScriptEscape="true"/>';				
+				message += '<br/><br/>' + JSON.parse(data);
+				
+				document.getElementById('dependency-confirmation-message').innerHTML = message;
+			    $j( "#dialog-confirm" ).dialog({
+			        resizable: false,
+			        width: '50%',
+			        modal: true,
+			        buttons: {
+			          "Ok": function() {
+			            $j( this ).dialog( "close" );	
+			            
+			            moduleId = escapeSpecialCharacters(moduleId);	
+			            if(isUnloadFlag == false){
+			            $j('#' + moduleId + '-form').append('<input type="hidden" name="stop.x" value="stop.x">');
+			            }else{
+				            $j('#' + moduleId + '-form').append('<input type="hidden" name="unload.x" value="unload.x">');
+     	
+			            }
+						$j('#' + moduleId + '-form').submit();
+			          },
+			          Cancel: function() {			        	  
+			            $j( this ).dialog( "close" );
+			          }
+			        }
+			      });
+			}else{
+	            moduleId = escapeSpecialCharacters(moduleId);	
+	            if(isUnloadFlag == false){
+				$j('#' + moduleId + '-form').append('<input type="hidden" name="stop.x" value="stop.x">');
+	            }else{
+					$j('#' + moduleId + '-form').append('<input type="hidden" name="unload.x" value="unload.x">');
+	            }
+				$j('#' + moduleId + '-form').submit();
+			}
+		}
+	});
+	return false;
+	}
+	 
 	$j(document).ready(function() {
 		$j('#addUpgradePopup').dialog({
 			autoOpen: false,
@@ -68,6 +128,7 @@
 <h2><openmrs:message code="Module.header" /></h2>
 
 <p><openmrs:message code="Module.notice" /></p>
+<div id="dialog-confirm" title="<openmrs:message code="Module.dependencyValidationNotice"/>"><p id="dependency-confirmation-message"></p></div>
 
 <c:choose>
 	<c:when test="${allowAdmin == 'true'}">
@@ -149,7 +210,7 @@
 				<tbody>
 	</c:if>
 			
-				<form method="post">
+				<form id="${module.moduleId}-form" method="post">
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
 						<c:choose>
@@ -160,11 +221,11 @@
 											<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<openmrs:message code="Module.start.help"/>" alt="<openmrs:message code="Module.start"/>" />
 										</c:when>
 										<c:otherwise>
-											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="document.getElementById('hiddenAction').value = this.value" title="<openmrs:message code="Module.stop.help"/>" alt="<openmrs:message code="Module.stop"/>" />
+											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="return getDependencies(this, false);" title="<openmrs:message code="Module.stop.help"/>" alt="<openmrs:message code="Module.stop"/>" />
 										</c:otherwise>
 									</c:choose>
 								</td>
-								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<openmrs:message code="Module.unloadWarning"/>');" title="<openmrs:message code="Module.unload.help"/>" title="<openmrs:message code="Module.unload"/>" alt="<openmrs:message code="Module.unload"/>" /></td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return getDependencies(this, true);" title="<openmrs:message code="Module.unload.help"/>" title="<openmrs:message code="Module.unload"/>" alt="<openmrs:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
 								<td valign="top">
@@ -233,7 +294,7 @@
 			<li><i><openmrs:message code="Module.help.startStop"/></i></li>
 			<li><i><openmrs:message code="Module.help.update"/></i></li>
 		</c:if>
-		<li><i><openmrs:message code="Module.help.findMore"/></i></li>
+		<li><i><openmrs:message htmlEscape="false" code="Module.help.findMore"/></i></li>
 	</ul>
 </div>
 

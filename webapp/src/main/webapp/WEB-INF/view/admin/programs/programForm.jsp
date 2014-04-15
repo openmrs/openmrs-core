@@ -95,14 +95,14 @@
 <h2><openmrs:message code="Program.addEdit.title"/></h2>
 
 <spring:hasBindErrors name="program">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
 <form method="post" id="theForm">
 <table>
 	<tr>
-		<th><openmrs:message code="general.name"/></th>
+		<th><openmrs:message code="general.name"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="program.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -111,7 +111,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="general.description"/></th>
+		<th><openmrs:message code="general.description"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="program.description">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -120,7 +120,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><openmrs:message code="Program.concept"/></th>
+		<th><openmrs:message code="Program.concept"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="program.concept">
 				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>
@@ -187,6 +187,16 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<tr>
+     <c:if test="${program.id != null}">
+     <th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
+     <td colspan="${fn:length(locales)}">
+       <font color="#D0D0D0"><sub>
+       <spring:bind path="program.uuid">
+           <c:out value="${status.value}"></c:out>
+       </spring:bind> </sub></font></td>
+       </c:if>
+   </tr>
 </table>
 <br />
 <input type="submit" value='<openmrs:message code="Program.save"/>' onClick="jQuery('#theForm').submit()" />

@@ -18,10 +18,10 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="conceptSource.name">
-				<input type="text" name="name" value="${status.value}" size="35" />
+				<input type="text" name="name" value="<c:out value="${status.value}" />" size="35" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -31,17 +31,17 @@
 		<td><openmrs:message code="ConceptSource.hl7Code"/></td>
 		<td>
 			<spring:bind path="conceptSource.hl7Code">
-				<input type="text" name="hl7Code" value="${status.value}" size="35" maxlength="20" />
+				<input type="text" name="hl7Code" value="<c:out value="${status.value}" />" size="35" maxlength="20" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 		<td class="description"><openmrs:message code="ConceptSource.hl7Code.help"/></td>
 	</tr>
 	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="conceptSource.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40"><c:out value="${status.value}" /></textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -51,12 +51,18 @@
 		<tr>
 			<td><openmrs:message code="general.createdBy" /></td>
 			<td>
-				${conceptSource.creator.personName} -
+				<c:out value="${conceptSource.creator.personName}" /> -
 				<openmrs:formatDate date="${conceptSource.dateCreated}" type="long" />
 			</td>
 			<td class="description"></td>
 		</tr>
 	</c:if>
+	<tr>
+ 		 <c:if test="${conceptSource.conceptSourceId != null}">
+           <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${conceptSource.uuid}</sub></font></td>
+         </c:if>
+   </tr>
 </table>
 </fieldset>
 

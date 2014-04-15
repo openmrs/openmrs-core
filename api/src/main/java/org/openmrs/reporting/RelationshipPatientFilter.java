@@ -16,6 +16,8 @@ package org.openmrs.reporting;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -48,25 +50,35 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 	 */
 	@Override
 	public String getDescription() {
+		MessageSourceService msa = Context.getMessageSourceService();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Patients ");
+		sb.append(msa.getMessage("reporting.patients")).append(" ");
 		RelationshipType relType = getRelationshipType();
 		if (relType != null) {
 			if (includeAtoB && includeBtoA) {
-				sb.append("who are either " + relType.getaIsToB() + " or " + relType.getbIsToA() + " of ");
+				sb.append(
+				    msa.getMessage("reporting.whoAreEither", new Object[] { relType.getaIsToB(), relType.getbIsToA() },
+				        Context.getLocale())).append(" ");
 			} else {
-				if (includeAtoB)
-					sb.append("who are " + relType.getaIsToB() + " to " + relType.getbIsToA() + " ");
-				if (includeBtoA)
-					sb.append("who are " + relType.getbIsToA() + " to " + relType.getaIsToB() + " ");
+				if (includeAtoB) {
+					sb.append(
+					    msa.getMessage("reporting.whoAre", new Object[] { relType.getaIsToB(), relType.getbIsToA() },
+					        Context.getLocale())).append(" ");
+				}
+				if (includeBtoA) {
+					sb.append(
+					    msa.getMessage("reporting.whoAre", new Object[] { relType.getaIsToB(), relType.getbIsToA() },
+					        Context.getLocale())).append(" ");
+				}
 			}
 		} else {
-			sb.append("with any relationship to ");
+			sb.append(msa.getMessage("reporting.withAnyRelationshipTo")).append(" ");
 		}
-		if (getPerson() != null)
+		if (getPerson() != null) {
 			sb.append(getPerson().toString());
-		else
-			sb.append("anyone");
+		} else {
+			sb.append(msa.getMessage("reporting.anyone"));
+		}
 		return sb.toString();
 	}
 	
@@ -77,12 +89,13 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 	public String getCacheKey() {
 		StringBuilder sb = new StringBuilder();
 		if (getRelationshipType() != null) {
-			sb.append("t" + getRelationshipType().getRelationshipTypeId() + ".");
-			sb.append(includeAtoB + ".");
-			sb.append(includeBtoA + ".");
+			sb.append("t").append(getRelationshipType().getRelationshipTypeId()).append(".");
+			sb.append(includeAtoB).append(".");
+			sb.append(includeBtoA).append(".");
 		}
-		if (getPerson() != null)
-			sb.append("p" + getPerson().getPersonId() + ".");
+		if (getPerson() != null) {
+			sb.append("p").append(getPerson().getPersonId()).append(".");
+		}
 		return sb.toString();
 	}
 	

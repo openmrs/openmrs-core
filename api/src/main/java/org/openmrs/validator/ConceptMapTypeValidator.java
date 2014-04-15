@@ -25,7 +25,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates {@link ConceptMapType} objects.
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { ConceptMapType.class }, order = 50)
@@ -36,7 +36,7 @@ public class ConceptMapTypeValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -46,7 +46,7 @@ public class ConceptMapTypeValidator implements Validator {
 	
 	/**
 	 * Checks that a given concept map type object is valid.
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the concept map type object is null
@@ -58,9 +58,10 @@ public class ConceptMapTypeValidator implements Validator {
 	 */
 	public void validate(Object obj, Errors errors) {
 		
-		if (obj == null || !(obj instanceof ConceptMapType))
+		if (obj == null || !(obj instanceof ConceptMapType)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
 			        + ConceptMapType.class);
+		}
 		
 		ConceptMapType conceptMapType = (ConceptMapType) obj;
 		String name = conceptMapType.getName();
@@ -73,7 +74,7 @@ public class ConceptMapTypeValidator implements Validator {
 		name = name.trim();
 		ConceptMapType duplicate = Context.getConceptService().getConceptMapTypeByName(name);
 		if (duplicate != null) {
-			if (!OpenmrsUtil.nullSafeEquals(duplicate.getId(), conceptMapType.getId())) {
+			if (!OpenmrsUtil.nullSafeEquals(duplicate.getUuid(), conceptMapType.getUuid())) {
 				errors.rejectValue("name", "ConceptMapType.duplicate.name", "Duplicate concept map type name: " + name);
 			}
 		}

@@ -57,7 +57,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * Very crude way of setting just one line of template. This just puts
 	 * something on {@link #setLineByLineFormat(List)} with this string
-	 * 
+	 *
 	 * @param simpleTemplate
 	 *            first template line
 	 */
@@ -85,11 +85,13 @@ public abstract class LayoutTemplate {
 			
 			for (int i = 0; i < nonTokens.length; i++) {
 				String nonToken = nonTokens[i];
-				if (idxCurr + 1 < line.length())
+				if (idxCurr + 1 < line.length()) {
 					idxCurr = line.indexOf(nonToken, idxCurr + 1);
+				}
 				
-				if (ret == null)
+				if (ret == null) {
 					ret = new Vector<Map<String, String>>();
+				}
 				
 				if (i == 0 && idxCurr > 0) {
 					// this means there is a token at the beginning - we'll have to grab it
@@ -146,8 +148,9 @@ public abstract class LayoutTemplate {
 		} else if (line != null) {
 			if (line.length() > 0) {
 				// looks like we have a single token on a line by itself
-				if (ret == null)
+				if (ret == null) {
 					ret = new Vector<Map<String, String>>();
+				}
 				Map<String, String> currToken = new HashMap<String, String>();
 				
 				// adding a nontoken to match the code that does "more than a single token on a line"
@@ -167,7 +170,7 @@ public abstract class LayoutTemplate {
 			}
 		}
 		
-		if (this.maxTokens < ret.size()) {
+		if (ret != null && this.maxTokens < ret.size()) {
 			this.maxTokens = ret.size();
 		}
 		
@@ -179,8 +182,9 @@ public abstract class LayoutTemplate {
 		
 		if (this.lineByLineFormat != null) {
 			for (String line : this.lineByLineFormat) {
-				if (ret == null)
+				if (ret == null) {
 					ret = new Vector<List<Map<String, String>>>();
+				}
 				String tokenizedLine = replaceTokens(line);
 				String[] nonTokens = tokenizedLine.split(this.LAYOUT_TOKEN);
 				List<Map<String, String>> lineTokens = convertToTokens(line, nonTokens);
@@ -252,7 +256,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * Get the element regular expressions. These can be used to enforce that an element matches a
 	 * regex.
-	 * 
+	 *
 	 * @return the elementRegex
 	 */
 	public Map<String, String> getElementRegex() {
@@ -262,7 +266,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * Set the element regular expressions. These can be used to enforce that an element matches a
 	 * regex.
-	 * 
+	 *
 	 * @param elementRegex the elementRegex to set
 	 */
 	public void setElementRegex(Map<String, String> elementRegex) {
@@ -272,7 +276,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * Get the element formats. These can be used to display an example format that an element
 	 * should look like.
-	 * 
+	 *
 	 * @return the elementFormats
 	 */
 	public Map<String, String> getElementRegexFormats() {
@@ -282,7 +286,7 @@ public abstract class LayoutTemplate {
 	/**
 	 * Set the element formats. These can be used to display an example format that an element
 	 * should look like.
-	 * 
+	 *
 	 * @param elementFormats the elementFormats to set
 	 */
 	public void setElementRegexFormats(Map<String, String> elementRegexFormats) {
@@ -307,9 +311,10 @@ public abstract class LayoutTemplate {
 	 * @return the maxTokens
 	 */
 	public int getMaxTokens() {
-		if (maxTokens == -1)
+		if (maxTokens == -1) {
 			getLines(); // initialize the maxTokens variable
-			
+		}
+		
 		return maxTokens;
 	}
 	
@@ -355,12 +360,14 @@ public abstract class LayoutTemplate {
 		List<String> strList = new ArrayList(strListArg); // copy the list so we don't get concurrentmodification exceptions
 		for (String s : strList) {
 			for (String sInner : strList) {
-				if (sInner.indexOf(s) != -1 && s.length() < sInner.length() && !dup.contains(s))
+				if (sInner.indexOf(s) != -1 && s.length() < sInner.length() && !dup.contains(s)) {
 					dup.add(s);
+				}
 			}
 		}
-		if (dup.size() > 1)
+		if (dup.size() > 1) {
 			dup = nonUniqueStringsGoLast(dup);
+		}
 		strList.removeAll(dup);
 		strList.addAll(dup);
 		return strList;

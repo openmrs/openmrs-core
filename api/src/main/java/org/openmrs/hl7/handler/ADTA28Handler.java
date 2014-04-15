@@ -103,7 +103,7 @@ public class ADTA28Handler implements Application {
 	/**
 	 * Always returns true, assuming that the router calling this handler will only call this
 	 * handler with ADT_A28 messages.
-	 * 
+	 *
 	 * @return true
 	 */
 	public boolean canProcess(Message message) {
@@ -117,8 +117,9 @@ public class ADTA28Handler implements Application {
 		
 		log.debug("Processing ADT_A28 message");
 		
-		if (!(message instanceof ADT_A05))
+		if (!(message instanceof ADT_A05)) {
 			throw new ApplicationException("Invalid message sent to ADT_A28 handler");
+		}
 		
 		Message response;
 		try {
@@ -164,8 +165,9 @@ public class ADTA28Handler implements Application {
 		if (patientId == null) {
 			log.info("Creating new patient in response to ADT_A28 " + messageControlId);
 			Patient patient = createPatient(pid, sendingApp);
-			if (patient == null)
+			if (patient == null) {
 				throw new HL7Exception("Couldn't create Patient object from PID");
+			}
 			Context.getPatientService().savePatient(patient);
 			
 		} else {
@@ -204,8 +206,9 @@ public class ADTA28Handler implements Application {
 		// Create all patient identifiers specified in the message
 		// Copied code from resolvePatientId() in HL7ServiceImpl.java
 		CX[] idList = pid.getPatientIdentifierList();
-		if (idList == null || idList.length < 1)
+		if (idList == null || idList.length < 1) {
 			throw new HL7Exception("Missing patient identifier in PID segment");
+		}
 		
 		List<PatientIdentifier> goodIdentifiers = new ArrayList<PatientIdentifier>();
 		for (CX id : idList) {
@@ -251,9 +254,7 @@ public class ADTA28Handler implements Application {
 					log.error("Uncaught error parsing/creating patient identifier '" + hl7PatientId
 					        + "' for assigning authority '" + assigningAuthority + "'", e);
 				}
-			}
-
-			else {
+			} else {
 				log.error("PID contains identifier with no assigning authority");
 				continue;
 			}
@@ -265,8 +266,9 @@ public class ADTA28Handler implements Application {
 		
 		// Extract patient name from the message
 		XPN patientNameX = pid.getPatientName(0);
-		if (patientNameX == null)
+		if (patientNameX == null) {
 			throw new HL7Exception("Missing patient name in the PID segment");
+		}
 		
 		// Patient name
 		PersonName name = new PersonName();
@@ -280,17 +282,20 @@ public class ADTA28Handler implements Application {
 		
 		// Gender (checks for null, but not for 'M' or 'F')
 		String gender = pid.getAdministrativeSex().getValue();
-		if (gender == null)
+		if (gender == null) {
 			throw new HL7Exception("Missing gender in the PID segment");
+		}
 		gender = gender.toUpperCase();
-		if (!OpenmrsConstants.GENDER().containsKey(gender))
+		if (!OpenmrsConstants.GENDER().containsKey(gender)) {
 			throw new HL7Exception("Unrecognized gender: " + gender);
+		}
 		patient.setGender(gender);
 		
 		// Date of Birth
 		TS dateOfBirth = pid.getDateTimeOfBirth();
-		if (dateOfBirth == null || dateOfBirth.getTime() == null || dateOfBirth.getTime().getValue() == null)
+		if (dateOfBirth == null || dateOfBirth.getTime() == null || dateOfBirth.getTime().getValue() == null) {
 			throw new HL7Exception("Missing birth date in the PID segment");
+		}
 		patient.setBirthdate(tsToDate(dateOfBirth));
 		
 		// Estimated birthdate?
@@ -299,8 +304,9 @@ public class ADTA28Handler implements Application {
 			String precision = precisionTemp.getValue().toUpperCase();
 			log.debug("The birthdate is estimated: " + precision);
 			
-			if (precision.equals("Y") || precision.equals("L"))
+			if (precision.equals("Y") || precision.equals("L")) {
 				patient.setBirthdateEstimated(true);
+			}
 		}
 		
 		return patient;

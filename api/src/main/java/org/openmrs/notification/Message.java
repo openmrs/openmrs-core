@@ -19,7 +19,7 @@ import java.util.Date;
 public class Message implements Serializable {
 	
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -5392076713513109152L;
 	
@@ -100,13 +100,14 @@ public class Message implements Serializable {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param recipients
 	 * @should set multiple recipients
 	 */
 	public void setRecipients(String recipients) {
-		if (recipients != null)
+		if (recipients != null) {
 			this.recipients = new StringBuffer(recipients);
+		}
 	}
 	
 	public String getRecipients() {
@@ -117,7 +118,7 @@ public class Message implements Serializable {
 	 * Add a new receiver of this message. Will append to current list of recipients by inserting a
 	 * comma. If no recipients exist, this method has no effect (TODO is this the correct
 	 * behavior??!).
-	 * 
+	 *
 	 * @param recipient a new address to assign
 	 * @should add new recipient
 	 */

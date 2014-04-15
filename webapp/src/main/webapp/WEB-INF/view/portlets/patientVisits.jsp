@@ -70,7 +70,7 @@ tr.bottom-encounter-in-visit td:last-child {
 										{
 											"bProcessing" : true,
 											"bServerSide" : true,
-											"sAjaxSource" : "${pageContext.request.contextPath}/admin/visits/datatable.list?patient=${model.patient.patientId}",
+											"sAjaxSource" : "${pageContext.request.contextPath}/admin/visits/datatable.list?patient=<c:out value="${model.patient.patientId}" />",
 											"bLengthChange" : false,
 											"oLanguage": {
 												"sInfo": ""//hack to hide the text but keep the element to maintain the UI
@@ -195,7 +195,7 @@ tr.bottom-encounter-in-visit td:last-child {
 
 															visit = '<a href="${pageContext.request.contextPath}/admin/visits/visit.form?visitId='
 																	+ visitId
-																	+ '&patientId=${model.patient.patientId}">'
+																	+ '&patientId=<c:out value="${model.patient.patientId}" />">'
 																	+ type
 																	+ '</a><br/><span class="dimmedDates"><openmrs:message code="general.fromDate" /> '
 																	+ from;
@@ -238,7 +238,7 @@ tr.bottom-encounter-in-visit td:last-child {
 		<openmrs:hasPrivilege privilege="View Visits, View Encounters">
 			<openmrs:hasPrivilege privilege="Add Visits">
 				&nbsp;<a
-					href="<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}"><openmrs:message
+					href="<openmrs:contextPath />/admin/visits/visit.form?patientId=<c:out value="${model.patient.patientId}" />"><openmrs:message
 						code="Visit.add" /></a>
 				<br />
 				<br />

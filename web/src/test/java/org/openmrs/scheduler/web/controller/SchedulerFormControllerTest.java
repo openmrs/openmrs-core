@@ -18,11 +18,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerService;
@@ -30,6 +33,7 @@ import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BindException;
@@ -40,7 +44,35 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	
-	private static final String INITIAL_SCHEDULER_TASK_CONFIG_XML = "org/openmrs/web/include/SchedulerServiceTest.xml";
+	private static final String DATE_TIME_FORMAT = "MM/dd/yyyy HH:mm:ss";
+	
+	private static final String INITIAL_SCHEDULER_TASK_CONFIG_XML = "org/openmrs/web/include/SchedulerFormControllerTest.xml";
+	
+	private static final long MAX_WAIT_TIME_IN_MILLISECONDS = 2048;
+	
+	private MockHttpServletRequest mockRequest;
+	
+	private TaskHelper taskHelper;
+	
+	@Autowired
+	private SchedulerFormController controller;
+	
+	// should be @Autowired as well but the respective bean is commented out
+	// in applicationContext-service.xml at the time of coding (Jan 2013)
+	private SchedulerService service;
+	
+	@Before
+	public void setUpSchedulerService() throws Exception {
+		executeDataSet(INITIAL_SCHEDULER_TASK_CONFIG_XML);
+		
+		service = Context.getSchedulerService();
+		taskHelper = new TaskHelper(service);
+		
+		mockRequest = new MockHttpServletRequest();
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("taskId", "1");
+	}
 	
 	/**
 	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
@@ -48,49 +80,18 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	@Test
 	@Verifies(value = "should reschedule a currently scheduled task", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRescheduleACurrentlyScheduledTask() throws Exception {
-		executeDataSet(INITIAL_SCHEDULER_TASK_CONFIG_XML);
+		Date timeOne = taskHelper.getTime(Calendar.MINUTE, 5);
+		TaskDefinition task = taskHelper.getScheduledTaskDefinition(timeOne);
+		Task oldTaskInstance = task.getTaskInstance();
 		
-		SchedulerService service = Context.getSchedulerService();
-		TaskDefinition task = service.getTaskByName("Hello World Task");
-		//sanity check
-		Assert.assertNull(task.getTaskInstance());
+		Date timeTwo = taskHelper.getTime(Calendar.MINUTE, 2);
+		mockRequest.setParameter("startTime", new SimpleDateFormat(DATE_TIME_FORMAT).format(timeTwo));
 		
-		Calendar cal = Calendar.getInstance();
-		//schedule the task to run in the next 5 min for testing
-		cal.add(Calendar.MINUTE, 5);
-		task.setStartTime(cal.getTime());
-		service.saveTask(task);
-		try {
-			//start the task
-			service.scheduleTask(task);
-			//the task should have been started
-			Assert.assertTrue(task.getStarted());
-			Assert.assertNotNull(task.getTaskInstance());
-			Task oldTaskInstance = task.getTaskInstance();
-			
-			SchedulerFormController controller = (SchedulerFormController) applicationContext
-			        .getBean("schedulerFormController");
-			MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-			mockRequest.setMethod("POST");
-			mockRequest.setParameter("action", "");
-			mockRequest.setParameter("taskId", "1");
-			
-			//postpone the start time by 2 min and submit the form
-			cal.add(Calendar.MINUTE, 2);
-			mockRequest.setParameter("startTime", new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(cal.getTime()));
-			ModelAndView mav = controller.handleRequest(mockRequest, new MockHttpServletResponse());
-			assertNotNull(mav);
-			assertTrue(mav.getModel().isEmpty());
-			
-			//the task should have been rescheduled to reflect the change in start time
-			Assert.assertNotSame(oldTaskInstance, task.getTaskInstance());
-		}
-		finally {
-			service.shutdownTask(task);
-			//Ensure that the task was stopped
-			Assert.assertFalse(task.getTaskInstance().isExecuting());
-			Assert.assertFalse(task.getStarted());
-		}
+		ModelAndView mav = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Assert.assertNotSame(oldTaskInstance, task.getTaskInstance());
 	}
 	
 	/**
@@ -99,86 +100,61 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not reschedule a task that is not currently scheduled", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldNotRescheduleATaskThatIsNotCurrentlyScheduled() throws Exception {
-		executeDataSet(INITIAL_SCHEDULER_TASK_CONFIG_XML);
-		
-		SchedulerService service = Context.getSchedulerService();
-		TaskDefinition task = service.getTaskByName("Hello World Task");
-		//sanity check
-		Assert.assertNull(task.getTaskInstance());
-		
-		Calendar cal = Calendar.getInstance();
-		//schedule the task to run in the next 5 min for testing
-		cal.add(Calendar.MINUTE, 5);
-		task.setStartTime(cal.getTime());
-		service.saveTask(task);
+		Date timeOne = taskHelper.getTime(Calendar.MINUTE, 5);
+		TaskDefinition task = taskHelper.getUnscheduledTaskDefinition(timeOne);
 		Task oldTaskInstance = task.getTaskInstance();
 		
-		SchedulerFormController controller = (SchedulerFormController) applicationContext.getBean("schedulerFormController");
-		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-		mockRequest.setMethod("POST");
-		mockRequest.setParameter("action", "");
-		mockRequest.setParameter("taskId", "1");
+		Date timeTwo = taskHelper.getTime(Calendar.MINUTE, 2);
+		mockRequest.setParameter("startTime", new SimpleDateFormat(DATE_TIME_FORMAT).format(timeTwo));
 		
-		//postpone the start time by 2 min and submit the form
-		cal.add(Calendar.MINUTE, 2);
-		mockRequest.setParameter("startTime", new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(cal.getTime()));
 		ModelAndView mav = controller.handleRequest(mockRequest, new MockHttpServletResponse());
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
 		
-		//the task shouldn't have been rescheduled
-		Assert.assertEquals(oldTaskInstance, task.getTaskInstance());
+		Assert.assertSame(oldTaskInstance, task.getTaskInstance());
 	}
 	
 	/**
 	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
 	 */
 	@Test
+	@Ignore("TRUNK-3948")
 	@Verifies(value = "should not reschedule a task if the start time has passed", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldNotRescheduleATaskIfTheStartTimeHasPassed() throws Exception {
-		executeDataSet(INITIAL_SCHEDULER_TASK_CONFIG_XML);
+		Date timeOne = taskHelper.getTime(Calendar.MINUTE, 5);
+		TaskDefinition task = taskHelper.getScheduledTaskDefinition(timeOne);
+		Task oldTaskInstance = task.getTaskInstance();
 		
-		SchedulerService service = Context.getSchedulerService();
-		TaskDefinition task = service.getTaskByName("Hello World Task");
-		//sanity check
-		Assert.assertNull(task.getTaskInstance());
+		Date timeTwo = taskHelper.getTime(Calendar.SECOND, -1);
+		mockRequest.setParameter("startTime", new SimpleDateFormat(DATE_TIME_FORMAT).format(timeTwo));
 		
-		Calendar cal = Calendar.getInstance();
-		//schedule the task to run in the next 5 min for testing
-		cal.add(Calendar.MINUTE, 5);
-		task.setStartTime(cal.getTime());
-		service.saveTask(task);
-		try {
-			//start the task
-			service.scheduleTask(task);
-			//the task should have been started
-			Assert.assertTrue(task.getStarted());
-			Assert.assertNotNull(task.getTaskInstance());
-			Task oldTaskInstance = task.getTaskInstance();
-			
-			SchedulerFormController controller = (SchedulerFormController) applicationContext
-			        .getBean("schedulerFormController");
-			MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-			mockRequest.setMethod("POST");
-			mockRequest.setParameter("action", "");
-			mockRequest.setParameter("taskId", "1");
-			
-			//set the start time to be in the past
-			Calendar cal2 = Calendar.getInstance();
-			cal2.add(Calendar.SECOND, -1);
-			mockRequest.setParameter("startTime", new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(cal2.getTime()));
-			ModelAndView mav = controller.handleRequest(mockRequest, new MockHttpServletResponse());
-			assertNotNull(mav);
-			assertTrue(mav.getModel().isEmpty());
-			
-			//the task shouldn't have been rescheduled
-			Assert.assertSame(oldTaskInstance, task.getTaskInstance());
-		}
-		finally {
-			service.shutdownTask(task);
-			//Ensure that the task was stopped
-			Assert.assertFalse(task.getTaskInstance().isExecuting());
-			Assert.assertFalse(task.getStarted());
-		}
+		ModelAndView mav = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Assert.assertSame(oldTaskInstance, task.getTaskInstance());
 	}
+	
+	/**
+	 * @see {@link SchedulerFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should not reschedule an executing task", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldNotRescheduleAnExecutingTask() throws Exception {
+		Date startTime = taskHelper.getTime(Calendar.SECOND, 1);
+		TaskDefinition task = taskHelper.getScheduledTaskDefinition(startTime);
+		
+		taskHelper.waitUntilTaskIsExecuting(task, MAX_WAIT_TIME_IN_MILLISECONDS);
+		Task oldTaskInstance = task.getTaskInstance();
+		
+		// use the *same* start time as in the task already running
+		mockRequest.setParameter("startTime", new SimpleDateFormat(DATE_TIME_FORMAT).format(startTime));
+		
+		ModelAndView mav = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Assert.assertSame(oldTaskInstance, task.getTaskInstance());
+	}
+	
 }

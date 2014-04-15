@@ -50,7 +50,7 @@
 			format = '<openmrs:datePattern />';
 		format = format.toLowerCase();
 
-		var yyyy = date.getYear() + 1900
+		var yyyy = date.getFullYear();
 		var mm = date.getMonth() + 1;
 		if (mm < 10)
 			mm = "0" + mm;
@@ -77,7 +77,7 @@
 		var endDate = parseDate(jQuery('#completionDateElement').val());
 		var locationId = jQuery('#programLocationElement').val();
 		var outcomeId = jQuery('#programOutcomeConceptElement').val();
-		if (endDate != '' && !$j('#editProgramOutcomeRow').is(':hidden')
+        if (!isEmtpy(endDate) && !$j('#editProgramOutcomeRow').is(':hidden')
 				&& outcomeId == '') {
 			alert("<openmrs:message code="PatientProgram.error.outcomeRequired" />");
 		} else if (!isEmpty(startDate) && startDate > endDate && !isEmpty(endDate)) {
@@ -553,8 +553,8 @@
 	<div id="enrollError" class="error" style="display:none;"></div>
 	<form id="enrollForm" name="enrollForm" method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
 		<input type="hidden" name="method" value="enroll"/>
-		<input type="hidden" name="patientId" value="${model.patientId}"/>
-		<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${model.patientId}"/>
+		<input type="hidden" name="patientId" value="<c:out value="${model.patientId}" />"/>
+		<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=<c:out value="${model.patientId}" />"/>
 		<table style="margin: 0px 0px 1em 2em;">
 			<tr>
 				<td nowrap><openmrs:message code="Program.program" javaScriptEscape="true"/>:</td>

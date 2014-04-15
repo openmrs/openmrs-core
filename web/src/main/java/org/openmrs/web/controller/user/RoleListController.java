@@ -48,7 +48,7 @@ public class RoleListController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -60,7 +60,7 @@ public class RoleListController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -72,7 +72,7 @@ public class RoleListController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String success = "";
+			StringBuilder success = new StringBuilder();
 			String error = "";
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -87,9 +87,10 @@ public class RoleListController extends SimpleFormController {
 					//TODO convenience method deleteRole(String) ??
 					try {
 						us.purgeRole(us.getRole(p));
-						if (!success.equals(""))
-							success += "<br/>";
-						success += p + " " + deleted;
+						if (!success.equals("")) {
+							success.append("<br/>");
+						}
+						success.append(p).append(" ").append(deleted);
 					}
 					catch (DataIntegrityViolationException e) {
 						error = handleRoleIntegrityException(e, error, notDeleted);
@@ -98,14 +99,17 @@ public class RoleListController extends SimpleFormController {
 						error = handleRoleIntegrityException(e, error, notDeleted);
 					}
 				}
-			} else
+			} else {
 				error = msa.getMessage("Role.select");
+			}
 			
 			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-			if (!error.equals(""))
+			if (!success.equals("")) {
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
+			}
+			if (!error.equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -114,7 +118,7 @@ public class RoleListController extends SimpleFormController {
 	/**
 	 * Logs a role delete data integrity violation exception and returns a user friedly message of
 	 * the problem that occured.
-	 * 
+	 *
 	 * @param e the exception.
 	 * @param error the error message.
 	 * @param notDeleted the role not deleted error message.
@@ -122,8 +126,9 @@ public class RoleListController extends SimpleFormController {
 	 */
 	private String handleRoleIntegrityException(Exception e, String error, String notDeleted) {
 		log.warn("Error deleting role", e);
-		if (!error.equals(""))
+		if (!error.equals("")) {
 			error += "<br/>";
+		}
 		error += notDeleted;
 		return error;
 	}
@@ -131,7 +136,7 @@ public class RoleListController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -145,10 +150,11 @@ public class RoleListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
 			for (Role r : us.getAllRoles()) {
-				if (OpenmrsUtil.getCoreRoles().keySet().contains(r.getRole()))
+				if (OpenmrsUtil.getCoreRoles().keySet().contains(r.getRole())) {
 					roleList.put(r, true);
-				else
+				} else {
 					roleList.put(r, false);
+				}
 			}
 		}
 		

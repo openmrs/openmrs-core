@@ -33,7 +33,7 @@ public class FormValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
@@ -43,7 +43,7 @@ public class FormValidator implements Validator {
 	
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null
@@ -62,8 +62,9 @@ public class FormValidator implements Validator {
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "version", "error.null");
 			
-			if (form.getVersion() != null && !form.getVersion().matches("^\\d.*$"))
+			if (form.getVersion() != null && !form.getVersion().matches("^\\d.*$")) {
 				errors.rejectValue("version", "Form.version.invalid");
+			}
 			
 			if (form.isRetired()) {
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "retireReason", "general.retiredReason.empty");

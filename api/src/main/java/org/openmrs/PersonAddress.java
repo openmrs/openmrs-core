@@ -19,12 +19,15 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
+
+import static org.apache.commons.lang.StringUtils.defaultString;
 
 /**
  * This class is the representation of a person's address. This class is many-to-one to the Person
@@ -49,17 +52,17 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	private String address2;
 	
-	private String cityVillage;
-	
 	private String address3;
-	
-	private String countyDistrict;
 	
 	private String address4;
 	
+	private String address5;
+	
 	private String address6;
 	
-	private String address5;
+	private String cityVillage;
+	
+	private String countyDistrict;
 	
 	private String stateProvince;
 	
@@ -90,9 +93,11 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" + getCityVillage() + ", sp:" + getStateProvince()
-		        + ", c:" + getCountry() + ", cd:" + getCountyDistrict() + ", nc:" + getAddress3() + ", pc:"
-		        + getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
+		return new StringBuilder().append("a1:").append(getAddress1()).append(", a2:").append(getAddress2()).append(", cv:")
+		        .append(getCityVillage()).append(", sp:").append(getStateProvince()).append(", c:").append(getCountry())
+		        .append(", cd:").append(getCountyDistrict()).append(", nc:").append(getAddress3()).append(", pc:").append(
+		            getPostalCode()).append(", lat:").append(getLatitude()).append(", long:").append(getLongitude())
+		        .toString();
 	}
 	
 	/**
@@ -100,53 +105,33 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * {@link #equals(Object)} in that this method compares the inner fields of each address for
 	 * equality. Note: Null/empty fields on <code>otherAddress</code> /will not/ cause a false value
 	 * to be returned
-	 * 
+	 *
 	 * @param otherAddress PersonAddress with which to compare
 	 * @return boolean true/false whether or not they are the same addresses
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonAddress otherAddress) {
-		boolean returnValue = true;
-		
-		// these are the methods to compare. All are expected to be Strings
-		String[] methods = { "getAddress1", "getAddress2", "getAddress3", "getAddress4", "getAddress5", "getAddress6",
-		        "getCityVillage", "getCountyDistrict", "getStateProvince", "getCountry", "getPostalCode", "getLatitude",
-		        "getLongitude" };
-		
-		Class addressClass = this.getClass();
-		
-		// loop over all of the selected methods and compare this and other
-		for (String methodName : methods) {
-			try {
-				Method method = addressClass.getMethod(methodName, new Class[] {});
-				
-				String thisValue = (String) method.invoke(this);
-				String otherValue = (String) method.invoke(otherAddress);
-				
-				if (otherValue != null && otherValue.length() > 0)
-					returnValue &= otherValue.equals(thisValue);
-				
-			}
-			catch (NoSuchMethodException e) {
-				log.warn("No such method for comparison " + methodName, e);
-			}
-			catch (IllegalAccessException e) {
-				log.error("Error while comparing addresses", e);
-			}
-			catch (InvocationTargetException e) {
-				log.error("Error while comparing addresses", e);
-			}
-			
-		}
-		
-		return returnValue;
+		return new EqualsBuilder().append(defaultString(otherAddress.getAddress1()), defaultString(address1)).append(
+		    defaultString(otherAddress.getAddress2()), defaultString(address2)).append(
+		    defaultString(otherAddress.getAddress3()), defaultString(address3)).append(
+		    defaultString(otherAddress.getAddress4()), defaultString(address4)).append(
+		    defaultString(otherAddress.getAddress5()), defaultString(address5)).append(
+		    defaultString(otherAddress.getAddress6()), defaultString(address6)).append(
+		    defaultString(otherAddress.getCityVillage()), defaultString(cityVillage)).append(
+		    defaultString(otherAddress.getCountyDistrict()), defaultString(countyDistrict)).append(
+		    defaultString(otherAddress.getStateProvince()), defaultString(stateProvince)).append(
+		    defaultString(otherAddress.getCountry()), defaultString(country)).append(
+		    defaultString(otherAddress.getPostalCode()), defaultString(postalCode)).append(
+		    defaultString(otherAddress.getLatitude()), defaultString(latitude)).append(
+		    defaultString(otherAddress.getLongitude()), defaultString(longitude)).append(otherAddress.getStartDate(),
+		    startDate).append(otherAddress.getEndDate(), endDate).isEquals();
 	}
 	
 	/**
 	 * bitwise copy of the personAddress object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
 	 * PersonAddress.person object in this object AND the cloned object will point at the same
 	 * person
-	 * 
+	 *
 	 * @return New PersonAddress object
 	 */
 	public Object clone() {
@@ -226,8 +211,9 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @return Returns the preferred.
 	 */
 	public Boolean isPreferred() {
-		if (preferred == null)
+		if (preferred == null) {
 			return new Boolean(false);
+		}
 		return preferred;
 	}
 	
@@ -378,7 +364,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * Convenience method to test whether any of the fields in this address are set
-	 * 
+	 *
 	 * @return whether any of the address fields (address1, address2, cityVillage, stateProvince,
 	 *         country, countyDistrict, neighborhoodCell, postalCode, latitude, longitude, etc) are
 	 *         whitespace, empty ("") or null.
@@ -462,18 +448,22 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 		int retValue = 0;
 		if (other != null) {
 			retValue = isVoided().compareTo(other.isVoided());
-			if (retValue == 0)
+			if (retValue == 0) {
 				retValue = other.isPreferred().compareTo(isPreferred());
-			if (retValue == 0 && getDateCreated() != null)
+			}
+			if (retValue == 0 && getDateCreated() != null) {
 				retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-			if (retValue == 0)
+			}
+			if (retValue == 0) {
 				retValue = OpenmrsUtil.compareWithNullAsGreatest(getPersonAddressId(), other.getPersonAddressId());
+			}
 			
 			// if we've gotten this far, just check all address values. If they are
 			// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 			// and return that (they are not equal).
-			if (retValue == 0 && !equalsContent(other))
+			if (retValue == 0 && !equalsContent(other)) {
 				retValue = 1;
+			}
 		}
 		return retValue;
 	}
@@ -594,7 +584,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * Returns true if the address' endDate is null
-	 * 
+	 *
 	 * @return true or false
 	 * @since 1.9
 	 */
@@ -604,7 +594,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * Makes an address inactive by setting its endDate to the current time
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	public void deactivate() {
@@ -613,7 +603,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * Makes an address active by setting its endDate to null
-	 * 
+	 *
 	 * @since 1.9
 	 */
 	public void activate() {

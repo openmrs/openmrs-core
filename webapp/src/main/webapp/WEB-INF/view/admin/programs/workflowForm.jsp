@@ -8,23 +8,25 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
 <style>
-.statesToRetire {
-	width: 50px;
+.statesToRetire, .statesToDelete {
 	border: 1px solid #009d8e;
+    padding: 0px 7px;
+    margin: 0px 2px;
 }
 </style>
 <script type="text/javascript">
 	var displayedStates = new Array();
 	var idToNameMap = new Array();
 	var retiredStates = new Array();
-	var allSates= new Array();
+    var deletedStates = new Array();
+	var allStates= new Array();
 	var activeStates=new Array();
 	var isActiveDisplay=true;
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 
 	dojo.addOnLoad( function() {
-		dojo.event.topic.subscribe("cSearch/select", 
+		dojo.event.topic.subscribe("cSearch/select",
 			function(msg) {
 				idToNameMap[msg.objs[0].conceptId] = msg.objs[0].name;
 				addState(msg.objs[0].conceptId, false, false);
@@ -39,7 +41,8 @@
 					function (st) { return getIdToNameMap(st[0]); },
 					function (st) { return '<input type="checkbox" id="initial_' + st[0] + '" ' + (st[1] ? 'checked' : '') + '/>'; },
 					function (st) { return '<input type="checkbox" id="terminal_' + st[0] + '" ' + (st[2] ? 'checked' : '') + '/>'; },
-					function (st) { return getButton(st[0]); }
+					function (st) { return getButton(st[0]); },
+                    function (st) { return getDeleteButton(st[0]); }
 				], { escapeHtml:false });
 		} else {
 			dwr.util.addRows('stateTable', ['<openmrs:message code="general.none"/>'], [
@@ -47,7 +50,7 @@
 				], { escapeHtml:false });
 		}
 	}
-	
+
 	function retireState(conceptId) {
 		for (var i = 0; i < activeStates.length; ++i) {
 			if (activeStates[i][0] == conceptId) {
@@ -58,16 +61,15 @@
 					if(isActiveDisplay){
 						displayedStates=activeStates;
 					}else{
-						displayedStates=allSates;
-						
+						displayedStates=allStates;
 					}
-					
+
 					refreshStateTable();
 				}
 			}
 		}
 	}
-	
+
 	function unretireState(conceptId) {
 		for (var i = 0; i < retiredStates.length; ++i) {
 			if (retiredStates[i][0] == conceptId) {
@@ -80,30 +82,48 @@
 			}
 		}
 	}
-	
-	function getIdToNameMap(conceptId){
-		
-		if(isStateRetired(conceptId)){
-			
-			return '<strike>'+idToNameMap[conceptId]+'</strike>';
-		 }else{
-			 
-			 return idToNameMap[conceptId];
 
-		 } 
-		
-	
-}
+    function deleteState(conceptId) {
+        for (var i = 0; i < activeStates.length; ++i) {
+            if (activeStates[i][0] == conceptId) {
+                var x=window.confirm("<openmrs:message code='State.delete.confirmation'/>")
+                if (x) {
+                    deletedStates.push(activeStates[i]);
+                    activeStates.splice(i,1);
+                    if(isActiveDisplay){
+                        displayedStates=activeStates;
+                    }else{
+                        displayedStates=allStates;
+                    }
+                    refreshStateTable();
+                }
+            }
+        }
+    }
+
+	function getIdToNameMap(conceptId){
+
+		if(isStateRetired(conceptId)){
+
+			return '<strike>'+idToNameMap[conceptId]+'</strike>';
+		 } else {
+            return idToNameMap[conceptId];
+		 }
+    }
 function getButton(conceptId){
-	if(isStateRetired(conceptId)){
-		
-		return '<input type="button" class="statesToRetire" value="<openmrs:message code="general.unretire"/>" onclick="unretireState('+conceptId+')"}/>';
+	    if(isStateRetired(conceptId)){
+
+		return '<input type="button" class="statesToRetire" value="<openmrs:message code="general.unretire"/>" onclick="unretireState('+conceptId+')"/>';
 	 }else{
-		 
-	    return '<input type="button" class="statesToRetire" value="<openmrs:message code="general.retire"/>" onclick="retireState('+conceptId+')"}/>';
+
+	    return '<input type="button" class="statesToRetire" value="<openmrs:message code="general.retire"/>" onclick="retireState('+conceptId+')"/>';
 
 	 }
-	
+}
+
+
+function getDeleteButton(conceptId){
+    return '<input type="button" class="statesToDelete" value="<openmrs:message code="general.void"/>" onclick="deleteState('+conceptId+')"/>';
 }
 
 function isStateRetired(conceptId){
@@ -111,13 +131,13 @@ function isStateRetired(conceptId){
 		if(conceptId==retiredStates[i][0]){
 			return true;
 		}
-		
+
 	}
 }
 	function toggleStatesVisibility(){
 	if(isActiveDisplay){
 	activeStates=displayedStates;
-	displayedStates=allSates;
+	displayedStates=allStates;
 	refreshStateTable();
 		isActiveDisplay=false;
 	}else{
@@ -125,24 +145,24 @@ function isStateRetired(conceptId){
 		refreshStateTable();
 		isActiveDisplay=true;
 	}
-		
+
 	}
-	
+
 	function initialiseStateTable(){
 		isActiveDisplay=false;
 		activeStates=displayedStates;
 		toggleStatesVisibility();
 	}
-	
+
 	function addState(conceptId, isInitial, isTerminal) {
-		for (var i = 0; i < allSates.length; ++i)
-			if (allSates[i][0] == conceptId) {
+		for (var i = 0; i < allStates.length; ++i)
+			if (allStates[i][0] == conceptId) {
 				window.alert("<openmrs:message code='State.error.name.duplicate'/>");
 				return;
 			}
 		if(isActiveDisplay){
 			displayedStates.push([ conceptId, isInitial, isTerminal ]);
-			allSates.push([ conceptId, isInitial, isTerminal ]);
+			allStates.push([ conceptId, isInitial, isTerminal ]);
 
 		}else{
 			activeStates.push([ conceptId, isInitial, isTerminal ]);
@@ -150,7 +170,7 @@ function isStateRetired(conceptId){
 		}
 refreshStateTable();
 	}
-	
+
 	function handleAddState() {
 		var popup = dojo.widget.manager.getWidgetById("conceptSelection")
 		var conceptId = popup.hiddenInputNode.value;
@@ -158,10 +178,11 @@ refreshStateTable();
 		popup.displayNode.innerHTML = '';
 		addState(conceptId, false, false);
 	}
-	
+
 	function handleSave() {
 		displayedStates=activeStates;
 		var tmp = "";
+        var toDelete = "";
 		for (var i = 0; i < displayedStates.length; ++i) {
 			var conceptId = displayedStates[i][0];
 			var isInitial = jQuery('#initial_' + conceptId).is(':checked');
@@ -170,7 +191,15 @@ refreshStateTable();
 			tmp += isInitial + ",";
 			tmp += isTerminal + "|";
 		}
+
+        for (var i = 0; iLen = deletedStates.length, i < iLen; ++i) {
+            var conceptId = deletedStates[i][0];
+            toDelete += conceptId;
+            toDelete += "|";
+        }
+
 		jQuery('#statesToSubmit').val(tmp);
+        jQuery('#statesToDelete').val(toDelete);
 		jQuery('#theForm').submit();
 	}
 </script>
@@ -182,7 +211,7 @@ refreshStateTable();
 </h3>
 
 <spring:hasBindErrors name="workflow">
-	<openmrs:message code="fix.error"/>
+	<openmrs:message htmlEscape="false" code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 
@@ -213,13 +242,14 @@ refreshStateTable();
 		</tbody>
 	</table>
 	<input type="hidden" id="statesToSubmit" name="newStates" />
+    <input type="hidden" id="statesToDelete" name="deleteStates" />
 	<input type="button" onClick="handleSave()" value="<openmrs:message code="general.save" />" />
 </form>
 
 <script type="text/javascript">
 <c:forEach var="state" items="${workflow.states}">
 idToNameMap[${state.concept.conceptId}] = '<openmrs:concept conceptId="${state.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
-allSates.push([ ${state.concept.conceptId}, ${state.initial}, ${state.terminal} ]);
+allStates.push([ ${state.concept.conceptId}, ${state.initial}, ${state.terminal} ]);
 	<c:if test="${!state.retired}">
 	displayedStates.push([ ${state.concept.conceptId}, ${state.initial}, ${state.terminal} ]);
 </c:if>
@@ -230,6 +260,7 @@ retiredStates.push([ ${state.concept.conceptId}, ${state.initial}, ${state.termi
 </c:forEach>
 initialiseStateTable();
 refreshStateTable();
+
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

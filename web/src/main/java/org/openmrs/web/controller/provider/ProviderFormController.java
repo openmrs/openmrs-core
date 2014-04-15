@@ -60,10 +60,11 @@ public class ProviderFormController {
 		if (saveProviderButton != null) {
 			//For existing providers, switch between linking to person or use name
 			if (provider.getProviderId() != null) {
-				if (linkToPerson)
+				if (linkToPerson) {
 					provider.setName(null);
-				else
+				} else {
 					provider.setPerson(null);
+				}
 			}
 		}
 		
@@ -111,7 +112,7 @@ public class ProviderFormController {
 	
 	@ModelAttribute("providerAttributeTypes")
 	public List<ProviderAttributeType> getProviderAttributeTypes() throws Exception {
-		return Context.getProviderService().getAllProviderAttributeTypes();
+		return Context.getProviderService().getAllProviderAttributeTypes(false);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)

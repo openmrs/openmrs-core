@@ -38,24 +38,30 @@ public class ListPickerTag extends TagSupport {
 	
 	public int doStartTag() {
 		
-		if (name == null)
+		if (name == null) {
 			name = "list" + (int) (Math.random() * 100);
-		if (currentItems == null)
+		}
+		if (currentItems == null) {
 			currentItems = new Vector<Object>();
-		if (inheritedItems == null)
+		}
+		if (inheritedItems == null) {
 			inheritedItems = new Vector<Object>();
-		if (allItems == null)
+		}
+		if (allItems == null) {
 			allItems = new Vector<Object>();
+		}
 		
 		String str = "\n<div id='" + name + "' class='listItemBox'>";
 		
 		for (Object item : allItems) {
 			boolean checked = false;
 			boolean inherited = false;
-			if (currentItems.contains(item))
+			if (currentItems.contains(item)) {
 				checked = true;
-			if (inheritedItems.contains(item))
+			}
+			if (inheritedItems.contains(item)) {
 				inherited = true;
+			}
 			String id = name + "." + item.toString().replace(" ", "");
 			if (inherited) {
 				str += "<span class='listItem listItemChecked'>";
@@ -69,8 +75,9 @@ public class ListPickerTag extends TagSupport {
 				str += " id='" + id + "'";
 				str += " value='" + item + "'";
 				str += " onclick='this.parentNode.className=\"listItem \" + (this.checked == true ? \"listItemChecked\" : \"\");'";
-				if (checked)
+				if (checked) {
 					str += "  checked='checked' ";
+				}
 			}
 			str += " /><label for='" + id + "'>" + item + "</label>";
 			str += "</span>\n";

@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link PropertyEditor} for {@link Visit}
- * 
+ *
  * @since 1.9
  */
 public class VisitEditor extends PropertyEditorSupport {
@@ -48,8 +48,9 @@ public class VisitEditor extends PropertyEditorSupport {
 			catch (Exception ex) {
 				Visit v = vs.getVisitByUuid(text);
 				setValue(v);
-				if (v == null)
+				if (v == null) {
 					throw new IllegalArgumentException("Visit not found: " + ex.getMessage());
+				}
 			}
 		} else {
 			setValue(null);

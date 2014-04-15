@@ -48,7 +48,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	
 	/**
 	 * Sets the dao
-	 * 
+	 *
 	 * @param dao the dao to set
 	 */
 	public void setDao(DatatypeDAO dao) {
@@ -59,6 +59,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getAllDatatypeClasses()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Set<Class<? extends CustomDatatype<?>>> getAllDatatypeClasses() {
 		if (datatypeClasses == null) {
 			populateBeanListsFromContext();
@@ -70,6 +71,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getAllHandlerClasses()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Set<Class<? extends CustomDatatypeHandler<?, ?>>> getAllHandlerClasses() {
 		if (handlerClasses == null) {
 			populateBeanListsFromContext();
@@ -81,15 +83,17 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		if (datatypeClasses == null) {
 			List<CustomDatatype> datatypeBeans = Context.getRegisteredComponents(CustomDatatype.class);
 			datatypeClasses = new ArrayList<Class<? extends CustomDatatype>>();
-			for (CustomDatatype<?> dt : datatypeBeans)
+			for (CustomDatatype<?> dt : datatypeBeans) {
 				datatypeClasses.add(dt.getClass());
+			}
 			
 		}
 		if (handlerClasses == null) {
 			List<CustomDatatypeHandler> handlerBeans = Context.getRegisteredComponents(CustomDatatypeHandler.class);
 			handlerClasses = new ArrayList<Class<? extends CustomDatatypeHandler>>();
-			for (CustomDatatypeHandler<?, ?> h : handlerBeans)
+			for (CustomDatatypeHandler<?, ?> h : handlerBeans) {
 				handlerClasses.add(h.getClass());
+			}
 		}
 	}
 	
@@ -97,6 +101,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getDatatype(java.lang.Class, java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public <T extends CustomDatatype<?>> T getDatatype(Class<T> clazz, String config) {
 		try {
 			T dt = clazz.newInstance();
@@ -112,13 +117,14 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getHandlerClasses(Class)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<Class<? extends CustomDatatypeHandler>> getHandlerClasses(Class<? extends CustomDatatype<?>> datatype) {
 		List<Class<? extends CustomDatatypeHandler>> ret = new ArrayList<Class<? extends CustomDatatypeHandler>>();
 		for (Class<? extends CustomDatatypeHandler<?, ?>> candidate : getAllHandlerClasses()) {
-			if (datatypeClassHandled(candidate).equals(datatype))
+			if (datatypeClassHandled(candidate).equals(datatype)) {
 				ret.add(candidate);
+			}
 		}
-		// TODO sort the preferred one to the top
 		return ret;
 	}
 	
@@ -139,8 +145,9 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		} else if (t instanceof Class) {
 			for (Type candidate : ((Class) t).getGenericInterfaces()) {
 				Class ret = datatypeClassHandled(candidate);
-				if (ret != null)
+				if (ret != null) {
 					return ret;
+				}
 			}
 		}
 		
@@ -151,9 +158,11 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 * @see org.openmrs.api.DatatypeService#getHandler(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public CustomDatatypeHandler<?, ?> getHandler(CustomDatatype<?> datatype, String handlerConfig) {
-		if (prioritizedHandlerClasses == null)
+		if (prioritizedHandlerClasses == null) {
 			prioritizeHandlers();
+		}
 		Class<? extends CustomDatatypeHandler> clazz = prioritizedHandlerClasses.get(datatype.getClass());
 		if (clazz == null) {
 			return null;

@@ -73,8 +73,9 @@ public class ConceptProposalFormController extends SimpleFormController {
 		String action = request.getParameter("action");
 		
 		Concept c = null;
-		if (StringUtils.hasText(request.getParameter("conceptId")))
+		if (StringUtils.hasText(request.getParameter("conceptId"))) {
 			c = Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId")));
+		}
 		cp.setMappedConcept(c);
 		
 		MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -85,17 +86,19 @@ public class ConceptProposalFormController extends SimpleFormController {
 			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
 		} else {
 			// Set the state of the concept according to the button pushed
-			if (cp.getMappedConcept() == null)
+			if (cp.getMappedConcept() == null) {
 				errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
-			else {
+			} else {
 				String proposalAction = request.getParameter("actionToTake");
 				if (proposalAction.equals("saveAsMapped")) {
 					cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
 				} else if (proposalAction.equals("saveAsSynonym")) {
-					if (cp.getMappedConcept() == null)
+					if (cp.getMappedConcept() == null) {
 						errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
-					if (!StringUtils.hasText(cp.getFinalText()))
+					}
+					if (!StringUtils.hasText(cp.getFinalText())) {
 						errors.rejectValue("finalText", "error.null");
+					}
 					cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
 				}
 			}
@@ -107,7 +110,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -135,11 +138,13 @@ public class ConceptProposalFormController extends SimpleFormController {
 			
 			// find the mapped concept
 			Concept c = null;
-			if (StringUtils.hasText(request.getParameter("conceptId")))
+			if (StringUtils.hasText(request.getParameter("conceptId"))) {
 				c = cs.getConcept(Integer.valueOf(request.getParameter("conceptId")));
+			}
 			Collection<ConceptName> oldNames = null;
-			if (c != null)
+			if (c != null) {
 				oldNames = c.getNames();
+			}
 			// The users to be alerted of this change
 			Set<User> uniqueProposers = new HashSet<User>();
 			Locale conceptNameLocale = new Locale(request.getParameter("conceptNamelocale"));
@@ -158,15 +163,17 @@ public class ConceptProposalFormController extends SimpleFormController {
 			if (c != null) {
 				Collection<ConceptName> newNames = c.getNames();
 				newNames.removeAll(oldNames);
-				if (newNames.size() == 1)
+				if (newNames.size() == 1) {
 					newConceptName = newNames.iterator().next();
+				}
 			}
 			
 			// all of the proposals to map with similar text
 			List<ConceptProposal> allProposals = cs.getConceptProposals(cp.getOriginalText());
 			//exclude the proposal submitted with the form since it is already handled above
-			if (allProposals.contains(cp))
+			if (allProposals.contains(cp)) {
 				allProposals.remove(cp);
+			}
 			
 			//Just mark the rest of the proposals as mapped to avoid duplicate synonyms and obs
 			for (ConceptProposal conceptProposal : allProposals) {
@@ -191,8 +198,9 @@ public class ConceptProposalFormController extends SimpleFormController {
 						ob.setConcept(conceptProposal.getObsConcept());
 						ob.setValueCoded(conceptProposal.getMappedConcept());
 						if (conceptProposal.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)
-						        && newConceptName != null)
+						        && newConceptName != null) {
 							ob.setValueCodedName(newConceptName);
+						}
 						ob.setCreator(Context.getAuthenticatedUser());
 						ob.setDateCreated(new Date());
 						ob.setObsDatetime(conceptProposal.getEncounter().getEncounterDatetime());
@@ -240,7 +248,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -250,12 +258,14 @@ public class ConceptProposalFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			String id = request.getParameter("conceptProposalId");
-			if (id != null)
+			if (id != null) {
 				cp = cs.getConceptProposal(Integer.valueOf(id));
+			}
 		}
 		
-		if (cp == null)
+		if (cp == null) {
 			cp = new ConceptProposal();
+		}
 		
 		return cp;
 	}
@@ -275,8 +285,9 @@ public class ConceptProposalFormController extends SimpleFormController {
 		ConceptListItem listItem = null;
 		
 		Concept obsConcept = cp.getObsConcept();
-		if (obsConcept != null)
+		if (obsConcept != null) {
 			listItem = new ConceptListItem(obsConcept, obsConcept.getName(locale), locale);
+		}
 		map.put("obsConcept", listItem);
 		
 		String defaultVerbose = "false";
@@ -290,22 +301,26 @@ public class ConceptProposalFormController extends SimpleFormController {
 			
 			// search on part of the originalText to find possible matching concepts
 			String phrase = cp.getOriginalText();
-			if (phrase.length() > 3)
+			if (phrase.length() > 3) {
 				phrase = phrase.substring(0, 3);
+			}
 			List<ConceptSearchResult> possibleConcepts = cs.getConcepts(phrase, locale, false);
-			if (possibleConcepts != null)
-				for (ConceptSearchResult searchResult : possibleConcepts)
+			if (possibleConcepts != null) {
+				for (ConceptSearchResult searchResult : possibleConcepts) {
 					possibleConceptsListItems.add(new ConceptListItem(searchResult));
+				}
+			}
 			
 			// premtively get the mapped concept name
-			if (cp.getMappedConcept() != null)
+			if (cp.getMappedConcept() != null) {
 				map.put("mappedConceptName", cp.getMappedConcept().getName(locale));
+			}
 		}
 		map.put("possibleConcepts", possibleConceptsListItems);
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		map.put("states", OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
 		map.put("matchingProposals", matchingProposals);
-		map.put("locales", LocaleUtility.getLocalesInOrder());
+		map.put("locales", Context.getAdministrationService().getAllowedLocales());
 		
 		return map;
 	}

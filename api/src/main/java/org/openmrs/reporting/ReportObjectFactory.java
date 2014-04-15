@@ -40,36 +40,39 @@ public class ReportObjectFactory {
 	private List<ReportObjectFactoryModule> modules;
 	
 	/**
-	 * 
+	 *
 	 */
 	public ReportObjectFactory() {
-		if (singleton == null)
+		if (singleton == null) {
 			singleton = this;
+		}
 	}
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @return ReportedObjectFactory gets the singleton Instance of the ReportedObjectFactory
 	 */
 	public static ReportObjectFactory getInstance() {
-		if (singleton == null)
+		if (singleton == null) {
 			throw new RuntimeException("Not Yet Instantiated");
-		else
+		} else {
 			return singleton;
+		}
 	}
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @return List<String> of ReportObjectTypes
 	 */
 	public List<String> getReportObjectTypes() {
 		if (modules != null) {
 			List<String> uniqueTypes = new Vector<String>();
 			for (ReportObjectFactoryModule mod : modules) {
-				if (!uniqueTypes.contains(mod.getType()))
+				if (!uniqueTypes.contains(mod.getType())) {
 					uniqueTypes.add(mod.getType());
+				}
 			}
 			
 			return uniqueTypes;
@@ -80,7 +83,7 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param type
 	 * @return List<String> with the ReportObjects subtypes
 	 */
@@ -101,7 +104,7 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param type
 	 * @param subType
 	 * @return true if the subType is of type
@@ -121,7 +124,7 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param subType
 	 * @return String with the class name of an object of subType
 	 */
@@ -142,7 +145,7 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param name
 	 * @return String with the name of a ReportObjectClass, by giving the ReportObjectFactoryModule
 	 *         name
@@ -164,15 +167,16 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @return List with the name of all ReportObjectClasses
 	 */
 	public List<String> getAllReportObjectClasses() {
 		if (modules != null) {
 			List<String> uniqueClasses = new Vector<String>();
 			for (ReportObjectFactoryModule mod : modules) {
-				if (!uniqueClasses.contains(mod.getClassName()))
+				if (!uniqueClasses.contains(mod.getClassName())) {
 					uniqueClasses.add(mod.getClassName());
+				}
 			}
 			
 			return uniqueClasses;
@@ -183,7 +187,7 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param currentClassName
 	 * @return String gets the ReportObjectValidator for the current class name
 	 */
@@ -205,7 +209,7 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param reportObjectName
 	 * @param initialValues
 	 * @param context
@@ -225,7 +229,7 @@ public class ReportObjectFactory {
 				// attempt to populate setters with initialValues Map
 				
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				log.error("Could not create class: " + className + " when trying to get report object from the factory");
 			}
 		}
@@ -235,7 +239,7 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param reportObjectClass
 	 * @param initialValues
 	 * @return AbstractReportObject instance
@@ -250,7 +254,7 @@ public class ReportObjectFactory {
 				reportObj = (AbstractReportObject) ct.newInstance();
 				reportObj = ReportObjectFactory.initInstance(reportObj, initialValues);
 			}
-			catch (Throwable t) {
+			catch (Exception e) {
 				log.error("Could not instantiate class: " + reportObjectClass.getName()
 				        + " when trying to get report object from the factory");
 			}
@@ -261,7 +265,7 @@ public class ReportObjectFactory {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param reportObj
 	 * @param initialValues
 	 * @return AbstractReportObject instance
@@ -269,9 +273,9 @@ public class ReportObjectFactory {
 	@SuppressWarnings("unchecked")
 	private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
 		if (reportObj != null && initialValues != null) {
-			for (Iterator<String> i = initialValues.keySet().iterator(); i.hasNext();) {
-				String key = i.next();
-				Object val = initialValues.get(key);
+			for (Map.Entry<String, Object> entry : initialValues.entrySet()) {
+				String key = entry.getKey();
+				Object val = entry.getValue();
 				Class valClass = val.getClass();
 				String methodName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
 				Class[] setterParamClasses = new Class[1];

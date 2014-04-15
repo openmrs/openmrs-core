@@ -67,10 +67,12 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 	        IOException {
 		String path = request.getServletPath() + request.getPathInfo();
 		
-		if (rewrites != null && rewrites.containsKey(path))
+		if (rewrites != null && rewrites.containsKey(path)) {
 			path = rewrites.get(path);
-		if (interpretJstl)
+		}
+		if (interpretJstl) {
 			path += ".withjstl";
+		}
 		
 		return new ModelAndView(path);
 	}
@@ -82,8 +84,9 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		// through the jsp (.withjstl) servlet
 		// this allows the files to cache until we say so
 		if (interpretJstl) {
-			if (log.isDebugEnabled())
+			if (log.isDebugEnabled()) {
 				log.debug("returning last modified date of : " + lastModified + " for : " + request.getPathInfo());
+			}
 			return lastModified;
 		}
 		
@@ -92,16 +95,20 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		return -1;
 	}
 	
+	public static void setLastModified(Long lastModified) {
+		PseudoStaticContentController.lastModified = lastModified;
+	}
+	
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
 		// reset for every global property change
-		lastModified = System.currentTimeMillis();
+		setLastModified(System.currentTimeMillis());
 	}
 	
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
 		// reset for every global property change
-		lastModified = System.currentTimeMillis();
+		setLastModified(System.currentTimeMillis());
 	}
 	
 	@Override
@@ -110,6 +117,6 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 	}
 	
 	public static void invalidateCachedResources(Map<String, String> newValue) {
-		lastModified = System.currentTimeMillis();
+		setLastModified(System.currentTimeMillis());
 	}
 }

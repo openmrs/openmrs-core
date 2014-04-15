@@ -140,18 +140,13 @@
 <h2><openmrs:message code="Alert.manage.title"/></h2>	
 
 <spring:hasBindErrors name="alert">
-	<openmrs:message code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <form method="post">
 <table>
 	<tr>
-		<th valign="top"><openmrs:message code="Alert.text"/></th>
+		<th valign="top"><openmrs:message code="Alert.text"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="alert.text">
 				<textarea id="text" name="${status.expression}" rows="2" cols="43">${status.value}</textarea>
@@ -160,7 +155,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><openmrs:message code="Alert.recipients"/></th>
+		<th valign="top"><openmrs:message code="Alert.recipients"/><span class="required">*</span></th>
 		<td valign="top">
 			<input type="hidden" name="userIds" id="userIds" size="40" value='<c:forEach items="${alert.recipients}" var="recipient">${recipient.recipient.userId} </c:forEach>' />
 			<table cellpadding="0" cellspacing="0">
@@ -168,7 +163,7 @@
 					<td valign="top">
 						<select class="mediumWidth" size="6" id="userNames" multiple onkeyup="listKeyPress('userNames', 'userIds', ' ', event);">
 							<c:forEach items="${alert.recipients}" var="recipient">
-								<option value="${recipient.recipient.userId}">${recipient.recipient.personName}</option>
+								<option value="${recipient.recipient.userId}"><c:out value="${recipient.recipient.personName}" /></option>
 							</c:forEach>
 						</select>
 					</td>
@@ -230,11 +225,17 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<tr>
+         <c:if test="${alert.alertId != null}">
+           <th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
+           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${alert.uuid}</sub></font></td>
+         </c:if>
+ 	</tr>
 	<c:if test="${!(encounter.changedBy == null)}">
 		<tr>
 			<td><openmrs:message code="general.changedBy" /></td>
 			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${alert.changedBy.userId}')">${alert.changedBy.personName}</a> -
+				<a href="#View User" onclick="return gotoUser(null, '${alert.changedBy.userId}')"><c:out value="${alert.changedBy.personName}" /></a> -
 				<openmrs:formatDate date="${alert.dateChanged}" type="medium" />
 			</td>
 		</tr>

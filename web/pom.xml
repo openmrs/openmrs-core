@@ -2,7 +2,7 @@
    <parent>
       <groupId>org.openmrs</groupId>
       <artifactId>openmrs</artifactId>
-      <version>1.10.0-SNAPSHOT</version>
+      <version>1.11.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.web</groupId>
@@ -109,14 +109,6 @@
          <artifactId>page</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.codehaus.jackson</groupId>
-         <artifactId>jackson-core-asl</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.codehaus.jackson</groupId>
-         <artifactId>jackson-mapper-asl</artifactId>
-      </dependency>
-      <dependency>
          <groupId>org.liquibase</groupId>
          <artifactId>liquibase-core</artifactId>
       </dependency>
@@ -133,6 +125,12 @@
 		 <artifactId>mysql-connector-mxj</artifactId>
 		 <scope>provided</scope>
 	  </dependency>
+	  <dependency>
+	      <groupId>org.apache.tomcat</groupId>
+	      <artifactId>jasper</artifactId>
+	      <version>6.0.18</version>
+	      <scope>provided</scope>
+     </dependency>
    </dependencies>
 
    <build>

@@ -70,7 +70,7 @@
 				<select name="location">
 					<option value=""><openmrs:message code="QuickReport.location.all"/></option>
 					<openmrs:forEachRecord name="location">
-						<option value="${record.locationId}" <c:if test="${status.value == record.locationId}">selected</c:if>>${record.name}</option>
+						<option value="${record.locationId}" <c:if test="${status.value == record.locationId}">selected</c:if>><c:out value="${record.name}" /></option>
 					</openmrs:forEachRecord>
 				</select>
 			</td>

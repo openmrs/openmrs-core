@@ -91,9 +91,9 @@ public class PatientProgramFormController implements Controller {
 			return new ModelAndView(new RedirectView(returnPage));
 		}
 		
-		if (!pws.getPatientPrograms(patient, program, null, completionDate, enrollmentDate, null, false).isEmpty())
+		if (!pws.getPatientPrograms(patient, program, null, completionDate, enrollmentDate, null, false).isEmpty()) {
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.already");
-		else {
+		} else {
 			if (enrollmentDate == null) {
 				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.enrollmentDateRequired");
 			} else {

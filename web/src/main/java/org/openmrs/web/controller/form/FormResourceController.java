@@ -16,8 +16,6 @@ package org.openmrs.web.controller.form;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.api.context.Context;
@@ -36,8 +34,6 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class FormResourceController {
-	
-	private final Log log = LogFactory.getLog(getClass());
 	
 	@RequestMapping(method = RequestMethod.GET, value = "admin/forms/formResources")
 	public void manageFormResources(@RequestParam("formId") Form form, Model model) {

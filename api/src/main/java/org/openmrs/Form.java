@@ -24,7 +24,7 @@ import org.openmrs.api.context.Context;
 
 /**
  * Form
- * 
+ *
  * @version 1.0
  */
 public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
@@ -53,7 +53,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Constructor with id
-	 * 
+	 *
 	 * @should set formId with given parameter
 	 */
 	public Form(Integer formId) {
@@ -222,12 +222,13 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Adds a FormField to the list of form fields
-	 * 
+	 *
 	 * @param formField FormField to be added
 	 */
 	public void addFormField(FormField formField) {
-		if (formFields == null)
+		if (formFields == null) {
 			formFields = new HashSet<FormField>();
+		}
 		if (!formFields.contains(formField) && formField != null) {
 			formField.setForm(this);
 			this.formFields.add(formField);
@@ -236,7 +237,7 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Removes a FormField from the list of form fields
-	 * 
+	 *
 	 * @param formField FormField to be removed
 	 */
 	public void removeFormField(FormField formField) {
@@ -247,8 +248,9 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	@Override
 	public String toString() {
-		if (formId == null)
+		if (formId == null) {
 			return "";
+		}
 		return formId.toString();
 	}
 	

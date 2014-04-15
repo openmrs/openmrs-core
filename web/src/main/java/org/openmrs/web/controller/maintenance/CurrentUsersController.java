@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Display the current users logged in the system.
- * 
+ *
  * @see CurrentUsers
  * @see LoginServlet
  * @see SessionListener
@@ -41,15 +41,16 @@ public class CurrentUsersController {
 	
 	/**
 	 * Lists current users.
-	 * 
+	 *
 	 * @param request
 	 * @param modelMap
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/admin/maintenance/currentUsers.list")
 	public void listCurrentUsers(HttpServletRequest request, ModelMap modelMap) {
 		log.debug("List current users");
-		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_USERS))
+		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_USERS)) {
 			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.VIEW_USERS);
+		}
 		
 		modelMap.put("currentUsers", CurrentUsers.getCurrentUsernames(request.getSession()));
 	}

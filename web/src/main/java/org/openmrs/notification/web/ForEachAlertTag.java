@@ -67,15 +67,17 @@ public class ForEachAlertTag extends LoopTagSupport {
 	
 	@Override
 	protected boolean hasNext() throws JspTagException {
-		if (alerts == null)
+		if (alerts == null) {
 			return false;
+		}
 		return alerts.hasNext();
 	}
 	
 	@Override
 	protected Object next() throws JspTagException {
-		if (alerts == null)
+		if (alerts == null) {
 			throw new JspTagException("The alert iterator is null");
+		}
 		return alerts.next();
 	}
 	

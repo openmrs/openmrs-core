@@ -64,7 +64,7 @@
 							</c:otherwise>
 						</c:choose>
 					</td>
-					<td valign="top" rowspan="2"><input type="button" align="right" value='<openmrs:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /> </td> 
+					<td valign="top" rowspan="2"><input type="button" align="right" value='<openmrs:message code="general.remove" />' class="closeButton" onclick="edited(); removeProperty(this)" /> </td> 
 					<td id="message" valign="top" rowspan="2"></td>
 				</tr>
 				<tr class="${status.index % 2 == 0 ? 'evenRow' : 'oddRow' }">
@@ -78,7 +78,7 @@
 			<tr id="newProperty">
 				<td valign="top"><input type="text" name="property" size="50" maxlength="250" onkeyup="edited()" /></td>
 				<td valign="top"><input type="text" name="value" size="30" maxlength="250" onkeyup="edited()" /></td>
-				<td valign="top" rowspan="2"><input type="button" value='<openmrs:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
+				<td valign="top" rowspan="2"><input type="button" value='<openmrs:message code="general.remove" />' class="closeButton" onclick="removeProperty(this)" /></td>
 			</tr>
 			<tr id="newPropertyDescription">
 					<td colspan="2" valign="top" class="description">
@@ -118,7 +118,7 @@
 			}
 		}
 		
-		function remove(btn) {
+		function removeProperty(btn) {
 			if(btn.getAttribute("remove") == null){
 				var parent = btn.parentNode;
 				if(parent.tagName.toLowerCase() == "td"){
@@ -212,7 +212,7 @@
 
 	<div id="buttonsAtBottom">
 	 <br/>
-	 <openmrs:message code="general.changes.toSave"/>
+	 <openmrs:message htmlEscape="false" code="general.changes.toSave"/>
 	 <br/>
 	 <br/>
 		&nbsp;&nbsp;

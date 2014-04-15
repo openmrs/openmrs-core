@@ -55,8 +55,9 @@ public class CustomDatatypeUtil {
 		try {
 			Class dtClass = Context.loadClass(datatypeClassname);
 			CustomDatatype<?> ret = (CustomDatatype<?>) Context.getDatatypeService().getDatatype(dtClass, datatypeConfig);
-			if (ret == null)
+			if (ret == null) {
 				throw new CustomDatatypeException("Can't find datatype: " + datatypeClassname);
+			}
 			return ret;
 		}
 		catch (Exception ex) {
@@ -100,8 +101,9 @@ public class CustomDatatypeUtil {
 				Class<? extends CustomDatatypeHandler> clazz = (Class<? extends CustomDatatypeHandler>) Context
 				        .loadClass(preferredHandlerClassname);
 				CustomDatatypeHandler handler = clazz.newInstance();
-				if (handlerConfig != null)
+				if (handlerConfig != null) {
 					handler.setHandlerConfiguration(handlerConfig);
+				}
 				return handler;
 			}
 			catch (Exception ex) {
@@ -117,13 +119,14 @@ public class CustomDatatypeUtil {
 	/**
 	 * Converts a simple String-based configuration to a serialized form.
 	 * Utility method for {@link AttributeHandler}s that have property-style configuration.
-	 * 
+	 *
 	 * @param simpleConfig
 	 * @return
 	 */
 	public static String serializeSimpleConfiguration(Map<String, String> simpleConfig) {
-		if (simpleConfig == null || simpleConfig.size() == 0)
+		if (simpleConfig == null || simpleConfig.size() == 0) {
 			return "";
+		}
 		try {
 			return Context.getSerializationService().getDefaultSerializer().serialize(simpleConfig);
 		}
@@ -134,17 +137,18 @@ public class CustomDatatypeUtil {
 	
 	/**
 	 * Deserializes a simple String-based configuration from the serialized form used by
-	 * {@link serializeSimpleConfiguration} 
+	 * {@link serializeSimpleConfiguration}
 	 * Utility method for {@link AttributeHandler}s that have property-style configuration.
-	 * 
+	 *
 	 * @param serializedConfig
 	 * @return
 	 * @should deserialize a configuration serialized by the corresponding serialize method
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> deserializeSimpleConfiguration(String serializedConfig) {
-		if (StringUtils.isBlank(serializedConfig))
+		if (StringUtils.isBlank(serializedConfig)) {
 			return Collections.emptyMap();
+		}
 		try {
 			return Context.getSerializationService().getDefaultSerializer().deserialize(serializedConfig, Map.class);
 		}
@@ -156,7 +160,7 @@ public class CustomDatatypeUtil {
 	/**
 	 * Uses the appropriate datatypes to convert all values in the input map to their valueReference equivalents.
 	 * This is a convenience method for calling XyzService.getXyz(..., attributeValues, ...).
-	 * 
+	 *
 	 * @param datatypeValues
 	 * @return a map similar to the input parameter, but with typed values converted to their reference equivalents
 	 */
@@ -185,8 +189,9 @@ public class CustomDatatypeUtil {
 	 */
 	public static List<String> getDatatypeClassnames() {
 		List<String> ret = new ArrayList<String>();
-		for (Class<?> c : Context.getDatatypeService().getAllDatatypeClasses())
+		for (Class<?> c : Context.getDatatypeService().getAllDatatypeClasses()) {
 			ret.add(c.getName());
+		}
 		return ret;
 	}
 	
@@ -195,8 +200,9 @@ public class CustomDatatypeUtil {
 	 */
 	public static List<String> getHandlerClassnames() {
 		List<String> ret = new ArrayList<String>();
-		for (Class<?> c : Context.getDatatypeService().getAllHandlerClasses())
+		for (Class<?> c : Context.getDatatypeService().getAllHandlerClasses()) {
 			ret.add(c.getName());
+		}
 		return ret;
 	}
 	
@@ -214,7 +220,7 @@ public class CustomDatatypeUtil {
 	/**
 	 * To be called by service save methods for customizable implementations.
 	 * Iterates over all attributes and calls save on the {@link ConceptDatatype} for any dirty ones.
-	 * 
+	 *
 	 * @param customizable
 	 */
 	public static void saveAttributesIfNecessary(Customizable<?> customizable) {
@@ -226,15 +232,16 @@ public class CustomDatatypeUtil {
 	
 	/**
 	 * Calls the save method on value's {@link ConceptDatatype} if necessary
-	 * 
+	 *
 	 * @param value
 	 */
 	public static void saveIfDirty(SingleCustomValue<?> value) {
 		if (value.isDirty()) {
 			CustomDatatype datatype = CustomDatatypeUtil.getDatatype(value.getDescriptor());
-			if (value.getValue() == null)
+			if (value.getValue() == null) {
 				throw new InvalidCustomValueException(value.getClass() + " with type=" + value.getDescriptor()
 				        + " cannot be null");
+			}
 			String existingValueReference = null;
 			try {
 				existingValueReference = value.getValueReference();
@@ -250,7 +257,7 @@ public class CustomDatatypeUtil {
 	
 	/**
 	 * Validates a {@link SingleCustomValue}
-	 * 
+	 *
 	 * @param value
 	 * @return true is value is valid, according to its configured datatype
 	 */

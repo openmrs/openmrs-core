@@ -95,40 +95,53 @@ public class DrugOrderListItem {
 		
 		DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, Context.getLocale());
 		
-		if (drugOrder.getStartDate() != null)
+		if (drugOrder.getStartDate() != null) {
 			startDate = df.format(drugOrder.getStartDate());
-		if (drugOrder.getAutoExpireDate() != null)
+		}
+		if (drugOrder.getAutoExpireDate() != null) {
 			autoExpireDate = df.format(drugOrder.getAutoExpireDate());
-		if (drugOrder.getEncounter() != null)
+		}
+		if (drugOrder.getEncounter() != null) {
 			encounterId = drugOrder.getEncounter().getEncounterId();
-		if (drugOrder.getOrderer() != null)
+		}
+		if (drugOrder.getOrderer() != null) {
 			ordererId = drugOrder.getOrderer().getProviderId();
+		}
 		discontinued = drugOrder.getDiscontinued();
-		if (drugOrder.getDiscontinuedBy() != null)
+		if (drugOrder.getDiscontinuedBy() != null) {
 			discontinuerId = drugOrder.getDiscontinuedBy().getUserId();
-		if (drugOrder.getDiscontinuedDate() != null)
+		}
+		if (drugOrder.getDiscontinuedDate() != null) {
 			discontinuedDate = df.format(drugOrder.getDiscontinuedDate());
-		if (drugOrder.getDiscontinuedReason() != null)
+		}
+		if (drugOrder.getDiscontinuedReason() != null) {
 			discontinueReason = drugOrder.getDiscontinuedReason();
-		if (drugOrder.getDrug() != null)
+		}
+		if (drugOrder.getDrug() != null) {
 			drugId = drugOrder.getDrug().getDrugId();
-		if (drugOrder.getDrug() != null)
+		}
+		if (drugOrder.getDrug() != null) {
 			drugName = drugOrder.getDrug().getName();
+		}
 		dose = drugOrder.getDose();
 		doseUnits = drugOrder.getDoseUnits();
 		frequency = drugOrder.getFrequency();
 		asNeeded = drugOrder.getAsNeeded();
 		quantity = drugOrder.getQuantity();
 		voided = drugOrder.getVoided();
-		if (drugOrder.getVoidedBy() != null)
+		if (drugOrder.getVoidedBy() != null) {
 			voiderId = drugOrder.getVoidedBy().getUserId();
-		if (drugOrder.getDateVoided() != null)
+		}
+		if (drugOrder.getDateVoided() != null) {
 			voidedDate = df.format(drugOrder.getDateVoided());
+		}
 		voidReason = drugOrder.getVoidReason();
-		if (drugOrder.getCreator() != null)
+		if (drugOrder.getCreator() != null) {
 			creatorId = drugOrder.getCreator().getUserId();
-		if (drugOrder.getDateCreated() != null)
+		}
+		if (drugOrder.getDateCreated() != null) {
 			createdDate = df.format(drugOrder.getDateCreated());
+		}
 	}
 	
 	/**
@@ -289,10 +302,11 @@ public class DrugOrderListItem {
 	 * @return Returns the instructions.
 	 */
 	public String getInstructions() {
-		if (instructions == null)
+		if (instructions == null) {
 			return "";
-		else
+		} else {
 			return instructions;
+		}
 	}
 	
 	/**
@@ -404,10 +418,11 @@ public class DrugOrderListItem {
 	 * @return Returns the autoExpireDate.
 	 */
 	public String getAutoExpireDate() {
-		if (autoExpireDate == null)
+		if (autoExpireDate == null) {
 			return "";
-		else
+		} else {
 			return autoExpireDate;
+		}
 	}
 	
 	/**
@@ -435,10 +450,11 @@ public class DrugOrderListItem {
 	 * @return Returns the discontinuedDate.
 	 */
 	public String getDiscontinuedDate() {
-		if (discontinuedDate == null)
+		if (discontinuedDate == null) {
 			return "";
-		else
+		} else {
 			return discontinuedDate;
+		}
 	}
 	
 	/**
@@ -527,9 +543,8 @@ public class DrugOrderListItem {
 		
 		if (other instanceof DrugOrderListItem) {
 			DrugOrderListItem otherItem = (DrugOrderListItem) other;
-			if (otherItem != null) {
-				if (otherItem.getOrderId().equals(this.orderId))
-					isSame = true;
+			if (otherItem.getOrderId().equals(this.orderId)) {
+				isSame = true;
 			}
 		}
 		

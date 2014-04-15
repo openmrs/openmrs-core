@@ -61,8 +61,9 @@ public abstract class LayoutPortletController extends PortletController {
 						String name = pair[0];
 						String val = pair[1];
 						
-						if (elementDefaults == null)
+						if (elementDefaults == null) {
 							elementDefaults = new HashMap<String, String>();
+						}
 						elementDefaults.put(name, val);
 					} else {
 						log.debug("Found invalid token while parsing GlobalProperty address format defaults");

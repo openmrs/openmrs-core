@@ -13,6 +13,9 @@
  */
 package org.openmrs.api;
 
+import static java.util.Collections.synchronizedSet;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -24,10 +27,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptMapType;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GenericDrug;
+import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.Orderable;
@@ -37,8 +42,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsUtil;
-
-import static java.util.Collections.synchronizedSet;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -50,6 +53,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	protected static final String DRUG_ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-drugOrdersList.xml";
 	
 	protected static final String ORDERS_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-ordersList.xml";
+	
+	protected static final String OBS_THAT_REFERENCE_DATASET_XML = "org/openmrs/api/include/OrderServiceTest-deleteObsThatReference.xml";
 	
 	private OrderService service;
 	
@@ -240,7 +245,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should fetch an orderable with given identifier", method = "getOrderable(String)")
 	public void getOrderable_shouldFetchAnOrderableWithGivenIdentifier() throws Exception {
-		Orderable orderable = Context.getOrderService().getOrderable("org.openmrs.GenericDrug:concept=3");
+		Orderable<?> orderable = Context.getOrderService().getOrderable("org.openmrs.GenericDrug:concept=3");
 		Assert.assertNotNull(orderable);
 		Assert.assertTrue(orderable.getClass().equals(GenericDrug.class));
 		
@@ -463,7 +468,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(order);
 		
 		String voidReason = "";
-		orderService.voidOrder(order, "");
+		orderService.voidOrder(order, voidReason);
 	}
 	
 	/**
@@ -579,4 +584,64 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(order.getOrderId());
 		Assert.assertNotNull(order.getOrderNumber());
 	}
+	
+	/**
+	 * @throws Exception 
+	 * @see OrderService#getOrderHistoryByOrderNumber(String)
+	 * @verifies return the list of orders in a history
+	 */
+	@Test
+	public void getOrderHistoryByOrderNumber_shouldReturnTheListOfOrdersInAHistory() throws Exception {
+		
+		executeDataSet(ORDERS_DATASET_XML);
+		
+		OrderService orderService = Context.getOrderService();
+		
+		List<Order> expectedHistory = new ArrayList<Order>();
+		expectedHistory.add(orderService.getOrderByOrderNumber("ORD-111"));
+		expectedHistory.add(orderService.getOrderByOrderNumber("ORD-222"));
+		expectedHistory.add(orderService.getOrderByOrderNumber("ORD-333"));
+		
+		List<Order> history = orderService.getOrderHistoryByOrderNumber("ORD-111");
+		Assert.assertEquals(expectedHistory, history);
+		
+		history = orderService.getOrderHistoryByOrderNumber("ORD-222");
+		Assert.assertEquals(expectedHistory, history);
+		
+		history = orderService.getOrderHistoryByOrderNumber("ORD-333");
+		Assert.assertEquals(expectedHistory, history);
+		
+	}
+	
+	@Test
+	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
+		executeDataSet(OBS_THAT_REFERENCE_DATASET_XML);
+		final String ordUuid = "0c96f25c-4949-4f72-9931-d808fbcdb612";
+		final String obsUuid = "be3a4d7a-f9ab-47bb-aaad-bc0b452fcda4";
+		ObsService os = Context.getObsService();
+		OrderService service = Context.getOrderService();
+		
+		Obs obs = os.getObsByUuid(obsUuid);
+		Assert.assertNotNull(obs);
+		
+		Order order = service.getOrderByUuid(ordUuid);
+		Assert.assertNotNull(order);
+		
+		//sanity check to ensure that the obs and order are actually related
+		Assert.assertEquals(order, obs.getOrder());
+		
+		//Ensure that passing false does not delete the related obs
+		service.purgeOrder(order, false);
+		Assert.assertNotNull(os.getObsByUuid(obsUuid));
+		
+		service.purgeOrder(order, true);
+		
+		//Ensure that actually the order got purged
+		Assert.assertNull(service.getOrderByUuid(ordUuid));
+		
+		//Ensure that the related obs got deleted
+		Assert.assertNull(os.getObsByUuid(obsUuid));
+		
+	}
+	
 }

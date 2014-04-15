@@ -13,9 +13,14 @@
  */
 package org.openmrs.web.controller;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -41,6 +46,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.WebTestHelper;
+import org.openmrs.web.test.WebTestHelper.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -51,6 +59,12 @@ import org.springframework.web.servlet.ModelAndView;
  * Unit testing for the ConceptFormController.
  */
 public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
+	
+	@Autowired
+	WebTestHelper webTestHelper;
+	
+	@Autowired
+	ConceptService conceptService;
 	
 	/**
 	 * Checks that the conceptId query param gets a concept from the database
@@ -469,9 +483,52 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
 		
+		updateSearchIndex();
+		
 		Concept actualConcept = cs.getConceptByName("new name");
 		assertNotNull(actualConcept);
 		assertEquals(concept.getConceptId(), actualConcept.getConceptId());
+	}
+	
+	/**
+	 * Test removing short name by adding a blank short name
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldVoidShortName() throws Exception {
+		final String CONCEPT_NAME = "default concept name";
+		
+		ConceptService cs = Context.getConceptService();
+		
+		final Concept concept = new Concept();
+		concept.addName(new ConceptName(CONCEPT_NAME, Locale.ENGLISH));
+		concept.setShortName(new ConceptName("shortname", Locale.ENGLISH));
+		cs.saveConcept(concept);
+		
+		Concept actualConcept = cs.getConceptByName(CONCEPT_NAME);
+		assertThat(actualConcept.getShortNameInLocale(Locale.ENGLISH), is(notNullValue()));
+		assertThat(actualConcept.getShortNames().size(), greaterThan(0));
+		assertThat(actualConcept.getNames().size(), is(2));
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", concept.getConceptId().toString());
+		mockRequest.setParameter("shortNamesByLocale[en].name", " ");
+		mockRequest.setParameter("concept.datatype", "1");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
+		assertNotNull(mav);
+		
+		actualConcept = cs.getConceptByName(CONCEPT_NAME);
+		assertThat(actualConcept.getShortNameInLocale(Locale.ENGLISH), is(nullValue()));
+		assertThat(actualConcept.getShortNames().size(), is(0));
+		assertThat(actualConcept.getNames().size(), is(1));
 	}
 	
 	/**
@@ -984,5 +1041,29 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertEquals(1, errors.getErrorCount());
 		Assert.assertEquals(true, errors
 		        .hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptReferenceTermMaps[0].termB"));
+	}
+	
+	/**
+	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
+	 * @verifies not save changes if there are validation errors
+	 */
+	@Test
+	public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
+		Integer conceptId = 792;
+		
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/dictionary/concept.form");
+		request.setParameter("conceptId", conceptId.toString());
+		request.setParameter("namesByLocale[en].name", "should not change");
+		request.setParameter("preferredNamesByLocale[en]", "should not change");
+		request.setParameter("synonymsByLocale[en][1].name", ""); //empty name is invalid
+		request.setParameter("synonymsByLocale[en][1].voided", "false");
+		
+		Response response = webTestHelper.handle(request);
+		assertThat(response.getErrors().hasFieldErrors("synonymsByLocale[en][1].name"), is(true));
+		
+		Context.clearSession();
+		
+		Concept concept = conceptService.getConcept(conceptId);
+		assertThat(concept.getPreferredName(Locale.ENGLISH).getName(), is("STAVUDINE LAMIVUDINE AND NEVIRAPINE"));
 	}
 }

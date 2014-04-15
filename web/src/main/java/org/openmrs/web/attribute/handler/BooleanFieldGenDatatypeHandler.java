@@ -68,8 +68,9 @@ public class BooleanFieldGenDatatypeHandler implements FieldGenDatatypeHandler<B
 	public Boolean getValue(org.openmrs.customdatatype.datatype.BooleanDatatype datatype, HttpServletRequest request,
 	        String formFieldName) throws InvalidCustomValueException {
 		String result = request.getParameter(formFieldName);
-		if (StringUtils.isBlank(result))
+		if (StringUtils.isBlank(result)) {
 			return null;
+		}
 		try {
 			return Boolean.valueOf(result);
 		}

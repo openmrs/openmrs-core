@@ -38,15 +38,16 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	/**
 	 * Used for caching purposes
-	 * 
+	 *
 	 * @see javax.servlet.http.HttpServlet#getLastModified(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
 	protected long getLastModified(HttpServletRequest req) {
 		File f = getFile(req);
 		
-		if (f == null)
+		if (f == null) {
 			return super.getLastModified(req);
+		}
 		
 		return f.lastModified();
 	}
@@ -62,7 +63,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		}
 		
 		response.setDateHeader("Last-Modified", f.lastModified());
-		response.setContentLength(new Long(f.length()).intValue());
+		response.setContentLength(Long.valueOf(f.length()).intValue());
 		String mimeType = getServletContext().getMimeType(f.getName());
 		response.setContentType(mimeType);
 		
@@ -77,7 +78,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	/**
 	 * Turns the given request/path into a File object
-	 * 
+	 *
 	 * @param request the current http request
 	 * @return the file being requested or null if not found
 	 */
