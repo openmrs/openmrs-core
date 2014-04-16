@@ -113,21 +113,21 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	private void validateFieldsForOutpatientCareSettingType(DrugOrder order, Errors errors) {
 		if (order.getAction() != Order.Action.DISCONTINUE && order.getCareSetting() != null
 		        && order.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
-			ValidationUtils.rejectIfEmpty(errors, "quantity", "error.quantityIsNullForOutPatient");
-			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "error.quantityUnitsIsNullForOutPatient");
-			ValidationUtils.rejectIfEmpty(errors, "numRefills", "error.numRefillsIsNullForOutPatient");
+			ValidationUtils.rejectIfEmpty(errors, "quantity", "DrugOrder.error.quantityIsNullForOutPatient");
+			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "DrugOrder.error.quantityUnitsIsNullForOutPatient");
+			ValidationUtils.rejectIfEmpty(errors, "numRefills", "DrugOrder.error.numRefillsIsNullForOutPatient");
 		}
 	}
 	
 	private void validatePairedFields(DrugOrder order, Errors errors) {
 		if (order.getDose() != null) {
-			ValidationUtils.rejectIfEmpty(errors, "doseUnits", "error.doseUnitsRequiredWithDose");
+			ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsRequiredWithDose");
 		}
 		if (order.getQuantity() != null) {
-			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "error.quantityUnitsRequiredWithQuantity");
+			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "DrugOrder.error.quantityUnitsRequiredWithQuantity");
 		}
 		if (order.getDuration() != null) {
-			ValidationUtils.rejectIfEmpty(errors, "durationUnits", "error.durationUnitsRequiredWithDuration");
+			ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.error.durationUnitsRequiredWithDuration");
 		}
 	}
 	
@@ -138,8 +138,8 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	}
 	
 	private void validateConceptClassIsUnitsOfMeasure(Concept unitsConcept, String fieldName, Errors errors) {
-		if (unitsConcept != null && !unitsConcept.getConceptClass().getUuid().equals(ConceptClass.UNITS_OF_MEASURE_UUID)) {
-			errors.rejectValue(fieldName, "error.conceptClassIsNotUnitsOfMeasure");
+		if (unitsConcept != null && !unitsConcept.getConceptClass().getUuid().equals(ConceptClass.UNIT_OF_MEASUREMENT_UUID)) {
+			errors.rejectValue(fieldName, "DrugOrder.error.conceptClassIsNotUnitsOfMeasure");
 		}
 	}
 }

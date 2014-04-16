@@ -340,7 +340,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		new OrderValidator().validate(order, errors);
 		Assert.assertTrue(errors.hasFieldErrors("orderType"));
 		Assert.assertTrue(Arrays.asList(errors.getFieldError("orderType").getCodes()).contains(
-		    "error.orderTypeClassMismatchesOrderClass"));
+		    "Order.error.orderTypeClassMismatchesOrderClass"));
 	}
 	
 	/**

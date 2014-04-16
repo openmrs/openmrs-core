@@ -94,7 +94,7 @@ public class OrderValidator implements Validator {
 	private void validateOrderTypeClass(Order order, Errors errors) {
 		OrderType orderType = order.getOrderType();
 		if (orderType != null && !orderType.getJavaClass().isAssignableFrom(order.getClass())) {
-			errors.rejectValue("orderType", "error.orderTypeClassMismatchesOrderClass");
+			errors.rejectValue("orderType", "Order.error.orderTypeClassMismatchesOrderClass");
 		}
 	}
 	
@@ -134,10 +134,10 @@ public class OrderValidator implements Validator {
 		boolean isUrgencyOnScheduledDate = (order.getUrgency() != null && order.getUrgency().equals(
 		    Order.Urgency.ON_SCHEDULED_DATE));
 		if (order.getScheduledDate() != null && !isUrgencyOnScheduledDate) {
-			errors.rejectValue("urgency", "error.urgencyNotOnScheduledDate");
+			errors.rejectValue("urgency", "Order.error.urgencyNotOnScheduledDate");
 		}
 		if (isUrgencyOnScheduledDate && order.getScheduledDate() == null) {
-			errors.rejectValue("scheduledDate", "error.scheduledDateNullForOnScheduledDateUrgency");
+			errors.rejectValue("scheduledDate", "Order.error.scheduledDateNullForOnScheduledDateUrgency");
 		}
 	}
 }

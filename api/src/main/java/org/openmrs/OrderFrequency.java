@@ -26,8 +26,6 @@ public class OrderFrequency extends BaseOpenmrsMetadata implements Serializable 
 	
 	private static final long serialVersionUID = 1L;
 	
-	public static final String CONCEPT_CLASS_UUID = "8e071bfe-520c-44c0-a89b-538e9129b42a";
-	
 	private Integer orderFrequencyId;
 	
 	private Double frequencyPerDay;

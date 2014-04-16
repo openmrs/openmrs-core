@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.OrderFrequency;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
@@ -68,7 +69,7 @@ public class OrderFrequencyValidator implements Validator {
 			
 			Concept concept = orderFrequency.getConcept();
 			if (concept != null) {
-				if (!OrderFrequency.CONCEPT_CLASS_UUID.equals(concept.getConceptClass().getUuid())) {
+				if (!ConceptClass.FREQUENCY_UUID.equals(concept.getConceptClass().getUuid())) {
 					errors.rejectValue("concept", "OrderFrequency.concept.shouldBeClassFrequency");
 				}
 				

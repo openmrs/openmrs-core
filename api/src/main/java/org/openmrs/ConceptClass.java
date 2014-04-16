@@ -60,7 +60,7 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	
 	public static final String FREQUENCY_UUID = "8e071bfe-520c-44c0-a89b-538e9129b42a";
 	
-	public static final String UNITS_OF_MEASURE_UUID = "e30d8601-07f8-413a-9d11-cdfbb28196ec";
+	public static final String UNIT_OF_MEASUREMENT_UUID = "e30d8601-07f8-413a-9d11-cdfbb28196ec";
 	
 	// Fields
 	

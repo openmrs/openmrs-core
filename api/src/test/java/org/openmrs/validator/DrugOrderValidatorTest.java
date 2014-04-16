@@ -341,7 +341,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfClassOfQuantityUnitsdoseUnitsOrDurationUnitsIsNotUnitsOfMeasureConceptClass()
 	        throws Exception {
 		Concept concept = Context.getConceptService().getConcept(3);
-		Assert.assertFalse(concept.getConceptClass().getUuid().equals(ConceptClass.UNITS_OF_MEASURE_UUID));
+		Assert.assertFalse(concept.getConceptClass().getUuid().equals(ConceptClass.UNIT_OF_MEASUREMENT_UUID));
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
