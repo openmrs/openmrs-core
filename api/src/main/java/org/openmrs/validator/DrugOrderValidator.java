@@ -93,15 +93,15 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			}
 			if (order.getAction() != Order.Action.DISCONTINUE && order.getDosingType() != null) {
 				if (order.getDosingType().equals(DrugOrder.DosingType.SIMPLE)) {
-					ValidationUtils.rejectIfEmpty(errors, "dose", "error.doseIsNullForDosingTypeSimple");
-					ValidationUtils.rejectIfEmpty(errors, "doseUnits", "error.doseUnitsIsNullForDosingTypeSimple");
-					ValidationUtils.rejectIfEmpty(errors, "route", "error.routeIsNullForDosingTypeSimple");
-					ValidationUtils.rejectIfEmpty(errors, "frequency", "error.frequencyIsNullForDosingTypeSimple");
+					ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
+					ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
+					ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
+					ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
 				} else if (order.getDosingType().equals(DrugOrder.DosingType.FREE_TEXT)) {
-					ValidationUtils.rejectIfEmpty(errors, "instructions", "error.instructionIsNullForDosingTypeFreeText");
+					ValidationUtils.rejectIfEmpty(errors, "instructions", "DrugOrder.error.instructionIsNullForDosingTypeFreeText");
 				} else {
 					ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
-					    "error.dosingInstructionsIsNullForDosingTypeOther");
+					    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeOther");
 				}
 			}
 			validateFieldsForOutpatientCareSettingType(order, errors);
