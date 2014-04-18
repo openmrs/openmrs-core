@@ -1016,7 +1016,12 @@ public final class OpenmrsConstants {
 	public static final String GP_NEXT_ORDER_NUMBER_SEED = "order.nextOrderNumberSeed";
 	
 	public static final String GP_ORDER_NUMBER_GENERATOR_BEAN_ID = "order.orderNumberGeneratorBeanId";
-	
+
+    /**
+     * Global property concept uuid for get drug routes
+     */
+    public static final String DRUG_ROUTE_CONCEPT_UUID="order.drugRoutesConceptUuid";
+
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1446,7 +1451,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
 		        "Specifies spring bean id of the order generator to use when assigning order numbers"));
-		
+
+        props.add(new GlobalProperty(DRUG_ROUTE_CONCEPT_UUID, "","Uuid of the concept associated with drug routes"));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}

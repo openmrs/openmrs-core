@@ -609,4 +609,13 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public OrderType getOrderTypeByConcept(Concept concept);
+
+    /**
+     * Get drug routes for concept uuid specified in global properties
+     * @return concept list of drug routes associated with concept uuid provided as global property
+     * @Should return an empty list if nothing is configured
+     * @should never return null
+     */
+    @Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+    public List<Concept> getDrugRoutes();
 }
