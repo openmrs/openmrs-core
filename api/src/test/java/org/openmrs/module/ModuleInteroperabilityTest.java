@@ -13,21 +13,21 @@
  */
 package org.openmrs.module;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.StartModule;
 import org.openmrs.util.OpenmrsClassLoader;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Tests how modules interact and call each other. Both when loaded by Spring during OpenMRS startup
  * and during normal file usage.
  */
 @SkipBaseSetup
-@StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atd-0.51.omod" })
+@StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atdproducer-0.51.omod" })
 public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	
 	/**
@@ -44,7 +44,7 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 		assertNotNull(dssServiceClass);
 		
 		ModuleClassLoader atdClassLoader = (ModuleClassLoader) atdServiceClass.getClassLoader();
-		assertEquals("atd", atdClassLoader.getModule().getModuleId());
+		assertEquals("atdproducer", atdClassLoader.getModule().getModuleId());
 		
 		ModuleClassLoader dssClassLoader = (ModuleClassLoader) dssServiceClass.getClassLoader();
 		assertEquals("dssmodule", dssClassLoader.getModule().getModuleId());
