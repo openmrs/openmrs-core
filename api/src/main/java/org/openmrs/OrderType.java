@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
@@ -36,6 +37,7 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	private OrderType parent;
 	
+	@Independent
 	private Collection<ConceptClass> conceptClasses;
 	
 	/**
