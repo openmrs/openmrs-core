@@ -2500,6 +2500,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return a search result for phrase with stop words", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnASearchResultForPhraseWithStopWords() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("tuberculosis of knee", Collections
+		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+		
+		Assert.assertEquals(1, searchResults.size());
+		Assert.assertEquals("Tuberculosis of Knee", searchResults.get(0).getConceptName().getName());
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<
 	 *      ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)}
 	 */

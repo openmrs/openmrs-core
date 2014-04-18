@@ -1355,6 +1355,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return concept search results that match unique concepts
 	 * @should return a search result whose concept name contains all word tokens
+	 * @should return a search result for phrase with stop words
 	 * @should not return concepts with matching names that are voided
 	 * @since 1.8
 	 */
