@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
@@ -83,12 +84,12 @@ public class HierarchyController {
 	 */
 	private Map<String, Object> toJsonHelper(Location loc) {
 		Map<String, Object> ret = new LinkedHashMap<String, Object>();
-		StringBuilder sb = new StringBuilder(loc.getName());
+		StringBuilder sb = new StringBuilder(getName(loc));
 		if (loc.getTags() != null && loc.getTags().size() > 0) {
 			sb.append(" (");
 			for (Iterator<LocationTag> i = loc.getTags().iterator(); i.hasNext();) {
 				LocationTag t = i.next();
-				sb.append(t.getName());
+				sb.append(getName(t));
 				if (i.hasNext()) {
 					sb.append(", ");
 				}
@@ -104,6 +105,10 @@ public class HierarchyController {
 			ret.put("children", children);
 		}
 		return ret;
+	}
+	
+	private String getName(BaseOpenmrsMetadata element) {
+		return element.isRetired() ? "<strike>" + element + "</strike>" : element.getName(); 
 	}
 	
 }
