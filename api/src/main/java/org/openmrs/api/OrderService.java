@@ -81,6 +81,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if the order type of the previous order does not match
 	 * @should fail if the java type of the previous order does not match
 	 * @should fail if the careSetting of the previous order does not match
+	 * @should set concept for drug orders if null
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;

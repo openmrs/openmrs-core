@@ -120,21 +120,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if order concept is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfOrderConceptIsNull() throws Exception {
-		DrugOrder order = new DrugOrder();
-		order.setConcept(null);
-		
-		Errors errors = new BindException(order, "order");
-		new DrugOrderValidator().validate(order, errors);
-		
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
-	}
-	
-	/**
 	 * @verifies fail validation if quantity is null for outpatient careSetting
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */

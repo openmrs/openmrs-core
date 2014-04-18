@@ -164,6 +164,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("The class does not match that of the previous order");
 			}
 		}
+		if (order.getConcept() == null && DrugOrder.class.isAssignableFrom(order.getClass())) {
+			order.setConcept(((DrugOrder) order).getDrug().getConcept());
+		}
 		
 		return saveOrderInternal(order, orderContext);
 	}

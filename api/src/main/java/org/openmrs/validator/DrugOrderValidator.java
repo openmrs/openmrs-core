@@ -53,7 +53,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if asNeeded is null
 	 * @should fail validation if dosingType is null
-	 * @should fail validation if order concept is null
 	 * @should fail validation if drug concept is different from order concept
 	 * @should fail validation if dose is null for SIMPLE dosingType
 	 * @should fail validation if doseUnits is null for SIMPLE dosingType
@@ -98,7 +97,8 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 					ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
 				} else if (order.getDosingType().equals(DrugOrder.DosingType.FREE_TEXT)) {
-					ValidationUtils.rejectIfEmpty(errors, "instructions", "DrugOrder.error.instructionIsNullForDosingTypeFreeText");
+					ValidationUtils.rejectIfEmpty(errors, "instructions",
+					    "DrugOrder.error.instructionIsNullForDosingTypeFreeText");
 				} else {
 					ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
 					    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeOther");

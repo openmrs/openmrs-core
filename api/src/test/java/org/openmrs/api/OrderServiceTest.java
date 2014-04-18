@@ -1900,4 +1900,31 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage("The care setting does not match that of the previous order");
 		orderService.saveOrder(discontinuationOrder, null);
 	}
+	
+	/**
+	 * @verifies set concept for drug orders if null
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldSetConceptForDrugOrdersIfNull() throws Exception {
+		Patient patient = patientService.getPatient(7);
+		CareSetting careSetting = orderService.getCareSetting(2);
+		OrderType orderType = orderService.getOrderTypeByName("Drug order");
+		
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = encounterService.getEncounter(3);
+		order.setEncounter(encounter);
+		order.setPatient(patient);
+		order.setDrug(conceptService.getDrug(3));
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setStartDate(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setInstructions("None");
+		
+		orderService.saveOrder(order, null);
+		assertNotNull(order.getOrderId());
+	}
 }

@@ -17,6 +17,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -77,7 +78,10 @@ public class OrderValidator implements Validator {
 		} else {
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
+			//For DrugOrders, the api will set the concept to drug.concept
+			if (!DrugOrder.class.isAssignableFrom(order.getClass())) {
+				ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
+			}
 			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "encounter", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "orderer", "error.null");
