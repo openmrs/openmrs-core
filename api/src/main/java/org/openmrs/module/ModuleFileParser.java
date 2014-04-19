@@ -36,6 +36,7 @@ import java.util.zip.ZipEntry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -168,6 +169,7 @@ public class ModuleFileParser {
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				db.setEntityResolver(new EntityResolver() {
 					
+					@Override
 					public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 						// When asked to resolve external entities (such as a
 						// DTD) we return an InputSource
@@ -239,33 +241,6 @@ public class ModuleFileParser {
 				        name);
 			}
 			
-			// look for log4j.xml in the root of the module
-			Document log4jDoc = null;
-			try {
-				ZipEntry log4j = jarfile.getEntry("log4j.xml");
-				if (log4j != null) {
-					InputStream log4jStream = jarfile.getInputStream(log4j);
-					
-					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-					DocumentBuilder db = dbf.newDocumentBuilder();
-					db.setEntityResolver(new EntityResolver() {
-						
-						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-							// When asked to resolve external entities (such as
-							// a
-							// DTD) we return an InputSource
-							// with no data at the end, causing the parser to
-							// ignore
-							// the DTD.
-							return new InputSource(new StringReader(""));
-						}
-					});
-					
-					log4jDoc = db.parse(log4jStream);
-				}
-			}
-			catch (Exception e) {}
-			
 			// create the module object
 			module = new Module(name, moduleId, packageName, author, desc, version);
 			
@@ -284,14 +259,12 @@ public class ModuleFileParser {
 			module.setPrivileges(getPrivileges(rootNode, configVersion));
 			module.setGlobalProperties(getGlobalProperties(rootNode, configVersion));
 			
-			module.setMessages(getMessages(rootNode, configVersion, jarfile));
+			module.setMessages(getMessages(rootNode, configVersion, jarfile, moduleId, version));
 			
 			module.setMappingFiles(getMappingFiles(rootNode, configVersion, jarfile));
 			module.setPackagesWithMappedClasses(getPackagesWithMappedClasses(rootNode, configVersion));
 			
 			module.setConfig(configDoc);
-			
-			module.setLog4j(log4jDoc);
 			
 			module.setMandatory(getMandatory(rootNode, configVersion, jarfile));
 			
@@ -503,7 +476,8 @@ public class ModuleFileParser {
 	 * @param configVersion
 	 * @return
 	 */
-	private Map<String, Properties> getMessages(Element root, String configVersion, JarFile jarfile) {
+	private Map<String, Properties> getMessages(Element root, String configVersion, JarFile jarfile, String moduleId,
+	        String version) {
 		
 		Map<String, Properties> messages = new HashMap<String, Properties>();
 		
@@ -531,12 +505,16 @@ public class ModuleFileParser {
 				if (lang.length() > 0 && file.length() > 0) {
 					InputStream inStream = null;
 					try {
-						ZipEntry entry = jarfile.getEntry(file);
-						if (entry == null) {
-							throw new ModuleException(Context.getMessageSourceService().getMessage(
-							    "Module.error.noMessagePropsFile", new Object[] { file, lang }, Context.getLocale()));
+						inStream = ModuleUtil.getResourceFromApi(jarfile, moduleId, version, file);
+						if (inStream == null) {
+							// Try the old way. Loading from the root of the omod
+							ZipEntry entry = jarfile.getEntry(file);
+							if (entry == null) {
+								throw new ModuleException(Context.getMessageSourceService().getMessage(
+								    "Module.error.noMessagePropsFile", new Object[] { file, lang }, Context.getLocale()));
+							}
+							inStream = jarfile.getInputStream(entry);
 						}
-						inStream = jarfile.getInputStream(entry);
 						Properties props = new Properties();
 						OpenmrsUtil.loadProperties(props, inStream);
 						messages.put(lang, props);
@@ -545,15 +523,7 @@ public class ModuleFileParser {
 						log.warn("Unable to load properties: " + file);
 					}
 					finally {
-						if (inStream != null) {
-							try {
-								inStream.close();
-							}
-							catch (IOException io) {
-								log.error("Error while closing property input stream for module: "
-								        + moduleFile.getAbsolutePath(), io);
-							}
-						}
+						IOUtils.closeQuietly(inStream);
 					}
 				} else {
 					log.warn("'lang' and 'file' are required for extensions. Given '" + lang + "' and '" + file + "'");

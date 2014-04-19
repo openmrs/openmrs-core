@@ -16,8 +16,7 @@ package org.openmrs.module;
 import java.io.File;
 import java.net.URL;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;

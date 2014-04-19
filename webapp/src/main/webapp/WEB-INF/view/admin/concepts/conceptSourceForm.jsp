@@ -18,7 +18,7 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="conceptSource.name">
 				<input type="text" name="name" value="<c:out value="${status.value}" />" size="35" />
@@ -38,7 +38,7 @@
 		<td class="description"><openmrs:message code="ConceptSource.hl7Code.help"/></td>
 	</tr>
 	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="conceptSource.description">
 				<textarea name="description" rows="3" cols="40"><c:out value="${status.value}" /></textarea>

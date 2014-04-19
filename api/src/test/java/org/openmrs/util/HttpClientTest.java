@@ -14,20 +14,21 @@
 
 package org.openmrs.util;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
 
 public class HttpClientTest {
 	
@@ -45,7 +46,7 @@ public class HttpClientTest {
 	
 	@Test
 	public void post_shouldPostUrlParametersAndGetResponse() throws Exception {
-		HashMap<String, String> parameters = new HashMap<String, String>();
+		Map<String, String> parameters = new TreeMap<String, String>();
 		parameters.put("one", "one");
 		parameters.put("two", "two");
 		
@@ -61,7 +62,7 @@ public class HttpClientTest {
 		verify(connection).setRequestProperty("Content-Length", String.valueOf(16));
 		verify(connection).setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		
-		assertThat(stream.toString(), is("&two=two&one=one"));
-		assertThat(response, containsString("response"));
+		assertThat(stream.toString(), is("&one=one&two=two"));
+		assertThat(response, CoreMatchers.containsString("response"));
 	}
 }

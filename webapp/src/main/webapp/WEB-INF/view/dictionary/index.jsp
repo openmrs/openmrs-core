@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:message var="pageTitle" code="dictionary.titlebar" scope="page"/>
-
+<openmrs:message var="pageTitle" code="dictionary.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <openmrs:require privilege="View Concepts" otherwise="/login.htm"

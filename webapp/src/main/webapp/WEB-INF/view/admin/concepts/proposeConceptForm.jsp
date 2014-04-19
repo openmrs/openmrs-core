@@ -74,7 +74,7 @@
 <openmrs:message code="ConceptProposal.proposeWarning"/> <br/>
 <openmrs:message code="ConceptProposal.proposeInfo"/>
 <spring:bind path="conceptProposal.originalText">
-	<input type="text" name="${status.expression}" id="originalText" value="" size="60" />
+	<input type="text" name="${status.expression}" id="originalText" value="" size="60" /><span class="required">*</span>
 	<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 </spring:bind>
 

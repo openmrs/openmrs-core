@@ -65,4 +65,33 @@
 	</c:if>
 </form>
 
+<br/>
+<br/>
+<c:if test="${field.fieldId!=null}">
+<div class="boxHeader">
+	<b><openmrs:message code="Field.formTableTitle" /></b>
+</div>
+<div class="box">
+	<table cellpadding="2" cellspacing="0" id="formTable" width="98%">
+		<tr>
+			<th> <openmrs:message code="general.name" /> </th>
+			<th> <openmrs:message code="Form.version" /> </th>
+			<th> <openmrs:message code="Form.build" /> </th>
+			<th> <openmrs:message code="general.description" /> </th>
+			<th> <openmrs:message code="Form.published" /> </th>
+
+		</tr>
+		<c:forEach var="form" items="${formList}" varStatus="status">
+			<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"} ${form.retired ? "voided" : ""}'>
+				<td valign="top" style="white-space: nowrap"><a href="formEdit.form?formId=${form.formId}"><c:out value="${form.name}"/></a></td>
+				<td valign="top">${form.version}</td>
+				<td valign="top">${form.build}</td>
+				<td valign="top"><c:out value="${form.description}"/></td>
+				<td valign="top"><c:if test="${form.published == true}"><openmrs:message code="general.yes"/></c:if></td>
+			</tr>
+		</c:forEach>
+	</table>
+</div>
+</c:if>
+
 <%@ include file="/WEB-INF/template/footer.jsp"%>

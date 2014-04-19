@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.api.APIException;
 import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.springframework.util.Assert;
@@ -64,7 +63,7 @@ public class ValidateUtil {
 	 * @should throw APIException if errors occur during validation
 	 */
 	public static void validate(Object obj) throws ValidationException {
-		BindException errors = new BindException(obj, "");
+		Errors errors = new BindException(obj, "");
 		
 		Context.getAdministrationService().validate(obj, errors);
 		
@@ -81,7 +80,7 @@ public class ValidateUtil {
 			
 			String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
 			exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
-			throw new ValidationException(exceptionMessage, errors.getCause());
+			throw new ValidationException(exceptionMessage, errors);
 		}
 	}
 	

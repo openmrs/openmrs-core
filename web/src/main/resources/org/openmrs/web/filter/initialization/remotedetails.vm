@@ -20,8 +20,10 @@
             </tr>
             <tr>
                 <th align="right">$l10n.get("install.testing.password.remote"):</th>
-                <td><input type="password" name="password" onKeyPress="return submitenter(this,event);" /></td>
-            </tr>
+                <td><input type="password" name="password" onKeyPress="return submitenter(this,event);" />
+                     <br/>
+                     <i><small>$l10n.get("install.testing.passwordadvice.remote")</small></i>
+                </td></tr>
 			<tr><td colspan="2" height="40px"></td></tr>
             <tr>
                 <td colspan="2" align="center">

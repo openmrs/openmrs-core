@@ -4,7 +4,18 @@
 
 <c:choose>
 	<c:when test="${command.concept.conceptId != null}">
-		<openmrs:message var="pageTitle" code="Concept.edit.titlebar" scope="page" htmlEscape="true" arguments="${command.concept.name}"/>
+			<openmrs:message var="pageTitle" code="Concept.edit.title" scope="page" arguments="${command.concept.name}"/>
+  	</c:when>
+  	<c:otherwise>
+  	<openmrs:message var="pageTitle" code="Concept.creatingNewConcept.title" scope="page"/>
+  	</c:otherwise>
+  </c:choose>
+  
+ <c:choose>
+  	<c:when test="${command.concept.conceptId != null}">
+  		<openmrs:message var="pageTitle" code="Concept.edit.titlebar" scope="page" arguments="${command.concept.name}"/>
+  	<h2><openmrs:message code="Concept.edit.header" arguments="${command.concept.name}" /></h2>
+  	
 	</c:when>
 	<c:otherwise>
 		<openmrs:message var="pageTitle" code="Concept.creatingNewConcept.titlebar" scope="page"/>
@@ -187,13 +198,7 @@
 </c:if>
 
 <spring:hasBindErrors name="command">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <c:if test="${command.concept.conceptId != null}">
@@ -231,7 +236,7 @@
 	</tr>
 	<tr class="localeSpecific">
 		<th valign="bottom">
-			<openmrs:message code="Concept.fullySpecifiedName" /> 
+			<openmrs:message code="Concept.fullySpecifiedName" /><span class="required">*</span>
 			<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<openmrs:message code="Concept.fullySpecified.help"/>"/>
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
@@ -755,6 +760,7 @@
 						<select name="term.source" >
 							<option value=""><openmrs:message code="ConceptReferenceTerm.searchAllSources" /></option>
 							<openmrs:forEachRecord  name="conceptSource">
+							<c:set var="sourceID" value="${record.conceptSourceId}" scope="page" />
 							<option value="${record.conceptSourceId}">
 								<c:out value="${record.name}" />
 							</option>
@@ -775,8 +781,20 @@
 				
 				<tr>
 					<td colspan="3" valign="top" align="left">
+					<c:choose>
+				           <c:when test="${sourceID != null}">
 						<input id="addMapButton" type="button" value='<openmrs:message code="Concept.mapping.add"/>' class="smallButton" 
 							   onClick="addConceptMapping(${fn:length(command.conceptMappings)})" />
+							    </c:when>
+							    <c:otherwise>
+					<span>
+					<openmrs:message code="Concept.mapping.sourceUnavailable"/>
+                	<a href="${pageContext.request.contextPath}/admin/concepts/conceptSource.list">
+					<openmrs:message code="Concept.mapping.sourceAdd"/>
+					</a>
+					</span>
+					</c:otherwise>
+			       </c:choose>
 					</td>
 					<td class="hideableEle" align="right">
 						<openmrs:hasPrivilege privilege="Create Reference Terms While Editing Concepts">

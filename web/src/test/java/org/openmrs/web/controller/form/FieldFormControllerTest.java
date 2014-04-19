@@ -89,7 +89,7 @@ public class FieldFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	@Test
-	@Ignore("TRUNK-3079: Fails due to foreign key constraint: Referential integrity constraint violation: FKF276DBFEA104846: PUBLIC.FORM_FIELD FOREIGN KEY(FIELD_ID) REFERENCES PUBLIC.FIELD(FIELD_ID); SQL statement: delete from field where field_id=? [23003-135]")
+	@Verifies(value = "should purge field", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldPurgeField() throws Exception {
 		final String FIELD_ID = "1";
 		

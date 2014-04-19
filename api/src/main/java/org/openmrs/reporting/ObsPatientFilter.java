@@ -16,13 +16,13 @@ package org.openmrs.reporting;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -140,17 +140,19 @@ public class ObsPatientFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService mss = Context.getMessageSourceService();
 		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
 		if (question == null) {
 			if (getValue() != null) {
-				ret.append("Patients with " + timeModifier + " obs with value " + ((Concept) value).getName().getName());
+				ret.append(mss.getMessage("reporting.patientsWith") + " " + timeModifier + " "
+				        + mss.getMessage("reporting.obsWithValue") + " " + ((Concept) value).getName().getName());
 			} else {
-				ret.append("question and value are both null");
+				ret.append(mss.getMessage("reporting.qtnNValNull"));
 			}
 		} else {
-			ret.append("Patients with ");
-			ret.append(timeModifier + " ");
+			ret.append(mss.getMessage("reporting.patientsWith")).append(" ");
+			ret.append(timeModifier).append(" ");
 			ConceptName questionName = question.getName(locale, false);
 			if (questionName != null) {
 				ret.append(questionName);
@@ -160,11 +162,11 @@ public class ObsPatientFilter extends CachingPatientFilter {
 					questionName = question.getName(locale, false);
 					ret.append(questionName);
 				} else {
-					ret.append("CONCEPT");
+					ret.append(mss.getMessage("reporting.concept"));
 				}
 			}
 			if (value != null && modifier != null) {
-				ret.append(" " + modifier.getSqlRepresentation() + " ");
+				ret.append(" ").append(modifier.getSqlRepresentation()).append(" ");
 				if (value instanceof Concept) {
 					ret.append(((Concept) value).getName(locale));
 				} else {
@@ -173,33 +175,30 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			}
 		}
 		if (withinLastDays != null || withinLastMonths != null) {
-			ret.append(" within last");
 			if (withinLastMonths != null) {
-				ret.append(" " + withinLastMonths + " months");
+				ret.append(" ").append(
+				    mss.getMessage("reporting.withinLastMonths", new Object[] { withinLastMonths }, locale));
 			}
 			if (withinLastDays != null) {
-				ret.append(" " + withinLastDays + " days");
+				ret.append(" ").append(mss.getMessage("reporting.withinLastDays", new Object[] { withinLastDays }, locale));
 			}
 		}
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
-			ret.append(" until");
 			if (untilMonthsAgo != null) {
-				ret.append(" " + untilMonthsAgo + " months");
+				ret.append(" ").append(mss.getMessage("reporting.untilMonthsAgo", new Object[] { untilMonthsAgo }, locale));
 			}
 			if (untilDaysAgo != null) {
-				ret.append(" " + untilDaysAgo + " months");
+				ret.append(" ").append(mss.getMessage("reporting.untilDaysAgo", new Object[] { untilDaysAgo }, locale));
 			}
-			ret.append(" ago");
 		}
-		DateFormat df = null;
-		if (sinceDate != null || untilDate != null) {
-			df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
-		}
+		
+		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
+		
 		if (sinceDate != null) {
-			ret.append(" since " + df.format(sinceDate));
+			ret.append(" ").append(mss.getMessage("reporting.since", new Object[] { df.format(sinceDate) }, locale));
 		}
 		if (untilDate != null) {
-			ret.append(" until " + df.format(untilDate));
+			ret.append(" ").append(mss.getMessage("reporting.until", new Object[] { df.format(untilDate) }, locale));
 		}
 		return ret.toString();
 	}

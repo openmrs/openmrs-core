@@ -44,18 +44,13 @@
 <h2><openmrs:message code="Role.manage.title"/></h2>	
 
 <spring:hasBindErrors name="role">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <form method="post">
 <table>
 	<tr>
-		<th><openmrs:message code="Role.role"/></th>
+		<th><openmrs:message code="Role.role"/><span class="required">*</span></th>
 		<td>
 			<spring:bind path="role.role">
 				<c:if test="${param.roleName == null}"><input type="text" id="role" name="${status.expression}" value="${status.value}" onChange="updateRoleName()"></c:if>

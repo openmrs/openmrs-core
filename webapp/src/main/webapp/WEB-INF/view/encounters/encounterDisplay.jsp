@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="View Encounters" redirect="/encounters/encounterDisplay.htm" otherwise="/login.htm" />
-
+<openmrs:message var="pageTitle" code="encounter.title" scope="page"/>
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 
 <openmrs:globalProperty var="showEmptyFields" key="dashboard.encounters.showEmptyFields" defaultValue="true"/>

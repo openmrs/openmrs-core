@@ -57,7 +57,7 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="attributeType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
@@ -93,7 +93,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="AttributeType.datatypeClassname"/></td>
+		<td><openmrs:message code="AttributeType.datatypeClassname"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="attributeType.datatypeClassname">
 				<select name="datatypeClassname">

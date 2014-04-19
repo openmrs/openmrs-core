@@ -8,12 +8,7 @@
 <h2><openmrs:message code="Form.edit.title"/></h2>
 
 <spring:hasBindErrors name="form">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <c:if test="${form.retired}">
@@ -40,7 +35,7 @@
 <form method="post" enctype="multipart/form-data">
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/></td>
+		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="form.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -58,7 +53,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Form.version"/></td>
+		<td><openmrs:message code="Form.version"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="form.version">
 				<input type="text" name="${status.expression}" value="${status.value}" size="5" />

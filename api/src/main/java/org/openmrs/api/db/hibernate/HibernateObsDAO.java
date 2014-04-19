@@ -180,7 +180,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @param answers
 	 * @param personTypes
 	 * @param locations
-	 * @param sortList
+	 * @param sortList If a field needs to be in <i>asc</i> order, <code>" asc"</code> has to be appended to the field name. For example: <code>fieldname asc</code>
 	 * @param mostRecentN
 	 * @param obsGroupId
 	 * @param fromDate
@@ -218,11 +218,20 @@ public class HibernateObsDAO implements ObsDAO {
 			criteria.add(Restrictions.in("location", locations));
 		}
 		
-		// TODO add an option for each sort item to be asc/desc
 		if (CollectionUtils.isNotEmpty(sortList)) {
 			for (String sort : sortList) {
 				if (sort != null && !"".equals(sort)) {
-					criteria.addOrder(Order.desc(sort));
+					// Split the sort, the field name shouldn't contain space char, so it's safe
+					String[] split = sort.split(" ", 2);
+					String fieldName = split[0];
+					
+					if (split.length == 2 && "asc".equals(split[1])) {
+						/* If asc is specified */
+						criteria.addOrder(Order.asc(fieldName));
+					} else {
+						/* If the field hasn't got ordering or desc is specified */
+						criteria.addOrder(Order.desc(fieldName));
+					}
 				}
 			}
 		}

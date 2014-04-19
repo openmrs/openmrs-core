@@ -17,7 +17,7 @@
 
             <tr>
                 <td valign="top">
-                    <textarea name="xml" rows="20" cols="60">${addressTemplateXml}</textarea>
+                    <textarea name="xml" rows="20" cols="60">${addressTemplateXml}</textarea><span class="required">*</span>
                 </td>
                 <td valign="top">
                     <span class="description"> <p><openmrs:message htmlEscape="false" code="AddressTemplate.copy.form.wiki"/>: <a

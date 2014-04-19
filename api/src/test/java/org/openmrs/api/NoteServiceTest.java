@@ -18,6 +18,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Note;
@@ -26,6 +27,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 @SuppressWarnings("deprecation")
+@Ignore("TRUNK-4106")
 public class NoteServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_NOTE_XML = "org/openmrs/api/include/NoteServiceTest-initial.xml";

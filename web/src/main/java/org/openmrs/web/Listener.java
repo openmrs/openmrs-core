@@ -16,6 +16,7 @@ package org.openmrs.web;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
@@ -210,7 +211,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// start openmrs
 		try {
 			Context.openSession();
-			
+			PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
 			// load bundled modules that are packaged into the webapp
 			Listener.loadBundledModules(servletContext);
 			

@@ -18,7 +18,7 @@
 
 <fieldset>
 	<legend><openmrs:message code="Concept.usage" /></legend>
-
+	<c:if test="${command.concept.conceptId!=null}">
 	<h4><openmrs:message code="dictionary.numobs" arguments="${command.numberOfObsUsingThisConcept}" /></h4>
 
 	<c:if test="${fn:length(command.questionsAnswered) > 0}">
@@ -63,5 +63,5 @@
 		</c:if>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>
-
+	</c:if>
 </fieldset>

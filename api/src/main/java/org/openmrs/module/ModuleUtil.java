@@ -13,6 +13,7 @@
  */
 package org.openmrs.module;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,9 +39,11 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -498,19 +501,18 @@ public class ModuleUtil {
 	 *            relating to <code>name</code>. if false will start directory structure at
 	 *            <code>name</code>
 	 */
-	@SuppressWarnings("unchecked")
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		JarFile jarFile = null;
 		InputStream input = null;
 		String docBase = tmpModuleDir.getAbsolutePath();
 		try {
 			jarFile = new JarFile(fileToExpand);
-			Enumeration jarEntries = jarFile.entries();
+			Enumeration<JarEntry> jarEntries = jarFile.entries();
 			boolean foundName = (name == null);
 			
 			// loop over all of the elements looking for the match to 'name'
 			while (jarEntries.hasMoreElements()) {
-				JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
+				JarEntry jarEntry = jarEntries.nextElement();
 				if (name == null || jarEntry.getName().startsWith(name)) {
 					String entryName = jarEntry.getName();
 					// trim out the name path from the name of the new file
@@ -1062,7 +1064,7 @@ public class ModuleUtil {
 		
 		// end early if we're given a non jar file
 		if (!file.getName().endsWith(".jar")) {
-			return Collections.EMPTY_SET;
+			return Collections.<String> emptySet();
 		}
 		
 		Set<String> packagesProvided = new HashSet<String>();
@@ -1120,8 +1122,8 @@ public class ModuleUtil {
 		packagesProvidedCopy.addAll(packagesProvided);
 		
 		for (String packageNameOuter : packagesProvidedCopy) {
-			// add the period so that we don't match to ourselves or to 
-			// similarly named packages. eg. org.pih and org.pihrwanda 
+			// add the period so that we don't match to ourselves or to
+			// similarly named packages. eg. org.pih and org.pihrwanda
 			// should not match
 			packageNameOuter += ".";
 			for (String packageNameInner : packagesProvidedCopy) {
@@ -1134,6 +1136,73 @@ public class ModuleUtil {
 		// end cleanup
 		
 		return packagesProvided;
+	}
+	
+	/**
+	 * Get a resource as from the module's api jar. Api jar should be in the omod's lib folder.
+	 * 
+	 * @param jarFile omod file loaded as jar
+	 * @param moduleId id of the module
+	 * @param version version of the module
+	 * @param resource name of a resource from the api jar
+	 * @return resource as an input stream or <code>null</code> if resource cannot be loaded
+	 * @should load file from api as input stream
+	 * @should return null if api is not found
+	 * @should return null if file is not found in api
+	 */
+	public static InputStream getResourceFromApi(JarFile jarFile, String moduleId, String version, String resource) {
+		String apiLocation = "lib/" + moduleId + "-api-" + version + ".jar";
+		return getResourceFromInnerJar(jarFile, apiLocation, resource);
+	}
+	
+	/**
+	 * Load resource from a jar inside a jar.
+	 * 
+	 * @param outerJarFile jar file that contains a jar file
+	 * @param innerJarFileLocation inner jar file location relative to the outer jar
+	 * @param resource path to a resource relative to the inner jar
+	 * @return resource from the inner jar as an input stream or <code>null</code> if resource cannot be loaded
+	 */
+	private static InputStream getResourceFromInnerJar(JarFile outerJarFile, String innerJarFileLocation, String resource) {
+		File tempFile = null;
+		FileOutputStream tempOut = null;
+		JarFile innerJarFile = null;
+		InputStream innerInputStream = null;
+		try {
+			tempFile = File.createTempFile("tempFile", "jar");
+			tempOut = new FileOutputStream(tempFile);
+			ZipEntry innerJarFileEntry = outerJarFile.getEntry(innerJarFileLocation);
+			if (innerJarFileEntry != null) {
+				IOUtils.copy(outerJarFile.getInputStream(innerJarFileEntry), tempOut);
+				innerJarFile = new JarFile(tempFile);
+				ZipEntry targetEntry = innerJarFile.getEntry(resource);
+				if (targetEntry != null) {
+					// clone InputStream to make it work after the innerJarFile is closed
+					innerInputStream = innerJarFile.getInputStream(targetEntry);
+					byte[] byteArray = IOUtils.toByteArray(innerInputStream);
+					return new ByteArrayInputStream(byteArray);
+				}
+			}
+		}
+		catch (IOException e) {
+			log.error("Unable to get '" + resource + "' from '" + innerJarFileLocation + "' of '" + outerJarFile.getName()
+			        + "'", e);
+		}
+		finally {
+			IOUtils.closeQuietly(tempOut);
+			IOUtils.closeQuietly(innerInputStream);
+			if (tempFile != null && !tempFile.delete()) {
+				log.warn("Could not delete temporary jarfile: " + tempFile);
+			}
+			try {
+				if (innerJarFile != null)
+					innerJarFile.close();
+			}
+			catch (IOException e) {
+				log.warn("Unable to close inner jarfile: " + innerJarFile, e);
+			}
+		}
+		return null;
 	}
 	
 }

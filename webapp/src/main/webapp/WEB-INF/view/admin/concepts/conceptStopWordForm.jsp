@@ -10,13 +10,13 @@
 <h2><openmrs:message code="ConceptStopWord.title"/></h2>
 
 <spring:hasBindErrors name="command">
-    <openmrs:message htmlEscape="false" code="fix.error"/><br/>
+    <div class="error"><openmrs:message code="fix.error"/></div><br/>
 </spring:hasBindErrors>
 
 <form method="post">
     <table>
         <tr>
-            <td><openmrs:message code="general.name"/></td>
+            <td><openmrs:message code="general.name"/><span class="required">*</span></td>
             <td>
                 <spring:bind path="command.value">
                     <input type="text" name="${status.expression}" value="<c:out value="${status.value}" />" size="35"/>

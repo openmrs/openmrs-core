@@ -183,6 +183,7 @@ public class ShortPatientFormController {
 	 * Handles the form submission by validating the form fields and saving it to the DB
 	 * 
 	 * @param request the webRequest object
+	 * @param relationshipsMap
 	 * @param patientModel the modelObject containing the patient info collected from the form
 	 *            fields
 	 * @param result
@@ -209,6 +210,7 @@ public class ShortPatientFormController {
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
 	        @ModelAttribute("personAddressCache") PersonAddress personAddressCache,
+	        @ModelAttribute("relationshipsMap") Map<String, Relationship> relationshipsMap,
 	        @ModelAttribute("patientModel") ShortPatientModel patientModel, BindingResult result) {
 		
 		if (Context.isAuthenticated()) {
@@ -249,10 +251,8 @@ public class ShortPatientFormController {
 				// process and save the death info
 				saveDeathInfo(patientModel, request);
 				
-				if (!patient.getVoided()) {
-					// save the relationships to the database
-					Map<String, Relationship> relationships = getRelationshipsMap(patientModel, result, request);
-					for (Relationship relationship : relationships.values()) {
+				if (!patient.getVoided() && relationshipsMap != null) {
+					for (Relationship relationship : relationshipsMap.values()) {
 						// if the user added a person to this relationship, save
 						// it
 						if (relationship.getPersonA() != null && relationship.getPersonB() != null) {
@@ -362,19 +362,26 @@ public class ShortPatientFormController {
 	 * @return map of strings matched against actual relationships
 	 */
 	@ModelAttribute("relationshipsMap")
-	private Map<String, Relationship> getRelationshipsMap(@ModelAttribute("patientModel") ShortPatientModel patientModel,
-	        BindingResult result, WebRequest request) {
+	private Map<String, Relationship> getRelationshipsMap(
+	        @RequestParam(value = "patientId", required = false) Integer patientId, WebRequest request) {
+		Map<String, Relationship> relationshipMap = new LinkedHashMap<String, Relationship>();
+		
+		if (patientId == null) {
+			return relationshipMap;
+		}
+		
+		Person person = Context.getPersonService().getPerson(patientId);
+		if (person == null) {
+			throw new IllegalArgumentException("Patient does not exist: " + patientId);
+		}
 		
 		// Check if relationships must be shown
 		String showRelationships = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_NEWPATIENTFORM_SHOW_RELATIONSHIPS, "false");
 		
-		if ("false".equals(showRelationships) || result.hasErrors()) {
-			return new LinkedHashMap<String, Relationship>();
+		if ("false".equals(showRelationships)) {
+			return relationshipMap;
 		}
-		
-		Person person = patientModel.getPatient();
-		Map<String, Relationship> relationshipMap = new LinkedHashMap<String, Relationship>();
 		
 		// gp is in the form "3a, 7b, 4a"
 		String relationshipsString = Context.getAdministrationService().getGlobalProperty(

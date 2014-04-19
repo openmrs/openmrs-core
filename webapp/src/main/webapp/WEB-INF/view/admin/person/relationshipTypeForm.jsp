@@ -23,7 +23,7 @@
 <fieldset>
 <table>
 	<tr>
-		<td><openmrs:message code="RelationshipType.aIsToB"/></td>
+		<td><openmrs:message code="RelationshipType.aIsToB"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="relationshipType.aIsToB">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -32,7 +32,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="RelationshipType.bIsToA"/></td>
+		<td><openmrs:message code="RelationshipType.bIsToA"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="relationshipType.bIsToA">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -41,7 +41,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td valign="top"><openmrs:message code="general.description"/><span class="required">*</span></td>
 		<td valign="top">
 			<spring:bind path="relationshipType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>

@@ -13,7 +13,10 @@
  */
 package org.openmrs.web.controller.form;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,7 +27,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.EncounterType;
 import org.openmrs.Field;
+import org.openmrs.Form;
+import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -132,12 +138,12 @@ public class FieldFormController extends SimpleFormController {
 		
 		Field field = (Field) obj;
 		Locale locale = Context.getLocale();
+		FormService fs = Context.getFormService();
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
 		
 		if (Context.isAuthenticated()) {
-			FormService fs = Context.getFormService();
 			//map.put("fieldTypes", es.getFieldTypes());
 			map.put("fieldTypes", fs.getAllFieldTypes());
 			if (field.getConcept() != null) {
@@ -147,8 +153,23 @@ public class FieldFormController extends SimpleFormController {
 			}
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
-		
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
+		
+		Collection<EncounterType> encounterTypes = new ArrayList<EncounterType>();
+		Collection<FormField> containingAnyFormField = new ArrayList<FormField>();
+		Collection<FormField> containingAllFormFields = new ArrayList<FormField>();
+		Collection<Field> fields = new ArrayList<Field>();
+		fields.add(field); // add the field to the fields collection                                                      	
+		List<Form> formsReturned = null;
+		try {
+			formsReturned = fs.getForms(null, null, encounterTypes, null, containingAnyFormField, containingAllFormFields,
+			    fields); // Retrieving forms which contain this particular field
+		}
+		catch (Exception e) {
+			// When Object parameter doesn't contain a valid Form object, getFroms() throws an Exception
+		}
+		
+		map.put("formList", formsReturned); // add the returned forms to the ma
 		
 		return map;
 	}

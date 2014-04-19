@@ -44,6 +44,8 @@ public class SqlDiffFileParser {
 	
 	private static Log log = LogFactory.getLog(SqlDiffFileParser.class);
 	
+	private static final String SQLDIFF_CHANGELOG_FILENAME = "sqldiff.xml";
+	
 	/**
 	 * Get the diff map. Return a sorted map<version, sql statements>
 	 *
@@ -69,22 +71,25 @@ public class SqlDiffFileParser {
 				throw new ModuleException("Unable to get jar file", module.getName(), e);
 			}
 			
-			ZipEntry diffEntry = jarfile.getEntry("sqldiff.xml");
-			
-			if (diffEntry == null) {
-				log.debug("No sqldiff.xml found for module: " + module.getName());
-				return map;
-			} else {
-				try {
-					diffStream = jarfile.getInputStream(diffEntry);
-				}
-				catch (IOException e) {
-					throw new ModuleException("Unable to get sql diff file stream", module.getName(), e);
+			diffStream = ModuleUtil.getResourceFromApi(jarfile, module.getModuleId(), module.getVersion(),
+			    SQLDIFF_CHANGELOG_FILENAME);
+			if (diffStream == null) {
+				// Try the old way. Loading from the root of the omod
+				ZipEntry diffEntry = jarfile.getEntry(SQLDIFF_CHANGELOG_FILENAME);
+				if (diffEntry == null) {
+					log.debug("No sqldiff.xml found for module: " + module.getName());
+					return map;
+				} else {
+					try {
+						diffStream = jarfile.getInputStream(diffEntry);
+					}
+					catch (IOException e) {
+						throw new ModuleException("Unable to get sql diff file stream", module.getName(), e);
+					}
 				}
 			}
 			
 			try {
-				
 				// turn the diff stream into an xml document
 				Document diffDoc = null;
 				try {
@@ -92,6 +97,7 @@ public class SqlDiffFileParser {
 					DocumentBuilder db = dbf.newDocumentBuilder();
 					db.setEntityResolver(new EntityResolver() {
 						
+						@Override
 						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 							// When asked to resolve external entities (such as a DTD) we return an InputSource
 							// with no data at the end, causing the parser to ignore the DTD.

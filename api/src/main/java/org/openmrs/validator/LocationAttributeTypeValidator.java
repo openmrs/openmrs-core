@@ -15,10 +15,14 @@ package org.openmrs.validator;
 
 import org.openmrs.LocationAttributeType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.LocationService;
+import org.openmrs.api.context.Context;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 /**
  * Validates attributes on the {@link LocationAttributeType} object.
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { LocationAttributeType.class }, order = 50)
@@ -30,6 +34,29 @@ public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<L
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return LocationAttributeType.class.isAssignableFrom(clazz);
+	}
+	
+	/**
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
+	 * @should fail validation if name is null
+	 * @should fail validation if name already in use
+	 * @should pass validation if the location attribute type description is null or empty or whitespace
+	 * @should pass validation if all fields are correct
+	 */
+	@Override
+	public void validate(Object obj, Errors errors) {
+		super.validate(obj, errors);
+		LocationAttributeType locationObj = (LocationAttributeType) obj;
+		LocationService ls = Context.getLocationService();
+		if (locationObj.getName() != null && !locationObj.getName().isEmpty()) {
+			LocationAttributeType loc = ls.getLocationAttributeTypeByName(locationObj.getName());
+			if (loc != null && !loc.getUuid().equals(locationObj.getUuid())) {
+				errors.rejectValue("name", "LocationAttributeType.error.nameAlreadyInUse");
+			}
+		} else {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "LocationAttributeType.error.nameEmpty");
+		}
 	}
 	
 }

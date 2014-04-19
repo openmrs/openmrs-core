@@ -142,17 +142,11 @@ window.onload = init;
 
 
 <spring:hasBindErrors name="concept">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
-	<div class="error">
-		<c:forEach items="${errors.allErrors}" var="error">
-			<openmrs:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
-		</c:forEach>
-	</div>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
 <spring:hasBindErrors name="task">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
+	<div class="error"><openmrs:message code="fix.error"/></div>
 	<br />
 </spring:hasBindErrors>
 
@@ -166,7 +160,7 @@ window.onload = init;
 			<td>${task.id}</td>
 		</tr>
 		<tr>
-			<td><openmrs:message code="general.name"/></td>
+			<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 			<td>
 				<spring:bind path="task.name">
 					<input type="text" name="name" value="${status.value}" size="35" />
@@ -175,7 +169,7 @@ window.onload = init;
 			</td>
 		</tr>
 		<tr>
-			<td><openmrs:message code="Scheduler.taskForm.class"/></td>
+			<td><openmrs:message code="Scheduler.taskForm.class"/><span class="required">*</span></td>
 			<td>
 				<spring:bind path="task.taskClass">
 					<input type="text" name="taskClass" value="${status.value}" size="60" />

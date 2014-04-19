@@ -466,4 +466,57 @@ public class PersonNameTest {
 		Assert.assertEquals("Bob Jones", pn.getFullName());
 	}
 	
+	/**
+	 * @see {@link PersonName#getFullName()}
+	 */
+	@Test
+	@Verifies(value = "should Not Return Long If Person Name Format Is Short", method = "getFullName()")
+	public void getFullName_shouldNotReturnLongIfPersonNameFormatIsShort() throws Exception {
+		PersonName pn = new PersonName();
+		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_LONG);
+		pn.setPrefix("Sr.");
+		pn.setGivenName("Taylor");
+		pn.setMiddleName("Bob");
+		pn.setFamilyNamePrefix("Wilson");
+		pn.setFamilyName("Mark");
+		pn.setFamilyName2("Jones");
+		pn.setFamilyNameSuffix("jr.");
+		pn.setDegree("3");
+		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_SHORT);
+		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
+	}
+	
+	@Test
+	@Verifies(value = "should Not Return Short If Person Name Format Is Long", method = "getFullName()")
+	public void getFullName_shouldNotReturnShortIfPersonNameFormatIsLong() throws Exception {
+		PersonName pn = new PersonName();
+		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_LONG);
+		pn.setPrefix("Sr.");
+		pn.setGivenName("Taylor");
+		pn.setMiddleName("Bob");
+		pn.setFamilyNamePrefix("Wilson");
+		pn.setFamilyName("Mark");
+		pn.setFamilyName2("Jones");
+		pn.setFamilyNameSuffix("jr.");
+		pn.setDegree("3");
+		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Wilson Mark Jones jr. 3");
+	}
+	
+	@Test
+	@Verifies(value = "should Return Short If Person Name Format Is null", method = "getFullName()")
+	public void getFullName_shouldReturnShortIfPersonNameFormatIsNull() throws Exception {
+		PersonName pn = new PersonName();
+		PersonName.setFormat(OpenmrsConstants.PERSON_NAME_FORMAT_LONG);
+		pn.setPrefix("Sr.");
+		pn.setGivenName("Taylor");
+		pn.setMiddleName("Bob");
+		pn.setFamilyNamePrefix("Wilson");
+		pn.setFamilyName("Mark");
+		pn.setFamilyName2("Jones");
+		pn.setFamilyNameSuffix("jr.");
+		pn.setDegree("3");
+		PersonName.setFormat("");
+		Assert.assertEquals(pn.getFullName(), "Sr. Taylor Bob Mark");
+	}
+	
 }

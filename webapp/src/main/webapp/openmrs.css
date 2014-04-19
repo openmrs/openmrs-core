@@ -21,7 +21,9 @@ body {
 .barsmall {
 	background-image:url(images/openmrs_green_bar_repeat.gif);
 	background-repeat:repeat-x;
-	height:27px;
+	background-size:auto 100%;
+	height:auto;
+	min-height:27px;
 	margin-left: 0px;
     font-family: Verdana,Arial,Helvetica,sans-serif;
     color: #ffffff;

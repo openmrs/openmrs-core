@@ -513,4 +513,15 @@ public interface LocationService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.GET_LOCATIONS)
 	LocationAttribute getLocationAttributeByUuid(String uuid);
 	
+	/**
+	 * Retrieves a LocationAttributeType object based on the name provided
+	 *
+	 * @param locationAttributeTypeName
+	 * @return the {@link LocationAttributeType} with the specified name
+	 * @since 1.10.0
+	 * @should return the location attribute type with the specified name
+	 * @should return null if no location attribute type exists with the specified name
+	 */
+	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	LocationAttributeType getLocationAttributeTypeByName(String locationAttributeTypeName);
 }

@@ -20,8 +20,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -30,6 +30,7 @@ import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -86,31 +87,36 @@ public class DrugOrderFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
+		MessageSourceService mss = Context.getMessageSourceService();
+		Locale locale = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		boolean currentlyCase = getWithinLastDays() != null && getWithinLastDays() == 0
 		        && (getWithinLastMonths() == null || getWithinLastMonths() == 0);
 		if (currentlyCase) {
-			ret.append("Patients currently ");
+			ret.append(mss.getMessage("reporting.patientCurrently")).append(" ");
 		} else {
-			ret.append("Patients ");
+			ret.append(mss.getMessage("reporting.patients")).append(" ");
 		}
-		if (getDrugListToUse() == null || getDrugListToUse().size() == 0) {
+		if (getDrugListToUse() == null || getDrugListToUse().isEmpty()) {
 			if (getAnyOrAll() == GroupMethod.NONE) {
-				ret.append(currentlyCase ? "taking no drugs" : "who never took any drugs");
+				ret.append(currentlyCase ? mss.getMessage("reporting.takingNoDrugs") : mss
+				        .getMessage("reporting.whoNeverTakeDrug"));
 			} else {
-				ret.append(currentlyCase ? "taking any drugs" : "ever taking any drugs");
+				ret.append(currentlyCase ? mss.getMessage("reporting.takingAnyDrugs") : mss
+				        .getMessage("reporting.everTakingAnyDrugs"));
 			}
 		} else {
 			if (getDrugListToUse().size() == 1) {
 				if (getAnyOrAll() == GroupMethod.NONE) {
-					ret.append("not taking ");
+					ret.append(mss.getMessage("reporting.notTaking")).append(" ");
 				} else {
-					ret.append("taking ");
+					ret.append(mss.getMessage("reporting.taking").toLowerCase()).append(" ");
 				}
 				ret.append(getDrugListToUse().get(0).getName());
 			} else {
-				ret.append("taking " + getAnyOrAll() + " of [");
+				ret.append(mss.getMessage("reporting.taking").toLowerCase()).append(" ").append(getAnyOrAll()).append(
+				    mss.getMessage("reporting.of")).append(" [");
 				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext();) {
 					ret.append(i.next().getName());
 					if (i.hasNext()) {
@@ -120,22 +126,26 @@ public class DrugOrderFilter extends CachingPatientFilter {
 				ret.append("]");
 			}
 		}
+		Integer within_last_days = getWithinLastDays();
+		Integer within_last_months = getWithinLastMonths();
+		
 		if (!currentlyCase) {
-			if (getWithinLastDays() != null || getWithinLastMonths() != null) {
-				ret.append(" withing the last");
-				if (getWithinLastMonths() != null) {
-					ret.append(" " + getWithinLastMonths() + " months");
-				}
-				if (getWithinLastDays() != null) {
-					ret.append(" " + getWithinLastDays() + " days");
-				}
+			if (within_last_days != null || within_last_months != null) {
+				if (within_last_months != null)
+					ret.append(" ").append(
+					    mss.getMessage("reporting.WithinTheLastMonths", new Object[] { within_last_months }, locale));
+				
+				if (within_last_days != null)
+					ret.append(" ").append(
+					    mss.getMessage("reporting.WithinTheLastDays", new Object[] { within_last_days }, locale));
+				
 			}
 		}
 		if (getSinceDate() != null) {
-			ret.append(" since " + df.format(getSinceDate()));
+			ret.append(" ").append(mss.getMessage("reporting.since", new Object[] { df.format(getSinceDate()) }, locale));
 		}
 		if (getUntilDate() != null) {
-			ret.append(" until " + df.format(getUntilDate()));
+			ret.append(" ").append(mss.getMessage("reporting.until", new Object[] { df.format(getUntilDate()) }, locale));
 		}
 		return ret.toString();
 	}

@@ -37,7 +37,7 @@ public abstract class BaseCustomizableValidator implements Validator {
 		
 		// check to make sure that the target has the right number of each type of attribute
 		for (T at : attributeTypes) {
-			if (at.getMinOccurs() > 0 || at.getMaxOccurs() != null) {
+			if ((at.getMinOccurs() > 0 || at.getMaxOccurs() != null) && !at.isRetired()) {
 				int numFound = 0;
 				for (A attr : customizable.getActiveAttributes()) {
 					if (attr.getAttributeType().equals(at)) {

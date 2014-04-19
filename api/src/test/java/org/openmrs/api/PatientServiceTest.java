@@ -3253,8 +3253,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.mergePatients(preferredPatient, nonPreferredPatient);
 		Set<PersonName> names = preferredPatient.getNames();
 		
-		assertThat(names, containsFullName("President John Fitzgerald Kennedy Esq."));
-		assertThat(names, containsFullName("John Fitzgerald Kennedy"));
+		if ((PersonName.getFormat()).equals(OpenmrsConstants.PERSON_NAME_FORMAT_LONG))
+			assertThat(names, containsFullName("President John Fitzgerald Kennedy Esq."));
+		else
+			assertThat(names, containsFullName("John Fitzgerald Kennedy"));
 		
 	}
 	
