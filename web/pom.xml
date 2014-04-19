@@ -143,8 +143,8 @@
                   <exclude>**/test/*</exclude>
                </excludes>
 		<systemPropertyVariables>
-			<java.awt.headless>true</java.awt.headless>
-		</systemPropertyVariables>
+                    <java.awt.headless>true</java.awt.headless>
+                </systemPropertyVariables>
             </configuration>
          </plugin>
          <plugin>
