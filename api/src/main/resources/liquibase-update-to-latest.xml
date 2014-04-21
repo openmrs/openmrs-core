@@ -6440,8 +6440,8 @@
     <!-- If the order_type table has already been updated(has the new columns added in 1.10),
         assume the admin has set up things properly, otherwise they should have exactly one order type
         row which MUST be for drug orders for the scripts to auto update the table for them -->
-    <changeSet id="201404091111" author="wyclif">
-        <preConditions onFail="HALT" onFailMessage="Cannot update order_type table, please use the 1.10 upgrade documentation to modify the order_type table before upgrading">
+    <changeSet id="201404091110" author="wyclif">
+        <preConditions onFail="HALT" onFailMessage="Cannot update order_type table, please see the 1.10 release notes for how to modify the order_type table before upgrading">
             <or>
                 <and>
                     <columnExists tableName="order_type" columnName="java_class_name" />
