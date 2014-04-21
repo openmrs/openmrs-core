@@ -35,7 +35,6 @@ import java.util.List;
 /**
  * Contains the tests for the {@link PatientDataUnvoidHandler}
  */
-@Ignore
 public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
