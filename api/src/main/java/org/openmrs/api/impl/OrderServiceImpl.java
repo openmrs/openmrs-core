@@ -15,6 +15,7 @@ package org.openmrs.api.impl;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -767,15 +768,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public OrderType getOrderTypeByConcept(Concept concept) {
 		return Context.getOrderService().getOrderTypeByConceptClass(concept.getConceptClass());
 	}
-
-    /**
-     * @see org.openmrs.api.OrderService#getDrugRoutes()
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<Concept> getDrugRoutes(){
-        String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.DRUG_ROUTE_CONCEPT_UUID);
-        return Context.getConceptService().getConceptByUuid(conceptUuid).getSetMembers();
-    }
-
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugRoutes()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Concept> getDrugRoutes() {
+		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.DRUG_ROUTE_CONCEPT_UUID);
+		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);
+		if (concept != null && concept.isSet()) {
+			return concept.getSetMembers();
+		}
+		return Collections.EMPTY_LIST;
+	}
+	
 }
