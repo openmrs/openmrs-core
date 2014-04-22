@@ -92,6 +92,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param order The Order to remove from the system
 	 * @throws APIException
+	 * @should delete order from the database
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDERS)
 	public void purgeOrder(Order order) throws APIException;
@@ -107,9 +108,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param cascade
 	 * @throws APIException
 	 * @since 1.9.4
-	 * @should delete order
-	 * @should delete order when cascade is false
-	 * @should delete order when cascade is true and also delete any Obs that references it
+	 * @should delete any Obs associated to the order when cascade is true
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDERS)
 	public void purgeOrder(Order order, boolean cascade) throws APIException;
@@ -413,12 +412,12 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
 	 * @since 1.10
-	 * @should populate correct attributes on the discontinue and discontinued orders
-	 * @should fail for a discontinue order
+	 * @should set correct attributes on the discontinue and discontinued orders
+	 * @should not pass for a discontinuation order
 	 * @should fail for a stopped order
 	 * @should fail for an expired order
 	 * @should reject a future discontinueDate
-	 * @should fail for a discontinuation order
+	 * @should not pass for a discontinued order
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
@@ -437,9 +436,10 @@ public interface OrderService extends OpenmrsService {
 	 *             <code>Order.Action.DISCONTINUE</code>
 	 * @since 1.10
 	 * @should populate correct attributes on the discontinue and discontinued orders
-	 * @should fail for a discontinue order
+	 * @should fail for a discontinuation order
 	 * @should fail if discontinueDate is in the future
 	 * @should fail for a voided order
+	 * @should fail for a discontinued order
 	 */
 	@Authorized(PrivilegeConstants.ADD_ORDERS)
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
@@ -547,7 +547,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param orderType the order type to purge
 	 * @since 1.10
-	 * @should delete given order type
+	 * @should delete order type if not in use
 	 * @should not allow deleting an order type that is in use
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
@@ -560,7 +560,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param reason the retire reason
 	 * @return the retired order type
 	 * @since 1.10
-	 * @should retire given order type
+	 * @should retire order type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType retireOrderType(OrderType orderType, String reason);
@@ -571,7 +571,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderType the order type to unretire
 	 * @return the unretired order type
 	 * @since 1.10
-	 * @should unretire given order type
+	 * @should unretire order type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType unretireOrderType(OrderType orderType);

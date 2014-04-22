@@ -113,7 +113,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = APIException.class)
 	@Verifies(value = "should not save order if order doesnt validate", method = "saveOrder(Order)")
 	public void saveOrder_shouldNotSaveOrderIfOrderDoesntValidate() throws Exception {
-		OrderService orderService = Context.getOrderService();
 		Order order = new Order();
 		order.setPatient(null);
 		order.setOrderer(null);
@@ -127,7 +126,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should find object given valid uuid", method = "getOrderByUuid(String)")
 	public void getOrderByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "921de0a3-05c4-444a-be03-e01b4c4b9142";
-		Order order = Context.getOrderService().getOrderByUuid(uuid);
+		Order order = orderService.getOrderByUuid(uuid);
 		Assert.assertEquals(1, (int) order.getOrderId());
 	}
 	
@@ -137,38 +136,53 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderByUuid(String)")
 	public void getOrderByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
-		Assert.assertNull(Context.getOrderService().getOrderByUuid("some invalid uuid"));
+		Assert.assertNull(orderService.getOrderByUuid("some invalid uuid"));
 	}
 	
+	/**
+	 * @verifies delete any Obs associated to the order when cascade is true
+	 * @see OrderService#purgeOrder(org.openmrs.Order, boolean)
+	 */
 	@Test
-	public void purgeOrder_shouldDeleteObsThatReference() throws Exception {
+	public void purgeOrder_shouldDeleteAnyObsAssociatedToTheOrderWhenCascadeIsTrue() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-deleteObsThatReference.xml");
 		final String ordUuid = "0c96f25c-4949-4f72-9931-d808fbcdb612";
 		final String obsUuid = "be3a4d7a-f9ab-47bb-aaad-bc0b452fcda4";
 		ObsService os = Context.getObsService();
-		OrderService service = Context.getOrderService();
 		
 		Obs obs = os.getObsByUuid(obsUuid);
 		Assert.assertNotNull(obs);
 		
-		Order order = service.getOrderByUuid(ordUuid);
+		Order order = orderService.getOrderByUuid(ordUuid);
 		Assert.assertNotNull(order);
 		
 		//sanity check to ensure that the obs and order are actually related
 		Assert.assertEquals(order, obs.getOrder());
 		
 		//Ensure that passing false does not delete the related obs
-		service.purgeOrder(order, false);
+		orderService.purgeOrder(order, false);
 		Assert.assertNotNull(os.getObsByUuid(obsUuid));
 		
-		service.purgeOrder(order, true);
+		orderService.purgeOrder(order, true);
 		
 		//Ensure that actually the order got purged
-		Assert.assertNull(service.getOrderByUuid(ordUuid));
+		Assert.assertNull(orderService.getOrderByUuid(ordUuid));
 		
 		//Ensure that the related obs got deleted
 		Assert.assertNull(os.getObsByUuid(obsUuid));
-		
+	}
+	
+	/**
+	 * @verifies delete order from the database
+	 * @see OrderService#purgeOrder(org.openmrs.Order, boolean)
+	 */
+	@Test
+	public void purgeOrder_shouldDeleteOrderFromTheDatabase() throws Exception {
+		final String uuid = "9c21e407-697b-11e3-bd76-0800271c1b75";
+		Order order = orderService.getOrderByUuid(uuid);
+		assertNotNull(order);
+		orderService.purgeOrder(order);
+		assertNull(orderService.getOrderByUuid(uuid));
 	}
 	
 	/**
@@ -190,7 +204,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 					try {
 						Context.openSession();
 						Context.addProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
-						uniqueOrderNumbers.add(((OrderNumberGenerator) Context.getOrderService()).getNewOrderNumber(null));
+						uniqueOrderNumbers.add(((OrderNumberGenerator) orderService).getNewOrderNumber(null));
 					}
 					finally {
 						Context.removeProxyPrivilege(PrivilegeConstants.ADD_ORDERS);
@@ -215,7 +229,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should find object given valid order number", method = "getOrderByOrderNumber(String)")
 	public void getOrderByOrderNumber_shouldFindObjectGivenValidOrderNumber() throws Exception {
-		Order order = Context.getOrderService().getOrderByOrderNumber("1");
+		Order order = orderService.getOrderByOrderNumber("1");
 		Assert.assertNotNull(order);
 		Assert.assertEquals(1, (int) order.getOrderId());
 	}
@@ -226,7 +240,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return null if no object found with given order number", method = "getOrderByOrderNumber(String)")
 	public void getOrderByOrderNumber_shouldReturnNullIfNoObjectFoundWithGivenOrderNumber() throws Exception {
-		Assert.assertNull(Context.getOrderService().getOrderByOrderNumber("some invalid order number"));
+		Assert.assertNull(orderService.getOrderByOrderNumber("some invalid order number"));
 	}
 	
 	/**
@@ -238,7 +252,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//We should have two orders with this concept.
 		Concept concept = Context.getConceptService().getConcept(88);
 		Patient patient = Context.getPatientService().getPatient(2);
-		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
+		List<Order> orders = orderService.getOrderHistoryByConcept(patient, concept);
 		
 		//They must be sorted by startDate starting with the latest
 		Assert.assertEquals(4, orders.size());
@@ -248,7 +262,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(4, orders.get(3).getOrderId().intValue());
 		
 		concept = Context.getConceptService().getConcept(792);
-		orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
+		orders = orderService.getOrderHistoryByConcept(patient, concept);
 		
 		//They must be sorted by startDate starting with the latest
 		Assert.assertEquals(4, orders.size());
@@ -266,7 +280,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderHistoryByConcept_shouldReturnEmptyListForConceptWithoutOrders() throws Exception {
 		Concept concept = Context.getConceptService().getConcept(21);
 		Patient patient = Context.getPatientService().getPatient(2);
-		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
+		List<Order> orders = orderService.getOrderHistoryByConcept(patient, concept);
 		Assert.assertEquals(0, orders.size());
 	}
 	
@@ -294,7 +308,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return all order history for given order number", method = "getOrderHistoryByOrderNumber(String)")
 	public void getOrderHistoryByOrderNumber_shouldReturnAllOrderHistoryForGivenOrderNumber() throws Exception {
-		List<Order> orders = Context.getOrderService().getOrderHistoryByOrderNumber("111");
+		List<Order> orders = orderService.getOrderHistoryByOrderNumber("111");
 		assertEquals(2, orders.size());
 		assertEquals(111, orders.get(0).getOrderId().intValue());
 		assertEquals(1, orders.get(1).getOrderId().intValue());
@@ -306,7 +320,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderFrequency_shouldReturnTheOrderFrequencyThatMatchesTheSpecifiedId() throws Exception {
-		assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", Context.getOrderService().getOrderFrequency(1).getUuid());
+		assertEquals("28090760-7c38-11e3-baa7-0800200c9a66", orderService.getOrderFrequency(1).getUuid());
 	}
 	
 	/**
@@ -315,8 +329,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderFrequencyByUuid_shouldReturnTheOrderFrequencyThatMatchesTheSpecifiedUuid() throws Exception {
-		assertEquals(1, Context.getOrderService().getOrderFrequencyByUuid("28090760-7c38-11e3-baa7-0800200c9a66")
-		        .getOrderFrequencyId().intValue());
+		assertEquals(1, orderService.getOrderFrequencyByUuid("28090760-7c38-11e3-baa7-0800200c9a66").getOrderFrequencyId()
+		        .intValue());
+	}
+	
+	/**
+	 * @verifies return the order frequency that matches the specified concept
+	 * @see OrderService#getOrderFrequencyByConcept(org.openmrs.Concept)
+	 */
+	@Test
+	public void getOrderFrequencyByConcept_shouldReturnTheOrderFrequencyThatMatchesTheSpecifiedConcept() throws Exception {
+		Concept concept = conceptService.getConcept(4);
+		assertEquals(3, orderService.getOrderFrequencyByConcept(concept).getOrderFrequencyId().intValue());
 	}
 	
 	/**
@@ -326,7 +350,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderFrequencies_shouldReturnOnlyNonRetiredOrderFrequenciesIfIncludeRetiredIsSetToFalse()
 	        throws Exception {
-		List<OrderFrequency> orderFrequencies = Context.getOrderService().getOrderFrequencies(false);
+		List<OrderFrequency> orderFrequencies = orderService.getOrderFrequencies(false);
 		assertEquals(2, orderFrequencies.size());
 		assertTrue(containsId(orderFrequencies, 1));
 		assertTrue(containsId(orderFrequencies, 2));
@@ -338,7 +362,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderFrequencies_shouldReturnAllTheOrderFrequenciesIfIncludeRetiredIsSetToTrue() throws Exception {
-		List<OrderFrequency> orderFrequencies = Context.getOrderService().getOrderFrequencies(true);
+		List<OrderFrequency> orderFrequencies = orderService.getOrderFrequencies(true);
 		assertEquals(3, orderFrequencies.size());
 		assertTrue(containsId(orderFrequencies, 1));
 		assertTrue(containsId(orderFrequencies, 2));
@@ -524,11 +548,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
+	 * @verifies populate correct attributes on the discontinue and discontinued orders
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test
-	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, String, Date, Provider, Encounter)")
-	public void discontinueOrderWithNonCodedReason_shouldPopulateCorrectAttributesOnBothOrders() throws Exception {
+	public void discontinueOrder_shouldPopulateCorrectAttributesOnTheDiscontinueAndDiscontinuedOrders() throws Exception {
 		Order order = orderService.getOrderByOrderNumber("111");
 		Encounter encounter = encounterService.getEncounter(3);
 		Provider orderer = providerService.getProvider(1);
@@ -548,11 +573,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
+	 * @verifies set correct attributes on the discontinue and discontinued orders
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test
-	@Verifies(value = "populate correct attributes on the discontinue and discontinued orders", method = "discontinueOrder(Order, Concept, Date, Provider, Encounter)")
-	public void discontinueOrderWithConcept_shouldPopulateCorrectAttributesOnBothOrders() throws Exception {
+	public void discontinueOrder_shouldSetCorrectAttributesOnTheDiscontinueAndDiscontinuedOrders() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
 		
 		Order order = orderService.getOrderByOrderNumber("111");
@@ -575,39 +601,70 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
 	@Test
-	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, String, Date, Provider, Encounter)")
-	public void discontinueOrderWithNonCodedReason_shouldFailForADiscontinueOrder() throws Exception {
+	@Verifies(value = "should fail for a discontinuation order", method = "discontinueOrder(Order, String, Date, Provider, Encounter)")
+	public void discontinueOrder_shouldFailForADiscontinuationOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
-		OrderService orderService = Context.getOrderService();
-		Order discontinueOrder = orderService.getOrder(26);
+		Order discontinuationOrder = orderService.getOrder(26);
+		assertEquals(Action.DISCONTINUE, discontinuationOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued.");
-		orderService.discontinueOrder(discontinueOrder, "Test if I can discontinue this", null, null, encounter);
+		orderService.discontinueOrder(discontinuationOrder, "Test if I can discontinue this", null, null, encounter);
 	}
 	
 	/**
 	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
 	 */
 	@Test
-	@Verifies(value = "fail for a discontinue order", method = "discontinueOrder(Order, Concept, Date, Provider, Encounter)")
-	public void discontinueOrderWithConcept_shouldFailForADiscontinueOrder() throws Exception {
+	@Verifies(value = "should not pass for a discontinuation order", method = "discontinueOrder(Order, Concept, Date, Provider, Encounter)")
+	public void discontinueOrder_shouldNotPassForADiscontinuationOrder() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinuedOrder.xml");
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
-		OrderService orderService = Context.getOrderService();
-		Order discontinueOrder = orderService.getOrder(26);
-		assertEquals(Action.DISCONTINUE, discontinueOrder.getAction());
+		Order discontinuationOrder = orderService.getOrder(26);
+		assertEquals(Action.DISCONTINUE, discontinuationOrder.getAction());
 		Encounter encounter = encounterService.getEncounter(3);
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("An order with action " + Action.DISCONTINUE + " cannot be discontinued.");
-		orderService.discontinueOrder(discontinueOrder, (Concept) null, null, null, encounter);
+		orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter);
+	}
+	
+	/**
+	 * @verifies fail for a discontinued order
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
+	 */
+	@Test
+	public void discontinueOrder_shouldFailForADiscontinuedOrder() throws Exception {
+		Order discontinuationOrder = orderService.getOrder(2);
+		assertFalse(discontinuationOrder.isCurrent());
+		assertNotNull(discontinuationOrder.getDateStopped());
+		Encounter encounter = encounterService.getEncounter(3);
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
+		orderService.discontinueOrder(discontinuationOrder, "some reason", null, null, encounter);
+	}
+	
+	/**
+	 * @verifies not pass for a discontinued order
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
+	 *      org.openmrs.Provider, org.openmrs.Encounter)
+	 */
+	@Test
+	public void discontinueOrder_shouldNotPassForADiscontinuedOrder() throws Exception {
+		Order discontinuationOrder = orderService.getOrder(2);
+		assertFalse(discontinuationOrder.isCurrent());
+		assertNotNull(discontinuationOrder.getDateStopped());
+		Encounter encounter = encounterService.getEncounter(3);
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
+		orderService.discontinueOrder(discontinuationOrder, (Concept) null, null, null, encounter);
 	}
 	
 	/**
 	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
 	 */
 	@Test
-	@Verifies(value = "discontinue existing active order if new order being saved with action to discontinue", method = "saveOrder(Order)")
+	@Verifies(value = "should discontinue existing active order if new order being saved with action to discontinue", method = "saveOrder(Order)")
 	public void saveOrder_shouldDiscontinueExistingActiveOrderIfNewOrderBeingSavedWithActionToDiscontinue() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setAction(Order.Action.DISCONTINUE);
@@ -645,7 +702,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
 	 */
 	@Test
-	@Verifies(value = "discontinue previousOrder if it is not already discontinued", method = "saveOrder(Order)")
+	@Verifies(value = "should discontinue previousOrder if it is not already discontinued", method = "saveOrder(Order)")
 	public void saveOrder_shouldDiscontinuePreviousOrderIfItIsNotAlreadyDiscontinued() throws Exception {
 		//We are trying to discontinue order id 111 in standardTestDataset.xml
 		DrugOrder order = new DrugOrder();
@@ -680,7 +737,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
 	 */
 	@Test
-	@Verifies(value = "fail if concept in previous order does not match this concept", method = "saveOrder(Order)")
+	@Verifies(value = "should fail if concept in previous order does not match this concept", method = "saveOrder(Order)")
 	public void saveOrder_shouldFailIfConceptInPreviousOrderDoesNotMatchThisConcept() throws Exception {
 		Order previousOrder = orderService.getOrder(7);
 		assertTrue(OrderUtilTest.isActiveOrder(previousOrder, null));
@@ -1106,58 +1163,58 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should retire given order frequency", method = "retireOrderFrequency(orderFrequency, String)")
 	public void retireOrderFrequency_shouldRetireGivenOrderFrequency() throws Exception {
-		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
 		assertNotNull(orderFrequency);
 		Assert.assertFalse(orderFrequency.isRetired());
 		Assert.assertNull(orderFrequency.getRetireReason());
 		Assert.assertNull(orderFrequency.getDateRetired());
 		
-		Context.getOrderService().retireOrderFrequency(orderFrequency, "retire reason");
+		orderService.retireOrderFrequency(orderFrequency, "retire reason");
 		
-		orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		orderFrequency = orderService.getOrderFrequency(1);
 		assertNotNull(orderFrequency);
 		assertTrue(orderFrequency.isRetired());
 		assertEquals("retire reason", orderFrequency.getRetireReason());
 		assertNotNull(orderFrequency.getDateRetired());
 		
 		//Should not change the number of order frequencies.
-		assertEquals(3, Context.getOrderService().getOrderFrequencies(true).size());
+		assertEquals(3, orderService.getOrderFrequencies(true).size());
 	}
 	
 	@Test
 	@Verifies(value = "should unretire given order frequency", method = "unretireOrderFrequency(OrderFrequency)")
 	public void unretireOrderFrequency_shouldUnretireGivenOrderFrequency() throws Exception {
-		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(3);
+		OrderFrequency orderFrequency = orderService.getOrderFrequency(3);
 		assertNotNull(orderFrequency);
 		assertTrue(orderFrequency.isRetired());
 		assertEquals("Some Retire Reason", orderFrequency.getRetireReason());
 		assertNotNull(orderFrequency.getDateRetired());
 		
-		Context.getOrderService().unretireOrderFrequency(orderFrequency);
+		orderService.unretireOrderFrequency(orderFrequency);
 		
-		orderFrequency = Context.getOrderService().getOrderFrequency(3);
+		orderFrequency = orderService.getOrderFrequency(3);
 		assertNotNull(orderFrequency);
 		assertFalse(orderFrequency.isRetired());
 		assertNull(orderFrequency.getRetireReason());
 		assertNull(orderFrequency.getDateRetired());
 		
 		//Should not change the number of order frequencies.
-		assertEquals(3, Context.getOrderService().getOrderFrequencies(true).size());
+		assertEquals(3, orderService.getOrderFrequencies(true).size());
 	}
 	
 	@Test
 	@Verifies(value = "should delete given order frequency", method = "purgeOrderFrequency(OrderFrequency)")
 	public void purgeOrderFrequency_shouldDeleteGivenOrderFrequency() throws Exception {
-		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(3);
+		OrderFrequency orderFrequency = orderService.getOrderFrequency(3);
 		assertNotNull(orderFrequency);
 		
-		Context.getOrderService().purgeOrderFrequency(orderFrequency);
+		orderService.purgeOrderFrequency(orderFrequency);
 		
-		orderFrequency = Context.getOrderService().getOrderFrequency(3);
+		orderFrequency = orderService.getOrderFrequency(3);
 		Assert.assertNull(orderFrequency);
 		
 		//Should reduce the existing number of order frequencies.
-		assertEquals(2, Context.getOrderService().getOrderFrequencies(true).size());
+		assertEquals(2, orderService.getOrderFrequencies(true).size());
 	}
 	
 	/**
@@ -1170,19 +1227,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("new name", Context.getLocale()));
 		concept.setConceptClass(conceptService.getConceptClassByName("Frequency"));
 		concept = conceptService.saveConcept(concept);
-		OrderService os = Context.getOrderService();
-		Integer originalSize = os.getOrderFrequencies(true).size();
+		Integer originalSize = orderService.getOrderFrequencies(true).size();
 		OrderFrequency orderFrequency = new OrderFrequency();
 		orderFrequency.setConcept(concept);
 		orderFrequency.setFrequencyPerDay(2d);
 		
-		orderFrequency = os.saveOrderFrequency(orderFrequency);
+		orderFrequency = orderService.saveOrderFrequency(orderFrequency);
 		
 		assertNotNull(orderFrequency.getId());
 		assertNotNull(orderFrequency.getUuid());
 		assertNotNull(orderFrequency.getCreator());
 		assertNotNull(orderFrequency.getDateCreated());
-		assertEquals(originalSize + 1, os.getOrderFrequencies(true).size());
+		assertEquals(originalSize + 1, orderService.getOrderFrequencies(true).size());
 	}
 	
 	/**
@@ -1192,11 +1248,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should edit an existing order frequency that is not in use", method = "saveOrderFrequency(OrderFrequency)")
 	public void saveOrderFrequency_shouldEditAnExistingOrderFrequencyThatIsNotInUse() throws Exception {
 		executeDataSet(OTHER_ORDER_FREQUENCIES_XML);
-		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(100);
+		OrderFrequency orderFrequency = orderService.getOrderFrequency(100);
 		assertNotNull(orderFrequency);
 		
 		orderFrequency.setFrequencyPerDay(4d);
-		Context.getOrderService().saveOrderFrequency(orderFrequency);
+		orderService.saveOrderFrequency(orderFrequency);
 	}
 	
 	/**
@@ -1205,13 +1261,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not allow editing an existing order frequency that is in use", method = "saveOrderFrequency(OrderFrequency)")
 	public void saveOrderFrequency_shouldNotAllowEditingAnExistingOrderFrequencyThatIsInUse() throws Exception {
-		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
 		assertNotNull(orderFrequency);
 		
 		orderFrequency.setFrequencyPerDay(4d);
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("This order frequency cannot be edited because it is already in use");
-		Context.getOrderService().saveOrderFrequency(orderFrequency);
+		orderService.saveOrderFrequency(orderFrequency);
 	}
 	
 	/**
@@ -1220,12 +1276,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not allow deleting an order frequency that is in use", method = "purgeOrderFrequency(OrderFrequency)")
 	public void purgeOrderFrequency_shouldNotAllowDeletingAnOrderFrequencyThatIsInUse() throws Exception {
-		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(1);
+		OrderFrequency orderFrequency = orderService.getOrderFrequency(1);
 		assertNotNull(orderFrequency);
 		
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("This order frequency cannot be deleted because it is already in use");
-		Context.getOrderService().purgeOrderFrequency(orderFrequency);
+		orderService.purgeOrderFrequency(orderFrequency);
 	}
 	
 	@Test
@@ -1304,8 +1360,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderType_shouldFindOrderTypeObjectGivenValidId() throws Exception {
-		OrderType orderType = Context.getOrderService().getOrderType(1);
-		assertEquals("Drug order", orderType.getName());
+		assertEquals("Drug order", orderService.getOrderType(1).getName());
 	}
 	
 	/**
@@ -1314,7 +1369,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderType_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenId() throws Exception {
-		OrderType orderType = Context.getOrderService().getOrderType(1000);
+		OrderType orderType = orderService.getOrderType(1000);
 		assertNull(orderType);
 	}
 	
@@ -1324,7 +1379,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypeByUuid_shouldFindOrderTypeObjectGivenValidUuid() throws Exception {
-		OrderType orderType = Context.getOrderService().getOrderTypeByUuid("2ca568f3-a64a-11e3-9aeb-50e549534c5e");
+		OrderType orderType = orderService.getOrderTypeByUuid("2ca568f3-a64a-11e3-9aeb-50e549534c5e");
 		assertEquals("Drug order", orderType.getName());
 	}
 	
@@ -1334,8 +1389,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypeByUuid_shouldReturnNullIfNoOrderTypeObjectFoundWithGivenUuid() throws Exception {
-		OrderType orderType = Context.getOrderService().getOrderTypeByUuid("some random uuid");
-		assertNull(orderType);
+		assertNull(orderService.getOrderTypeByUuid("some random uuid"));
 	}
 	
 	/**
@@ -1362,7 +1416,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypeByName_shouldReturnTheOrderTypeThatMatchesTheSpecifiedName() throws Exception {
-		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		OrderType orderType = orderService.getOrderTypeByName("Drug order");
 		assertEquals("2ca568f3-a64a-11e3-9aeb-50e549534c5e", orderType.getUuid());
 	}
 	
@@ -1531,9 +1585,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#saveOrderType(org.openmrs.OrderType)}
 	 */
 	@Test
-	@Verifies(value = "should save order type", method = "saveOrderType(org.openmrs.OrderType)")
-	public void saveOrderType_shouldAddNewOrderTypeToTheDatabase() {
-		OrderService orderService = Context.getOrderService();
+	@Verifies(value = "should add a new order type to the database", method = "saveOrderType(org.openmrs.OrderType)")
+	public void saveOrderType_shouldAddANewOrderTypeToTheDatabase() {
 		int orderTypeCount = orderService.getOrderTypes(true).size();
 		OrderType orderType = new OrderType();
 		orderType.setName("New Order");
@@ -1548,25 +1601,42 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#purgeOrderType(org.openmrs.OrderType)}
+	 * @verifies edit an existing order type
+	 * @see OrderService#saveOrderType(org.openmrs.OrderType)
 	 */
 	@Test
-	@Verifies(value = "should purge order type", method = "purgeOrderType(org.openmrs.OrderType)")
-	public void purgeOrderType_shouldPurgeOrderTypeIfNotUse() {
-		OrderService orderService = Context.getOrderService();
-		OrderType orderType = orderService.getOrderType(13);
-		assertNotNull(orderType);
-		orderService.purgeOrderType(orderType);
-		assertNull(orderService.getOrderType(13));
+	public void saveOrderType_shouldEditAnExistingOrderType() throws Exception {
+		OrderType orderType = orderService.getOrderType(1);
+		assertNull(orderType.getDateChanged());
+		assertNull(orderType.getChangedBy());
+		final String newDescription = "new";
+		orderType.setDescription(newDescription);
+		
+		orderService.saveOrderType(orderType);
+		Context.flushSession();
+		assertNotNull(orderType.getDateChanged());
+		assertNotNull(orderType.getChangedBy());
 	}
 	
 	/**
 	 * @see {@link OrderService#purgeOrderType(org.openmrs.OrderType)}
 	 */
 	@Test
-	@Verifies(value = "should purge order type", method = "purgeOrderType(org.openmrs.OrderType)")
-	public void purgeOrderType_shouldNotPurgeOrderTypeIfUse() {
-		OrderService orderService = Context.getOrderService();
+	@Verifies(value = "should delete order type if not in use", method = "purgeOrderType(org.openmrs.OrderType)")
+	public void purgeOrderType_shouldDeleteOrderTypeIfNotInUse() {
+		final Integer id = 13;
+		OrderType orderType = orderService.getOrderType(id);
+		assertNotNull(orderType);
+		orderService.purgeOrderType(orderType);
+		assertNull(orderService.getOrderType(id));
+	}
+	
+	/**
+	 * @see {@link OrderService#purgeOrderType(org.openmrs.OrderType)}
+	 */
+	@Test
+	@Verifies(value = "should not allow deleting an order type that is in use", method = "purgeOrderType(org.openmrs.OrderType)")
+	public void purgeOrderType_shouldNotAllowDeletingAnOrderTypeThatIsInUse() {
 		OrderType orderType = orderService.getOrderType(1);
 		assertNotNull(orderType);
 		expectedException.expect(APIException.class);
@@ -1579,8 +1649,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should retire order type", method = "retireOrderType(org.openmrs.OrderType, String)")
-	public void retireOrderType_shouldRetiredTheGivenUnretiredOrderType() {
-		OrderService orderService = Context.getOrderService();
+	public void retireOrderType_shouldRetireOrderType() {
 		OrderType orderType = orderService.getOrderType(15);
 		assertFalse(orderType.getRetired());
 		assertNull(orderType.getRetiredBy());
@@ -1599,8 +1668,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should unretire order type", method = "unretireOrderType(org.openmrs.OrderType)")
-	public void unretireOrderType_shouldUnretireTheGivenUnretiredOrderType() {
-		OrderService orderService = Context.getOrderService();
+	public void unretireOrderType_shouldUnretireOrderType() {
 		OrderType orderType = orderService.getOrderType(16);
 		assertTrue(orderType.getRetired());
 		assertNotNull(orderType.getRetiredBy());
@@ -1620,7 +1688,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return all order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
 	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithRetiredOrderTypes() {
-		OrderService orderService = Context.getOrderService();
 		List<OrderType> orderTypeList = orderService.getSubtypes(orderService.getOrderType(2), true);
 		assertEquals(7, orderTypeList.size());
 	}
@@ -1631,7 +1698,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return unretired order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
 	public void getOrderSubTypes_shouldGetAllSubOrderTypesWithoutRetiredOrderTypes() {
-		OrderService orderService = Context.getOrderService();
 		List<OrderType> orderTypeList = orderService.getSubtypes(orderService.getOrderType(2), false);
 		assertEquals(6, orderTypeList.size());
 	}
