@@ -6488,8 +6488,8 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="201404091130" author="wyclif">
-        <preConditions>
+    <changeSet id="201404101130" author="wyclif">
+        <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
                 SELECT COUNT(*) FROM order_type
                 WHERE uuid = '131168f4-15f5-102d-96e4-000c29c2a5d7' AND java_class_name IS NULL
@@ -6606,8 +6606,8 @@
         </update>
     </changeSet>
 
-    <changeSet id="201311041514-TRUNK-4122" author="wyclif">
-        <preConditions>
+    <changeSet id="201311041515-TRUNK-4122" author="wyclif">
+        <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="order_number" />
         </preConditions>
         <comment>Making orders.order_number not nullable</comment>

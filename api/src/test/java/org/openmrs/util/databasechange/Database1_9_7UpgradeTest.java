@@ -292,6 +292,34 @@ public class Database1_9_7UpgradeTest {
 		upgradeTestUtil.upgrade();
 	}
 	
+	@Test
+	public void shouldFailIfThereAreAnyOrderTypesInTheDatabaseOtherThanDrugOrderTypeAndNoNewColumns() throws IOException,
+	        SQLException {
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-otherOrderTypes.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		
+		expectedException.expect(IOException.class);
+		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201404091110::wyclif";
+		expectedException.expectMessage(errorMsgSubString);
+		upgradeTestUtil.upgrade();
+	}
+	
+	@Test
+	public void shouldPassIfThereAreAnyOrderTypesInTheDatabaseOtherThanDrugOrderTypeAndTheNewColumnsExist()
+	        throws IOException, SQLException {
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-otherOrderTypes.xml");
+		upgradeTestUtil.getConnection().createStatement().executeUpdate(
+		    "alter table `order_type` add java_class_name varchar(255) default 'org.openmrs.Order'");
+		upgradeTestUtil.getConnection().createStatement().executeUpdate("alter table `order_type` add parent int(11)");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		
+		upgradeTestUtil.upgrade();
+	}
+	
 	private Map<String, String> row(String... values) {
 		Map<String, String> row = new HashMap<String, String>();
 		for (int i = 0; i < values.length; i += 2) {
