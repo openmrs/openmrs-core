@@ -110,12 +110,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	@Verifies(value = "should not save order if order doesnt validate", method = "saveOrder(Order)")
 	public void saveOrder_shouldNotSaveOrderIfOrderDoesntValidate() throws Exception {
 		Order order = new Order();
 		order.setPatient(null);
 		order.setOrderer(null);
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("failed to validate with reason:");
 		orderService.saveOrder(order, null);
 	}
 	
@@ -288,8 +290,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies reject a null concept
 	 * @see OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getOrderHistoryByConcept_shouldRejectANullConcept() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("patient and concept are required");
 		orderService.getOrderHistoryByConcept(new Patient(), null);
 	}
 	
@@ -297,8 +301,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies reject a null patient
 	 * @see OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getOrderHistoryByConcept_shouldRejectANullPatient() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("patient and concept are required");
 		orderService.getOrderHistoryByConcept(null, new Concept());
 	}
 	
@@ -440,8 +446,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#getActiveOrders(org.openmrs.Patient, org.openmrs.OrderType,
 	 *      org.openmrs.CareSetting, java.util.Date)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void getActiveOrders_shouldFailIfPatientIsNull() throws Exception {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Patient is required when fetching active orders");
 		orderService.getActiveOrders(null, null, orderService.getCareSetting(1), null);
 	}
 	
@@ -760,7 +768,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
 	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void discontinueOrder_shouldRejectAFutureDiscontinueDate() throws Exception {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR_OF_DAY, 1);
@@ -768,6 +776,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		CareSetting careSetting = orderService.getCareSetting(1);
 		Order orderToDiscontinue = orderService.getActiveOrders(patient, null, careSetting, null).get(0);
 		Encounter encounter = encounterService.getEncounter(3);
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Discontinue date cannot be in the future");
 		orderService.discontinueOrder(orderToDiscontinue, new Concept(), cal.getTime(), null, encounter);
 	}
 	
@@ -776,13 +786,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
 	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void discontinueOrder_shouldFailIfDiscontinueDateIsInTheFuture() throws Exception {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Order orderToDiscontinue = orderService.getActiveOrders(Context.getPatientService().getPatient(2), null,
 		    orderService.getCareSetting(1), null).get(0);
 		Encounter encounter = encounterService.getEncounter(3);
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Discontinue date cannot be in the future");
 		orderService.discontinueOrder(orderToDiscontinue, "Testing", cal.getTime(), null, encounter);
 	}
 	
@@ -853,11 +865,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
 	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void discontinueOrder_shouldFailForAStoppedOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(1);
 		Encounter encounter = encounterService.getEncounter(3);
 		assertNotNull(orderToDiscontinue.getDateStopped());
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
 		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter);
 	}
 	
@@ -866,11 +880,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date,
 	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void discontinueOrder_shouldFailForAVoidedOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(8);
 		Encounter encounter = encounterService.getEncounter(3);
 		assertTrue(orderToDiscontinue.isVoided());
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
 		orderService.discontinueOrder(orderToDiscontinue, "testing", null, null, encounter);
 	}
 	
@@ -879,12 +895,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
 	 *      org.openmrs.Provider, org.openmrs.Encounter)
 	 */
-	@Test(expected = APIException.class)
+	@Test
 	public void discontinueOrder_shouldFailForAnExpiredOrder() throws Exception {
 		Order orderToDiscontinue = orderService.getOrder(6);
 		Encounter encounter = encounterService.getEncounter(3);
 		assertNotNull(orderToDiscontinue.getAutoExpireDate());
 		assertTrue(orderToDiscontinue.getAutoExpireDate().before(new Date()));
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot discontinue an order that is already stopped, expired or voided");
 		orderService.discontinueOrder(orderToDiscontinue, Context.getConceptService().getConcept(1), null, null, encounter);
 	}
 	

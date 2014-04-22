@@ -71,13 +71,8 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 	private Set<String> getUnMappedText(Set<String> textList, JdbcConnection connection) {
 		Set<String> unmappedText = new HashSet<String>(textList.size());
 		for (String text : textList) {
-			try {
-				if (UpgradeUtil.getConceptIdForUnits(text) != null) {
-					continue;
-				}
-			}
-			catch (Exception e) {
-				//ignore, mostly like an invalid integer value
+			if (UpgradeUtil.getConceptIdForUnits(text) != null) {
+				continue;
 			}
 			
 			unmappedText.add(text);

@@ -86,20 +86,30 @@ public class Database1_9_7UpgradeTest {
 		upgradeTestUtil.buildSessionFactory();
 	}
 	
-	@Test(expected = Exception.class)
+	@Test
 	public void shouldFailMigratingDrugOrdersIfUnitsToConceptsMappingsIsNotSet() throws IOException, SQLException {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		
+		createOrderEntryUpgradeFileWithTestData("");
+		expectedException.expect(IOException.class);
+		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101645-TRUNK-4187::wyclif";
+		expectedException.expectMessage(errorMsgSubString1);
+		String errorMsgSubString2 = "Your order entry upgrade settings file does not have mapping for mg";
+		expectedException.expectMessage(errorMsgSubString2);
 		upgradeTestUtil.upgrade();
 	}
 	
-	@Test(expected = Exception.class)
-	public void shouldFailMigratingDrugOrdersIUnitsToConceptsMappingsDoesNotPointToValidCodedDoseUnits() throws IOException,
-	        SQLException {
+	@Test
+	public void shouldFailMigratingDrugOrdersIfUnitsToConceptsMappingsDoesNotPointToValidCodedDoseUnits()
+	        throws IOException, SQLException {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=invalid");
 		
-		createOrderEntryUpgradeFileWithTestData("mg=-1\ntab(s)=-2");
-		
+		expectedException.expect(IOException.class);
+		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101645-TRUNK-4187::wyclif";
+		expectedException.expectMessage(errorMsgSubString1);
+		expectedException.expectMessage("For input string: \"invalid\"");
 		upgradeTestUtil.upgrade();
 	}
 	
