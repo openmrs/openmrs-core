@@ -6888,15 +6888,31 @@
 
     <changeSet id="201312201524-TRUNK-4138" author="wyclif">
         <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="discontinued_reason" />
             <not>
                 <sqlCheck expectedResult="0">select count(*) from orders where discontinued = true</sqlCheck>
             </not>
         </preConditions>
         <comment>
-            Clearing order.discontinued_reason and orders.discontinued_reason_non_coded columns for stopped orders
+            SETTING order.discontinued_reason to null for stopped orders
         </comment>
         <update tableName="orders">
             <column name="discontinued_reason" value="NULL" />
+            <where>discontinued = true</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="201312201525-TRUNK-4138" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="discontinued_reason_non_coded" />
+            <not>
+                <sqlCheck expectedResult="0">select count(*) from orders where discontinued = true</sqlCheck>
+            </not>
+        </preConditions>
+        <comment>
+            Setting orders.discontinued_reason_non_coded to null for stopped orders
+        </comment>
+        <update tableName="orders">
             <column name="discontinued_reason_non_coded" value="NULL" />
             <where>discontinued = true</where>
         </update>
