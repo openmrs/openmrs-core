@@ -6886,6 +6886,22 @@
         <customChange class="org.openmrs.util.databasechange.CreateDiscontinueOrders"/>
 	</changeSet>
 
+    <changeSet id="201312201524-TRUNK-4138" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">select count(*) from orders where discontinued = true</sqlCheck>
+            </not>
+        </preConditions>
+        <comment>
+            Clearing order.discontinued_reason and orders.discontinued_reason_non_coded columns for stopped orders
+        </comment>
+        <update tableName="orders">
+            <column name="discontinued_reason" value="NULL" />
+            <column name="discontinued_reason_non_coded" value="NULL" />
+            <where>discontinued = true</where>
+        </update>
+    </changeSet>
+
 	<changeSet id="201312201650-TRUNK-4138" author="banka">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="discontinued"/>
@@ -7282,7 +7298,7 @@
         <addPrimaryKey tableName="order_type_class_map" columnNames="order_type_id,concept_class_id" constraintName="primary_key_for_order_type_class_map" />
     </changeSet>
 
-    <changeSet id="20140317-TRUNK-4265" author="jkondrat">
+    <changeSet id="20140318-TRUNK-4265" author="jkondrat">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug" columnName="strength"/></not>
         </preConditions>
@@ -7293,6 +7309,10 @@
                       finalColumnType="varchar(255)"
                       joinString=""
                       tableName="drug"/>
+        <update tableName="drug">
+            <column name="strength" value="NULL" />
+            <where>strength = ''</where>
+        </update>
     </changeSet>
     
     <changeSet id="20140331-1-TRUNK-4335" author="rkorytkowski">

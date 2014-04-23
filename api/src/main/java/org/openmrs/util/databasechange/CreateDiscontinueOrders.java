@@ -61,23 +61,22 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			connection.setAutoCommit(false);
 			insertStatement = connection
 			        .prepareStatement("Insert into orders(previous_order_id, concept_id, patient_id, encounter_id, "
-			                + "creator, date_created, date_stopped, discontinued_reason, discontinued_reason_non_coded, "
-			                + "uuid, order_action, orderer, order_number, order_type_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			                + "creator, date_created, discontinued_reason, discontinued_reason_non_coded, "
+			                + "uuid, order_action, orderer, order_number, order_type_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			for (DiscontinuedOrder discontinuedOrder : discontinuedOrders) {
 				insertStatement.setInt(1, discontinuedOrder.previousOrderId);
 				insertStatement.setInt(2, discontinuedOrder.conceptId);
 				insertStatement.setInt(3, discontinuedOrder.patientId);
 				setIntOrNull(insertStatement, 4, discontinuedOrder.encounterId);
-				insertStatement.setInt(5, discontinuedOrder.creator);
-				insertStatement.setDate(6, discontinuedOrder.dateCreated);
-				insertStatement.setDate(7, discontinuedOrder.dateStopped);
-				setIntOrNull(insertStatement, 8, discontinuedOrder.discontinuedReasonId);
-				insertStatement.setString(9, discontinuedOrder.discontinuedReasonNonCoded);
-				insertStatement.setString(10, UUID.randomUUID().toString());
-				insertStatement.setString(11, Order.Action.DISCONTINUE.name());
-				setIntOrNull(insertStatement, 12, discontinuedOrder.orderer);
-				insertStatement.setString(13, discontinuedOrder.orderNumber);
-				insertStatement.setInt(14, discontinuedOrder.orderTypeId);
+				insertStatement.setInt(5, discontinuedOrder.discontinuedById);
+				insertStatement.setDate(6, discontinuedOrder.dateStopped);
+				setIntOrNull(insertStatement, 7, discontinuedOrder.discontinuedReasonId);
+				insertStatement.setString(8, discontinuedOrder.discontinuedReasonNonCoded);
+				insertStatement.setString(9, UUID.randomUUID().toString());
+				insertStatement.setString(10, Order.Action.DISCONTINUE.name());
+				setIntOrNull(insertStatement, 11, discontinuedOrder.discontinuedById);
+				insertStatement.setString(12, discontinuedOrder.orderNumber);
+				insertStatement.setInt(13, discontinuedOrder.orderTypeId);
 				insertStatement.addBatch();
 				
 				if (index % batchSize == 0) {
@@ -119,18 +118,18 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 	
 	private List<DiscontinuedOrder> getDiscontinuedOrders(JdbcConnection connection) throws CustomChangeException,
 	        SQLException {
-		List<DiscontinuedOrder> dc = new ArrayList<DiscontinuedOrder>();
+		List<DiscontinuedOrder> dcOrders = new ArrayList<DiscontinuedOrder>();
 		PreparedStatement statement = null;
 		try {
 			statement = connection
-			        .prepareStatement("select order_id, concept_id, patient_id, encounter_id, date_stopped, discontinued_by, discontinued_reason, discontinued_reason_non_coded, orderer, order_type_id from orders where discontinued = ?");
+			        .prepareStatement("select order_id, concept_id, patient_id, encounter_id, date_stopped, discontinued_by, discontinued_reason, discontinued_reason_non_coded, order_type_id, date_stopped from orders where discontinued = ?");
 			statement.setBoolean(1, true);
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
-				dc.add(new DiscontinuedOrder(rs.getInt("order_id"), rs.getInt("concept_id"), rs.getInt("patient_id"), rs
-				        .getInt("encounter_id"), rs.getInt("discontinued_by"), rs.getInt("discontinued_reason"), rs
-				        .getString("discontinued_reason_non_coded"), rs.getDate("date_stopped"), rs.getInt("orderer"), rs
-				        .getInt("order_type_id")));
+				dcOrders.add(new DiscontinuedOrder(rs.getInt("order_id"), rs.getInt("concept_id"), rs.getInt("patient_id"),
+				        rs.getInt("encounter_id"), rs.getInt("discontinued_by"), rs.getInt("discontinued_reason"), rs
+				                .getString("discontinued_reason_non_coded"), rs.getDate("date_stopped"), rs
+				                .getInt("order_type_id")));
 			}
 		}
 		catch (SQLException e) {
@@ -144,7 +143,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				statement.close();
 			}
 		}
-		return dc;
+		return dcOrders;
 	}
 	
 	@Override
@@ -181,20 +180,20 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 		
 		public Date dateStopped;
 		
-		public int creator;
+		public int discontinuedById;
 		
 		public Date dateCreated;
 		
 		public int previousOrderId;
 		
-		public int orderer;
-		
 		public String orderNumber;
 		
 		public int orderTypeId;
 		
+		public Date date;
+		
 		private DiscontinuedOrder(int orderId, int conceptId, int patientId, int encounterId, int discontinuedById,
-		    int discontinuedReasonId, String discontinuedReasonNonCoded, Date dateStopped, int orderer, int orderTypeId) {
+		    int discontinuedReasonId, String discontinuedReasonNonCoded, Date dateStopped, int orderTypeId) {
 			this.orderId = orderId;
 			this.previousOrderId = orderId;
 			this.conceptId = conceptId;
@@ -203,11 +202,11 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			this.discontinuedReasonId = discontinuedReasonId;
 			this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
 			this.dateStopped = dateStopped;
-			this.creator = discontinuedById;
+			this.discontinuedById = discontinuedById;
 			this.dateCreated = dateStopped;
-			this.orderer = orderer;
 			this.orderNumber = String.valueOf(orderId).concat("-DC");
 			this.orderTypeId = orderTypeId;
+			this.dateStopped = dateStopped;
 		}
 	}
 }

@@ -273,7 +273,7 @@ public class Database1_9_7UpgradeTest {
 		Assert.assertThat(drugs.size(), Matchers.is(3));
 		Assert.assertTrue(drugs.get(0).containsValue("1.0tab(s)"));
 		Assert.assertTrue(drugs.get(1).containsValue("325.0mg"));
-		Assert.assertTrue(drugs.get(2).get("strength").isEmpty());
+		Assert.assertNull(drugs.get(2).get("strength"));
 	}
 	
 	@Test
