@@ -6909,7 +6909,7 @@
         <comment>Removing discontinued_by from orders</comment>
         <dropColumn tableName="orders" columnName="discontinued_by" />
 	</changeSet>
-	
+
 	<changeSet id="201401031433-TRUNK-4135" author="rkorytkowski">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="drug_order" columnName="frequency" />
@@ -7082,12 +7082,13 @@
                                  referencedTableName="care_setting" referencedColumnNames="care_setting_id"/>
     </changeSet>
 
-	<changeSet id="20131216-1636" author="gitahi">
+	<changeSet id="20131216-1637" author="gitahi">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="drug_reference_map" />
 			</not>
 		</preConditions>
+        <comment>Add drug_reference_map table</comment>
 		<createTable tableName="drug_reference_map">
 			<column name="drug_reference_map_id" type="int" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true"/>
@@ -7222,10 +7223,11 @@
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
     </changeSet>
 
-    <changeSet id="201403061757-TRUNK-4284" author="Banka, Vinay">
+    <changeSet id="201403061758-TRUNK-4284" author="Banka, Vinay">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">select count(*) from concept_class where uuid = '8e071bfe-520c-44c0-a89b-538e9129b42a'</sqlCheck>
         </preConditions>
+        <comment>Inserting Frequency concept class</comment>
         <insert tableName="concept_class">
             <column name="name" value="Frequency"/>
             <column name="description" value="A class for order frequencies"/>
@@ -7235,10 +7237,11 @@
             <column name="retired" valueBoolean="false"/>
         </insert>
     </changeSet>
-    <changeSet id="201403061803-TRUNK-4284" author="Banka, Vinay">
+    <changeSet id="201403061804-TRUNK-4284" author="Banka, Vinay">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">select count(*) from concept_class where uuid = 'e30d8601-07f8-413a-9d11-cdfbb28196ec'</sqlCheck>
         </preConditions>
+        <comment>Inserting Unit of Measurement concept class</comment>
         <insert tableName="concept_class">
             <column name="name" value="Unit of Measurement"/>
             <column name="description" value="A class for Units of Measurement"/>
@@ -7250,13 +7253,13 @@
     </changeSet>
 
     <changeSet id="20140304816-TRUNK-4139" author="Akshika">
-      <preConditions onFail="MARK_RAN">
+        <preConditions onFail="MARK_RAN">
            <not><columnExists tableName="orders" columnName="scheduled_date"/></not>
-      </preConditions>
-         <comment>Adding scheduled_date column to orders table</comment>
-       <addColumn tableName="orders">
+        </preConditions>
+        <comment>Adding scheduled_date column to orders table</comment>
+        <addColumn tableName="orders">
             <column name="scheduled_date" type="datetime"/>
-       </addColumn>
+        </addColumn>
     </changeSet>
 
     <changeSet id="20140313-TRUNK-4288" author="dszafranek">
