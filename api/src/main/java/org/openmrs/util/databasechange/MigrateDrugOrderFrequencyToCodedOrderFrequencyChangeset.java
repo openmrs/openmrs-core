@@ -58,8 +58,8 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 				if (conceptIdForFrequency == null) {
 					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
 				}
-				Integer orderFrequencyId = DatabaseUtil.getOrderFrequencyIdForConceptId(
-				    connection.getUnderlyingConnection(), conceptIdForFrequency);
+				Integer orderFrequencyId = UpgradeUtil.getOrderFrequencyIdForConceptId(connection.getUnderlyingConnection(),
+				    conceptIdForFrequency);
 				if (orderFrequencyId == null) {
 					throw new CustomChangeException("No order frequency found for concept " + conceptIdForFrequency);
 				}

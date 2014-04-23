@@ -64,15 +64,15 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
 				}
 				
-				Integer orderFrequencyId = DatabaseUtil.getOrderFrequencyIdForConceptId(
-				    connection.getUnderlyingConnection(), conceptIdForFrequency);
+				Integer orderFrequencyId = UpgradeUtil.getOrderFrequencyIdForConceptId(connection.getUnderlyingConnection(),
+				    conceptIdForFrequency);
 				if (orderFrequencyId != null) {
 					//a single concept is mapped to more than one text or there is an order frequency already
 					continue;
 				}
 				
 				//Generating UUID for order frequency. Generated UUIDs will be the same if concepts UUIDs are the same.
-				String uuid = DatabaseUtil.getConceptUuid(connection.getUnderlyingConnection(), conceptIdForFrequency);
+				String uuid = UpgradeUtil.getConceptUuid(connection.getUnderlyingConnection(), conceptIdForFrequency);
 				uuid += "-6925ebb0-7c69-11e3-baa7-0800200c9a66"; //Adding random value for order frequency
 				uuid = UUID.nameUUIDFromBytes(uuid.getBytes()).toString();
 				

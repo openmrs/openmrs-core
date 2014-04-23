@@ -16,6 +16,10 @@ package org.openmrs.util;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -68,5 +72,34 @@ public class UpgradeUtil {
 		
 		throw new APIException("Your order entry upgrade settings file" + " does not have mapping for " + units
 		        + ". Please refer to upgrade instructions for more details.");
+	}
+	
+	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
+		PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?");
+		try {
+			select.setInt(1, conceptId);
+			
+			ResultSet resultSet = select.executeQuery();
+			if (resultSet.next()) {
+				return resultSet.getString(1);
+			} else {
+				throw new IllegalArgumentException("Concept not found " + conceptId);
+			}
+		}
+		finally {
+			select.close();
+		}
+	}
+	
+	public static Integer getOrderFrequencyIdForConceptId(Connection connection, Integer conceptIdForFrequency)
+	        throws SQLException {
+		PreparedStatement orderFrequencyIdQuery = connection
+		        .prepareStatement("select order_frequency_id from order_frequency where concept_id = ?");
+		orderFrequencyIdQuery.setInt(1, conceptIdForFrequency);
+		ResultSet orderFrequencyIdResultSet = orderFrequencyIdQuery.executeQuery();
+		if (!orderFrequencyIdResultSet.next()) {
+			return null;
+		}
+		return orderFrequencyIdResultSet.getInt("order_frequency_id");
 	}
 }

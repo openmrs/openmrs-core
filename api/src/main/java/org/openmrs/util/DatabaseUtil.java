@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Utility class that provides database related methods
- *
+ * 
  * @since 1.6
  */
 public class DatabaseUtil {
@@ -41,7 +41,7 @@ public class DatabaseUtil {
 	 * Load the jdbc driver class for the database which is specified by the connectionUrl parameter <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
-	 *
+	 * 
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @throws ClassNotFoundException
@@ -58,7 +58,7 @@ public class DatabaseUtil {
 	 * <br/>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
-	 *
+	 * 
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @param connectionDriver the database driver class name, such as "com.mysql.jdbc.Driver"
@@ -157,38 +157,9 @@ public class DatabaseUtil {
 		return results;
 	}
 	
-	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {
-		PreparedStatement select = connection.prepareStatement("select uuid from concept where concept_id = ?");
-		try {
-			select.setInt(1, conceptId);
-			
-			ResultSet resultSet = select.executeQuery();
-			if (resultSet.next()) {
-				return resultSet.getString(1);
-			} else {
-				throw new IllegalArgumentException("Concept not found " + conceptId);
-			}
-		}
-		finally {
-			select.close();
-		}
-	}
-	
-	public static Integer getOrderFrequencyIdForConceptId(Connection connection, Integer conceptIdForFrequency)
-	        throws SQLException {
-		PreparedStatement orderFrequencyIdQuery = connection
-		        .prepareStatement("select order_frequency_id from order_frequency where concept_id = ?");
-		orderFrequencyIdQuery.setInt(1, conceptIdForFrequency);
-		ResultSet orderFrequencyIdResultSet = orderFrequencyIdQuery.executeQuery();
-		if (!orderFrequencyIdResultSet.next()) {
-			return null;
-		}
-		return orderFrequencyIdResultSet.getInt("order_frequency_id");
-	}
-	
 	/**
 	 * Gets all unique values excluding nulls in the specified column and table
-	 *
+	 * 
 	 * @param columnName the column
 	 * @param tableName the table
 	 * @param connection
