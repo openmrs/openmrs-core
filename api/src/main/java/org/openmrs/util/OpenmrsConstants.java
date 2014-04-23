@@ -900,6 +900,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
+	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "Form.forms.locked";
+	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
@@ -1556,6 +1558,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true",
 		        "true/false whether or not to allow visits of a given patient to overlap", BooleanDatatype.class, null));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_FORMS_LOCKED, "false",
+		        "Set to a value of true if you do not want any changes to be made on forms, else set to false."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
