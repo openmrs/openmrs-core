@@ -755,7 +755,6 @@ public class Context {
 	 */
 	public static void closeSessionWithCurrentUser() {
 		getContextDAO().closeSession();
-		;
 	}
 	
 	/**

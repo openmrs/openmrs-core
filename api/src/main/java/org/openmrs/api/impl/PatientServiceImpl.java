@@ -16,6 +16,7 @@ package org.openmrs.api.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
