@@ -16,11 +16,12 @@ package org.openmrs.order;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+import java.lang.reflect.Method;
+import java.util.Date;
+
 import org.junit.Test;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
-
-import java.util.Date;
 
 /**
  * Contains test for OrderUtil
@@ -29,6 +30,24 @@ public class OrderUtilTest {
 	
 	public static boolean isActiveOrder(Order order, Date asOfDate) {
 		return order.isCurrent(asOfDate) && order.getAction() != Order.Action.DISCONTINUE;
+	}
+	
+	public static void setDateStopped(Order targetOrder, Date dateStopped) throws Exception {
+		Method method = null;
+		Boolean isMethodAccessible = null;
+		try {
+			method = Order.class.getDeclaredMethod("setDateStopped", Date.class);
+			isMethodAccessible = method.isAccessible();
+			if (!isMethodAccessible) {
+				method.setAccessible(true);
+			}
+			method.invoke(targetOrder, dateStopped);
+		}
+		finally {
+			if (method != null && isMethodAccessible != null) {
+				method.setAccessible(isMethodAccessible);
+			}
+		}
 	}
 	
 	/**

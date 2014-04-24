@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.junit.Test;
+import org.openmrs.order.OrderUtilTest;
 import org.openmrs.util.Reflect;
 
 /**
@@ -103,7 +104,7 @@ public class OrderTest {
 		assertFalse("shouldn't be discontinued before autoExpireDate", o.isDiscontinued(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be discontinued after autoExpireDate", o.isDiscontinued(ymd.parse("2008-10-26")));
 		
-		o.setDateStopped(ymd.parse("2007-11-01"));
+		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
 		assertFalse("shouldn't be discontinued before start date", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("shouldn't be discontinued before dateStopped", o.isDiscontinued(ymd.parse("2007-10-26")));
 		assertTrue("should be discontinued after dateStopped", o.isDiscontinued(ymd.parse("2007-11-26")));
@@ -132,12 +133,12 @@ public class OrderTest {
 		assertTrue("should be current between startDate and autoExpireDate", o.isCurrent(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after autoExpireDate", o.isCurrent(ymd.parse("2008-10-26")));
 		
-		o.setDateStopped(ymd.parse("2007-11-01"));
+		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
 		assertFalse("shouldn't be current before startDate", o.isCurrent(ymd.parse("2006-10-26")));
 		assertTrue("should be current between startDate and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after dateStopped", o.isCurrent(ymd.parse("2007-11-26")));
 		
-		o.setDateStopped(ymd.parse("2007-11-01"));
+		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
 		assertFalse("shouldn't be current before startDate", o.isCurrent(ymd.parse("2006-10-26")));
 		assertTrue("should be current between startDate and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after dateStopped", o.isCurrent(ymd.parse("2007-11-26")));

@@ -219,9 +219,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @param dateStopped The dateStopped to set.
-	 * @since 1.10
 	 */
-	public void setDateStopped(Date dateStopped) {
+	private void setDateStopped(Date dateStopped) {
 		this.dateStopped = dateStopped;
 	}
 	
