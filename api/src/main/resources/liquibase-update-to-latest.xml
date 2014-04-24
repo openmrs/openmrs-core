@@ -6918,7 +6918,7 @@
         </update>
     </changeSet>
 
-	<changeSet id="201312201650-TRUNK-4138" author="banka">
+	<changeSet id="201312201651-TRUNK-4138" author="banka">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="discontinued"/>
         </preConditions>
