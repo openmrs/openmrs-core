@@ -37,13 +37,16 @@ public abstract class ImmutableEntityInterceptor extends EmptyInterceptor {
 	
 	private static final Log log = LogFactory.getLog(ImmutableEntityInterceptor.class);
 	
+	/**
+	 * Returns the class handled by the interceptor
+	 */
 	protected abstract Class<?> getSupportedType();
 	
 	/**
-	 * Subclasses can override this classes to specify which fields are allowd to be edited,
-	 * returning null or an empty array implies the entity is immutable
+	 * Subclasses can override this to return fields that are allowed to be edited, returning null
+	 * or an empty array implies the entity is immutable
 	 * 
-	 * @return
+	 * @return an array of properties
 	 */
 	protected String[] getMutablePropertyNames() {
 		return null;
