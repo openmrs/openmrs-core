@@ -2040,4 +2040,42 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(drugRoutesList.contains(concept4));
 		assertTrue(drugRoutesList.contains(concept5));
 	}
+	
+	/**
+	 * @verifies void an order
+	 * @see OrderService#voidOrder(org.openmrs.Order, String)
+	 */
+	@Test
+	public void voidOrder_shouldVoidAnOrder() throws Exception {
+		Order order = orderService.getOrder(1);
+		assertFalse(order.getVoided());
+		assertNull(order.getDateVoided());
+		assertNull(order.getVoidedBy());
+		assertNull(order.getVoidReason());
+		
+		orderService.voidOrder(order, "None");
+		assertTrue(order.getVoided());
+		assertNotNull(order.getDateVoided());
+		assertNotNull(order.getVoidedBy());
+		assertNotNull(order.getVoidReason());
+	}
+	
+	/**
+	 * @verifies unvoid an order
+	 * @see OrderService#unvoidOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void unvoidOrder_shouldUnvoidAnOrder() throws Exception {
+		Order order = orderService.getOrder(8);
+		assertTrue(order.getVoided());
+		assertNotNull(order.getDateVoided());
+		assertNotNull(order.getVoidedBy());
+		assertNotNull(order.getVoidReason());
+		
+		orderService.unvoidOrder(order);
+		assertFalse(order.getVoided());
+		assertNull(order.getDateVoided());
+		assertNull(order.getVoidedBy());
+		assertNull(order.getVoidReason());
+	}
 }

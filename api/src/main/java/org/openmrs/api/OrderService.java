@@ -121,6 +121,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param order Order to void
 	 * @return the Order that was voided
 	 * @throws APIException
+	 * @should void an order
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order voidOrder(Order order, String voidReason) throws APIException;
@@ -194,6 +195,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param order order to be unvoided
 	 * @return the Order that was unvoided
+	 * @should unvoid an order
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order unvoidOrder(Order order) throws APIException;
