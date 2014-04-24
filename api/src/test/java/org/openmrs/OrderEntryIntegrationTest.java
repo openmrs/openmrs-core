@@ -16,13 +16,19 @@ package org.openmrs;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
 
+import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
@@ -54,6 +60,9 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	@Autowired
 	private EncounterService encounterService;
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
 	public void shouldGetTheActiveOrdersForAPatient() {
@@ -205,5 +214,98 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
 		assertFalse(OrderUtilTest.isActiveOrder(originalOrder, null));
+	}
+	
+	/**
+	 * @verifies void an order
+	 * @see OrderService#voidOrder(org.openmrs.Order, String)
+	 */
+	@Test
+	public void shouldVoidAnOrderAndFlushSuccessfully() throws Exception {
+		Order order = orderService.getOrder(1);
+		assertFalse(order.getVoided());
+		assertNull(order.getDateVoided());
+		assertNull(order.getVoidedBy());
+		assertNull(order.getVoidReason());
+		
+		orderService.voidOrder(order, "None");
+		//forces hibernate interceptors to get invoked
+		Context.flushSession();
+		assertTrue(order.getVoided());
+		assertNotNull(order.getDateVoided());
+		assertNotNull(order.getVoidedBy());
+		assertNotNull(order.getVoidReason());
+	}
+	
+	/**
+	 * @verifies unvoid an order
+	 * @see OrderService#unvoidOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void shouldUnvoidAnOrderAndFlushSuccessfully() throws Exception {
+		Order order = orderService.getOrder(8);
+		assertTrue(order.getVoided());
+		assertNotNull(order.getDateVoided());
+		assertNotNull(order.getVoidedBy());
+		assertNotNull(order.getVoidReason());
+		
+		orderService.unvoidOrder(order);
+		Context.flushSession();
+		assertFalse(order.getVoided());
+		assertNull(order.getDateVoided());
+		assertNull(order.getVoidedBy());
+		assertNull(order.getVoidReason());
+	}
+	
+	@Test
+	public void shouldDiscontinueAnActiveOrderAndFlushSuccessfully() throws Exception {
+		executeDataSet(ORDER_ENTRY_DATASET_XML);
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueReason.xml");
+		
+		Order firstOrderToDiscontinue = orderService.getOrder(3);
+		Encounter encounter = encounterService.getEncounter(3);
+		assertTrue(OrderUtilTest.isActiveOrder(firstOrderToDiscontinue, null));
+		
+		Concept discontinueReason = Context.getConceptService().getConcept(1);
+		Provider orderer = providerService.getProvider(1);
+		Order discontinuationOrder1 = orderService.discontinueOrder(firstOrderToDiscontinue, discontinueReason, null,
+		    orderer, encounter);
+		Context.flushSession();
+		assertEquals(firstOrderToDiscontinue, discontinuationOrder1.getPreviousOrder());
+	}
+	
+	@Test
+	public void shouldReviseAnOrderAndFlushSuccessfully() throws Exception {
+		Order originalOrder = orderService.getOrder(111);
+		assertTrue(OrderUtilTest.isActiveOrder(originalOrder, null));
+		final Patient patient = originalOrder.getPatient();
+		List<Order> originalActiveOrders = orderService.getActiveOrders(patient, null, null, null);
+		final int originalOrderCount = originalActiveOrders.size();
+		assertTrue(originalActiveOrders.contains(originalOrder));
+		
+		Order revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setInstructions("Take after a meal");
+		revisedOrder.setStartDate(new Date());
+		revisedOrder.setOrderer(providerService.getProvider(1));
+		revisedOrder.setEncounter(encounterService.getEncounter(3));
+		orderService.saveOrder(revisedOrder, null);
+		Context.flushSession();
+		//If the time is too close, the original order may be returned because it
+		//dateStopped will be exactly the same as the asOfDate(now) to the millisecond
+		Thread.sleep(1);
+		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(originalOrderCount, activeOrders.size());
+		assertFalse(OrderUtilTest.isActiveOrder(originalOrder, null));
+	}
+	
+	@Test
+	public void shouldFailIfAnEditedOrderIsFlushed() throws Exception {
+		Encounter encounter = encounterService.getEncounter(3);
+		assertFalse(encounter.getOrders().isEmpty());
+		encounter.getOrders().iterator().next().setInstructions("new");
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Matchers.is("Editing some fields on Order is not allowed"));
+		encounterService.saveEncounter(encounter);
+		Context.flushSession();
 	}
 }
