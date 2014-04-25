@@ -19,12 +19,21 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.search.annotations.DocumentId;
+import org.apache.solr.analysis.StandardFilterFactory;
+import org.apache.solr.analysis.StandardTokenizerFactory;
+import org.apache.solr.analysis.StopFilterFactory;
+import org.apache.solr.analysis.LowerCaseFilterFactory;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.TokenizerDef;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Analyzer;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
@@ -40,6 +49,9 @@ import org.simpleframework.xml.Root;
  */
 @Root
 @Indexed
+@AnalyzerDef(name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+        @TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+        @TokenFilterDef(factory = StopFilterFactory.class, params = { @Parameter(name = "ignoreCase", value = "true") }) })
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
@@ -50,7 +62,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@IndexedEmbedded
 	private Concept concept;
 	
-	@Field
+	@Field(index = Index.TOKENIZED)
+	@Analyzer(definition = "ConceptNameAnalyzer")
 	private String name;
 	
 	@Field(index = Index.UN_TOKENIZED)
