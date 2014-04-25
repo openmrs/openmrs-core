@@ -6886,7 +6886,7 @@
         <customChange class="org.openmrs.util.databasechange.CreateDiscontinueOrders"/>
 	</changeSet>
 
-    <changeSet id="201312201524-TRUNK-4138" author="wyclif">
+    <changeSet id="201312201425-TRUNK-4138" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="discontinued_reason" />
             <not>
@@ -6894,7 +6894,7 @@
             </not>
         </preConditions>
         <comment>
-            SETTING order.discontinued_reason to null for stopped orders
+            Setting order.discontinued_reason to null for stopped orders
         </comment>
         <update tableName="orders">
             <column name="discontinued_reason" value="NULL" />
