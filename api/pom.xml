@@ -194,6 +194,12 @@
            <groupId>javax.validation</groupId>
            <artifactId>validation-api</artifactId>
        </dependency>
+       <dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.7.6</version>
+			<type>jar</type>
+		</dependency>
    </dependencies>
    <build>
       <resources>
