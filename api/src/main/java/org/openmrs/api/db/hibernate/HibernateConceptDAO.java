@@ -16,6 +16,7 @@ package org.openmrs.api.db.hibernate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -412,9 +413,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Drug> getDrugs(final String phrase) throws DAOException {
-		String searchPhrase = newRequirePartialWordsSearchPhrase(phrase);
+		if (phrase.trim().isEmpty()) {
+			return Collections.emptyList();
+		}
 		
-		String query = "+name:(" + searchPhrase + ")";
+		List<String> notEmptyWords = new ArrayList<String>();
+		String[] words = phrase.split(" ");
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				notEmptyWords.add(word);
+			}
+		}
+		
+		String query = "name:(\"" + phrase + "\")^0.6 OR name:(" + phrase + ")^0.2 OR name:("
+		        + StringUtils.join(notEmptyWords, "* OR ") + "*)^0.1 OR name:("
+		        + StringUtils.join(notEmptyWords, "~0.2 OR ") + "~0.2)^0.1";
 		
 		List<Drug> list = LuceneQuery.newQuery(query, sessionFactory.getCurrentSession(), Drug.class).list();
 		
@@ -585,11 +598,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 		}
 		
-		query.append(" +concept.retired:false");
+		query.append(" concept.retired:false");
 		
-		appendIdsQuery(query, "+concept.conceptClass.conceptClassId", classes);
+		appendIdsQuery(query, "concept.conceptClass.conceptClassId", classes);
 		
-		appendIdsQuery(query, "+concept.datatype.conceptDatatypeId", datatypes);
+		appendIdsQuery(query, "concept.datatype.conceptDatatypeId", datatypes);
 		
 		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
 		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").list();
@@ -600,25 +613,35 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	private String newNamesQuery(final Set<Locale> locales, final String name, final boolean keywords) {
-		final String phrase;
+		final StringBuilder query = new StringBuilder();
+		
+		query.append("(");
 		if (keywords) {
-			phrase = "(" + newRequirePartialWordsSearchPhrase(name) + " \"" + name + "\"^1000)";
+			query.append(" name:(" + name + ")^0.2");
+			//Put exact phrase higher
+			query.append(" OR name:(\"" + name + "\")^0.6");
+			
+			//Include similar as last
+			String[] names = name.trim().split(" ");
+			query.append(" OR name:(" + StringUtils.join(names, "~ OR ") + "~)^0.1 OR name:("
+			        + StringUtils.join(names, "* OR ") + "*)^0.1");
 		} else {
-			phrase = "\"" + LuceneQuery.escapeQuery(name) + "\"";
-		}
-		
-		StringBuilder query = new StringBuilder();
-		
-		query.append(" +name:").append(phrase);
-		query.append(" +locale:(");
-		for (Locale locale : locales) {
-			query.append(locale.getLanguage()).append("* ");
-			if (!StringUtils.isBlank(locale.getCountry())) {
-				query.append(locale).append("^2");
-			}
+			query.append(" name:\"" + LuceneQuery.escapeQuery(name) + "\"");
 		}
 		query.append(")");
-		query.append(" +voided:false");
+		
+		List<String> localeQueries = new ArrayList<String>();
+		for (Locale locale : locales) {
+			String localeQuery = locale.getLanguage() + "* ";
+			if (!StringUtils.isBlank(locale.getCountry())) {
+				localeQuery += " OR " + locale + "^2 ";
+			}
+			localeQueries.add(localeQuery);
+		}
+		query.append(" locale:(");
+		query.append(StringUtils.join(localeQueries, " OR "));
+		query.append(")");
+		query.append(" voided:false");
 		
 		return query.toString();
 	}
@@ -1293,14 +1316,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		if (!includeRetired) {
-			query.append(" +concept.retired:false");
+			query.append(" concept.retired:false");
 		}
 		
-		appendIdsQuery(query, "+concept.conceptClass.conceptClassId", requireClasses);
+		appendIdsQuery(query, "concept.conceptClass.conceptClassId", requireClasses);
 		
 		appendIdsQuery(query, "-concept.conceptClass.conceptClassId", excludeClasses);
 		
-		appendIdsQuery(query, "+concept.datatype.conceptDatatypeId", requireDatatypes);
+		appendIdsQuery(query, "concept.datatype.conceptDatatypeId", requireDatatypes);
 		
 		appendIdsQuery(query, "-concept.datatype.conceptDatatypeId", excludeDatatypes);
 		
@@ -1308,11 +1331,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Collection<ConceptAnswer> answers = answersToConcept.getAnswers(false);
 			
 			if (answers != null && !answers.isEmpty()) {
-				StringBuilder ids = new StringBuilder();
+				List<Integer> ids = new ArrayList<Integer>();
 				for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers(false)) {
-					ids.append(conceptAnswer.getAnswerConcept().getId()).append(" ");
+					ids.add(conceptAnswer.getAnswerConcept().getId());
 				}
-				query.append(" +concept.conceptId:(").append(ids).append(")");
+				query.append(" concept.conceptId:(").append(StringUtils.join(ids, " OR ")).append(")");
 			}
 		}
 		
@@ -1336,16 +1359,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (ids != null) {
 			query.append(" ").append(field).append(":(").append(ids).append(")");
 		}
-	}
-	
-	private String newRequirePartialWordsSearchPhrase(final String phrase) {
-		StringBuilder searchPhrase = new StringBuilder();
-		String[] words = LuceneQuery.escapeQuery(phrase).trim().split(" ");
-		for (String word : words) {
-			word = word.trim();
-			searchPhrase.append(" +(").append(word).append("~ ").append(word).append("*^2)");
-		}
-		return searchPhrase.toString();
 	}
 	
 	private String transformToIds(final List<? extends OpenmrsObject> items) {

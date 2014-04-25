@@ -40,7 +40,6 @@ import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.dbunit.dataset.IDataSet;
-import org.apache.commons.lang.BooleanUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -77,9 +76,6 @@ import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.annotation.ExpectedException;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -1704,14 +1700,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Test
-	@Verifies(value = "should return concept search results that contain all search words", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnConceptSearchResultsThatContainAllSearchWords() throws Exception {
+	@Verifies(value = "should return concept search results that contain all search words as first", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnConceptSearchResultsThatContainAllSearchWordsAsFirst() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust now", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		//"trust now" is name for conceptid=4000.
-		//So we should see 1 results only
-		Assert.assertEquals(1, searchResults.size());
+		//"trust now" must be first hit
+		assertThat(searchResults.get(0).getWord(), is("trust now"));
 	}
 	
 	/**
@@ -2488,15 +2483,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Test
-	@Verifies(value = "should return a search result whose concept name contains all word tokens", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokens() throws Exception {
+	@Verifies(value = "should return a search result whose concept name contains all word tokens as first", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokensAsFirst() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER", Collections
 		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
 		
-		Assert.assertEquals(1, searchResults.size());
-		Assert.assertEquals("SALBUTAMOL INHALER", searchResults.get(0).getWord());
+		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL INHALER"));
 	}
 	
 	/**
