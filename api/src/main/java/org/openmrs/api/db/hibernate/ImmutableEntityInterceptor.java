@@ -27,9 +27,14 @@ import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Superclass for all Interceptors that wish to ensure that changes to immutable entities of
- * specific type don't get persisted to the database, more granularity of the immutable properties
+ * Superclass for all Interceptors that would like to ensure that changes to immutable entities of
+ * specific types don't get persisted to the database, more granularity of the immutable properties
  * is also supported so as to allow editing some properties while not for others
+ * 
+ * <pre>
+ * <b>NOTE:</b> Subclasses MUST not make any changes to the persistent object because they get 
+ * called last, if they make any changes other interceptors would never know about them.
+ * </pre>
  * 
  * @since 1.10
  */

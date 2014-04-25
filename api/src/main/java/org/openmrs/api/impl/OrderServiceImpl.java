@@ -14,6 +14,7 @@
 package org.openmrs.api.impl;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -587,8 +588,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (orderToStop.getAction().equals(Order.Action.DISCONTINUE)) {
 			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued.");
 		}
-		orderToStop.setDateStopped(discontinueDate);
+		setDateStopped(orderToStop, discontinueDate);
 		saveOrderInternal(orderToStop, null);
+	}
+	
+	private void setDateStopped(Order targetOrder, Date dateStopped) {
+		Method method = null;
+		Boolean isMethodAccessible = null;
+		try {
+			method = Order.class.getDeclaredMethod("setDateStopped", Date.class);
+			isMethodAccessible = method.isAccessible();
+			if (!isMethodAccessible) {
+				method.setAccessible(true);
+			}
+			method.invoke(targetOrder, dateStopped);
+		}
+		catch (Exception e) {
+			throw new APIException("Failed to set dateStopped for order:" + targetOrder, e);
+		}
+		finally {
+			if (method != null && isMethodAccessible != null) {
+				method.setAccessible(isMethodAccessible);
+			}
+		}
 	}
 	
 	/**

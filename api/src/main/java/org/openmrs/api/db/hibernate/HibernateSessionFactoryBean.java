@@ -107,9 +107,22 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 		// make sure all autowired interceptors are put onto our chaining interceptor
 		// sort on the keys so that the devs/modules have some sort of control over the order of the interceptors 
 		List<String> keys = new ArrayList<String>(interceptors.keySet());
+		List<Interceptor> immutableEntityInterceptors = new ArrayList<Interceptor>();
 		Collections.sort(keys);
 		for (String key : keys) {
-			chainingInterceptor.addInterceptor(interceptors.get(key));
+			Interceptor i = interceptors.get(key);
+			if (ImmutableEntityInterceptor.class.isAssignableFrom(i.getClass())) {
+				immutableEntityInterceptors.add(i);
+			} else {
+				chainingInterceptor.addInterceptor(i);
+			}
+		}
+		
+		//Immutable entity interceptors need to be invoked last just in case the others make some edits
+		//to immutable objects so that we always catch them and that is why we add them last so that they 
+		//are invoked last, See javadocs for ImmutableEntityInterceptor
+		for (Interceptor iInt : immutableEntityInterceptors) {
+			chainingInterceptor.addInterceptor(iInt);
 		}
 		
 		config.setInterceptor(chainingInterceptor);
