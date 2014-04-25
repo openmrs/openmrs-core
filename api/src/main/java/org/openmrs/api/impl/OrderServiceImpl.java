@@ -173,16 +173,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
-		//TODO call module registered order number generators
-		//and if there is none, use the default below
 		if (order.getOrderId() == null) {
+			Boolean isAccessible = null;
+			Field field = null;
 			try {
-				Field field = Order.class.getDeclaredField("orderNumber");
+				field = Order.class.getDeclaredField("orderNumber");
 				field.setAccessible(true);
 				field.set(order, getOrderNumberGenerator().getNewOrderNumber(orderContext));
 			}
 			catch (Exception e) {
 				throw new APIException("Failed to assign order number", e);
+			}
+			finally {
+				if (field != null && isAccessible != null) {
+					field.setAccessible(isAccessible);
+				}
 			}
 		}
 		
