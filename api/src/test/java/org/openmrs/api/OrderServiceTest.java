@@ -2007,7 +2007,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderType(orderType);
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
 		order.setInstructions("None");
-		
+		order.setDosingInstructions("Test Instruction");
 		orderService.saveOrder(order, null);
 		assertNotNull(order.getOrderId());
 	}

@@ -99,6 +99,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
 		order.setInstructions("Instructions");
+		order.setDosingInstructions("Test Instruction");
 		order.setPatient(patient);
 		encounter.setPatient(patient);
 		order.setEncounter(encounter);
@@ -243,13 +244,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfInstructionIsNullForFREE_TEXTDosingType() throws Exception {
+	public void validate_shouldFailValidationIfDosingInstructionIsNullForFREE_TEXTDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
-		order.setInstructions(null);
+		order.setDosingInstructions(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("instructions"));
+		Assert.assertTrue(errors.hasFieldErrors("dosingInstructions"));
 	}
 	
 	/**
