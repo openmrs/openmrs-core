@@ -218,6 +218,12 @@
            <groupId>org.codehaus.jackson</groupId>
            <artifactId>jackson-mapper-asl</artifactId>
        </dependency>
+       <dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.7.6</version>
+			<type>jar</type>
+		</dependency>
    </dependencies>
    <build>
       <plugins>
