@@ -58,7 +58,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if doseUnits is null for SIMPLE dosingType
 	 * @should fail validation if route is null for SIMPLE dosingType
 	 * @should fail validation if frequency is null for SIMPLE dosingType
-	 * @should fail validation if instruction is null for FREE_TEXT dosingType
+	 * @should fail validation if dosingInstructions is null for all dosage types except SIMPLE
 	 * @should fail validation if numberOfRefills is null for outpatient careSetting
 	 * @should fail validation if quantityUnits is null for outpatient careSetting
 	 * @should fail validation if quantity is null for outpatient careSetting
@@ -96,9 +96,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 					ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-				} else if (order.getDosingType().equals(DrugOrder.DosingType.FREE_TEXT)) {
-					ValidationUtils.rejectIfEmpty(errors, "instructions",
-					    "DrugOrder.error.instructionIsNullForDosingTypeFreeText");
 				} else {
 					ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
 					    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeOther");
