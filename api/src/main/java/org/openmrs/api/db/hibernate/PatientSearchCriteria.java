@@ -210,6 +210,7 @@ public class PatientSearchCriteria {
 	 * @param identifier
 	 * @param identifierTypes
 	 * @param matchIdentifierExactly
+	 * @should search on patientIdentifierType restrictions
 	 */
 	private Criterion prepareCriterionForIdentifier(String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) {
