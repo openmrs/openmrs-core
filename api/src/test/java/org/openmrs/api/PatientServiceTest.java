@@ -13,6 +13,33 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
+import static org.openmrs.util.AddressMatcher.containsAddress;
+import static org.openmrs.util.NameMatcher.containsFullName;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,33 +81,6 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.openmrs.test.TestUtil.assertCollectionContentsEquals;
-import static org.openmrs.util.AddressMatcher.containsAddress;
-import static org.openmrs.util.NameMatcher.containsFullName;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -1695,6 +1695,36 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		Assert.assertTrue("odd, user 7 didn't get user 8's address", found);
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient, Patient)
+	 */
+	@Test
+	@Verifies(value = "should not mark addresses of non-preferred patient as preferred", method = "mergePatients(Patient,Patient)")
+	public void mergePatients_shouldOnlyMarkAddressesOfPreferredPatientAsPreferred() throws Exception {
+		
+		Patient preferred = patientService.getPatient(7);
+		Patient notPreferred = patientService.getPatient(8);
+		
+		// since the test data has no preferred addresses, we need to mark addresses to preferred to set up the test
+		preferred.getPersonAddress().setPreferred(true);
+		notPreferred.getPersonAddress().setPreferred(true);
+		
+		patientService.savePatient(preferred);
+		patientService.savePatient(notPreferred);
+		
+		patientService.mergePatients(preferred, notPreferred);
+		
+		Assert.assertThat(preferred.getAddresses().size(), is(2));
+		
+		// make sure only the address from the preferred patient is marked as preferred
+		for (PersonAddress pa : preferred.getAddresses()) {
+			if (pa.getCityVillage().equals("Jabali")) {
+				Assert.assertFalse(pa.isPreferred());
+			}
+		}
+		
 	}
 	
 	/**

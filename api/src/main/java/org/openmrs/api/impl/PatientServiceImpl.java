@@ -13,6 +13,18 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Vector;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,7 +32,6 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
-import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -41,7 +52,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
@@ -60,18 +70,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.Vector;
 
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
@@ -958,6 +956,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpAddress.setVoided(false);
 				tmpAddress.setVoidedBy(null);
 				tmpAddress.setVoidReason(null);
+				tmpAddress.setPreferred(false); // addresses from non-preferred patient shouldn't be marked as preferred
 				tmpAddress.setUuid(UUID.randomUUID().toString());
 				preferred.addAddress(tmpAddress);
 				mergedData.addCreatedAddress(tmpAddress.getUuid());
