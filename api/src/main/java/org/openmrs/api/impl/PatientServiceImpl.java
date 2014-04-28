@@ -1086,6 +1086,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpAddress.setVoided(false);
 				tmpAddress.setVoidedBy(null);
 				tmpAddress.setVoidReason(null);
+				tmpAddress.setPreferred(false); // addresses from non-preferred patient shouldn't be marked as preferred
 				tmpAddress.setUuid(UUID.randomUUID().toString());
 				preferred.addAddress(tmpAddress);
 				mergedData.addCreatedAddress(tmpAddress.getUuid());
