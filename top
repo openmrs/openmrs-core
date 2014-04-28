@@ -1,0 +1,527 @@
+[33mcommit b6615a9205b8bc4a5bd0b3a29765cc6ab005d433[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 14 13:18:38 2014 -0400
+
+    Update EncounterServiceTest.java
+
+[33mcommit 2f6e1921269bea87a0a68cb8f04f8599fc521437[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 14 12:57:02 2014 -0400
+
+    Update ActiveListServiceTest.java
+
+[33mcommit cdd9940ade3e95df7111e951ffec76a41d81c3e4[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 12:22:06 2014 -0400
+
+    Update ConceptService.java
+    
+    Fixed minor spacing issue.
+
+[33mcommit 929ca2e175184c57c739eb55ebe21900a31e0abc[m
+Merge: a543e53 02479bf
+Author: Michael Gibson <michaelgibson@live.com>
+Date:   Mon Apr 14 12:21:10 2014 -0400
+
+    Merge branch 'master' of https://github.com/Nnabugw/openmrs-core
+
+[33mcommit a543e53ee4fbc29e949de0adeaddfebf0747e6d3[m
+Author: Michael Gibson <michaelgibson@live.com>
+Date:   Mon Apr 14 12:20:40 2014 -0400
+
+    closes #17 Verified other Tickets as well
+
+[33mcommit 02479bf8363ab567ca9740261c31e152f2c874ba[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 12:20:56 2014 -0400
+
+    Update CohortService.java
+    
+    Fixed minor spacing issue.
+
+[33mcommit 0d736edaf56761484bd21ed138d807650991ce63[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 12:19:52 2014 -0400
+
+    Update AdministrationService.java
+    
+    Fixed minor spacing issue.
+
+[33mcommit 45a28cf7ccac1758455f897cda08dcda53277ad5[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 12:17:44 2014 -0400
+
+    Update VisitServiceTest.java
+    
+    Fixed spacing issues.
+    Added missing javadoc, fixed ones that were inaccurate.
+
+[33mcommit 88325bb746c08d0ed5aa23369a6b00e2ad24e496[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 12:01:16 2014 -0400
+
+    Update UserServiceTest.java
+    
+    Fixed spacing issues
+    Added javadoc to methods missing it.
+
+[33mcommit fcd452159054fd2aa60cf30435daea72b32a4413[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 11:57:33 2014 -0400
+
+    Update ProviderServiceTest.java
+    
+    Fixed 1 spacing issue.
+
+[33mcommit 4b7f3fc7917e3d2e1ef0eedfd0298812d6641b29[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 11:56:28 2014 -0400
+
+    Update ProgramWorkflowServiceUnitTest.java
+    
+    Added javadoc to methods.
+    Fixed issues with old javadoc being inaccurate.
+    Fixed spacing issues.
+
+[33mcommit 516b44778726a80fa78490ff6da32f7b50d6c00a[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 11:53:18 2014 -0400
+
+    Update PersonServiceTest.java
+    
+    Added javadoc to some methods.
+    Fixed some small spacing issues.
+
+[33mcommit 65babf20cdd45ec6fad2302d43af7e1e32ce3dfe[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 11:49:53 2014 -0400
+
+    Update PatientSetServiceTest.java
+    
+    Added javadoc to class.
+    Fixed spacing issues.
+
+[33mcommit b3ee9fd9b17e16bcb632ddb8dd107320e85f1d89[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 14 11:46:56 2014 -0400
+
+    Update PatientServiceTest.java
+    
+    Added javadoc to methods that were missing it.
+    Fixed some spacing issues.
+
+[33mcommit b30da588a60e6ddeea135adc2f3affc01fe39f7b[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 14 11:15:36 2014 -0400
+
+    Update ConceptServiceTest.java
+
+[33mcommit 04af9fa471c67a97fedfcc09381993e2ef8a6efd[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 14 11:06:00 2014 -0400
+
+    Update ConceptServicePerformanceIT.java
+
+[33mcommit 827acda8b4feae1ec9843fa07c79ad802881d411[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 14 11:04:26 2014 -0400
+
+    Update ConceptServicePerformanceIT.java
+
+[33mcommit 003a2d0b64334872a4a74ecb12132ebb3389672e[m
+Author: zyybear <yzhou1@worcester.edu>
+Date:   Mon Apr 14 10:24:38 2014 -0400
+
+    Update BaseOpenmrsService.java
+
+[33mcommit df295fcfd16762ba26b0d3775a2db57648db802c[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Sun Apr 13 23:17:52 2014 -0400
+
+    Update OrderServiceTest.java
+    
+    Added javadoc to last method.
+    Cleaned up a few spacing issues.
+
+[33mcommit 8ac4a5ef9124aba7e574d8d2a6fe197813c22ac4[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 7 15:28:28 2014 -0400
+
+    Update ProgramWorkflowServiceTest.java
+
+[33mcommit f2a964ac2b34f569d9d819f9835d6238c0a58c49[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 15:26:48 2014 -0400
+
+    Update ProgramWorkflowServiceTest.java
+
+[33mcommit d6eb60c7ea5fcb4a27ac0b9b7dd788c045f5af2f[m
+Author: slykrysis <slykrysis@gmail.com>
+Date:   Mon Apr 7 15:24:49 2014 -0400
+
+    Update ProgramWorkflowServiceTest.java
+
+[33mcommit 93b1ad919246f13a65a769ff56fc5525747b9a9d[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 15:22:28 2014 -0400
+
+    Update ProgramWorkflowServiceTest.java
+
+[33mcommit b67c3ebb8cc792e62abcef6af0100deece312152[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 15:20:00 2014 -0400
+
+    Update ProgramWorkflowServiceTest.java
+
+[33mcommit 8eef95508640f452f52e16c550ace01c67b0d505[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 15:15:57 2014 -0400
+
+    Update ProgramWorkflowServiceTest.java
+
+[33mcommit 265cc6e5e8f5b890ae513f13612989ac5d8a79f6[m
+Author: acordor <acordor@worcester.edu>
+Date:   Mon Apr 7 15:07:36 2014 -0400
+
+    Update ProgramWorkflowServiceTest.java
+
+[33mcommit bf1ff6673b0894a21328824b0ea00ba405e1b12b[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 15:00:39 2014 -0400
+
+    Update ProgramWorkflowServiceTest.java
+    
+    Added
+
+[33mcommit c9d384a07ee7def185582fb8e99b000ea40141a5[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 13:48:14 2014 -0400
+
+    Update ProgramWorkflowServiceUnitTest.java
+    
+    Inserted dummy javadoc
+
+[33mcommit 1cabe827b209be038ac5138e37fb1b83b836e71e[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 13:27:23 2014 -0400
+
+    Update VisitServiceTest.java
+    
+    Added dummy javadoc. Recheck
+
+[33mcommit 81e66e8aaf58cc4fd776c98685ba4a576a2f5ff8[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 13:17:27 2014 -0400
+
+    Update ConceptServicePerformanceIT.java
+    
+    Need to recheck javadoc tags.
+
+[33mcommit aa69e8701281b86687e720baa357a36c845efe4a[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Apr 7 13:08:08 2014 -0400
+
+    Update ActiveListServiceTest.java
+    
+    Added a sample javadoc to all tests. Will finish later.
+
+[33mcommit 57b99b6dc76371dbdec9b880cff2fbc81a6b2074[m
+Author: Nnabugw <nonyirimba@worcester.edu>
+Date:   Mon Mar 24 15:56:48 2014 -0400
+
+    Update ActiveListServiceTest.java
+
+[33mcommit bc242028011e5f11ee6aec3325c408970aa3bf14[m
+Author: acordor <acordor@worcester.edu>
+Date:   Mon Mar 24 13:49:24 2014 -0400
+
+    Update VisitServiceImpl.java
+
+[33mcommit b25df4b81f2bca4e6ba43796512625dab248a9cf[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Mon Feb 17 12:31:08 2014 +0300
+
+    Followup fix for: Unable to invoke getForms after adding FormField to
+    containingAnyFormField - TRUNK-4189
+
+[33mcommit ef7b6da845e59cfdeadbeeed16933c6424390bbe[m
+Merge: b527b96 732a906
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Fri Feb 14 12:06:31 2014 +0300
+
+    Merge pull request #640 from k-joseph/TRUNK-3902
+    
+    [#TRUNK-3902]  Proposal: rename concept_numeric.precise property to concept_numeric.allowDecimal
+
+[33mcommit b527b9680f5d3c05653d0aaced78295ea47e9d38[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Fri Feb 14 12:00:22 2014 +0300
+
+    Fixing NPE in MemoryLeakUtil
+
+[33mcommit 732a906684e59c7b29209c51311235d245f31e05[m
+Author: k-joseph <kaweesi.joseph2012@gmail.com>
+Date:   Fri Feb 14 11:58:02 2014 +0300
+
+    TRUNK-3902 changchanged isPrecise() to getAllowDecimal
+
+[33mcommit 8d2405417dcd4b1a2b1fe32425b5370ba4123522[m
+Merge: 3640de6 14686ba
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Fri Feb 14 11:10:58 2014 +0300
+
+    Merge pull request #637 from k-joseph/TRUNK-3902
+    
+    TRUNK-3902 Proposal: rename concept_numeric.precise property to concept_numeric.allowDecimal
+
+[33mcommit 14686bafc063e78e15711a567cb41ab90bb003a4[m
+Author: k-joseph <kaweesi.joseph2012@gmail.com>
+Date:   Fri Feb 14 08:27:33 2014 +0300
+
+    TRUNK-3902 corrected changeset to changeSet
+
+[33mcommit ee76c3e95a6983d9f60a7af7122b6b587bd5aed1[m
+Author: k-joseph <kaweesi.joseph2012@gmail.com>
+Date:   Fri Feb 14 06:47:14 2014 +0300
+
+    TRUNK-3902 added @Deprecated to precise related deprecated methods and removed some unnecessary space in changeset
+
+[33mcommit cc26eaafd6806fee9d9f1b0efb69c15c836b6aa5[m
+Author: k-joseph <kaweesi.joseph2012@gmail.com>
+Date:   Thu Feb 13 16:44:16 2014 +0300
+
+    TRUNK-resolved review comments
+
+[33mcommit f79fbadb13335d654fbfa1e1e057204457321e0a[m
+Author: k-joseph <kaweesi.joseph2012@gmail.com>
+Date:   Thu Feb 13 08:56:42 2014 +0300
+
+    TRUNK-3902 Proposal: rename concept_numeric.precise property to concept_numeric.allowDecimal
+
+[33mcommit 3640de69f1d2a9671b46e43cd537c66ca8bd6257[m
+Merge: a5bc0b9 9faa028
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Wed Feb 12 13:09:13 2014 +0300
+
+    Merge pull request #632 from lplotni/TRUNK-287-corrected
+    
+    TRUNK-287
+
+[33mcommit a5bc0b9dee8e084584d3eee8c9ba940ef68259f7[m
+Merge: 2e9bcfa 9232e0c
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Wed Feb 12 11:28:30 2014 +0300
+
+    Merge pull request #634 from vaibhav-hp/TRUNK-4250
+    
+    TRUNK-4250  You can set your default locale message is messed up
+
+[33mcommit 9232e0cf8732dd6db46ca19ad5bbab00512fb3c0[m
+Author: vaibhav-hp <kmit.vaibhav@gmail.com>
+Date:   Wed Feb 12 13:41:21 2014 +0530
+
+    TRUNK-4250  You can set your default locale message is messed up
+
+[33mcommit 2e9bcfa430c8077f9bb9b57e93e9bc289ac4822f[m
+Author: Rafal Korytkowski <rafal.korytkowski@gmail.com>
+Date:   Tue Feb 11 17:03:10 2014 +0100
+
+    TRUNK-3644 Strip off qualifier when comparing versions
+    
+    (cherry picked from commit 36f2c8da3e5c32ae836d4bb318d6b445e8062e2a)
+    
+    Conflicts:
+    	api/src/main/java/org/openmrs/module/ModuleUtil.java
+
+[33mcommit 1d59b0b1bdde4bd879a8413d2324553386ed5924[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Mon Feb 10 18:35:59 2014 +0300
+
+    Removing a TODO for: Upgrade Spring framework to 3.2.7.RELEASE -
+    TRUNK-3390
+
+[33mcommit 4f4aa728c3362e51d698e6e22d7aec8c648a35c6[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Mon Feb 10 15:30:19 2014 +0300
+
+    Upgrade Spring framework to 3.2.7.RELEASE - TRUNK-3390
+
+[33mcommit 9faa028cdd96ba6024e94bb0815d16c85efea589[m
+Author: Lukasz Plotnicki <lplotnicki@thoughtworks.com>
+Date:   Sat Feb 8 14:50:11 2014 +0100
+
+    @lplotni TRUNK-287 Applied the changes.
+    
+    As discussed with @dkayiwa
+
+[33mcommit f3a8e610b62bfb62505d1b80cea5d960daed9204[m
+Author: Lukasz Plotnicki <lplotnicki@thoughtworks.com>
+Date:   Sat Jan 11 14:08:36 2014 +0100
+
+    @lplotni/@puffedo: TRUNK-287 We added a test to the ConceptServiceImplTest verifying that the whitespaces will be trimmed when storing a name of a concept. We also tidied up the imports and some tests.
+
+[33mcommit c03c3fb62a12643f9e153aac26cd6e922ef8d5f5[m
+Merge: 05d46f1 66f0eb3
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Fri Feb 7 11:28:53 2014 +0300
+
+    Merge pull request #620 from vaibhav-hp/RCM-82
+    
+    RCM-82 If have no results it still shows Displaying 1 to 1 of 1, this sh...
+
+[33mcommit 66f0eb3ee5dd13d1501ba3308cecb3f11f9cc1fe[m
+Author: vaibhav-hp <kmit.vaibhav@gmail.com>
+Date:   Thu Feb 6 23:21:59 2014 +0530
+
+    RCM-82 If have no results it still shows Displaying 1 to 1 of 1, this should say No results
+
+[33mcommit 05d46f1fadcc177ed4584bb3f976df205a890a50[m
+Merge: 8260d34 bdb6c7b
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Wed Feb 5 18:36:07 2014 +0300
+
+    Merge pull request #616 from vaibhav-hp/TRUNK-2779-new
+    
+    TRUNK-2779 clean up patient birthdate error and give proper error messag...
+
+[33mcommit bdb6c7b8604a9367459af12152218b80730e78f7[m
+Author: vaibhav-hp <kmit.vaibhav@gmail.com>
+Date:   Wed Feb 5 20:51:26 2014 +0530
+
+    TRUNK-2779 clean up patient birthdate error and give proper error message
+
+[33mcommit 8260d34248073682718c5b2e6fb69a0e50c2a972[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Wed Feb 5 16:32:16 2014 +0300
+
+    Ignore blank message code - UIFR-140
+
+[33mcommit d20da4d7d7ac02c0d24ac588d803272f8100d65d[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Wed Feb 5 13:19:51 2014 +0300
+
+    Doing some formatting
+
+[33mcommit 2e81755b96bb18f7de9fbfb8ce057e5e27ab3354[m
+Merge: 5b301b5 36c69cf
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Wed Feb 5 12:16:48 2014 +0300
+
+    Merge pull request #614 from dszafranek/TRUNK-4246
+    
+    TRUNK-4246: if/else/for/while/do statements should always use curly braces
+
+[33mcommit 36c69cff69921fabb58dacbaf15e7c55d5bdabef[m
+Author: Damian Szafranek <dszafranek@soldevelo.com>
+Date:   Wed Feb 5 09:52:47 2014 +0100
+
+    TRUNK-4246: if/else/for/while/do statements should always use curly braces
+
+[33mcommit 5b301b5de9e33036fcc738c5e8325bb279289d5a[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Tue Feb 4 21:50:54 2014 +0300
+
+    Follow up fix for: Performance - Method concatenates strings using + in
+    a loop - TRUNK-4226
+
+[33mcommit 7b6e6e2f776aafc3ad397ab6430c77ed25a20857[m
+Merge: 88802ef b54304f
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Tue Feb 4 02:36:42 2014 -0800
+
+    Merge pull request #606 from dszafranek/TRUNK-4246
+    
+    TRUNK-4246: if/else/for/while/do statements should always use curly braces
+
+[33mcommit b54304f90aaa12e7ffc6b51b808d95e500b3fce4[m
+Author: Damian Szafranek <dszafranek@soldevelo.com>
+Date:   Mon Feb 3 09:59:04 2014 +0100
+
+    TRUNK-4246: if/else/for/while/do statements should always use curly braces
+
+[33mcommit 88802efa392807184f759e02c8187631f880528f[m
+Merge: b53085b 41f31b4
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Mon Feb 3 01:01:15 2014 -0800
+
+    Merge pull request #601 from lishar/TRUNK-3840
+    
+    TRUNK-3840: display retired concepts with strikethrough at end of list
+
+[33mcommit b53085bdfbef2ad0c9ac7f59822a02ee006b41b7[m
+Merge: ef61a0c dfb59a9
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Mon Feb 3 00:39:41 2014 -0800
+
+    Merge pull request #602 from vaibhav-hp/TRUNK-2779
+    
+    TRUNK-2779 Clean up patient birthdate error
+
+[33mcommit dfb59a9e68b9bb0863b1397ddd0df1fa15eccdb8[m
+Author: vaibhav-hp <kmit.vaibhav@gmail.com>
+Date:   Sat Feb 1 13:34:44 2014 +0530
+
+    TRUNK-2779 Clean up patient birthdate error
+
+[33mcommit 41f31b4e931f049099c86faf3983516d7a501a56[m
+Author: Lisha Ruan <lisha.ruan@gmail.com>
+Date:   Sat Jan 25 19:07:54 2014 -0500
+
+    TRUNK-3840: display retired concepts with strikethrough at end of list
+
+[33mcommit ef61a0cab6d5a4f4df6d663917e8478faa40bf36[m
+Merge: 8451a17 50f32d7
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Fri Jan 31 07:28:31 2014 -0800
+
+    Merge pull request #588 from saramirza14/TRUNK-2448-New
+    
+    TRUNK-2448: Add ability to view uuids to most objects
+
+[33mcommit 50f32d73b190ddf895e5696a7f8e30d4a6725281[m
+Author: Sara Fatima <sara.mirza14@gmail.com>
+Date:   Fri Jan 31 20:27:43 2014 +0530
+
+    TRUNK-2448 Adding uuid
+
+[33mcommit 8451a1714909a14d26db166d82a81a332789027a[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Fri Jan 31 15:58:46 2014 +0300
+
+    Create generic DAO interfaces and abstract classes - TRUNK-3782
+    author:lluismf
+
+[33mcommit e62012d07773a39c74238e4a95150268eaff2dd1[m
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Fri Jan 31 14:30:00 2014 +0300
+
+    Doing some formatting
+
+[33mcommit 2c7079443ad4b9fa7d7944289b4a0e30eee4f8f0[m
+Merge: ef50284 afa1f73
+Author: dkayiwa <dkayiwa@openmrs.org>
+Date:   Fri Jan 31 02:33:32 2014 -0800
+
+    Merge pull request #598 from madawa-rc/TRUNK-3569
+    
+    Trunk-3569 : Displaying formatDescription when identifier fails regex validation
+
+[33mcommit afa1f735b01c4228f8ef75e51cb71a787d7a105c[m
+Author: madawa-rc <madawa.rc@gmail.com>
+Date:   Fri Jan 31 07:17:31 2014 +0530
+
+    TRUNK-3569: Changed the error message PatientIdentifier.error.invalidFormat
+
+[33mcommit 5c280d076c49b4553e134cc10d1c0b584229e34e[m
+Author: madawa-rc <madawa.rc@gmail.com>
+Date:   Fri Jan 31 06:49:53 2014 +0530
+
+    TRUNK-3569: Modified test class
+
+[33mcommit 04a0d6684bfb1a5875e45d666ce5a5b38a845a03[m
+Author: Sara Fatima <sara.mirza14@gmail.com>
+Date:   Fri Jan 31 00:26:40 2014 +0530
+
+    TRUNK-2448 Adding uuid to other metadata pages
+
+[33mc

@@ -304,7 +304,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @see {@link ProgramWorkflow#getSortedStates()}
 	 */
-	
 	@Test
 	@Verifies(value = "should sort names containing numbers intelligently", method = "getSortedStates()")
 	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() throws Exception {
@@ -337,7 +336,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			x++;
 		}
 	}
-	
+	/**
+	 * This tests for getting possible outcomes for a set
+	 * 
+	 * Asserts if the size is equal to 2.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldGetOutcomesForASet() throws Exception {
@@ -346,7 +351,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(4);
 		assertEquals(2, possibleOutcomes.size());
 	}
-	
+	/**
+	 * This tests for getting possible outcomes for a set
+	 * 
+	 * Asserts if the size is equal to 2.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get possible outcomes for a program with outcome questions", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldGetOutcomesForAQuestion() throws Exception {
@@ -355,7 +366,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(5);
 		assertEquals(2, possibleOutcomes.size());
 	}
-	
+	/**
+	 * This tests for getting possible outcomes for a set
+	 * 
+	 * Asserts if the size is equal to 2.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get no possible outcomes for a program that does not exist", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() throws Exception {
@@ -365,6 +382,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertTrue(possibleOutcomes.isEmpty());
 	}
 	
+	/**
+	 * Gets possible outcomes; Should get no outcomes for a program with no outcome
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get no possible outcomes for a program with no outcome", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnEmptyListWhenProgramHasNoOutcome() throws Exception {
@@ -410,14 +432,22 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		pp = pws.getPatientProgram(patientProgramId);
 		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());
 	}
-	
+	/** 
+	 * The get program by name method gets the program when the name matches
+	 * 
+	 * Asserts if it is not null
+	 **/
 	@Test
 	@Verifies(value = "should return program when name matches", method = "getProgramByName()")
 	public void getProgramByName_shouldReturnProgramWhenNameMatches() {
 		Program p = pws.getProgramByName("program name");
 		assertNotNull(p);
 	}
-	
+	/**
+	 * This method asserts if a program is null when the program does not exist with the given name
+	 * 
+	 * Asserts that it is not null
+	 **/
 	@Test
 	@Verifies(value = "should return null when program does not exist with given name", method = "getProgramByName()")
 	public void getProgramByName_shouldReturnNullWhenNoProgramForGivenName() {
@@ -426,6 +456,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/*
+	* RetiresProgram;Should save retired program with reason
+	*
+        * @throws APIException
+	*/
 	@Verifies(value = "should save the retire program with resaon", method = "retireProgram(Program program,String reason)")
 	public void retireProgram_shouldSaveTheRetiredProgramWithReason() throws APIException {
 		String reason = "Feeling well.";
