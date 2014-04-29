@@ -14,6 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -70,11 +71,23 @@ public class ChainingInterceptor implements Interceptor {
 	
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) {
-		boolean objectChanged = false;
 		
-		for (Interceptor i : interceptors)
+		boolean objectChanged = false;
+		List<Interceptor> immutableEntityInterceptors = new ArrayList<Interceptor>();
+		for (Interceptor i : interceptors) {
+			if (ImmutableEntityInterceptor.class.isAssignableFrom(i.getClass())) {
+				//Immutable entity interceptors need to be invoked last just in case the others make some edits
+				//to immutable objects, See javadocs for ImmutableEntityInterceptor
+				immutableEntityInterceptors.add(i);
+				continue;
+			}
 			// must be in this order so that java doesn't skip the method call for optimizations
 			objectChanged = i.onFlushDirty(entity, id, currentState, previousState, propertyNames, types) || objectChanged;
+		}
+		
+		for (Interceptor i : immutableEntityInterceptors) {
+			objectChanged = i.onFlushDirty(entity, id, currentState, previousState, propertyNames, types) || objectChanged;
+		}
 		
 		return objectChanged;
 	}

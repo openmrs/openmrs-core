@@ -30,6 +30,7 @@ import org.openmrs.Patient;
 import org.openmrs.TestOrder;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
@@ -245,7 +246,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(new Date());
-		order.setDateStopped(cal.getTime());
+		OrderUtilTest.setDateStopped(order, cal.getTime());
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
@@ -376,7 +377,6 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
-		order.setDateStopped(new Date());
 		order.setAutoExpireDate(new Date());
 		order.setCareSetting(new CareSetting());
 		order.setEncounter(encounter);
