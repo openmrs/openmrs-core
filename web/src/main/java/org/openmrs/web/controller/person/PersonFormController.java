@@ -15,18 +15,21 @@ package org.openmrs.web.controller.person;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +46,7 @@ import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.web.address.AddressTemplate;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.WebConstants;
@@ -188,7 +192,7 @@ public class PersonFormController extends SimpleFormController {
 		String action = request.getParameter("action");
 		
 		if (action.equals(msa.getMessage("Person.save"))) {
-			updatePersonAddresses(request, person);
+			updatePersonAddresses(request, person, errors);
 			
 			updatePersonNames(request, person);
 			
@@ -498,9 +502,11 @@ public class PersonFormController extends SimpleFormController {
 	 *
 	 * @param request
 	 * @param person
+	 * @param errors
 	 * @throws ParseException
 	 */
-	protected void updatePersonAddresses(HttpServletRequest request, Person person) throws ParseException {
+	protected void updatePersonAddresses(HttpServletRequest request, Person person, BindException errors)
+	        throws ParseException {
 		String[] add1s = ServletRequestUtils.getStringParameters(request, "address1");
 		String[] add2s = ServletRequestUtils.getStringParameters(request, "address2");
 		String[] cities = ServletRequestUtils.getStringParameters(request, "cityVillage");
@@ -652,6 +658,10 @@ public class PersonFormController extends SimpleFormController {
 					pa.setEndDate(Context.getDateFormat().parse(endDates[i]));
 				}
 				
+				//check if all required addres fields are filled
+				if (!areRequiredAddressFieldsFilled(pa, errors))
+					return;
+				
 				person.addAddress(pa);
 			}
 			Iterator<PersonAddress> addresses = person.getAddresses().iterator();
@@ -659,6 +669,11 @@ public class PersonFormController extends SimpleFormController {
 			PersonAddress preferredAddress = null;
 			while (addresses.hasNext()) {
 				currentAddress = addresses.next();
+				
+				//check if all required addres fields are filled
+				if (!areRequiredAddressFieldsFilled(currentAddress, errors))
+					return;
+				
 				if (currentAddress.isPreferred()) {
 					if (preferredAddress != null) { // if there's a preferred address already exists, make it preferred=false
 						preferredAddress.setPreferred(false);
@@ -795,7 +810,43 @@ public class PersonFormController extends SimpleFormController {
 			person.setBirthdate(birthdate);
 		}
 		person.setBirthdateEstimated(birthdateEstimated);
+	}
+	
+	/**
+	 * checks if all required address fields re filled
+	 * @param errors
+	 * @return
+	 */
+	public static boolean areRequiredAddressFieldsFilled(PersonAddress pa, Errors errors) {
+		String xml = Context.getLocationService().getAddressTemplate();
+		List<String> requiredElements = new ArrayList<String>();
 		
+		try {
+			AddressTemplate addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
+			    AddressTemplate.class);
+			requiredElements = addressTemplate.getRequiredElements();
+		}
+		catch (Exception e) {
+			errors.reject(Context.getMessageSourceService().getMessage("AddressTemplate.error"));
+			return false;
+		}
+		
+		for (String fieldName : requiredElements) {
+			try {
+				Object value = PropertyUtils.getProperty(pa, fieldName);
+				if (StringUtils.isBlank((String) value)) {
+					//required field not found
+					errors.reject("Required address field " + fieldName + " is blank.");
+				}
+			}
+			catch (Exception e) {
+				//wrong field declared in template
+			}
+		}
+		if (errors.hasErrors())
+			return false;
+		
+		return true;
 	}
 	
 }
