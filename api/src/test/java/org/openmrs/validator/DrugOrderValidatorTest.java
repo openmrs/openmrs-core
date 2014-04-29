@@ -142,27 +142,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if quantityUnits is null for outpatient careSetting
-	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void validate_shouldFailValidationIfQuantityUnitsIsNullForOutpatientCareSetting() throws Exception {
-		DrugOrder OutpatientOrder = new DrugOrder();
-		OutpatientOrder.setCareSetting(Context.getOrderService().getCareSetting(1));
-		OutpatientOrder.setQuantityUnits(null);
-		Errors OutpatientOrderErrors = new BindException(OutpatientOrder, "order");
-		new DrugOrderValidator().validate(OutpatientOrder, OutpatientOrderErrors);
-		Assert.assertTrue(OutpatientOrderErrors.hasFieldErrors("quantityUnits"));
-		
-		DrugOrder inPatientOrder = new DrugOrder();
-		inPatientOrder.setCareSetting(Context.getOrderService().getCareSetting(2));
-		inPatientOrder.setQuantityUnits(null);
-		Errors InpatientOrderErrors = new BindException(inPatientOrder, "order");
-		new DrugOrderValidator().validate(inPatientOrder, InpatientOrderErrors);
-		Assert.assertFalse(InpatientOrderErrors.hasFieldErrors("quantityUnits"));
-	}
-	
-	/**
 	 * @verifies fail validation if numberOfRefills is null for outpatient careSetting
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */

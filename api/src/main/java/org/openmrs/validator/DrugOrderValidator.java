@@ -111,7 +111,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		if (order.getAction() != Order.Action.DISCONTINUE && order.getCareSetting() != null
 		        && order.getCareSetting().getCareSettingType().equals(CareSetting.CareSettingType.OUTPATIENT)) {
 			ValidationUtils.rejectIfEmpty(errors, "quantity", "DrugOrder.error.quantityIsNullForOutPatient");
-			ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "DrugOrder.error.quantityUnitsIsNullForOutPatient");
 			ValidationUtils.rejectIfEmpty(errors, "numRefills", "DrugOrder.error.numRefillsIsNullForOutPatient");
 		}
 	}
