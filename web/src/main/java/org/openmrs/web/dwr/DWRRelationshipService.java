@@ -13,9 +13,7 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -25,6 +23,8 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.RelationshipValidator;
+import org.springframework.validation.MapBindingResult;
 
 public class DWRRelationshipService {
 	
@@ -50,7 +50,7 @@ public class DWRRelationshipService {
 		Context.getPersonService().voidRelationship(Context.getPersonService().getRelationship(relationshipId), voidReason);
 	}
 	
-	public void changeRelationshipDates(Integer relationshipId, String startDateStr, String endDateStr) throws Exception {
+	public boolean changeRelationshipDates(Integer relationshipId, String startDateStr, String endDateStr) throws Exception {
 		Relationship r = Context.getPersonService().getRelationship(relationshipId);
 		Date startDate = null;
 		if (StringUtils.isNotBlank(startDateStr)) {
@@ -62,7 +62,15 @@ public class DWRRelationshipService {
 		}
 		r.setStartDate(startDate);
 		r.setEndDate(endDate);
-		Context.getPersonService().saveRelationship(r);
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
+		new RelationshipValidator().validate(r, errors);
+		if (errors.hasErrors()) {
+			return false;
+		} else {
+			Context.getPersonService().saveRelationship(r);
+			return true;
+		}
 	}
 	
 	public Vector<RelationshipListItem> getRelationships(Integer personId, Integer relationshipTypeId) {

@@ -189,22 +189,22 @@
 		$j("#editRelationship").dialog("open");
 	}
 
+    function handleDateResult(validEndDate) {
+        if(validEndDate==true) {
+            refreshRelationships();
+            $j("#relationship_invalid_Date").hide();
+            $j("#editRelationship").dialog("close");
+        } else {
+            $j("#relationship_invalid_Date").show();
+            $j('#editRelationship #edit_rel_end_date').select();
+        }
+    }
+
 	function handleEditRelationship() {
 		var relId = $j("#editRelationship #edit_relationship_id").val();
 		var startDate = $j("#editRelationship #edit_rel_start_date").val();
 		var endDate = $j("#editRelationship #edit_rel_end_date").val();
-
-        if(startDate>endDate)
-		{
-			$j("#relationship_invalid_Date").show();
-			$j('#editRelationship #edit_rel_end_date').select();
-		}
-
-       else
-		{
-		$j("#editRelationship").dialog("close");
-		DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, refreshRelationships);
-		}
+        DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, handleDateResult);
 	}
 	
 	function voidRelationshipDialog(relId) {
