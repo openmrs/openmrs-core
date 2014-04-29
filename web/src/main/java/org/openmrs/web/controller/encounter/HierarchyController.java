@@ -108,7 +108,7 @@ public class HierarchyController {
 	}
 	
 	private String getName(BaseOpenmrsMetadata element) {
-		return element.isRetired() ? "<strike>" + element + "</strike>" : element.getName(); 
+		return element.isRetired() ? "<strike>" + element + "</strike>" : element.getName();
 	}
 	
 }
