@@ -32,6 +32,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -690,7 +691,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
 			throw new APIException("Merge operation cancelled: Cannot merge user " + preferred.getPatientId() + " to self");
 		}
-		
+		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(notPreferred);
+		for (Order order : orders) {
+			if (!order.isVoided()) {
+				throw new APIException("Cannot merge patients where the not preferred patient has unvoided orders");
+			}
+		}
 		PersonMergeLogData mergedData = new PersonMergeLogData();
 		mergeVisits(preferred, notPreferred, mergedData);
 		mergeEncounters(preferred, notPreferred, mergedData);

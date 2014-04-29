@@ -20,9 +20,10 @@
 var dupSize=0;
 var currSelectedTab = null;
 var tabCount = 0;
+var patientIdsWithUnvoidedOrders = ${patientIdsWithUnvoidedOrders}
 	dojo.require("dojo.widget.openmrs.PatientSearch");
 	
-	function changePrimary(dir) {
+	function changePrimary(dir, patientId) {
 		var left = document.getElementById("left");
 		var right= document.getElementById("right");
 		
@@ -41,6 +42,7 @@ var tabCount = 0;
 		var src = "${pageContext.request.contextPath}/images/" + dir + "Arrow.gif";
 		img.src = src;
 		cell.appendChild(img);
+        toggleUnvoidedOrderErrorMessage(patientId);
 	}
 
 	dojo.addOnLoad( function() {
@@ -122,11 +124,12 @@ function collectInfo(){
 			document.getElementById("np1").style.display="none";
 			document.getElementById("np2").style.display="none";
 			document.getElementById("tabsRow").style.display="none";
+            toggleUnvoidedOrderErrorMessage();
 		}
 }
 
 
-function display(obj, updateTabs){
+function display(obj, updateTabs, prefPatientId){
 	var prefId = obj.id;
 	var check = true;
 	var patientsNames = document.getElementById("PatientNames").value.split('#');
@@ -239,6 +242,8 @@ function display(obj, updateTabs){
 	if(dupSize > 1){
 		updateTabState('tab0');
 	}
+
+    toggleUnvoidedOrderErrorMessage(prefPatientId);
 }
 
 function unPrefPatient(i){
@@ -393,6 +398,30 @@ function generateMergeList(){
 	} else return false;
 }
 
+var patientList = [];
+<c:forEach items="${patientList}" var="pat" varStatus="status">
+patientList[${status.index}] = ${pat.patientId};
+</c:forEach>
+function toggleUnvoidedOrderErrorMessage(prefPatientId){
+    $j('#patientWithUnvoidedOrdersError').hide();
+    $j('#mergeButton').removeAttr('disabled');
+    if(!prefPatientId && patientList.length > 0){
+        prefPatientId = patientList[0];
+    }
+
+    if(prefPatientId){
+        for(var i = 0; i < patientList.length; i++){
+            if(patientList[i] != prefPatientId){
+                if(patientIdsWithUnvoidedOrders.indexOf(patientList[i]) > -1){
+                    $j('#patientWithUnvoidedOrdersError').show();
+                    $j('#mergeButton').attr('disabled', 'disabled');
+                    break;
+                }
+            }
+        }
+    }
+}
+
 </script>
 
 <style>
@@ -415,8 +444,10 @@ function generateMergeList(){
 <h2><openmrs:message code="Patient.merge.title"/></h2>
 
 <openmrs:message code="Patient.merge.warning" />
-
 <br/><br/>
+<span id="patientWithUnvoidedOrdersError" class="error" style="display: none">
+    <openmrs:message code="Patient.merge.patient.NoUnvoidedOrders" />
+</span>
 <div id="selectionList" style="display:none">
 <b class="boxHeader"><openmrs:message code="Select a Preferred Patient" /></b>
 <div class="box" style="max-height:160px; overflow:auto">
@@ -426,7 +457,7 @@ function generateMergeList(){
 <tr id="${status.index}tr" class="<c:choose>
 				<c:when test="${status.index % 2 == 0}">evenRow</c:when>
 				<c:otherwise>oddRow</c:otherwise>
-			</c:choose>"><td><input type="radio" id="${status.index}" name="preferred2" value="${patient.patientId}" onclick="display(this, true)" <c:if test="${patient.voided==true}">disabled</c:if>/></td><td>${patient.patientId}</td><td><c:forEach items="${patient.identifiers}" var="identifier" varStatus="entries">
+			</c:choose>"><td><input type="radio" id="${status.index}" name="preferred2" value="${patient.patientId}" onclick="display(this, true, ${patient.patientId})" <c:if test="${patient.voided==true}">disabled</c:if>/></td><td>${patient.patientId}</td><td><c:forEach items="${patient.identifiers}" var="identifier" varStatus="entries">
 							<c:if test="${entries.index==0}">${identifier}</c:if>
 						</c:forEach> </td><c:forEach items="${patient.names}" var="name" varStatus="entries">
 						<c:if test="${entries.index==0}">
@@ -470,7 +501,7 @@ function generateMergeList(){
 			<tr>
 				<td valign="top">
 					<h4 id="p1">
-						<input type="radio" name="preferred1" id="${patient1.patientId}preferred" value="${patient1.patientId}" onclick="if (this.checked) changePrimary('left')" <c:if test="${!patient1.voided}">checked</c:if><c:if test="${patient1.voided}">disabled</c:if> />
+						<input type="radio" name="preferred1" id="${patient1.patientId}preferred" value="${patient1.patientId}" onclick="if (this.checked) changePrimary('left',${patient1.patientId})" <c:if test="${!patient1.voided}">checked</c:if><c:if test="${patient1.voided}">disabled</c:if> />
 						<label for="${patient1.patientId}preferred"><openmrs:message code="Patient.merge.preferred" /></label>
 						<c:if test="${patient1.voided}">
 						<div class="retiredMessage">
@@ -487,7 +518,7 @@ function generateMergeList(){
 				</td>
 				<td valign="top">
 					<h4 id="p2">
-						<input type="radio" name="preferred1" id="${patient2.patientId}preferred" value="${patient2.patientId}" onclick="if (this.checked) changePrimary('right')" <c:if test="${patient2.voided}">disabled</c:if>/>
+						<input type="radio" name="preferred1" id="${patient2.patientId}preferred" value="${patient2.patientId}" onclick="if (this.checked) changePrimary('right', ${patient2.patientId})" <c:if test="${patient2.voided}">disabled</c:if>/>
 						<label for="${patient2.patientId}preferred"><openmrs:message code="Patient.merge.preferred" /></label>
 						<c:if test="${patient2.voided}">
 							<div class="retiredMessage">
@@ -753,7 +784,7 @@ function generateMergeList(){
 	
 	<c:if test="${patient2.patientId != null}">
 		<br />
-		<input type="submit" name="action" value='<openmrs:message code="Patient.merge"/>' onclick="return generateMergeList();" >
+		<input id="mergeButton" type="submit" name="action" value='<openmrs:message code="Patient.merge"/>' onclick="return generateMergeList();" >
 		<input type="hidden" id="pref" name="preferred" value=""/>
 		<input type="hidden" id="nonPref" name="nonPreferred" value=""/>
 		<input type="hidden" name="modalMode" value='${modalMode}' />

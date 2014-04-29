@@ -13,6 +13,11 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -30,14 +35,9 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Contains methods pertaining to Patients in the system
- *
+ * 
  * <pre>
  * Usage:
  * List&lt;Patient&gt; patients = Context.getPatientService().getAllPatients();
@@ -409,7 +409,7 @@ public interface PatientService extends OpenmrsService {
 	 * Get all patientIdentifier types that match the given criteria
 	 * <p>
 	 * Ordered same as {@link org.openmrs.comparator.PatientIdentifierTypeDefaultComparator}.
-	 *
+	 * 
 	 * @param name name of the type to match on
 	 * @param format the string format to match on
 	 * @param required if true, limits to only identifiers marked as required if false, only non
@@ -662,9 +662,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param notPreferred The Patient to merge from (and then void)
 	 * @throws APIException
 	 * @throws SerializationException
-	 * 
 	 * @see PersonMergeLogData
-	 * 
 	 * @should not merge the same patient to itself
 	 * @should copy nonvoided names to preferred patient
 	 * @should copy nonvoided identifiers to preferred patient
@@ -709,6 +707,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should audit prior date of birth estimated
 	 * @should audit prior gender
 	 * @should not copy over duplicate patient identifiers
+	 * @should fail if not preferred patient has unvoided orders
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException;
