@@ -2416,4 +2416,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, ""));
 		assertThat(orderService.getTestSpecimenSources(), is(empty()));
 	}
+	
+	/**
+	 * @see OrderService#retireOrderType(org.openmrs.OrderType, String)
+	 */
+	@Test
+	@Verifies(value = "should not retire concept class", method = "retireOrderType(OrderType orderType, String reason)")
+	public void retireOrderType_shouldNotRetireIndependentField() throws Exception {
+		OrderType orderType = orderService.getOrderType(2);
+		ConceptClass conceptClass = conceptService.getConceptClass(1);
+		Assert.assertFalse(conceptClass.isRetired());
+		orderType.addConceptClass(conceptClass);
+		orderService.retireOrderType(orderType, "test retire reason");
+		Assert.assertFalse(conceptClass.isRetired());
+	}
 }
