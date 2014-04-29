@@ -144,11 +144,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		'</span>'+
 	'</span>';
 	
-	var BATCH_SIZE = gp.maxSearchResults;
 	var SEARCH_DELAY = gp.searchDelay;//time interval in ms between keyup and triggering the search off
 	var ERROR_MSG_DELAY = 600;//time interval in ms between keyup and  showing the minimum character error
-	if(!Number(BATCH_SIZE))
-		BATCH_SIZE = 200;
 	var ajaxTimer = null;
 	var buffer = null;
 	var inSerialMode = Boolean(gp.searchRunInSerialMode);
@@ -173,9 +170,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		_div: null,
 		_table: null,
 		_textInputTimer: null,
-		_lastSubCallCount: 0,
 		_bufferedAjaxCallCounters: null,
 		_searchDelayTimer: null,
+		_searchText: null,
 		
 		_create: function() {
 		    var self = this,
@@ -439,12 +436,33 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	/* Called to toggle the verbose output */
 		    	fnDrawCallback : function(oSettings){
 		    		//we have nothing to hide
-		    		if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length == 0)
+		    		if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length == 0 || oSettings._iDisplayStart > self._results.length)
 	    				return;
+					check = true;
 		    		pageRowCount = oSettings._iDisplayStart+oSettings._iDisplayLength;
+					if (pageRowCount > self._results.length){
+						pageRowCount = self._results.length;
+					}
 		    		for(var i = oSettings._iDisplayStart; i < pageRowCount; i++){
 		    			if(self.options.showIncludeVerbose && self.options.verboseHandler){
 		    				rowData = self._results[i];
+							if (rowData == null) {
+								var actualBatchSize = self._table.fnSettings()._iDisplayLength - (i - oSettings._iDisplayStart);
+								if ((i + actualBatchSize) > self._results.length) {
+									actualBatchSize = self._results.length - i;
+								}
+								spinnerObj.css("visibility", "visible");
+								loadingMsgObj.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", actualBatchSize));
+								self.options.searchHandler(self._searchText, self._addMoreRows(i),
+									false, {includeVoided: self.options.showIncludeVoided && checkBox.prop('checked'),
+										start: i, length: actualBatchSize});
+
+								if ($j(verboseCheckBox).prop('checked')) {
+									check = false;
+								}
+								break;
+							}
+
 		    				verboseText = self.options.verboseHandler(i, rowData);
 		    				nRow = self._table.fnGetNodes()[i];
 		    				if(!nRow)
@@ -492,6 +510,19 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				    		}
 		    		}}
 		    		
+					if (check && pageRowCount < self._results.length) {
+						var nextRow = self._results[pageRowCount];
+						if (nextRow == null) {
+							var actualBatchSize = self._table.fnSettings()._iDisplayLength;
+							if ((pageRowCount + actualBatchSize) > self._results.length) {
+								actualBatchSize = self._results.length - pageRowCount;
+							}
+							self.options.searchHandler(self._searchText, self._addMoreRows(pageRowCount),
+								false, {includeVoided: self.options.showIncludeVoided && checkBox.prop('checked'),
+									start: pageRowCount, length: actualBatchSize});
+						}
+					}
+
 		    		if(!$j(verboseCheckBox).prop('checked')){
 		    			$j('.verbose').hide();
 		    		}
@@ -723,46 +754,21 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 						self._bufferedAjaxCallCounters = new Array;
 					}
 					
-					loadingMsgObj.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", matchCount));
-					self._lastSubCallCount = 1;
-					self._fetchMoreResults(searchText, curCallCount, startIndex, matchCount, 1);										
+					self._searchText = searchText;
+					var actualBatchSize = startIndex;
+					if((startIndex+actualBatchSize) > matchCount){
+						actualBatchSize = matchCount-startIndex;
+					}
+
+					loadingMsgObj.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", startIndex+actualBatchSize));
+					self.options.searchHandler(searchText, self._addOtherRows(searchText, matchCount, startIndex),
+						false, {includeVoided: self.options.showIncludeVoided && checkBox.prop('checked'),
+							start: startIndex, length: actualBatchSize});
 				}else if(matchCount > 0) 
 					$j('#pageInfo').append(" - "+omsgs.onePage);
 			};
 		},
 		
-		_fetchMoreResults: function(searchText, curCallCount, startIndex, matchCount, curSubCallCount){
-			//if a new ajax call has been triggered off
-			if(curCallCount && this._lastCallCount > curCallCount) {
-				return;
-			}
-			actualBatchSize = BATCH_SIZE;
-			if((startIndex+BATCH_SIZE) > matchCount){
-				//startIndex always matches the actual row count
-				actualBatchSize = matchCount-startIndex;
-			}
-			
-			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex, curSubCallCount),
-				false, {includeVoided: this.options.showIncludeVoided && checkBox.prop('checked'),
-				start: startIndex, length: actualBatchSize});
-					
-			if(inSerialMode)
-				return;
-				
-			var self = this;
-			ajaxTimer = window.setTimeout(function(){
-				nextStart = startIndex+BATCH_SIZE;
-				if(nextStart < matchCount){
-					self._fetchMoreResults(searchText, curCallCount, nextStart, matchCount, ++curSubCallCount);
-				}
-				else{
-					if(ajaxTimer)
-						window.clearTimeout(ajaxTimer);
-						return;
-				}
-			}, 10);//fetch more results every 10ms till we have all
-		},
-			
 		_doHandleResults: function(matchCount, searchText) {
 			this.curRowSelection = null;
 				
@@ -1060,8 +1066,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				$j('#pageInfo').css("visibility", "visible");
 		},
 		
-		//This function adds the data returned by the second ajax call that fetches the remaining rows
-		_addMoreRows: function(curCallCount2, searchText, matchCount, startIndex, curSubCallCount){
+		//This function adds the data returned by the second ajax call
+		_addOtherRows: function(searchText, matchCount, startIndex){
 			var self = this;
 			return function(results) {
 				
@@ -1076,13 +1082,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					if(currInput.length > 0)
 						$j("#minCharError").css("visibility", "visible");
 					spinnerObj.css("visibility", "hidden");
-					return;
-				}
-				
-				//Since this method is called on the second ajax call to return the remaining results,
-				//therefore (self._lastCallCount == curCallCount) so it will pass if no later ajax call were made				
-				if(curCallCount2 && self._lastCallCount > curCallCount2) {
-                    //stop old ajax calls from over writing later ones
 					return;
 				}
 				
@@ -1101,86 +1100,80 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				if(results["notification"])
 					$j(notification).html(results["notification"]);
 				
-				//or if we are in serial mode
-				if(inSerialMode || (curSubCallCount == self._lastSubCallCount)){
-					var newRows = new Array();
-					for(var x in data) {
-						currentData = data[x];
-						newRows.push(self._buildRow(currentData));
-						//add the data to the results list
-						self._results.push(currentData);
-					}
-					
-					self._table.fnAddData(newRows);
-					nextSubCallCount = curSubCallCount + 1;
-					
-					if(!inSerialMode && self._bufferedAjaxCallCounters.length > 0){
-						//peep to the next sub call and search through the subcall counters of buffered rows for a match
-						while(true){
-							//if the this is true, it means the next subcall was found in the buffer and we need to
-							//we need to loop over it again to see if even the next in ine after it is also in the buffer
-							wasNextSubCallInBuffer = false;
-							foundAtIndex = null;// in case the next subcal was in the buffer, store its index here for removal
-							for(var i in self._bufferedAjaxCallCounters){
-								subCallCounter = self._bufferedAjaxCallCounters[i];
-								//Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
-								//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ignore 5 since it has to wait on 4							
-								bufferedData = buffer[subCallCounter];
-								if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedData){
-									rowsToInsert = new Array();
-									for(var j in bufferedData) {
-										bufferedRowData = bufferedData[j];
-										rowsToInsert.push(self._buildRow(bufferedRowData));
-										self._results.push(bufferedRowData);
-									}
-									self._table.fnAddData(rowsToInsert);
-									buffer[subCallCounter] = null;//drop rows from buffer
-									nextSubCallCount++;
-									wasNextSubCallInBuffer = true;
-									foundAtIndex = i;
-								}
-							}
-							
-							if(!wasNextSubCallInBuffer)
-								break;		
-							
-							//remove the sub call counter
-							self._bufferedAjaxCallCounters.splice(foundAtIndex, 1);
-						}
-					}
-					
-					self._lastSubCallCount = nextSubCallCount;
-				}
-				else if(!inSerialMode && curSubCallCount > self._lastSubCallCount){
-					//this ajax request returned before others that were made before it, add its results to the buffer
-					self._bufferedAjaxCallCounters.push(curSubCallCount);	
-					buffer[curSubCallCount] = data;
-
-					return;
+				var newRows = new Array();
+				for(var x in data) {
+					currentData = data[x];
+					newRows.push(self._buildRow(currentData));
+					//add the data to the results list
+					self._results.push(currentData);
 				}
 				
-				//update the page statistics to match the actual hit count, this is important for searches
-				//where the actual result count is less or more than the predicted matchCount
-				var actualResultCount = self._table.fnGetNodes().length;
-				if(actualResultCount % self._table.fnSettings()._iDisplayLength == 0)
-					self._table.numberOfPages = actualResultCount/self._table.fnSettings()._iDisplayLength;
+				for (i=startIndex+data.length; i<matchCount; i++){
+					newRows.push([" ", " "]);
+					self._results.push(null);
+				}
+				self._table.fnAddData(newRows);
+				
+				//update the page statistics
+				if(matchCount % self._table.fnSettings()._iDisplayLength == 0)
+					self._table.numberOfPages = matchCount/self._table.fnSettings()._iDisplayLength;
 				else
-					self._table.numberOfPages = Math.floor(actualResultCount/self._table.fnSettings()._iDisplayLength)+1;
-				
+					self._table.numberOfPages = Math.floor(matchCount/self._table.fnSettings()._iDisplayLength)+1;
 				self._updatePageInfo(searchText);
 				
-				//all the hits have been fetched
-				if(actualResultCount >= matchCount){
+				spinnerObj.css("visibility", "hidden");
+				loadingMsgObj.html("");
+				$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
+				pageStr = omsgs.pagesWithPlaceHolder.replace("_NUMBER_OF_PAGES_", self._table.numberOfPages);
+				$j('#pageInfo').append(" - "+pageStr);
+			};
+		},
+		
+		_addMoreRows: function(startIndex){
+			var self = this;
+			return function(results) {
+				//Don't display results from delayed ajax calls when the input box is blank or has less
+				//than the minimum characters
+				var currInput = $j.trim($j("#inputNode").val());
+				if(currInput == '' && !self.options.doSearchWhenEmpty){
+					$j(notification).html(" ");
+					if($j('#pageInfo').css("visibility") == 'visible')
+						$j('#pageInfo').css("visibility", "hidden");
+					$j(".openmrsSearchDiv").hide();
+					if(currInput.length > 0)
+						$j("#minCharError").css("visibility", "visible");
+					spinnerObj.css("visibility", "hidden");
+					return;
+				}
+
+				var data = results["objectList"];
+				//if error occured on server
+				if(data && data.length > 0 && typeof data[0] == 'string') {
+					if(!inSerialMode && ajaxTimer)
+						window.clearTimeout(ajaxTimer);
+
+					$j(notification).html(data[0]);
 					spinnerObj.css("visibility", "hidden");
 					loadingMsgObj.html("");
-					$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
-					pageStr = omsgs.pagesWithPlaceHolder.replace("_NUMBER_OF_PAGES_", self._table.numberOfPages);
-					$j('#pageInfo').append(" - "+pageStr);
+					return;
 				}
-				
-				//if there are still more hits to fetch and we are in serial mode, get them
-				if(inSerialMode && actualResultCount < matchCount){
-					self._fetchMoreResults(searchText, curCallCount2, (startIndex+BATCH_SIZE), matchCount);
+
+				if(results["notification"])
+					$j(notification).html(results["notification"]);
+
+				var i = startIndex;
+				for(var x in data) {
+					currentData = data[x];
+					self._results[i] = currentData;
+					self._table.fnUpdate(self._buildRow(currentData), i);
+					i++;
+				}
+
+				spinnerObj.css("visibility", "hidden");
+				loadingMsgObj.html("");
+
+				if($j(verboseCheckBox).prop('checked')) {
+					self._table.fnDraw();
 				}
 			};
 		}
