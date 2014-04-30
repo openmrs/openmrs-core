@@ -1269,4 +1269,19 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(editedTag.getChangedBy());
 	}
 	
+	/**
+	 * @see LocationService#retireLocation(Location location, String reason)
+	 */
+	@Test
+	@Verifies(value = "should not retire location tag", method = "retireLocation(Location location, String reason)")
+	public void retireLocation_shouldNotRetireIndependentField() throws Exception {
+		LocationService locationService = Context.getLocationService();
+		Location location = new Location(1);
+		location.setName("location to retire");
+		LocationTag tag = new LocationTag(1);
+		location.addTag(tag);
+		locationService.retireLocation(location, "test retire reason");
+		Assert.assertFalse(tag.isRetired());
+	}
+	
 }
