@@ -41,11 +41,13 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.FormResource;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * TODO clean up and finish this test for all methods in FormService
@@ -811,4 +813,114 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 	
+	/**
+	 * Creates a new Global Property to lock forms by setting its value
+	 * @param propertyValue value for forms locked GP
+	 */
+	public void createFormsLockedGPAndSetValue(String propertyValue) {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FORMS_LOCKED);
+		gp.setPropertyValue(propertyValue);
+		Context.getAdministrationService().saveGlobalProperty(gp);
+	}
+	
+	/**
+	 * @see {@link FormService#saveForm(Form)}
+	 */
+	@Test
+	@Verifies(method = "saveForm(Form)", value = "should save given form successfully")
+	public void saveForm_shouldSaveGivenFormSuccessfully() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValue("false");
+		
+		Form form = new Form();
+		form.setName("new form");
+		form.setVersion("1.0");
+		form.setDescription("testing TRUNK-4030");
+		
+		Form formSave = fs.saveForm(form);
+		
+		assertTrue(form.equals(formSave));
+	}
+	
+	/**
+	 * @see {@link FormService#saveForm(Form)}
+	 */
+	@Test
+	@Verifies(method = "saveForm(Form)", value = "should update an existing form")
+	public void saveForm_shouldUpdateAnExistingForm() {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValue("false");
+		
+		Form form = fs.getForm(1);
+		form.setName("modified basic form");
+		fs.saveForm(form);
+		
+		Form formUpdate = fs.getForm(1);
+		
+		assertTrue(form.equals(formUpdate));
+	}
+	
+	/**
+	 * @see {@link FormService#saveForm(Form)}
+	 * @throws FormsLockedException
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(method = "saveForm(Form)", value = "should throw an error when trying to save an existing form while forms are locked")
+	public void saveForm_shouldThrowAnErrorWhenTryingToSaveAnExistingFormWhileFormsAreLocked() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValue("true");
+		
+		Form form = fs.getForm(1);
+		form.setName("modified basic form");
+		
+		fs.saveForm(form);
+	}
+	
+	/**
+	 * @see {@link FormService#saveForm(Form)}
+	 * @throws FormsLockedException
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(method = "saveForm(Form)", value = "should throw an error when trying to save a new form while forms are locked")
+	public void saveForm_shouldThrowAnErrorWhenTryingToSaveANewFormWhileFormsAreLocked() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValue("true");
+		
+		Form form = new Form();
+		form.setName("new form");
+		form.setVersion("1.0");
+		form.setDescription("testing TRUNK-4030");
+		
+		fs.saveForm(form);
+	}
+	
+	/**
+	 * @see {@link FormService#purgeForm(Form)}
+	 * @throws FormsLockedException
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(method = "purgeForm(Form)", value = "should throw an error when trying to delete a form while forms are locked")
+	public void purgeForm_shouldThrowAnErrorWhenTryingToDeleteFormWhileFormsAreLocked() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValue("true");
+		
+		Form form = fs.getForm(1);
+		
+		fs.purgeForm(form);
+	}
+	
+	/**
+	 * @see {@link FormService#purgeForm(Form)}
+	 */
+	@Test
+	@Verifies(method = "purgeForm(Form)", value = "should delete given form successfully")
+	public void purgeForm_shouldDeleteGivenFormSuccessfully() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValue("false");
+		
+		Form form = fs.getForm(1);
+		fs.purgeForm(form);
+		
+		assertNull(fs.getForm(1));
+	}
 }
