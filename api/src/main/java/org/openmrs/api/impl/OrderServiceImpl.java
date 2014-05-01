@@ -370,10 +370,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return dao.getOrderByUuid(uuid);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getDiscontinuationOrder(Order)
+	 */
 	@Transactional(readOnly = true)
 	@Override
 	public Order getDiscontinuationOrder(Order order) throws APIException {
 		return dao.getDiscontinuationOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getRevisionOrder(Order)
+	 */
+	@Override
+	public Order getRevisionOrder(Order order) throws APIException {
+		return dao.getRevisionOrder(order);
 	}
 	
 	/**

@@ -160,12 +160,22 @@ public class HibernateOrderDAO implements OrderDAO {
 		    uuid).uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getRevisionOrder(org.openmrs.Order)
+	 */
 	@Override
 	public Order getDiscontinuationOrder(Order order) {
 		Order discontinuationOrder = (Order) sessionFactory.getCurrentSession().createCriteria(Order.class).add(
 		    Restrictions.eq("previousOrder", order)).add(Restrictions.eq("action", Order.Action.DISCONTINUE)).uniqueResult();
 		
 		return discontinuationOrder;
+	}
+	
+	@Override
+	public Order getRevisionOrder(Order order) throws APIException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
+		criteria.add(Restrictions.eq("previousOrder", order)).add(Restrictions.eq("action", Order.Action.REVISE));
+		return (Order) criteria.uniqueResult();
 	}
 	
 	/**

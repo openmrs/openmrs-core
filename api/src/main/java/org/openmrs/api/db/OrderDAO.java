@@ -26,6 +26,7 @@ import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 
 /**
  * Order-related database functions
@@ -225,7 +226,12 @@ public interface OrderDAO {
 	public boolean isOrderTypeInUse(OrderType orderType);
 	
 	/**
-	 * @see OrderService#getDiscontinuationOrder(Order) 
+	 * @see org.openmrs.api.OrderService#getDiscontinuationOrder(Order)
 	 */
 	public Order getDiscontinuationOrder(Order order);
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getRevisionOrder(org.openmrs.Order)
+	 */
+	public Order getRevisionOrder(Order order) throws APIException;
 }

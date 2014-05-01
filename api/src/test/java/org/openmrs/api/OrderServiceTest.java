@@ -2078,4 +2078,22 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNull(order.getVoidedBy());
 		assertNull(order.getVoidReason());
 	}
+	
+	/**
+	 * @verifies return revision order if order has been revised
+	 * @see OrderService#getRevisionOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void getRevisionOrder_shouldReturnRevisionOrderIfOrderHasBeenRevised() throws Exception {
+		assertEquals(orderService.getOrder(111), orderService.getRevisionOrder(orderService.getOrder(1)));
+	}
+	
+	/**
+	 * @verifies return null if order has not been revised
+	 * @see OrderService#getRevisionOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void getRevisionOrder_shouldReturnNullIfOrderHasNotBeenRevised() throws Exception {
+		assertNull(orderService.getRevisionOrder(orderService.getOrder(444)));
+	}
 }

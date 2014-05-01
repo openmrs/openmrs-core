@@ -160,6 +160,19 @@ public interface OrderService extends OpenmrsService {
 	public Order getDiscontinuationOrder(Order order) throws APIException;
 	
 	/**
+	 * Get revision order for the given order, it is the order with the changes that was created as
+	 * a replacement for the specified order
+	 * 
+	 * @param order
+	 * @return the revision order or null if none
+	 * @throws APIException
+	 * @since 1.10
+	 * @should return revision order if order has been revised
+	 * @should return null if order has not been revised
+	 */
+	public Order getRevisionOrder(Order order) throws APIException;
+	
+	/**
 	 * Gets all Orders that match the specified parameters excluding discontinuation orders
 	 * 
 	 * @param patient the patient to match on
