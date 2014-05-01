@@ -222,11 +222,6 @@
 				<prop key="**/nameLayout.portlet">nameLayoutPortletController</prop>
 				<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 				<prop key="**/personRelationships.portlet">personRelationshipsPortletController</prop>
-				<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenCurrent.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenCompleted.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientEncounters.portlet">patientEncountersPortletController</prop>
 				<prop key="**/patientVisits.portlet">patientVisitsPortletController</prop>
 				<prop key="**/personFormEntry.portlet">personFormEntryPortletController</prop>
@@ -253,7 +248,6 @@
 	<bean id="globalPropertyPortletController" class="org.openmrs.web.controller.GlobalPropertyPortletController" />
 	<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController" />
 	<bean id="personRelationshipsPortletController" class="org.openmrs.web.controller.PersonRelationshipsPortletController" />
-	<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController" />
 	<bean id="patientEncountersPortletController" class="org.openmrs.web.controller.PatientEncountersPortletController" />
 	<bean id="patientVisitsPortletController" class="org.openmrs.web.controller.PatientVisitsPortletController" />
 	<bean id="personFormEntryPortletController" class="org.openmrs.web.controller.PersonFormEntryPortletController" />
