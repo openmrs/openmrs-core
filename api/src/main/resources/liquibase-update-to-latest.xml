@@ -6526,14 +6526,15 @@
         </insert>
     </changeSet>
 
-    <changeSet id="201402241054" author="Akshika">
+    <changeSet id="201402241055" author="Akshika">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="orders" columnName="start_date" />
         </preConditions>
         <comment>Making orders.start_date not nullable</comment>
         <ext:modifyColumn tableName="orders">
-            <column name="start_date" type="DATETIME"/>
-            <constraints nullable="false"/>
+            <column name="start_date" type="DATETIME">
+                <constraints nullable="false" />
+            </column>
         </ext:modifyColumn>
     </changeSet>
 

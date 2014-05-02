@@ -13,6 +13,8 @@
  */
 package org.openmrs.util.databasechange;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -47,42 +49,42 @@ public class Database1_9_7UpgradeTest {
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-
-    private Map<String, String> row(String... values) {
-        Map<String, String> row = new HashMap<String, String>();
-        for (int i = 0; i < values.length; i += 2) {
-            row.put(values[i], values[i + 1]);
-        }
-        return row;
-    }
-
-    private class OrderAndPerson {
-
-        private Integer orderId;
-
-        private Integer personId;
-
-        OrderAndPerson(Integer orderId, Integer personId) {
-            this.orderId = orderId;
-            this.personId = personId;
-        }
-
-        Integer getOrderId() {
-            return orderId;
-        }
-
-        void setOrderId(Integer orderId) {
-            this.orderId = orderId;
-        }
-
-        Integer getPersonId() {
-            return personId;
-        }
-
-        void setPersonId(Integer personId) {
-            this.personId = personId;
-        }
-    }
+	
+	private Map<String, String> row(String... values) {
+		Map<String, String> row = new HashMap<String, String>();
+		for (int i = 0; i < values.length; i += 2) {
+			row.put(values[i], values[i + 1]);
+		}
+		return row;
+	}
+	
+	private class OrderAndPerson {
+		
+		private Integer orderId;
+		
+		private Integer personId;
+		
+		OrderAndPerson(Integer orderId, Integer personId) {
+			this.orderId = orderId;
+			this.personId = personId;
+		}
+		
+		Integer getOrderId() {
+			return orderId;
+		}
+		
+		void setOrderId(Integer orderId) {
+			this.orderId = orderId;
+		}
+		
+		Integer getPersonId() {
+			return personId;
+		}
+		
+		void setPersonId(Integer personId) {
+			this.personId = personId;
+		}
+	}
 	
 	/**
 	 * This method creates mock order entry upgrade file
@@ -364,5 +366,31 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
+	}
+	
+	@Test
+	public void shouldCreateDiscontinuationOrderForStoppedOrders() throws IOException, SQLException {
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+		List<List<Object>> discontinuedOrders = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "SELECT count(*) order_id FROM orders WHERE discontinued = true", true);
+		long discontinuedOrdersCount = (Long) discontinuedOrders.get(0).get(0);
+		assertEquals(3, discontinuedOrdersCount);
+		
+		upgradeTestUtil.upgrade();
+		List<List<Object>> discontinuationOrders = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE'", true);
+		assertEquals(discontinuedOrdersCount, discontinuationOrders.get(0).get(0));
+		
+		//There should be no DC order with a null stop date
+		List<List<Object>> discontinuationOrdersWithNotStartDate = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE' AND date_stopped IS NULL", true);
+		assertEquals(0L, discontinuationOrdersWithNotStartDate.get(0).get(0));
+		
+		List<List<Object>> newer = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE' AND "
+		            + "(start_date IS NULL OR orderer IS NULL OR encounter_id IS NULL OR previous_order_id IS NULL)", true);
+		assertEquals(0L, newer.get(0).get(0));
 	}
 }

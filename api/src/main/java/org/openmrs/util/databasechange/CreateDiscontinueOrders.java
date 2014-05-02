@@ -62,14 +62,15 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			insertStatement = connection
 			        .prepareStatement("Insert into orders(previous_order_id, concept_id, patient_id, encounter_id, "
 			                + "creator, date_created, discontinued_reason, discontinued_reason_non_coded, "
-			                + "uuid, order_action, orderer, order_number, order_type_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			                + "uuid, order_action, orderer, order_number, order_type_id, start_date, date_stopped) "
+			                + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			for (DiscontinuedOrder discontinuedOrder : discontinuedOrders) {
 				insertStatement.setInt(1, discontinuedOrder.previousOrderId);
 				insertStatement.setInt(2, discontinuedOrder.conceptId);
 				insertStatement.setInt(3, discontinuedOrder.patientId);
 				setIntOrNull(insertStatement, 4, discontinuedOrder.encounterId);
 				insertStatement.setInt(5, discontinuedOrder.discontinuedById);
-				insertStatement.setDate(6, discontinuedOrder.dateStopped);
+				insertStatement.setDate(6, new Date(System.currentTimeMillis()));
 				setIntOrNull(insertStatement, 7, discontinuedOrder.discontinuedReasonId);
 				insertStatement.setString(8, discontinuedOrder.discontinuedReasonNonCoded);
 				insertStatement.setString(9, UUID.randomUUID().toString());
@@ -77,6 +78,8 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				setIntOrNull(insertStatement, 11, discontinuedOrder.discontinuedById);
 				insertStatement.setString(12, discontinuedOrder.orderNumber);
 				insertStatement.setInt(13, discontinuedOrder.orderTypeId);
+				insertStatement.setDate(14, discontinuedOrder.dateStarted);
+				insertStatement.setDate(15, discontinuedOrder.dateStarted);
 				insertStatement.addBatch();
 				
 				if (index % batchSize == 0) {
@@ -121,8 +124,9 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 		List<DiscontinuedOrder> dcOrders = new ArrayList<DiscontinuedOrder>();
 		PreparedStatement statement = null;
 		try {
-			statement = connection
-			        .prepareStatement("select order_id, concept_id, patient_id, encounter_id, date_stopped, discontinued_by, discontinued_reason, discontinued_reason_non_coded, order_type_id, date_stopped from orders where discontinued = ?");
+			statement = connection.prepareStatement("select order_id, concept_id, patient_id, encounter_id, date_stopped, "
+			        + "discontinued_by, discontinued_reason, discontinued_reason_non_coded, order_type_id "
+			        + "from orders where discontinued = ?");
 			statement.setBoolean(1, true);
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
@@ -178,7 +182,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 		
 		public String discontinuedReasonNonCoded;
 		
-		public Date dateStopped;
+		public Date dateStarted;
 		
 		public int discontinuedById;
 		
@@ -201,12 +205,11 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			this.encounterId = encounterId;
 			this.discontinuedReasonId = discontinuedReasonId;
 			this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
-			this.dateStopped = dateStopped;
+			this.dateStarted = dateStopped;
 			this.discontinuedById = discontinuedById;
 			this.dateCreated = dateStopped;
 			this.orderNumber = String.valueOf(orderId).concat("-DC");
 			this.orderTypeId = orderTypeId;
-			this.dateStopped = dateStopped;
 		}
 	}
 }
