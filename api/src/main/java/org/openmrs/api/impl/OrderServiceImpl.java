@@ -192,6 +192,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 		}
 		
+		if (Order.Action.DISCONTINUE == order.getAction()) {
+			setDateStopped(order, order.getStartDate());
+		}
+		
 		return dao.saveOrder(order);
 	}
 	
