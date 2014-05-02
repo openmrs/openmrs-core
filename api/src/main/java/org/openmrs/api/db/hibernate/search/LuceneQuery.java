@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 import org.hibernate.Session;
@@ -94,7 +95,9 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	protected QueryParser newQueryParser() {
 		Analyzer analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
-		return new QueryParser(Version.LUCENE_31, null, analyzer);
+		QueryParser queryParser = new QueryParser(Version.LUCENE_31, null, analyzer);
+		queryParser.setDefaultOperator(Operator.AND);
+		return queryParser;
 	}
 	
 	protected FullTextSession getFullTextSession() {
