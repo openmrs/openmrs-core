@@ -47,6 +47,42 @@ public class Database1_9_7UpgradeTest {
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
+
+    private Map<String, String> row(String... values) {
+        Map<String, String> row = new HashMap<String, String>();
+        for (int i = 0; i < values.length; i += 2) {
+            row.put(values[i], values[i + 1]);
+        }
+        return row;
+    }
+
+    private class OrderAndPerson {
+
+        private Integer orderId;
+
+        private Integer personId;
+
+        OrderAndPerson(Integer orderId, Integer personId) {
+            this.orderId = orderId;
+            this.personId = personId;
+        }
+
+        Integer getOrderId() {
+            return orderId;
+        }
+
+        void setOrderId(Integer orderId) {
+            this.orderId = orderId;
+        }
+
+        Integer getPersonId() {
+            return personId;
+        }
+
+        void setPersonId(Integer personId) {
+            this.personId = personId;
+        }
+    }
 	
 	/**
 	 * This method creates mock order entry upgrade file
@@ -328,41 +364,5 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
-	}
-	
-	private Map<String, String> row(String... values) {
-		Map<String, String> row = new HashMap<String, String>();
-		for (int i = 0; i < values.length; i += 2) {
-			row.put(values[i], values[i + 1]);
-		}
-		return row;
-	}
-	
-	private class OrderAndPerson {
-		
-		private Integer orderId;
-		
-		private Integer personId;
-		
-		OrderAndPerson(Integer orderId, Integer personId) {
-			this.orderId = orderId;
-			this.personId = personId;
-		}
-		
-		Integer getOrderId() {
-			return orderId;
-		}
-		
-		void setOrderId(Integer orderId) {
-			this.orderId = orderId;
-		}
-		
-		Integer getPersonId() {
-			return personId;
-		}
-		
-		void setPersonId(Integer personId) {
-			this.personId = personId;
-		}
 	}
 }
