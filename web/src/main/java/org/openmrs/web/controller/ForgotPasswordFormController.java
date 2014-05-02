@@ -13,9 +13,12 @@
  */
 package org.openmrs.web.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +60,10 @@ public class ForgotPasswordFormController extends SimpleFormController {
 	 */
 	private Map<String, Integer> loginAttemptsByIP = new HashMap<String, Integer>();
 	
+	private Map<String, Integer> map = new HashMap<String, Integer>();
+	
+	private String username;
+	
 	/**
 	 * The mapping from user's IP address to the time that they were locked out
 	 */
@@ -72,11 +79,14 @@ public class ForgotPasswordFormController extends SimpleFormController {
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
-		
 		HttpSession httpSession = request.getSession();
 		
-		String username = request.getParameter("uname");
-		
+		username = request.getParameter("uname");
+		if (!map.containsKey(username)) {
+			map.put(username, 0);
+		} else {
+			map.put(username, map.get(username) + 1);
+		}
 		String ipAddress = request.getRemoteAddr();
 		Integer forgotPasswordAttempts = loginAttemptsByIP.get(ipAddress);
 		if (forgotPasswordAttempts == null) {
@@ -108,11 +118,9 @@ public class ForgotPasswordFormController extends SimpleFormController {
 			// then continue with the check
 			
 			forgotPasswordAttempts++;
-			
 			String secretAnswer = request.getParameter("secretAnswer");
 			if (secretAnswer == null) {
 				// if they are seeing this page for the first time
-				
 				User user = null;
 				
 				try {
@@ -127,10 +135,12 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 				
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user == null) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.fill");
+					request.setAttribute("secretQuestion", getRandomFakeSecretQuestion());
+				} else if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 				} else {
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
 					request.setAttribute("secretQuestion", user.getSecretQuestion());
 					
 					// reset the forgotPasswordAttempts because they have a right user.
@@ -140,7 +150,6 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				
 			} else {
 				// if they've filled in the username and entered their secret answer
-				
 				User user = null;
 				
 				try {
@@ -152,7 +161,10 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				}
 				
 				// check the secret question again in case the user got here "illegally"
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user == null) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.fill");
+					request.setAttribute("secretQuestion", getRandomFakeSecretQuestion());
+				} else if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 				} else if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
 					
@@ -187,4 +199,22 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		return showForm(request, response, errors);
 	}
 	
+	/**
+	 * This method will return a random 'fake secret question'
+	 * @return String randomQ
+	 */
+	private String getRandomFakeSecretQuestion() {
+		
+		Random randomGenerator = new Random();
+		List<String> questions = new ArrayList<String>();
+		
+		questions.add("What is your best friend's last name?");
+		questions.add("What is your grandfather's home town?");
+		questions.add("What is your mother's maiden name?");
+		questions.add("What is your favorite band?");
+		questions.add("What is your first pet's name?");
+		questions.add("What is your brother's middle name?");
+		questions.add("What city were you born in?");
+		return questions.get(map.get(username));
+	}
 }
