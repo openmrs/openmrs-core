@@ -246,9 +246,9 @@ public class UserFormController {
 			}
 			
 			if (StringUtils.hasLength(secretQuestion) && !StringUtils.hasLength(secretAnswer))
-				 errors.reject("error.User.secretAnswer.empty");
+				errors.reject("error.User.secretAnswer.empty");
 			else if (!StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer))
-				 errors.reject("error.User.secretQuestion.empty");
+				errors.reject("error.User.secretQuestion.empty");
 			
 			new UserProperties(user.getUserProperties()).setSupposedToChangePassword(forcePassword);
 			

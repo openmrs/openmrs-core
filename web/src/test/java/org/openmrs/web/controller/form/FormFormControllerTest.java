@@ -51,24 +51,24 @@ public class FormFormControllerTest extends BaseWebContextSensitiveTest {
 	public void shouldNotSaveAFormWhenFormsAreLocked() throws Exception {
 		// dataset to locks forms
 		executeDataSet("org/openmrs/web/controller/include/FormFormControllerTest.xml");
-
-        //setting the controller
-        FormFormController controller = (FormFormController) applicationContext.getBean("formEditForm");
-        controller.setApplicationContext(applicationContext);
-        controller.setFormView("index.htm");
-        controller.setSuccessView("formEdit.form");
-
-        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/admin/forms/formEdit.form?formId=1");
-        request.setSession(new MockHttpSession(null));
-        HttpServletResponse response = new MockHttpServletResponse();
-        controller.handleRequest(request, response);
-
-        request.addParameter("name", "TRUNK");
-        request.addParameter("version", "1");
-        request.addParameter("action", "Form.save");
-        request.setContentType("application/x-www-form-urlencoded");
-
-        ModelAndView mav = controller.handleRequest(request, response);
+		
+		//setting the controller
+		FormFormController controller = (FormFormController) applicationContext.getBean("formEditForm");
+		controller.setApplicationContext(applicationContext);
+		controller.setFormView("index.htm");
+		controller.setSuccessView("formEdit.form");
+		
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/admin/forms/formEdit.form?formId=1");
+		request.setSession(new MockHttpSession(null));
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		
+		request.addParameter("name", "TRUNK");
+		request.addParameter("version", "1");
+		request.addParameter("action", "Form.save");
+		request.setContentType("application/x-www-form-urlencoded");
+		
+		ModelAndView mav = controller.handleRequest(request, response);
 		Assert.assertEquals("The save attempt should have failed!", "index.htm", mav.getViewName());
 		Assert.assertNotEquals("formEdit.form", mav.getViewName());
 		Assert.assertSame(controller.getFormView(), mav.getViewName());
