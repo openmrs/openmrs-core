@@ -100,8 +100,7 @@
 				</spring:bind>
 			</td>
 		</tr>
-	</c:if>
-	<tr id="voidReasonIdentifierRow-<c:out value="${identifier}" />" <spring:bind path="voided"><c:if test="${status.value == false}">style="display: none"</c:if></spring:bind> >
+	<tr id="voidReasonIdentifierRow-<c:out value="${identifier.patientIdentifierId}" />" <spring:bind path="voided"><c:if test="${status.value == false}">style="display: none"</c:if></spring:bind> >
 		<td><openmrs:message code="general.voidReason"/></td>
 		<spring:bind path="voidReason">
 			<td>
@@ -110,6 +109,7 @@
 			</td>
 		</spring:bind>
 	</tr>
+    </c:if>
 	<spring:bind path="voidedBy">
 		<c:if test="${status.value != null}">
 			<tr>
