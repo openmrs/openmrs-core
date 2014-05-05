@@ -332,6 +332,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		DrugOrder orderToDiscontinue = (DrugOrder) Context.getOrderService().getOrder(111);
 		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
 		DrugOrder discontinuationOrder = new DrugOrder();
+		discontinuationOrder.setDosingType(null);
 		discontinuationOrder.setCareSetting(orderToDiscontinue.getCareSetting());
 		discontinuationOrder.setConcept(orderToDiscontinue.getConcept());
 		discontinuationOrder.setAction(Order.Action.DISCONTINUE);
