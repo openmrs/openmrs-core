@@ -2045,6 +2045,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	<<<<<<< HEAD
 	 * @verifies void an order
 	 * @see OrderService#voidOrder(org.openmrs.Order, String)
 	 */
@@ -2098,5 +2099,20 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getRevisionOrder_shouldReturnNullIfOrderHasNotBeenRevised() throws Exception {
 		assertNull(orderService.getRevisionOrder(orderService.getOrder(444)));
+	}
+	
+	/**
+	 * @see OrderService#getDiscontinuationOrder(Order)
+	 * @verifies return null if dc order is voided
+	 */
+	@Test
+	public void getDiscontinuationOrder_shouldReturnNullIfDcOrderIsVoided() throws Exception {
+		Order order = orderService.getOrder(7);
+		Order discontinueOrder = orderService.discontinueOrder(order, "Some reason", new Date(), providerService
+		        .getProvider(1), encounterService.getEncounter(3));
+		orderService.voidOrder(discontinueOrder, "Invalid reason");
+		
+		Order discontinuationOrder = orderService.getDiscontinuationOrder(order);
+		assertThat(discontinuationOrder, is(nullValue()));
 	}
 }
