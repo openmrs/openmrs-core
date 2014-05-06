@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -162,7 +163,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("The order type does not match that of the previous order");
 			} else if (!order.getCareSetting().equals(previousOrder.getCareSetting())) {
 				throw new APIException("The care setting does not match that of the previous order");
-			} else if (!order.getClass().equals(previousOrder.getClass())) {
+			} else if (!getActualType(order).equals(getActualType(previousOrder))) {
 				throw new APIException("The class does not match that of the previous order");
 			}
 		}
@@ -248,7 +249,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(order.getClass())
 		        && ((DrugOrder) order).getDrug() != null;
 		for (Order activeOrder : orders) {
-			if (!order.getClass().equals(activeOrder.getClass())) {
+			if (!getActualType(order).equals(getActualType(activeOrder))) {
 				continue;
 			}
 			boolean shouldMarkAsDiscontinued = false;
@@ -278,6 +279,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		throw new APIException(errorMessage);
+	}
+	
+	/**
+	 * Returns the class object of the specified persistent object returning the actual persistent
+	 * class in case it is a hibernate proxy
+	 * 
+	 * @param persistentObject
+	 * @return the Class object
+	 */
+	private Class<?> getActualType(Object persistentObject) {
+		Class<?> type = persistentObject.getClass();
+		if (persistentObject instanceof HibernateProxy) {
+			type = ((HibernateProxy) persistentObject).getHibernateLazyInitializer().getPersistentClass();
+		}
+		return type;
 	}
 	
 	/**
