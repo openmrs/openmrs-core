@@ -95,6 +95,14 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return Search.getFullTextSession(getSession());
 	}
 	
+	/**
+	 * Skip elements, values of which repeat in the given field.
+	 * <p>
+	 * Only the first element will be included in the results.
+	 * 
+	 * @param field
+	 * @return
+	 */
 	public LuceneQuery<T> skipSame(String field) {
 		String idPropertyName = getSession().getSessionFactory().getClassMetadata(getType()).getIdentifierPropertyName();
 		
