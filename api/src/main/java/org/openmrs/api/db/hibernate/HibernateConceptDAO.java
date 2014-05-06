@@ -1355,22 +1355,22 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	private void appendIdsQuery(final StringBuilder query, final String field, final List<? extends OpenmrsObject> objects) {
-		String ids = transformToIds(objects);
-		if (ids != null) {
-			query.append(" ").append(field).append(":(").append(ids).append(")");
+		List<Integer> ids = transformToIds(objects);
+		if (!ids.isEmpty()) {
+			query.append(" ").append(field).append(":(").append(StringUtils.join(ids, " OR ")).append(")");
 		}
 	}
 	
-	private String transformToIds(final List<? extends OpenmrsObject> items) {
+	private List<Integer> transformToIds(final List<? extends OpenmrsObject> items) {
 		if (items == null || items.isEmpty()) {
-			return null;
+			return Collections.emptyList();
 		}
 		
-		StringBuilder ids = new StringBuilder();
+		List<Integer> ids = new ArrayList<Integer>();
 		for (OpenmrsObject item : items) {
-			ids.append(item.getId()).append(" ");
+			ids.add(item.getId());
 		}
-		return ids.toString();
+		return ids;
 	}
 	
 	/**
