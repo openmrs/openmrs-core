@@ -17,10 +17,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermsFilter;
 import org.apache.lucene.util.Version;
 import org.hibernate.Session;
 import org.hibernate.search.FullTextQuery;
@@ -29,7 +31,6 @@ import org.hibernate.search.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.openmrs.collection.ListPart;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 
 /**
@@ -38,10 +39,6 @@ import com.google.common.collect.Sets;
 public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	private FullTextQuery fullTextQuery;
-	
-	private String skipIds;
-	
-	private String skipIdField;
 	
 	public static <T> LuceneQuery<T> newQuery(final String query, final Session session, final Class<T> type) {
 		return new LuceneQuery<T>(
@@ -69,12 +66,6 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		Query query;
 		try {
 			query = prepareQuery();
-			
-			if (skipIds != null) {
-				QueryBuilder queryBuilder = newQueryBuilder();
-				query = queryBuilder.bool().must(query).must(
-				    queryBuilder.keyword().onField(skipIdField).matching(skipIds).createQuery()).not().createQuery();
-			}
 		}
 		catch (ParseException e) {
 			throw new IllegalStateException("Invalid query", e);
@@ -104,27 +95,22 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return Search.getFullTextSession(getSession());
 	}
 	
-	public LuceneQuery<T> skipSame(String field, String idField) {
-		List<Object> documents = listProjection(idField, field);
+	public LuceneQuery<T> skipSame(String field) {
+		String idPropertyName = getSession().getSessionFactory().getClassMetadata(getType()).getIdentifierPropertyName();
 		
-		Set<Object> uniqueDocuments = Sets.newHashSet();
-		Set<Object> skipDocuments = Sets.newHashSet();
+		List<Object> documents = listProjection(idPropertyName, field);
+		
+		Set<Object> uniqueFieldValues = Sets.newHashSet();
+		TermsFilter termsFilter = new TermsFilter();
 		for (Object document : documents) {
 			Object[] row = (Object[]) document;
-			if (!uniqueDocuments.add(row[1])) {
-				skipDocuments.add(row[0]);
+			if (uniqueFieldValues.add(row[1])) {
+				termsFilter.addTerm(new Term(idPropertyName, row[0].toString()));
 			}
 		}
 		
-		if (!skipDocuments.isEmpty()) {
-			skipIds = Joiner.on(" ").join(skipDocuments);
-		} else {
-			skipIds = null;
-		}
-		
-		skipIdField = idField;
-		
 		buildQuery();
+		fullTextQuery.setFilter(termsFilter);
 		
 		return this;
 	}

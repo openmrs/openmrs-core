@@ -605,7 +605,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		appendIdsQuery(query, "concept.datatype.conceptDatatypeId", datatypes);
 		
 		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").list();
+		    ConceptName.class).skipSame("concept.conceptId").list();
 		
 		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
 		
@@ -1340,7 +1340,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		ListPart<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").listPart(start, size);
+		    ConceptName.class).skipSame("concept.conceptId").listPart(start, size);
 		
 		List<ConceptSearchResult> results = Lists.transform(names.getList(),
 		    new Function<ConceptName, ConceptSearchResult>() {
@@ -1666,7 +1666,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		query.append(" +concept.retired:false");
 		
 		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).skipSame("concept.conceptId", "conceptNameId").list();
+		    ConceptName.class).skipSame("concept.conceptId").list();
 		
 		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
 		
