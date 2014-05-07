@@ -623,8 +623,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 			
 			//Include similar as last
 			String[] names = name.trim().split(" ");
-			query.append(" OR name:(" + StringUtils.join(names, "~ OR ") + "~)^0.1 OR name:("
-			        + StringUtils.join(names, "* OR ") + "*)^0.1");
+			query.append(" OR name:(" + StringUtils.join(names, "~ ") + "~)^0.1 OR name:(" + StringUtils.join(names, "* ")
+			        + "*)^0.1");
 		} else {
 			query.append(" name:\"" + LuceneQuery.escapeQuery(name) + "\"");
 		}
