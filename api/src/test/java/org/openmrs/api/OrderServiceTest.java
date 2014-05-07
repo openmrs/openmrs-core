@@ -2045,7 +2045,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	<<<<<<< HEAD
 	 * @verifies void an order
 	 * @see OrderService#voidOrder(org.openmrs.Order, String)
 	 */
