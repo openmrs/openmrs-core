@@ -13,11 +13,11 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.order.OrderUtil;
-
-import java.util.Date;
 
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
@@ -47,7 +47,10 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.10
 	 */
 	public enum Action {
-		NEW, REVISE, RENEW, DISCONTINUE
+		NEW, REVISE, DISCONTINUE,
+		//When we start supporting RENEW, we need to remove lazy="false"
+		//from order.previousOrder in the mapping file
+		//RENEW
 	}
 	
 	private static final Log log = LogFactory.getLog(Order.class);

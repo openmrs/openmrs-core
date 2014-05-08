@@ -46,9 +46,7 @@
         <many-to-one name="orderType" column="order_type_id" class="org.openmrs.OrderType" not-null="true" />
 
         <!-- bi-directional many-to-one association to Order -->
-		<many-to-one name="previousOrder" class="org.openmrs.Order">
-			<column name="previous_order_id" />
-		</many-to-one>
+		<many-to-one name="previousOrder" class="org.openmrs.Order" column="previous_order_id" lazy="false" />
 		<!-- bi-directional many-to-one association to Concept -->
 		<many-to-one name="concept" column="concept_id" class="org.openmrs.Concept" not-null="true" />
 		<!-- bi-directional many-to-one association to Encounter -->

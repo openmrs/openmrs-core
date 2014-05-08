@@ -308,4 +308,13 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		encounterService.saveEncounter(encounter);
 		Context.flushSession();
 	}
+	
+	@Test
+	public void shouldNotReturnAProxyForPreviousOrder() throws Exception {
+		Order dcOrder = orderService.getOrder(22);
+		Order previousOrder = dcOrder.getPreviousOrder();
+		assertNotNull(previousOrder);
+		previousOrder.getId();
+		DrugOrder previousDrugOrder = (DrugOrder) previousOrder;
+	}
 }
