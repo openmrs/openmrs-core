@@ -69,27 +69,6 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		//then exception
 	}
 	
-	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkOpenmrsCoreModulesStarted()}
-	 */
-	@Test(expected = OpenmrsCoreModuleException.class)
-	@Verifies(value = "should throw ModuleException if a core module is not started", method = "checkOpenmrsCoreModulesStarted()")
-	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfACoreModuleIsNotStarted() throws Exception {
-		//given
-		assertThat(ModuleFactory.getStartedModules(), empty());
-		assertThat(ModuleConstants.CORE_MODULES.keySet(), contains("logic"));
-		
-		initialRuntimeProperties = new Properties(Context.getRuntimeProperties());
-		Properties runtimeProperties = Context.getRuntimeProperties();
-		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "false");
-		Context.setRuntimeProperties(runtimeProperties);
-		
-		//when
-		ModuleUtil.checkOpenmrsCoreModulesStarted();
-		
-		//then exception
-	}
-	
 	@After
 	public void revertRuntimeProperties() {
 		if (initialRuntimeProperties != null) {

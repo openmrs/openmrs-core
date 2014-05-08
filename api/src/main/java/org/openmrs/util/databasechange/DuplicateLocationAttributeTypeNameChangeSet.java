@@ -28,10 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import liquibase.database.jvm.JdbcConnection;
-
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
@@ -40,7 +39,6 @@ import liquibase.resource.ResourceAccessor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.db.DAOException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
 
@@ -90,7 +88,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 			autoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 			stmt = connection.createStatement();
-			rs = stmt.executeQuery("SELECT * FROM location_attribute_type"
+			rs = stmt.executeQuery("SELECT * FROM location_attribute_type "
 			        + "INNER JOIN (SELECT name FROM location_attribute_type GROUP BY name HAVING count(name) > 1) "
 			        + "dup ON location_attribute_type.name = dup.name");
 			Integer id = null;

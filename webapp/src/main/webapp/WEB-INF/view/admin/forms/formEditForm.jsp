@@ -163,13 +163,14 @@
 <c:if test="${not empty param.duplicate}">
 	<input type="submit" name="action" value="<openmrs:message code="Form.create.duplicate"/>">
 </c:if>
+<openmrs:globalProperty key="Form.forms.locked" var="formsLocked"/>
 <c:if test="${empty param.duplicate}">
-	<input type="submit" name="action" value="<openmrs:message code="Form.save"/>">
+	<input type="submit" name="action" value="<openmrs:message code="Form.save"/>" <c:if test="${formsLocked == 'true'}">disabled</c:if>>
 	
 	<c:if test="${form.formId != null && not isBasicForm}">
 		<openmrs:hasPrivilege privilege="Delete Forms">
 			 &nbsp; &nbsp; &nbsp;
-			<input type="submit" name="action" value="<openmrs:message code="Form.delete"/>" onclick="return confirm('<openmrs:message code="Form.confirmation"/>')"/>
+			<input type="submit" name="action" value="<openmrs:message code="Form.delete"/>" onclick="return confirm('<openmrs:message code="Form.confirmation"/>')" <c:if test="${formsLocked == 'true'}">disabled</c:if>/>
 		</openmrs:hasPrivilege>
 	</c:if>
 </c:if>

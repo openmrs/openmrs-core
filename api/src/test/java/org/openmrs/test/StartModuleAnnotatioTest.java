@@ -14,12 +14,10 @@
 package org.openmrs.test;
 
 import junit.framework.Assert;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 
-@StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atd-0.51.omod" })
+@StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atdproducer-0.51.omod" })
 public class StartModuleAnnotatioTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
