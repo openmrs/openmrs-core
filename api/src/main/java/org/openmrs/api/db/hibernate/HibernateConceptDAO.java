@@ -621,10 +621,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 			//Put exact phrase higher
 			query.append(" OR name:(\"" + name + "\")^0.6");
 			
-			//Include similar as last
-			String[] names = name.trim().split(" ");
-			query.append(" OR name:(" + StringUtils.join(names, "~0.9 ") + "~)^0.1 OR name:("
-			        + StringUtils.join(names, "* ") + "*)^0.1");
+			//Include partial
+			String[] words = name.trim().split(" ");
+			query.append(" OR name:(" + StringUtils.join(words, "* ") + "*)^0.1");
+			
+			//Include similar
+			query.append(" OR name:(" + StringUtils.join(words, "~0.8 ") + "~0.8)^0.1");
 		} else {
 			query.append(" name:\"" + LuceneQuery.escapeQuery(name) + "\"");
 		}
