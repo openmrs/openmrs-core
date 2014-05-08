@@ -627,22 +627,22 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	private void setDateStopped(Order targetOrder, Date dateStopped) {
-		Method method = null;
+		Field field = null;
 		Boolean isMethodAccessible = null;
 		try {
-			method = Order.class.getDeclaredMethod("setDateStopped", Date.class);
-			isMethodAccessible = method.isAccessible();
+			field = Order.class.getDeclaredField("dateStopped");
+			isMethodAccessible = field.isAccessible();
 			if (!isMethodAccessible) {
-				method.setAccessible(true);
+				field.setAccessible(true);
 			}
-			method.invoke(targetOrder, dateStopped);
+			field.set(targetOrder, dateStopped);
 		}
 		catch (Exception e) {
 			throw new APIException("Failed to set dateStopped for order:" + targetOrder, e);
 		}
 		finally {
-			if (method != null && isMethodAccessible != null) {
-				method.setAccessible(isMethodAccessible);
+			if (field != null && isMethodAccessible != null) {
+				field.setAccessible(isMethodAccessible);
 			}
 		}
 	}

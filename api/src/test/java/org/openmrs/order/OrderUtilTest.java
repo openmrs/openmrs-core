@@ -16,7 +16,7 @@ package org.openmrs.order;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.Date;
 
 import org.junit.Test;
@@ -33,19 +33,19 @@ public class OrderUtilTest {
 	}
 	
 	public static void setDateStopped(Order targetOrder, Date dateStopped) throws Exception {
-		Method method = null;
+		Field field = null;
 		Boolean isMethodAccessible = null;
 		try {
-			method = Order.class.getDeclaredMethod("setDateStopped", Date.class);
-			isMethodAccessible = method.isAccessible();
+			field = Order.class.getDeclaredField("dateStopped");
+			isMethodAccessible = field.isAccessible();
 			if (!isMethodAccessible) {
-				method.setAccessible(true);
+				field.setAccessible(true);
 			}
-			method.invoke(targetOrder, dateStopped);
+			field.set(targetOrder, dateStopped);
 		}
 		finally {
-			if (method != null && isMethodAccessible != null) {
-				method.setAccessible(isMethodAccessible);
+			if (field != null && isMethodAccessible != null) {
+				field.setAccessible(isMethodAccessible);
 			}
 		}
 	}

@@ -145,7 +145,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setOrderer(getOrderer());
 		target.setCreator(getCreator());
 		target.setDateCreated(getDateCreated());
-		target.setDateStopped(getDateStopped());
+		target.dateStopped = getDateStopped();
 		target.setOrderReason(getOrderReason());
 		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		target.setAccessionNumber(getAccessionNumber());
@@ -218,13 +218,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public Date getDateStopped() {
 		return dateStopped;
-	}
-	
-	/**
-	 * @param dateStopped The dateStopped to set.
-	 */
-	private void setDateStopped(Date dateStopped) {
-		this.dateStopped = dateStopped;
 	}
 	
 	/**
