@@ -89,7 +89,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getStartDate() == null) {
 			order.setStartDate(new Date());
 		}
-		Order prevOrder = order.getPreviousOrder();
+		Order previousOrder = order.getPreviousOrder();
 		if (order.getOrderType() == null) {
 			OrderType orderType = null;
 			if (orderContext != null) {
@@ -99,7 +99,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				orderType = getOrderTypeByConcept(order.getConcept());
 			}
 			//this order's order type should match that of the previous
-			if (orderType == null || (prevOrder != null && !orderType.equals(prevOrder.getOrderType()))) {
+			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
 				throw new APIException("Cannot determine the order type of the order");
 			}
 			order.setOrderType(orderType);
@@ -109,14 +109,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (orderContext != null) {
 				careSetting = orderContext.getCareSetting();
 			}
-			if (careSetting == null || (prevOrder != null && !careSetting.equals(prevOrder.getCareSetting()))) {
+			if (careSetting == null || (previousOrder != null && !careSetting.equals(previousOrder.getCareSetting()))) {
 				throw new APIException("Cannot determine the care setting of the order");
 			}
 			order.setCareSetting(careSetting);
 		}
 		
 		if (Order.Action.REVISE.equals(order.getAction())) {
-			Order previousOrder = order.getPreviousOrder();
 			if (previousOrder == null) {
 				throw new APIException("Previous Order is required for a revised order");
 			}
@@ -125,8 +124,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			discontinueExistingOrdersIfNecessary(order);
 		}
 		
-		if (order.getPreviousOrder() != null) {
-			Order previousOrder = order.getPreviousOrder();
+		if (previousOrder != null) {
 			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
 			String query = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = ";
