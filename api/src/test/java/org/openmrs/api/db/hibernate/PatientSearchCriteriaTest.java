@@ -107,7 +107,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isShortName_shouldRecogniseShortName() throws Exception {
-		Assert.assertTrue(patientSearchCriteria.isShortName("Jo"));
+		Assert.assertTrue(patientSearchCriteria.isShortName("J"));
 	}
 	
 	/**
@@ -116,7 +116,7 @@ public class PatientSearchCriteriaTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void isShortName_shouldRecogniseLongName() throws Exception {
-		Assert.assertFalse(patientSearchCriteria.isShortName("Jonathan"));
+		Assert.assertFalse(patientSearchCriteria.isShortName("Jo"));
 	}
 	
 	/**

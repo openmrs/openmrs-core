@@ -550,8 +550,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
 		
-		// make sure the default of "3" kicks in and blocks any results
-		assertEquals(0, Context.getPatientService().getPatients("Je").size());
+		// make sure the default of "2" kicks in and blocks any results
+		assertEquals(0, Context.getPatientService().getPatients("J").size());
 		
 		Context.clearSession();
 		Context.getAdministrationService().saveGlobalProperty(
@@ -559,18 +559,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		// there is a patient will middle name "F", so this should generate a hit.
 		assertEquals(1, Context.getPatientService().getPatients("F").size());
-	}
-	
-	/**
-	 * @see {@link PatientService#getPatients(String)}
-	 */
-	@Test
-	@Verifies(value = "should allow search of two character name", method = "getPatients(String)")
-	public void getPatients_shouldAllowExactSearchOfForTwoCharacterName() throws Exception {
-		initializeInMemoryDatabase();
-		executeDataSet(FIND_PATIENTS_XML);
-		List<Patient> patientList = Context.getPatientService().getPatients("Ho");
-		assertEquals(1, patientList.size());
 	}
 	
 	/**

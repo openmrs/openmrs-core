@@ -3,7 +3,7 @@
 var omsgs = new Array();
 var gp = new Array();
 var userProperties = new Array();
-omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="3"/>";
+omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="2"/>";
 omsgs.datePattern="<openmrs:datePattern />";
 omsgs.name="<openmrs:message javaScriptEscape="true" code="general.name"/>";
 omsgs.addNewPatient="<openmrs:message javaScriptEscape="true" code="Patient.addNew"/>";
