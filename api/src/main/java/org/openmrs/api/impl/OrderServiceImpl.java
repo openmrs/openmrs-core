@@ -14,7 +14,6 @@
 package org.openmrs.api.impl;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -628,11 +627,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private void setDateStopped(Order targetOrder, Date dateStopped) {
 		Field field = null;
-		Boolean isMethodAccessible = null;
+		Boolean isAccessible = null;
 		try {
 			field = Order.class.getDeclaredField("dateStopped");
-			isMethodAccessible = field.isAccessible();
-			if (!isMethodAccessible) {
+			isAccessible = field.isAccessible();
+			if (!isAccessible) {
 				field.setAccessible(true);
 			}
 			field.set(targetOrder, dateStopped);
@@ -641,8 +640,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new APIException("Failed to set dateStopped for order:" + targetOrder, e);
 		}
 		finally {
-			if (field != null && isMethodAccessible != null) {
-				field.setAccessible(isMethodAccessible);
+			if (field != null && isAccessible != null) {
+				field.setAccessible(isAccessible);
 			}
 		}
 	}

@@ -34,18 +34,18 @@ public class OrderUtilTest {
 	
 	public static void setDateStopped(Order targetOrder, Date dateStopped) throws Exception {
 		Field field = null;
-		Boolean isMethodAccessible = null;
+		Boolean isAccessible = null;
 		try {
 			field = Order.class.getDeclaredField("dateStopped");
-			isMethodAccessible = field.isAccessible();
-			if (!isMethodAccessible) {
+			isAccessible = field.isAccessible();
+			if (!isAccessible) {
 				field.setAccessible(true);
 			}
 			field.set(targetOrder, dateStopped);
 		}
 		finally {
-			if (field != null && isMethodAccessible != null) {
-				field.setAccessible(isMethodAccessible);
+			if (field != null && isAccessible != null) {
+				field.setAccessible(isAccessible);
 			}
 		}
 	}
