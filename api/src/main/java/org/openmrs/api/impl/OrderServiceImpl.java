@@ -13,6 +13,9 @@
  */
 package org.openmrs.api.impl;
 
+import static org.openmrs.Order.Action.DISCONTINUE;
+import static org.openmrs.Order.Action.REVISE;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,7 +117,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			order.setCareSetting(careSetting);
 		}
 		
-		if (Order.Action.REVISE.equals(order.getAction())) {
+		if (REVISE.equals(order.getAction())) {
 			if (previousOrder == null) {
 				throw new APIException("Previous Order is required for a revised order");
 			}
@@ -173,29 +176,33 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
 		if (order.getOrderId() == null) {
-			Boolean isAccessible = null;
-			Field field = null;
-			try {
-				field = Order.class.getDeclaredField("orderNumber");
-				field.setAccessible(true);
-				field.set(order, getOrderNumberGenerator().getNewOrderNumber(orderContext));
-			}
-			catch (Exception e) {
-				throw new APIException("Failed to assign order number", e);
-			}
-			finally {
-				if (field != null && isAccessible != null) {
-					field.setAccessible(isAccessible);
-				}
-			}
+			setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
 			
 			//DC orders should auto expire upon creating them
-			if (Order.Action.DISCONTINUE == order.getAction()) {
-				setDateStopped(order, order.getStartDate());
+			if (DISCONTINUE == order.getAction()) {
+				setProperty(order, "dateStopped", order.getStartDate());
 			}
 		}
 		
 		return dao.saveOrder(order);
+	}
+	
+	private void setProperty(Order order, String propertyName, Object value) {
+		Boolean isAccessible = null;
+		Field field = null;
+		try {
+			field = Order.class.getDeclaredField(propertyName);
+			field.setAccessible(true);
+			field.set(order, value);
+		}
+		catch (Exception e) {
+			throw new APIException("Failed to set " + propertyName + " for order:" + order, e);
+		}
+		finally {
+			if (field != null && isAccessible != null) {
+				field.setAccessible(isAccessible);
+			}
+		}
 	}
 	
 	/**
@@ -230,7 +237,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	private void discontinueExistingOrdersIfNecessary(Order order) {
 		//Ignore and return if this is not an order to discontinue
-		if (!Order.Action.DISCONTINUE.equals(order.getAction())) {
+		if (!DISCONTINUE.equals(order.getAction())) {
 			return;
 		}
 		
@@ -322,7 +329,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null && isDiscontinueOrReviseOrder(order)) {
-			setDateStopped(previousOrder, null);
+			setProperty(previousOrder, "dateStopped", null);
 		}
 		
 		return saveOrderInternal(order, null);
@@ -335,7 +342,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null && isDiscontinueOrReviseOrder(order)) {
 			if (!previousOrder.isCurrent()) {
-				final String action = Order.Action.DISCONTINUE == order.getAction() ? "discontinuation" : "revision";
+				final String action = DISCONTINUE == order.getAction() ? "discontinuation" : "revision";
 				throw new APIException("Cannot unvoid a " + action + " order if the previous order is no longer active");
 			}
 			stopOrder(previousOrder, order.getStartDate());
@@ -606,8 +613,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return saveOrderInternal(newOrder, null);
 	}
 	
-	private static boolean isDiscontinueOrReviseOrder(Order order) {
-		return Order.Action.DISCONTINUE == order.getAction() || Order.Action.REVISE == order.getAction();
+	private boolean isDiscontinueOrReviseOrder(Order order) {
+		return DISCONTINUE == order.getAction() || REVISE == order.getAction();
 	}
 	
 	/**
@@ -627,32 +634,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (!orderToStop.isCurrent()) {
 			throw new APIException("Cannot discontinue an order that is already stopped, expired or voided");
 		}
-		if (orderToStop.getAction().equals(Order.Action.DISCONTINUE)) {
-			throw new APIException("An order with action " + Order.Action.DISCONTINUE + " cannot be discontinued.");
+		if (orderToStop.getAction().equals(DISCONTINUE)) {
+			throw new APIException("An order with action " + DISCONTINUE + " cannot be discontinued.");
 		}
-		setDateStopped(orderToStop, discontinueDate);
+		setProperty(orderToStop, "dateStopped", discontinueDate);
 		saveOrderInternal(orderToStop, null);
-	}
-	
-	private void setDateStopped(Order targetOrder, Date dateStopped) {
-		Field field = null;
-		Boolean isAccessible = null;
-		try {
-			field = Order.class.getDeclaredField("dateStopped");
-			isAccessible = field.isAccessible();
-			if (!isAccessible) {
-				field.setAccessible(true);
-			}
-			field.set(targetOrder, dateStopped);
-		}
-		catch (Exception e) {
-			throw new APIException("Failed to set dateStopped for order:" + targetOrder, e);
-		}
-		finally {
-			if (field != null && isAccessible != null) {
-				field.setAccessible(isAccessible);
-			}
-		}
 	}
 	
 	/**
