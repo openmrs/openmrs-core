@@ -117,12 +117,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			order.setCareSetting(careSetting);
 		}
 		
-		if (REVISE.equals(order.getAction())) {
+		if (REVISE == order.getAction()) {
 			if (previousOrder == null) {
 				throw new APIException("Previous Order is required for a revised order");
 			}
 			stopOrder(previousOrder, order.getStartDate());
-		} else if (Order.Action.DISCONTINUE.equals(order.getAction())) {
+		} else if (DISCONTINUE == order.getAction()) {
 			discontinueExistingOrdersIfNecessary(order);
 		}
 		
@@ -237,7 +237,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	private void discontinueExistingOrdersIfNecessary(Order order) {
 		//Ignore and return if this is not an order to discontinue
-		if (!DISCONTINUE.equals(order.getAction())) {
+		if (DISCONTINUE != order.getAction()) {
 			return;
 		}
 		
@@ -634,7 +634,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (!orderToStop.isCurrent()) {
 			throw new APIException("Cannot discontinue an order that is already stopped, expired or voided");
 		}
-		if (orderToStop.getAction().equals(DISCONTINUE)) {
+		if (DISCONTINUE == orderToStop.getAction()) {
 			throw new APIException("An order with action " + DISCONTINUE + " cannot be discontinued.");
 		}
 		setProperty(orderToStop, "dateStopped", discontinueDate);
