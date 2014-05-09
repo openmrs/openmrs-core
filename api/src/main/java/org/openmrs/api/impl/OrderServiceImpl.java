@@ -188,10 +188,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 					field.setAccessible(isAccessible);
 				}
 			}
-		}
-		
-		if (Order.Action.DISCONTINUE == order.getAction()) {
-			setDateStopped(order, order.getStartDate());
+			
+			//DC orders should auto expire upon creating them
+			if (Order.Action.DISCONTINUE == order.getAction()) {
+				setDateStopped(order, order.getStartDate());
+			}
 		}
 		
 		return dao.saveOrder(order);
@@ -315,18 +316,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
 	 */
 	public Order voidOrder(Order order, String voidReason) throws APIException {
-		// fail early if this order is already voided
-		if (order.getVoided())
-			return order;
-		
-		if (!StringUtils.hasLength(voidReason))
+		if (!StringUtils.hasLength(voidReason)) {
 			throw new IllegalArgumentException("voidReason cannot be empty or null");
+		}
 		
-		order.setVoided(Boolean.TRUE);
-		order.setVoidReason(voidReason);
-		order.setVoidedBy(Context.getAuthenticatedUser());
-		if (order.getDateVoided() == null)
-			order.setDateVoided(new Date());
+		Order previousOrder = order.getPreviousOrder();
+		if (previousOrder != null && isDiscontinueOrReviseOrder(order)) {
+			setDateStopped(previousOrder, null);
+		}
 		
 		return saveOrderInternal(order, null);
 	}
@@ -335,7 +332,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
 	public Order unvoidOrder(Order order) throws APIException {
-		order.setVoided(false);
+		Order previousOrder = order.getPreviousOrder();
+		if (previousOrder != null && isDiscontinueOrReviseOrder(order)) {
+			if (!previousOrder.isCurrent()) {
+				final String action = Order.Action.DISCONTINUE == order.getAction() ? "discontinuation" : "revision";
+				throw new APIException("Cannot unvoid a " + action + " order if the previous order is no longer active");
+			}
+			stopOrder(previousOrder, order.getStartDate());
+		}
+		
 		return saveOrderInternal(order, null);
 	}
 	
@@ -599,6 +604,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		newOrder.setStartDate(discontinueDate);
 		return saveOrderInternal(newOrder, null);
+	}
+	
+	private static boolean isDiscontinueOrReviseOrder(Order order) {
+		return Order.Action.DISCONTINUE == order.getAction() || Order.Action.REVISE == order.getAction();
 	}
 	
 	/**

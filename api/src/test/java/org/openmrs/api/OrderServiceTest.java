@@ -2064,6 +2064,43 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies unset dateStopped of the previous order if the specified order is a discontinuation
+	 * @see OrderService#voidOrder(org.openmrs.Order, String)
+	 */
+	@Test
+	public void voidOrder_shouldUnsetDateStoppedOfThePreviousOrderIfTheSpecifiedOrderIsADiscontinuation() throws Exception {
+		Order order = orderService.getOrder(22);
+		assertEquals(Action.DISCONTINUE, order.getAction());
+		Order previousOrder = order.getPreviousOrder();
+		assertNotNull(previousOrder.getDateStopped());
+		assertFalse(order.getVoided());
+		
+		orderService.voidOrder(order, "None");
+		//Ensures order interceptor is okay with all the changes
+		Context.flushSession();
+		assertTrue(order.getVoided());
+		assertNull(previousOrder.getDateStopped());
+	}
+	
+	/**
+	 * @verifies unset dateStopped of the previous order if the specified order is a revision
+	 * @see OrderService#voidOrder(org.openmrs.Order, String)
+	 */
+	@Test
+	public void voidOrder_shouldUnsetDateStoppedOfThePreviousOrderIfTheSpecifiedOrderIsARevision() throws Exception {
+		Order order = orderService.getOrder(111);
+		assertEquals(Action.REVISE, order.getAction());
+		Order previousOrder = order.getPreviousOrder();
+		assertNotNull(previousOrder.getDateStopped());
+		assertFalse(order.getVoided());
+		
+		orderService.voidOrder(order, "None");
+		Context.flushSession();
+		assertTrue(order.getVoided());
+		assertNull(previousOrder.getDateStopped());
+	}
+	
+	/**
 	 * @verifies unvoid an order
 	 * @see OrderService#unvoidOrder(org.openmrs.Order)
 	 */
@@ -2080,6 +2117,108 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNull(order.getDateVoided());
 		assertNull(order.getVoidedBy());
 		assertNull(order.getVoidReason());
+	}
+	
+	/**
+	 * @verifies stop the previous order if the specified order is a discontinuation
+	 * @see OrderService#unvoidOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void unvoidOrder_shouldStopThePreviousOrderIfTheSpecifiedOrderIsADiscontinuation() throws Exception {
+		Order order = orderService.getOrder(22);
+		assertEquals(Action.DISCONTINUE, order.getAction());
+		Order previousOrder = order.getPreviousOrder();
+		assertNotNull(previousOrder.getDateStopped());
+		assertFalse(order.getVoided());
+		
+		//void the DC order for testing purposes so we can unvoid it later
+		orderService.voidOrder(order, "None");
+		Context.flushSession();
+		assertTrue(order.getVoided());
+		assertNull(previousOrder.getDateStopped());
+		
+		orderService.unvoidOrder(order);
+		Context.flushSession();
+		assertFalse(order.getVoided());
+		assertNotNull(previousOrder.getDateStopped());
+	}
+	
+	/**
+	 * @verifies stop the previous order if the specified order is a revision
+	 * @see OrderService#unvoidOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void unvoidOrder_shouldStopThePreviousOrderIfTheSpecifiedOrderIsARevision() throws Exception {
+		Order order = orderService.getOrder(111);
+		assertEquals(Action.REVISE, order.getAction());
+		Order previousOrder = order.getPreviousOrder();
+		assertNotNull(previousOrder.getDateStopped());
+		assertFalse(order.getVoided());
+		
+		//void the revise order for testing purposes so we can unvoid it later
+		orderService.voidOrder(order, "None");
+		Context.flushSession();
+		assertTrue(order.getVoided());
+		assertNull(previousOrder.getDateStopped());
+		
+		orderService.unvoidOrder(order);
+		Context.flushSession();
+		assertFalse(order.getVoided());
+		assertNotNull(previousOrder.getDateStopped());
+	}
+	
+	/**
+	 * @verifies fail for a discontinuation order if the previousOrder is inactive
+	 * @see OrderService#unvoidOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void unvoidOrder_shouldFailForADiscontinuationOrderIfThePreviousOrderIsInactive() throws Exception {
+		Order order = orderService.getOrder(22);
+		assertEquals(Action.DISCONTINUE, order.getAction());
+		Order previousOrder = order.getPreviousOrder();
+		assertNotNull(previousOrder.getDateStopped());
+		assertFalse(order.getVoided());
+		
+		//void the DC order for testing purposes so we can unvoid it later
+		orderService.voidOrder(order, "None");
+		assertTrue(order.getVoided());
+		assertNull(previousOrder.getDateStopped());
+		
+		//stop the order with a different DC order
+		orderService.discontinueOrder(previousOrder, "Testing", null, previousOrder.getOrderer(), previousOrder
+		        .getEncounter());
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot unvoid a discontinuation order if the previous order is no longer active");
+		orderService.unvoidOrder(order);
+	}
+	
+	/**
+	 * @verifies fail for a revise order if the previousOrder is inactive
+	 * @see OrderService#unvoidOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void unvoidOrder_shouldFailForAReviseOrderIfThePreviousOrderIsInactive() throws Exception {
+		Order order = orderService.getOrder(111);
+		assertEquals(Action.REVISE, order.getAction());
+		Order previousOrder = order.getPreviousOrder();
+		assertNotNull(previousOrder.getDateStopped());
+		assertFalse(order.getVoided());
+		
+		//void the DC order for testing purposes so we can unvoid it later
+		orderService.voidOrder(order, "None");
+		assertTrue(order.getVoided());
+		assertNull(previousOrder.getDateStopped());
+		
+		//stop the order with a different DC order
+		Order revise = previousOrder.cloneForRevision();
+		revise.setOrderer(order.getOrderer());
+		revise.setEncounter(order.getEncounter());
+		orderService.saveOrder(revise, null);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot unvoid a revision order if the previous order is no longer active");
+		orderService.unvoidOrder(order);
 	}
 	
 	/**

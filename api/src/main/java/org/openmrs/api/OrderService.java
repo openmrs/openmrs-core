@@ -122,6 +122,8 @@ public interface OrderService extends OpenmrsService {
 	 * @return the Order that was voided
 	 * @throws APIException
 	 * @should void an order
+	 * @should unset dateStopped of the previous order if the specified order is a discontinuation
+	 * @should unset dateStopped of the previous order if the specified order is a revision
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order voidOrder(Order order, String voidReason) throws APIException;
@@ -210,6 +212,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param order order to be unvoided
 	 * @return the Order that was unvoided
 	 * @should unvoid an order
+	 * @should stop the previous order if the specified order is a discontinuation
+	 * @should stop the previous order if the specified order is a revision
+	 * @should fail for a discontinuation order if the previousOrder is inactive
+	 * @should fail for a revise order if the previousOrder is inactive
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order unvoidOrder(Order order) throws APIException;
