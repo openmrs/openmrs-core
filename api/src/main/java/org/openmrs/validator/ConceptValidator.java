@@ -166,39 +166,9 @@ public class ConceptValidator implements Validator {
 				}
 				
 				//find duplicate names for a non-retired concept
-				if (!conceptToValidate.isRetired()) {
-					if (nameInLocale.isLocalePreferred() || nameInLocale.isFullySpecifiedName()) {
-						//must be unique among all country specific locals
-						Locale languageLocale = new Locale(nameInLocale.getLocale().getLanguage());
-						
-						List<Concept> conceptsWithPossibleDuplicateNames = Context.getConceptService().getConceptsByName(
-						    nameInLocale.getName(), languageLocale, false);
-						if (conceptsWithPossibleDuplicateNames.size() > 0) {
-							for (Concept concept : conceptsWithPossibleDuplicateNames) {
-								//skip retired
-								if (concept.isRetired()) {
-									continue;
-								}
-								
-								//skip same
-								String uuid = conceptToValidate.getUuid();
-								if (conceptToValidate.getConceptId() != null && uuid != null
-								        && uuid.equals(concept.getUuid())) {
-									continue;
-								}
-								
-								//should be a unique name amongst all preferred and fully specified names in its locale system wide
-								if ((concept.getFullySpecifiedName(conceptNameLocale) != null && concept
-								        .getFullySpecifiedName(conceptNameLocale).getName().equalsIgnoreCase(
-								            nameInLocale.getName()))
-								        || (concept.getPreferredName(conceptNameLocale) != null && concept.getPreferredName(
-								            conceptNameLocale).getName().equalsIgnoreCase(nameInLocale.getName()))) {
-									throw new DuplicateConceptNameException("'" + nameInLocale.getName()
-									        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "'");
-								}
-							}
-						}
-					}
+				if (Context.getConceptService().isConceptNameDuplicate(nameInLocale)) {
+					throw new DuplicateConceptNameException("'" + nameInLocale.getName()
+					        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "'");
 				}
 				
 				//

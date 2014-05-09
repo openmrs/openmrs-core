@@ -37,6 +37,7 @@ public class DWRConceptServiceTest extends BaseWebContextSensitiveTest {
 	@Before
 	public void before() throws Exception {
 		executeDataSet("org/openmrs/web/dwr/include/DWRConceptServiceTest-coded-concept-with-no-answers.xml");
+		updateSearchIndex();
 	}
 	
 	/**

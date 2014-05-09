@@ -39,26 +39,6 @@ public class ConceptSearchResult implements java.io.Serializable {
 	}
 	
 	/**
-	 * Optional constructor for turning a conceptWord into a conceptSearchResult, the constructor is
-	 * hidden from API users so as to hide the idea of conceptWord, it is meant to be used
-	 * underneath the API for convenience purposes.
-	 *
-	 * @param conceptWord the conceptWord from which to construct a search result
-	 */
-	protected ConceptSearchResult(ConceptWord conceptWord) {
-		if (conceptWord != null) {
-			this.concept = conceptWord.getConcept();
-			this.conceptName = conceptWord.getConceptName();
-			this.word = conceptWord.getWord();
-			// if a null value is passed in, ignore it and maintain the default
-			// of 0.0
-			if (conceptWord.getWeight() != null) {
-				this.transientWeight = conceptWord.getWeight();
-			}
-		}
-	}
-	
-	/**
 	 * Convenience constructor
 	 *
 	 * @param word the single word that will be matched to search terms

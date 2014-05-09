@@ -52,7 +52,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -172,6 +171,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameSpecified() throws Exception {
+		updateSearchIndex();
+		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		
@@ -212,6 +213,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameAndDescriptionSpecifiedToCodeConcepts() throws Exception {
+		updateSearchIndex();
+		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -257,6 +260,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameAndDescriptionSpecifiedToNumericConcepts() throws Exception {
+		updateSearchIndex();
+		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -302,6 +307,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAddConceptWithAllNamingSpecified() throws Exception {
+		updateSearchIndex();
+		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -354,6 +361,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldUpdateConceptWithNameAlreadyInSynonymList() throws Exception {
+		updateSearchIndex();
+		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -403,6 +412,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldUpdateConceptWithShortNameAlreadyInSynonymList() throws Exception {
+		updateSearchIndex();
+		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -472,6 +483,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
 		
+		updateSearchIndex();
+		
 		Concept actualConcept = cs.getConceptByName("new name");
 		assertNotNull(actualConcept);
 		assertEquals(concept.getConceptId(), actualConcept.getConceptId());
@@ -525,6 +538,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldReplacePreviousDescription() throws Exception {
+		updateSearchIndex();
+		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String ORIGINAL_DESCRIPTION = "this is indescribable";

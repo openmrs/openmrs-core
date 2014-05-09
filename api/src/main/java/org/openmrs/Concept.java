@@ -30,6 +30,11 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
@@ -66,6 +71,7 @@ import org.springframework.util.ObjectUtils;
  * @see ConceptService
  */
 @Root
+@Indexed
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, java.io.Serializable, Attributable<Concept> {
 	
 	public static final long serialVersionUID = 57332L;
@@ -74,8 +80,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	// Fields
 	
+	@DocumentId
 	private Integer conceptId;
 	
+	@Field
 	private Boolean retired = false;
 	
 	private User retiredBy;
@@ -84,8 +92,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	private String retireReason;
 	
+	@IndexedEmbedded
 	private ConceptDatatype datatype;
 	
+	@IndexedEmbedded
 	private ConceptClass conceptClass;
 	
 	private Boolean set = false;
@@ -101,6 +111,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	private Date dateChanged;
 	
 	@AllowDirectAccess
+	@ContainedIn
 	private Collection<ConceptName> names;
 	
 	@AllowDirectAccess

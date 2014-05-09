@@ -5,13 +5,7 @@
   <concept_name concept_id="3000" name="TRUST ALWAYS" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="9997" voided="false" locale_preferred="0" uuid="3e1b3848-e879-11e0-950d-00248140a5eb"/>
   <concept_name concept_id="3000" name="TRUST ME" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="9998" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" uuid="36bf76ae-e879-11e0-950d-00248140a5eb"/>
   <concept_name concept_id="4000" name="TRUST NOW" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="9999" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" uuid="67ce91b2-e879-11e0-950d-00248140a5eb"/>
-  <concept_word concept_word_id="1" concept_id="3000" word="TRUST" locale="en" concept_name_id="9998" weight="2.72"/>
-  <concept_word concept_word_id="2" concept_id="3000" word="ME" locale="en" concept_name_id="9998" weight="1.482"/>
-  <concept_word concept_word_id="3" concept_id="3000" word="TRUST" locale="en" concept_name_id="9997" weight="2.51"/>
-  <concept_word concept_word_id="4" concept_id="3000" word="ALWAYS" locale="en" concept_name_id="9997" weight="1.374"/>
-  <concept_word concept_word_id="5" concept_id="4000" word="TRUST" locale="en" concept_name_id="9999" weight="2.683"/>
-  <concept_word concept_word_id="6" concept_id="4000" word="NOW" locale="en" concept_name_id="9999" weight="1.456"/>
-  
+
   <concept concept_id="240" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e1"/>
   <concept concept_id="357" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e2"/>
   <concept concept_id="798" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e3"/>
@@ -27,22 +21,8 @@
   
   <concept_name concept_id="328" name="VENTOLIN INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="328" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e7"/>
   <concept_name concept_id="798" name="VENTOLIN INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3403" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e8"/>
-  <concept_name concept_id="798" name="SALBUTAMOL INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3256" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e9"/>
   <concept_name concept_id="1240" name="BECLOMETHASONE INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2662" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a510"/>
   <concept_name concept_id="1240" name="BECLOMETASONE INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2661" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a511"/>
+  <concept_name concept_id="1240" name="Tuberculosis of Knee" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2663" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a512"/>
 
-  <concept_word concept_word_id="7394" concept_id="240" word="SALBUTAMOL" locale="en" concept_name_id="240" weight="2.19"/>
-  <concept_word concept_word_id="7706" concept_id="357" word="SALBUTAMOL" locale="en" concept_name_id="357" weight="2.178"/>
-  <concept_word concept_word_id="14009" concept_id="798" word="SALBUTAMOL" locale="en" concept_name_id="3256" weight="2.126666666666667"/>
-  <concept_word concept_word_id="14011" concept_id="798" word="SALBUTAMOL" locale="en" concept_name_id="3257" weight="2.1475"/>
-  <concept_word concept_word_id="14012" concept_id="798" word="SALBUTAMOL" locale="en" concept_name_id="798" weight="8.475"/>
-  <concept_word concept_word_id="14014" concept_id="798" word="SALBUTAMOL" locale="en" concept_name_id="3258" weight="2.16"/>
-
-  <concept_word concept_word_id="7637" concept_id="328" word="INHALER" locale="en" concept_name_id="328" weight="1.349"/>
-  <concept_word concept_word_id="10574" concept_id="1240" word="INHALER" locale="en" concept_name_id="2662" weight="1.308"/>
-  <concept_word concept_word_id="10575" concept_id="1240" word="INHALER" locale="en" concept_name_id="2661" weight="1.312"/>
-  <concept_word concept_word_id="14010" concept_id="798" word="INHALER" locale="en" concept_name_id="3403" weight="1.3387499999999999"/>
-  <concept_word concept_word_id="14015" concept_id="798" word="INHALER" locale="en" concept_name_id="3256" weight="1.3264814814814816"/>
- 
-  
 </dataset>

@@ -1091,8 +1091,6 @@ public final class OpenmrsConstants {
 	 */
 	public static final String AUTO_CLOSE_VISITS_TASK_NAME = "Auto Close Visits Task";
 	
-	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "concept.IndexUpdateTask.lastConceptUpdated";
-	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 	
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
@@ -1100,6 +1098,11 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
 	
 	public static final String GP_MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
+	
+	/**
+	 * @since 1.10
+	 */
+	public static final String GP_LAST_FULL_INDEX_DATE = "index.lastFullIndexDate";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1555,6 +1558,8 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
+		
+		props.add(new GlobalProperty(GP_LAST_FULL_INDEX_DATE, "", "Indicates the last time the full index was built"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true",
 		        "true/false whether or not to allow visits of a given patient to overlap", BooleanDatatype.class, null));

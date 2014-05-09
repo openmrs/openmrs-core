@@ -15,6 +15,8 @@ package org.openmrs.api;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,7 +39,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
+import org.dbunit.dataset.IDataSet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -103,6 +105,29 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@After
 	public void revertToDefaultLocale() throws Exception {
 		Context.setLocale(Locale.US);
+	}
+	
+	/**
+	 * Updates the search index to clean up after each test.
+	 * 
+	 * @see org.openmrs.test.BaseContextSensitiveTest#updateSearchIndex()
+	 */
+	@Before
+	@Override
+	public void updateSearchIndex() {
+		super.updateSearchIndex();
+	}
+	
+	/**
+	 * Updates the search index after executing each dataset.
+	 * 
+	 * @see org.openmrs.test.BaseContextSensitiveTest#executeDataSet(org.dbunit.dataset.IDataSet)
+	 */
+	@Override
+	public void executeDataSet(IDataSet dataset) throws Exception {
+		super.executeDataSet(dataset);
+		
+		updateSearchIndex();
 	}
 	
 	/**
@@ -1334,6 +1359,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		conceptService.saveConcept(concept);
+		
+		//force Hibernate interceptor to set dateCreated
+		Context.flushSession();
+		
 		Assert.assertEquals(4, concept.getNames(true).size());
 		
 		for (ConceptName cn : concept.getNames()) {
@@ -1659,7 +1688,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return concept search results that match unique concepts", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
 	public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConcepts() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		//trust is included in 2 names for conceptid=3000 and in one name for conceptid=4000.
@@ -1671,14 +1700,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Test
-	@Verifies(value = "should return concept search results that contain all search words", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnConceptSearchResultsThatContainAllSearchWords() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+	@Verifies(value = "should return concept search results that contain all search words as first", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnConceptSearchResultsThatContainAllSearchWordsAsFirst() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust now", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		//"trust now" is name for conceptid=4000.
-		//So we should see 1 results only
-		Assert.assertEquals(1, searchResults.size());
+		//"trust now" must be first hit
+		assertThat(searchResults.get(0).getWord(), is("trust now"));
 	}
 	
 	/**
@@ -2062,7 +2090,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a count of unique concepts", method = "getCountOfConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept)")
 	public void getCountOfConcepts_shouldReturnACountOfUniqueConcepts() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		Assert.assertEquals(2, conceptService.getCountOfConcepts("trust", Collections.singletonList(Locale.ENGLISH), false,
 		    null, null, null, null, null).intValue());
 	}
@@ -2165,6 +2193,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept3.addName(new ConceptName(name, new Locale("en")));
 		Context.getConceptService().saveConcept(concept3);
 		
+		updateSearchIndex();
+		
 		//when
 		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en"), false);
 		
@@ -2195,12 +2225,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept3.addName(new ConceptName(name, new Locale("en")));
 		Context.getConceptService().saveConcept(concept3);
 		
+		updateSearchIndex();
+		
 		//when
 		List<Concept> concepts = Context.getConceptService().getConceptsByName(name, new Locale("en", "US"), false);
 		
 		//then
-		Assert.assertEquals(2, concepts.size());
-		Assert.assertTrue(concepts.containsAll(Arrays.asList(concept1, concept3)));
+		assertThat(concepts.get(0), is(concept1));
+		assertThat(concepts, containsInAnyOrder(concept1, concept2, concept3));
 	}
 	
 	/**
@@ -2451,24 +2483,28 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Test
-	@Verifies(value = "should return a search result whose concept name contains all word tokens", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
-	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokens() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		Concept conceptWithMultipleMatchingNames = conceptService.getConcept(798);
-		
-		//recalculate the weights just in case the logic for calculating the weights is changed
-		conceptService.updateConceptIndex(conceptWithMultipleMatchingNames);
-		conceptService.updateConceptIndex(conceptService.getConcept(240));
-		conceptService.updateConceptIndex(conceptService.getConcept(357));
-		conceptService.updateConceptIndex(conceptService.getConcept(328));
-		conceptService.updateConceptIndex(conceptService.getConcept(1240));
+	@Verifies(value = "should return a search result whose concept name contains all word tokens as first", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokensAsFirst() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER", Collections
-		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
+		
+		assertThat(searchResults.get(0).getWord(), is("SALBUTAMOL INHALER"));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return a search result for phrase with stop words", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnASearchResultForPhraseWithStopWords() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		List<ConceptSearchResult> searchResults = conceptService.getConcepts("tuberculosis of knee", Collections
+		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
 		
 		Assert.assertEquals(1, searchResults.size());
-		Assert.assertEquals(conceptWithMultipleMatchingNames, searchResults.get(0).getConcept());
-		Assert.assertEquals("SALBUTAMOL INHALER", searchResults.get(0).getConceptName().getName());
+		Assert.assertEquals("Tuberculosis of Knee", searchResults.get(0).getConceptName().getName());
 	}
 	
 	/**
@@ -2479,9 +2515,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
 	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
 		Concept concept = conceptService.getConcept(7);
-		conceptService.updateConceptIndex(concept);
-		Assert.assertEquals(0, conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
-		    null, null, null, null, null, null).size());
+		
+		List<ConceptSearchResult> results = conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH),
+		    false, null, null, null, null, null, null, null);
+		
+		for (ConceptSearchResult result : results) {
+			assertThat(result.getConcept(), not(concept));
+		}
 	}
 	
 	/**
@@ -2670,7 +2710,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass when saving a concept after removing a name", method = "saveConcept(Concept)")
 	public void saveConcept_shouldPassWhenSavingAConceptAfterRemovingAName() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
 		Concept concept = conceptService.getConcept(3000);
 		Assert.assertFalse(concept.getSynonyms().isEmpty());
 		concept.removeName(concept.getSynonyms().iterator().next());
