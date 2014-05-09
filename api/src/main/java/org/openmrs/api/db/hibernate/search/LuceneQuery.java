@@ -13,7 +13,9 @@
  */
 package org.openmrs.api.db.hibernate.search;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -21,6 +23,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermsFilter;
 import org.apache.lucene.util.Version;
@@ -40,12 +43,17 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	private FullTextQuery fullTextQuery;
 	
+	private Map<String, Object> fieldMap;
+	
 	public static <T> LuceneQuery<T> newQuery(final String query, final Session session, final Class<T> type) {
 		return new LuceneQuery<T>(
 		                          session, type) {
 			
 			@Override
 			protected Query prepareQuery() throws ParseException {
+				if (query.isEmpty()) {
+					return new MatchAllDocsQuery();
+				}
 				return newQueryParser().parse(query);
 			}
 			
@@ -60,6 +68,29 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		super(session, type);
 		
 		buildQuery();
+	}
+	
+	private void addFilter(String field, Object value) {
+		if (fieldMap == null) {
+			fieldMap = new HashMap<String, Object>();
+		}
+		fieldMap.put(field, value);
+		// update filters
+		fullTextQuery.enableFullTextFilter("filterFactory").setParameter("fieldMap", fieldMap);
+	}
+	
+	public LuceneQuery<T> filter(String field, Object value) {
+		if (value != null) {
+			addFilter(field, value);
+		}
+		return this;
+	}
+	
+	public LuceneQuery<T> filter(String field, Object[] values) {
+		if (values != null && values.length != 0) {
+			addFilter(field, values);
+		}
+		return this;
 	}
 	
 	private void buildQuery() {

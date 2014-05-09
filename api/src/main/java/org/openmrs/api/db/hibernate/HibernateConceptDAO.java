@@ -598,14 +598,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 		}
 		
-		query.append(" concept.retired:false");
-		
-		appendIdsQuery(query, "concept.conceptClass.conceptClassId", classes);
-		
-		appendIdsQuery(query, "concept.datatype.conceptDatatypeId", datatypes);
-		
 		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).skipSame("concept.conceptId").list();
+		    ConceptName.class).filter("concept.datatype.conceptDatatypeId", transformToIds(datatypes)).filter(
+		    "concept.conceptClass.conceptClassId", transformToIds(classes)).filter("concept.retired", "false").skipSame(
+		    "concept.conceptId").list();
 		
 		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
 		
@@ -1303,11 +1299,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        final List<ConceptDatatype> requireDatatypes, final List<ConceptDatatype> excludeDatatypes,
 	        final Concept answersToConcept, final Integer start, final Integer size) throws DAOException {
 		
-		String query = createQuery(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
-		    excludeDatatypes, answersToConcept);
+		LuceneQuery<ConceptName> query = createConceptNameQuery(phrase, locales, includeRetired, requireClasses,
+		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
 		
-		ListPart<ConceptName> names = LuceneQuery.newQuery(query, sessionFactory.getCurrentSession(), ConceptName.class)
-		        .skipSame("concept.conceptId").listPart(start, size);
+		ListPart<ConceptName> names = query.listPart(start, size);
 		
 		List<ConceptSearchResult> results = Lists.transform(names.getList(),
 		    new Function<ConceptName, ConceptSearchResult>() {
@@ -1326,17 +1321,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException {
 		
-		String query = createQuery(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
-		    excludeDatatypes, answersToConcept);
+		LuceneQuery<ConceptName> query = createConceptNameQuery(phrase, locales, includeRetired, requireClasses,
+		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
 		
-		Long size = LuceneQuery.newQuery(query, sessionFactory.getCurrentSession(), ConceptName.class).skipSame(
-		    "concept.conceptId").resultSize();
+		Long size = query.resultSize();
 		return size.intValue();
 	}
 	
-	private String createQuery(final String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) {
+	private LuceneQuery<ConceptName> createConceptNameQuery(final String phrase, List<Locale> locales,
+	        boolean includeRetired, List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	        List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) {
 		final StringBuilder query = new StringBuilder();
 		
 		if (!StringUtils.isBlank(phrase)) {
@@ -1351,17 +1345,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			query.append(newNamesQuery(searchLocales, phrase, true));
 		}
 		
-		if (!includeRetired) {
-			query.append(" concept.retired:false");
-		}
-		
-		appendIdsQuery(query, "concept.conceptClass.conceptClassId", requireClasses);
-		
-		appendIdsQuery(query, "-concept.conceptClass.conceptClassId", excludeClasses);
-		
-		appendIdsQuery(query, "concept.datatype.conceptDatatypeId", requireDatatypes);
-		
-		appendIdsQuery(query, "-concept.datatype.conceptDatatypeId", excludeDatatypes);
+		LuceneQuery<ConceptName> luceneQuery = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
+		    ConceptName.class).skipSame("concept.conceptId").filter("concept.conceptClass.conceptClassId",
+		    transformToIds(requireClasses)).filter("-concept.conceptClass.conceptClassId", transformToIds(excludeClasses))
+		        .filter("concept.datatype.conceptDatatypeId", transformToIds(requireDatatypes)).filter(
+		            "-concept.datatype.conceptDatatypeId", transformToIds(excludeDatatypes));
 		
 		if (answersToConcept != null) {
 			Collection<ConceptAnswer> answers = answersToConcept.getAnswers(false);
@@ -1371,27 +1359,25 @@ public class HibernateConceptDAO implements ConceptDAO {
 				for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers(false)) {
 					ids.add(conceptAnswer.getAnswerConcept().getId());
 				}
-				query.append(" concept.conceptId:(").append(StringUtils.join(ids, " OR ")).append(")");
+				luceneQuery.filter("concept.conceptId", ids.toArray(new Object[0]));
 			}
 		}
-		return query.toString();
-	}
-	
-	private void appendIdsQuery(final StringBuilder query, final String field, final List<? extends OpenmrsObject> objects) {
-		List<Integer> ids = transformToIds(objects);
-		if (!ids.isEmpty()) {
-			query.append(" ").append(field).append(":(").append(StringUtils.join(ids, " OR ")).append(")");
-		}
-	}
-	
-	private List<Integer> transformToIds(final List<? extends OpenmrsObject> items) {
-		if (items == null || items.isEmpty()) {
-			return Collections.emptyList();
+		
+		if (!includeRetired) {
+			luceneQuery.filter("concept.retired", "false");
 		}
 		
-		List<Integer> ids = new ArrayList<Integer>();
-		for (OpenmrsObject item : items) {
-			ids.add(item.getId());
+		return luceneQuery;
+	}
+	
+	private String[] transformToIds(final List<? extends OpenmrsObject> items) {
+		if (items == null || items.isEmpty()) {
+			return new String[0];
+		}
+		
+		String[] ids = new String[items.size()];
+		for (int i = 0; i < items.size(); i++) {
+			ids[i] = items.get(i).getId().toString();
 		}
 		return ids;
 	}
