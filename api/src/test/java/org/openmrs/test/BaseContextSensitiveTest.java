@@ -70,6 +70,8 @@ import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -732,6 +734,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		//Commit, but note that it will be committed even earlier when turning on DB constraints
 		connection.commit();
 		
+		updateSearchIndex();
+		
 		isBaseSetup = false;
 	}
 	
@@ -782,6 +786,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 					//Commit so that it is not rolled back after a test.
 					getConnection().commit();
 					
+					updateSearchIndex();
+					
 					isBaseSetup = true;
 				}
 				
@@ -794,6 +800,22 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		Context.clearSession();
+	}
+	
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { Concept.class, Drug.class };
+	}
+	
+	/**
+	 * It needs to be call if you want to do a concept search after you modify a concept in a test.
+	 * 
+	 * It is because index is automatically updated only after transaction is committed, which happens
+	 * only at the end of a test in our transactional tests.
+	 */
+	public void updateSearchIndex() {
+		for (Class<?> indexType : getIndexedTypes()) {
+			Context.updateSearchIndexForType(indexType);
+		}
 	}
 	
 	/**

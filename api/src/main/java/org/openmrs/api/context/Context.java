@@ -878,6 +878,8 @@ public class Context {
 		// correctly.
 		// TODO: Should this be one of the first things executed at startup?
 		checkCoreDataset();
+		
+		getContextDAO().setupSearchIndex();
 	}
 	
 	/**
@@ -1346,6 +1348,18 @@ public class Context {
 		Properties props = new Properties();
 		props.putAll(configProperties);
 		return props;
+	}
+	
+	public static void updateSearchIndex() {
+		getContextDAO().updateSearchIndex();
+	}
+	
+	public static void updateSearchIndexForType(Class<?> type) {
+		getContextDAO().updateSearchIndexForType(type);
+	}
+	
+	public static void updateSearchIndexForObject(Object object) {
+		getContextDAO().updateSearchIndexForObject(object);
 	}
 	
 	/**

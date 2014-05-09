@@ -573,11 +573,8 @@ public class OpenmrsUtil {
 		}
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
 		
-		// set the application data directory
-		val = p.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
-		if (val != null) {
-			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = val;
-		}
+		//sets application data directory
+		OpenmrsUtil.getApplicationDataDirectory();
 		
 		// set global log level
 		applyLogLevels();
@@ -1220,35 +1217,37 @@ public class OpenmrsUtil {
 	 *         the application (runtime properties, modules, etc)
 	 */
 	public static String getApplicationDataDirectory() {
+		String filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
 		
-		String filepath = null;
-		if (System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY") != null) {
+		if (filepath == null) {
 			filepath = System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
-		} else {
-			
-			if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
-				filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
-			} else {
-				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
-					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-					if (!(new File(filepath)).canWrite()) {
-						log.warn("Unable to write to users home dir, fallback to: "
-						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
-						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
-					}
-				} else {
-					filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
-					        + "OpenMRS";
-					if (!(new File(filepath)).canWrite()) {
-						log.warn("Unable to write to users home dir, fallback to: "
-						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
-						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + "OpenMRS";
-					}
-				}
-				
-				filepath = filepath + File.separator;
-			}
 		}
+		if (filepath == null) {
+			filepath = Context.getRuntimeProperties().getProperty(
+			    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+		}
+		if (filepath == null) {
+			if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
+				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
+				if (!(new File(filepath)).canWrite()) {
+					log.warn("Unable to write to users home dir, fallback to: "
+					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
+					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
+				}
+			} else {
+				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
+				        + "OpenMRS";
+				if (!(new File(filepath)).canWrite()) {
+					log.warn("Unable to write to users home dir, fallback to: "
+					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
+					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + "OpenMRS";
+				}
+			}
+			
+			filepath = filepath + File.separator;
+		}
+		
+		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = filepath;
 		
 		File folder = new File(filepath);
 		if (!folder.exists()) {

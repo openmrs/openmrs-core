@@ -20,10 +20,13 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Indexed;
 
 /**
  * Drug
  */
+@Indexed
 public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, Orderable<DrugOrder> {
 	
 	public static final long serialVersionUID = 285L;
@@ -33,7 +36,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	private static final Log log = LogFactory.getLog(Drug.class);
 	
 	// Fields
-	
+	@DocumentId
 	private Integer drugId;
 	
 	private Boolean combination = false;

@@ -14,16 +14,23 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
@@ -317,7 +324,6 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.context.Context#startup(Properties)
 	 */
 	public void startup(Properties properties) {
-		
 	}
 	
 	/**
@@ -410,6 +416,84 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 		}
 		
+	}
+	
+	@Override
+	public void updateSearchIndexForType(Class<?> type) {
+		//From http://docs.jboss.org/hibernate/search/3.3/reference/en-US/html/manual-index-changes.html#search-batchindex-flushtoindexes
+		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
+		session.purgeAll(type);
+		
+		//Prepare session for batch work
+		session.flush();
+		session.clear();
+		
+		FlushMode flushMode = session.getFlushMode();
+		CacheMode cacheMode = session.getCacheMode();
+		try {
+			session.setFlushMode(FlushMode.MANUAL);
+			session.setCacheMode(CacheMode.IGNORE);
+			
+			//Scrollable results will avoid loading too many objects in memory
+			ScrollableResults results = session.createCriteria(type).setFetchSize(1000).scroll(ScrollMode.FORWARD_ONLY);
+			int index = 0;
+			while (results.next()) {
+				index++;
+				session.index(results.get(0)); //index each element
+				if (index % 1000 == 0) {
+					session.flushToIndexes(); //apply changes to indexes
+					session.clear(); //free memory since the queue is processed
+				}
+			}
+			session.flushToIndexes();
+			session.clear();
+		}
+		finally {
+			session.setFlushMode(flushMode);
+			session.setCacheMode(cacheMode);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#updateSearchIndexForObject(java.lang.Object)
+	 */
+	@Override
+	public void updateSearchIndexForObject(Object object) {
+		FullTextSession session = Search.getFullTextSession(sessionFactory.getCurrentSession());
+		session.index(object);
+		session.flushToIndexes();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#setupSearchIndex()
+	 */
+	@Override
+	public void setupSearchIndex() {
+		String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LAST_FULL_INDEX_DATE, "");
+		
+		if (StringUtils.isBlank(gp)) {
+			updateSearchIndex();
+		}
+	}
+	
+	@Override
+	public void updateSearchIndex() {
+		try {
+			log.info("Updating the search index... It may take a few minutes.");
+			Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().startAndWait();
+			
+			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+			    OpenmrsConstants.GP_LAST_FULL_INDEX_DATE);
+			if (gp == null) {
+				gp = new GlobalProperty(OpenmrsConstants.GP_LAST_FULL_INDEX_DATE);
+			}
+			gp.setPropertyValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			Context.getAdministrationService().saveGlobalProperty(gp);
+			log.info("Finished updating the search index");
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Failed to update the search index", e);
+		}
 	}
 	
 }
