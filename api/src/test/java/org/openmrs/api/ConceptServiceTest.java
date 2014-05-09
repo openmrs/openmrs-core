@@ -2676,4 +2676,53 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept.removeName(concept.getSynonyms().iterator().next());
 		conceptService.saveConcept(concept);
 	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test(expected = Exception.class)
+	@Verifies(value = "not save a concept name tag if tag is null, empty or whitespace", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldNotSaveATagIfItIsInvalid() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptNameTag faultyNameTag = cs.saveConceptNameTag(cnt);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "save a concept name tag if tag is supplied", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldSaveATagIfItIsSupplied() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		cnt.setTag("abcd");
+		cnt.setDescription("test");
+		ConceptService cs = Context.getConceptService();
+		
+		Integer id = cs.saveConceptNameTag(cnt).getId();
+		Context.flushSession();
+		Context.clearSession();
+		
+		ConceptNameTag savedNameTag = cs.getConceptNameTag(id);
+		Assert.assertNotNull(savedNameTag);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "save an edited concept name tag", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldSaveAnEditedNameTag() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		ConceptNameTag cnt = cs.getConceptNameTag(1);
+		cnt.setTag("dcba");
+		
+		Integer id = cs.saveConceptNameTag(cnt).getId();
+		Context.flushSession();
+		Context.clearSession();
+		
+		ConceptNameTag savedNameTag = cs.getConceptNameTag(id);
+		Assert.assertNotNull(savedNameTag);
+	}
 }
