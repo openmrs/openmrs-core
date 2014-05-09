@@ -8,9 +8,10 @@
 
   <concept concept_id="240" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e1"/>
   <concept concept_id="357" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e2"/>
-  <concept concept_id="798" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e3"/>
-  <concept concept_id="328" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e4"/>
+  <concept concept_id="798" retired="0" datatype_id="4" class_id="8" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e3"/>
+  <concept concept_id="328" retired="0" datatype_id="4" class_id="5" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e4"/>
   <concept concept_id="1240" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e5"/>
+  <concept concept_id="1241" retired="1" datatype_id="4" class_id="5" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e6"/>
 
   <concept_name concept_id="240" name="SALBUTAMOL TABS" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="240" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e1"/>
   <concept_name concept_id="357" name="SALBUTAMOL SYRUP" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="357" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e2"/>
@@ -24,5 +25,6 @@
   <concept_name concept_id="1240" name="BECLOMETHASONE INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2662" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a510"/>
   <concept_name concept_id="1240" name="BECLOMETASONE INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2661" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a511"/>
   <concept_name concept_id="1240" name="Tuberculosis of Knee" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2663" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a512"/>
+  <concept_name concept_id="1241" name="Retired Concept" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2664" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a513"/>
 
 </dataset>
