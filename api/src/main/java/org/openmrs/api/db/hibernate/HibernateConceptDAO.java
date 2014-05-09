@@ -1356,6 +1356,49 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return results;
 	}
 	
+	@Override
+	public Integer getCountOfConcepts(final String phrase, List<Locale> locales, boolean includeRetired,
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException {
+		
+		final StringBuilder query = new StringBuilder();
+		
+		if (!StringUtils.isBlank(phrase)) {
+			final Set<Locale> searchLocales;
+			if (locales == null) {
+				searchLocales = Sets.newHashSet(Context.getLocale());
+			} else {
+				searchLocales = Sets.newHashSet(locales);
+			}
+			query.append(newNamesQuery(searchLocales, phrase, true));
+		}
+		
+		if (!includeRetired) {
+			query.append(" concept.retired:false");
+		}
+		
+		appendIdsQuery(query, "concept.conceptClass.conceptClassId", requireClasses);
+		appendIdsQuery(query, "-concept.conceptClass.conceptClassId", excludeClasses);
+		appendIdsQuery(query, "concept.datatype.conceptDatatypeId", requireDatatypes);
+		appendIdsQuery(query, "-concept.datatype.conceptDatatypeId", excludeDatatypes);
+		
+		if (answersToConcept != null) {
+			Collection<ConceptAnswer> answers = answersToConcept.getAnswers(false);
+			
+			if (answers != null && !answers.isEmpty()) {
+				List<Integer> ids = new ArrayList<Integer>();
+				for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers(false)) {
+					ids.add(conceptAnswer.getAnswerConcept().getId());
+				}
+				query.append(" concept.conceptId:(").append(StringUtils.join(ids, " OR ")).append(")");
+			}
+		}
+		
+		Long size = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(), ConceptName.class).skipSame(
+		    "concept.conceptId").resultSize();
+		return size.intValue();
+	}
+	
 	private void appendIdsQuery(final StringBuilder query, final String field, final List<? extends OpenmrsObject> objects) {
 		List<Integer> ids = transformToIds(objects);
 		if (!ids.isEmpty()) {
