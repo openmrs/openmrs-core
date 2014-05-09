@@ -459,9 +459,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	public String toString() {
-		return "DrugOrder(" + getDose() + getDoseUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
-		        + " from " + getStartDate() + " to " + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate())
-		        + ")";
+		String prefix = Action.DISCONTINUE == getAction() ? "DC " : "";
+		return prefix + "DrugOrder(" + getDose() + getDoseUnits() + " of "
+		        + (getDrug() != null ? getDrug().getName() : "[no drug]") + " from " + getStartDate() + " to "
+		        + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate()) + ")";
 	}
 	
 }

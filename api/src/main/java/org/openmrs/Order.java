@@ -452,7 +452,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Order. orderId: " + orderId + " patient: " + patient + " concept: " + concept + " care setting: "
+		String prefix = Action.DISCONTINUE == getAction() ? "DC " : "";
+		return prefix + "Order. orderId: " + orderId + " patient: " + patient + " concept: " + concept + " care setting: "
 		        + careSetting;
 	}
 	
