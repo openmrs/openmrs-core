@@ -14,8 +14,12 @@
 package org.openmrs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.Date;
 
 import org.junit.Test;
+import org.openmrs.order.OrderUtilTest;
 
 /**
  * Contains tests for DrugOrder
@@ -70,5 +74,25 @@ public class DrugOrderTest {
 		OrderTest.assertThatAllFieldsAreCopied(new DrugOrder(), "cloneForRevision", "creator", "dateCreated", "action",
 		    "changedBy", "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber",
 		    "orderer", "previousOrder", "startDate", "dateStopped");
+	}
+	
+	/**
+	 * @verifies set the relevant fields for a DC order
+	 * @see DrugOrder#cloneForRevision()
+	 */
+	@Test
+	public void cloneForRevision_shouldSetTheRelevantFieldsForADCOrder() throws Exception {
+		Order order = new DrugOrder();
+		order.setAction(Order.Action.DISCONTINUE);
+		Date date = new Date();
+		order.setStartDate(date);
+		OrderUtilTest.setDateStopped(order, date);
+		order.setPreviousOrder(new Order());
+		
+		Order clone = order.cloneForRevision();
+		assertEquals(Order.Action.DISCONTINUE, clone.getAction());
+		assertEquals(order.getStartDate(), clone.getStartDate());
+		assertEquals(order.getPreviousOrder(), clone.getPreviousOrder());
+		assertNull(clone.getDateStopped());
 	}
 }

@@ -16,6 +16,7 @@ package org.openmrs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
@@ -23,6 +24,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.MethodUtils;
@@ -223,5 +225,25 @@ public class OrderTest {
 		order.setOrderType(new OrderType());
 		
 		assertFalse(order.isType(new OrderType()));
+	}
+	
+	/**
+	 * @verifies set the relevant fields for a DC order
+	 * @see Order#cloneForRevision()
+	 */
+	@Test
+	public void cloneForRevision_shouldSetTheRelevantFieldsForADCOrder() throws Exception {
+		Order order = new Order();
+		order.setAction(Order.Action.DISCONTINUE);
+		Date date = new Date();
+		order.setStartDate(date);
+		order.setPreviousOrder(new Order());
+		OrderUtilTest.setDateStopped(order, date);
+		
+		Order clone = order.cloneForRevision();
+		assertEquals(Order.Action.DISCONTINUE, clone.getAction());
+		assertEquals(order.getStartDate(), clone.getStartDate());
+		assertEquals(order.getPreviousOrder(), clone.getPreviousOrder());
+		assertNull(clone.getDateStopped());
 	}
 }

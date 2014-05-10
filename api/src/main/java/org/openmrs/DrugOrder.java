@@ -423,14 +423,21 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * @return the newly created order
 	 * @since 1.10
 	 * @should set all the relevant fields
+	 * @should set the relevant fields for a DC order
 	 */
 	@Override
 	public DrugOrder cloneForRevision() {
 		DrugOrder newOrder = new DrugOrder();
 		newOrder.setCareSetting(this.getCareSetting());
 		newOrder.setConcept(this.getConcept());
-		newOrder.setAction(Action.REVISE);
-		newOrder.setPreviousOrder(this);
+		if (getAction() == Action.DISCONTINUE) {
+			newOrder.setAction(Action.DISCONTINUE);
+			newOrder.setPreviousOrder(getPreviousOrder());
+			newOrder.setStartDate(getStartDate());
+		} else {
+			newOrder.setAction(Action.REVISE);
+			newOrder.setPreviousOrder(this);
+		}
 		newOrder.setPatient(this.getPatient());
 		newOrder.setOrderType(this.getOrderType());
 		newOrder.setInstructions(this.getInstructions());

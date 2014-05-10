@@ -21,9 +21,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -316,5 +318,32 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertNotNull(previousOrder);
 		previousOrder.getId();
 		DrugOrder previousDrugOrder = (DrugOrder) previousOrder;
+	}
+	
+	@Test
+	public void shouldAllowEditingADiscontinuationOrder() throws Exception {
+		Order originalDCOrder = orderService.getOrder(22);
+		assertEquals(Order.Action.DISCONTINUE, originalDCOrder.getAction());
+		List<Order> originalPatientOrders = orderService.getAllOrdersByPatient(originalDCOrder.getPatient());
+		final Order previousOrder = originalDCOrder.getPreviousOrder();
+		assertNotNull(previousOrder);
+		final Date newStartDate = originalDCOrder.getEncounter().getEncounterDatetime();
+		
+		Order newDcOrder = originalDCOrder.cloneForRevision();
+		newDcOrder.setEncounter(originalDCOrder.getEncounter());
+		newDcOrder.setOrderer(originalDCOrder.getOrderer());
+		newDcOrder.setStartDate(newStartDate);
+		orderService.voidOrder(originalDCOrder, "To be replace with a new one");
+		assertNull(originalDCOrder.getDateStopped());
+		orderService.saveOrder(newDcOrder, null);
+		
+		//We need to flush so that we ensure the interceptor is okay with all this
+		Context.flushSession();
+		assertTrue(originalDCOrder.isVoided());
+		List<Order> newPatientOrders = orderService.getAllOrdersByPatient(originalDCOrder.getPatient());
+		assertEquals(originalPatientOrders.size() + 1, newPatientOrders.size());
+		Collection<Order> newOrders = CollectionUtils.disjunction(originalPatientOrders, newPatientOrders);
+		assertEquals(1, newOrders.size());
+		assertEquals(newOrders.iterator().next().getPreviousOrder(), previousOrder);
 	}
 }
