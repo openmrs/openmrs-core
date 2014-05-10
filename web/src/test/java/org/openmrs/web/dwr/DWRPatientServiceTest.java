@@ -112,7 +112,7 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 		Assert.assertEquals(0, ps.getCountOfPatients(identifier).intValue());
 		
 		Patient patient = ps.getPatient(2);
-		PatientIdentifier pId = new PatientIdentifier(identifier, ps.getPatientIdentifierType(2), Context
+		PatientIdentifier pId = new PatientIdentifier(identifier, ps.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patient.addIdentifier(pId);
 		ps.savePatient(patient);

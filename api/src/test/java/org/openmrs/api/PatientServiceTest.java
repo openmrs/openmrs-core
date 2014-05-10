@@ -1080,7 +1080,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			if (type.getRetired())
 				Assert.fail("Should not return retired patient identifier types");
 		}
-		Assert.assertEquals("Should be exactly two patient identifier types in the dataset", 2, types.size());
+		Assert.assertEquals("Should be exactly three patient identifier types in the dataset", 3, types.size());
 		
 	}
 	
@@ -1102,7 +1102,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		Assert.assertTrue("There should be at least one retired patient identifier type", atLeastOneRetired);
-		Assert.assertEquals("Should be exactly three patient identifier types", 3, types.size());
+		Assert.assertEquals("Should be exactly four patient identifier types", 4, types.size());
 	}
 	
 	/**
@@ -1119,7 +1119,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			if (type.getRetired())
 				Assert.fail("Should not return retired patient identifier types");
 		}
-		Assert.assertEquals("Should be exactly two patient identifier types in the dataset", 2, types.size());
+		Assert.assertEquals("Should be exactly three patient identifier types in the dataset", 3, types.size());
 		
 	}
 	
@@ -1356,7 +1356,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(!patientIdentifierTypes.isEmpty());
 		
-		Assert.assertEquals(4, patientIdentifierTypes.size());
+		Assert.assertEquals(5, patientIdentifierTypes.size());
 	}
 	
 	/**
@@ -1408,7 +1408,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(!patientIdentifierTypes.isEmpty());
 		
-		Assert.assertEquals(4, patientIdentifierTypes.size());
+		Assert.assertEquals(5, patientIdentifierTypes.size());
 	}
 	
 	/**
@@ -2580,7 +2580,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(2);
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier("123-0");
-		patientIdentifier.setIdentifierType(patientService.getPatientIdentifierType(1));
+		patientIdentifier.setIdentifierType(patientService.getPatientIdentifierType(5));
 		patientIdentifier.setLocation(new Location(1));
 		notPreferred.addIdentifier(patientIdentifier);
 		patientService.savePatient(notPreferred);
@@ -2950,14 +2950,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Location> locations = Context.getLocationService().getAllLocations();
 		Assert.assertTrue(CollectionUtils.isNotEmpty(locations));
 		// check if we have patient identifiers already
-		List<PatientIdentifierType> patientIdentifierTypes = Context.getPatientService().getAllPatientIdentifierTypes();
-		Assert.assertTrue(CollectionUtils.isNotEmpty(patientIdentifierTypes));
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierType(5);
+		Assert.assertNotNull(patientIdentifierType);
 		//retrieve preferred patient and set gender
 		Patient preferred = patientService.getPatient(999);
 		// create new identifier for the preferred patient
 		PatientIdentifier preferredIdentifier = new PatientIdentifier();
 		preferredIdentifier.setIdentifier("9999-4");
-		preferredIdentifier.setIdentifierType(patientIdentifierTypes.get(0));
+		preferredIdentifier.setIdentifierType(patientIdentifierType);
 		preferredIdentifier.setLocation(locations.get(0));
 		preferred.addIdentifier(preferredIdentifier);
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
@@ -2967,7 +2967,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// create identifier with the same values for the non preferred patient
 		PatientIdentifier nonPreferredIdentifier = new PatientIdentifier();
 		nonPreferredIdentifier.setIdentifier("9999-4");
-		nonPreferredIdentifier.setIdentifierType(patientIdentifierTypes.get(0));
+		nonPreferredIdentifier.setIdentifierType(patientIdentifierType);
 		nonPreferredIdentifier.setLocation(locations.get(0));
 		notPreferred.addIdentifier(nonPreferredIdentifier);
 		patientService.savePatient(notPreferred);
@@ -3340,7 +3340,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void savePatient_shouldNotSetThePreferredNameAddressAndIdentifierIfTheyAlreadyExist() throws Exception {
 		Patient patient = new Patient();
 		patient.setGender("M");
-		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(2),
+		PatientIdentifier identifier = new PatientIdentifier("QWERTY", patientService.getPatientIdentifierType(5),
 		        locationService.getLocation(1));
 		PatientIdentifier preferredIdentifier = new PatientIdentifier("QWERTY2", patientService.getPatientIdentifierType(2),
 		        locationService.getLocation(1));
@@ -3440,7 +3440,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		final String identifier = "XYZ";
 		Patient patient = patientService.getPatient(2);
 		Assert.assertEquals(0, patientService.getPatients(identifier, (Integer) null, (Integer) null).size());
-		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
+		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(5),
 		        locationService.getLocation(1));
 		patient.addIdentifier(pId);
 		patientService.savePatient(patient);
@@ -3457,7 +3457,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		final String identifier = "XYZ";
 		Patient patient = patientService.getPatient(2);
 		Assert.assertEquals(0, patientService.getCountOfPatients(identifier).intValue());
-		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(2),
+		PatientIdentifier pId = new PatientIdentifier(identifier, patientService.getPatientIdentifierType(5),
 		        locationService.getLocation(1));
 		patient.addIdentifier(pId);
 		patientService.savePatient(patient);

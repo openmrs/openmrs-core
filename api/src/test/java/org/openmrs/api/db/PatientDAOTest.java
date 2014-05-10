@@ -113,14 +113,14 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		//Note that all tests for wildcard should be pass in 2s due to the behaviour of wildcards,
 		//that is we test for the size and actual patient object returned
 		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("*567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier = new PatientIdentifier("*567", pService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
 		pService.savePatient(patient2);
 		
 		//add closely matching identifier to a different patient
 		Patient patient6 = pService.getPatient(6);
-		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
@@ -145,14 +145,14 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapePercentageCharacterInIdentifierPhrase() throws Exception {
 		
 		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("%567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier = new PatientIdentifier("%567", pService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
 		pService.savePatient(patient2);
 		
 		//add closely matching identifier to a different patient
 		Patient patient6 = pService.getPatient(6);
-		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
@@ -177,14 +177,14 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapeUnderscoreCharacterInIdentifierPhrase() throws Exception {
 		
 		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("_567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier = new PatientIdentifier("_567", pService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
 		pService.savePatient(patient2);
 		
 		//add closely matching identifier to a different patient
 		Patient patient6 = pService.getPatient(6);
-		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier6 = new PatientIdentifier("4567", pService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
 		patientIdentifier6.setPreferred(true);
 		patient6.addIdentifier(patientIdentifier6);
@@ -305,7 +305,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllPatientIdentifierTypes_shouldNotReturnRetired() throws Exception {
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(false);
-		Assert.assertEquals("patientIdentifierTypes list should have 2 elements", 2, patientIdentifierTypes.size());
+		Assert.assertEquals("patientIdentifierTypes list should have 3 elements", 3, patientIdentifierTypes.size());
 	}
 	
 	/**
@@ -324,7 +324,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getAllPatientIdentifierTypes_shouldReturnAll() throws Exception {
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getAllPatientIdentifierTypes(true);
-		Assert.assertEquals("patientIdentifierTypes list should have 3 elements", 3, patientIdentifierTypes.size());
+		Assert.assertEquals("patientIdentifierTypes list should have 4 elements", 4, patientIdentifierTypes.size());
 	}
 	
 	@Test
@@ -501,12 +501,14 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		PatientIdentifierType patientIdentifierType4 = dao.getPatientIdentifierType(4); //retired
 		
+		PatientIdentifierType patientIdentifierType5 = dao.getPatientIdentifierType(5); //non retired, non required
+		
 		//when
 		List<PatientIdentifierType> all = dao.getAllPatientIdentifierTypes(true);
 		
 		//then
-		Assert.assertArrayEquals(new Object[] { patientIdentifierType2, patientIdentifierType1, patientIdentifierType4 },
-		    all.toArray());
+		Assert.assertArrayEquals(new Object[] { patientIdentifierType2, patientIdentifierType1, patientIdentifierType5,
+		        patientIdentifierType4 }, all.toArray());
 	}
 	
 	/**
@@ -548,12 +550,14 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatAreNotRequired() {
 		PatientIdentifierType nonRetiredNonRequired1 = dao.getPatientIdentifierType(1);
 		PatientIdentifierType nonRetiredNonRequired2 = dao.getPatientIdentifierType(2);
+		PatientIdentifierType nonRetiredNonRequired3 = dao.getPatientIdentifierType(5);
 		
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, false, null);
 		
-		Assert.assertEquals(patientIdentifierTypes.size(), 2);
+		Assert.assertEquals(patientIdentifierTypes.size(), 3);
 		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredNonRequired1));
 		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredNonRequired2));
+		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredNonRequired3));
 	}
 	
 	/**
@@ -593,12 +597,14 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypesThatHasNotCheckDigit() {
-		PatientIdentifierType nonRetiredHasNoDigit = dao.getPatientIdentifierType(2);
+		PatientIdentifierType nonRetiredHasNoDigit1 = dao.getPatientIdentifierType(2);
+		PatientIdentifierType nonRetiredHasNoDigit2 = dao.getPatientIdentifierType(5);
 		
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, false);
 		
-		Assert.assertEquals(patientIdentifierTypes.size(), 1);
-		Assert.assertEquals(nonRetiredHasNoDigit, patientIdentifierTypes.get(0));
+		Assert.assertEquals(patientIdentifierTypes.size(), 2);
+		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredHasNoDigit1));
+		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredHasNoDigit2));
 	}
 	
 	/**
@@ -613,14 +619,18 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		PatientIdentifierType nonRetiredType2 = dao.getPatientIdentifierType(2);
 		Assert.assertEquals(nonRetiredType2.getRetired(), false);
 		
+		PatientIdentifierType nonRetiredType3 = dao.getPatientIdentifierType(5);
+		Assert.assertEquals(nonRetiredType3.getRetired(), false);
+		
 		PatientIdentifierType retiredType = dao.getPatientIdentifierType(4);
 		Assert.assertEquals(retiredType.getRetired(), true);
 		
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
 		
-		Assert.assertEquals(patientIdentifierTypes.size(), 2);
+		Assert.assertEquals(patientIdentifierTypes.size(), 3);
 		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredType1));
 		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredType2));
+		Assert.assertTrue(patientIdentifierTypes.contains(nonRetiredType3));
 	}
 	
 	/**
@@ -629,15 +639,16 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatientIdentifierTypes_shouldReturnNonRetiredPatientIdentifierTypes_OrderedByRequiredFirst() {
-		PatientIdentifierType nonRetiredNonRequiredType = dao.getPatientIdentifierType(1);
+		PatientIdentifierType nonRetiredNonRequiredType1 = dao.getPatientIdentifierType(1);
+		PatientIdentifierType nonRetiredNonRequiredType2 = dao.getPatientIdentifierType(5);
 		PatientIdentifierType nonRetiredRequiredType = dao.getPatientIdentifierType(2);
 		nonRetiredRequiredType.setRequired(true);
 		dao.savePatientIdentifierType(nonRetiredRequiredType);
 		
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
 		
-		Assert.assertArrayEquals(new Object[] { nonRetiredRequiredType, nonRetiredNonRequiredType }, patientIdentifierTypes
-		        .toArray());
+		Assert.assertArrayEquals(new Object[] { nonRetiredRequiredType, nonRetiredNonRequiredType1,
+		        nonRetiredNonRequiredType2 }, patientIdentifierTypes.toArray());
 	}
 	
 	/**
@@ -652,6 +663,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		oldIdNumber.setRequired(true);
 		dao.savePatientIdentifierType(oldIdNumber);
 		
+		PatientIdentifierType nationalIdNo = dao.getPatientIdentifierType(5);
+		oldIdNumber.setRequired(true);
+		dao.savePatientIdentifierType(nationalIdNo);
+		
 		PatientIdentifierType socialSecNumber = dao.getPatientIdentifierType(4);
 		socialSecNumber.setName("ASecurityNumber");
 		socialSecNumber.setRequired(true);
@@ -660,8 +675,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
 		
-		Assert.assertArrayEquals(new Object[] { socialSecNumber, oldIdNumber, openMRSIdNumber }, patientIdentifierTypes
-		        .toArray());
+		Assert.assertArrayEquals(new Object[] { socialSecNumber, oldIdNumber, openMRSIdNumber, nationalIdNo },
+		    patientIdentifierTypes.toArray());
 	}
 	
 	/**
@@ -685,10 +700,15 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		socialSecNumber.setRetired(false);
 		dao.savePatientIdentifierType(socialSecNumber);
 		
+		PatientIdentifierType nationalIdNo = dao.getPatientIdentifierType(5);
+		oldIdNumber.setName("IdNumber");
+		oldIdNumber.setRequired(true);
+		dao.savePatientIdentifierType(nationalIdNo);
+		
 		List<PatientIdentifierType> patientIdentifierTypes = dao.getPatientIdentifierTypes(null, null, null, null);
 		
-		Assert.assertArrayEquals(new Object[] { openMRSIdNumber, oldIdNumber, socialSecNumber }, patientIdentifierTypes
-		        .toArray());
+		Assert.assertArrayEquals(new Object[] { openMRSIdNumber, oldIdNumber, socialSecNumber, nationalIdNo },
+		    patientIdentifierTypes.toArray());
 	}
 	
 	/**
