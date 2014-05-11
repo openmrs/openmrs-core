@@ -316,8 +316,14 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Order dcOrder = orderService.getOrder(22);
 		Order previousOrder = dcOrder.getPreviousOrder();
 		assertNotNull(previousOrder);
-		previousOrder.getId();
 		DrugOrder previousDrugOrder = (DrugOrder) previousOrder;
+		
+		Order testOrder = orderService.getOrder(7);
+		Order dcTestOrder = orderService.discontinueOrder(testOrder, "Testing", null, testOrder.getOrderer(), testOrder
+		        .getEncounter());
+		Context.flushSession();
+		Context.clearSession();
+		dcTestOrder = (TestOrder) orderService.getOrder(dcTestOrder.getOrderId()).getPreviousOrder();
 	}
 	
 	@Test

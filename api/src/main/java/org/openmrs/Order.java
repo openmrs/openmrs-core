@@ -17,6 +17,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 
 /**
@@ -47,10 +48,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.10
 	 */
 	public enum Action {
-		NEW, REVISE, DISCONTINUE,
-		//When we start supporting RENEW, we need to remove lazy="false"
-		//from order.previousOrder in the mapping file
-		//RENEW
+		NEW, REVISE, DISCONTINUE, RENEW
 	}
 	
 	private static final Log log = LogFactory.getLog(Order.class);
@@ -497,7 +495,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return the previous order.
 	 */
 	public Order getPreviousOrder() {
-		return previousOrder;
+		return HibernateUtil.getRealObjectFromProxy(previousOrder);
 	}
 	
 	/**
