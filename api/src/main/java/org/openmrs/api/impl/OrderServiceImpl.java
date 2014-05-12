@@ -180,7 +180,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			
 			//DC orders should auto expire upon creating them
 			if (DISCONTINUE == order.getAction()) {
-				setProperty(order, "dateStopped", order.getStartDate());
+				order.setAutoExpireDate(order.getStartDate());
 			}
 		}
 		

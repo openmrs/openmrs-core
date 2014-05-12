@@ -584,7 +584,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(order.getDateStopped(), discontinueDate);
 		Assert.assertNotNull(discontinueOrder);
 		Assert.assertNotNull(discontinueOrder.getId());
-		Assert.assertEquals(discontinueOrder.getStartDate(), discontinueOrder.getDateStopped());
+		Assert.assertEquals(discontinueOrder.getStartDate(), discontinueOrder.getAutoExpireDate());
 		Assert.assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
 		Assert.assertEquals(discontinueOrder.getOrderReasonNonCoded(), discontinueReasonNonCoded);
 		Assert.assertEquals(discontinueOrder.getPreviousOrder(), order);
@@ -610,7 +610,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(order.getDateStopped(), discontinueDate);
 		Assert.assertNotNull(discontinueOrder);
 		Assert.assertNotNull(discontinueOrder.getId());
-		Assert.assertEquals(discontinueOrder.getStartDate(), discontinueOrder.getDateStopped());
+		Assert.assertEquals(discontinueOrder.getStartDate(), discontinueOrder.getAutoExpireDate());
 		Assert.assertEquals(discontinueOrder.getAction(), Action.DISCONTINUE);
 		Assert.assertEquals(discontinueOrder.getOrderReason(), concept);
 		Assert.assertEquals(discontinueOrder.getPreviousOrder(), order);
@@ -715,7 +715,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull("should save discontinue order", order.getId());
 		Assert.assertEquals(expectedPreviousOrder, order.getPreviousOrder());
 		Assert.assertNotNull(expectedPreviousOrder.getDateStopped());
-		Assert.assertEquals(order.getStartDate(), order.getDateStopped());
+		Assert.assertEquals(order.getStartDate(), order.getAutoExpireDate());
 	}
 	
 	/**
@@ -749,7 +749,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setPreviousOrder(previousOrder);
 		
 		orderService.saveOrder(order, null);
-		Assert.assertEquals(order.getStartDate(), order.getDateStopped());
+		Assert.assertEquals(order.getStartDate(), order.getAutoExpireDate());
 		Assert.assertNotNull("previous order should be discontinued", previousOrder.getDateStopped());
 	}
 	

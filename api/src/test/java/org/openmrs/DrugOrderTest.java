@@ -73,7 +73,7 @@ public class DrugOrderTest {
 	public void cloneForRevision_shouldSetAllTheRelevantFields() throws Exception {
 		OrderTest.assertThatAllFieldsAreCopied(new DrugOrder(), "cloneForRevision", "creator", "dateCreated", "action",
 		    "changedBy", "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber",
-		    "orderer", "previousOrder", "startDate", "dateStopped");
+		    "orderer", "previousOrder", "startDate", "dateStopped", "accessionNumber");
 	}
 	
 	/**
@@ -86,6 +86,8 @@ public class DrugOrderTest {
 		order.setAction(Order.Action.DISCONTINUE);
 		Date date = new Date();
 		order.setStartDate(date);
+		order.setAutoExpireDate(date);
+		order.setAccessionNumber("some number");
 		OrderUtilTest.setDateStopped(order, date);
 		order.setPreviousOrder(new Order());
 		
@@ -93,6 +95,8 @@ public class DrugOrderTest {
 		assertEquals(Order.Action.DISCONTINUE, clone.getAction());
 		assertEquals(order.getStartDate(), clone.getStartDate());
 		assertEquals(order.getPreviousOrder(), clone.getPreviousOrder());
+		assertNull(clone.getAutoExpireDate());
 		assertNull(clone.getDateStopped());
+		assertNull(clone.getAccessionNumber());
 	}
 }

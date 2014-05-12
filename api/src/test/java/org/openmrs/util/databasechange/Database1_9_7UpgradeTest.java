@@ -385,7 +385,7 @@ public class Database1_9_7UpgradeTest {
 		
 		//There should be no DC order with a null stop date
 		List<List<Object>> discontinuationOrdersWithNotStartDate = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
-		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE' AND date_stopped IS NULL", true);
+		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE' AND auto_expire_date IS NULL", true);
 		assertEquals(0L, discontinuationOrdersWithNotStartDate.get(0).get(0));
 		
 		List<List<Object>> newer = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),

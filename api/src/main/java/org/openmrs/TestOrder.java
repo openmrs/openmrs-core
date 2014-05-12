@@ -161,11 +161,11 @@ public class TestOrder extends Order {
 	@Override
 	public TestOrder cloneForDiscontinuing() {
 		TestOrder newOrder = new TestOrder();
-		newOrder.setCareSetting(this.getCareSetting());
-		newOrder.setConcept(this.getConcept());
+		newOrder.setCareSetting(getCareSetting());
+		newOrder.setConcept(getConcept());
 		newOrder.setAction(Action.DISCONTINUE);
 		newOrder.setPreviousOrder(this);
-		newOrder.setPatient(this.getPatient());
+		newOrder.setPatient(getPatient());
 		newOrder.setOrderType(getOrderType());
 		
 		return newOrder;
@@ -178,24 +178,30 @@ public class TestOrder extends Order {
 	 * @return the newly created order
 	 * @since 1.10
 	 * @should set all the relevant fields
+	 * @should set the relevant fields for a DC order
 	 */
 	@Override
 	public TestOrder cloneForRevision() {
 		TestOrder newOrder = new TestOrder();
-		newOrder.setCareSetting(this.getCareSetting());
-		newOrder.setConcept(this.getConcept());
-		newOrder.setAction(Action.REVISE);
-		newOrder.setPreviousOrder(this);
-		newOrder.setPatient(this.getPatient());
-		newOrder.setOrderType(this.getOrderType());
-		newOrder.setInstructions(this.getInstructions());
-		newOrder.setUrgency(this.getUrgency());
-		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
-		newOrder.setAccessionNumber(this.getAccessionNumber());
-		newOrder.setAutoExpireDate(this.getAutoExpireDate());
-		newOrder.setOrderReason(this.getOrderReason());
-		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
-		newOrder.setScheduledDate(this.getScheduledDate());
+		newOrder.setCareSetting(getCareSetting());
+		newOrder.setConcept(getConcept());
+		if (getAction() == Action.DISCONTINUE) {
+			newOrder.setAction(Action.DISCONTINUE);
+			newOrder.setPreviousOrder(getPreviousOrder());
+			newOrder.setStartDate(getStartDate());
+		} else {
+			newOrder.setAction(Action.REVISE);
+			newOrder.setPreviousOrder(this);
+			newOrder.setAutoExpireDate(getAutoExpireDate());
+		}
+		newOrder.setPatient(getPatient());
+		newOrder.setOrderType(getOrderType());
+		newOrder.setInstructions(getInstructions());
+		newOrder.setUrgency(getUrgency());
+		newOrder.setCommentToFulfiller(getCommentToFulfiller());
+		newOrder.setOrderReason(getOrderReason());
+		newOrder.setOrderReasonNonCoded(getOrderReasonNonCoded());
+		newOrder.setScheduledDate(getScheduledDate());
 		newOrder.setSpecimenSource(getSpecimenSource());
 		newOrder.setLaterality(getLaterality());
 		newOrder.setClinicalHistory(getClinicalHistory());

@@ -406,13 +406,13 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	@Override
 	public DrugOrder cloneForDiscontinuing() {
 		DrugOrder newOrder = new DrugOrder();
-		newOrder.setCareSetting(this.getCareSetting());
-		newOrder.setConcept(this.getConcept());
+		newOrder.setCareSetting(getCareSetting());
+		newOrder.setConcept(getConcept());
 		newOrder.setAction(Action.DISCONTINUE);
 		newOrder.setPreviousOrder(this);
-		newOrder.setPatient(this.getPatient());
-		newOrder.setDrug(this.getDrug());
-		newOrder.setOrderType(this.getOrderType());
+		newOrder.setPatient(getPatient());
+		newOrder.setDrug(getDrug());
+		newOrder.setOrderType(getOrderType());
 		return newOrder;
 	}
 	
@@ -428,8 +428,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	@Override
 	public DrugOrder cloneForRevision() {
 		DrugOrder newOrder = new DrugOrder();
-		newOrder.setCareSetting(this.getCareSetting());
-		newOrder.setConcept(this.getConcept());
+		newOrder.setCareSetting(getCareSetting());
+		newOrder.setConcept(getConcept());
 		if (getAction() == Action.DISCONTINUE) {
 			newOrder.setAction(Action.DISCONTINUE);
 			newOrder.setPreviousOrder(getPreviousOrder());
@@ -437,31 +437,30 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		} else {
 			newOrder.setAction(Action.REVISE);
 			newOrder.setPreviousOrder(this);
+			newOrder.setAutoExpireDate(getAutoExpireDate());
 		}
-		newOrder.setPatient(this.getPatient());
-		newOrder.setOrderType(this.getOrderType());
-		newOrder.setInstructions(this.getInstructions());
-		newOrder.setUrgency(this.getUrgency());
-		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
-		newOrder.setAccessionNumber(this.getAccessionNumber());
-		newOrder.setAutoExpireDate(this.getAutoExpireDate());
-		newOrder.setOrderReason(this.getOrderReason());
-		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
+		newOrder.setPatient(getPatient());
+		newOrder.setOrderType(getOrderType());
+		newOrder.setInstructions(getInstructions());
+		newOrder.setUrgency(getUrgency());
+		newOrder.setCommentToFulfiller(getCommentToFulfiller());
+		newOrder.setOrderReason(getOrderReason());
+		newOrder.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		newOrder.setScheduledDate(getScheduledDate());
-		newOrder.setDose(this.getDose());
-		newOrder.setDoseUnits(this.getDoseUnits());
-		newOrder.setFrequency(this.getFrequency());
-		newOrder.setAsNeeded(this.getAsNeeded());
-		newOrder.setAsNeededCondition(this.getAsNeededCondition());
-		newOrder.setQuantity(this.getQuantity());
-		newOrder.setQuantityUnits(this.getQuantityUnits());
-		newOrder.setDrug(this.getDrug());
-		newOrder.setDosingType(this.getDosingType());
-		newOrder.setDosingInstructions(this.getDosingInstructions());
-		newOrder.setDuration(this.getDuration());
-		newOrder.setDurationUnits(this.getDurationUnits());
-		newOrder.setRoute(this.getRoute());
-		newOrder.setNumRefills(this.getNumRefills());
+		newOrder.setDose(getDose());
+		newOrder.setDoseUnits(getDoseUnits());
+		newOrder.setFrequency(getFrequency());
+		newOrder.setAsNeeded(getAsNeeded());
+		newOrder.setAsNeededCondition(getAsNeededCondition());
+		newOrder.setQuantity(getQuantity());
+		newOrder.setQuantityUnits(getQuantityUnits());
+		newOrder.setDrug(getDrug());
+		newOrder.setDosingType(getDosingType());
+		newOrder.setDosingInstructions(getDosingInstructions());
+		newOrder.setDuration(getDuration());
+		newOrder.setDurationUnits(getDurationUnits());
+		newOrder.setRoute(getRoute());
+		newOrder.setNumRefills(getNumRefills());
 		return newOrder;
 	}
 	

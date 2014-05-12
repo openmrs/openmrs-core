@@ -576,11 +576,11 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public Order cloneForDiscontinuing() {
 		Order newOrder = new Order();
-		newOrder.setCareSetting(this.getCareSetting());
-		newOrder.setConcept(this.getConcept());
+		newOrder.setCareSetting(getCareSetting());
+		newOrder.setConcept(getConcept());
 		newOrder.setAction(Action.DISCONTINUE);
 		newOrder.setPreviousOrder(this);
-		newOrder.setPatient(this.getPatient());
+		newOrder.setPatient(getPatient());
 		newOrder.setOrderType(getOrderType());
 		
 		return newOrder;
@@ -596,8 +596,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public Order cloneForRevision() {
 		Order newOrder = new Order();
-		newOrder.setCareSetting(this.getCareSetting());
-		newOrder.setConcept(this.getConcept());
+		newOrder.setCareSetting(getCareSetting());
+		newOrder.setConcept(getConcept());
 		if (getAction() == Action.DISCONTINUE) {
 			newOrder.setAction(Action.DISCONTINUE);
 			newOrder.setPreviousOrder(getPreviousOrder());
@@ -605,17 +605,16 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		} else {
 			newOrder.setAction(Action.REVISE);
 			newOrder.setPreviousOrder(this);
+			newOrder.setAutoExpireDate(getAutoExpireDate());
 		}
-		newOrder.setPatient(this.getPatient());
-		newOrder.setOrderType(this.getOrderType());
+		newOrder.setPatient(getPatient());
+		newOrder.setOrderType(getOrderType());
 		newOrder.setScheduledDate(getScheduledDate());
-		newOrder.setInstructions(this.getInstructions());
-		newOrder.setUrgency(this.getUrgency());
-		newOrder.setCommentToFulfiller(this.getCommentToFulfiller());
-		newOrder.setAccessionNumber(this.getAccessionNumber());
-		newOrder.setAutoExpireDate(this.getAutoExpireDate());
-		newOrder.setOrderReason(this.getOrderReason());
-		newOrder.setOrderReasonNonCoded(this.getOrderReasonNonCoded());
+		newOrder.setInstructions(getInstructions());
+		newOrder.setUrgency(getUrgency());
+		newOrder.setCommentToFulfiller(getCommentToFulfiller());
+		newOrder.setOrderReason(getOrderReason());
+		newOrder.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		return newOrder;
 	}
 	

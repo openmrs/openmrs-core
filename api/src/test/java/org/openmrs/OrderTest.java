@@ -193,7 +193,7 @@ public class OrderTest {
 	public void cloneForRevision_shouldSetAllTheRelevantFields() throws Exception {
 		assertThatAllFieldsAreCopied(new Order(), "cloneForRevision", "creator", "dateCreated", "action", "changedBy",
 		    "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber", "orderer",
-		    "previousOrder", "startDate", "dateStopped");
+		    "previousOrder", "startDate", "dateStopped", "accessionNumber");
 	}
 	
 	/**
@@ -238,12 +238,16 @@ public class OrderTest {
 		Date date = new Date();
 		order.setStartDate(date);
 		order.setPreviousOrder(new Order());
+		order.setAutoExpireDate(date);
+		order.setAccessionNumber("some number");
 		OrderUtilTest.setDateStopped(order, date);
 		
 		Order clone = order.cloneForRevision();
 		assertEquals(Order.Action.DISCONTINUE, clone.getAction());
 		assertEquals(order.getStartDate(), clone.getStartDate());
 		assertEquals(order.getPreviousOrder(), clone.getPreviousOrder());
+		assertNull(clone.getAutoExpireDate());
 		assertNull(clone.getDateStopped());
+		assertNull(clone.getAccessionNumber());
 	}
 }

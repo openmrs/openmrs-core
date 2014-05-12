@@ -62,7 +62,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			insertStatement = connection
 			        .prepareStatement("Insert into orders(previous_order_id, concept_id, patient_id, encounter_id, "
 			                + "creator, date_created, discontinued_reason, discontinued_reason_non_coded, "
-			                + "uuid, order_action, orderer, order_number, order_type_id, start_date, date_stopped) "
+			                + "uuid, order_action, orderer, order_number, order_type_id, start_date, auto_expire_date) "
 			                + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			for (DiscontinuedOrder discontinuedOrder : discontinuedOrders) {
 				insertStatement.setInt(1, discontinuedOrder.previousOrderId);
