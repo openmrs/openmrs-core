@@ -60,9 +60,8 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if doseUnits is null for SIMPLE dosingType
 	 * @should fail validation if route is null for SIMPLE dosingType
 	 * @should fail validation if frequency is null for SIMPLE dosingType
-	 * @should fail validation if dosingInstructions is null for all dosage types except SIMPLE
+	 * @should fail validation if dosingInstructions is null for FREE_TEXT dosingType
 	 * @should fail validation if numberOfRefills is null for outpatient careSetting
-	 * @should fail validation if quantityUnits is null for outpatient careSetting
 	 * @should fail validation if quantity is null for outpatient careSetting
 	 * @should fail validation if doseUnits is null when dose is present
 	 * @should fail validation if doseUnits is not a dose unit concept

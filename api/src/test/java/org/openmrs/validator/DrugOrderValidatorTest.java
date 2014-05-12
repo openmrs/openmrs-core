@@ -24,7 +24,6 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -221,11 +220,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if instruction is null for FREE_TEXT dosingType
+	 * @verifies fail validation if dosingInstructions is null for FREE_TEXT dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfDosingInstructionIsNullForFREE_TEXTDosingType() throws Exception {
+	public void validate_shouldFailValidationIfDosingInstructionsIsNullForFREE_TEXTDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
 		order.setDosingInstructions(null);
