@@ -2325,9 +2325,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		assertThat(orderService.getDrugDurationUnits(), is(empty()));
 	}
-
-    /**
-     *  @verifies not return a voided revision order
+	
+	/**
+	 * @verifies not return a voided revision order
 	 * @see OrderService#getRevisionOrder(org.openmrs.Order)
 	 */
 	@Test
@@ -2347,5 +2347,21 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revision2.setOrderer(order.getOrderer());
 		orderService.saveOrder(revision2, null);
 		assertEquals(revision2, orderService.getRevisionOrder(order));
-    }
+	}
+	
+	/**
+	 * @verifies pass for a discontinuation order with no previous order
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassForADiscontinuationOrderWithNoPreviousOrder() throws Exception {
+		Order dcOrder = new Order();
+		dcOrder.setAction(Action.DISCONTINUE);
+		dcOrder.setPatient(patientService.getPatient(2));
+		dcOrder.setCareSetting(orderService.getCareSetting(2));
+		dcOrder.setConcept(conceptService.getConcept(5089));
+		dcOrder.setEncounter(encounterService.getEncounter(6));
+		dcOrder.setOrderer(providerService.getProvider(1));
+		orderService.saveOrder(dcOrder, null);
+	}
 }

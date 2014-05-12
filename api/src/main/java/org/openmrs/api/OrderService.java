@@ -83,6 +83,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if the java type of the previous order does not match
 	 * @should fail if the careSetting of the previous order does not match
 	 * @should set concept for drug orders if null
+	 * @should pass for a discontinuation order with no previous order
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
@@ -663,7 +664,7 @@ public interface OrderService extends OpenmrsService {
 	 * Gets the possible units of dispensing, i.e the set members for the concept that matches the
 	 * uuid specified as the value for the global property
 	 * {@link OpenmrsConstants#GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID}
-	 *
+	 * 
 	 * @return concept list of units of dispensing
 	 * @since 1.10
 	 * @should return an empty list if nothing is configured
@@ -673,8 +674,9 @@ public interface OrderService extends OpenmrsService {
 	public List<Concept> getDrugDispensingUnits();
 	
 	/**
-	 * Gets the possible units of duration, i.e the set members for the concept that matches the uuid
-	 * specified as the value for the global property {@link OpenmrsConstants#GP_DRUG_DURATION_UNITS_CONCEPT_UUID}
+	 * Gets the possible units of duration, i.e the set members for the concept that matches the
+	 * uuid specified as the value for the global property
+	 * {@link OpenmrsConstants#GP_DRUG_DURATION_UNITS_CONCEPT_UUID}
 	 * 
 	 * @return concept list of units of duration
 	 * @since 1.10

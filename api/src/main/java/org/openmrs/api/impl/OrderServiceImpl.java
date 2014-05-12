@@ -272,18 +272,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (shouldMarkAsDiscontinued) {
 				order.setPreviousOrder(activeOrder);
 				stopOrder(activeOrder, order.getStartDate());
-				return;
+				break;
 			}
 		}
-		
-		String errorMessage = "Could not find an active order with the concept \"" + order.getConcept().getDisplayString()
-		        + "\" to discontinue.";
-		if (isDrugOrderAndHasADrug) {
-			errorMessage = "Could not find an active drug order with the drug \"" + ((DrugOrder) order).getDrug().getName()
-			        + "\" to discontinue.";
-		}
-		
-		throw new APIException(errorMessage);
 	}
 	
 	/**
