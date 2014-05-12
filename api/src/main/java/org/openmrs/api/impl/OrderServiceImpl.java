@@ -825,12 +825,28 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDrugRoutes() {
-		String conceptUuid = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.DRUG_ROUTE_CONCEPT_UUID);
+		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_ROUTE_CONCEPT_UUID);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Concept> getDrugDosingUnits() {
+		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Concept> getUnitsOfDispensing() {
+		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_UNITS_OF_DISPENSING_CONCEPT_UUID);
+	}
+	
+	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
+		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);
 		if (concept != null && concept.isSet()) {
 			return concept.getSetMembers();
 		}
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 	
 }

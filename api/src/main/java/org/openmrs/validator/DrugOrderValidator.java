@@ -13,14 +13,16 @@
  */
 package org.openmrs.validator;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -63,10 +65,10 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if quantityUnits is null for outpatient careSetting
 	 * @should fail validation if quantity is null for outpatient careSetting
 	 * @should fail validation if doseUnits is null when dose is present
+	 * @should fail validation if doseUnits is not a dose unit concept
 	 * @should fail validation if quantityUnits is null when quantity is present
+	 * @should fail validation if quantityUnits it not a quantity unit concept
 	 * @should fail validation if durationUnits is null when duration is present
-	 * @should fail validation if class of quantityUnits,doseUnits or durationUnits is not Units of
-	 *         Measure Concept class
 	 * @should pass validation if all fields are correct
 	 * @should not require all fields for a discontinuation order
 	 */
@@ -104,7 +106,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			}
 			validateFieldsForOutpatientCareSettingType(order, errors);
 			validatePairedFields(order, errors);
-			validateUnitsConceptClassIsUnitsOfMeasure(errors, order);
+			validateUnitsAreAmongAllowedConcepts(errors, order);
 		}
 	}
 	
@@ -128,15 +130,18 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		}
 	}
 	
-	private void validateUnitsConceptClassIsUnitsOfMeasure(Errors errors, DrugOrder order) {
-		validateConceptClassIsUnitsOfMeasure(order.getDoseUnits(), "doseUnits", errors);
-		validateConceptClassIsUnitsOfMeasure(order.getDurationUnits(), "durationUnits", errors);
-		validateConceptClassIsUnitsOfMeasure(order.getQuantityUnits(), "quantityUnits", errors);
-	}
-	
-	private void validateConceptClassIsUnitsOfMeasure(Concept unitsConcept, String fieldName, Errors errors) {
-		if (unitsConcept != null && !unitsConcept.getConceptClass().getUuid().equals(ConceptClass.UNIT_OF_MEASUREMENT_UUID)) {
-			errors.rejectValue(fieldName, "DrugOrder.error.conceptClassIsNotUnitsOfMeasure");
+	private void validateUnitsAreAmongAllowedConcepts(Errors errors, DrugOrder order) {
+		if (order.getDoseUnits() != null) {
+			List<Concept> drugDosingUnits = Context.getOrderService().getDrugDosingUnits();
+			if (!drugDosingUnits.contains(order.getDoseUnits())) {
+				errors.rejectValue("doseUnits", "DrugOrder.error.notAmongAllowedConcepts");
+			}
+		}
+		if (order.getQuantityUnits() != null) {
+			List<Concept> unitsOfDispensing = Context.getOrderService().getUnitsOfDispensing();
+			if (!unitsOfDispensing.contains(order.getQuantityUnits())) {
+				errors.rejectValue("quantityUnits", "DrugOrder.error.notAmongAllowedConcepts");
+			}
 		}
 	}
 }

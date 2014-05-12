@@ -28,6 +28,8 @@
   <concept concept_id="5089" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="c607c80f-1ea9-4da3-bb88-6276ce8868dd"/>
   <concept concept_id="5497" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="a09ab2c5-878e-4905-b25d-5784167d0216"/>
   <concept concept_id="24" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="11716f9c-1434-4f8d-b9fc-9aa14c4d6129"/>
+  <concept concept_id="25" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="c9386d70-d9c5-11e3-9c1a-0800200c9a66"/>
+  <concept concept_id="26" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="d198bec0-d9c5-11e3-9c1a-0800200c9a66"/>
   <concept_answer concept_answer_id="1" concept_id="21" answer_concept="7" creator="1" date_created="2008-08-18 12:34:26.0" uuid="b1230431-2fe5-49fc-b535-ae42bc849747"/>
   <concept_answer concept_answer_id="2" concept_id="21" answer_concept="8" creator="1" date_created="2008-08-18 12:34:26.0" uuid="f67e537b-d9f9-45c4-846b-79ed1ba88778"/>
   <concept_answer concept_answer_id="3" concept_id="21" answer_concept="22" creator="1" date_created="2008-08-18 12:34:58.0" uuid="11e15f3b-3237-40e9-9c24-cb7916a4868b"/>
@@ -148,6 +150,8 @@
   <concept_name concept_id="50" name="mg" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="6043" voided="0" uuid="860064b4-68a3-11e3-bd76-0800271c1b75" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"/>
   <concept_name concept_id="51" name="tab (s)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="6044" voided="0" uuid="8c51680c-68a3-11e3-bd76-0800271c1b75" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"/>
   <concept_name concept_id="52" name="cm" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="6045" voided="0" uuid="ca9d5ea3-68b1-11e3-bd76-0800271c1b75" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"/>
+  <concept_name concept_id="25" name="Dosing Units" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="6046" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="19da8470-d9c6-11e3-9c1a-0800200c9a66"/>
+  <concept_name concept_id="26" name="Dispensing Units" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="6047" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="20a604f0-d9c6-11e3-9c1a-0800200c9a66"/>
   <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="9e9df183-2328-4117-acd8-fb9bf400911d"/>
   <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="57396ec9-fb90-44b2-b59a-21bc5631bf3d"/>
   <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cb6bc7cf-d5d3-4d51-a05b-5ea656c7413a"/>
@@ -173,6 +177,9 @@
   <concept_set concept_set_id="1" concept_id="18" concept_set="23" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="1a111827-639f-4cb4-961f-1e025bf88d90"/>
   <concept_set concept_set_id="2" concept_id="19" concept_set="23" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="df26fc1a-6fc0-4867-8982-9e5dfe3f8265"/>
   <concept_set concept_set_id="3" concept_id="20" concept_set="23" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="fdefaa94-3f99-464c-8b1f-3e1d1c61335c"/>
+  <concept_set concept_set_id="4" concept_id="50" concept_set="25" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="7c843d00-d9c6-11e3-9c1a-0800200c9a66"/>
+  <concept_set concept_set_id="5" concept_id="51" concept_set="25" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="84c7b780-d9c6-11e3-9c1a-0800200c9a66"/>
+  <concept_set concept_set_id="6" concept_id="51" concept_set="26" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="8e5b0a90-d9c6-11e3-9c1a-0800200c9a66"/>
   <concept_state_conversion concept_state_conversion_id="1" concept_id="16" program_workflow_id="2" program_workflow_state_id="1" uuid="6c72b064-506d-11de-80cb-001e378eb67e"/>
   <drug drug_id="2" concept_id="792" name="Triomune-30" combination="true" strength="1.0tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="3cfcf118-931c-46f7-8ff6-7b876f0d4202"/>
   <drug drug_id="3" concept_id="88" name="Aspirin" combination="false" strength="325.0mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="05ec820a-d297-44e3-be6e-698531d9dd3f"/>
@@ -206,6 +213,8 @@
   <drug_order order_id="44" drug_inventory_id="3" as_needed="0" />
   <drug_order order_id="444" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="5" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
+  <global_property property="order.drugDosingUnitsConceptUuid" property_value="c9386d70-d9c5-11e3-9c1a-0800200c9a66" uuid="35466f40-d9c5-11e3-9c1a-0800200c9a66"/>
+  <global_property property="order.unitsOfDispensingConceptUuid" property_value="d198bec0-d9c5-11e3-9c1a-0800200c9a66" uuid="40f04640-d9c5-11e3-9c1a-0800200c9a66"/>
   <encounter_role encounter_role_id="1" name="Unknown" description="Unknown encounter role for legacy providers with no encounter role set" creator="1" retired="false" date_created="2011-08-18 14:00:00.0" uuid="a0b03050-c99b-11e0-9572-0800200c9a66" />
   <provider provider_id="1" person_id="1" identifier="Test" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-cca9-11e0-9572-0800200c9a66" />
   <encounter encounter_id="3" encounter_type="2" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="6519d653-393b-4118-9c83-a3715b82d4ac"/>
