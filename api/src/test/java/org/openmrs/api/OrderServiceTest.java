@@ -13,6 +13,9 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -23,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.ArrayList;
@@ -81,6 +85,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private ProviderService providerService;
 	
+	private AdministrationService adminService;
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
@@ -104,6 +110,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		}
 		if (providerService == null) {
 			providerService = Context.getProviderService();
+		}
+		if (adminService == null) {
+			adminService = Context.getAdministrationService();
 		}
 	}
 	
@@ -2252,5 +2261,68 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Order discontinuationOrder = orderService.getDiscontinuationOrder(order);
 		assertThat(discontinuationOrder, is(nullValue()));
+	}
+	
+	/**
+	 * @see OrderService#getDrugDispensingUnits()
+	 * @verifies return a list if GP is set
+	 */
+	@Test
+	public void getDrugDispensingUnits_shouldReturnAListIfGPIsSet() throws Exception {
+		
+		assertThat(orderService.getDrugDispensingUnits(), contains(hasId(51)));
+	}
+	
+	/**
+	 * @see OrderService#getDrugDispensingUnits()
+	 * @verifies return an empty list if nothing is configured
+	 */
+	@Test
+	public void getDrugDispensingUnits_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID, ""));
+		
+		assertThat(orderService.getDrugDispensingUnits(), is(empty()));
+	}
+	
+	/**
+	 * @see OrderService#getDrugDosingUnits()
+	 * @verifies return a list if GP is set
+	 */
+	@Test
+	public void getDrugDosingUnits_shouldReturnAListIfGPIsSet() throws Exception {
+		
+		assertThat(orderService.getDrugDosingUnits(), containsInAnyOrder(hasId(50), hasId(51)));
+	}
+	
+	/**
+	 * @see OrderService#getDrugDosingUnits()
+	 * @verifies return an empty list if nothing is configured
+	 */
+	@Test
+	public void getDrugDosingUnits_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID, ""));
+		
+		assertThat(orderService.getDrugDosingUnits(), is(empty()));
+	}
+	
+	/**
+	 * @see OrderService#getDrugDurationUnits()
+	 * @verifies return a list if GP is set
+	 */
+	@Test
+	public void getDrugDurationUnits_shouldReturnAListIfGPIsSet() throws Exception {
+		
+		assertThat(orderService.getDrugDurationUnits(), containsInAnyOrder(hasId(28)));
+	}
+	
+	/**
+	 * @see OrderService#getDrugDurationUnits()
+	 * @verifies return an empty list if nothing is configured
+	 */
+	@Test
+	public void getDrugDurationUnits_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_DURATION_UNITS_CONCEPT_UUID, ""));
+		
+		assertThat(orderService.getDrugDurationUnits(), is(empty()));
 	}
 }

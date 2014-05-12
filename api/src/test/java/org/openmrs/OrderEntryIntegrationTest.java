@@ -112,7 +112,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setQuantity(20.0);
 		order.setQuantityUnits(conceptService.getConcept(51));
 		order.setDuration(20.0);
-		order.setDurationUnits(conceptService.getConcept(1002));
+		order.setDurationUnits(conceptService.getConcept(28));
 		order.setFrequency(orderService.getOrderFrequency(3000));
 		order.setRoute(conceptService.getConcept(22));
 		order.setNumRefills(10);

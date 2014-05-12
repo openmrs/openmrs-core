@@ -10,7 +10,7 @@
 	<concept_name concept_id="114" name="2/day x 7 days/week" concept_name_id="1141" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="cfb4b230-7c5f-11e3-baa7-0800200c9a66"/>
 	
 	<global_property property="order.drugDosingUnitsConceptUuid" property_value="c9386d70-d9c5-11e3-9c1a-0800200c9a66" uuid="35466f40-d9c5-11e3-9c1a-0800200c9a66"/>
-	<global_property property="order.unitsOfDispensingConceptUuid" property_value="d198bec0-d9c5-11e3-9c1a-0800200c9a66" uuid="40f04640-d9c5-11e3-9c1a-0800200c9a66"/>
+	<global_property property="order.drugDispensingUnitsConceptUuid" property_value="d198bec0-d9c5-11e3-9c1a-0800200c9a66" uuid="40f04640-d9c5-11e3-9c1a-0800200c9a66"/>
 	
 	<concept concept_id="25" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="c9386d70-d9c5-11e3-9c1a-0800200c9a66"/>
   	<concept concept_id="26" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="d198bec0-d9c5-11e3-9c1a-0800200c9a66"/>

@@ -69,6 +69,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if quantityUnits is null when quantity is present
 	 * @should fail validation if quantityUnits it not a quantity unit concept
 	 * @should fail validation if durationUnits is null when duration is present
+	 * @should fail validation if durationUnits is not a duration unit concept
 	 * @should pass validation if all fields are correct
 	 * @should not require all fields for a discontinuation order
 	 */
@@ -138,9 +139,15 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			}
 		}
 		if (order.getQuantityUnits() != null) {
-			List<Concept> unitsOfDispensing = Context.getOrderService().getUnitsOfDispensing();
-			if (!unitsOfDispensing.contains(order.getQuantityUnits())) {
+			List<Concept> drugDispensingUnits = Context.getOrderService().getDrugDispensingUnits();
+			if (!drugDispensingUnits.contains(order.getQuantityUnits())) {
 				errors.rejectValue("quantityUnits", "DrugOrder.error.notAmongAllowedConcepts");
+			}
+		}
+		if (order.getDurationUnits() != null) {
+			List<Concept> drugDurationUnits = Context.getOrderService().getDrugDurationUnits();
+			if (!drugDurationUnits.contains(order.getDurationUnits())) {
+				errors.rejectValue("durationUnits", "DrugOrder.error.notAmongAllowedConcepts");
 			}
 		}
 	}

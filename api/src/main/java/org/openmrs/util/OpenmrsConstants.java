@@ -1024,7 +1024,9 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_DRUG_DOSING_UNITS_CONCEPT_UUID = "order.drugDosingUnitsConceptUuid";
 	
-	public static final String GP_UNITS_OF_DISPENSING_CONCEPT_UUID = "order.unitsOfDispensingConceptUuid";
+	public static final String GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID = "order.drugDispensingUnitsConceptUuid";
+	
+	public static final String GP_DRUG_DURATION_UNITS_CONCEPT_UUID = "order.drugDurationUnitsConceptUuid";;
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1458,6 +1460,15 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_DRUG_ROUTE_CONCEPT_UUID, "",
 		        "Specifies the uuid of the concept set where its members represent the possible drug routes"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DOSING_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug dosing units"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug dispensing units"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DURATION_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug duration units"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
