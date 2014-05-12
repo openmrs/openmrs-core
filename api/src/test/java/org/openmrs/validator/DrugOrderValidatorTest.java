@@ -13,6 +13,9 @@
  */
 package org.openmrs.validator;
 
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
@@ -111,7 +114,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDrug(Context.getConceptService().getDrug(3));
 		order.setCareSetting(Context.getOrderService().getCareSetting(1));
 		order.setQuantity(2.00);
-		order.setQuantityUnits(Context.getConceptService().getConcept(50));
+		order.setQuantityUnits(Context.getConceptService().getConcept(51));
 		order.setNumRefills(10);
 		
 		Errors errors = new BindException(order, "order");
@@ -297,33 +300,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if class of quantityUnits,doseUnits or durationUnits is not Units
-	 *           of Measure Concept class
-	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void validate_shouldFailValidationIfClassOfQuantityUnitsdoseUnitsOrDurationUnitsIsNotUnitsOfMeasureConceptClass()
-	        throws Exception {
-		Concept concept = Context.getConceptService().getConcept(3);
-		Assert.assertFalse(concept.getConceptClass().getUuid().equals(ConceptClass.UNIT_OF_MEASUREMENT_UUID));
-		
-		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
-		order.setDuration(5.0);
-		order.setDurationUnits(concept);
-		order.setDose(1.0);
-		order.setDoseUnits(concept);
-		order.setQuantity(30.0);
-		order.setQuantityUnits(concept);
-		
-		Errors errors = new BindException(order, "order");
-		new DrugOrderValidator().validate(order, errors);
-		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
-		Assert.assertTrue(errors.hasFieldErrors("quantityUnits"));
-		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
-	}
-	
-	/**
 	 * @verifies not require all fields for a discontinuation order
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -346,5 +322,51 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(discontinuationOrder, "order");
 		new DrugOrderValidator().validate(discontinuationOrder, errors);
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see DrugOrderValidator#validate(Object,Errors)
+	 * @verifies fail validation if doseUnits is not a dose unit concept
+	 */
+	@Test
+	public void validate_shouldFailValidationIfDoseUnitsIsNotADoseUnitConcept() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(3);
+		assertThat(concept, not(isIn(Context.getOrderService().getDrugDosingUnits())));
+		
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDuration(5.0);
+		order.setDurationUnits(concept);
+		order.setDose(1.0);
+		order.setDoseUnits(concept);
+		order.setQuantity(30.0);
+		order.setQuantityUnits(concept);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
+	}
+	
+	/**
+	 * @see DrugOrderValidator#validate(Object,Errors)
+	 * @verifies fail validation if quantityUnits it not a quantity unit concept
+	 */
+	@Test
+	public void validate_shouldFailValidationIfQuantityUnitsItNotAQuantityUnitConcept() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(3);
+		assertThat(concept, not(isIn(Context.getOrderService().getUnitsOfDispensing())));
+		
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDuration(5.0);
+		order.setDurationUnits(concept);
+		order.setDose(1.0);
+		order.setDoseUnits(concept);
+		order.setQuantity(30.0);
+		order.setQuantityUnits(concept);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("quantityUnits"));
 	}
 }

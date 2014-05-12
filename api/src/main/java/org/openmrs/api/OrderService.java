@@ -28,6 +28,7 @@ import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -634,7 +635,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets the possible drug routes, i.e the set members for the concept that matches the uuid
-	 * specified as the value for the global property OpenmrsConstants.DRUG_ROUTE_CONCEPT_UUID
+	 * specified as the value for the global property {@link OpenmrsConstants#GP_DRUG_ROUTE_CONCEPT_UUID}
 	 * 
 	 * @return concept list of drug routes
 	 * @since 1.10
@@ -642,4 +643,26 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getDrugRoutes();
+	
+	/**
+	 * Gets the possible drug dosing units, i.e the set members for the concept that matches the uuid
+	 * specified as the value for the global property {@link OpenmrsConstants#GP_DRUG_DOSING_UNITS_CONCEPT_UUID}
+	 * 
+	 * @return concept list of drug dosing units
+	 * @since 1.10
+	 * @Should return an empty list if nothing is configured
+	 */
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public List<Concept> getDrugDosingUnits();
+	
+	/**
+	 * Gets the possible units of dispensing, i.e the set members for the concept that matches the uuid
+	 * specified as the value for the global property {@link OpenmrsConstants#GP_UNITS_OF_DISPENSING_CONCEPT_UUID}
+	 * 
+	 * @return concept list of units of dispensing
+	 * @since 1.10
+	 * @Should return an empty list if nothing is configured
+	 */
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public List<Concept> getUnitsOfDispensing();
 }

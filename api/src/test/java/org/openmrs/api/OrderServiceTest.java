@@ -2035,7 +2035,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		AdministrationService as = Context.getAdministrationService();
 		List<GlobalProperty> globalProperties = as.getAllGlobalProperties();
-		globalProperties.add(new GlobalProperty(OpenmrsConstants.DRUG_ROUTE_CONCEPT_UUID, drugRoutes.getUuid(), "test"));
+		globalProperties.add(new GlobalProperty(OpenmrsConstants.GP_DRUG_ROUTE_CONCEPT_UUID, drugRoutes.getUuid(), "test"));
 		as.saveGlobalProperties(globalProperties);
 		List<Concept> drugRoutesList = orderService.getDrugRoutes();
 		assertEquals(3, drugRoutesList.size());

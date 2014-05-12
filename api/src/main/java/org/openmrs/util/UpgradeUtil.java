@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -89,6 +91,60 @@ public class UpgradeUtil {
 		finally {
 			select.close();
 		}
+	}
+	
+	public static String getGlobalProperty(Connection connection, String gp) throws SQLException {
+		PreparedStatement select = connection
+		        .prepareStatement("select property_value from global_property where property = ?");
+		try {
+			select.setString(1, gp);
+			
+			ResultSet resultSet = select.executeQuery();
+			if (resultSet.next()) {
+				return resultSet.getString(1);
+			} else {
+				throw new IllegalArgumentException("Global property not found " + gp);
+			}
+		}
+		finally {
+			select.close();
+		}
+	}
+	
+	public static List<Integer> getMemberSetIds(Connection connection, String conceptUuid) throws SQLException {
+		Integer conceptSetId = null;
+		
+		PreparedStatement select = connection.prepareStatement("select concept_id from concept where uuid = ?");
+		try {
+			select.setString(1, conceptUuid);
+			
+			ResultSet resultSet = select.executeQuery();
+			if (resultSet.next()) {
+				conceptSetId = resultSet.getInt(1);
+			} else {
+				throw new IllegalArgumentException("Concept not found " + conceptUuid);
+			}
+		}
+		finally {
+			select.close();
+		}
+		
+		List<Integer> conceptIds = new ArrayList<Integer>();
+		PreparedStatement selectConceptIds = connection
+		        .prepareStatement("select concept_id from concept_set where concept_set = ?");
+		try {
+			selectConceptIds.setInt(1, conceptSetId);
+			
+			ResultSet resultSet = selectConceptIds.executeQuery();
+			while (resultSet.next()) {
+				conceptIds.add(resultSet.getInt(1));
+			}
+		}
+		finally {
+			selectConceptIds.close();
+		}
+		
+		return conceptIds;
 	}
 	
 	public static Integer getOrderFrequencyIdForConceptId(Connection connection, Integer conceptIdForFrequency)

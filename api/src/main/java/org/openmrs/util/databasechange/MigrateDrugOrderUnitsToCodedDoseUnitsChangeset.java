@@ -15,6 +15,7 @@ package org.openmrs.util.databasechange;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 
 import liquibase.change.custom.CustomTaskChange;
@@ -27,6 +28,7 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.UpgradeUtil;
 
 public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTaskChange {
@@ -58,6 +60,16 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 				if (conceptIdForUnit == null) {
 					throw new CustomChangeException("No concept mapping found for unit: " + unit);
 				}
+				String dosingUnitsConceptSetUuid = UpgradeUtil.getGlobalProperty(connection.getUnderlyingConnection(),
+				    OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
+				List<Integer> dosingUnitsconceptIds = UpgradeUtil.getMemberSetIds(connection.getUnderlyingConnection(),
+				    dosingUnitsConceptSetUuid);
+				if (!dosingUnitsconceptIds.contains(conceptIdForUnit)) {
+					throw new CustomChangeException("Dosing unit '" + unit
+					        + "' is not among valid concepts defined in global property "
+					        + OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
+				}
+				
 				updateDrugOrderStatement.setInt(1, conceptIdForUnit);
 				updateDrugOrderStatement.setString(2, unit);
 				updateDrugOrderStatement.executeUpdate();
