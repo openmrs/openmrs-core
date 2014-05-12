@@ -175,7 +175,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public Order getRevisionOrder(Order order) throws APIException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Order.class);
-		criteria.add(Restrictions.eq("previousOrder", order)).add(Restrictions.eq("action", Order.Action.REVISE));
+		criteria.add(Restrictions.eq("previousOrder", order)).add(Restrictions.eq("action", Order.Action.REVISE)).add(
+		    Restrictions.eq("voided", false));
 		return (Order) criteria.uniqueResult();
 	}
 	

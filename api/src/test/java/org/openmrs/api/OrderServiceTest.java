@@ -2325,4 +2325,27 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		assertThat(orderService.getDrugDurationUnits(), is(empty()));
 	}
+
+    /**
+     *  @verifies not return a voided revision order
+	 * @see OrderService#getRevisionOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void getRevisionOrder_shouldNotReturnAVoidedRevisionOrder() throws Exception {
+		Order order = orderService.getOrder(7);
+		Order revision1 = order.cloneForRevision();
+		revision1.setEncounter(order.getEncounter());
+		revision1.setOrderer(order.getOrderer());
+		orderService.saveOrder(revision1, null);
+		assertEquals(revision1, orderService.getRevisionOrder(order));
+		orderService.voidOrder(revision1, "Testing");
+		assertThat(orderService.getRevisionOrder(order), is(nullValue()));
+		
+		//should return the new unvoided revision
+		Order revision2 = order.cloneForRevision();
+		revision2.setEncounter(order.getEncounter());
+		revision2.setOrderer(order.getOrderer());
+		orderService.saveOrder(revision2, null);
+		assertEquals(revision2, orderService.getRevisionOrder(order));
+    }
 }

@@ -173,6 +173,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should return revision order if order has been revised
 	 * @should return null if order has not been revised
+	 * @should not return a voided revision order
 	 */
 	public Order getRevisionOrder(Order order) throws APIException;
 	
@@ -635,7 +636,8 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Gets the possible drug routes, i.e the set members for the concept that matches the uuid
-	 * specified as the value for the global property {@link OpenmrsConstants#GP_DRUG_ROUTE_CONCEPT_UUID}
+	 * specified as the value for the global property
+	 * {@link OpenmrsConstants#GP_DRUG_ROUTE_CONCEPT_UUID}
 	 * 
 	 * @return concept list of drug routes
 	 * @since 1.10
@@ -645,8 +647,9 @@ public interface OrderService extends OpenmrsService {
 	public List<Concept> getDrugRoutes();
 	
 	/**
-	 * Gets the possible drug dosing units, i.e the set members for the concept that matches the uuid
-	 * specified as the value for the global property {@link OpenmrsConstants#GP_DRUG_DOSING_UNITS_CONCEPT_UUID}
+	 * Gets the possible drug dosing units, i.e the set members for the concept that matches the
+	 * uuid specified as the value for the global property
+	 * {@link OpenmrsConstants#GP_DRUG_DOSING_UNITS_CONCEPT_UUID}
 	 * 
 	 * @return concept list of drug dosing units
 	 * @since 1.10
@@ -657,9 +660,10 @@ public interface OrderService extends OpenmrsService {
 	public List<Concept> getDrugDosingUnits();
 	
 	/**
-	 * Gets the possible units of dispensing, i.e the set members for the concept that matches the uuid
-	 * specified as the value for the global property {@link OpenmrsConstants#GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID}
-	 * 
+	 * Gets the possible units of dispensing, i.e the set members for the concept that matches the
+	 * uuid specified as the value for the global property
+	 * {@link OpenmrsConstants#GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID}
+	 *
 	 * @return concept list of units of dispensing
 	 * @since 1.10
 	 * @should return an empty list if nothing is configured
