@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -351,5 +352,25 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Collection<Order> newOrders = CollectionUtils.disjunction(originalPatientOrders, newPatientOrders);
 		assertEquals(1, newOrders.size());
 		assertEquals(newOrders.iterator().next().getPreviousOrder(), previousOrder);
+	}
+	
+	@Test
+	public void shouldAllowRetrospectiveDataEntryOfOrders() throws Exception {
+		Order order = new Order();
+		order.setPatient(patientService.getPatient(2));
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(conceptService.getConcept(5089));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_WEEK, -1);
+		order.setStartDate(cal.getTime());
+		orderService.saveOrder(order, null);
+		
+		cal.add(Calendar.HOUR_OF_DAY, -1);
+		Date stopDate = cal.getTime();
+		Order dcOrder = orderService.discontinueOrder(order, "Testing", stopDate, order.getOrderer(), order.getEncounter());
+		assertEquals(stopDate, order.getDateStopped());
+		assertEquals(stopDate, dcOrder.getAutoExpireDate());
 	}
 }
