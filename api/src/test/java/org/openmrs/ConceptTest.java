@@ -52,7 +52,7 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
-	 *
+	 * 
 	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
@@ -76,7 +76,7 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
-	 *
+	 * 
 	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
@@ -91,7 +91,7 @@ public class ConceptTest {
 	/**
 	 * The Concept should unmark the old conceptName as the locale preferred one to enforce the rule
 	 * that a each locale should have only one preferred name per concept
-	 *
+	 * 
 	 * @see {@link Concept#setPreferredName(ConceptName)}
 	 */
 	@Test
@@ -306,7 +306,7 @@ public class ConceptTest {
 	@Verifies(value = "not return null if answers is null or empty", method = "getAnswers()")
 	public void getAnswers_shouldInitAnswersObject() throws Exception {
 		Concept c = new Concept();
-		c.setAnswers(null); //make sure the list is null
+		c.setAnswers(null); // make sure the list is null
 		Assert.assertEquals(c.getAnswers(), c.getAnswers());
 	}
 	
@@ -332,7 +332,7 @@ public class ConceptTest {
 		Concept c = new Concept();
 		Assert.assertEquals(0, c.getAnswers().size());
 		
-		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
+		ca.getAnswerConcept().setRetired(false);// set test condition explicitly
 		c.addAnswer(ca);
 		
 		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
@@ -351,7 +351,7 @@ public class ConceptTest {
 		Concept c = new Concept();
 		Assert.assertEquals(0, c.getAnswers(false).size());
 		
-		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
+		ca.getAnswerConcept().setRetired(false);// set test condition explicitly
 		c.addAnswer(ca);
 		
 		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
@@ -370,7 +370,7 @@ public class ConceptTest {
 		Concept c = new Concept();
 		Assert.assertEquals(0, c.getAnswers(true).size());
 		
-		ca.getAnswerConcept().setRetired(false);//set test condition explicitly
+		ca.getAnswerConcept().setRetired(false);// set test condition explicitly
 		c.addAnswer(ca);
 		
 		ConceptAnswer ca2 = new ConceptAnswer(new Concept(456));
@@ -387,7 +387,7 @@ public class ConceptTest {
 	public void addAnswer_shouldSetTheSortWeightToTheMaxPlusOneIfNotProvided() throws Exception {
 		ConceptAnswer ca = new ConceptAnswer(123);
 		Concept c = new Concept();
-		c.setAnswers(null);//make sure null list
+		c.setAnswers(null);// make sure null list
 		c.addAnswer(ca);
 		Assert.assertEquals(1d, ca.getSortWeight(), 0);
 		
@@ -669,7 +669,7 @@ public class ConceptTest {
 		concept.addName(new ConceptName("name3", new Locale("en", "UG")));
 		concept.addName(new ConceptName("name4", new Locale("fr", "RW")));
 		concept.addName(new ConceptName("name5", new Locale("en", "UK")));
-		//add some names in duplicate locales
+		// add some names in duplicate locales
 		concept.addName(new ConceptName("name6", new Locale("en", "US")));
 		concept.addName(new ConceptName("name7", new Locale("en", "UG")));
 		Set<Locale> localesForNames = concept.getAllConceptNameLocales();
@@ -678,18 +678,17 @@ public class ConceptTest {
 	
 	/**
 	 * @see {@link Concept#getPreferredName(Locale)}
-	 *
 	 */
 	@Test
 	@Verifies(value = "should return the fully specified name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
 	public void getPreferredName_shouldReturnTheFullySpecifiedNameIfNoNameIsExplicitlyMarkedAsLocalePreferred()
 	        throws Exception {
 		Concept testConcept = createMockConcept(1, Locale.US);
-		//preferred name in en_US
+		// preferred name in en_US
 		ConceptName preferredNameEN_US = createMockConceptName(3, Locale.US, null, false);
 		testConcept.addName(preferredNameEN_US);
 		String fullySpecName = testConcept.getFullySpecifiedName(Locale.US).getName();
-		//preferred name in en
+		// preferred name in en
 		ConceptName preferredNameEN = createMockConceptName(4, new Locale("en"), null, false);
 		testConcept.addName(preferredNameEN);
 		Assert.assertEquals(fullySpecName, testConcept.getPreferredName(Locale.US).getName());
@@ -699,13 +698,26 @@ public class ConceptTest {
 	 * @see {@link Concept#getPreferredName(Locale)}
 	 */
 	@Test
+	@Verifies(value = "should return the language prefered name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
+	public void getPreferredName_shouldReturnTheBesLocalePreferred() throws Exception {
+		Concept testConcept = createMockConcept(1, Locale.US);
+		// preferred name in en
+		ConceptName preferredNameEN = createMockConceptName(4, new Locale("en"), null, true);
+		testConcept.addName(preferredNameEN);
+		Assert.assertEquals(preferredNameEN.getName(), testConcept.getPreferredName(Locale.US).getName());
+	}
+	
+	/**
+	 * @see {@link Concept#getPreferredName(Locale)}
+	 */
+	@Test
 	@Verifies(value = "should return the concept name explicitly marked as locale preferred", method = "getPreferredName(Locale)")
 	public void getPreferredName_shouldReturnTheConceptNameExplicitlyMarkedAsLocalePreferred() throws Exception {
 		Concept testConcept = createMockConcept(1, Locale.US);
-		//preferred name in en_US
+		// preferred name in en_US
 		ConceptName preferredNameEN_US = createMockConceptName(3, Locale.US, null, true);
 		testConcept.addName(preferredNameEN_US);
-		//preferred name in en
+		// preferred name in en
 		ConceptName preferredNameEN = createMockConceptName(4, new Locale("en"), null, true);
 		testConcept.addName(preferredNameEN);
 		Assert.assertEquals(preferredNameEN_US, testConcept.getPreferredName(Locale.US));
@@ -760,7 +772,7 @@ public class ConceptTest {
 	public void setFullySpecifiedName_shouldConvertThePreviousFullySpecifiedNameIfAnyToASynonym() throws Exception {
 		Concept concept = createMockConcept(1, Context.getLocale());
 		ConceptName oldFullySpecifiedName = concept.getFullySpecifiedName(Context.getLocale());
-		//sanity check
+		// sanity check
 		Assert.assertEquals(ConceptNameType.FULLY_SPECIFIED, oldFullySpecifiedName.getConceptNameType());
 		
 		concept.setFullySpecifiedName(new ConceptName("some name", Context.getLocale()));
@@ -799,7 +811,7 @@ public class ConceptTest {
 	public void setShortName_shouldConvertThePreviousShortNameIfAnyToASynonym() throws Exception {
 		Concept concept = createMockConcept(1, Context.getLocale());
 		ConceptName oldShortName = concept.getShortNameInLocale(Context.getLocale());
-		//sanity check
+		// sanity check
 		Assert.assertEquals(ConceptNameType.SHORT, oldShortName.getConceptNameType());
 		
 		concept.setShortName(new ConceptName("some name", Context.getLocale()));
@@ -953,9 +965,30 @@ public class ConceptTest {
 	}
 	
 	/**
+	 * @see {@link Concept#getShortestName(Locale,Boolean)}
+	 */
+	@Test
+	public void getShortNameInLocale_shouldReturnTheBestShortNameForAConcept() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Giant cat", new Locale("en")));
+		concept.addName(new ConceptName("Gato gigante", new Locale("es")));
+		
+		ConceptName shortName1 = new ConceptName("Cat", new Locale("en"));
+		shortName1.setConceptNameType(ConceptNameType.SHORT);
+		concept.addName(shortName1);
+		
+		ConceptName shortName2 = new ConceptName("Gato", new Locale("es"));
+		shortName2.setConceptNameType(ConceptNameType.SHORT);
+		concept.addName(shortName2);
+		
+		Assert.assertEquals("Gato", concept.getShortNameInLocale(new Locale("es", "ES")).getName());
+		
+	}
+	
+	/**
 	 * Convenient factory method to create a populated Concept with a one fully specified name and
 	 * one short name
-	 *
+	 * 
 	 * @param conceptId the id for the concept to create
 	 * @param locale the locale of the of the conceptNames for the concept to create
 	 * @return the created concept
@@ -978,7 +1011,7 @@ public class ConceptTest {
 	
 	/**
 	 * Convenient factory method to create a populated Concept name.
-	 *
+	 * 
 	 * @param conceptNameId id for the conceptName
 	 * @param locale for the conceptName
 	 * @param conceptNameType the conceptNameType of the concept
