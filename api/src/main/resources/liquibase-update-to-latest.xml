@@ -6977,11 +6977,11 @@
 		<customChange class="org.openmrs.util.databasechange.CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset"/>
 	</changeSet>
 	
-	<changeSet id="201301031447-TRUNK-4135" author="rkorytkowski">
+	<changeSet id="201301031448-TRUNK-4135" author="rkorytkowski">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="drug_order" columnName="frequency_text" />
 		</preConditions>
-		<comment>Migrating durg order frequencies to coded order frequencies</comment>
+		<comment>Migrating drug order frequencies to coded order frequencies</comment>
 		<customChange class="org.openmrs.util.databasechange.MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset" />
 	</changeSet>
 

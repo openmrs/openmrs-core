@@ -152,7 +152,8 @@ public interface OrderService extends OpenmrsService {
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Get discontinuation order for the given order
+	 * Get discontinuation order for the given order, it is the un voided discontinuation order with
+	 * a previousOrder that matches the specified order.
 	 * 
 	 * @param order
 	 * @return the discontinuation order or null if none
@@ -166,7 +167,8 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * Get revision order for the given order, it is the order with the changes that was created as
-	 * a replacement for the specified order
+	 * a replacement for the specified order. In other words, it is the un voided revise order with
+	 * a previousOrder that matches the specified order.
 	 * 
 	 * @param order
 	 * @return the revision order or null if none
