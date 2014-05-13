@@ -312,6 +312,12 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Context.flushSession();
 	}
 	
+	/**
+	 * This test ensures that the getter for previous order field returns objects of the actual sub
+	 * types for subclasses instead proxies that are instances of Order
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void shouldNotReturnAProxyForPreviousOrder() throws Exception {
 		Order dcOrder = orderService.getOrder(22);
