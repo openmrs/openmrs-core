@@ -427,41 +427,30 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	@Override
 	public DrugOrder cloneForRevision() {
-		DrugOrder newOrder = new DrugOrder();
-		newOrder.setCareSetting(getCareSetting());
-		newOrder.setConcept(getConcept());
-		if (getAction() == Action.DISCONTINUE) {
-			newOrder.setAction(Action.DISCONTINUE);
-			newOrder.setPreviousOrder(getPreviousOrder());
-			newOrder.setStartDate(getStartDate());
-		} else {
-			newOrder.setAction(Action.REVISE);
-			newOrder.setPreviousOrder(this);
-			newOrder.setAutoExpireDate(getAutoExpireDate());
-		}
-		newOrder.setPatient(getPatient());
-		newOrder.setOrderType(getOrderType());
-		newOrder.setInstructions(getInstructions());
-		newOrder.setUrgency(getUrgency());
-		newOrder.setCommentToFulfiller(getCommentToFulfiller());
-		newOrder.setOrderReason(getOrderReason());
-		newOrder.setOrderReasonNonCoded(getOrderReasonNonCoded());
-		newOrder.setScheduledDate(getScheduledDate());
-		newOrder.setDose(getDose());
-		newOrder.setDoseUnits(getDoseUnits());
-		newOrder.setFrequency(getFrequency());
-		newOrder.setAsNeeded(getAsNeeded());
-		newOrder.setAsNeededCondition(getAsNeededCondition());
-		newOrder.setQuantity(getQuantity());
-		newOrder.setQuantityUnits(getQuantityUnits());
-		newOrder.setDrug(getDrug());
-		newOrder.setDosingType(getDosingType());
-		newOrder.setDosingInstructions(getDosingInstructions());
-		newOrder.setDuration(getDuration());
-		newOrder.setDurationUnits(getDurationUnits());
-		newOrder.setRoute(getRoute());
-		newOrder.setNumRefills(getNumRefills());
-		return newOrder;
+		return cloneForRevisionHelper(new DrugOrder());
+	}
+	
+	/**
+	 * @see Order#cloneForRevisionHelper(Order)
+	 */
+	protected DrugOrder cloneForRevisionHelper(DrugOrder target) {
+		super.cloneForRevisionHelper(target);
+		target.setDose(getDose());
+		target.setDoseUnits(getDoseUnits());
+		target.setFrequency(getFrequency());
+		target.setAsNeeded(getAsNeeded());
+		target.setAsNeededCondition(getAsNeededCondition());
+		target.setQuantity(getQuantity());
+		target.setQuantityUnits(getQuantityUnits());
+		target.setDrug(getDrug());
+		target.setDosingType(getDosingType());
+		target.setDosingInstructions(getDosingInstructions());
+		target.setDuration(getDuration());
+		target.setDurationUnits(getDurationUnits());
+		target.setRoute(getRoute());
+		target.setNumRefills(getNumRefills());
+		
+		return target;
 	}
 	
 	public String toString() {

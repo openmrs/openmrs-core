@@ -595,27 +595,39 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should set the relevant fields for a DC order
 	 */
 	public Order cloneForRevision() {
-		Order newOrder = new Order();
-		newOrder.setCareSetting(getCareSetting());
-		newOrder.setConcept(getConcept());
+		return cloneForRevisionHelper(new Order());
+	}
+	
+	/**
+	 * The purpose of this method is to allow subclasses of Order to delegate a portion of their
+	 * cloneForRevision() method back to the superclass, in case the base class implementation
+	 * changes.
+	 * 
+	 * @param target an Order that will have the state of <code>this</code> copied into it
+	 * @return Returns the Order that was passed in, with state copied into it
+	 */
+	protected Order cloneForRevisionHelper(Order target) {
 		if (getAction() == Action.DISCONTINUE) {
-			newOrder.setAction(Action.DISCONTINUE);
-			newOrder.setPreviousOrder(getPreviousOrder());
-			newOrder.setStartDate(getStartDate());
+			target.setAction(Action.DISCONTINUE);
+			target.setPreviousOrder(getPreviousOrder());
+			target.setStartDate(getStartDate());
 		} else {
-			newOrder.setAction(Action.REVISE);
-			newOrder.setPreviousOrder(this);
-			newOrder.setAutoExpireDate(getAutoExpireDate());
+			target.setAction(Action.REVISE);
+			target.setPreviousOrder(this);
+			target.setAutoExpireDate(getAutoExpireDate());
 		}
-		newOrder.setPatient(getPatient());
-		newOrder.setOrderType(getOrderType());
-		newOrder.setScheduledDate(getScheduledDate());
-		newOrder.setInstructions(getInstructions());
-		newOrder.setUrgency(getUrgency());
-		newOrder.setCommentToFulfiller(getCommentToFulfiller());
-		newOrder.setOrderReason(getOrderReason());
-		newOrder.setOrderReasonNonCoded(getOrderReasonNonCoded());
-		return newOrder;
+		target.setCareSetting(getCareSetting());
+		target.setConcept(getConcept());
+		target.setPatient(getPatient());
+		target.setOrderType(getOrderType());
+		target.setScheduledDate(getScheduledDate());
+		target.setInstructions(getInstructions());
+		target.setUrgency(getUrgency());
+		target.setCommentToFulfiller(getCommentToFulfiller());
+		target.setOrderReason(getOrderReason());
+		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
+		
+		return target;
 	}
 	
 	/**
