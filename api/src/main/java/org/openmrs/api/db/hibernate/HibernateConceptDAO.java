@@ -615,20 +615,50 @@ public class HibernateConceptDAO implements ConceptDAO {
 	private String newNamesQuery(final Set<Locale> locales, final String name, final boolean keywords) {
 		final StringBuilder query = new StringBuilder();
 		
+		String[] words;
+		String newName = "";
+		if (name.charAt(0) != '\"') {
+			words = name.trim().split(" ");
+			
+			List<String> stopWords = new ArrayList<String>();
+			for (Locale l : locales) {
+				stopWords.addAll(getConceptStopWords(l));
+			}
+			
+			for (int i = 0; i < words.length; i++) {
+				String w = words[i];
+				if (!stopWords.contains(w.toUpperCase()))
+					newName += w + " ";
+			}
+			if (newName != "")
+				newName = newName.substring(0, newName.length() - 1);
+			else
+				newName = "\"";
+		} else if (name.length() > 1) {
+			if (name.charAt(name.length() - 1) == '\"') {
+				if (name.length() > 2)
+					newName = name.substring(1, name.length() - 1);
+				else
+					newName = "\"";
+			} else
+				newName = name.substring(1, name.length());
+		} else
+			newName = "\"";
+		
 		query.append("(");
 		if (keywords) {
-			query.append(" name:(" + name + ")^0.2");
+			query.append(" name:(" + newName + ")^0.2");
 			//Put exact phrase higher
-			query.append(" OR name:(\"" + name + "\")^0.6");
+			query.append(" OR name:(\"" + newName + "\")^0.6");
 			
 			//Include partial
-			String[] words = name.trim().split(" ");
+			words = newName.trim().split(" ");
 			query.append(" OR name:(" + StringUtils.join(words, "* ") + "*)^0.1");
 			
 			//Include similar
 			query.append(" OR name:(" + StringUtils.join(words, "~0.8 ") + "~0.8)^0.1");
 		} else {
-			query.append(" name:\"" + LuceneQuery.escapeQuery(name) + "\"");
+			query.append(" name:\"" + LuceneQuery.escapeQuery(newName) + "\"");
 		}
 		query.append(")");
 		
