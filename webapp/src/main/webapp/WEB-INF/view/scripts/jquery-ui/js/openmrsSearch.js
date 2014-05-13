@@ -309,7 +309,11 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     			//This discontinues any further ajax SUB calls from the last triggered search
     			if(!inSerialMode && ajaxTimer)
     				window.clearInterval(ajaxTimer);
-    			
+
+				var searchDelay = SEARCH_DELAY;
+				if(text.length < o.minLength && !self.options.doSearchWhenEmpty) {
+					searchDelay = searchDelay * 2;
+				}
         		//if there is any delay in progress, cancel it
     			if(self._searchDelayTimer != null)
     				window.clearTimeout(self._searchDelayTimer);
@@ -329,7 +333,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     					self.options.initialData = null;
     					
     				self._doSearch(text);
-    			}, SEARCH_DELAY);
+    			}, searchDelay);
 	    			
 	    		return true;
 		    });
