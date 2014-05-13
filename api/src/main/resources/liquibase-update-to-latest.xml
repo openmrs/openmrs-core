@@ -6656,6 +6656,14 @@
         <renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="dosing_type" columnDataType="varchar(50)"/>
     </changeSet>
 
+    <changeSet id="201312141401-TRUNK-4126" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="drug_order" columnName="dosing_type"/>
+        </preConditions>
+        <comment>Making drug_order.dosing_type nullable</comment>
+        <dropNotNullConstraint tableName="drug_order" columnName="dosing_type" columnDataType="varchar(50)" />
+    </changeSet>
+
     <changeSet id="201312141400-TRUNK-4127" author="arathy">
         <preConditions onFail="MARK_RAN">
             <not>
