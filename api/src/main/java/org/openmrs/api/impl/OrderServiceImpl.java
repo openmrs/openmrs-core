@@ -91,9 +91,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getStartDate() == null) {
 			order.setStartDate(new Date());
 		}
-		//Reject if there is an active order for the same orderable 
+		//Reject if there is an active order for the same orderable
+		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
 		if (!isDiscontinueOrReviseOrder(order)) {
-			boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
 			Concept concept = order.getConcept();
 			if (concept == null && isDrugOrder) {
 				concept = ((DrugOrder) order).getDrug().getConcept();
@@ -144,8 +144,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
 			String query = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = ";
-			boolean isDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
-			if (isDrugOrder) {
+			boolean isPreviousDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
+			if (isPreviousDrugOrder) {
 				query = "SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
 				        + "FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id =";
 			}
@@ -158,13 +158,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("Cannot change the careSetting of an order");
 			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
 				throw new APIException("Cannot change the concept of an order");
-			} else if (isDrugOrder && !rowData.get(3).equals(((DrugOrder) previousOrder).getDrug().getDrugId())) {
+			} else if (isPreviousDrugOrder && !rowData.get(3).equals(((DrugOrder) previousOrder).getDrug().getDrugId())) {
 				throw new APIException("Cannot change the drug of a drug order");
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(order.getClass())
-			        && ((DrugOrder) order).getDrug() != null;
+			boolean isDrugOrderAndHasADrug = isDrugOrder && ((DrugOrder) order).getDrug() != null;
 			if (!order.getConcept().equals(previousOrder.getConcept())) {
 				throw new APIException("The concept of the previous order and the new one order don't match");
 			} else if (isDrugOrderAndHasADrug) {
@@ -181,7 +180,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("The class does not match that of the previous order");
 			}
 		}
-		if (order.getConcept() == null && DrugOrder.class.isAssignableFrom(order.getClass())) {
+		if (order.getConcept() == null && isDrugOrder) {
 			order.setConcept(((DrugOrder) order).getDrug().getConcept());
 		}
 		
@@ -265,7 +264,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Mark first order found corresponding to this DC order as discontinued.
 		List<? extends Order> orders = getActiveOrders(order.getPatient(), order.getOrderType(), order.getCareSetting(),
 		    null);
-		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(order.getClass())
+		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(getActualType(order))
 		        && ((DrugOrder) order).getDrug() != null;
 		for (Order activeOrder : orders) {
 			if (!getActualType(order).equals(getActualType(activeOrder))) {
