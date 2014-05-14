@@ -753,6 +753,25 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			}
 		}
 		
+		// look for partially locale match - any language matches takes precedence over country matches.
+		ConceptName bestMatch = null;
+		
+		for (ConceptName nameInLocale : getPartiallyCompatibleNames(forLocale)) {
+			if (ObjectUtils.nullSafeEquals(nameInLocale.isLocalePreferred(), true)) {
+				Locale nameLocale = nameInLocale.getLocale();
+				if (forLocale.getLanguage().equals(nameLocale.getLanguage())) {
+					return nameInLocale;
+				} else {
+					bestMatch = nameInLocale;
+				}
+				
+			}
+		}
+		
+		if (bestMatch != null) {
+			return bestMatch;
+		}
+		
 		return getFullySpecifiedName(forLocale);
 	}
 	
@@ -780,6 +799,20 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 					return conceptName;
 				}
 			}
+			
+			// look for partially locale match - any language matches takes precedence over country matches.
+			ConceptName bestMatch = null;
+			for (ConceptName conceptName : getPartiallyCompatibleNames(locale)) {
+				if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true)) {
+					Locale nameLocale = conceptName.getLocale();
+					if (locale.getLanguage().equals(nameLocale.getLanguage())) {
+						return conceptName;
+					}
+					bestMatch = conceptName;
+				}
+			}
+			return bestMatch;
+			
 		}
 		return null;
 	}
@@ -796,6 +829,27 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		Collection<ConceptName> localeNames = new Vector<ConceptName>();
 		for (ConceptName possibleName : getNames()) {
 			if (possibleName.getLocale().equals(locale)) {
+				localeNames.add(possibleName);
+			}
+		}
+		return localeNames;
+	}
+	
+	/**
+	 * Returns all names available for locale langueage "or" country. <br/>
+	 * <br/>
+	 *
+	 * @param locale locale for which names should be returned
+	 * @return Collection of ConceptNames with the given locale langueage or country
+	 */
+	private Collection<ConceptName> getPartiallyCompatibleNames(Locale locale) {
+		Collection<ConceptName> localeNames = new Vector<ConceptName>();
+		String language = locale.getLanguage();
+		String country = locale.getCountry();
+		for (ConceptName possibleName : getNames()) {
+			Locale possibleLocale = possibleName.getLocale();
+			if (language.equals(possibleLocale.getLanguage())
+			        || (StringUtils.isNotBlank(country) && country.equals(possibleLocale.getCountry()))) {
 				localeNames.add(possibleName);
 			}
 		}
@@ -961,14 +1015,23 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return the short name, or null if none has been explicitly set
 	 */
 	public ConceptName getShortNameInLocale(Locale locale) {
+		ConceptName bestMatch = null;
 		if (locale != null && getShortNames().size() > 0) {
 			for (ConceptName shortName : getShortNames()) {
-				if (shortName.getLocale().equals(locale)) {
+				Locale nameLocale = shortName.getLocale();
+				if (nameLocale.equals(locale)) {
 					return shortName;
+				}
+				// test for partially locale match - any language matches takes precedence over country matches.
+				if (OpenmrsUtil.nullSafeEquals(locale.getLanguage(), nameLocale.getLanguage())) {
+					bestMatch = shortName;
+				} else if (bestMatch == null && StringUtils.isNotBlank(locale.getCountry())
+				        && locale.getCountry().equals(nameLocale.getCountry())) {
+					bestMatch = shortName;
 				}
 			}
 		}
-		return null;
+		return bestMatch;
 	}
 	
 	/**
