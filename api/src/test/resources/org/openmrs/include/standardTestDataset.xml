@@ -213,6 +213,7 @@
   <drug_order order_id="111" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="22" drug_inventory_id="2" as_needed="0" />
+  <drug_order order_id="222" drug_inventory_id="2" as_needed="0" />
   <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="4" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="44" drug_inventory_id="3" as_needed="0" />
