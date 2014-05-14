@@ -84,12 +84,26 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
-	public Order saveOrder(Order order, OrderContext orderContext) throws APIException {
+	public synchronized Order saveOrder(Order order, OrderContext orderContext) throws APIException {
 		if (order.getOrderId() != null) {
 			throw new APIException("Cannot edit an existing order, you need to revise it instead");
 		}
 		if (order.getStartDate() == null) {
 			order.setStartDate(new Date());
+		}
+		//Reject if there is an active order for the same orderable 
+		if (!isDiscontinueOrReviseOrder(order)) {
+			boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
+			Concept concept = order.getConcept();
+			if (concept == null && isDrugOrder) {
+				concept = ((DrugOrder) order).getDrug().getConcept();
+			}
+			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, null, null);
+			for (Order o : activeOrders) {
+				if (o.getConcept().equals(concept)) {
+					throw new APIException("Cannot have more than one active order for the same concept");
+				}
+			}
 		}
 		Order previousOrder = order.getPreviousOrder();
 		if (order.getOrderType() == null) {

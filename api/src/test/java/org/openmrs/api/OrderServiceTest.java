@@ -266,11 +266,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		List<Order> orders = orderService.getOrderHistoryByConcept(patient, concept);
 		
 		//They must be sorted by startDate starting with the latest
-		Assert.assertEquals(4, orders.size());
-		Assert.assertEquals(5, orders.get(0).getOrderId().intValue());
-		Assert.assertEquals(444, orders.get(1).getOrderId().intValue());
-		Assert.assertEquals(44, orders.get(2).getOrderId().intValue());
-		Assert.assertEquals(4, orders.get(3).getOrderId().intValue());
+		Assert.assertEquals(3, orders.size());
+		Assert.assertEquals(444, orders.get(0).getOrderId().intValue());
+		Assert.assertEquals(44, orders.get(1).getOrderId().intValue());
+		Assert.assertEquals(4, orders.get(2).getOrderId().intValue());
 		
 		concept = Context.getConceptService().getConcept(792);
 		orders = orderService.getOrderHistoryByConcept(patient, concept);
@@ -1320,7 +1319,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setAction(Action.NEW);
 		order.setPatient(Context.getPatientService().getPatient(7));
-		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setConcept(Context.getConceptService().getConcept(5497));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setOrderer(orderService.getOrder(1).getOrderer());
 		order.setEncounter(encounterService.getEncounter(3));
@@ -1349,12 +1348,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		Order order = new TestOrder();
 		order.setEncounter(encounterService.getEncounter(6));
-		order.setPatient(patientService.getPatient(2));
+		order.setPatient(patientService.getPatient(7));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setOrderType(orderService.getOrderType(2));
-		order.setEncounter(encounterService.getEncounter(6));
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
 		OrderContext orderCtxt = new OrderContext();
 		final String expectedOrderNumber = "Testing";
@@ -1373,15 +1372,40 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		        "orderEntry.OrderNumberGenerator");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		Order order = new TestOrder();
-		order.setPatient(patientService.getPatient(2));
+		order.setPatient(patientService.getPatient(7));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setOrderType(orderService.getOrderType(2));
-		order.setEncounter(encounterService.getEncounter(6));
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
 		order = orderService.saveOrder(order, null);
 		assertTrue(order.getOrderNumber().startsWith(TimestampOrderNumberGenerator.ORDER_NUMBER_PREFIX));
+	}
+	
+	/**
+	 * @verifies fail if an active order for the same concept exists
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfAnActiveOrderForTheSameConceptExists() throws Exception {
+		final Patient patient = patientService.getPatient(2);
+		final Concept cd4Count = conceptService.getConcept(5497);
+		//sanity check that we have an active order for the same concept
+		TestOrder duplicateOrder = (TestOrder) orderService.getOrder(7);
+		assertTrue(duplicateOrder.isCurrent());
+		assertEquals(cd4Count, duplicateOrder.getConcept());
+		
+		Order order = new Order();
+		order.setPatient(patient);
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(cd4Count);
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("Cannot have more than one active order for the same concept");
+		orderService.saveOrder(order, null);
 	}
 	
 	/**
@@ -1583,11 +1607,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldSetOrderTypeIfNullButMappedToTheConceptClass() throws Exception {
 		Order order = new Order();
-		order.setPatient(patientService.getPatient(2));
+		order.setPatient(patientService.getPatient(7));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
-		order.setEncounter(encounterService.getEncounter(6));
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
 		order = orderService.saveOrder(order, null);
 		assertEquals(2, order.getOrderType().getOrderTypeId().intValue());
@@ -1600,11 +1624,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldFailIfOrderTypeIsNullAndNotMappedToTheConceptClass() throws Exception {
 		Order order = new Order();
-		order.setPatient(patientService.getPatient(2));
+		order.setPatient(patientService.getPatient(7));
 		order.setConcept(conceptService.getConcept(3));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
-		order.setEncounter(encounterService.getEncounter(6));
+		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot determine the order type of the order");
@@ -1740,8 +1764,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldDefaultToCareSettingAndOrderTypeDefinedInTheOrderContextIfNull() throws Exception {
 		Order order = new Order();
 		order.setPatient(patientService.getPatient(7));
-		Concept aspirin = conceptService.getConcept(88);
-		order.setConcept(aspirin);
+		Concept trimune30 = conceptService.getConcept(792);
+		order.setConcept(trimune30);
 		order.setOrderer(providerService.getProvider(1));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
@@ -1751,7 +1775,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderContext.setOrderType(expectedOrderType);
 		orderContext.setCareSetting(expectedCareSetting);
 		order = orderService.saveOrder(order, orderContext);
-		assertFalse(expectedOrderType.getConceptClasses().contains(aspirin.getConceptClass()));
+		assertFalse(expectedOrderType.getConceptClasses().contains(trimune30.getConceptClass()));
 		assertEquals(expectedOrderType, order.getOrderType());
 		assertEquals(expectedCareSetting, order.getCareSetting());
 	}
@@ -2012,7 +2036,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Encounter encounter = encounterService.getEncounter(3);
 		order.setEncounter(encounter);
 		order.setPatient(patient);
-		order.setDrug(conceptService.getDrug(3));
+		order.setDrug(conceptService.getDrug(2));
 		order.setCareSetting(careSetting);
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setStartDate(encounter.getEncounterDatetime());
