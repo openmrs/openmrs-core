@@ -180,6 +180,20 @@ public class ModuleFactory {
 				}
 			}
 		}
+		
+		//inform modules, that they can't start before other modules
+		Map<String, Module> loadedModulesMap = getLoadedModulesMapPackage();
+		for (String key : loadedModules.keySet()) {
+			Module m = loadedModules.get(key);
+			Map<String, String> startBeforeModules = m.getStartBeforeModulesMap();
+			if (startBeforeModules.size() > 0) {
+				for (String s : startBeforeModules.keySet()) {
+					Module mod = loadedModulesMap.get(s);
+					if (mod != null)
+						mod.addRequiredModule(m.getPackageName(), m.getVersion());
+				}
+			}
+		}
 	}
 	
 	/**
@@ -391,6 +405,25 @@ public class ModuleFactory {
 			loadedModules = new WeakHashMap<String, Module>();
 		
 		return loadedModules;
+	}
+	
+	/**
+	 * Returns all modules found/loaded into the system (started and not started) in the form of a
+	 * map<PackageName, Module>
+	 *
+	 * @return map<PackageName, Module>
+	 */
+	public static Map<String, Module> getLoadedModulesMapPackage() {
+		if (loadedModules == null) {
+			loadedModules = new WeakHashMap<String, Module>();
+			return loadedModules;
+		}
+		
+		Map<String, Module> map = new WeakHashMap<String, Module>();
+		for (String key : loadedModules.keySet()) {
+			map.put(loadedModules.get(key).getPackageName(), loadedModules.get(key));
+		}
+		return map;
 	}
 	
 	/**
@@ -1250,6 +1283,7 @@ public class ModuleFactory {
 	 * @return true/false boolean whether this module's required modules are all started
 	 */
 	private static boolean requiredModulesStarted(Module module) {
+		//required
 		for (String reqModPackage : module.getRequiredModules()) {
 			boolean started = false;
 			for (Module mod : getStartedModules()) {
