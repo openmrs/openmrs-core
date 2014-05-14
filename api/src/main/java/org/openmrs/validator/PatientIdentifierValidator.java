@@ -227,8 +227,13 @@ public class PatientIdentifierValidator implements Validator {
 		return Context.getMessageSourceService().getMessage(messageKey, arguments, Context.getLocale());
 	}
 	
-	//validate patient identifier types whether they contains same identifier types
-	public static boolean isIdentifiersContainsSameIdentifierTypes(List<PatientIdentifier> patientIdentifiers) {
+	/**
+	 * Validate patient identifier types whether they contains more than one identifier for the same identifier type
+	 *
+	 * @param patientIdentifiers the list of patient identifiers to validate
+	 * @return true if patient identifier types contains more than one identifier for the same identifier type
+	 */
+	public static boolean hasMoreThanOneIdentifierForSameIdentifierType(List<PatientIdentifier> patientIdentifiers) {
 		if (patientIdentifiers.size() > 1) {
 			List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList();
 			Set<PatientIdentifierType> patientIdentifierTypeSet;
