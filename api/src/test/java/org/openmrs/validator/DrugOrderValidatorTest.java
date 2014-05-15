@@ -391,4 +391,29 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
 	}
+	
+	/**
+	 * @verifies fail if route is not a valid concept
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfRouteIsNotAValidConcept() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(3);
+		assertThat(concept, not(isIn(Context.getOrderService().getDrugRoutes())));
+		
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDuration(5.0);
+		order.setDurationUnits(concept);
+		order.setDose(1.0);
+		order.setDoseUnits(concept);
+		order.setQuantity(30.0);
+		order.setQuantityUnits(concept);
+		order.setRoute(concept);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("route"));
+		Assert.assertEquals("DrugOrder.error.routeNotAmongAllowedConcepts", errors.getFieldError("route").getCode());
+	}
 }

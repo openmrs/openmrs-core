@@ -1,10 +1,15 @@
 package org.openmrs.validator;
 
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+
 import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.CareSetting;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
@@ -27,10 +32,12 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldFailValidationIfTheSpecimenSourceIsInvalid() throws Exception {
+		ConceptService conceptService = Context.getConceptService();
+		Concept specimenSource = conceptService.getConcept(3);
+		assertThat(specimenSource, not(isIn(Context.getOrderService().getDrugRoutes())));
 		TestOrder order = new TestOrder();
 		Patient patient = new Patient(8);
 		order.setPatient(patient);
-		ConceptService conceptService = Context.getConceptService();
 		OrderService orderService = Context.getOrderService();
 		order.setOrderType(orderService.getOrderTypeByName("Test order"));
 		order.setConcept(conceptService.getConcept(5497));
@@ -40,11 +47,11 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		encounter.setPatient(patient);
 		order.setEncounter(encounter);
 		order.setStartDate(new Date());
-		order.setSpecimenSource(conceptService.getConcept(3));
+		order.setSpecimenSource(specimenSource);
 		
 		Errors errors = new BindException(order, "order");
 		new TestOrderValidator().validate(order, errors);
 		Assert.assertTrue(errors.hasFieldErrors("specimenSource"));
-		
+		Assert.assertEquals("TestOrder.error.notAmongAllowedConcepts", errors.getFieldError("specimenSource").getCode());
 	}
 }

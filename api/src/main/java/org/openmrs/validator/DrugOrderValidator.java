@@ -22,6 +22,7 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -71,6 +72,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if durationUnits is not a duration unit concept
 	 * @should pass validation if all fields are correct
 	 * @should not require all fields for a discontinuation order
+	 * @should fail if route is not a valid concept
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
@@ -131,22 +133,29 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	}
 	
 	private void validateUnitsAreAmongAllowedConcepts(Errors errors, DrugOrder order) {
+		OrderService orderService = Context.getOrderService();
 		if (order.getDoseUnits() != null) {
-			List<Concept> drugDosingUnits = Context.getOrderService().getDrugDosingUnits();
+			List<Concept> drugDosingUnits = orderService.getDrugDosingUnits();
 			if (!drugDosingUnits.contains(order.getDoseUnits())) {
 				errors.rejectValue("doseUnits", "DrugOrder.error.notAmongAllowedConcepts");
 			}
 		}
 		if (order.getQuantityUnits() != null) {
-			List<Concept> drugDispensingUnits = Context.getOrderService().getDrugDispensingUnits();
+			List<Concept> drugDispensingUnits = orderService.getDrugDispensingUnits();
 			if (!drugDispensingUnits.contains(order.getQuantityUnits())) {
 				errors.rejectValue("quantityUnits", "DrugOrder.error.notAmongAllowedConcepts");
 			}
 		}
 		if (order.getDurationUnits() != null) {
-			List<Concept> drugDurationUnits = Context.getOrderService().getDrugDurationUnits();
+			List<Concept> drugDurationUnits = orderService.getDrugDurationUnits();
 			if (!drugDurationUnits.contains(order.getDurationUnits())) {
 				errors.rejectValue("durationUnits", "DrugOrder.error.notAmongAllowedConcepts");
+			}
+		}
+		if (order.getRoute() != null) {
+			List<Concept> routes = orderService.getDrugRoutes();
+			if (!routes.contains(order.getRoute())) {
+				//errors.rejectValue("route", "DrugOrder.error.routeNotAmongAllowedConcepts");
 			}
 		}
 	}
