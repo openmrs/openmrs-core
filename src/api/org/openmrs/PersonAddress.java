@@ -13,10 +13,11 @@
  */
 package org.openmrs;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+
+import static org.apache.commons.lang.StringUtils.defaultString;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
@@ -85,9 +86,11 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 */
 	@Override
 	public String toString() {
-		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" + getCityVillage() + ", sp:" + getStateProvince()
-		        + ", c:" + getCountry() + ", cd:" + getCountyDistrict() + ", nc:" + getNeighborhoodCell() + ", pc:"
-		        + getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
+		return new StringBuilder().append("a1:").append(getAddress1()).append(", a2:").append(getAddress2()).append(", cv:")
+		        .append(getCityVillage()).append(", sp:").append(getStateProvince()).append(", c:").append(getCountry())
+		        .append(", cd:").append(getCountyDistrict()).append(", nc:").append(getNeighborhoodCell()).append(", pc:")
+		        .append(getPostalCode()).append(", lat:").append(getLatitude()).append(", long:").append(getLongitude())
+		        .toString();
 	}
 	
 	/**
@@ -119,40 +122,19 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonAddress otherAddress) {
-		boolean returnValue = true;
-		
-		// these are the methods to compare. All are expected to be Strings
-		String[] methods = { "getAddress1", "getAddress2", "getCityVillage", "getNeighborhoodCell", "getCountyDistrict",
-		        "getTownshipDivision", "getRegion", "getSubregion", "getStateProvince", "getCountry", "getPostalCode",
-		        "getLatitude", "getLongitude" };
-		
-		Class addressClass = this.getClass();
-		
-		// loop over all of the selected methods and compare this and other
-		for (String methodName : methods) {
-			try {
-				Method method = addressClass.getMethod(methodName, new Class[] {});
-				
-				String thisValue = (String) method.invoke(this);
-				String otherValue = (String) method.invoke(otherAddress);
-				
-				if (otherValue != null && otherValue.length() > 0)
-					returnValue &= otherValue.equals(thisValue);
-				
-			}
-			catch (NoSuchMethodException e) {
-				log.warn("No such method for comparison " + methodName, e);
-			}
-			catch (IllegalAccessException e) {
-				log.error("Error while comparing addresses", e);
-			}
-			catch (InvocationTargetException e) {
-				log.error("Error while comparing addresses", e);
-			}
-			
-		}
-		
-		return returnValue;
+		return new EqualsBuilder().append(defaultString(otherAddress.getAddress1()), defaultString(address1))
+		        .append(defaultString(otherAddress.getAddress2()), defaultString(address2))
+		        .append(defaultString(otherAddress.getNeighborhoodCell()), defaultString(neighborhoodCell))
+		        .append(defaultString(otherAddress.getTownshipDivision()), defaultString(townshipDivision))
+		        .append(defaultString(otherAddress.getSubregion()), defaultString(subregion))
+		        .append(defaultString(otherAddress.getRegion()), defaultString(region))
+		        .append(defaultString(otherAddress.getCityVillage()), defaultString(cityVillage))
+		        .append(defaultString(otherAddress.getCountyDistrict()), defaultString(countyDistrict))
+		        .append(defaultString(otherAddress.getStateProvince()), defaultString(stateProvince))
+		        .append(defaultString(otherAddress.getCountry()), defaultString(country))
+		        .append(defaultString(otherAddress.getPostalCode()), defaultString(postalCode))
+		        .append(defaultString(otherAddress.getLatitude()), defaultString(latitude))
+		        .append(defaultString(otherAddress.getLongitude()), defaultString(longitude)).isEquals();
 	}
 	
 	/**
