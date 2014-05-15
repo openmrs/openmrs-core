@@ -56,17 +56,13 @@
 		<many-to-one name="patient" column="patient_id" class="org.openmrs.Patient" not-null="true" />
 
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="orderReason" class="org.openmrs.Concept" not-null="false">
-			<column name="order_reason" />
-		</many-to-one>
+		<many-to-one name="orderReason" class="org.openmrs.Concept" not-null="false" column="order_reason" />
 
 		<!-- bi-directional many-to-one association to Provider -->
 		<many-to-one name="orderer" class="org.openmrs.Provider" not-null="true" />
 
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="voidedBy" class="org.openmrs.User">
-			<column name="voided_by" />
-		</many-to-one>
+		<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
 
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
@@ -83,9 +79,7 @@
 			<property name="quantity" type="double" column="quantity" length="22"/>
 			<many-to-one name="quantityUnits" class="org.openmrs.Concept" column="quantity_units" />
 			<!-- bi-directional many-to-one association to Drug -->
-			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false">
-				<column name="drug_inventory_id" />
-			</many-to-one>
+			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false" column="drug_inventory_id" />
             <property name="dosingType" column="dosing_type" length="50">
                 <type name="org.openmrs.util.HibernateEnumType">
                     <param name="enumClassName">org.openmrs.DrugOrder$DosingType</param>
@@ -94,21 +88,15 @@
             <property name="numRefills" type="int" column="num_refills" />
             <property name="dosingInstructions" type="java.lang.String" column="dosing_instructions" length="65535"/>
             <property name="duration" type="double" column="duration" length="22"/>
-            <many-to-one name="durationUnits" class="org.openmrs.Concept">
-            	<column name="duration_units"/>
-            </many-to-one>
-            <many-to-one name="route" class="org.openmrs.Concept">
-            	<column name="route" />
-            </many-to-one>
+            <many-to-one name="durationUnits" class="org.openmrs.Concept" column="duration_units" />
+            <many-to-one name="route" class="org.openmrs.Concept" />
 		</joined-subclass>
 
         <joined-subclass name="org.openmrs.TestOrder" table="test_order" lazy="false">
 
             <key column="order_id" not-null="true" on-delete="cascade" />
 
-            <many-to-one name="specimenSource" class="org.openmrs.Concept">
-                <column name="specimen_source" />
-            </many-to-one>
+            <many-to-one name="specimenSource" class="org.openmrs.Concept" column="specimen_source" />
 
             <property name="laterality" column="laterality" length="20" not-null="false">
                 <type name="org.openmrs.util.HibernateEnumType">
