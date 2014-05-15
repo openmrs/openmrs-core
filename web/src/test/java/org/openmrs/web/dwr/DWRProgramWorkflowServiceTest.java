@@ -27,6 +27,6 @@ public class DWRProgramWorkflowServiceTest extends BaseWebContextSensitiveTest {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		Vector<ListItem> possibleOutcomes = dwrProgramWorkflowService.getPossibleOutcomes(4);
 		assertFalse(possibleOutcomes.isEmpty());
-		assertEquals(2, possibleOutcomes.size());
+		assertEquals(4, possibleOutcomes.size());
 	}
 }

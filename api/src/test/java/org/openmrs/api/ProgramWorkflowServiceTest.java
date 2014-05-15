@@ -343,7 +343,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(4);
-		assertEquals(2, possibleOutcomes.size());
+		assertEquals(4, possibleOutcomes.size());
 	}
 	
 	@Test
