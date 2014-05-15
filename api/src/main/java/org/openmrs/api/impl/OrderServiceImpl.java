@@ -829,7 +829,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDrugRoutes() {
-		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_ROUTE_CONCEPT_UUID);
+		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_ROUTES_CONCEPT_UUID);
 	}
 	
 	@Override

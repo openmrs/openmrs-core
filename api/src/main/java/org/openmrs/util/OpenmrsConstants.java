@@ -1020,7 +1020,7 @@ public final class OpenmrsConstants {
 	/**
 	 * Specifies the uuid of the concept set where its members represent the possible drug routes
 	 */
-	public static final String GP_DRUG_ROUTE_CONCEPT_UUID = "order.drugRoutesConceptUuid";
+	public static final String GP_DRUG_ROUTES_CONCEPT_UUID = "order.drugRoutesConceptUuid";
 	
 	public static final String GP_DRUG_DOSING_UNITS_CONCEPT_UUID = "order.drugDosingUnitsConceptUuid";
 	
@@ -1458,7 +1458,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
 		        "Specifies spring bean id of the order generator to use when assigning order numbers"));
 		
-		props.add(new GlobalProperty(GP_DRUG_ROUTE_CONCEPT_UUID, "",
+		props.add(new GlobalProperty(GP_DRUG_ROUTES_CONCEPT_UUID, "",
 		        "Specifies the uuid of the concept set where its members represent the possible drug routes"));
 		
 		props.add(new GlobalProperty(GP_DRUG_DOSING_UNITS_CONCEPT_UUID, "",

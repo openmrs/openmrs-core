@@ -642,7 +642,7 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Gets the possible drug routes, i.e the set members for the concept that matches the uuid
 	 * specified as the value for the global property
-	 * {@link OpenmrsConstants#GP_DRUG_ROUTE_CONCEPT_UUID}
+	 * {@link OpenmrsConstants#GP_DRUG_ROUTES_CONCEPT_UUID}
 	 * 
 	 * @return concept list of drug routes
 	 * @since 1.10
