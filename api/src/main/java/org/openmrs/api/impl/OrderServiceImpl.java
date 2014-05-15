@@ -93,11 +93,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		//Reject if there is an active order for the same orderable
 		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
+		Concept concept = order.getConcept();
+		if (concept == null && isDrugOrder) {
+			concept = ((DrugOrder) order).getDrug().getConcept();
+		}
 		if (!isDiscontinueOrReviseOrder(order)) {
-			Concept concept = order.getConcept();
-			if (concept == null && isDrugOrder) {
-				concept = ((DrugOrder) order).getDrug().getConcept();
-			}
 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, null, null);
 			for (Order o : activeOrders) {
 				if (o.getConcept().equals(concept)) {
@@ -112,7 +112,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				orderType = orderContext.getOrderType();
 			}
 			if (orderType == null) {
-				orderType = getOrderTypeByConcept(order.getConcept());
+				orderType = getOrderTypeByConcept(concept);
 			}
 			//this order's order type should match that of the previous
 			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
@@ -181,7 +181,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 		}
 		if (order.getConcept() == null && isDrugOrder) {
-			order.setConcept(((DrugOrder) order).getDrug().getConcept());
+			order.setConcept(concept);
 		}
 		
 		return saveOrderInternal(order, orderContext);

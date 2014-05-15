@@ -2412,11 +2412,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		globalProperties.add(new GlobalProperty(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, specimenSources
 		        .getUuid(), "testing"));
 		as.saveGlobalProperties(globalProperties);
-		List<Concept> drugRoutesList = orderService.getTestSpecimenSources();
-		assertEquals(3, drugRoutesList.size());
-		assertTrue(drugRoutesList.contains(concept6));
-		assertTrue(drugRoutesList.contains(concept7));
-		assertTrue(drugRoutesList.contains(concept8));
+		List<Concept> specimenSourceList = orderService.getTestSpecimenSources();
+		assertEquals(3, specimenSourceList.size());
+		assertTrue(specimenSourceList.contains(concept6));
+		assertTrue(specimenSourceList.contains(concept7));
+		assertTrue(specimenSourceList.contains(concept8));
 	}
 	
 	/**
