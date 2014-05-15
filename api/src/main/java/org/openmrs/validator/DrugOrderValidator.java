@@ -155,7 +155,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		if (order.getRoute() != null) {
 			List<Concept> routes = orderService.getDrugRoutes();
 			if (!routes.contains(order.getRoute())) {
-				//errors.rejectValue("route", "DrugOrder.error.routeNotAmongAllowedConcepts");
+				errors.rejectValue("route", "DrugOrder.error.routeNotAmongAllowedConcepts");
 			}
 		}
 	}

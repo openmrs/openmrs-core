@@ -2054,27 +2054,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugRoutes_shouldGetDrugRoutesAssociatedConceptPrividedInGlobalProperties() throws Exception {
-		Concept drugRoutes = new Concept();
-		ConceptName cn = new ConceptName("Test concept for drug routes", Locale.US);
-		drugRoutes.addName(cn);
-		drugRoutes.setSet(true);
-		Concept concept3 = conceptService.getConcept(3);
-		Concept concept4 = conceptService.getConcept(4);
-		Concept concept5 = conceptService.getConcept(5);
-		drugRoutes.addSetMember(concept3);
-		drugRoutes.addSetMember(concept4);
-		drugRoutes.addSetMember(concept5);
-		drugRoutes = conceptService.saveConcept(drugRoutes);
-		
-		AdministrationService as = Context.getAdministrationService();
-		List<GlobalProperty> globalProperties = as.getAllGlobalProperties();
-		globalProperties.add(new GlobalProperty(OpenmrsConstants.GP_DRUG_ROUTES_CONCEPT_UUID, drugRoutes.getUuid(), "test"));
-		as.saveGlobalProperties(globalProperties);
 		List<Concept> drugRoutesList = orderService.getDrugRoutes();
-		assertEquals(3, drugRoutesList.size());
-		assertTrue(drugRoutesList.contains(concept3));
-		assertTrue(drugRoutesList.contains(concept4));
-		assertTrue(drugRoutesList.contains(concept5));
+		assertEquals(1, drugRoutesList.size());
+		assertEquals(22, drugRoutesList.get(0).getConceptId().intValue());
 	}
 	
 	/**
@@ -2395,28 +2377,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getTestSpecimenSources_shouldReturnAListIfGPIsSet() throws Exception {
-		Concept specimenSources = new Concept();
-		ConceptName cn = new ConceptName("Test concept for specimen sources", Locale.US);
-		specimenSources.addName(cn);
-		specimenSources.setSet(true);
-		Concept concept6 = conceptService.getConcept(6);
-		Concept concept7 = conceptService.getConcept(7);
-		Concept concept8 = conceptService.getConcept(8);
-		specimenSources.addSetMember(concept6);
-		specimenSources.addSetMember(concept7);
-		specimenSources.addSetMember(concept8);
-		specimenSources = conceptService.saveConcept(specimenSources);
-		
-		AdministrationService as = Context.getAdministrationService();
-		List<GlobalProperty> globalProperties = as.getAllGlobalProperties();
-		globalProperties.add(new GlobalProperty(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, specimenSources
-		        .getUuid(), "testing"));
-		as.saveGlobalProperties(globalProperties);
 		List<Concept> specimenSourceList = orderService.getTestSpecimenSources();
-		assertEquals(3, specimenSourceList.size());
-		assertTrue(specimenSourceList.contains(concept6));
-		assertTrue(specimenSourceList.contains(concept7));
-		assertTrue(specimenSourceList.contains(concept8));
+		assertEquals(1, specimenSourceList.size());
+		assertEquals(22, specimenSourceList.get(0).getConceptId().intValue());
 	}
 	
 	/**
@@ -2425,6 +2388,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getTestSpecimenSources_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, ""));
 		assertThat(orderService.getTestSpecimenSources(), is(empty()));
 	}
 }

@@ -143,7 +143,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setStartDate(new Date());
 		order.setClinicalHistory("Patient had a negative reaction to the test in the past");
 		order.setFrequency(orderService.getOrderFrequency(3000));
-		order.setSpecimenSource(conceptService.getConcept(1000));
+		order.setSpecimenSource(conceptService.getConcept(22));
 		order.setNumberOfRepeats(3);
 		
 		orderService.saveOrder(order, null);

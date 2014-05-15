@@ -32,6 +32,8 @@
   <concept concept_id="26" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="d198bec0-d9c5-11e3-9c1a-0800200c9a66"/>
   <concept concept_id="27" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version="" uuid="54d29840-d9e6-11e3-9c1a-0800200c9a66"/>
   <concept concept_id="28" retired="false" datatype_id="3" class_id="20" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="7bfdcbf0-d9e7-11e3-9c1a-0800200c9a66"/>
+  <concept concept_id="29" retired="false" datatype_id="4" class_id="11" is_set="1" creator="1" date_created="2004-08-12 00:00:00.0" uuid="5e02d1a0-7869-11e4-981f-0800200c9a73"/>
+  <concept concept_id="30" retired="false" datatype_id="4" class_id="11" is_set="1" creator="1" date_created="2004-08-12 00:00:00.0" uuid="6e02d1a0-7869-11e4-981f-0800200c9a89"/>
   <concept_answer concept_answer_id="1" concept_id="21" answer_concept="7" creator="1" date_created="2008-08-18 12:34:26.0" uuid="b1230431-2fe5-49fc-b535-ae42bc849747"/>
   <concept_answer concept_answer_id="2" concept_id="21" answer_concept="8" creator="1" date_created="2008-08-18 12:34:26.0" uuid="f67e537b-d9f9-45c4-846b-79ed1ba88778"/>
   <concept_answer concept_answer_id="3" concept_id="21" answer_concept="22" creator="1" date_created="2008-08-18 12:34:58.0" uuid="11e15f3b-3237-40e9-9c24-cb7916a4868b"/>
@@ -156,6 +158,8 @@
   <concept_name concept_id="26" name="Dispensing Units" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="6047" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="20a604f0-d9c6-11e3-9c1a-0800200c9a66"/>
   <concept_name concept_id="27" name="Duration Units" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="6048" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="6a421cf0-d9e6-11e3-9c1a-0800200c9a66"/>
   <concept_name concept_id="28" name="day" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="6049" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="6609d500-d9e7-11e3-9c1a-0800200c9a66"/>
+  <concept_name concept_id="29" concept_name_id="6050" name="Test Specimen Sources" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="45f24a00-7969-11e3-981f-0800211c9a68"/>
+  <concept_name concept_id="30" concept_name_id="6051" name="Drug Routes" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="98f24a00-7969-11e3-981f-0800211c9a68"/>
   <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="9e9df183-2328-4117-acd8-fb9bf400911d"/>
   <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="57396ec9-fb90-44b2-b59a-21bc5631bf3d"/>
   <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cb6bc7cf-d5d3-4d51-a05b-5ea656c7413a"/>
@@ -185,6 +189,8 @@
   <concept_set concept_set_id="5" concept_id="51" concept_set="25" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="84c7b780-d9c6-11e3-9c1a-0800200c9a66"/>
   <concept_set concept_set_id="6" concept_id="51" concept_set="26" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="8e5b0a90-d9c6-11e3-9c1a-0800200c9a66"/>
   <concept_set concept_set_id="7" concept_id="28" concept_set="27" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="90893230-d9e7-11e3-9c1a-0800200c9a66"/>
+  <concept_set concept_set_id="8" concept_id="22" concept_set="29" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="2a111827-639f-4cb5-961f-1e025bf88d90"/>
+  <concept_set concept_set_id="9" concept_id="22" concept_set="30" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="3a111827-639f-4cb5-961f-1e025bf88d91"/>
   <concept_state_conversion concept_state_conversion_id="1" concept_id="16" program_workflow_id="2" program_workflow_state_id="1" uuid="6c72b064-506d-11de-80cb-001e378eb67e"/>
   <drug drug_id="2" concept_id="792" name="Triomune-30" combination="true" strength="1.0tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="3cfcf118-931c-46f7-8ff6-7b876f0d4202"/>
   <drug drug_id="3" concept_id="88" name="Aspirin" combination="false" strength="325.0mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="05ec820a-d297-44e3-be6e-698531d9dd3f"/>
@@ -219,9 +225,6 @@
   <drug_order order_id="44" drug_inventory_id="3" as_needed="0" />
   <drug_order order_id="444" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
   <drug_order order_id="5" drug_inventory_id="11" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"/>
-  <global_property property="order.drugDosingUnitsConceptUuid" property_value="c9386d70-d9c5-11e3-9c1a-0800200c9a66" uuid="35466f40-d9c5-11e3-9c1a-0800200c9a66"/>
-  <global_property property="order.drugDispensingUnitsConceptUuid" property_value="d198bec0-d9c5-11e3-9c1a-0800200c9a66" uuid="40f04640-d9c5-11e3-9c1a-0800200c9a66"/>
-  <global_property property="order.drugDurationUnitsConceptUuid" property_value="54d29840-d9e6-11e3-9c1a-0800200c9a66" uuid="3e26c300-d9e6-11e3-9c1a-0800200c9a66"/>
   <encounter_role encounter_role_id="1" name="Unknown" description="Unknown encounter role for legacy providers with no encounter role set" creator="1" retired="false" date_created="2011-08-18 14:00:00.0" uuid="a0b03050-c99b-11e0-9572-0800200c9a66" />
   <provider provider_id="1" person_id="1" identifier="Test" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-cca9-11e0-9572-0800200c9a66" />
   <encounter encounter_id="3" encounter_type="2" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="6519d653-393b-4118-9c83-a3715b82d4ac"/>
@@ -242,7 +245,16 @@
   <form_field form_field_id="2" form_id="1" field_id="1" field_number="1" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:11:53.0" creator="1" date_created="2006-07-18 11:04:36.0" sort_weight="10.0" uuid="1c822b7b-7840-463d-ba70-e0c8338a4c2d"/>
   <form_field form_field_id="3" form_id="1" field_id="1" field_number="2" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:12:05.0" creator="1" date_created="2006-07-18 11:06:52.0" sort_weight="20.0" uuid="1d26a18a-3f72-42e1-b6a2-59ab6494afb2"/>
   <form_field form_field_id="5" form_id="1" field_id="1" field_number="3" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:13:59.0" creator="1" date_created="2006-07-18 11:13:57.0" sort_weight="30.0" uuid="92e63d19-9b11-4bbf-8622-85bb191b2409"/>
+  <global_property property="locale.allowed.list" property_value="en" uuid="4f55827e-26fe-102b-80cb-0017a47871b3"/>
+  <global_property property="concept.true" property_value="7" uuid="6ed7aeb4-0663-11e1-8c99-2b4f0c4f671a"/>
+  <global_property property="concept.false" property_value="8" uuid="7abcc444-0663-11e1-8c99-2b4f0c4f671a"/>
+  <global_property property="concept.defaultConceptMapType" property_value="same-as" uuid="66263ff5-613a-11e1-a8b0-c80aa9edcf4e"/>
   <global_property property="order.nextOrderNumberSeed" property_value="1" uuid="7ed7aeb4-0663-11e1-8c99-2b4f0c4f671b" />
+  <global_property property="order.drugDosingUnitsConceptUuid" property_value="c9386d70-d9c5-11e3-9c1a-0800200c9a66" uuid="35466f40-d9c5-11e3-9c1a-0800200c9a66"/>
+  <global_property property="order.drugDispensingUnitsConceptUuid" property_value="d198bec0-d9c5-11e3-9c1a-0800200c9a66" uuid="40f04640-d9c5-11e3-9c1a-0800200c9a66"/>
+  <global_property property="order.drugDurationUnitsConceptUuid" property_value="54d29840-d9e6-11e3-9c1a-0800200c9a66" uuid="3e26c300-d9e6-11e3-9c1a-0800200c9a66"/>
+  <global_property property="order.testSpecimenSourcesConceptUuid" property_value="5e02d1a0-7869-11e4-981f-0800200c9a73" uuid="56466f40-d9c5-11e3-9c1a-0800200c9a66"/>
+  <global_property property="order.drugRoutesConceptUuid" property_value="6e02d1a0-7869-11e4-981f-0800200c9a89" uuid="67466f40-d9c5-22e3-9c1a-0800200c9a66"/>
   <hl7_source hl7_source_id="1" name="LOCAL" description="Local hl7 messages" creator="1" date_created="2006-07-18 11:13:59.0" uuid="bb191b2409-9b11-4bbf-8622-85b" />
   <location location_id="1" name="Unknown Location" description="The default location used when limited information is known" address1="" address2="" city_village="" state_province="" postal_code="" country="" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="8d6c993e-c2cc-11de-8d13-0010c6dffd0f"/>
   <location location_id="2" name="Xanadu" description="A metaphor for opulence, most famously in the English Romantic Samuel Taylor Coleridge&apos;s poem Kubla Khan." address1="800 Boylston Street" address2="" city_village="Boston" state_province="MA" postal_code="02115" country="USA" latitude="" longitude="" creator="1" date_created="2008-08-15 13:46:50.0" retired="false" uuid="9356400c-a5a2-4532-8f2b-2361b3446eb8"/>
@@ -364,10 +376,6 @@
   <user_role user_id="502" role="Provider"/>
   <users user_id="501" person_id="501" system_id="2-6" username="bruno" password="ff6d1655327d385e11a04e1632b4f33ceb8fafd2" salt="5d32c5fd9fde391c755f1f4dfd5e1d6e3debe6" secret_question="" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" retired="true" retire_reason="Test purposes" uuid="c1d8f5c2-e131-11de-babe-001e378eb67e"/>
   <users user_id="502" person_id="502" system_id="3-4" username="butch" password="eeeda5c0cc3837151b2d61cfeab54a91fb0c27d" salt="42af4c437a47cd778a54f6564d71b3cd6e8e5ca" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="c98a1558-e131-11de-babe-001e378eb67e"/>
-  <global_property property="locale.allowed.list" property_value="en" uuid="4f55827e-26fe-102b-80cb-0017a47871b3"/>
-  <global_property property="concept.true" property_value="7" uuid="6ed7aeb4-0663-11e1-8c99-2b4f0c4f671a"/>
-  <global_property property="concept.false" property_value="8" uuid="7abcc444-0663-11e1-8c99-2b4f0c4f671a"/>
-  <global_property property="concept.defaultConceptMapType" property_value="same-as" uuid="66263ff5-613a-11e1-a8b0-c80aa9edcf4e"/>
   <concept_stop_word concept_stop_word_id="1" word="A" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972eb"/>
   <concept_stop_word concept_stop_word_id="2" word="AN" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ec"/>
   <concept_stop_word concept_stop_word_id="3" word="BUT" locale="en_GB" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ed"/>
