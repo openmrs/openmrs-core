@@ -79,7 +79,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		
 		DrugOrder order = (DrugOrder) obj;
 		if (order == null) {
-			errors.rejectValue("order", "error.general");
+			errors.reject("error.general");
 		} else {
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "asNeeded", "error.null");

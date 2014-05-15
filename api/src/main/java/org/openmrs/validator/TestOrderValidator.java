@@ -53,17 +53,18 @@ public class TestOrderValidator extends OrderValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if the specimen source is invalid
+	 * @should pass validation if the specimen source is valid
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
 		TestOrder order = (TestOrder) obj;
 		if (order == null) {
-			errors.rejectValue("order", "error.general");
+			errors.reject("error.general");
 		} else {
 			if (order.getSpecimenSource() != null) {
 				List<Concept> specimenSources = Context.getOrderService().getTestSpecimenSources();
 				if (!specimenSources.contains(order.getSpecimenSource())) {
-					errors.rejectValue("specimenSource", "TestOrder.error.notAmongAllowedConcepts");
+					errors.rejectValue("specimenSource", "TestOrder.error.specimenSourceNotAmongAllowedConcepts");
 				}
 			}
 		}

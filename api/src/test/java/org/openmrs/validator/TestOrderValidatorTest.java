@@ -34,11 +34,11 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfTheSpecimenSourceIsInvalid() throws Exception {
 		ConceptService conceptService = Context.getConceptService();
 		Concept specimenSource = conceptService.getConcept(3);
-		assertThat(specimenSource, not(isIn(Context.getOrderService().getDrugRoutes())));
+		OrderService orderService = Context.getOrderService();
+		assertThat(specimenSource, not(isIn(orderService.getDrugRoutes())));
 		TestOrder order = new TestOrder();
 		Patient patient = new Patient(8);
 		order.setPatient(patient);
-		OrderService orderService = Context.getOrderService();
 		order.setOrderType(orderService.getOrderTypeByName("Test order"));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(new Provider());
@@ -52,6 +52,35 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new TestOrderValidator().validate(order, errors);
 		Assert.assertTrue(errors.hasFieldErrors("specimenSource"));
-		Assert.assertEquals("TestOrder.error.notAmongAllowedConcepts", errors.getFieldError("specimenSource").getCode());
+		Assert.assertEquals("TestOrder.error.specimenSourceNotAmongAllowedConcepts", errors.getFieldError("specimenSource")
+		        .getCode());
+	}
+	
+	/**
+	 * @verifies pass validation if the specimen source is valid
+	 * @see TestOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfTheSpecimenSourceIsValid() throws Exception {
+		ConceptService conceptService = Context.getConceptService();
+		Concept specimenSource = conceptService.getConcept(22);
+		OrderService orderService = Context.getOrderService();
+		assertThat(specimenSource, isIn(orderService.getDrugRoutes()));
+		TestOrder order = new TestOrder();
+		Patient patient = new Patient(8);
+		order.setPatient(patient);
+		order.setOrderType(orderService.getOrderTypeByName("Test order"));
+		order.setConcept(conceptService.getConcept(5497));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setCareSetting(new CareSetting());
+		Encounter encounter = new Encounter();
+		encounter.setPatient(patient);
+		order.setEncounter(encounter);
+		order.setStartDate(new Date());
+		order.setSpecimenSource(specimenSource);
+		
+		Errors errors = new BindException(order, "order");
+		new TestOrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
 	}
 }
