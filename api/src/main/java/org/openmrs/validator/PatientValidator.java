@@ -68,7 +68,7 @@ public class PatientValidator extends PersonValidator {
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should fail validation if a preferred patient identifier is not chosen for voided patients
-	 * @should fail if same identifier types are added for identifiers
+	 * @should fail validation if patient identifiers contains more than one identifier for the same identifier type
 	 * @should not fail when patient has only one identifier and its not preferred
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -84,7 +84,7 @@ public class PatientValidator extends PersonValidator {
 		
 		Patient patient = (Patient) obj;
 		
-		if (PatientIdentifierValidator.isIdentifiersContainsSameIdentifierTypes(patient.getActiveIdentifiers())) {
+		if (PatientIdentifierValidator.hasMoreThanOneIdentifierForSameIdentifierType(patient.getActiveIdentifiers())) {
 			errors.reject("error.duplicateIdentifierTypes");
 		}
 		
