@@ -689,4 +689,17 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getDrugDurationUnits();
+	
+	/**
+	 * Gets the possible test specimen sources, i.e the set members for the concept that matches the
+	 * uuid specified as the value for the global property
+	 * {@link OpenmrsConstants#GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID}
+	 * 
+	 * @return concept list of specimen sources
+	 * @since 1.10
+	 * @should return an empty list if nothing is configured
+	 * @should return a list if GP is set
+	 */
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public List<Concept> getTestSpecimenSources();
 }

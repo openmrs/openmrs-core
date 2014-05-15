@@ -2388,4 +2388,43 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		dcOrder.setOrderer(providerService.getProvider(1));
 		orderService.saveOrder(dcOrder, null);
 	}
+	
+	/**
+	 * @verifies return a list if GP is set
+	 * @see OrderService#getTestSpecimenSources()
+	 */
+	@Test
+	public void getTestSpecimenSources_shouldReturnAListIfGPIsSet() throws Exception {
+		Concept specimenSources = new Concept();
+		ConceptName cn = new ConceptName("Test concept for specimen sources", Locale.US);
+		specimenSources.addName(cn);
+		specimenSources.setSet(true);
+		Concept concept6 = conceptService.getConcept(6);
+		Concept concept7 = conceptService.getConcept(7);
+		Concept concept8 = conceptService.getConcept(8);
+		specimenSources.addSetMember(concept6);
+		specimenSources.addSetMember(concept7);
+		specimenSources.addSetMember(concept8);
+		specimenSources = conceptService.saveConcept(specimenSources);
+		
+		AdministrationService as = Context.getAdministrationService();
+		List<GlobalProperty> globalProperties = as.getAllGlobalProperties();
+		globalProperties.add(new GlobalProperty(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, specimenSources
+		        .getUuid(), "testing"));
+		as.saveGlobalProperties(globalProperties);
+		List<Concept> drugRoutesList = orderService.getTestSpecimenSources();
+		assertEquals(3, drugRoutesList.size());
+		assertTrue(drugRoutesList.contains(concept6));
+		assertTrue(drugRoutesList.contains(concept7));
+		assertTrue(drugRoutesList.contains(concept8));
+	}
+	
+	/**
+	 * @verifies return an empty list if nothing is configured
+	 * @see OrderService#getTestSpecimenSources()
+	 */
+	@Test
+	public void getTestSpecimenSources_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
+		assertThat(orderService.getTestSpecimenSources(), is(empty()));
+	}
 }

@@ -850,6 +850,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_DURATION_UNITS_CONCEPT_UUID);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getTestSpecimenSources()
+	 */
+	@Override
+	public List<Concept> getTestSpecimenSources() {
+		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID);
+	}
+	
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);

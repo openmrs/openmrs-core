@@ -5,10 +5,15 @@
     <concept concept_id="1001" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800200c9a76"/>
     <concept concept_id="1002" retired="0" datatype_id="4" class_id="20" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="7e02d1a0-7869-11e4-981f-0800200c9a75"/>
     <concept concept_id="1003" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="6e02d1a0-7869-11e4-981f-0800200c9a74"/>
+    <concept concept_id="1004" retired="0" datatype_id="4" class_id="11" is_set="1" creator="1" date_created="2004-08-12 00:00:00.0" uuid="5e02d1a0-7869-11e4-981f-0800200c9a73"/>
     <concept_name concept_name_id="2000" concept_id="1000" name="Blood" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="9edfd54f-b189-43dd-86e0-913591978e489" />
     <concept_name concept_name_id="2001" concept_id="1001" name="Once" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="93f24a00-7869-11e3-981f-0800200c9a67"/>
     <concept_name concept_name_id="2002" concept_id="1002" name="Day(s)" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="83f24a00-7869-11e3-981f-0800200c9a68"/>
     <concept_name concept_name_id="2003" concept_id="1003" name="Once Daily" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="73f24a00-7869-11e3-981f-0800200c9a67"/>
+    <concept_name concept_name_id="2004" concept_id="1004" name="Test Specimen Sources" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="45f24a00-7969-11e3-981f-0800211c9a68"/>
+    <concept_set concept_set_id="1" concept_id="1000" concept_set="1004" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="2a111827-639f-4cb5-961f-1e025bf88d90"/>
+
+    <global_property property="order.testSpecimenSourcesConceptUuid" property_value="5e02d1a0-7869-11e4-981f-0800200c9a73" uuid="56466f40-d9c5-11e3-9c1a-0800200c9a66"/>
 
     <order_frequency order_frequency_id="3000" concept_id="1001" creator="1" date_created="2008-08-15 13:52:53.0" retired="0" uuid="38090760-7c38-11e4-baa7-0800200c9a67" />
     <encounter encounter_id="6" encounter_type="1" patient_id="2" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="y403fafb-e5e4-42d0-9d11-4f52e89d123r"/>

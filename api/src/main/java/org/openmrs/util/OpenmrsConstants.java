@@ -1026,7 +1026,9 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID = "order.drugDispensingUnitsConceptUuid";
 	
-	public static final String GP_DRUG_DURATION_UNITS_CONCEPT_UUID = "order.drugDurationUnitsConceptUuid";;
+	public static final String GP_DRUG_DURATION_UNITS_CONCEPT_UUID = "order.drugDurationUnitsConceptUuid";
+	
+	public static final String GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID = "order.testSpecimenSourcesConceptUuid";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
