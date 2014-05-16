@@ -36,14 +36,7 @@
 			<column name="edit_privilege" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="1-fix" author="sunbiz" dbms="mysql">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="person_attribute_type" columnName="edit_privilege"/>
-		</preConditions>
-		<comment>(Fixed)Modified edit_privilege to correct column size</comment>
-		<modifyDataType tableName="person_attribute_type" columnName="edit_privilege" newDataType="varchar(50)"/>
-	</changeSet>
-	
+
 	<changeSet id="2" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit"/></not>
@@ -2347,14 +2340,16 @@
 	</changeSet>
 	
 	<changeSet id="200902142213" author="ewolodzko" dbms="mysql">
+		<validCheckSum>3:ace82a1ecb3a0c3246e39f0bebe38423</validCheckSum> <!-- original checksum -->
+		<validCheckSum>3:288804e42d575fe62c852ed9daa9d59d</validCheckSum> <!-- current checksum with TRUNK-4025 fix-->
 		<comment>
 			Add default sortWeights to all current PersonAttributeTypes
 		</comment>
-		<update tableName="person_attribute_type" >
-			<!-- The weird (select * from person_attribute_type) is needed here instead of just (person_attribute_type) to avoid sql ERROR 1093 -->
-			<column name="sort_weight" valueNumeric="((select count(*) from (select * from person_attribute_type) pat where pat.name &lt; person_attribute_type.name))" />
-			<where>sort_weight is null</where>
-		</update>
+		<sql>
+			<![CDATA[
+			UPDATE  person_attribute_type as A JOIN person_attribute_type as B ON A.name = B.name  SET A.sort_weight = (select count(*) from (select * from person_attribute_type) pat where pat.name < A.name) WHERE A.sort_weight is null;
+			]]>
+		</sql>
 	</changeSet>
 	
 	<changeSet id="200906301606" author="bwolfe" dbms="mysql">
@@ -6327,8 +6322,23 @@
 			baseTableName="drug" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-	
-	
+
+    <changeSet id="3-increase-privilege-col-size-person_attribute_type" author="dkayiwa">
+        <validCheckSum>3:f8e6499f5839e64223d9fb7cbe8cdbc6</validCheckSum><!-- TRUNK-3909 -->
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="person_attribute_type" columnName="edit_privilege"/>
+        </preConditions>
+        <comment>
+            Increasing the size of the edit_privilege column in the person_attribute_type table
+        </comment>
+        <dropForeignKeyConstraint baseTableName="person_attribute_type" constraintName="privilege_which_can_edit"/>
+        <ext:modifyColumn tableName="person_attribute_type">
+            <column name="edit_privilege" type="varchar(255)" />
+        </ext:modifyColumn>
+        <addForeignKeyConstraint baseTableName="person_attribute_type" baseColumnNames="edit_privilege" constraintName="privilege_which_can_edit"
+                                 referencedTableName="privilege" referencedColumnNames="privilege"/>
+    </changeSet>
+
 	<changeSet id="20120330-0954" author="jkeiper">
 		<comment>Increase size of drug name column to 255 characters</comment>
 		<modifyDataType tableName="drug" columnName="name" newDataType="varchar(255)"/>
@@ -6379,6 +6389,21 @@
                                  referencedTableName="concept" referencedColumnNames="concept_id" />
     </changeSet>
     
+    <changeSet id="20121016-1504" author="wyclif">
+    	<validCheckSum>3:ca4bde46e2fe247d1d4d227a539ff465</validCheckSum><!-- TRUNK-3909 -->
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="test_order" columnName="order_id"/>
+		</preConditions>
+		<comment>Removing auto increment from test_order.order_id column</comment>
+		<dropForeignKeyConstraint baseTableName="test_order" constraintName="test_order_order_id_fk"/>
+		<ext:modifyColumn tableName="test_order">
+		    <column name="order_id" type="int" />
+		</ext:modifyColumn>
+		<addForeignKeyConstraint constraintName="test_order_order_id_fk"
+			baseTableName="test_order" baseColumnNames="order_id"
+			referencedTableName="orders" referencedColumnNames="order_id" />
+	</changeSet>
+
     <changeSet id="20121020-TRUNK-3610" author="lluismf">
 		<comment>
 			Rename global property autoCloseVisits.visitType to visits.autoCloseVisitType
