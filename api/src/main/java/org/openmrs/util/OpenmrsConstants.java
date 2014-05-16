@@ -14,6 +14,7 @@
 package org.openmrs.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -89,89 +91,43 @@ public final class OpenmrsConstants {
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersion() {
-		
-		Properties props = new Properties();
-		
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
-		
-		if (url == null) {
-			log.error("Unable to find MANIFEST.MF file built by maven");
-			return null;
-		}
-		
-		// Load the file
-		try {
-			props.load(url.openStream());
-			
-			return props.getProperty("Specification-Vendor");
-		}
-		catch (IOException e) {
-			log.error("Unable to get MANIFEST.MF file into manifest object");
-		}
-		
-		return null;
+		return getOpenmrsProperty("openmrs.version.long");
 	}
 	
 	/**
-	 * @return build version without alpha characters (eg: 1.10.0.24858) defined in MANIFEST.MF
-	 *         (specification-Version)
+	 * @return build version in the short format (eg: 1.10.0-24858)
+	 * 
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersionShort() {
-		
-		Properties props = new Properties();
-		
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
-		
-		if (url == null) {
-			log.error("Unable to find MANIFEST.MF file built by maven");
-			return null;
-		}
-		
-		// Load the file
-		try {
-			props.load(url.openStream());
-			
-			return props.getProperty("Specification-Version");
-		}
-		catch (IOException e) {
-			log.error("Unable to get MANIFEST.MF file into manifest object");
-		}
-		
-		return null;
+		return getOpenmrsProperty("openmrs.version.short");
 	}
 	
-	/**
-	 * Somewhat hacky method to fetch the version from the maven pom.properties file. <br/>
-	 * This method should not be used unless in a dev environment. The preferred way to get the
-	 * version is from the manifest in the api jar file. More detail is included in the properties
-	 * there.
-	 * 
-	 * @return version number defined in maven pom.xml file(s)
-	 * @see #OPENMRS_VERSION_SHORT
-	 * @see #OPENMRS_VERSION
-	 */
-	
 	private static String getVersion() {
-		Properties props = new Properties();
-		
-		// Get hold of the path to the properties file
-		// (Maven will make sure it's on the class path)
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource(
-		    "META-INF/maven/org.openmrs.api/openmrs-api/pom.properties");
-		if (url == null) {
-			log.error("Unable to find pom.properties file built by maven");
+		return getOpenmrsProperty("openmrs.version");
+	}
+	
+	public static String getOpenmrsProperty(String property) {
+		InputStream file = OpenmrsConstants.class.getClassLoader().getResourceAsStream("org/openmrs/api/openmrs.properties");
+		if (file == null) {
+			log.error("Unable to find the openmrs.properties file");
 			return null;
 		}
 		
-		// Load the file
 		try {
-			props.load(url.openStream());
-			return props.getProperty("version"); // this will return something like "1.9.0-SNAPSHOT" in dev environments
+			Properties props = new Properties();
+			props.load(file);
+			
+			file.close();
+			
+			return props.getProperty(property);
 		}
 		catch (IOException e) {
-			log.error("Unable to get pom.properties file into Properties object");
+			log.error("Unable to parse the openmrs.properties file", e);
+		}
+		finally {
+			IOUtils.closeQuietly(file);
 		}
 		
 		return null;

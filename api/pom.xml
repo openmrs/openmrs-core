@@ -226,6 +226,22 @@
 		</dependency>
    </dependencies>
    <build>
+     <resources>
+        <resource>
+          <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>org/openmrs/api/openmrs.properties</include>
+            </includes>
+         </resource>
+         <resource>
+            <directory>src/main/resources</directory>
+            <filtering>false</filtering>
+            <excludes>
+               <exclude>org/openmrs/api/openmrs.properties</exclude>
+            </excludes>
+         </resource>
+      </resources>
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
