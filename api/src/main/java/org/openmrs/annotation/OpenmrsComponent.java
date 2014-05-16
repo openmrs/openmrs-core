@@ -19,16 +19,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.stereotype.Component;
+
 /**
- * Place it on classes annotated as Spring beans which should be created conditionally based on
- * OpenMRS version and/or started modules.
- * 
+ * Place it on classes you want to be beans only if OpenMRS version and/or started modules match.
+ * <p>
+ * It is a shorthand to using {@link Component} and {@link OpenmrsProfile}.
+ *
  * @since 1.10, 1.9.8, 1.8.5, 1.7.5
  */
 @Target( { ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface OpenmrsProfile {
+public @interface OpenmrsComponent {
 	
 	public String openmrsVersion() default "";
 	
