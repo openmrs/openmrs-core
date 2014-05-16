@@ -2705,7 +2705,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		ConceptNameTag savedNameTag = cs.getConceptNameTag(id);
-		Assert.assertNotNull(savedNameTag);
+		assertEquals(savedNameTag.getTag(), "abcd");
+		assertEquals(savedNameTag.getDescription(), "test");
 	}
 	
 	/**
@@ -2723,6 +2724,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		
 		ConceptNameTag savedNameTag = cs.getConceptNameTag(id);
-		Assert.assertNotNull(savedNameTag);
+		assertEquals(savedNameTag.getTag(), "dcba");
 	}
 }

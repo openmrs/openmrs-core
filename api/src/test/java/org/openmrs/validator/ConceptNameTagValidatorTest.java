@@ -68,7 +68,7 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 	 * @see ConceptNameTagValidator#validate(Object,Errors)
 	 */
 	@Test
-	@Verifies(value = "pass validation if tag does not exists and is not null or empty", method = "validate(Object,Errors)")
+	@Verifies(value = "pass validation if tag does not exist and is not null or empty", method = "validate(Object,Errors)")
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		ConceptNameTag cnt = new ConceptNameTag();
 		
