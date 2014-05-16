@@ -17,6 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -53,6 +55,7 @@ public class PatientIdentifierTypeValidator implements Validator {
 	 * @should pass validation if regEx field length is not too long
 	 * @should fail validation if regEx field length is too long
 	 * @should fail validation if name field length is too long
+	 * @should fail validation if name is already exist in non retired identifier types
 	 */
 	public void validate(Object obj, Errors errors) {
 		PatientIdentifierType identifierType = (PatientIdentifierType) obj;
@@ -61,6 +64,12 @@ public class PatientIdentifierTypeValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidateUtil.validateFieldLengths(errors, identifierType.getClass(), "name", "description", "format");
+			PatientIdentifierType exist = Context.getPatientService().getPatientIdentifierTypeByName(
+			    identifierType.getName());
+			if (exist != null && !exist.isRetired()
+			        && !OpenmrsUtil.nullSafeEquals(identifierType.getUuid(), exist.getUuid())) {
+				errors.rejectValue("name", "identifierType.duplicate.name");
+			}
 		}
 	}
 }

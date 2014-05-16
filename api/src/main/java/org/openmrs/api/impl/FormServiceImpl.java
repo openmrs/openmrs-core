@@ -436,6 +436,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
+	 * @see org.openmrs.api.FormService#getFieldTypeByName(java.lang.String)
+	 */
+	@Transactional(readOnly = true)
+	public FieldType getFieldTypeByName(String name) throws APIException {
+		return dao.getFieldTypeByName(name);
+	}
+	
+	/**
 	 * @see org.openmrs.api.FormService#getFormByUuid(java.lang.String)
 	 */
 	@Transactional(readOnly = true)

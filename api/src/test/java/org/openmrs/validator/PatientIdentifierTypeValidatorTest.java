@@ -137,4 +137,22 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		Assert.assertTrue(errors.hasErrors());
 		Assert.assertEquals(1, errors.getFieldErrorCount("name"));
 	}
+	
+	/**
+	 * @see {@link org.openmrs.validator.PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if patient identifier type name is already exist", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfPatientIdentifierTypeNameAlreadyExist() throws Exception {
+		PatientIdentifierType type = new PatientIdentifierType();
+		type.setName("OpenMRS Identification Number");
+		type.setDescription("helps");
+		String valid50charInput = "12345678901234567890123456789012345678901234567890";
+		type.setFormat(valid50charInput);
+		
+		Errors errors = new BindException(type, "type");
+		new PatientIdentifierTypeValidator().validate(type, errors);
+		
+		Assert.assertTrue(errors.hasErrors());
+	}
 }
