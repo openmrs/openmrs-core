@@ -6435,6 +6435,88 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="20140331-1-TRUNK-4335" author="rkorytkowski">
+      	<preConditions onFail="MARK_RAN">
+      		<not><columnExists tableName="concept_set_derived" columnName="uuid"/></not>
+      	</preConditions>
+      	<comment>Adding uuid to concept_set_derived</comment>
+      	<addColumn tableName="concept_set_derived">
+      		<column name="uuid" type="char(38)" />
+      	</addColumn>
+    </changeSet>
+
+     <changeSet id="20140331-2-TRUNK-4335" author="rkorytkowski">
+      	<preConditions onFail="MARK_RAN">
+      		<not><columnExists tableName="drug_ingredient" columnName="uuid"/></not>
+      	</preConditions>
+      	<comment>Adding uuid to drug_ingredient</comment>
+      	<addColumn tableName="drug_ingredient">
+      		<column name="uuid" type="char(38)" />
+      	</addColumn>
+      </changeSet>
+
+      <changeSet id="201401040436-TRUNK-3919" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location_tag" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to location_tag table
+		</comment>
+		<addColumn tableName="location_tag">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_tag_changed_by"
+			baseTableName="location_tag" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+
+	<changeSet id="201401040438-TRUNK-3919" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location_tag" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to location_tag table
+		</comment>
+		<addColumn tableName="location_tag">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="201401040440-TRUNK-3919" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to location table
+		</comment>
+		<addColumn tableName="location">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="location_changed_by"
+			baseTableName="location" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+
+	<changeSet id="201401040442-TRUNK-3919" author="dkithmal">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="location" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to location table
+		</comment>
+		<addColumn tableName="location">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+
     <changeSet id="201401101645-TRUNK-4187" author="wyclif">
         <preConditions onFail="HALT">
             <customPrecondition className="org.openmrs.util.databasechange.CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts" />
@@ -7350,88 +7432,6 @@
             <where>strength = ''</where>
         </update>
     </changeSet>
-    
-    <changeSet id="20140331-1-TRUNK-4335" author="rkorytkowski">
-     	<preConditions onFail="MARK_RAN">
-     		<not><columnExists tableName="concept_set_derived" columnName="uuid"/></not>
-     	</preConditions>
-     	<comment>Adding uuid to concept_set_derived</comment>
-     	<addColumn tableName="concept_set_derived">
-     		<column name="uuid" type="char(38)" />
-     	</addColumn>
-     </changeSet>
-     
-      <changeSet id="20140331-2-TRUNK-4335" author="rkorytkowski">
-     	<preConditions onFail="MARK_RAN">
-     		<not><columnExists tableName="drug_ingredient" columnName="uuid"/></not>
-     	</preConditions>
-     	<comment>Adding uuid to drug_ingredient</comment>
-     	<addColumn tableName="drug_ingredient">
-     		<column name="uuid" type="char(38)" />
-     	</addColumn>
-     </changeSet>
-     
-     <changeSet id="201401040436-TRUNK-3919" author="dkithmal">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<columnExists tableName="location_tag" columnName="changed_by" />
-			</not>
-		</preConditions>
-		<comment>
-			Add changed_by column to location_tag table
-		</comment>
-		<addColumn tableName="location_tag">
-			<column name="changed_by" type="int" />
-		</addColumn>
-		<addForeignKeyConstraint constraintName="location_tag_changed_by"
-			baseTableName="location_tag" baseColumnNames="changed_by"
-			referencedTableName="users" referencedColumnNames="user_id" />
-	</changeSet>
-		
-	<changeSet id="201401040438-TRUNK-3919" author="dkithmal">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<columnExists tableName="location_tag" columnName="date_changed" />
-			</not>
-		</preConditions>
-		<comment>
-			Add date_changed column to location_tag table
-		</comment>
-		<addColumn tableName="location_tag">
-			<column name="date_changed" type="datetime" />
-		</addColumn>
-	</changeSet>
-
-    <changeSet id="201401040440-TRUNK-3919" author="dkithmal">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<columnExists tableName="location" columnName="changed_by" />
-			</not>
-		</preConditions>
-		<comment>
-			Add changed_by column to location table
-		</comment>
-		<addColumn tableName="location">
-			<column name="changed_by" type="int" />
-		</addColumn>
-		<addForeignKeyConstraint constraintName="location_changed_by"
-			baseTableName="location" baseColumnNames="changed_by"
-			referencedTableName="users" referencedColumnNames="user_id" />
-	</changeSet>
-		
-	<changeSet id="201401040442-TRUNK-3919" author="dkithmal">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<columnExists tableName="location" columnName="date_changed" />
-			</not>
-		</preConditions>
-		<comment>
-			Add date_changed column to location table
-		</comment>
-		<addColumn tableName="location">
-			<column name="date_changed" type="datetime" />
-		</addColumn>
-	</changeSet>
 
     <changeSet id="201404091516" author="wyclif">
         <preConditions onFail="MARK_RAN">
