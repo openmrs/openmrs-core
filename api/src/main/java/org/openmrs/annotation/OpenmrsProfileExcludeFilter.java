@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Creates a bean only if profile is matched. It returns true if a bean should be excluded.
+ * Prevents creating a bean if profile is not matched. It returns true if a bean should not be created.
  */
-public class OpenmrsProfileExclusionFilter implements TypeFilter {
+public class OpenmrsProfileExcludeFilter implements TypeFilter {
 	
 	/**
 	 * @param metadataReader
@@ -42,40 +42,45 @@ public class OpenmrsProfileExclusionFilter implements TypeFilter {
 	 */
 	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
-		Map<String, Object> openmrsProfile = metadataReader.getAnnotationMetadata().getAnnotationAttributes(
+		Map<String, Object> openmrsProfileAttributes = metadataReader.getAnnotationMetadata().getAnnotationAttributes(
 		    "org.openmrs.annotation.OpenmrsProfile");
-		if (openmrsProfile != null) {
-			Object openmrsVersion = openmrsProfile.get("openmrsVersion");
-			if (StringUtils.isNotBlank((String) openmrsVersion)) {
-				if (!ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsVersion)) {
-					return true; //exclude
-				}
-			}
-			
-			String[] modules = (String[]) openmrsProfile.get("modules");
-			
-			for (String moduleAndVersion : modules) {
-				boolean exclude = true;
-				
-				String[] splitModuleAndVersion = moduleAndVersion.split(":");
-				String moduleId = splitModuleAndVersion[0];
-				String moduleVersion = splitModuleAndVersion[1];
-				
-				for (Module module : ModuleFactory.getStartedModules()) {
-					if (module.getModuleId().equals(moduleId)) {
-						if (ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
-							exclude = false;
-							break;
-						}
-					}
-				}
-				
-				if (exclude) {
-					return exclude;
-				}
+		if (openmrsProfileAttributes != null) {
+			return !matchOpenmrsProfileAttributes(openmrsProfileAttributes);
+		} else {
+			return false; //do not exclude
+		}
+	}
+	
+	public boolean matchOpenmrsProfileAttributes(Map<String, Object> openmrsProfile) {
+		Object openmrsVersion = openmrsProfile.get("openmrsVersion");
+		if (StringUtils.isNotBlank((String) openmrsVersion)) {
+			if (!ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsVersion)) {
+				return false;
 			}
 		}
 		
-		return false; //include
+		String[] modules = (String[]) openmrsProfile.get("modules");
+		
+		for (String moduleAndVersion : modules) {
+			String[] splitModuleAndVersion = moduleAndVersion.split(":");
+			String moduleId = splitModuleAndVersion[0];
+			String moduleVersion = splitModuleAndVersion[1];
+			
+			boolean moduleMatched = false;
+			for (Module module : ModuleFactory.getStartedModules()) {
+				if (module.getModuleId().equals(moduleId)) {
+					if (ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
+						moduleMatched = true;
+						break;
+					}
+				}
+			}
+			
+			if (!moduleMatched) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
