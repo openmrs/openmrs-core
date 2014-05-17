@@ -6517,14 +6517,13 @@
 		</addColumn>
 	</changeSet>
 
-    <changeSet id="201401101645-TRUNK-4187" author="wyclif">
+    <changeSet id="201401101646-TRUNK-4187" author="wyclif">
         <preConditions onFail="HALT">
             <customPrecondition className="org.openmrs.util.databasechange.CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts" />
         </preConditions>
         <comment>
             Checks that all existing free text drug order dose units and frequencies have been mapped to
-            concept ids via the orderEntry.unitsToConceptsMappings global property, this will fail the
-            upgrade process if any unmapped text is found
+            concepts, this will fail the upgrade process if any unmapped text is found
         </comment>
     </changeSet>
 
