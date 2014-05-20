@@ -129,7 +129,7 @@ public class Database1_9_7UpgradeTest {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		createOrderEntryUpgradeFileWithTestData("");
 		expectedException.expect(IOException.class);
-		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101645-TRUNK-4187::wyclif";
+		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101646-TRUNK-4187::wyclif";
 		expectedException.expectMessage(errorMsgSubString1);
 		String errorMsgSubString2 = "Your order entry upgrade settings file does not have mapping for mg";
 		expectedException.expectMessage(errorMsgSubString2);
@@ -145,7 +145,7 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=invalid");
 		
 		expectedException.expect(IOException.class);
-		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101645-TRUNK-4187::wyclif";
+		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101646-TRUNK-4187::wyclif";
 		expectedException.expectMessage(errorMsgSubString1);
 		expectedException.expectMessage("For input string: \"invalid\"");
 		upgradeTestUtil.upgrade();
