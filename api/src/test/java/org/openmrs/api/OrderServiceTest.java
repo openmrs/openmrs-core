@@ -1384,11 +1384,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if an active order for the same concept exists
+	 * @verifies fail if an active order for the same concept and care setting exists
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
-	public void saveOrder_shouldFailIfAnActiveOrderForTheSameConceptExists() throws Exception {
+	public void saveOrder_shouldFailIfAnActiveOrderForTheSameConceptAndCareSettingExists() throws Exception {
 		final Patient patient = patientService.getPatient(2);
 		final Concept cd4Count = conceptService.getConcept(5497);
 		//sanity check that we have an active order for the same concept
@@ -1402,10 +1402,39 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(cd4Count);
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(duplicateOrder.getCareSetting());
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Cannot have more than one active order for the same concept");
+		expectedException.expectMessage("Cannot have more than one active order for the same concept and care setting");
 		orderService.saveOrder(order, null);
+	}
+	
+	/**
+	 * @verifies pass if an active order for the same concept exists in a different care setting
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassIfAnActiveOrderForTheSameConceptExistsInADifferentCareSetting() throws Exception {
+		final Patient patient = patientService.getPatient(2);
+		final Concept cd4Count = conceptService.getConcept(5497);
+		TestOrder duplicateOrder = (TestOrder) orderService.getOrder(7);
+		final CareSetting inpatient = orderService.getCareSetting(2);
+		assertNotEquals(inpatient, duplicateOrder.getCareSetting());
+		assertTrue(duplicateOrder.isCurrent());
+		assertEquals(cd4Count, duplicateOrder.getConcept());
+		int initialActiveOrderCount = orderService.getActiveOrders(patient, null, null, null).size();
+		
+		Order order = new Order();
+		order.setPatient(patient);
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(cd4Count);
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(inpatient);
+		
+		orderService.saveOrder(order, null);
+		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(++initialActiveOrderCount, activeOrders.size());
 	}
 	
 	/**

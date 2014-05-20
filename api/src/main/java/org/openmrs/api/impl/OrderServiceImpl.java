@@ -98,10 +98,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			concept = ((DrugOrder) order).getDrug().getConcept();
 		}
 		if (!isDiscontinueOrReviseOrder(order)) {
-			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, null, null);
+			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
 			for (Order o : activeOrders) {
 				if (o.getConcept().equals(concept)) {
-					throw new APIException("Cannot have more than one active order for the same concept");
+					throw new APIException("Cannot have more than one active order for the same concept and care setting");
 				}
 			}
 		}
