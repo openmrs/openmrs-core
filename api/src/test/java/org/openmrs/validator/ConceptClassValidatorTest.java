@@ -3,6 +3,7 @@ package org.openmrs.validator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ConceptClass;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -10,7 +11,7 @@ import org.springframework.validation.Errors;
 /**
  * Tests methods on the {@link ConceptClassValidator} class.
  */
-public class ConceptClassValidatorTest {
+public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
@@ -74,5 +75,21 @@ public class ConceptClassValidatorTest {
 		new ConceptClassValidator().validate(cc, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if concept class name is already exist", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfConceptClassNameAlreadyExist() throws Exception {
+		ConceptClass cc = new ConceptClass();
+		cc.setName("Test");
+		cc.setDescription("some text");
+		
+		Errors errors = new BindException(cc, "cc");
+		new ConceptClassValidator().validate(cc, errors);
+		
+		Assert.assertTrue(errors.hasErrors());
 	}
 }

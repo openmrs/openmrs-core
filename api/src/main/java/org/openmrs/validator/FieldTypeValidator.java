@@ -17,6 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.FieldType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -49,6 +51,7 @@ public class FieldTypeValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should fail validation if field type name already exist in none retired filed types
 	 */
 	public void validate(Object obj, Errors errors) {
 		FieldType fieldType = (FieldType) obj;
@@ -56,6 +59,12 @@ public class FieldTypeValidator implements Validator {
 			errors.rejectValue("fieldType", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			if (!errors.hasErrors()) {
+				FieldType exist = Context.getFormService().getFieldTypeByName(fieldType.getName());
+				if (exist != null && !exist.isRetired() && !OpenmrsUtil.nullSafeEquals(fieldType.getUuid(), exist.getUuid())) {
+					errors.rejectValue("name", "fieldtype.duplicate.name");
+				}
+			}
 		}
 	}
 	

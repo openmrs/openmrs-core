@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -55,6 +56,7 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 * @should pass validation if all fields are correct
 	 * @should pass validation if retired location is given retired reason
 	 * @should fail validation if parent location creates a loop
+	 * @should fail validation if name is exist in non retired locations
 	 */
 	public void validate(Object obj, Errors errors) {
 		Location location = (Location) obj;
@@ -70,6 +72,12 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 					errors.rejectValue("retireReason", "error.null");
 				}
 			}
+			
+			Location exist = Context.getLocationService().getLocation(location.getName());
+			if (exist != null && !exist.isRetired() && !OpenmrsUtil.nullSafeEquals(location.getUuid(), exist.getUuid())) {
+				errors.rejectValue("name", "location.duplicate.name");
+			}
+			
 			// Traverse all the way up (down?) to the root and check if it
 			// equals the root.
 			Location root = location;

@@ -33,7 +33,9 @@
 		</div>
 	</form>
 </c:if>
-
+<spring:hasBindErrors name="patientIdentifierType">
+    <openmrs_tag:errorNotify errors="${errors}" />
+</spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>

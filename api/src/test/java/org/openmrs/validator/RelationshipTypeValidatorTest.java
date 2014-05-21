@@ -15,6 +15,8 @@ package org.openmrs.validator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.RelationshipType;
+import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -23,7 +25,7 @@ import org.springframework.validation.Errors;
  *
  * @since 1.10
  */
-public class RelationshipTypeValidatorTest {
+public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
@@ -85,5 +87,20 @@ public class RelationshipTypeValidatorTest {
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link org.openmrs.validator.RelationshipTypeValidator#validate(Object, Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if relationshipTypeName exist", method = "validate(Object,Errors)")
+	public void validate_shouldPassEditingEncounterTypeName() throws Exception {
+		RelationshipType type = new RelationshipType();
+		type.setaIsToB("Doctor");
+		type.setbIsToA("Patient");
+		
+		Errors errors = new BindException(type, "type");
+		new RelationshipTypeValidator().validate(type, errors);
+		Assert.assertTrue(errors.hasErrors());
 	}
 }
