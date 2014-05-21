@@ -75,7 +75,7 @@ public class ChainingInterceptor implements Interceptor {
 		for (Interceptor i : interceptors)
 			// must be in this order so that java doesn't skip the method call for optimizations
 			objectChanged = i.onFlushDirty(entity, id, currentState, previousState, propertyNames, types) || objectChanged;
-
+		
 		return objectChanged;
 	}
 	
