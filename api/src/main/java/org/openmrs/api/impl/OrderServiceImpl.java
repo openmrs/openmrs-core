@@ -116,7 +116,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			//this order's order type should match that of the previous
 			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
-				throw new APIException("Cannot determine the order type of the order");
+				throw new APIException(
+				        "Cannot determine the order type of the order, make sure the concept's class is mapped to an order type");
 			}
 			order.setOrderType(orderType);
 		}
