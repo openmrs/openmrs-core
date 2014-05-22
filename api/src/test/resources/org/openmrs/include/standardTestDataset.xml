@@ -253,7 +253,7 @@
   <global_property property="order.nextOrderNumberSeed" property_value="1" uuid="7ed7aeb4-0663-11e1-8c99-2b4f0c4f671b" />
   <global_property property="order.drugDosingUnitsConceptUuid" property_value="c9386d70-d9c5-11e3-9c1a-0800200c9a66" uuid="35466f40-d9c5-11e3-9c1a-0800200c9a66"/>
   <global_property property="order.drugDispensingUnitsConceptUuid" property_value="d198bec0-d9c5-11e3-9c1a-0800200c9a66" uuid="40f04640-d9c5-11e3-9c1a-0800200c9a66"/>
-  <global_property property="order.drugDurationUnitsConceptUuid" property_value="54d29840-d9e6-11e3-9c1a-0800200c9a66" uuid="3e26c300-d9e6-11e3-9c1a-0800200c9a66"/>
+  <global_property property="order.durationUnitsConceptUuid" property_value="54d29840-d9e6-11e3-9c1a-0800200c9a66" uuid="3e26c300-d9e6-11e3-9c1a-0800200c9a66"/>
   <global_property property="order.testSpecimenSourcesConceptUuid" property_value="5e02d1a0-7869-11e4-981f-0800200c9a73" uuid="56466f40-d9c5-11e3-9c1a-0800200c9a66"/>
   <global_property property="order.drugRoutesConceptUuid" property_value="6e02d1a0-7869-11e4-981f-0800200c9a89" uuid="67466f40-d9c5-22e3-9c1a-0800200c9a66"/>
   <hl7_source hl7_source_id="1" name="LOCAL" description="Local hl7 messages" creator="1" date_created="2006-07-18 11:13:59.0" uuid="bb191b2409-9b11-4bbf-8622-85b" />

@@ -680,7 +680,7 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Gets the possible units of duration, i.e the set members for the concept that matches the
 	 * uuid specified as the value for the global property
-	 * {@link OpenmrsConstants#GP_DRUG_DURATION_UNITS_CONCEPT_UUID}
+	 * {@link OpenmrsConstants#GP_DURATION_UNITS_CONCEPT_UUID}
 	 * 
 	 * @return concept list of units of duration
 	 * @since 1.10
@@ -688,7 +688,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return a list if GP is set
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<Concept> getDrugDurationUnits();
+	public List<Concept> getDurationUnits();
 	
 	/**
 	 * Gets the possible test specimen sources, i.e the set members for the concept that matches the

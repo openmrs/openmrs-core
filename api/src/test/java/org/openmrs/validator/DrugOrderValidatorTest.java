@@ -376,7 +376,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDurationUnitsIsNotADurationUnitConcept() throws Exception {
 		Concept concept = Context.getConceptService().getConcept(3);
-		assertThat(concept, not(isIn(Context.getOrderService().getDrugDurationUnits())));
+		assertThat(concept, not(isIn(Context.getOrderService().getDurationUnits())));
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);

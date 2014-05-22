@@ -2304,7 +2304,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugDispensingUnits_shouldReturnAListIfGPIsSet() throws Exception {
-		
 		assertThat(orderService.getDrugDispensingUnits(), contains(hasId(51)));
 	}
 	
@@ -2315,7 +2314,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugDispensingUnits_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID, ""));
-		
 		assertThat(orderService.getDrugDispensingUnits(), is(empty()));
 	}
 	
@@ -2325,7 +2323,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugDosingUnits_shouldReturnAListIfGPIsSet() throws Exception {
-		
 		assertThat(orderService.getDrugDosingUnits(), containsInAnyOrder(hasId(50), hasId(51)));
 	}
 	
@@ -2336,29 +2333,26 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugDosingUnits_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID, ""));
-		
 		assertThat(orderService.getDrugDosingUnits(), is(empty()));
 	}
 	
 	/**
-	 * @see OrderService#getDrugDurationUnits()
+	 * @see OrderService#getDurationUnits()
 	 * @verifies return a list if GP is set
 	 */
 	@Test
-	public void getDrugDurationUnits_shouldReturnAListIfGPIsSet() throws Exception {
-		
-		assertThat(orderService.getDrugDurationUnits(), containsInAnyOrder(hasId(28)));
+	public void getDurationUnits_shouldReturnAListIfGPIsSet() throws Exception {
+		assertThat(orderService.getDurationUnits(), containsInAnyOrder(hasId(28)));
 	}
 	
 	/**
-	 * @see OrderService#getDrugDurationUnits()
+	 * @see OrderService#getDurationUnits()
 	 * @verifies return an empty list if nothing is configured
 	 */
 	@Test
-	public void getDrugDurationUnits_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
-		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_DURATION_UNITS_CONCEPT_UUID, ""));
-		
-		assertThat(orderService.getDrugDurationUnits(), is(empty()));
+	public void getDurationUnits_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DURATION_UNITS_CONCEPT_UUID, ""));
+		assertThat(orderService.getDurationUnits(), is(empty()));
 	}
 	
 	/**

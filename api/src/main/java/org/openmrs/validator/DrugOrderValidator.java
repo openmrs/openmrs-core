@@ -147,7 +147,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			}
 		}
 		if (order.getDurationUnits() != null) {
-			List<Concept> drugDurationUnits = orderService.getDrugDurationUnits();
+			List<Concept> drugDurationUnits = orderService.getDurationUnits();
 			if (!drugDurationUnits.contains(order.getDurationUnits())) {
 				errors.rejectValue("durationUnits", "DrugOrder.error.notAmongAllowedConcepts");
 			}
