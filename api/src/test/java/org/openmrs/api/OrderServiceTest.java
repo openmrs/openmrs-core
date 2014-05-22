@@ -1654,7 +1654,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldFailIfOrderTypeIsNullAndNotMappedToTheConceptClass() throws Exception {
 		Order order = new Order();
 		order.setPatient(patientService.getPatient(7));
-		order.setConcept(conceptService.getConcept(3));
+		order.setConcept(conceptService.getConcept(9));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setEncounter(encounterService.getEncounter(3));

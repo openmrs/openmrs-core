@@ -104,7 +104,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setCareSetting(careSetting);
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setStartDate(encounter.getEncounterDatetime());
-		order.setOrderType(orderService.getOrderTypeByName("Drug order"));
 		order.setDrug(conceptService.getDrug(2));
 		order.setDosingType(DrugOrder.DosingType.SIMPLE);
 		order.setDose(300.0);
@@ -135,12 +134,12 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		//place test order
 		TestOrder order = new TestOrder();
 		order.setPatient(patient);
-		order.setOrderType(orderService.getOrderTypeByName("Test order"));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(careSetting);
-		order.setEncounter(encounterService.getEncounter(3));
-		order.setStartDate(new Date());
+		Encounter encounter = encounterService.getEncounter(3);
+		order.setEncounter(encounter);
+		order.setStartDate(encounter.getEncounterDatetime());
 		order.setClinicalHistory("Patient had a negative reaction to the test in the past");
 		order.setFrequency(orderService.getOrderFrequency(3000));
 		order.setSpecimenSource(conceptService.getConcept(22));
