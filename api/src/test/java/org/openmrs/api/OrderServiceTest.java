@@ -2342,7 +2342,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDurationUnits_shouldReturnAListIfGPIsSet() throws Exception {
-		assertThat(orderService.getDurationUnits(), containsInAnyOrder(hasId(28)));
+		List<Concept> durationConcepts = orderService.getDurationUnits();
+		assertEquals(1, durationConcepts.size());
+		assertEquals(28, durationConcepts.get(0).getConceptId().intValue());
 	}
 	
 	/**
