@@ -96,6 +96,24 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		assertPeopleContainPersonID(people, 48);
 	}
 	
+	/**
+	 * @verifies get every one by empty string
+	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
+	 */
+	@Test
+	public void getPeople_shouldGetEveryOneByEmptyStringIncludingVoided() throws Exception {
+		List<Person> people = hibernatePersonDAO.getPeople("", false, true);
+		logPeople(people);
+		assertPeopleContainPersonID(people, 42);
+		assertPeopleContainPersonID(people, 43);
+		assertPeopleContainPersonID(people, 44);
+		assertPeopleContainPersonID(people, 45);
+		assertPeopleContainPersonID(people, 46);
+		assertPeopleContainPersonID(people, 47);
+		assertPeopleContainPersonID(people, 48);
+		assertPeopleContainPersonID(people, 50);
+	}
+	
 	private void assertPeopleContainPersonID(List<Person> people, Integer personID) {
 		for (Person person : people) {
 			if (person.getId() == personID) {
@@ -532,6 +550,18 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		logPeople(people);
 		
 		Assert.assertEquals(0, people.size());
+	}
+	
+	/**
+	 * @verifies get voided person when voided=true is passed
+	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
+	 */
+	@Test
+	public void getPeople_shouldGetVoidedByVoidedNameWhenVoidedIsTrue() throws Exception {
+		List<Person> people = hibernatePersonDAO.getPeople("voided-bravo", false, true);
+		logPeople(people);
+		
+		Assert.assertEquals(1, people.size());
 	}
 	
 	/**

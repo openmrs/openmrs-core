@@ -25,15 +25,19 @@
                     searchPlaceholder:'<openmrs:message code="Person.search.placeholder" javaScriptEscape="true"/>'
                 });
 	});
-	
+    var includeVoided=false;
 	function doSelectionHandler(index, data) {
 		document.location = "person.form?personId=" + data.personId;
 	}
 	
 	//searchHandler for the Search widget
 	function doPersonSearch(text, resultHandler, getMatchCount, opts) {
-		DWRPersonService.findCountAndPeople(text, true, "", opts.start, opts.length, false, resultHandler);
+		DWRPersonService.findCountAndPeople(text, includeVoided, "", opts.start, opts.length, false, resultHandler);
 	}
+    function includeVoidedPersons() {
+        var includeVoidedcheckbox=document.getElementsByName('filter');
+        includeVoided=includeVoidedcheckbox[0].checked;
+    }
 </script>
 
 <h2><openmrs:message code="Person.title"/></h2>
@@ -43,7 +47,11 @@
 <div>
 	<b class="boxHeader"><openmrs:message code="Person.find"/></b>
 	<div class="box">
-		<div class="searchWidgetContainer" id="findPersons"></div>
+        <div class="searchWidgetContainer" id="findPersons">
+            <div class="includeVoidedPersons">
+                <input type="checkbox" name="filter" onclick="includeVoidedPersons()"/>Include Voided
+            </div>
+        </div>
 	</div>
 </div>
 
