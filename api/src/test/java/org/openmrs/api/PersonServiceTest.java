@@ -378,6 +378,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonAttributeType pat = new PersonAttributeType();
 		pat.setName("attr type name");
 		pat.setDescription("attr type desc");
+		pat.setFormat("java.lang.String");
 		
 		service.savePersonAttributeType(pat);
 		
@@ -1225,6 +1226,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonAttributeType pat = new PersonAttributeType();
 		pat.setName("attr type name");
 		pat.setDescription("attr type desc");
+		pat.setFormat("java.lang.String");
 		
 		service.savePersonAttributeType(pat);
 		

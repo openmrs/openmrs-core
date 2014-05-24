@@ -64,12 +64,29 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfAllFieldsAreCorreect() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("Zodiac");
+		type.setFormat("java.lang.String");
 		type.setDescription("Zodiac Description");
 		
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if format is empty", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFormatIsEmpty() throws Exception {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setDescription("Zodiac Description");
+		type.setFormat("");
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+		
+		Assert.assertTrue(errors.hasErrors());
 	}
 	
 	/**
