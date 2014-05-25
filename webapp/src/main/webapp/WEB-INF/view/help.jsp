@@ -6,15 +6,15 @@
 <h2><openmrs:message code="help.title"/></h2>
 
 <br />
-<openmrs:message code="help.wiki.text" arguments="<a href='https://wiki.openmrs.org/x/GAAJ'>,</a>"/>
+<openmrs:message code="help.wiki.text" htmlEscape="false" arguments="<a href='https://wiki.openmrs.org/x/GAAJ'>,</a>"/>
 <br /><br/>
 <ul>
 	<li><h4><openmrs:message code="help.overview.text" /></h4></li>
 	<br/>
 	<ul>
-	<li><openmrs:message code="help.about.text" arguments="<a href='https://wiki.openmrs.org/x/3gNN'>,</a>"/></li>
+	<li><openmrs:message code="help.about.text" htmlEscape="false" arguments="<a href='https://wiki.openmrs.org/x/3gNN'>,</a>"/></li>
 	<br/>
-	<li><openmrs:message code="help.technical.text" arguments="<a href='https://wiki.openmrs.org/x/-g4z'>,</a>"/></li>
+	<li><openmrs:message code="help.technical.text" htmlEscape="false" arguments="<a href='https://wiki.openmrs.org/x/-g4z'>,</a>"/></li>
 	<br/>
 	</ul>
 	<li><h4><openmrs:message code="help.guides.text"/></h4></li>
@@ -37,9 +37,9 @@
 <openmrs:message code="help.contact.text"/>
 <br />
 <ul>
-	<li><openmrs:message code="help.irc.text" arguments="<a href='https://wiki.openmrs.org/x/EQAP'>,</a>"/></li>
+	<li><openmrs:message code="help.irc.text" htmlEscape="false" arguments="<a href='https://wiki.openmrs.org/x/EQAP'>,</a>"/></li>
 	<br>
-	<li><openmrs:message code="help.mailing.text" arguments="<a href='https://wiki.openmrs.org/x/SQAr'>,</a>"/></li>
+	<li><openmrs:message code="help.mailing.text" htmlEscape="false" arguments="<a href='https://wiki.openmrs.org/x/SQAr'>,</a>"/></li>
 </ul>
 
 
