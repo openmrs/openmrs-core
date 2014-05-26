@@ -126,7 +126,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		synchronized (TASK_TEST_METHOD_LOCK) {
 			latch = new CountDownLatch(2);
 			awaitFailed.set(false);
-
+			
 			schedulerService.scheduleTask(t1);
 			schedulerService.scheduleTask(t2);
 			
