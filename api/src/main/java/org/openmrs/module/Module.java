@@ -71,6 +71,8 @@ public final class Module {
 	
 	private Map<String, String> awareOfModulesMap;
 	
+	private Map<String, String> startBeforeModulesMap;
+	
 	private List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
 	
 	private IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
@@ -328,6 +330,17 @@ public final class Module {
 	}
 	
 	/**
+	 * @param requiredModule the requiredModule to add for this module
+	 * @param version version requiredModule
+	 * @should add module to required modules map
+	 */
+	public void addRequiredModule(String requiredModule, String version) {
+		if (requiredModulesMap != null) {
+			requiredModulesMap.put(requiredModule, version);
+		}
+	}
+	
+	/**
 	 * @param requiredModulesMap <code>Map<String,String></code> of the <code>requiredModule</code>s
 	 *            to set
 	 * @since 1.5
@@ -343,8 +356,33 @@ public final class Module {
 	 *
 	 * @return a map from required module to the version that is required
 	 */
-	public Map<String, String> setRequiredModulesMap() {
+	public Map<String, String> getRequiredModulesMap() {
 		return requiredModulesMap;
+	}
+	
+	/**
+	 * Sets modules that must start after this module
+	 * @param startBeforeModulesMap the startedBefore modules to set
+	 */
+	public void setStartBeforeModulesMap(Map<String, String> startBeforeModulesMap) {
+		this.startBeforeModulesMap = startBeforeModulesMap;
+	}
+	
+	/**
+	 * Gets modules which should start after this
+	 * @return map where key is module name and value is module version
+	 */
+	public Map<String, String> getStartBeforeModulesMap() {
+		return this.startBeforeModulesMap;
+	}
+	
+	/**
+	 * Gets names of modules which should start after this
+	 * @since 1.11
+	 * @return
+	 */
+	public List<String> getStartBeforeModules() {
+		return this.startBeforeModulesMap == null ? null : new ArrayList<String>(this.startBeforeModulesMap.keySet());
 	}
 	
 	/**
