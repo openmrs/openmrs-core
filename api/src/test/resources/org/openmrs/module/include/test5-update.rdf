@@ -4,6 +4,6 @@
 	<update>
 		 <currentVersion>2.0-SNAPSHOT</currentVersion>
 		 <requireOpenMRSVersion>1.6.0</requireOpenMRSVersion>
-		 <downloadURL>http://modules.openmrs.org/modules/download/test5/test5-1.0-SNAPSHOT.omod</downloadURL>
+		 <downloadURL>http://modules.openmrs.org/modules/download/test5/test5-2.0-SNAPSHOT.omod</downloadURL>
 	</update>
 </updates>
