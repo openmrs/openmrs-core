@@ -1317,6 +1317,11 @@ div.paging_full_numbers{
 .searchWidgetContainer{	
 	padding: 5px 5px 5px 5px;
 }
+.searchWidgetContainer .includeVoidedPersons{
+position:relative;
+left:320px;
+top:20px;
+}
 span#searchWidgetNotification{
 	color: #FF0000; font-style: italic;
 }
