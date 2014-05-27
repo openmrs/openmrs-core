@@ -113,8 +113,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		assertPeopleContainPersonID(people, 48);
 		assertPeopleContainPersonID(people, 50);
 	}
-	
-<<<<<<< HEAD
+
 	/**
 	 * @verifies no voided people should be returned
 	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
@@ -126,9 +125,6 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		for (Person p : people)
 			Assert.assertFalse(p.getVoided());
 	}
-	
-=======
->>>>>>> b53d10e292fc0ceabe50f628000dcc42f81f36a7
 	private void assertPeopleContainPersonID(List<Person> people, Integer personID) {
 		for (Person person : people) {
 			if (person.getId() == personID) {

@@ -49,11 +49,7 @@
 	<div class="box">
         <div class="searchWidgetContainer" id="findPersons">
             <div class="includeVoidedPersons">
-<<<<<<< HEAD
                 <input type="checkbox" name="filter" onclick="includeVoidedPersons()"/><openmrs:message code="Person.includeVoided"/>
-=======
-                <input type="checkbox" name="filter" onclick="includeVoidedPersons()"/>Include Voided
->>>>>>> b53d10e292fc0ceabe50f628000dcc42f81f36a7
             </div>
         </div>
 	</div>
