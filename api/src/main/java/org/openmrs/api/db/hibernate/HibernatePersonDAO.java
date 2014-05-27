@@ -243,9 +243,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @should get single dead person
 	 * @should get multiple dead people
 	 */
-	
 	@SuppressWarnings("unchecked")
-	public List<Person> getPeople(String searchString, Boolean dead) {
+	public List<Person> getPeople(String searchString, Boolean dead, Boolean voided) {
 		if (searchString == null) {
 			return new ArrayList<Person>();
 		}
@@ -259,8 +258,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		
 		personSearchCriteria.addAliasForName(criteria);
 		personSearchCriteria.addAliasForAttribute(criteria);
-		
-		criteria.add(Restrictions.eq("personVoided", false));
+		if (voided == null || voided == false)
+			criteria.add(Restrictions.eq("personVoided", false));
 		if (dead != null) {
 			criteria.add(Restrictions.eq("dead", dead));
 		}
@@ -268,8 +267,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		Disjunction disjunction = Restrictions.disjunction();
 		for (String value : values) {
 			if (value != null && value.length() > 0) {
-				disjunction.add(personSearchCriteria.prepareCriterionForName(value)).add(
-				    personSearchCriteria.prepareCriterionForAttribute(value));
+				disjunction.add(personSearchCriteria.prepareCriterionForName(value, voided)).add(
+				    personSearchCriteria.prepareCriterionForAttribute(value, voided));
 			}
 		}
 		criteria.add(disjunction);
@@ -282,6 +281,10 @@ public class HibernatePersonDAO implements PersonDAO {
 		log.debug(criteria.toString());
 		
 		return criteria.list();
+	}
+	
+	public List<Person> getPeople(String searchString, Boolean dead) {
+		return getPeople(searchString, dead, null);
 	}
 	
 	/**

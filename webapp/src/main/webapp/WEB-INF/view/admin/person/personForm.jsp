@@ -235,12 +235,6 @@
 
 <h2><openmrs:message code="Person.title"/></h2>
 
-<c:if test="${person.personVoided}">
-	<div id="personFormVoided" class="retiredMessage">
-		<div><openmrs:message code="Person.voidedMessage"/></div>
-	</div>
-</c:if>
-
 <c:if test="${person.dead}">
 	<div id="personFormDeceased" class="retiredMessage">
 		<div><openmrs:message code="Person.personDeceased"/></div>

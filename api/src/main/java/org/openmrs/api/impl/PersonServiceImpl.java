@@ -102,6 +102,11 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return dao.getPeople(searchPhrase, dead);
 	}
 	
+	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException {
+		
+		return dao.getPeople(searchPhrase, dead, voided);
+	}
+	
 	/**
 	 * @deprecated use {@link #getPeople(String, Boolean)}
 	 */

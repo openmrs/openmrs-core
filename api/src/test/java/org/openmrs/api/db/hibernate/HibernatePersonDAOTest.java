@@ -75,11 +75,11 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies get every one by empty string
+	 * @verifies get every one except Voided by empty string
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
 	@Test
-	public void getPeople_shouldGetEveryOneByEmptyString() throws Exception {
+	public void getPeople_shouldGetEveryOneExceptVoidedByEmptyString() throws Exception {
 		List<Person> people = hibernatePersonDAO.getPeople("", false);
 		logPeople(people);
 		
@@ -94,6 +94,36 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		assertPeopleContainPersonID(people, 46);
 		assertPeopleContainPersonID(people, 47);
 		assertPeopleContainPersonID(people, 48);
+	}
+	
+	/**
+	 * @verifies get every one by empty string
+	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
+	 */
+	@Test
+	public void getPeople_shouldGetEveryOneByEmptyStringIncludingVoided() throws Exception {
+		List<Person> people = hibernatePersonDAO.getPeople("", false, true);
+		logPeople(people);
+		assertPeopleContainPersonID(people, 42);
+		assertPeopleContainPersonID(people, 43);
+		assertPeopleContainPersonID(people, 44);
+		assertPeopleContainPersonID(people, 45);
+		assertPeopleContainPersonID(people, 46);
+		assertPeopleContainPersonID(people, 47);
+		assertPeopleContainPersonID(people, 48);
+		assertPeopleContainPersonID(people, 50);
+	}
+	
+	/**
+	 * @verifies no voided people should be returned
+	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
+	 */
+	@Test
+	public void getPeople_shouldNotGetVoided() throws Exception {
+		List<Person> people = hibernatePersonDAO.getPeople("", false, false);
+		logPeople(people);
+		for (Person p : people)
+			Assert.assertFalse(p.getVoided());
 	}
 	
 	private void assertPeopleContainPersonID(List<Person> people, Integer personID) {
@@ -532,6 +562,18 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		logPeople(people);
 		
 		Assert.assertEquals(0, people.size());
+	}
+	
+	/**
+	 * @verifies get voided person when voided=true is passed
+	 * @see HibernatePersonDAO#getPeople(String, Boolean, Boolean)
+	 */
+	@Test
+	public void getPeople_shouldGetVoidedByVoidedNameWhenVoidedIsTrue() throws Exception {
+		List<Person> people = hibernatePersonDAO.getPeople("voided-bravo", false, true);
+		logPeople(people);
+		
+		Assert.assertEquals(1, people.size());
 	}
 	
 	/**
