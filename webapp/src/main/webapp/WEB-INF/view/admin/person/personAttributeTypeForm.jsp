@@ -44,14 +44,7 @@
 				<c:set var="isJavaUtilDate" value='${status.value == "java.util.Date"}'/>
 				<select name="format">
                     <c:forEach items="${formats}" var="format">
-                        <c:choose>
-                            <c:when test="${status.displayValue!=''}">
-                                <option value="${format}" <c:if test="${format == status.value}">selected</c:if>>${format}</option>
-                            </c:when>
-                            <c:otherwise>
-                                <option value="${format}" <c:if test="${format=='java.lang.String'}">selected</c:if>>${format}</option>
-                            </c:otherwise>
-                        </c:choose>
+                        <option value="${format}" <c:if test="${format == status.value}">selected</c:if>>${format}</option>
                     </c:forEach>
                     <c:if test="${isJavaUtilDate}">
 						<option value="java.util.Date" selected="true">java.util.Date</option>

@@ -86,7 +86,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "patObj");
 		new PersonAttributeTypeValidator().validate(type, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasFieldErrors("format"));
 	}
 	
 	/**
