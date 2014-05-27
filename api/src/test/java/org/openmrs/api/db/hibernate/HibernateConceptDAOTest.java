@@ -122,4 +122,29 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * @see HibernateConceptDAO#getDrugs(String)
+	 * @verifies return drug should not return retired
+	 */
+	@Test
+	@Verifies(value = "return drug should not return retired", method = "getDrugs(String)")
+	public void getDrugs_shouldNotReturnRetired() throws Exception {
+		
+		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME_RETIRED");
+		Assert.assertEquals(0, drugList.size());
+		
+	}
+	
+	/**
+	 * @see HibernateConceptDAO#getDrugs(String)
+	 * @verifies return drug should return non-retired
+	 */
+	@Test
+	@Verifies(value = "return drug should return non-retired", method = "getDrugs(String)")
+	public void getDrugs_shouldReturnNonRetired() throws Exception {
+		
+		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME");
+		Assert.assertEquals(1, drugList.size());
+		
+	}
 }
