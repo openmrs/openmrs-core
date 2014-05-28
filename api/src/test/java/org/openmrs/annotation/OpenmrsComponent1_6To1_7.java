@@ -13,7 +13,7 @@
  */
 package org.openmrs.annotation;
 
-@OpenmrsComponent(openmrsVersion = "[1.6.* - 1.7.*]")
+@OpenmrsProfile(openmrsVersion = "[1.6.* - 1.7.*]")
 public class OpenmrsComponent1_6To1_7 {
 
 }
