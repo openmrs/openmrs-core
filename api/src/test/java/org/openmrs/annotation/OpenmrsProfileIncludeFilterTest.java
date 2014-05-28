@@ -23,10 +23,10 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
-public class OpenmrsComponentIncludeFilterTest extends BaseContextSensitiveTest {
+public class OpenmrsProfileIncludeFilterTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see OpenmrsComponentIncludeFilter#match(MetadataReader,MetadataReaderFactory)
+	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
 	 * @verifies create bean for openmrs 1_8 and later
 	 */
 	@Test
@@ -37,7 +37,7 @@ public class OpenmrsComponentIncludeFilterTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see OpenmrsComponentIncludeFilter#match(MetadataReader,MetadataReaderFactory)
+	 * @see OpenmrsProfileIncludeFilter#match(MetadataReader,MetadataReaderFactory)
 	 * @verifies not create bean for openmrs 1_6 to 1_7
 	 */
 	@Test(expected = NoSuchBeanDefinitionException.class)
