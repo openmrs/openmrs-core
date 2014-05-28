@@ -14,6 +14,7 @@
 package org.openmrs.scheduler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -59,6 +60,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		Context.flushSession();
+		getConnection().commit(); // tasks reappear at the start of the next test otherwise
 	}
 	
 	@Test
@@ -315,18 +317,14 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Task opens a session and stores the execution time.
+	 * Just stores the execution time.
 	 */
-	public static class SessionTask extends AbstractTask {
+	public static class StoreExecutionTimeTask extends AbstractTask {
 		
 		public void execute() {
-			try {
-				// something would happen here...
-				
-				actualExecutionTime = System.currentTimeMillis();
-			}
-			finally {}
-			
+			actualExecutionTime = System.currentTimeMillis();
+			// signal the test method that the task has executed
+			latch.countDown();
 		}
 	}
 	
@@ -337,33 +335,38 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSaveLastExecutionTime() throws Exception {
-		final String NAME = "Session Task";
+		final String NAME = "StoreExecutionTime Task";
 		SchedulerService service = Context.getSchedulerService();
 		
 		TaskDefinition td = new TaskDefinition();
 		td.setName(NAME);
 		td.setStartOnStartup(false);
-		td.setTaskClass(SessionTask.class.getName());
+		td.setTaskClass(StoreExecutionTimeTask.class.getName());
 		td.setStartTime(null);
 		td.setRepeatInterval(new Long(0));//0 indicates single execution
 		synchronized (TASK_TEST_METHOD_LOCK) {
+			latch = new CountDownLatch(1);
 			service.saveTaskDefinition(td);
 			service.scheduleTask(td);
+			
+			// wait for the task to execute
+			assertTrue("task didn't execute", latch.await(CONCURRENT_TASK_WAIT_MS, TimeUnit.MILLISECONDS));
+			
+			// wait for the SchedulerService to update the execution time
+			for (int x = 0; x < 100; x++) {
+				// refetch the task
+				td = service.getTaskByName(NAME);
+				if (td.getLastExecutionTime() != null) {
+					break;
+				}
+				Thread.sleep(200);
+			}
+			assertNotNull(
+			    "actualExecutionTime is null, so either the SessionTask.execute method hasn't finished or didn't get run",
+			    actualExecutionTime);
+			assertNotNull("lastExecutionTime is null, so the SchedulerService didn't save it", td.getLastExecutionTime());
+			assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td
+			        .getLastExecutionTime().getTime() / 1000, 1);
 		}
-		
-		// refetch the task
-		td = service.getTaskByName(NAME);
-		
-		// sleep a while until the task has executed, up to 30 times
-		for (int x = 0; x < 30 && (actualExecutionTime == null || td.getLastExecutionTime() == null); x++) {
-			Thread.sleep(200);
-		}
-		
-		Assert
-		        .assertNotNull(
-		            "The actualExecutionTime variable is null, so either the SessionTask.execute method hasn't finished or didn't get run",
-		            actualExecutionTime);
-		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td
-		        .getLastExecutionTime().getTime() / 1000, 1);
 	}
 }
