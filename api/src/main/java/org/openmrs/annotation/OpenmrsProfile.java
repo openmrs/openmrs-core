@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Place it on classes annotated as Spring beans which should be created conditionally based on
+ * Place it on classes which you want to be beans created conditionally based on
  * OpenMRS version and/or started modules.
  * 
  * @since 1.10, 1.9.8, 1.8.5, 1.7.5
