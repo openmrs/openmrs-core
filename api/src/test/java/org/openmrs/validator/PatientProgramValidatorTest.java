@@ -318,4 +318,66 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(false, errors.hasFieldErrors("states"));
 	}
 	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if patient program end date comes before its enrolled date", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfPatientProgramEndDateComesBeforeItsEnrolledDate() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		Calendar c = Calendar.getInstance();
+		c.set(2014, 3, 1);//set to an old date
+		program.setDateEnrolled(new Date());
+		program.setDateCompleted(c.getTime());
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if patient program enrolled date is in future", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfPatientProgramEnrolledDateIsInFuture() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		Calendar c = Calendar.getInstance();
+		c.set(2015, 3, 1);//set to an old date
+		program.setDateEnrolled(c.getTime());
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if patient program end date is in future", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfPatientProgramEndDateIsInFuture() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		Calendar c = Calendar.getInstance();
+		c.set(2015, 3, 1);//set to an old date
+		program.setDateCompleted(c.getTime());
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if patient program enroll date is empty", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfPatientProgramEnrollDateIsEmpty() throws Exception {
+		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
+		program.setDateEnrolled(null);
+		
+		BindException errors = new BindException(program, "");
+		new PatientProgramValidator().validate(program, errors);
+		Assert.assertTrue(errors.hasFieldErrors("dateEnrolled"));
+	}
 }

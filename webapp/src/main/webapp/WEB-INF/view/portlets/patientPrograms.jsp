@@ -77,7 +77,7 @@
 		var endDate = parseDate(jQuery('#completionDateElement').val());
 		var locationId = jQuery('#programLocationElement').val();
 		var outcomeId = jQuery('#programOutcomeConceptElement').val();
-        if (!isEmtpy(endDate) && !$j('#editProgramOutcomeRow').is(':hidden')
+        if (!isEmpty(endDate) && !$j('#editProgramOutcomeRow').is(':hidden')
 				&& outcomeId == '') {
 			alert("<openmrs:message code="PatientProgram.error.outcomeRequired" />");
 		} else if (!isEmpty(startDate) && startDate > endDate && !isEmpty(endDate)) {
