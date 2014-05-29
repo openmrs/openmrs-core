@@ -138,6 +138,9 @@ public interface PersonService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws APIException;
 	
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException;
+	
 	/**
 	 * @deprecated @see #getPeople(...)
 	 */

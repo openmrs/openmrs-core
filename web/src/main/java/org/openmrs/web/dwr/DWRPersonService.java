@@ -249,6 +249,7 @@ public class DWRPersonService {
 	        Integer length) {
 		Vector<Object> personList = new Vector<Object>();
 		try {
+			Boolean includeVoided = includeRetired;
 			// if roles were given, search for users with those roles
 			if (StringUtils.isNotBlank(roles)) {
 				UserService us = Context.getUserService();
@@ -269,7 +270,7 @@ public class DWRPersonService {
 				//TODO add batch person look up to the API and use it here and FIX the javadocs
 				// if no roles were given, search for normal people
 				PersonService ps = Context.getPersonService();
-				for (Person p : ps.getPeople(searchPhrase, null)) {
+				for (Person p : ps.getPeople(searchPhrase, null, includeVoided)) {
 					personList.add(PersonListItem.createBestMatch(p));
 				}
 				
