@@ -425,6 +425,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				log.debug(w);
 				searchCriteria.add(Restrictions.like("name", w, MatchMode.ANYWHERE));
 			}
+			searchCriteria.add(Restrictions.eq("drug.retired", false)); /* exclude retired drugs */
 			searchCriteria.addOrder(Order.asc("drug.concept"));
 			conceptDrugs = searchCriteria.list();
 		}

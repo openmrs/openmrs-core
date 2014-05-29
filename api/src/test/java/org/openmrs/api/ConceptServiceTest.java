@@ -828,14 +828,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getConceptService().getDrugByUuid("some invalid uuid"));
 	}
 	
+	@Test
+	@Verifies(value = "should return drugs that are not retired", method = "getDrugs(String)")
+	public void getDrugs_shouldReturnDrugsThatAreNotRetired() throws Exception {
+		List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL" /* is not retired */);
+		Assert.assertFalse(drugs.get(0).isRetired());
+	}
+	
 	/**
 	 * @see {@link ConceptService#getDrugs(String)}
 	 */
 	@Test
-	@Verifies(value = "should return drugs that are retired", method = "getDrugs(String)")
-	public void getDrugs_shouldReturnDrugsThatAreRetired() throws Exception {
-		List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL" /* is retired */);
-		Assert.assertTrue(drugs.get(0).isRetired());
+	@Verifies(value = "should not return drugs that are retired", method = "getDrugs(String)")
+	public void getDrugs_shouldNotReturnDrugsThatAreRetired() throws Exception {
+		List<Drug> drugs = Context.getConceptService().getDrugs("TEST_DRUG_NAME_RETIRED" /* is retired */);
+		Assert.assertEquals(0, drugs.size());
 	}
 	
 	/**
@@ -2590,15 +2597,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptField() throws Exception {
 		List<Concept> allConcepts = conceptService.getAllConcepts("dateCreated", true, true);
 		
-		assertEquals(25, allConcepts.size());
+		assertEquals(26, allConcepts.size());
 		assertEquals(88, allConcepts.get(0).getConceptId().intValue());
-		assertEquals(23, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
+		assertEquals(25, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 		
 		//check desc order
 		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
 		
-		assertEquals(25, allConcepts.size());
-		assertEquals(23, allConcepts.get(0).getConceptId().intValue());
+		assertEquals(26, allConcepts.size());
+		assertEquals(25, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(88, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 	}
 	
@@ -2630,7 +2637,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdAndIncludeRetiredWhenGivenNoParameters() throws Exception {
 		final List<Concept> allConcepts = conceptService.getAllConcepts();
 		
-		assertEquals(25, allConcepts.size());
+		assertEquals(26, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2642,7 +2649,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdDescendingWhenSetAscParameterToFalse() throws Exception {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, false, true);
 		
-		assertEquals(25, allConcepts.size());
+		assertEquals(26, allConcepts.size());
 		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
 	}
 	
