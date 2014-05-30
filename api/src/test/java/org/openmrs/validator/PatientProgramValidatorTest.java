@@ -13,6 +13,7 @@
  */
 package org.openmrs.validator;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
@@ -325,14 +326,15 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail if patient program end date comes before its enrolled date", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfPatientProgramEndDateComesBeforeItsEnrolledDate() throws Exception {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
-		Calendar c = Calendar.getInstance();
-		c.set(2014, 3, 1);//set to an old date
-		program.setDateEnrolled(new Date());
-		program.setDateCompleted(c.getTime());
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		Date dateEnrolled = sdf.parse("12/04/2014");
+		Date dateCompleted = sdf.parse("21/03/2014");
+		program.setDateEnrolled(dateEnrolled);
+		program.setDateCompleted(dateCompleted);
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasFieldErrors("dateCompleted"));
 	}
 	
 	/**
@@ -342,13 +344,12 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail if patient program enrolled date is in future", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfPatientProgramEnrolledDateIsInFuture() throws Exception {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
-		Calendar c = Calendar.getInstance();
-		c.set(2015, 3, 1);//set to an old date
-		program.setDateEnrolled(c.getTime());
+		Date date10DaysAfterSystemCurrentDate = new Date(System.currentTimeMillis() + 10 * 24 * 60 * 60 * 1000);
+		program.setDateEnrolled(date10DaysAfterSystemCurrentDate);
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasFieldErrors("dateEnrolled"));
 	}
 	
 	/**
@@ -358,13 +359,12 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail if patient program end date is in future", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfPatientProgramEndDateIsInFuture() throws Exception {
 		PatientProgram program = Context.getProgramWorkflowService().getPatientProgram(1);
-		Calendar c = Calendar.getInstance();
-		c.set(2015, 3, 1);//set to an old date
-		program.setDateCompleted(c.getTime());
+		Date date10DaysAfterSystemCurrentDate = new Date(System.currentTimeMillis() + 10 * 24 * 60 * 60 * 1000);
+		program.setDateCompleted(date10DaysAfterSystemCurrentDate);
 		
 		BindException errors = new BindException(program, "");
 		new PatientProgramValidator().validate(program, errors);
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasFieldErrors("dateCompleted"));
 	}
 	
 	/**
