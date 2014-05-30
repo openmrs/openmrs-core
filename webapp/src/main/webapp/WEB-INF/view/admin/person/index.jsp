@@ -37,6 +37,7 @@
     function includeVoidedPersons() {
         var includeVoidedcheckbox=document.getElementsByName('filter');
         includeVoided=includeVoidedcheckbox[0].checked;
+        document.getElementById("inputNode").focus();
     }
 </script>
 

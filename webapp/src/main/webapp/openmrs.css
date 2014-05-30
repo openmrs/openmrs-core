@@ -1321,6 +1321,7 @@ div.paging_full_numbers{
 position:relative;
 left:320px;
 top:20px;
+margin-top: -17px;
 }
 span#searchWidgetNotification{
 	color: #FF0000; font-style: italic;
