@@ -133,7 +133,8 @@
 </table>
 <input type="hidden" name="personAttributeTypeId:int" value="${personAttributeType.personAttributeTypeId}">
 <br />
-<input type="submit" value="<openmrs:message code="PersonAttributeType.save"/>" name="save">
+<openmrs:globalProperty key="PersonAttributeType.locked" var="PersonAttributeTypesLocked"/>
+<input type="submit" value="<openmrs:message code="PersonAttributeType.save"/>" name="save" <c:if test="${PersonAttributeTypesLocked == 'true'}"> disabled</c:if>>
 </fieldset>
 </form>
 
@@ -152,7 +153,7 @@
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
-			<input type="submit" value='<openmrs:message code="PersonAttributeType.retirePersonAttributeType"/>' name="retire"/>
+			<input type="submit" value='<openmrs:message code="PersonAttributeType.retirePersonAttributeType"/>' name="retire" <c:if test="${PersonAttributeTypesLocked == 'true'}"> disabled</c:if> />
 		</fieldset>
 	</form>
 </c:if>
@@ -167,7 +168,7 @@
 			code="PersonAttributeType.UnretirePersonAttributeType" /></h4>
 		<input type="submit"
 			value='<openmrs:message code="PersonAttributeType.UnretirePersonAttributeType"/>'
-			name="unretire" /></fieldset>
+			name="unretire" <c:if test="${PersonAttributeTypesLocked == 'true'}"> disabled</c:if> /></fieldset>
 		</form>
 	</openmrs:hasPrivilege>
 </c:if>
@@ -178,7 +179,7 @@
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
 				<h4><openmrs:message code="PersonAttributeType.purgePersonAttributeType"/></h4>
-				<input type="submit" value='<openmrs:message code="PersonAttributeType.purgePersonAttributeType"/>' name="purge" />
+				<input type="submit" value='<openmrs:message code="PersonAttributeType.purgePersonAttributeType"/>' name="purge" <c:if test="${PersonAttributeTypesLocked == 'true'}"> disabled</c:if> />
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>

@@ -174,6 +174,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should set the date created and creator on new
 	 * @should set the date changed and changed by on update
 	 * @should update any global property which reference this type
+	 * @should throw an error when trying to save person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;
@@ -182,6 +183,7 @@ public interface PersonService extends OpenmrsService {
 	 * Retire a Person Attribute Type
 	 * 
 	 * @param attrTypeId, retiredReason
+	 * @should throw an error when trying to retire person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException;
@@ -223,6 +225,7 @@ public interface PersonService extends OpenmrsService {
 	 * @param type type to be purged from the database
 	 * @throws APIException
 	 * @should delete person attribute type from database
+	 * @should throw an error when trying to delete person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES })
 	public void purgePersonAttributeType(PersonAttributeType type) throws APIException;
@@ -233,6 +236,7 @@ public interface PersonService extends OpenmrsService {
 	 * @param type type to be restored from the database
 	 * @throws APIException
 	 * @should restore person attribute type from database
+	 * @should throw an error when trying to unretire person attribute type while person attribute types are locked
 	 */
 	
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
@@ -1071,4 +1075,11 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public PersonAddress savePersonAddress(PersonAddress personAddress);
+	
+	/**
+	 * Check if the person attribute types are locked, and if they are throws an exception during manipulation of a person attribute type
+	 * 
+	 * @throws PersonAttributeTypeLockedException
+	 */
+	public void checkIfPersonAttributeTypesAreLocked() throws PersonAttributeTypeLockedException;
 }
