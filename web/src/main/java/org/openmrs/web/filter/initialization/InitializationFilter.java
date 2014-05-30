@@ -13,33 +13,13 @@
  */
 package org.openmrs.web.filter.initialization;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
+import java.sql.*;
+import java.util.*;
 import java.util.zip.ZipInputStream;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -58,17 +38,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
-import org.openmrs.scheduler.SchedulerConstants;
-import org.openmrs.util.DatabaseUpdateException;
-import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.*;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.MemoryAppender;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.util.Security;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebDaemon;
@@ -1736,7 +1707,6 @@ public class InitializationFilter extends StartupFilter {
 							if (wizardModel.createTables) {
 								Context.authenticate("admin", "test");
 								Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
-								SchedulerConstants.SCHEDULER_DEFAULT_PASSWORD = wizardModel.adminUserPassword;
 								Context.logout();
 							}
 						}
