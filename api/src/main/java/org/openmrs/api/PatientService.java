@@ -695,7 +695,6 @@ public interface PatientService extends OpenmrsService {
 	 * @should audit voided relationships
 	 * @should audit created relationships
 	 * @should audit moved independent observations
-	 * @should audit created orders
 	 * @should audit created identifiers
 	 * @should audit created names
 	 * @should audit created addresses

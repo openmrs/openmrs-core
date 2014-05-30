@@ -676,8 +676,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertThat(mergeLogData.getMovedVisits().size(), is(4));
 		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid(), visit2.getUuid(), visit3.getUuid(),
 		    visit6.getUuid()));
-		System.out.println("MOVED:" + mergeLogData.getMovedEncounters().size());
-		System.out.println("SHOULD:" + encounterUuidsThatShouldBeMoved.size());
 		assertThat(mergeLogData.getMovedEncounters().size(), is(encounterUuidsThatShouldBeMoved.size()));
 		assertThat(mergeLogData.getMovedEncounters(), containsInAnyOrder(encounterUuidsThatShouldBeMoved.toArray()));
 	}
@@ -2654,37 +2652,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull("expected new name was not found in the preferred patient after the merge", addedNameUuid);
 		Assert.assertTrue("person name creation not audited", isValueInList(addedNameUuid, audit.getPersonMergeLogData()
 		        .getCreatedNames()));
-	}
-	
-	/**
-	 * @see PatientService#mergePatients(Patient,Patient)
-	 * @verifies audit created orders
-	 */
-	@Test
-	@Ignore
-	public void mergePatients_shouldAuditCreatedOrders() throws Exception {
-		
-		//retrieve patients
-		Patient preferred = patientService.getPatient(999);
-		Patient notPreferred = patientService.getPatient(2);
-		
-		//retrieve order for notPreferred patient
-		Order order = Context.getOrderService().getAllOrdersByPatient(notPreferred).get(0);
-		
-		//merge the two patients and retrieve the audit object
-		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
-		
-		//find the UUID of the order that was created for preferred patient as a result of the merge
-		String addedOrderUuid = null;
-		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(preferred);
-		for (Order o : orders) {
-			if (o.getInstructions().equals(order.getInstructions())) {
-				addedOrderUuid = o.getUuid();
-			}
-		}
-		Assert.assertNotNull("expected new order was not found for the preferred patient after the merge", addedOrderUuid);
-		Assert.assertTrue("order creation not audited", isValueInList(addedOrderUuid, audit.getPersonMergeLogData()
-		        .getCreatedOrders()));
 	}
 	
 	/**
