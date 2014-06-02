@@ -13,6 +13,7 @@
  */
 package org.openmrs.validator;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,6 +66,9 @@ public class PatientProgramValidator implements Validator {
 	 * @should fail if a patientState has an invalid work flow state
 	 * @should fail if a patient program has duplicate states in the same work flow
 	 * @should fail if a patient is in multiple states in the same work flow
+	 * @should fail if a enrolled date is in future at the date it set
+	 * @should fail if a completion date is in future at the date it set
+	 * @should fail if a patient program has an enroll date after its completion
 	 * @should pass if a patient is in multiple states in different work flows
 	 * @should pass for a valid program
 	 * @should pass for patient states that have the same start dates in the same work flow
@@ -86,6 +90,23 @@ public class PatientProgramValidator implements Validator {
 		
 		if (errors.hasErrors()) {
 			return;
+		}
+		
+		ValidationUtils.rejectIfEmpty(errors, "dateEnrolled", "error.patientProgram.enrolledDateEmpty");
+		
+		Date today = new Date();
+		if (patientProgram.getDateEnrolled() != null && today.before(patientProgram.getDateEnrolled())) {
+			errors.rejectValue("dateEnrolled", "error.patientProgram.startDateCannotBeInFuture");
+		}
+		
+		if (patientProgram.getDateCompleted() != null && today.before(patientProgram.getDateCompleted())) {
+			errors.rejectValue("dateCompleted", "error.patientProgram.completionDateCannotBeInFuture");
+		}
+		
+		// if enrollment or complete date of program is in future or complete date has come before enroll date we should throw error
+		if (patientProgram.getDateEnrolled() != null
+		        && OpenmrsUtil.compareWithNullAsLatest(patientProgram.getDateCompleted(), patientProgram.getDateEnrolled()) < 0) {
+			errors.rejectValue("dateCompleted", "error.patientProgram.endDateCannotBeforeStartDate");
 		}
 		
 		Set<ProgramWorkflow> workFlows = patientProgram.getProgram().getWorkflows();
