@@ -27,6 +27,7 @@ import org.openmrs.Retireable;
 import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.ConceptNameSaveHandler;
@@ -275,6 +276,12 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		
 		// loop over all child collections of OpenmrsObjects and recursively save on those
 		for (Field field : allInheritedFields) {
+			
+			// skip field if it's declared independent
+			if (field.isAnnotationPresent(Independent.class)) {
+				continue;
+			}
+			
 			if (reflect.isCollectionField(field) && !isHandlerMarkedAsDisabled(handlerType, field)) {
 				
 				// the collection we'll be looping over
