@@ -348,6 +348,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws APIException
 	 * @should create new patient identifier type
 	 * @should update existing patient identifier type
+	 * @should throw error when trying to save a patient identifier type while patient identifier types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
@@ -468,6 +469,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws APIException
 	 * @should retire patient identifier type with given reason
 	 * @should throw error when reason is empty
+	 * @should throw error when trying to retire a patient identifier type while patient identifier types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType retirePatientIdentifierType(PatientIdentifierType patientIdentifierType, String reason)
@@ -479,8 +481,9 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifierType type of patient identifier to be unretired
 	 * @return the unretired type
 	 * @throws APIException
-	 * @should untire patient identifier type
+	 * @should unretire patient identifier type
 	 * @should return unretired patient identifier type
+	 * @should throw error when trying to unretire a patient identifier type while patient identifier types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType unretirePatientIdentifierType(PatientIdentifierType patientIdentifierType)
@@ -493,6 +496,7 @@ public interface PatientService extends OpenmrsService {
 	 * @throws APIException
 	 * @should delete type from database
 	 * @should delete patient identifier type from database
+	 * @should throw error when trying to delete a patient identifier type while patient identifier types are locked
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_IDENTIFIER_TYPES })
 	public void purgePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
@@ -999,4 +1003,11 @@ public interface PatientService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException;
+	
+	/**
+	 * Check if patient identifier types are locked, and if they are, throws an exception during manipulation of a patient identifier type
+	 * 
+	 * @throws PatientIdentifierTypeLockedException
+	 */
+	public void checkIfPatientIdentifierTypesAreLocked() throws PatientIdentifierTypeLockedException;
 }
