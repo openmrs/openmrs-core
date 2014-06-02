@@ -1466,8 +1466,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link PatientService#unretirePatientIdentifierType(PatientIdentifierType)}
 	 */
 	@Test
-	@Verifies(value = "should untire patient identifier type", method = "unretirePatientIdentifierType(PatientIdentifierType)")
-	public void unretirePatientIdentifierType_shouldUntirePatientIdentifierType() throws Exception {
+	@Verifies(value = "should unretire patient identifier type", method = "unretirePatientIdentifierType(PatientIdentifierType)")
+	public void unretirePatientIdentifierType_shouldUnretirePatientIdentifierType() throws Exception {
 		PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierType(4);
 		Assert.assertTrue(identifierType.isRetired());
 		Assert.assertNotNull(identifierType.getRetiredBy());
@@ -3473,5 +3473,72 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should throw an APIException when a null argument is passed", method = "savePatientIdentifier(PatientIdentifier)")
 	public void savePatientIdentifier_shouldThrowAnAPIExceptionWhenANullArgumentIsPassed() throws Exception {
 		patientService.savePatientIdentifier(null);
+	}
+	
+	/**
+	 * Creates a new Global Property to lock patient identifier types by setting its value
+	 * @param propertyValue value for patient identifier types locked GP
+	 */
+	public void createPatientIdentifierTypeLockedGPAndSetValue(String propertyValue) {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED);
+		gp.setPropertyValue(propertyValue);
+		Context.getAdministrationService().saveGlobalProperty(gp);
+	}
+	
+	/**
+	 * @see {@link PatientService#savePatientIdentifierType(PatientIdentifierType)}}
+	 * @throws PatientIdentifierTypeLockedException
+	 */
+	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Verifies(method = "savePatientIdentifierType(PatientIdentifierType)", value = "should throw error when trying to save a patient identifier type while patient identifier types are locked")
+	public void savePatientIdentifierType_shouldThrowErrorWhenTryingToSaveAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
+	        throws Exception {
+		PatientService ps = Context.getPatientService();
+		createPatientIdentifierTypeLockedGPAndSetValue("true");
+		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
+		pit.setDescription("test");
+		ps.savePatientIdentifierType(pit);
+	}
+	
+	/**
+	 * @see {@link PatientService#retirePatientIdentifierType(PatientIdentifierType, String)}}
+	 * @throws PatientIdentifierTypeLockedException
+	 */
+	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Verifies(method = "retirePatientIdentifierType(PatientIdentifierType, String)", value = "should throw error when trying to retire a patient identifier type while patient identifier types are locked")
+	public void retirePatientIdentifierType_shouldThrowErrorWhenTryingToRetireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
+	        throws Exception {
+		PatientService ps = Context.getPatientService();
+		createPatientIdentifierTypeLockedGPAndSetValue("true");
+		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
+		ps.retirePatientIdentifierType(pit, "Retire test");
+	}
+	
+	/**
+	 * @see {@link PatientService#unretirePatientIdentifierType(PatientIdentifierType)}}
+	 * @throws PatientIdentifierTypeLockedException
+	 */
+	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Verifies(method = "unretirePatientIdentifierType(PatientIdentifierType)", value = "should throw error when trying to unretire a patient identifier type while patient identifier types are locked")
+	public void unretirePatientIdentifierType_shouldThrowErrorWhenTryingToUnretireAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
+	        throws Exception {
+		PatientService ps = Context.getPatientService();
+		createPatientIdentifierTypeLockedGPAndSetValue("true");
+		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
+		ps.unretirePatientIdentifierType(pit);
+	}
+	
+	/**
+	 * @see {@link PatientService#purgePatientIdentifierType(PatientIdentifierType)}}
+	 * @throws PatientIdentifierTypeLockedException
+	 */
+	@Test(expected = PatientIdentifierTypeLockedException.class)
+	@Verifies(method = "purgePatientIdentifierType(PatientIdentifierType)", value = "should throw error when trying to delete a patient identifier type while patient identifier types are locked")
+	public void purgePatientIdentifierType_shouldThrowErrorWhenTryingToDeleteAPatientIdentifierTypeWhilePatientIdentifierTypesAreLocked()
+	        throws Exception {
+		PatientService ps = Context.getPatientService();
+		createPatientIdentifierTypeLockedGPAndSetValue("true");
+		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
+		ps.purgePatientIdentifierType(pit);
 	}
 }
