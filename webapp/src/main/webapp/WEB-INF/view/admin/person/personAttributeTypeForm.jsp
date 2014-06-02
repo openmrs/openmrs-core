@@ -43,6 +43,7 @@
 				<%-- This logic is here because java.util.Date should not be allowed, but existing entries may have that value, and it's impossible to fix that automatically. --%>
 				<c:set var="isJavaUtilDate" value='${status.value == "java.util.Date"}'/>
 				<select name="format">
+                    <option value=""></option>
                     <c:forEach items="${formats}" var="format">
                         <option value="${format}" <c:if test="${format == status.value}">selected</c:if>>${format}</option>
                     </c:forEach>
