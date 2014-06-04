@@ -19,14 +19,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -774,4 +773,37 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void nullSafeEqualsIgnoreCase_shouldReturnFalseIfOnlyOneOfTheStringsIsNull() throws Exception {
 		Assert.assertFalse(OpenmrsUtil.nullSafeEqualsIgnoreCase(null, ""));
 	}
+
+    /**
+     * @see {@link OpenmrsUtil#storeProperties(java.util.Properties properties, OutputStream outStream, String comment)}
+     */
+    @Test
+    public void storeProperties_shouldEscapeSlashes() throws Exception {
+        Charset utf8 = Charset.forName("UTF-8");
+        String expectedProperty = "blacklistRegex";
+        String expectedValue = "[^\\p{InBasicLatin}\\p{InLatin1Supplement}]";
+        Properties properties = new Properties();
+        properties.setProperty(expectedProperty, expectedValue);
+        boolean result;
+
+        ByteArrayOutputStream actual = new ByteArrayOutputStream();
+        ByteArrayOutputStream expected = new ByteArrayOutputStream();
+
+        // our utility method incorrectly writes:
+        //     blacklistRegex=[^\p{InBasicLatin}\p{InLatin1Supplement}]
+        OpenmrsUtil.storeProperties(properties, actual, null);
+
+        // java's underlying implementation correctly writes:
+        //     blacklistRegex=[^\\p{InBasicLatin}\\p{InLatin1Supplement}]
+        // this method didn't exist in Java 5, which is why we wrote a utility method in the first place, so we should
+        // just get rid of our own implementation, and use the underlying java one
+        properties.store(new OutputStreamWriter(expected, utf8), null);
+
+        if (Arrays.equals(actual.toByteArray(), expected.toByteArray()))
+            result = true;
+        else
+            result = false;
+
+        Assert.assertTrue(result);
+    }
 }

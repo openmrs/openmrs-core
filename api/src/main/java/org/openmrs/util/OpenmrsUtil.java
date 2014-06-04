@@ -40,6 +40,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -2171,20 +2172,18 @@ public class OpenmrsUtil {
 	 * @param file
 	 * @param comment (which appears in comments in properties file)
 	 */
+
+    @Deprecated
+    /*
+     * The following method is deprecated, as Java Properties supports UTF8 natively now.
+     * Please use properties.store() instead.
+     */
 	public static void storeProperties(Properties properties, OutputStream outStream, String comment) {
 		try {
-			OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(outStream), "UTF-8");
-			Writer out = new BufferedWriter(osw);
-			if (comment != null) {
-				out.write("\n#" + comment + "\n");
-			}
-			out.write("#" + new Date() + "\n");
-			for (Map.Entry<Object, Object> e : properties.entrySet()) {
-				out.write(e.getKey() + "=" + e.getValue() + "\n");
-			}
-			out.write("\n");
-			out.flush();
-			out.close();
+
+            Charset utf8 = Charset.forName("UTF-8");
+            properties.store(new OutputStreamWriter(outStream, utf8), comment);
+
 		}
 		catch (FileNotFoundException fnfe) {
 			log.error("target file not found" + fnfe);
