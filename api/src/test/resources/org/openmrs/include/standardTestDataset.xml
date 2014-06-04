@@ -55,6 +55,7 @@
   <concept concept_id="5089" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="c607c80f-1ea9-4da3-bb88-6276ce8868dd"/>
   <concept concept_id="5497" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="a09ab2c5-878e-4905-b25d-5784167d0216"/>
   <concept concept_id="24" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="11716f9c-1434-4f8d-b9fc-9aa14c4d6129"/>
+  <concept concept_id="25" retired="true" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2014-06-02 15:51:00.0" version="" uuid="0cbe2ed3-cd5f-4f46-9459-26127c9265ac"/>
   <concept_answer concept_answer_id="1" concept_id="21" answer_concept="7" creator="1" date_created="2008-08-18 12:34:26.0" uuid="b1230431-2fe5-49fc-b535-ae42bc849747"/>
   <concept_answer concept_answer_id="2" concept_id="21" answer_concept="8" creator="1" date_created="2008-08-18 12:34:26.0" uuid="f67e537b-d9f9-45c4-846b-79ed1ba88778"/>
   <concept_answer concept_answer_id="3" concept_id="21" answer_concept="22" creator="1" date_created="2008-08-18 12:34:58.0" uuid="11e15f3b-3237-40e9-9c24-cb7916a4868b"/>
@@ -277,7 +278,8 @@
   <orders order_id="12" order_number="12" concept_id="19" orderer="1" instructions="" start_date="2008-08-19 00:00:00.0" discontinued="false" order_action="ORDER" urgency="ROUTINE" creator="1" date_created="2008-08-19 12:24:10.0" voided="true" void_reason="For test purposes" patient_id="999" uuid="1c96f25c-4949-4f72-9931-d808fbc226d5" auto_expire_date="2011-06-30 00:00:00.0"/>
   <drug drug_id="2" concept_id="792" name="Triomune-30" combination="true" dose_strength="1.0" units="tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="3cfcf118-931c-46f7-8ff6-7b876f0d4202"/>
   <drug drug_id="3" concept_id="88" name="Aspirin" combination="false" dose_strength="325.0" units="mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="05ec820a-d297-44e3-be6e-698531d9dd3f"/>
-  <drug drug_id="11" concept_id="3" name="NYQUIL" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="true" uuid="7e2323fa-0fa0-461f-9b59-6765997d849e"/>
+  <drug drug_id="11" concept_id="3" name="NYQUIL" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="7e2323fa-0fa0-461f-9b59-6765997d849e"/>
+  <drug drug_id="12" concept_id="25" name="TEST_DRUG_NAME_RETIRED" combination="true" units="" creator="1" date_created="2014-06-02 15:51:00.0" retired="true" uuid="7e2323fa-0fa0-461f-9b59-6765997d849f"/>
   <drug_ingredient drug_id="2" ingredient_id="88" uuid="6519d653-393d-4118-9c83-a3715b82d4dc" quantity="20.0" units="3"/>
   <drug_ingredient drug_id="3" ingredient_id="88" uuid="6519d653-393e-4118-9c83-a3715b82d4de" quantity="20.0" units="3"/>
   <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="mg" frequency="1/day x 7 days/week" as_needed="false" brand_name="BRAND NAME"/>

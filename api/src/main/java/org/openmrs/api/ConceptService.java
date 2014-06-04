@@ -550,7 +550,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param phrase Search phrase
 	 * @throws APIException
 	 * @return A List<Drug> object containing all Drug matches
-	 * @should return drugs that are retired
+	 * @should not return drugs that are retired
 	 * @should return drugs by drug id
 	 * @should return drugs by drug concept id
 	 * @should not fail if there is no drug by given id
