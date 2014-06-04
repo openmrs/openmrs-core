@@ -210,6 +210,8 @@ public class PatientSearchCriteria {
 	 * @param identifier
 	 * @param identifierTypes
 	 * @param matchIdentifierExactly
+	 * 
+	 * @should test for patientIdentifierType restrictions
 	 */
 	private Criterion prepareCriterionForIdentifier(String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) {
@@ -250,8 +252,6 @@ public class PatientSearchCriteria {
 				}
 			}
 		}
-		
-		// TODO add a junit test for patientIdentifierType restrictions
 		
 		// do the type restriction
 		if (!CollectionUtils.isEmpty(identifierTypes)) {
