@@ -270,6 +270,9 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.Boolean)
+	 *  
+	 * @should add junit test for getting by identifier type
+	 * @should add junit test for getting by patients
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
@@ -289,7 +292,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Restrictions.eq("identifier", identifier));
 		}
 		
-		// TODO add junit test for getting by identifier type
+		// add junit test for getting by identifier type
 		if (patientIdentifierTypes.size() > 0) {
 			criteria.add(Restrictions.in("identifierType", patientIdentifierTypes));
 		}
@@ -298,7 +301,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Restrictions.in("location", locations));
 		}
 		
-		// TODO add junit test for getting by patients
+		// add junit test for getting by patients
 		if (patients.size() > 0) {
 			criteria.add(Restrictions.in("patient", patients));
 		}
