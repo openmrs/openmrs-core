@@ -1462,7 +1462,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrderTypeByUuid_shouldFindOrderTypeObjectGivenValidUuid() throws Exception {
-		OrderType orderType = orderService.getOrderTypeByUuid("2ca568f3-a64a-11e3-9aeb-50e549534c5e");
+		OrderType orderType = orderService.getOrderTypeByUuid("131168f4-15f5-102d-96e4-000c29c2a5d7");
 		assertEquals("Drug order", orderType.getName());
 	}
 	
@@ -1500,7 +1500,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getOrderTypeByName_shouldReturnTheOrderTypeThatMatchesTheSpecifiedName() throws Exception {
 		OrderType orderType = orderService.getOrderTypeByName("Drug order");
-		assertEquals("2ca568f3-a64a-11e3-9aeb-50e549534c5e", orderType.getUuid());
+		assertEquals("131168f4-15f5-102d-96e4-000c29c2a5d7", orderType.getUuid());
 	}
 	
 	/**
