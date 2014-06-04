@@ -35,22 +35,17 @@ if (jspContext.getAttribute("initialValue") != null) {
 					<option value="">${optionHeader}</option>
 				</c:if>
 			</c:if>
-			<openmrs:forEachRecord name="locationHierarchy">
-			<c:choose>
-				<c:when test="${record.location.retired=='true'}">
-			
-				<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
-                                    <c:forEach begin="1" end="${record.depth}" >&nbsp;&nbsp;</c:forEach>${record.location.name}+[retired]
-                                </option>
-                                </c:when>
-                    <c:when test="${record.location.retired=='false'}">
-			
-				<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
-                                    <c:forEach begin="1" end="${record.depth}" >&nbsp;&nbsp;</c:forEach>${record.location.name}
-                                </option>
-                                </c:when>
-                               </c:choose> 
+			<c:set var="groupOpen" value="false" />
+			<openmrs:forEachRecord name="location">
+				<c:if test="${record.retired && !groupOpen}">
+					<optgroup label="<openmrs:message code="Location.retiredList"/>">
+					<c:set var="groupOpen" value="true" />
+				</c:if>
+					<option value="${record.locationId}" <c:if test="${record == initialValue}">selected</c:if>>${record.name}</option>
 			</openmrs:forEachRecord>
+			<c:if test="${groupOpen}">
+				</optgroup>
+			</c:if>
 		</select>
 	</c:otherwise>
 </c:choose>
