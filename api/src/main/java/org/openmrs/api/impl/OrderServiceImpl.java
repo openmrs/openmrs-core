@@ -96,7 +96,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		Concept concept = order.getConcept();
 		if (concept == null && isDrugOrder) {
 			concept = ((DrugOrder) order).getDrug().getConcept();
+			order.setConcept(concept);
 		}
+		
 		if (!isDiscontinueOrReviseOrder(order)) {
 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
 			for (Order o : activeOrders) {
@@ -180,9 +182,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			} else if (!getActualType(order).equals(getActualType(previousOrder))) {
 				throw new APIException("The class does not match that of the previous order");
 			}
-		}
-		if (order.getConcept() == null && isDrugOrder) {
-			order.setConcept(concept);
 		}
 		
 		return saveOrderInternal(order, orderContext);
