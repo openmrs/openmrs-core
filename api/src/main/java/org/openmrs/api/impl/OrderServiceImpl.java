@@ -167,7 +167,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders
 			boolean isDrugOrderAndHasADrug = isDrugOrder && ((DrugOrder) order).getDrug() != null;
-			if (!order.getConcept().equals(previousOrder.getConcept())) {
+			if (!OpenmrsUtil.nullSafeEquals(order.getConcept(), previousOrder.getConcept())) {
 				throw new APIException("The concept of the previous order and the new one order don't match");
 			} else if (isDrugOrderAndHasADrug) {
 				DrugOrder drugOrder1 = (DrugOrder) order;
