@@ -61,15 +61,16 @@ public class ProgramValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description.required");
+			/*
 			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms(false);
 			for (Program program : programs) {
 				if (program.getName().equals(p.getName()) && !program.getUuid().equals(p.getUuid())) {
 					errors.rejectValue("name", "general.error.nameAlreadyInUse");
 					break;
 				} else {
-					Context.evictFromSession(program);
+					//Context.evictFromSession(program);
 				}
-			}
+			}*/
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
 		}
