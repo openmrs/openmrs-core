@@ -89,6 +89,11 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 			errors.rejectValue("name", "Provider.error.personOrName.required");
 		}
 		
+		if (provider.getId() == null) {
+			if (provider.getPerson() != null && StringUtils.isNotBlank(provider.getName())) {
+				errors.rejectValue("name", "Provider.error.personOrName.required");
+			}
+		}
 		//if this is a retired existing provider, skip this
 		//check if this provider has a unique identifier
 		boolean isUnique = Context.getProviderService().isProviderIdentifierUnique(provider);

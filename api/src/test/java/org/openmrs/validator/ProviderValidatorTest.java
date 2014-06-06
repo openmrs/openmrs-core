@@ -142,8 +142,8 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(provider, errors);
 		
 		//then
-		Assert.assertFalse(errors.hasErrors());
-		Assert.assertFalse(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasFieldErrors("name"));
 	}
 	
 	/**
