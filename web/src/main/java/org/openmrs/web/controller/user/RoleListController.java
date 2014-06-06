@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
+import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -73,7 +74,7 @@ public class RoleListController extends SimpleFormController {
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
 			StringBuilder success = new StringBuilder();
-			String error = "";
+			StringBuilder error = new StringBuilder();
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			
@@ -83,32 +84,36 @@ public class RoleListController extends SimpleFormController {
 				
 				String deleted = msa.getMessage("general.deleted");
 				String notDeleted = msa.getMessage("Role.cannot.delete");
+				String notDeletedWithChild = msa.getMessage("Role.cannot.delete.with.child");
 				for (String p : roleList) {
 					//TODO convenience method deleteRole(String) ??
 					try {
 						us.purgeRole(us.getRole(p));
-						if (!success.equals("")) {
+						if (!success.toString().isEmpty()) {
 							success.append("<br/>");
 						}
 						success.append(p).append(" ").append(deleted);
 					}
 					catch (DataIntegrityViolationException e) {
-						error = handleRoleIntegrityException(e, error, notDeleted);
+						handleRoleIntegrityException(e, error, notDeleted, p);
+					}
+					catch (CannotDeleteRoleWithChildrenException e) {
+						handleRoleIntegrityException(e, error, notDeletedWithChild, p);
 					}
 					catch (APIException e) {
-						error = handleRoleIntegrityException(e, error, notDeleted);
+						handleRoleIntegrityException(e, error, notDeleted, p);
 					}
 				}
 			} else {
-				error = msa.getMessage("Role.select");
+				error.append(msa.getMessage("Role.select"));
 			}
 			
 			view = getSuccessView();
-			if (!success.equals("")) {
+			if (!success.toString().isEmpty()) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!error.equals("")) {
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+			if (!error.toString().isEmpty()) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}
 		
@@ -116,21 +121,20 @@ public class RoleListController extends SimpleFormController {
 	}
 	
 	/**
-	 * Logs a role delete data integrity violation exception and returns a user friedly message of
-	 * the problem that occured.
+	 * Logs a role delete data integrity violation exception and returns a user friendly message of
+	 * the problem that occurred.
 	 *
 	 * @param e the exception.
 	 * @param error the error message.
 	 * @param notDeleted the role not deleted error message.
 	 * @return the formatted error message.
 	 */
-	private String handleRoleIntegrityException(Exception e, String error, String notDeleted) {
+	private void handleRoleIntegrityException(Exception e, StringBuilder error, String notDeleted, String role) {
 		log.warn("Error deleting role", e);
-		if (!error.equals("")) {
-			error += "<br/>";
+		if (!error.toString().isEmpty()) {
+			error.append("<br/>");
 		}
-		error += notDeleted;
-		return error;
+		error.append(role).append(": ").append(notDeleted);
 	}
 	
 	/**
