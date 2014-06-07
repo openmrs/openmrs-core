@@ -11,21 +11,12 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.taglib.fieldgen;
+package org.openmrs.web.controller.order;
 
-import org.openmrs.Orderable;
+/**
+ * @deprecated use {@link org.openmrs.validator.OrderTypeValidator} instead
+ */
+@Deprecated
+public class OrderTypeValidator extends org.openmrs.validator.OrderTypeValidator {
 
-public class OrderableHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-	
-	private String defaultUrl = "orderable.field";
-	
-	public void run() {
-		
-		setUrl(defaultUrl);
-		checkEmptyVal((Orderable<?>) null);
-		if (fieldGenTag != null) {
-			Object initialValue = this.fieldGenTag.getVal();
-			setParameter("initialValue", initialValue == null ? "" : initialValue);
-		}
-	}
 }

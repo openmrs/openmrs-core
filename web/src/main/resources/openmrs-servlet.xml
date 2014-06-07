@@ -134,6 +134,8 @@
 				<prop key="/admin/orders/orderDrug.list">orderListByPatient</prop>
 				<prop key="/admin/orders/orderDrug.form">orderDrugForm</prop>
 				<prop key="/admin/orders/order.form">orderForm</prop>
+				<prop key="/admin/orders/orderType.list">orderTypeList</prop>
+				<prop key="/admin/orders/orderType.form">orderTypeForm</prop>
 
 				<prop key="admin/patients/patient.form">patientForm</prop>
 				<prop key="admin/patients/mergePatients.form">mergePatientsForm</prop>
@@ -316,8 +318,25 @@
 
 	<!-- ** Order Type ** -->
 	<!--this is the optional method of declaring values in the constructor-->
+	<!--<bean id="orderTypeList" class="org.openmrs.web.controller.OrderTypeListController" />-->
+	<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
 
-	
+	<bean id="orderTypeList" class="org.openmrs.web.controller.order.OrderTypeListController">
+		<property name="commandName"><value>orderTypeList</value></property>
+		<property name="formView"><value>/admin/orders/orderTypeList</value></property>
+		<property name="successView"><value>orderType.list</value></property>
+	</bean>
+
+	<!--  Form Controller for the add/edit order types page -->
+	<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
+		<property name="commandName"><value>orderType</value></property>
+		<property name="validator">
+			<ref bean="orderTypeValidator" />
+		</property>
+		<property name="formView"><value>/admin/orders/orderTypeForm</value></property>
+		<property name="successView"><value>orderType.list</value></property>
+	</bean>
+	<!-- ** /Order Type ** -->
 	<!-- ====== /Order Sector ====== -->
 
 
@@ -1047,6 +1066,9 @@
 				<prop key="org.openmrs.Concept">
 					org.openmrs.web.taglib.fieldgen.ConceptHandler
 				</prop>
+				<prop key="org.openmrs.OrderType">
+					org.openmrs.web.taglib.fieldgen.OrderTypeHandler
+				</prop>
 				<prop key="org.openmrs.Encounter">
 					org.openmrs.web.taglib.fieldgen.EncounterHandler
 				</prop>
@@ -1063,9 +1085,6 @@
 				</prop>
 				<prop key="org.openmrs.Patient.exitReason">
 					org.openmrs.web.taglib.fieldgen.GenericReasonHandler
-				</prop>
-				<prop key="org.openmrs.Orderable">
-					org.openmrs.web.taglib.fieldgen.OrderableHandler
 				</prop>
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 				<prop key="org.openmrs.util.AttributableDate">org.openmrs.web.taglib.fieldgen.DateHandler</prop>

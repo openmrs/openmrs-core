@@ -19,7 +19,6 @@ import org.openmrs.Order;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
-import org.openmrs.api.context.Context;
 
 /**
  * This class deals with {@link Order} objects when they are saved via a save* method in an Openmrs
@@ -36,15 +35,10 @@ public class OrderSaveHandler implements SaveHandler<Order> {
 	/**
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
-	 * @should set the order number
-	 * @should not assign an new order number to an existing order
 	 */
 	public void handle(Order order, User creator, Date dateCreated, String other) {
 		if (order.getPatient() == null && order.getEncounter() != null) {
 			order.setPatient(order.getEncounter().getPatient());
-		}
-		if (order.getOrderNumber() == null) {
-			order.setOrderNumber(Context.getOrderService().getNewOrderNumber());
 		}
 	}
 }

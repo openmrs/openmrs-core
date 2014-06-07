@@ -189,17 +189,16 @@
 			}
 		}
 		
-		function handleAddDrugOrder( patientId, drugField, brandNameField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
+		function handleAddDrugOrder( patientId, drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
 			var drugId = dwr.util.getValue($(drugField));
-			var brandName = dwr.util.getValue($(brandNameField));
 			var dose = dwr.util.getValue($(doseField));
 			var units = dwr.util.getValue($(unitsField));
 			var frequency = dwr.util.getValue($(frequencyDayField)) + " x " + dwr.util.getValue($(frequencyWeekField));
 			var startDate = dwr.util.getValue($(startDateField));
 			var instructions = "";
 			if ( drugId != '' && dose != '' && units != '' && frequency != '' && startDate != '') {
-				blankAddNewOrder(drugField, brandNameField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField);
-				DWROrderService.createDrugOrder(patientId, drugId, brandName, dose, units, frequency, startDate, instructions, waitToRefreshRegimenTables);
+				blankAddNewOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField);
+				DWROrderService.createDrugOrder(patientId, drugId, dose, units, frequency, startDate, instructions, waitToRefreshRegimenTables);
 			} else {
 				if ( drugId == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingDrug" />");
 				else if ( dose == '' ) alert("<openmrs:message code="DrugOrder.add.error.missingDose" />");
@@ -209,14 +208,13 @@
 			}
 		}
 
-		function blankAddNewOrder(drugField, brandNameField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
+		function blankAddNewOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
 				dwr.util.setValue($(drugField),"");
 				dwr.util.setValue($(doseField),"");
 				dwr.util.setValue($(unitsField),"");
 				dwr.util.setValue($(frequencyDayField),"");
 				dwr.util.setValue($(frequencyWeekField),"");
 				dwr.util.setValue($(startDateField),"");
-				dwr.util.setValue($(brandNameField),"");
 		}
 		
 		function handleVoidCurrentDrugOrder(orderId, voidReasonField) {

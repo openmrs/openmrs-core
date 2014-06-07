@@ -35,6 +35,38 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail validation if prn is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfPrnIsNull() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setPrn(null);
+		order.setDrug(Context.getConceptService().getDrug(3));
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("prn"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if complex is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfComplexIsNull() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setComplex(null);
+		order.setDrug(Context.getConceptService().getDrug(3));
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("complex"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail validation if drug is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfDrugIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
@@ -72,12 +104,29 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setDose(500d);
 		// intentionally set order's units to null
-		order.setDoseUnits(null);
+		order.setUnits(null);
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("doseUnits"));
+		Assert.assertTrue(errors.hasFieldErrors("units"));
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if daily dose set and units not set", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfDailyDoseIsSetAndUnitsIsNotSet() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setEquivalentDailyDose(500d);
+		// intentionally set order's units to null
+		order.setUnits(null);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("units"));
 	}
 	
 	/**
@@ -85,16 +134,16 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should fail if quantity set and units not set", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfQuantitySetAndUnitsNotSet() throws Exception {
+	public void validate_shouldFailIfQuantitySetAndUnitsIsNotSet() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setQuantity(5);
 		// intentionally set order's units to null
-		order.setQuantityUnits(null);
+		order.setUnits(null);
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("quantityUnits"));
+		Assert.assertTrue(errors.hasFieldErrors("units"));
 	}
 	
 	/**
@@ -106,12 +155,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setOrderType(Context.getOrderService().getOrderType(1));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
+		order.setDiscontinuedDate(new Date());
 		order.setAutoExpireDate(new Date());
 		order.setDrug(Context.getConceptService().getDrug(3));
-		order.setOrderNumber("orderNumber");
 		
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);

@@ -21,10 +21,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.DrugEditor;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -66,6 +68,11 @@ public class OrderDrugFormController extends OrderFormController {
 		String view;
 		DrugOrder order = (DrugOrder) obj;
 		
+		// TODO: for now, orderType will have to be hard-coded?
+		if (order.getOrderType() == null) {
+			order.setOrderType(Context.getOrderService().getOrderType(OpenmrsConstants.ORDERTYPE_DRUG));
+		}
+		
 		boolean ok = executeCommand(order, request);
 		if (ok) {
 			int patientId = order.getPatient().getPatientId();
@@ -99,6 +106,11 @@ public class OrderDrugFormController extends OrderFormController {
 		// if this is a new order, let's see if the user has picked a type yet
 		if (order == null) {
 			order = new DrugOrder();
+			Integer orderTypeId = ServletRequestUtils.getIntParameter(request, "orderTypeId");
+			if (orderTypeId != null) {
+				OrderType ot = os.getOrderType(orderTypeId);
+				order.setOrderType(ot);
+			}
 			
 			Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
 			if (patientId != null) {

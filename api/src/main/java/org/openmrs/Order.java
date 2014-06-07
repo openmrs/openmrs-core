@@ -15,6 +15,9 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
  * "since the beginning of time" Otherwise the order starts on startDate If discontinued is non-null
@@ -30,11 +33,9 @@ import java.util.Date;
  */
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 4334343L;
 	
-	public enum OrderAction {
-		ORDER, DISCONTINUE
-	}
+	private static final Log log = LogFactory.getLog(Order.class);
 	
 	public enum Urgency {
 		ROUTINE, STAT
@@ -44,54 +45,31 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Patient patient;
 	
+	private OrderType orderType;
+	
 	private Concept concept;
 	
-	/**
-	 * This is an identifier generated for a given order and shared by all revisions (if any) of
-	 * that order. The order number is passed to ancillary systems in order for results & events
-	 * related to the order to be connected to the original order.
-	 */
-	private String orderNumber;
+	private String instructions;
 	
-	/**
-	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
-	 * to the original ampicillin order (the D/C gets its own order number)
-	 */
-	private String previousOrderNumber;
-	
-	/**
-	 * Represents the action being taken on an order.
-	 * 
-	 * @see OrderAction
-	 */
-	private OrderAction orderAction = OrderAction.ORDER;
-	
-	/** When the order should begin. */
 	private Date startDate;
 	
-	/** When the order should be discontinued if it hasn't already. */
 	private Date autoExpireDate;
 	
 	private Encounter encounter;
 	
-	/**
-	 * Free text instructions for the order (e.g., details about a referral, justification for a
-	 * cardiac stress test, etc.)
-	 */
-	private String instructions;
-	
-	private Provider orderer;
+	private User orderer;
 	
 	private Boolean discontinued = false;
 	
 	private User discontinuedBy;
 	
-	/** When the order was discontinued. */
 	private Date discontinuedDate;
 	
-	private String discontinuedReason;
+	private Concept discontinuedReason;
 	
 	private String accessionNumber;
+	
+	private String discontinuedReasonNonCoded;
 	
 	private Urgency urgency = Urgency.ROUTINE;
 	
@@ -104,12 +82,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/** constructor with id */
 	public Order(Integer orderId) {
 		this.orderId = orderId;
-	}
-	
-	public Order(Integer orderId, Patient patient, Concept concept) {
-		this.setOrderId(orderId);
-		this.setPatient(patient);
-		this.setConcept(concept);
 	}
 	
 	/**
@@ -130,6 +102,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	protected Order copyHelper(Order target) {
 		target.setPatient(getPatient());
+		target.setOrderType(getOrderType());
 		target.setConcept(getConcept());
 		target.setInstructions(getInstructions());
 		target.setStartDate(getStartDate());
@@ -147,35 +120,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
-		target.setOrderNumber(getOrderNumber());
-		target.setPreviousOrderNumber(getPreviousOrderNumber());
-		target.setOrderAction(getOrderAction());
 		target.setUrgency(getUrgency());
-		
 		return target;
-	}
-	
-	/**
-	 * Compares two objects for similarity
-	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
-	 */
-	public boolean equals(Object obj) {
-		if (obj instanceof Order) {
-			Order o = (Order) obj;
-			if (this.getOrderId() != null && o.getOrderId() != null) {
-				return (this.getOrderId().equals(o.getOrderId()));
-			}
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		if (this.getOrderId() == null) {
-			return super.hashCode();
-		}
-		return this.getOrderId().hashCode();
 	}
 	
 	/**
@@ -261,14 +207,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return Returns the discontinuedReason.
 	 */
-	public String getDiscontinuedReason() {
+	public Concept getDiscontinuedReason() {
 		return discontinuedReason;
 	}
 	
 	/**
 	 * @param discontinuedReason The discontinuedReason to set.
 	 */
-	public void setDiscontinuedReason(String discontinuedReason) {
+	public void setDiscontinuedReason(Concept discontinuedReason) {
 		this.discontinuedReason = discontinuedReason;
 	}
 	
@@ -317,14 +263,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return Returns the orderer.
 	 */
-	public Provider getOrderer() {
+	public User getOrderer() {
 		return orderer;
 	}
 	
 	/**
 	 * @param orderer The orderer to set.
 	 */
-	public void setOrderer(Provider orderer) {
+	public void setOrderer(User orderer) {
 		this.orderer = orderer;
 	}
 	
@@ -343,6 +289,20 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * @return Returns the orderType.
+	 */
+	public OrderType getOrderType() {
+		return orderType;
+	}
+	
+	/**
+	 * @param orderType The orderType to set.
+	 */
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
+	}
+	
+	/**
 	 * @return Returns the startDate.
 	 */
 	public Date getStartDate() {
@@ -357,15 +317,28 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * @return the discontinuedReasonNonCoded
+	 */
+	public String getDiscontinuedReasonNonCoded() {
+		return discontinuedReasonNonCoded;
+	}
+	
+	/**
+	 * @param discontinuedReasonNonCoded the discontinuedReasonNonCoded to set
+	 */
+	public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
+		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
+	}
+	
+	/**
 	 * Convenience method to determine if order is current
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was current on the input date
 	 */
 	public boolean isCurrent(Date checkDate) {
-		if (isVoided()) {
+		if (isVoided())
 			return false;
-		}
 		
 		if (checkDate == null) {
 			checkDate = new Date();
@@ -376,18 +349,16 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		
 		if (discontinued != null && discontinued) {
-			if (discontinuedDate == null) {
+			if (discontinuedDate == null)
 				return checkDate.equals(startDate);
-			} else {
+			else
 				return checkDate.before(discontinuedDate);
-			}
 			
 		} else {
-			if (autoExpireDate == null) {
+			if (autoExpireDate == null)
 				return true;
-			} else {
+			else
 				return checkDate.before(autoExpireDate);
-			}
 		}
 	}
 	
@@ -396,13 +367,10 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	public boolean isFuture(Date checkDate) {
-		if (isVoided()) {
+		if (isVoided())
 			return false;
-		}
-		
-		if (checkDate == null) {
+		if (checkDate == null)
 			checkDate = new Date();
-		}
 		
 		return startDate != null && checkDate.before(startDate);
 	}
@@ -418,16 +386,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return boolean indicating whether the order was discontinued on the input date
 	 */
 	public boolean isDiscontinued(Date checkDate) {
-		if (isVoided()) {
+		if (isVoided())
 			return false;
-		}
-		if (checkDate == null) {
+		if (checkDate == null)
 			checkDate = new Date();
-		}
 		
-		if (discontinued == null || !discontinued) {
+		if (discontinued == null || !discontinued)
 			return false;
-		}
 		
 		if (startDate == null || checkDate.before(startDate)) {
 			return false;
@@ -443,91 +408,24 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		return true;
 	}
 	
-	/**
+	/*
 	 * orderForm:jsp: <spring:bind path="order.discontinued" /> results in a call to
 	 * isDiscontinued() which doesn't give access to the discontinued property so renamed it to
 	 * isDiscontinuedRightNow which results in a call to getDiscontinued.
-	 * 
 	 * @since 1.5
 	 */
 	public boolean isDiscontinuedRightNow() {
 		return isDiscontinued(new Date());
 	}
 	
-	/**
-	 * Gets the patient.
-	 * 
-	 * @return the patient.
-	 */
 	public Patient getPatient() {
 		return patient;
 	}
 	
-	/**
-	 * Sets the patient.
-	 * 
-	 * @param patient the patient to set.
-	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
 	
-	/**
-	 * Gets the order number.
-	 * 
-	 * @return the order number.
-	 */
-	public String getOrderNumber() {
-		return orderNumber;
-	}
-	
-	/**
-	 * Sets the order number.
-	 * 
-	 * @param orderNumber the order number to set.
-	 */
-	public void setOrderNumber(String orderNumber) {
-		this.orderNumber = orderNumber;
-	}
-	
-	/**
-	 * Gets the previous order number.
-	 * 
-	 * @return the previous order number.
-	 */
-	public String getPreviousOrderNumber() {
-		return previousOrderNumber;
-	}
-	
-	/**
-	 * Sets the previous order number.
-	 * 
-	 * @param previousOrderNumber the previous order number to set.
-	 */
-	public void setPreviousOrderNumber(String previousOrderNumber) {
-		this.previousOrderNumber = previousOrderNumber;
-	}
-	
-	/**
-	 * @return the orderAction
-	 * @since 1.10
-	 */
-	public OrderAction getOrderAction() {
-		return orderAction;
-	}
-	
-	/**
-	 * @param orderAction the orderAction to set
-	 * @since 1.10
-	 */
-	public void setOrderAction(OrderAction orderAction) {
-		this.orderAction = orderAction;
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
-	 */
 	public Integer getId() {
 		return getOrderId();
 	}
@@ -536,7 +434,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + getClass() + " concept: " + concept;
+		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + orderType + " concept: " + concept;
 	}
 	
 	/**
@@ -563,15 +461,4 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.urgency = urgency;
 	}
 	
-	/**
-	 * Makes a copy of this order.
-	 * 
-	 * @return a copy of this order.
-	 */
-	public Order copyForModification() {
-		Order copy = copyHelper(this);
-		copy.orderNumber = null;
-		copy.previousOrderNumber = this.orderNumber;
-		return copy;
-	}
 }

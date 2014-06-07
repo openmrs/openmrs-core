@@ -2057,8 +2057,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// run with correctly-formed parameters first to make sure that the
 		// null is the problem when running with a null parameter
 		try {
-			patientService
-			        .exitFromCare(patientService.getPatient(7), new Date(), Context.getConceptService().getConcept(16));
+			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
 		}
 		catch (Exception e) {
 			fail("failed with correct parameters");
@@ -2077,8 +2076,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// run with correctly-formed parameters first to make sure that the
 		// null is the problem when running with a null parameter
 		try {
-			patientService
-			        .exitFromCare(patientService.getPatient(7), new Date(), Context.getConceptService().getConcept(16));
+			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
 		}
 		catch (Exception e) {
 			fail("failed with correct parameters");
@@ -2097,8 +2095,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// run with correctly-formed parameters first to make sure that the
 		// null is the problem when running with a null parameter
 		try {
-			patientService
-			        .exitFromCare(patientService.getPatient(7), new Date(), Context.getConceptService().getConcept(16));
+			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
 		}
 		catch (Exception e) {
 			fail("failed with correct parameters");
@@ -2645,32 +2642,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(2);
 		
 		//retrieve order for notPreferred patient
-		List<Order> ordersForUnPreferredPatient = Context.getOrderService().getOrdersByPatient(notPreferred);
-		List<Order> undiscontinuedOrders = new ArrayList<Order>();
-		for (Order or : ordersForUnPreferredPatient) {
-			if (!or.getDiscontinued())
-				undiscontinuedOrders.add(or);
-		}
-		Assert.assertFalse(undiscontinuedOrders.isEmpty());
+		Order order = Context.getOrderService().getOrdersByPatient(notPreferred).get(0);
+		
 		//merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		
+		//find the UUID of the order that was created for preferred patient as a result of the merge
+		String addedOrderUuid = null;
 		List<Order> orders = Context.getOrderService().getOrdersByPatient(preferred);
-		for (Order or : undiscontinuedOrders) {
-			//find the UUID of the order that was created for preferred patient as a result of the merge
-			String addedOrderUuid = null;
-			for (Order o : orders) {
-				if (o.getOrderNumber().equals(or.getOrderNumber())) {
-					addedOrderUuid = o.getUuid();
-				}
+		for (Order o : orders) {
+			if (o.getInstructions().equals(order.getInstructions())) {
+				addedOrderUuid = o.getUuid();
 			}
-			
-			Assert.assertNotNull("expected new order was not found for the preferred patient after the merge",
-			    addedOrderUuid);
-			
-			Assert.assertTrue("order creation not audited", isValueInList(addedOrderUuid, audit.getPersonMergeLogData()
-			        .getCreatedOrders()));
 		}
+		Assert.assertNotNull("expected new order was not found for the preferred patient after the merge", addedOrderUuid);
+		Assert.assertTrue("order creation not audited", isValueInList(addedOrderUuid, audit.getPersonMergeLogData()
+		        .getCreatedOrders()));
 	}
 	
 	/**

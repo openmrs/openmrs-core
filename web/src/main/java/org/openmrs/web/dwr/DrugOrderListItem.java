@@ -48,7 +48,7 @@ public class DrugOrderListItem {
 	
 	private String discontinuedDate;
 	
-	private String discontinueReason;
+	private Integer discontinueReason;
 	
 	private Integer drugId;
 	
@@ -56,13 +56,13 @@ public class DrugOrderListItem {
 	
 	private Double dose;
 	
-	private String doseUnits;
+	private String units;
 	
 	private String frequency;
 	
-	private Boolean asNeeded;
+	private Boolean prn;
 	
-	private String unstructuredDosing;
+	private Boolean complex;
 	
 	private Integer quantity;
 	
@@ -87,6 +87,8 @@ public class DrugOrderListItem {
 	
 	public DrugOrderListItem(DrugOrder drugOrder) {
 		orderId = drugOrder.getOrderId();
+		if (drugOrder.getOrderType() != null)
+			orderTypeId = drugOrder.getOrderType().getOrderTypeId();
 		if (drugOrder.getConcept() != null) {
 			conceptId = drugOrder.getConcept().getConceptId();
 			conceptName = drugOrder.getConcept().getName().getName();
@@ -105,7 +107,7 @@ public class DrugOrderListItem {
 			encounterId = drugOrder.getEncounter().getEncounterId();
 		}
 		if (drugOrder.getOrderer() != null) {
-			ordererId = drugOrder.getOrderer().getProviderId();
+			ordererId = drugOrder.getOrderer().getUserId();
 		}
 		discontinued = drugOrder.getDiscontinued();
 		if (drugOrder.getDiscontinuedBy() != null) {
@@ -115,7 +117,7 @@ public class DrugOrderListItem {
 			discontinuedDate = df.format(drugOrder.getDiscontinuedDate());
 		}
 		if (drugOrder.getDiscontinuedReason() != null) {
-			discontinueReason = drugOrder.getDiscontinuedReason();
+			discontinueReason = drugOrder.getDiscontinuedReason().getConceptId();
 		}
 		if (drugOrder.getDrug() != null) {
 			drugId = drugOrder.getDrug().getDrugId();
@@ -124,9 +126,10 @@ public class DrugOrderListItem {
 			drugName = drugOrder.getDrug().getName();
 		}
 		dose = drugOrder.getDose();
-		doseUnits = drugOrder.getDoseUnits();
+		units = drugOrder.getUnits();
 		frequency = drugOrder.getFrequency();
-		asNeeded = drugOrder.getAsNeeded();
+		prn = drugOrder.getPrn();
+		complex = drugOrder.getComplex();
 		quantity = drugOrder.getQuantity();
 		voided = drugOrder.getVoided();
 		if (drugOrder.getVoidedBy() != null) {
@@ -142,6 +145,20 @@ public class DrugOrderListItem {
 		if (drugOrder.getDateCreated() != null) {
 			createdDate = df.format(drugOrder.getDateCreated());
 		}
+	}
+	
+	/**
+	 * @return Returns the complex.
+	 */
+	public Boolean getComplex() {
+		return complex;
+	}
+	
+	/**
+	 * @param complex The complex to set.
+	 */
+	public void setComplex(Boolean complex) {
+		this.complex = complex;
 	}
 	
 	/**
@@ -187,6 +204,20 @@ public class DrugOrderListItem {
 	}
 	
 	/**
+	 * @return Returns the discontinueReason.
+	 */
+	public Integer getDiscontinueReason() {
+		return discontinueReason;
+	}
+	
+	/**
+	 * @param discontinueReason The discontinueReason to set.
+	 */
+	public void setDiscontinueReason(Integer discontinueReason) {
+		this.discontinueReason = discontinueReason;
+	}
+	
+	/**
 	 * @return Returns the discontinuerId.
 	 */
 	public Integer getDiscontinuerId() {
@@ -212,20 +243,6 @@ public class DrugOrderListItem {
 	 */
 	public void setDose(Double dose) {
 		this.dose = dose;
-	}
-	
-	/**
-	 * @return the doseUnits
-	 */
-	public String getDoseUnits() {
-		return doseUnits;
-	}
-	
-	/**
-	 * @param doseUnits the doseUnits to set
-	 */
-	public void setDoseUnits(String doseUnits) {
-		this.doseUnits = doseUnits;
 	}
 	
 	/**
@@ -282,20 +299,6 @@ public class DrugOrderListItem {
 	 */
 	public void setFrequency(String frequency) {
 		this.frequency = frequency;
-	}
-	
-	/**
-	 * @return the asNeeded
-	 */
-	public Boolean getAsNeeded() {
-		return asNeeded;
-	}
-	
-	/**
-	 * @param asNeeded the asNeeded to set
-	 */
-	public void setAsNeeded(Boolean asNeeded) {
-		this.asNeeded = asNeeded;
 	}
 	
 	/**
@@ -359,6 +362,20 @@ public class DrugOrderListItem {
 	}
 	
 	/**
+	 * @return Returns the prn.
+	 */
+	public Boolean getPrn() {
+		return prn;
+	}
+	
+	/**
+	 * @param prn The prn to set.
+	 */
+	public void setPrn(Boolean prn) {
+		this.prn = prn;
+	}
+	
+	/**
 	 * @return Returns the quantity.
 	 */
 	public Integer getQuantity() {
@@ -370,6 +387,20 @@ public class DrugOrderListItem {
 	 */
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
+	}
+	
+	/**
+	 * @return Returns the units.
+	 */
+	public String getUnits() {
+		return units;
+	}
+	
+	/**
+	 * @param units The units to set.
+	 */
+	public void setUnits(String units) {
+		this.units = units;
 	}
 	
 	/**
@@ -465,20 +496,6 @@ public class DrugOrderListItem {
 	}
 	
 	/**
-	 * @return the discontinueReason
-	 */
-	public String getDiscontinueReason() {
-		return discontinueReason;
-	}
-	
-	/**
-	 * @param discontinueReason the discontinueReason to set
-	 */
-	public void setDiscontinueReason(String discontinueReason) {
-		this.discontinueReason = discontinueReason;
-	}
-	
-	/**
 	 * @return Returns the startDate.
 	 */
 	public String getStartDate() {
@@ -565,19 +582,5 @@ public class DrugOrderListItem {
 	
 	public void setConceptName(String conceptName) {
 		this.conceptName = conceptName;
-	}
-	
-	/**
-	 * @param unstructuredDosing the value to set
-	 */
-	public void setUnstructuredDosing(String unstructuredDosing) {
-		this.unstructuredDosing = unstructuredDosing;
-	}
-	
-	/**
-	 * @return the unstructured dosing
-	 */
-	public String getUnstructuredDosing() {
-		return unstructuredDosing;
 	}
 }

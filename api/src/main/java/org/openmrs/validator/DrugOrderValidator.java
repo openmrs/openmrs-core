@@ -19,6 +19,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link DrugOrder} class.
@@ -26,7 +27,7 @@ import org.springframework.validation.ValidationUtils;
  * @since 1.5
  */
 @Handler(supports = { DrugOrder.class }, order = 50)
-public class DrugOrderValidator extends OrderValidator {
+public class DrugOrderValidator extends OrderValidator implements Validator {
 	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -36,7 +37,8 @@ public class DrugOrderValidator extends OrderValidator {
 	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class<?> c) {
+	@SuppressWarnings("unchecked")
+	public boolean supports(Class c) {
 		return DrugOrder.class.isAssignableFrom(c);
 	}
 	
@@ -47,8 +49,12 @@ public class DrugOrderValidator extends OrderValidator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if order concept is null
 	 * @should fail validation if drug concept is different from order concept
+	 * @should fail validation if prn is null
+	 * @should fail validation if complex is null
+	 * @should fail validation if drug is null
 	 * @should fail validation if drug concept is not set
 	 * @should fail validation if drug dose is set and units is not set
+	 * @should fail if daily dose set and units not set 
 	 * @should fail if quantity set and units not set
 	 * @should pass validation if all fields are correct
 	 */
@@ -60,23 +66,9 @@ public class DrugOrderValidator extends OrderValidator {
 			errors.rejectValue("order", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
-			if (order.getDuration() != null) {
-				ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.add.error.missingDurationUnits");
-			}
-			
-			if (order.getQuantity() != null) {
-				ValidationUtils.rejectIfEmpty(errors, "quantityUnits", "DrugOrder.add.error.missingQuantityUnits");
-			}
-			
-			if (order.getStrength() != null) {
-				ValidationUtils.rejectIfEmpty(errors, "strengthUnits", "DrugOrder.add.error.missingStrengthUnits");
-			}
-			
-			if (order.getDose() != null) {
-				ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.add.error.missingDoseUnits");
-			}
-			
 			// for the following elements Order.hbm.xml says: not-null="true"
+			ValidationUtils.rejectIfEmpty(errors, "prn", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "complex", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
 			if (order.getDrug() != null) {
 				ValidationUtils.rejectIfEmpty(errors, "drug.concept", "error.null");
@@ -88,6 +80,9 @@ public class DrugOrderValidator extends OrderValidator {
 					errors.rejectValue("concept", "error.concept");
 					
 				}
+			}
+			if (order.getDose() != null || order.getEquivalentDailyDose() != null || order.getQuantity() != null) {
+				ValidationUtils.rejectIfEmpty(errors, "units", "DrugOrder.error.unitsNotSetWhenDoseOrQuantitySpecified");
 			}
 		}
 	}

@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.User;
@@ -34,9 +35,11 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
+import org.openmrs.propertyeditor.OrderTypeEditor;
 import org.openmrs.propertyeditor.PatientEditor;
 import org.openmrs.propertyeditor.ProviderEditor;
 import org.openmrs.propertyeditor.UserEditor;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -63,6 +66,7 @@ public class OrderFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
+		binder.registerCustomEditor(OrderType.class, new OrderTypeEditor());
 		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
 		binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());
@@ -107,8 +111,11 @@ public class OrderFormController extends SimpleFormController {
 				orderService.unvoidOrder(order);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.unvoidedSuccessfully");
 			} else if (request.getParameter("discontinueOrder") != null) {
-				orderService.discontinueOrder(order, null);
+				orderService.discontinueOrder(order, order.getDiscontinuedReason(), order.getDiscontinuedDate());
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.discontinuedSuccessfully");
+			} else if (request.getParameter("undiscontinueOrder") != null) {
+				orderService.undiscontinueOrder(order);
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.undiscontinuedSuccessfully");
 			}
 		}
 		catch (APIException ex) {
@@ -163,6 +170,11 @@ public class OrderFormController extends SimpleFormController {
 		// if this is a new order, let's see if the user has picked a type yet
 		if (order == null) {
 			order = new Order();
+			Integer orderTypeId = ServletRequestUtils.getIntParameter(request, "orderTypeId");
+			if (orderTypeId != null) {
+				OrderType ot = os.getOrderType(orderTypeId);
+				order.setOrderType(ot);
+			}
 		}
 		
 		return order;

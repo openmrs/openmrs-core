@@ -45,7 +45,16 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top"><openmrs:message code="Order.concept"/><span class="required">*</span></td>
+			<td><openmrs:message code="Order.orderType"/></td>
+			<td>
+				<spring:bind path="order.orderType">
+					<openmrs:fieldGen type="org.openmrs.OrderType" formFieldName="${status.expression}" val="${status.editor.value}" parameters="optionHeader=[blank]" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+            <td valign="top"><openmrs:message code="Order.concept"/><span class="required">*</span></td>
 			<td valign="top">
 				<spring:bind path="order.concept">
 					<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.editor.value}" />

@@ -7038,203 +7038,6 @@
 		<dropNotNullConstraint tableName="provider" columnName="identifier" columnDataType="varchar(255)" />
 	</changeSet>
 	
-	<changeSet id="20101209-1111-orders-order_number" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="orders" columnName="order_number"/></not>
-		</preConditions>
-		<comment>Adding order_number column to orders table</comment>
-		<addColumn tableName="orders">
-			<column name="order_number" type="varchar(50)" >
-				<constraints nullable="false"/>
-			</column>
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-orders_previous_order_number" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="orders" columnName="previous_order_number"/></not>
-		</preConditions>
-		<comment>Adding previous_order_number column to orders table</comment>
-		<addColumn tableName="orders">
-			<column name="previous_order_number" type="varchar(50)" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-orders_order_action" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="orders" columnName="order_action"/></not>
-		</preConditions>
-		<comment>Adding order_action column to orders table</comment>
-		<addColumn tableName="orders">
-			<column name="order_action" type="varchar(50)">
-				<constraints nullable="false" />
-			</column>
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_drop_order_id_foreign_key" author="dkayiwa">
- 		<preConditions onFail="MARK_RAN">
-  			<foreignKeyConstraintExists foreignKeyName="extends_order" /> 
-  		</preConditions>
-  		<comment>
-  			Dropping order_id foreign key from drug_order table, in order to be able to drop its primary key.
-  		</comment> 
-  		<dropForeignKeyConstraint baseTableName="drug_order" constraintName="extends_order" /> 
-  	</changeSet>
-  	
-	<changeSet id="20101209-1111-drug_order_drop_order_id_primary_key" author="dkayiwa">
-	    <preConditions onFail="MARK_RAN">
-			<primaryKeyExists tableName="drug_order"/>
-		</preConditions>
-		<comment>Dropping primary key on drug_order table before defining a new one</comment>
-		<dropPrimaryKey tableName="drug_order" />
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_restore_order_id_foreign_key" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><foreignKeyConstraintExists foreignKeyName="extends_order"/></not>
-		</preConditions>
-		<comment>Restoring foreign key constraint on drug_order.order_id column to orders.order_id column</comment>
-        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="drug_order" constraintName="extends_order" referencedColumnNames="order_id" referencedTableName="orders"/>
-    </changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_is_structured_dosing" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="is_structured_dosing"/></not>
-			<columnExists tableName="drug_order" columnName="complex"/>
-		</preConditions>
-		<comment>Renaming drug_order.complex column to drug_order.is_structured_dosing</comment>
-		<renameColumn tableName="drug_order" oldColumnName="complex" newColumnName="is_structured_dosing" columnDataType="smallint" />
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_strength" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="strength"/></not>
-		</preConditions>
-		<comment>Adding strength column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="strength" type="double" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_strength_units" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="strength_units"/></not>
-		</preConditions>
-		<comment>Adding strength_units column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="strength_units" type="varchar(50)" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_brand_name" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="brand_name"/></not>
-		</preConditions>
-		<comment>Adding brand_name column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="brand_name" type="varchar(255)" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_dosage_form" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="dosage_form"/></not>
-		</preConditions>
-		<comment>Adding dosage_form column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="dosage_form" type="varchar(50)" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_route" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="route"/></not>
-		</preConditions>
-		<comment>Adding route column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="route" type="varchar(50)" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_as_needed" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="as_needed"/></not>
-			<columnExists tableName="drug_order" columnName="prn"/>
-		</preConditions>
-		<comment>Renaming drug_order.prn column to drug_order.as_needed</comment>
-		<renameColumn tableName="drug_order" oldColumnName="prn" newColumnName="as_needed" columnDataType="smallint" />
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_dose_units" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="dose_units"/></not>
-			<columnExists tableName="drug_order" columnName="units"/>
-		</preConditions>
-		<comment>Renaming drug_order.units column to drug_order.dose_units</comment>
-		<renameColumn tableName="drug_order" oldColumnName="units" newColumnName="dose_units" columnDataType="varchar(50)" />
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_as_needed_condition" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="as_needed_condition"/></not>
-		</preConditions>
-		<comment>Adding as_needed_condition column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="as_needed_condition" type="varchar(255)" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_additional_instructions" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="additional_instructions"/></not>
-		</preConditions>
-		<comment>Adding additional_instructions column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="additional_instructions" type="text" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-drug_order_num_refills" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="num_refills"/></not>
-		</preConditions>
-		<comment>Adding num_refills column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="num_refills" type="int" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20100621-1350-drug_order_duration" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="duration"/></not>
-		</preConditions>
-		<comment>Adding duration column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="duration" type="int" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20100621-1350-drug_order_duration_units" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="duration_units"/></not>
-		</preConditions>
-		<comment>Adding duration_units column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="duration_units" type="varchar(50)" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20100621-1350-drug_order_quantity_units" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="quantity_units"/></not>
-		</preConditions>
-		<comment>Adding quantity_units column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="quantity_units" type="varchar(50)" />
-		</addColumn>
-	</changeSet>
-	
 	<changeSet id="20101209-1353" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="drug_order" columnName="as_needed"/>
@@ -7242,110 +7045,29 @@
 		<comment>Adding not-null constraint to orders.as_needed</comment>
 		<addNotNullConstraint tableName="drug_order" columnName="as_needed" columnDataType="smallint" />
 	</changeSet>
-	
-	<changeSet id="20120504-1606" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="drug_order" columnName="equivalent_daily_dose"/>
-		</preConditions>
-		<comment>Dropping orders.equivalent_daily_dose column</comment>
-		<dropColumn tableName="drug_order" columnName="equivalent_daily_dose" />
-	</changeSet>
-	
-	<changeSet id="20110623-1605" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="type_of_order"/>
-		</preConditions>
-		<comment>Dropping foreign key constraint on orders.order_type_id to order_type.order_type_id</comment>
-		<dropForeignKeyConstraint baseTableName="orders" constraintName="type_of_order"/>
-	</changeSet>
-	
-	<changeSet id="20110623-1606" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="orders" columnName="order_type_id"/>
-		</preConditions>
-		<comment>Dropping orders.order_type_id column</comment>
-		<dropColumn tableName="orders" columnName="order_type_id" />
-	</changeSet>
-	
-	<changeSet id="20120503-1701" dbms="mysql" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<and>
-				<not><sqlCheck expectedResult="0">SELECT count(*) FROM orders WHERE discontinued = 1</sqlCheck></not>
-			</and>
-		</preConditions>
-		<comment>
-			Setting concept name for discontinue concept as discontinued_reason_non_coded
-			for discontinued orders	and have a null or blank discontinued_reason_non_coded
-		</comment>
-		<sql>
-			UPDATE orders o SET o.discontinued_reason_non_coded = (
-					SELECT cn.name FROM concept_name cn 
-					WHERE o.discontinued_reason = cn.concept_id 
-					AND (cn.locale_preferred = 1 OR cn.concept_name_type = 'FULLY_SPECIFIED')  
-					ORDER BY cn.locale_preferred DESC -- if we have both preferred and fully specified names and are different 
-					LIMIT 1 -- choose preferred name otherwise fully specified
-				)
-			WHERE o.discontinued = 1 
-			AND (o.discontinued_reason_non_coded IS NULL OR o.discontinued_reason_non_coded = '')
-		</sql>
-	</changeSet>
-	
-	<changeSet id="20120502-1650" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<foreignKeyConstraintExists foreignKeyName="discontinued_because"/>
-		</preConditions>
-		<comment>Dropping foreign key constraint on orders.discontinued_reason to concept.concept_id</comment>
-		<dropForeignKeyConstraint constraintName="discontinued_because" baseTableName="orders" />
-	</changeSet>
-	
-	<changeSet id="20120503-1658" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="orders" columnName="discontinued_reason"/>
-		</preConditions>
-		<comment>Dropping orders.discontinued_reason column (references concept.concept_id)</comment>
-		<dropColumn tableName="orders" columnName="discontinued_reason" />
-	</changeSet>
-	
-	<changeSet id="20120503-1659b" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="orders" columnName="discontinued_reason"/></not>
-			<columnExists tableName="orders" columnName="discontinued_reason_non_coded"/>
-		</preConditions>
-		<comment>Renaming orders.discontinued_reason_non_coded column to orders.discontinued_reason</comment>
-		<renameColumn tableName="orders" oldColumnName="discontinued_reason_non_coded" newColumnName="discontinued_reason" columnDataType="varchar(255)" />
-	</changeSet>
-	
-	<changeSet id="20120503-1702" author="wyclif">
-		<preConditions onFail="MARK_RAN">
-			<tableExists tableName="orders"/>
-		</preConditions>
-		<comment>Dropping order_type table</comment>
-		<dropTable tableName="order_type" cascadeConstraints="true"/>
-	</changeSet>
-	
-	<changeSet id="20120503" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="test_order" />
-			</not>
-		</preConditions>
 
-		<comment>Create test_order table</comment>
-
-		<createTable tableName="test_order">
-			<column name="order_id" type="int" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false" />
-			</column>
-			<column name="specimen_source" type="int" />
-			<column name="laterality" type="int" />
-			<column name="clinical_history" type="text" />
-		</createTable>
-		
-		<addForeignKeyConstraint constraintName="test_order_order_id_fk"
-			baseTableName="test_order" baseColumnNames="order_id"
-			referencedTableName="orders" referencedColumnNames="order_id" />
-
-	</changeSet>
+    <changeSet id="20120503-djmod" author="dkayiwa and djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="test_order" />
+            </not>
+        </preConditions>
+        <comment>Create test_order table</comment>
+        <createTable tableName="test_order">
+            <column name="order_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="specimen_source" type="int" />
+            <column name="laterality" type="varchar(20)" />
+            <column name="clinical_history" type="text" />
+        </createTable>
+        <addForeignKeyConstraint constraintName="test_order_order_id_fk"
+                                 baseTableName="test_order" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="order_id" />
+        <addForeignKeyConstraint constraintName="test_order_specimen_source_fk"
+                                 baseTableName="test_order" baseColumnNames="specimen_source"
+                                 referencedTableName="concept" referencedColumnNames="concept_id" />
+    </changeSet>
 
     <changeSet id="20121007-orders_urgency" author="djazayeri">
         <preConditions onFail="MARK_RAN">
@@ -7677,9 +7399,4 @@
         </comment>
         <addUniqueConstraint tableName="location_attribute_type" columnNames="name" constraintName="location_attribute_type_unique_name"/>
     </changeSet>
-    
-    <changeSet id="20140407-1217-TRUNK-4335" author="rkorytkowski">
-		<comment>Changing drug_order.as_needed to boolean</comment>
-		<modifyDataType tableName="drug_order" columnName="as_needed" newDataType="boolean" />
-	</changeSet>
 </databaseChangeLog>

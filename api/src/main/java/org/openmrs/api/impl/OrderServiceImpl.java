@@ -14,38 +14,37 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
-import org.openmrs.GenericDrug;
+import org.openmrs.EncounterType;
+import org.openmrs.Location;
 import org.openmrs.Order;
-import org.openmrs.Order.OrderAction;
-import org.openmrs.Orderable;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.order.DrugOrderSupport;
+import org.openmrs.order.OrderUtil;
 import org.openmrs.order.RegimenSuggestion;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Default implementation of the Order-related services class. This class should not be invoked by
+ * Default implementation of the Order-related services class. This method should not be invoked by
  * itself. Spring injection is used to inject this implementation into the ServiceContext. Which
  * implementation is injected is determined by the spring application context file:
  * /metadata/api/spring/applicationContext.xml
@@ -59,18 +58,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	protected OrderDAO dao;
 	
-	/**
-	 * Used to store the last used order number
-	 */
-	private static Integer orderNumberCounter = -1;
-	
 	public OrderServiceImpl() {
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#setOrderDAO(org.openmrs.api.db.OrderDAO)
 	 */
-	@Override
 	public void setOrderDAO(OrderDAO dao) {
 		this.dao = dao;
 	}
@@ -78,30 +71,40 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
-	@Override
 	public Order saveOrder(Order order) throws APIException {
-		
-		checkIfModifyingSavedOrderNumber(order);
-		
-		//No editing of orders. We instead create a new one.
-		if (order.getOrderId() != null) {
-			Order newOrder = new Order();
-			newOrder.setConcept(order.getConcept());
-			newOrder.setPatient(order.getPatient());
-			newOrder.setOrderNumber(order.getOrderNumber());
-			newOrder.setStartDate(new Date());
-			newOrder.setUuid(UUID.randomUUID().toString());
-			
-			return saveOrderWithLesserValidation(newOrder);
-		} else {
-			return saveOrderWithLesserValidation(order);
-		}
+		return dao.saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#createOrder(org.openmrs.Order)
+	 * @deprecated
+	 */
+	@Deprecated
+	public void createOrder(Order order) throws APIException {
+		Context.getOrderService().saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#updateOrder(org.openmrs.Order)
+	 * @deprecated
+	 */
+	@Deprecated
+	public void updateOrder(Order order) throws APIException {
+		Context.getOrderService().saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#deleteOrder(org.openmrs.Order)
+	 * @deprecated
+	 */
+	@Deprecated
+	public void deleteOrder(Order order) throws APIException {
+		Context.getOrderService().purgeOrder(order);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#purgeOrder(org.openmrs.Order)
 	 */
-	@Override
 	public void purgeOrder(Order order) throws APIException {
 		Context.getOrderService().purgeOrder(order, false);
 	}
@@ -119,77 +122,271 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
 	 */
-	@Override
 	public Order voidOrder(Order order, String voidReason) throws APIException {
-		return dao.saveOrder(order);
+		return saveOrder(order);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
-	@Override
 	public Order unvoidOrder(Order order) throws APIException {
-		return saveOrderWithLesserValidation(order);
+		return saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
+	 *      java.util.Date)
+	 */
+	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
+		if (discontinueDate.after(new Date()))
+			order.setAutoExpireDate(discontinueDate);
+		else {
+			order.setDiscontinued(Boolean.TRUE);
+			order.setDiscontinuedDate(discontinueDate);
+		}
+		order.setDiscontinuedReason(discontinueReason);
+		order.setDiscontinuedBy(Context.getAuthenticatedUser());
+		
+		return saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#undiscontinueOrder(org.openmrs.Order)
+	 */
+	public Order undiscontinueOrder(Order order) throws APIException {
+		order.setDiscontinued(Boolean.FALSE);
+		order.setDiscontinuedBy(null);
+		order.setDiscontinuedDate(null);
+		order.setDiscontinuedReason(null);
+		
+		return saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
+	 */
+	public OrderType saveOrderType(OrderType orderType) throws APIException {
+		return dao.saveOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#createOrderType(org.openmrs.OrderType)
+	 * @deprecated
+	 */
+	@Deprecated
+	public void createOrderType(OrderType orderType) throws APIException {
+		Context.getOrderService().saveOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#updateOrderType(org.openmrs.OrderType)
+	 * @deprecated
+	 */
+	@Deprecated
+	public void updateOrderType(OrderType orderType) throws APIException {
+		Context.getOrderService().saveOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#deleteOrderType(org.openmrs.OrderType)
+	 * @deprecated
+	 */
+	@Deprecated
+	public void deleteOrderType(OrderType orderType) throws APIException {
+		Context.getOrderService().purgeOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#retireOrderType(OrderType, String)
+	 */
+	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException {
+		
+		orderType.setRetired(true);
+		orderType.setRetireReason(reason);
+		return saveOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#unretireOrderType(org.openmrs.OrderType)
+	 */
+	public OrderType unretireOrderType(OrderType orderType) throws APIException {
+		orderType.setRetired(false);
+		return saveOrderType(orderType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
+	 */
+	public void purgeOrderType(OrderType orderType) throws APIException {
+		dao.deleteOrderType(orderType);
+	}
+	
+	/**
+	 * TODO: Refactor, generalize, or remove this method
+	 * 
+	 * @see org.openmrs.api.OrderService#createOrdersAndEncounter(org.openmrs.Patient,
+	 *      java.util.Collection)
+	 */
+	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException {
+		
+		// Get unknown user (or the authenticated user)
+		User unknownUser = Context.getUserService().getUserByUsername("Unknown");
+		// TODO: fix this hack
+		if (unknownUser == null) {
+			unknownUser = Context.getAuthenticatedUser();
+		}
+		
+		// Get unknown location
+		Location unknownLocation = Context.getLocationService().getDefaultLocation();
+		
+		if (unknownUser == null || unknownLocation == null) {
+			throw new APIException("Couldn't find a Location and a User named 'Unknown'.");
+		}
+		
+		EncounterType encounterType = Context.getEncounterService().getEncounterType("Regimen Change");
+		if (encounterType == null) {
+			throw new APIException("Couldn't find an encounter type 'Regimen Change'");
+		}
+		
+		Encounter e = new Encounter();
+		e.setPatient(p);
+		e.setProvider(unknownUser.getPerson());
+		e.setLocation(unknownLocation);
+		e.setEncounterDatetime(new Date());
+		// TODO: Remove hardcoded encounter type
+		e.setEncounterType(encounterType);
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, e, null);
+		for (Order order : orders) {
+			e.addOrder(order);
+			order.setEncounter(e);
+		}
+		Context.getEncounterService().saveEncounter(e);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
-	@Override
-	@Transactional(readOnly = true)
 	public Order getOrder(Integer orderId) throws APIException {
 		return Context.getOrderService().getOrder(orderId, Order.class);
 	}
 	
 	/**
+	 * @see org.openmrs.api.OrderService#getDrugOrder(java.lang.Integer)
+	 * @deprecated
+	 */
+	@Deprecated
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException {
+		return getOrder(drugOrderId, DrugOrder.class);
+	}
+	
+	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer, java.lang.Class)
 	 */
-	@Override
-	@Transactional(readOnly = true)
+	
 	public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType) throws APIException {
 		return dao.getOrder(orderId, orderClassType);
 	}
 	
 	/**
+	 * @deprecated This is a dumb method
+	 */
+	@Deprecated
+	public List<Order> getOrders() throws APIException {
+		return getOrders(Order.class, null, null, null, null, null, null);
+	}
+	
+	/**
+	 * @deprecated This is a dumb method
+	 */
+	@Deprecated
+	public List<DrugOrder> getDrugOrders() throws APIException {
+		return getOrders(DrugOrder.class, null, null, null, null, null, null);
+	}
+	
+	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.Date, java.util.List, java.util.List)
+	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
+	 *      java.util.List)
 	 */
 	@Transactional(readOnly = true)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
-	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
+	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
+	        List<OrderType> orderTypes) {
+		if (orderClassType == null)
+			throw new APIException(
+			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
 		
-		return getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate, actionsToInclude,
-		    actionsToExclude, false);
+		if (patients == null)
+			patients = new Vector<Patient>();
+		
+		if (concepts == null)
+			concepts = new Vector<Concept>();
+		
+		if (status == null)
+			status = ORDER_STATUS.CURRENT;
+		
+		if (orderers == null)
+			orderers = new Vector<User>();
+		
+		if (encounters == null)
+			encounters = new Vector<Encounter>();
+		
+		if (orderTypes == null)
+			orderTypes = new Vector<OrderType>();
+		
+		return dao.getOrders(orderClassType, patients, concepts, status, orderers, encounters, orderTypes);
 	}
 	
-	private <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
-	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude, boolean includeVoided) {
-		if (orderClassType == null) {
-			throw new APIException("orderClassType cannot be null.  An order type of Order.class or a subclass is required");
-		}
+	/**
+	 * @see org.openmrs.api.OrderService#getOrdersByUser(org.openmrs.User)
+	 */
+	public List<Order> getOrdersByUser(User user) throws APIException {
+		if (user == null)
+			throw new APIException("Unable to get orders if I am not given a user");
 		
-		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate, actionsToInclude,
-		    actionsToExclude, includeVoided);
+		List<User> users = new Vector<User>();
+		users.add(user);
+		
+		return getOrders(Order.class, null, null, ORDER_STATUS.NOTVOIDED, users, null, null);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByPatient(org.openmrs.Patient)
 	 */
-	@Override
-	@Transactional(readOnly = true)
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException {
-		return Context.getOrderService().getOrdersByPatient(patient, false);
+		if (patient == null)
+			throw new APIException("Unable to get orders if I am not given a patient");
+		
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(patient);
+		
+		return getOrders(Order.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, boolean)
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, int)
+	 * @deprecated
+	 */
+	@Deprecated
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow) {
+		return getDrugOrdersByPatient(patient, whatToShow, false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, int, boolean)
+	 * @deprecated
+	 */
+	@Deprecated
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided) {
+		return getDrugOrdersByPatient(patient, convertToOrderStatus(whatToShow), includeVoided);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
-	@Transactional(readOnly = true)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided) {
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus, boolean includeVoided) {
 		if (patient == null) {
 			throw new APIException("Unable to get drug orders if not given a patient");
 		}
@@ -197,28 +394,32 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		// TODO: could use this call to get only ACTIVE.  Getting complete is done with asOfDate.
-		// with those two calls you can get rid of all this extra logic
-		List<DrugOrder> drugOrders = Context.getOrderService().getOrders(DrugOrder.class, patients, null, null, null, null,
-		    null, null);
+		List<DrugOrder> drugOrders = getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ANY, null, null, null);
 		
 		// loop over the drug orders and add them if they are within the current desired order
 		if (drugOrders != null) {
-			if (includeVoided) {
+			if (orderStatus == ORDER_STATUS.ANY)
 				return drugOrders;
-			}
-			
-			//TODO should be done with a query
-			//remove voided ones
-			List<DrugOrder> ret = new ArrayList<DrugOrder>();
-			
-			for (DrugOrder drugOrder : drugOrders) {
-				if (!drugOrder.getVoided()) {
-					ret.add(drugOrder);
+			else {
+				// the user wants to limit the type of drug order to get, so loop over
+				// them all and do the logic on each 
+				
+				List<DrugOrder> ret = new ArrayList<DrugOrder>();
+				
+				for (DrugOrder drugOrder : drugOrders) {
+					if (orderStatus == ORDER_STATUS.CURRENT && drugOrder.isCurrent())
+						ret.add(drugOrder);
+					else if (orderStatus == ORDER_STATUS.CURRENT_AND_FUTURE
+					        && (drugOrder.isCurrent() || drugOrder.isFuture()))
+						ret.add(drugOrder);
+					else if (orderStatus == ORDER_STATUS.NOTVOIDED && !drugOrder.getVoided())
+						ret.add(drugOrder);
+					else if (orderStatus == ORDER_STATUS.COMPLETE && drugOrder.isDiscontinuedRightNow())
+						ret.add(drugOrder);
 				}
+				
+				return ret;
 			}
-			
-			return ret;
 		}
 		
 		// default return if no drug orders were found in the database
@@ -226,22 +427,56 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS)
+	 */
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus) {
+		return getDrugOrdersByPatient(patient, orderStatus, false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypes()
+	 * @deprecated
+	 */
+	@Deprecated
+	public List<OrderType> getOrderTypes() throws APIException {
+		return getAllOrderTypes(true);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getAllOrderTypes()
+	 */
+	public List<OrderType> getAllOrderTypes() throws APIException {
+		return getAllOrderTypes(true);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getAllOrderTypes(boolean)
+	 */
+	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException {
+		return dao.getAllOrderTypes(includeRetired);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
+	 */
+	public OrderType getOrderType(Integer orderTypeId) throws APIException {
+		return dao.getOrderType(orderTypeId);
+	}
+	
+	/**
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient)
 	 */
-	@Override
-	@Transactional(readOnly = true)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return Context.getOrderService().getOrders(DrugOrder.class, patients, null, null, null, null, null, null);
+		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getStandardRegimens()
 	 */
-	@Override
-	@Transactional(readOnly = true)
 	public List<RegimenSuggestion> getStandardRegimens() {
 		DrugOrderSupport dos = null;
 		List<RegimenSuggestion> standardRegimens = null;
@@ -263,261 +498,117 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
+	 * @see org.openmrs.api.OrderService#getDrugSetsByConcepts(java.util.List, java.util.List)
+	 * @deprecated use {@link OrderUtil#getDrugSetsByConcepts(List, List)}
+	 */
+	@Deprecated
+	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
+	        throws APIException {
+		return OrderUtil.getDrugSetsByConcepts(drugOrders, drugSets);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugSetsByDrugSetIdList(java.util.List,
+	 *      java.lang.String, java.lang.String)
+	 * @deprecated use {@link OrderUtil#getDrugSetsByDrugSetIdList(List, String, String)}
+	 */
+	
+	@Deprecated
+	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
+	        String delimiter) {
+		return OrderUtil.getDrugSetsByDrugSetIdList(orderList, drugSetIdList, delimiter);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugSetHeadersByDrugSetIdList(java.lang.String)
+	 * @deprecated use {@link OrderUtil#getDrugSetHeadersByDrugSetIdList(String)}
+	 */
+	@Deprecated
+	public Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
+		return OrderUtil.getDrugSetHeadersByDrugSetIdList(drugSetIds);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueDrugSet(org.openmrs.Patient, java.lang.String,
+	 *      org.openmrs.Concept, java.util.Date)
+	 * @deprecated use {@link OrderUtil#discontinueDrugSet(Patient, String, Concept, Date)}
+	 */
+	
+	@Deprecated
+	public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate) {
+		OrderUtil.discontinueDrugSet(patient, drugSetId, discontinueReason, discontinueDate);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#voidDrugSet(Patient, String, String, int)
+	 * @deprecated use
+	 *             {@link OrderUtil#voidDrugSet(Patient, String, String, org.openmrs.api.OrderService.ORDER_STATUS)}
+	 */
+	@Deprecated
+	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid) {
+		OrderUtil.voidDrugSet(patient, drugSetId, voidReason, convertToOrderStatus(whatToVoid));
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueAllOrders(org.openmrs.Patient,
+	 *      org.openmrs.Concept, java.util.Date)
+	 * @deprecated use {@link OrderUtil#discontinueAllOrders(Patient, Concept, Date)}
+	 */
+	@Deprecated
+	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
+		OrderUtil.discontinueAllOrders(patient, discontinueReason, discontinueDate);
+	}
+	
+	/**
+	 * Convenience method to convert between the old integer Order status and the new enumeration
+	 * ORDER_STATUS. This method can be removed when all deprecated methods using the Integer order
+	 * status are removed
+	 * 
+	 * @param oldOrderStatus
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	private ORDER_STATUS convertToOrderStatus(Integer oldOrderStatus) {
+		switch (oldOrderStatus) {
+			case SHOW_CURRENT:
+				return ORDER_STATUS.CURRENT;
+			case SHOW_ALL:
+				return ORDER_STATUS.ANY;
+			case SHOW_COMPLETE:
+				return ORDER_STATUS.COMPLETE;
+			case SHOW_CURRENT_AND_FUTURE:
+				return ORDER_STATUS.CURRENT_AND_FUTURE;
+				//case SHOW_NOTVOIDED:
+				// fall through to default
+			default:
+				return ORDER_STATUS.NOTVOIDED;
+		}
+	}
+	
+	/**
 	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
 	 */
-	@Override
-	@Transactional(readOnly = true)
 	public Order getOrderByUuid(String uuid) throws APIException {
 		return dao.getOrderByUuid(uuid);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
+	 * @see org.openmrs.api.OrderService#getOrderTypeByUuid(java.lang.String)
 	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Order getOrderByOrderNumber(String orderNumber) {
-		return dao.getOrderByOrderNumber(orderNumber);
+	
+	public OrderType getOrderTypeByUuid(String uuid) throws APIException {
+		return dao.getOrderTypeByUuid(uuid);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient,
-	 *      org.openmrs.Concept)
+	 * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
 	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
-		if (patient == null) {
-			throw new IllegalArgumentException("patient is required");
-		}
-		
-		List<Concept> concepts = new Vector<Concept>();
-		concepts.add(concept);
-		
-		List<Patient> patients = new Vector<Patient>();
-		patients.add(patient);
-		
-		return Context.getOrderService().getOrders(Order.class, patients, concepts, null, null, null, null, null);
-	}
 	
-	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrdersByPatient(org.openmrs.Patient,
-	 *      java.util.Date)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException {
+	public List<Order> getOrdersByEncounter(Encounter encounter) {
+		List<Encounter> encounters = new Vector<Encounter>();
+		encounters.add(encounter);
 		
-		if (p == null) {
-			throw new IllegalArgumentException("patient is required");
-		}
-		
-		if (date == null) {
-			date = new Date();
-		}
-		
-		List<Patient> patients = new Vector<Patient>();
-		patients.add(p);
-		
-		return Context.getOrderService().getOrders(Order.class, patients, null, null, null, date, null,
-		    Arrays.asList(OrderAction.DISCONTINUE));
-		
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getActiveDrugOrdersByPatient(org.openmrs.Patient,
-	 *      java.util.Date)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) {
-		if (p == null) {
-			throw new IllegalArgumentException("patient is required");
-		}
-		
-		if (date == null) {
-			date = new Date();
-		}
-		
-		List<Patient> patients = new Vector<Patient>();
-		patients.add(p);
-		
-		// TODO: add "NOT discontinued" action to this call
-		return Context.getOrderService().getOrders(DrugOrder.class, patients, null, null, null, date, null,
-		    Arrays.asList(OrderAction.DISCONTINUE));
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderables(java.lang.String)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<Orderable<?>> getOrderables(String query) throws APIException {
-		
-		if (query == null) {
-			throw new IllegalArgumentException("Orderable concept name is required");
-		}
-		
-		List<Orderable<?>> result = new ArrayList<Orderable<?>>();
-		
-		// then look for concepts that are drugs
-		List<Concept> concepts = Context.getConceptService().getConceptsByName(query);
-		if (concepts != null) {
-			for (Concept concept : concepts) {
-				if (concept.getConceptClass().getUuid().equals(ConceptClass.DRUG_UUID)) {
-					result.add(new GenericDrug(concept));
-				}
-			}
-		}
-		
-		// and next to try to find drugs by name
-		List<Drug> drugs = Context.getConceptService().getDrugs(query);
-		if (drugs != null) {
-			for (Drug drug : drugs) {
-				if (!drug.isRetired()) {
-					result.add(drug);
-				}
-			}
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String,
-	 *      org.openmrs.User, java.util.Date)
-	 */
-	@Override
-	public Order discontinueOrder(Order order, String reason, User user, Date discontinueDate) throws APIException {
-		order.setDiscontinuedReason(reason);
-		return doDiscontinueOrder(order, user, discontinueDate);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String)
-	 */
-	@Override
-	public Order discontinueOrder(Order order, String reason) throws APIException {
-		return Context.getOrderService().discontinueOrder(order, reason, null, null);
-	}
-	
-	/**
-	 * Utility method that discontinues an order
-	 *
-	 * @param oldOrder the order to discontinue
-	 * @param user the user discontinuing the order, default to authenticated user
-	 * @param discontinueDate the date when to discontinue the order, default to now. Note that this
-	 *            method only uses the passed in discontinue date if it is a future date and the
-	 *            order is not yet activated
-	 * @return the discontinued order
-	 * @throws APIException
-	 */
-	private Order doDiscontinueOrder(Order oldOrder, User user, Date discontinueDate) throws APIException {
-		if (user == null) {
-			user = Context.getAuthenticatedUser();
-		}
-		if (discontinueDate == null) {
-			discontinueDate = new Date();
-		} else if (discontinueDate.after(new Date())) {
-			throw new APIException("Cannot discontinue an order in the future");
-		}
-		if (oldOrder.getDiscontinued()) {
-			throw new APIException("Cannot discontinue an order that is already discontinued");
-		}
-		if (oldOrder.getAutoExpireDate() != null && OpenmrsUtil.compare(discontinueDate, oldOrder.getAutoExpireDate()) > 0) {
-			throw new APIException("Cannot discontinue an order after its autoexpire date");
-		}
-		
-		oldOrder.setDiscontinued(Boolean.TRUE);
-		oldOrder.setDiscontinuedBy(user);
-		oldOrder.setDiscontinuedDate(discontinueDate);
-		
-		saveOrderWithLesserValidation(oldOrder);
-		
-		Order newOrder = new Order();
-		newOrder.setOrderNumber(getNewOrderNumber());
-		newOrder.setConcept(oldOrder.getConcept());
-		newOrder.setPatient(oldOrder.getPatient());
-		newOrder.setPreviousOrderNumber(oldOrder.getOrderNumber());
-		newOrder.setOrderAction(OrderAction.DISCONTINUE);
-		newOrder.setStartDate(new Date());
-		newOrder.setUuid(UUID.randomUUID().toString());
-		
-		Context.getOrderService().saveOrder(newOrder);
-		
-		return oldOrder;
-	}
-	
-	/**
-	 * Convenience method to be called within the API to enable persisting changes in an existing
-	 * order while surpassing certain validation constraints e.g when discontinuing an order
-	 *
-	 * @param order
-	 * @return
-	 * @throws APIException
-	 */
-	private Order saveOrderWithLesserValidation(Order order) throws APIException {
-		checkIfModifyingSavedOrderNumber(order);
-		return dao.saveOrder(order);
-	}
-	
-	private void checkIfModifyingSavedOrderNumber(Order order) {
-		String orderNumberInDatabase = dao.getOrderNumberInDatabase(order);
-		if (orderNumberInDatabase != null && !orderNumberInDatabase.equals(order.getOrderNumber())) {
-			throw new APIException("Cannot modify the orderNumber of a saved order");
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderable(java.lang.String)
-	 */
-	@Transactional(readOnly = true)
-	public Orderable<?> getOrderable(String identifier) throws APIException {
-		if (identifier == null) {
-			throw new IllegalArgumentException("Orderable identifier is required");
-		}
-		
-		Integer numericIdentifier = GenericDrug.getNumericIdentifier(identifier);
-		if (numericIdentifier != null) {
-			Concept concept = Context.getConceptService().getConcept(numericIdentifier);
-			if (concept != null) {
-				return new GenericDrug(concept);
-			}
-		}
-		
-		numericIdentifier = Drug.getNumericIdentifier(identifier);
-		if (numericIdentifier != null) {
-			Drug drug = Context.getConceptService().getDrug(numericIdentifier);
-			if (drug != null) {
-				return drug;
-			}
-		}
-		
-		//Do we have other types to check?
-		
-		return null;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getNewOrderNumber()
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public String getNewOrderNumber() {
-		Integer next;
-		synchronized (orderNumberCounter) {
-			if (orderNumberCounter < 0) {
-				// we've just started up, so we need to fetch this from the DAO
-				Integer temp = dao.getHighestOrderId();
-				orderNumberCounter = temp == null ? 0 : temp;
-			}
-			orderNumberCounter += 1;
-			next = orderNumberCounter;
-		}
-		
-		return Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX,
-		    OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX)
-		        + next;
+		return getOrders(Order.class, null, null, null, null, encounters, null);
 	}
 	
 	/**
@@ -549,45 +640,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, null, null, null, null, null, null, includeVoided);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
-	 */
-	@Transactional(readOnly = true)
-	public List<Order> getOrdersByEncounter(Encounter encounter) throws APIException {
-		if (encounter == null) {
-			throw new APIException("Unable to get orders if I am not given an encounter");
-		}
-		
-		List<Encounter> encounters = new ArrayList<Encounter>();
-		encounters.add(encounter);
-		
-		return Context.getOrderService().getOrders(Order.class, null, null, null, encounters, null, null, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrdersByOrderer(org.openmrs.User)
-	 */
-	@Transactional(readOnly = true)
-	public List<Order> getOrdersByOrderer(User orderer) throws APIException {
-		if (orderer == null) {
-			throw new APIException("Unable to get orders if I am not given an orderer");
-		}
-		
-		List<User> orderers = new ArrayList<User>();
-		orderers.add(orderer);
-		
-		return Context.getOrderService().getOrders(Order.class, null, null, orderers, null, null, null, null);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
-	 */
-	@Transactional(readOnly = true)
-	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
-		return dao.getOrderHistoryByOrderNumber(orderNumber);
+		return getOrders(Order.class, patients, null, includeVoided ? ORDER_STATUS.ANY : ORDER_STATUS.NOTVOIDED, null, null,
+		    null);
 	}
 	
 }

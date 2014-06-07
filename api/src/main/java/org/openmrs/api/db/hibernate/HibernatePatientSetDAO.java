@@ -375,6 +375,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					for (Order order : orders) {
 						Element orderNode = doc.createElement("order");
 						orderNode.setAttribute("order_id", order.getOrderId().toString());
+						orderNode.setAttribute("order_type", order.getOrderType().getName());
 						
 						Concept concept = order.getConcept();
 						orderNode.setAttribute("concept_id", concept.getConceptId().toString());
@@ -390,8 +391,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							orderNode.setAttribute("auto_expire_date", df.format(order.getAutoExpireDate()));
 						}
 						if (order.getOrderer() != null) {
-							orderNode.setAttribute("orderer", order.getOrderer().getProviderId() + "^"
-							        + order.getOrderer().getName());
+							orderNode.setAttribute("orderer", formatUser(order.getOrderer()));
 						}
 						if (order.getDiscontinued() != null) {
 							orderNode.setAttribute("discontinued", order.getDiscontinued().toString());
@@ -400,7 +400,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							orderNode.setAttribute("discontinued_date", df.format(order.getDiscontinuedDate()));
 						}
 						if (order.getDiscontinuedReason() != null) {
-							orderNode.setAttribute("discontinued_reason", order.getDiscontinuedReason());
+							orderNode.setAttribute("discontinued_reason", order.getDiscontinuedReason().getName(locale,
+							    false).getName());
 						}
 						
 						ordersNode.appendChild(orderNode);

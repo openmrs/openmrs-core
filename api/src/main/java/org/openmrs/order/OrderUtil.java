@@ -29,6 +29,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsUtil;
@@ -36,9 +37,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Contains convenience methods for working with Orders.
  *
- * @deprecated get rid of this before we merge back to trunk
  */
-@Deprecated
 public class OrderUtil {
 	
 	private static final Log log = LogFactory.getLog(OrderUtil.class);
@@ -62,21 +61,18 @@ public class OrderUtil {
 		}
 		
 		OrderService orderService = Context.getOrderService();
-		//Shouldn't the type parameter value be Order
-		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatient(patient);
+		
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.CURRENT);
 		
 		// loop over all of this patient's drug orders to discontinue each
 		if (drugOrders != null) {
 			for (DrugOrder drugOrder : drugOrders) {
-				if (drugOrder.getDiscontinued()) {
-					continue;
-				}
 				
 				if (log.isDebugEnabled()) {
 					log.debug("discontinuing order: " + drugOrder);
 				}
 				// do the stuff to the database
-				orderService.discontinueOrder(drugOrder, discontinueReason.getName().getName(), null, discontinueDate);
+				orderService.discontinueOrder(drugOrder, discontinueReason, discontinueDate);
 			}
 		}
 	}
@@ -88,15 +84,16 @@ public class OrderUtil {
 	 * @param patient
 	 * @param drugSetId
 	 * @param voidReason
+	 * @param status
 	 * @should void all drug orders of the given type when status is null
 	 * @should void drug orders of the given type for status of CURRENT
 	 * @should void drug orders of the given type for status of COMPLETE
 	 * @should not affect drug orders that are already voided
 	 */
-	public static void voidDrugSet(Patient patient, String drugSetId, String voidReason) {
-		if (log.isDebugEnabled()) {
-			log.debug("Voiding drug sets for patient: " + patient + " drugSetId: " + drugSetId + " reason: " + voidReason);
-		}
+	public static void voidDrugSet(Patient patient, String drugSetId, String voidReason, ORDER_STATUS status) {
+		if (log.isDebugEnabled())
+			log.debug("Voiding drug sets for patient: " + patient + " drugSetId: " + drugSetId + " reason: " + voidReason
+			        + " status: " + status);
 		
 		// do some null pointer checks
 		
@@ -114,7 +111,7 @@ public class OrderUtil {
 		
 		OrderService orderService = Context.getOrderService();
 		
-		List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient);
+		List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient, status);
 		
 		Map<String, List<DrugOrder>> ordersBySetId = getDrugSetsByDrugSetIdList(currentOrders, drugSetId, ",");
 		
@@ -164,7 +161,7 @@ public class OrderUtil {
 		
 		OrderService orderService = Context.getOrderService();
 		
-		List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient);
+		List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.CURRENT);
 		Map<String, List<DrugOrder>> ordersBySetId = getDrugSetsByDrugSetIdList(currentOrders, drugSetId, ",");
 		
 		// loop over all of the orders and discontinue each of them
@@ -172,7 +169,7 @@ public class OrderUtil {
 			List<DrugOrder> ordersToDiscontinue = ordersBySetId.get(drugSetId);
 			if (ordersToDiscontinue != null) {
 				for (DrugOrder order : ordersToDiscontinue) {
-					orderService.discontinueOrder(order, discontinueReason.getName().getName(), null, discontinueDate);
+					orderService.discontinueOrder(order, discontinueReason, discontinueDate);
 				}
 			} else {
 				log.debug("no orders to discontinue");
