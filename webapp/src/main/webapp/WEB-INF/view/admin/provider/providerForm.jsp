@@ -10,6 +10,10 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
+$j(document).ready(function(){
+	hideError("providerOrPerson");
+})
+
 function toggleProviderDetails(){
 	
 	$j('.providerDetails').toggle();
@@ -17,9 +21,19 @@ function toggleProviderDetails(){
 	if($j('#providerName').is(":visible"))
 		$j('#linkToPerson').removeAttr('checked');
 	else
-		$j('#linkToPerson').attr('checked', 'checked');
+		$j('#linkToPerson').attr('checked', 'checked');		
 		
-		
+}
+
+function validateForm(){
+	var providerName = $j('#providerName');
+	var person = $j('#person_id');
+	var result = true;
+	if(providerName.val() != '' && person.val() != null){
+		result = false;
+		showError("providerOrPerson");
+	}
+	return result;
 }
 </script>
 
@@ -48,7 +62,7 @@ function toggleProviderDetails(){
 </b>
 
 <div class="box">
-	<form method="post">
+	<form method="post" onSubmit="return validateForm()">
 		
 		<table cellpadding="3" cellspacing="0">
 			<tr>
@@ -77,10 +91,11 @@ function toggleProviderDetails(){
 				<td>
 					<spring:bind path="provider.name">			
 						<input type="text" name="${status.expression}" size="25" 
-							   value="${status.value}" />
+							   value="${status.value}" id="providerName" />
 					   
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 					</spring:bind>
+					<span class="error" id="providerOrPerson"><openmrs:message code="Provider.error.personAndName.provided" /></span>
 				</td>
 			</tr>
 			</c:when>
