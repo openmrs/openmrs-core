@@ -304,4 +304,23 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(providerToValidate, errors);
 		Assert.assertTrue(errors.hasErrors());
 	}
+	
+	/**
+	 * @see ProviderValidator#validate(Object,Errors)
+	 * @verifies pass if both person and name set for existing provider
+	 */
+	@Test
+	public void validate_shouldPassIfBothPersonAndNameSetForExistingProvider() throws Exception {
+		
+		Provider existingProvider = Context.getProviderService().getProvider(1);
+		
+		Assert.assertFalse(existingProvider.isRetired());
+		
+		existingProvider.setName("name");
+		existingProvider.setPerson(new Person());
+		
+		providerValidator.validate(existingProvider, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
 }
