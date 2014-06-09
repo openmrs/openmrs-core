@@ -2465,4 +2465,29 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
         Assert.assertNotNull(drugOrder.getOrderType());
         Assert.assertEquals(orderService.getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID), drugOrder.getOrderType());
     }
+
+    /**
+     * @verifies set Order type of Test Order to test order if not set and concept not mapped
+     * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+     */
+    @Test
+    public void saveOrder_shouldSetOrderTypeOfTestOrderToTestOrderIfNotSetAndConceptNotMapped() throws Exception {
+        TestOrder testOrder = new TestOrder();
+        testOrder.setPatient(patientService.getPatient(7));
+        testOrder.setConcept(conceptService.getConcept(113));
+        testOrder.setOrderer(providerService.getProvider(1));
+        testOrder.setCareSetting(orderService.getCareSetting(1));
+        Encounter encounter = encounterService.getEncounter(3);
+        testOrder.setEncounter(encounter);
+        testOrder.setStartDate(encounter.getEncounterDatetime());
+        testOrder.setClinicalHistory("Patient had a negative reaction to the test in the past");
+        testOrder.setFrequency(orderService.getOrderFrequency(3));
+        testOrder.setSpecimenSource(conceptService.getConcept(22));
+        testOrder.setNumberOfRepeats(3);
+
+        orderService.saveOrder(testOrder,null);
+        Assert.assertNotNull(testOrder.getOrderType());
+        Assert.assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID),testOrder.getOrderType());
+    }
+
 }
