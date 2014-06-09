@@ -89,7 +89,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-	
+
 	private class SomeTestOrder extends TestOrder {}
 	
 	@Before
@@ -2430,4 +2430,41 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.retireOrderType(orderType, "test retire reason");
 		Assert.assertFalse(conceptClass.isRetired());
 	}
+
+
+    /**
+     * @verifies set Order type to drug order if not set
+     * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+     */
+    @Test
+    public void saveOrder_shouldSetOrderTypeOfDrugOrderToDrugOrderIfNotSetAndConceptNotMapped() throws Exception {
+        Drug drug = new Drug();
+        drug.setDrugId(4);
+        drug.setName("test drug");
+        drug.setConcept(conceptService.getConcept(113));
+
+        DrugOrder drugOrder = new DrugOrder();
+        Encounter encounter = encounterService.getEncounter(3);
+        drugOrder.setEncounter(encounter);
+        drugOrder.setPatient(patientService.getPatient(7));
+        drugOrder.setCareSetting(orderService.getCareSetting(1));
+        drugOrder.setOrderer(Context.getProviderService().getProvider(1));
+        drugOrder.setStartDate(encounter.getEncounterDatetime());
+        drugOrder.setDrug(drug);
+        drugOrder.setDosingType(DrugOrder.DosingType.SIMPLE);
+        drugOrder.setDose(300.0);
+        drugOrder.setDoseUnits(conceptService.getConcept(50));
+        drugOrder.setQuantity(20.0);
+        drugOrder.setQuantityUnits(conceptService.getConcept(51));
+        drugOrder.setDuration(20.0);
+        drugOrder.setDurationUnits(conceptService.getConcept(28));
+        drugOrder.setFrequency(orderService.getOrderFrequency(3));
+        drugOrder.setRoute(conceptService.getConcept(22));
+        drugOrder.setNumRefills(10);
+        drugOrder.setOrderType(null);
+
+        orderService.saveOrder(drugOrder, null);
+        Assert.assertNotNull(drugOrder.getOrderType());
+        Assert.assertEquals(orderService.getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID), drugOrder.getOrderType());
+    }
 }
