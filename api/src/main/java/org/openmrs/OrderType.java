@@ -30,6 +30,9 @@ import org.openmrs.api.context.Context;
 public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 23232L;
+
+    public static final String DRUG_ORDER_TYPE_UUID = "131168f4-15f5-102d-96e4-000c29c2a5d7";
+    public static final String TEST_ORDER_TYPE_UUID = " 52a447d3-a64a-11e3-9aeb-50e549534c5e";
 	
 	private Integer orderTypeId;
 	
