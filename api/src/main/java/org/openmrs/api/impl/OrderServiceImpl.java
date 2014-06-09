@@ -27,18 +27,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.proxy.HibernateProxy;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.Provider;
-import org.openmrs.User;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.OrderContext;
@@ -113,14 +102,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (orderContext != null) {
 				orderType = orderContext.getOrderType();
 			}
-			if (orderType == null) {
-				orderType = getOrderTypeByConcept(concept);
-			}
+            if (orderType == null) {
+                orderType = getOrderTypeByConcept(concept);
+            }
+            //Check if it is instance of DrugOrder
+            if(orderType == null && order instanceof DrugOrder) {
+                orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+            }
+            //Check if it is an instance of TestOrder
+            if(orderType == null && order instanceof TestOrder) {
+                orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
+            }
+
 			//this order's order type should match that of the previous
 			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
 				throw new APIException(
 				        "Cannot determine the order type of the order, make sure the concept's class is mapped to an order type");
 			}
+
+            //Check if order type java class matches the class stored in database
+            if (!orderType.getJavaClass().isAssignableFrom(order.getClass())) {
+                throw new APIException("Order type java class does not match the order class "+order.getClass().getName());
+            }
+
 			order.setOrderType(orderType);
 		}
 		if (order.getCareSetting() == null) {
