@@ -2438,9 +2438,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
      */
     @Test
     public void saveOrder_shouldSetOrderTypeOfDrugOrderToDrugOrderIfNotSetAndConceptNotMapped() throws Exception {
-        Drug drug = new Drug();
-        drug.setDrugId(4);
-        drug.setName("test drug");
+        Drug drug = conceptService.getDrug(2);
         drug.setConcept(conceptService.getConcept(113));
 
         DrugOrder drugOrder = new DrugOrder();

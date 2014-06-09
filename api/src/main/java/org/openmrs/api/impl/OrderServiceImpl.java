@@ -114,6 +114,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (orderType == null) {
 				orderType = getOrderTypeByConcept(concept);
 			}
+            //Check if it is instance of DrugOrder
+            if(order instanceof DrugOrder) {
+                orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+            }
 			//this order's order type should match that of the previous
 			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
 				throw new APIException(
