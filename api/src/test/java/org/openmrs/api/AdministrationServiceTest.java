@@ -789,7 +789,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
 		Assert.assertFalse("pl", searchLocales.contains(new Locale("pl")));
 	}
-
+	
 	/**
 	 * @see AdministrationService#validate(Object,Errors)
 	 * @verifies throws APIException if the input is null

@@ -1849,7 +1849,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (ps != null) {
 				criteria.createCriteria("patientProgram").add(Restrictions.in("patient.personId", ps.getMemberIds()));
 			}
-
+			
 			//criteria.add(Restrictions.eq("state.programWorkflow", wf));
 			criteria.createCriteria("state").add(Restrictions.eq("programWorkflow", wf));
 			criteria.add(Restrictions.eq("voided", false));

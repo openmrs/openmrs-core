@@ -870,7 +870,7 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to assign System Developer role")
 	public static final String ASSIGN_SYSTEM_DEVELOPER_ROLE = "Assign System Developer Role";
-
+	
 	@AddOnStartup(description = "Able to view Order Frequencies")
 	public static final String VIEW_ORDER_FREQUENCIES = "View Order Frequencies";
 	

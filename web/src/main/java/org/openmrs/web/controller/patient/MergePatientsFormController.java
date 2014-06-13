@@ -124,7 +124,7 @@ public class MergePatientsFormController extends SimpleFormController {
 			} else {
 				redirectURL = view.toString();
 			}
-
+			
 			return new ModelAndView(new RedirectView(redirectURL));
 		}
 		
@@ -209,7 +209,7 @@ public class MergePatientsFormController extends SimpleFormController {
 			}
 		}
 		map.put("patientIdsWithUnvoidedOrders", patientIdsWithUnvoidedOrders);
-
+		
 		return map;
 	}
 	

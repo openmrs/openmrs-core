@@ -459,7 +459,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public EncounterType saveEncounterType(EncounterType encounterType) {
 		//make sure the user has not turned off encounter types editing
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
-
+		
 		dao.saveEncounterType(encounterType);
 		return encounterType;
 	}
@@ -514,7 +514,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		//make sure the user has not turned off encounter types editing
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
-
+		
 		encounterType.setRetired(true);
 		encounterType.setRetireReason(reason);
 		return Context.getEncounterService().saveEncounterType(encounterType);
@@ -525,7 +525,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException {
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
-
+		
 		encounterType.setRetired(false);
 		return Context.getEncounterService().saveEncounterType(encounterType);
 	}
@@ -536,7 +536,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public void purgeEncounterType(EncounterType encounterType) throws APIException {
 		//make sure the user has not turned off encounter types editing
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
-
+		
 		dao.deleteEncounterType(encounterType);
 	}
 	
@@ -1060,7 +1060,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new EncounterTypeLockedException();
 		}
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterRolesByName(String)
 	 */

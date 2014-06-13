@@ -1954,8 +1954,8 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
-
-    /**
+	
+	/**
 	 * Fetches un retired drugs that match the specified search phrase. The logic matches on drug
 	 * names, concept names of the associated concepts or the concept reference term codes of the
 	 * drug reference term mappings

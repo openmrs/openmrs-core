@@ -58,7 +58,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private Patient patient;
 	
 	private OrderType orderType;
-
+	
 	private Concept concept;
 	
 	private String instructions;

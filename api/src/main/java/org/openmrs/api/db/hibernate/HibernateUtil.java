@@ -147,7 +147,7 @@ public class HibernateUtil {
 		
 		criteria.add(conjunction);
 	}
-
+	
 	/**
 	 * Gets an object as an instance of its persistent type if it is a hibernate proxy otherwise
 	 * returns the same passed in object

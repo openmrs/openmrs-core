@@ -95,14 +95,14 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		if (args == null || args.length == 0) {
 			return;
 		}
-
+		
 		Object mainArgument = args[0];
 		
 		// fail early on a null parameter
 		if (mainArgument == null) {
 			return;
 		}
-
+		
 		// the "create" is there to cover old deprecated methods since AOP doesn't occur
 		// on method calls within a class, only on calls to methods from external classes to methods
 		// "update" is not an option here because there are multiple methods that start with "update" but is
@@ -117,7 +117,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				if (!methodNameEndsWithClassName(method, mainArgument.getClass())) {
 					return;
 				}
-
+				
 				// if a second argument exists, pass that to the save handler as well
 				// (with current code, it means we're either in an obs save or a user save)				
 				String other = null;
@@ -157,13 +157,13 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			if (!methodNameEndsWithClassName(method, mainArgument.getClass())) {
 				return;
 			}
-
+			
 			if (methodName.startsWith("void")) {
 				Voidable voidable = (Voidable) args[0];
 				Date dateVoided = voidable.getDateVoided() == null ? new Date() : voidable.getDateVoided();
 				String voidReason = (String) args[1];
 				recursivelyHandle(VoidHandler.class, voidable, Context.getAuthenticatedUser(), dateVoided, voidReason, null);
-
+				
 			} else if (methodName.startsWith("unvoid")) {
 				Voidable voidable = (Voidable) args[0];
 				Date originalDateVoided = voidable.getDateVoided();

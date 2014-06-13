@@ -46,7 +46,6 @@ public class OrderUtil {
 			        + discontinueDate);
 		}
 		
-
 		//TODO discontinue all active drug orders for a patient
 		//See https://tickets.openmrs.org/browse/TRUNK-4185
 	}
@@ -75,7 +74,7 @@ public class OrderUtil {
 				}
 				parentType = parentType.getParent();
 			}
-
+			
 		}
 		return false;
 	}

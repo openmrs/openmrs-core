@@ -657,7 +657,7 @@ public interface ConceptDAO {
 	 * @see ConceptService#getDefaultConceptMapType()
 	 */
 	public ConceptMapType getDefaultConceptMapType() throws DAOException;
-
+	
 	/**
 	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
 	 */

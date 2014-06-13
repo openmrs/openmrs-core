@@ -138,7 +138,7 @@ public class HibernateOrderDAO implements OrderDAO {
 			crit.add(Restrictions.in("encounter", encounters));
 		
 		crit.addOrder(org.hibernate.criterion.Order.desc("startDate"));
-
+		
 		return crit.list();
 	}
 	
@@ -253,7 +253,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		dateStoppedAndAutoExpDateDisjunction.add(Restrictions.ge("dateStopped", asOfDate));
 		
 		crit.add(dateStoppedAndAutoExpDateDisjunction);
-
+		
 		return crit.list();
 	}
 	

@@ -233,7 +233,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				for (Module awareOfModule : collectAwareOfModuleImports(module)) {
 					startedRelatedModules.put(awareOfModule.getModuleId(), awareOfModule.getVersion());
 				}
-
+				
 				// recursively get files
 				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
@@ -410,7 +410,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		return publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
-
+		
 	}
 	
 	/**
@@ -450,7 +450,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 			log.debug(buf.toString());
 		}
-
+		
 		requiredModules = collectRequiredModuleImports(getModule());
 		awareOfModules = collectAwareOfModuleImports(getModule());
 		// repopulate resource URLs

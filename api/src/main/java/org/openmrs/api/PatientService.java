@@ -47,7 +47,7 @@ import org.openmrs.validator.PatientIdentifierValidator;
  * @see org.openmrs.Patient
  */
 public interface PatientService extends OpenmrsService {
-
+	
 	/**
 	 * Sets the DAO for this service. This is done by DI and Spring. See the
 	 * applicationContext-service.xml definition file.
