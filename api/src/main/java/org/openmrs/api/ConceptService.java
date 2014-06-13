@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -51,9 +52,9 @@ import org.openmrs.util.PrivilegeConstants;
  * 
  * <pre>
  * 
- * 
- * 
- * 
+ *
+ *
+ *
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * 
@@ -61,7 +62,7 @@ import org.openmrs.util.PrivilegeConstants;
  * 
  * <pre>
  * 
- * 
+ *
  * 
  * 
  * // if there is a concept row in the database with concept_id = 3845
@@ -1248,7 +1249,7 @@ public interface ConceptService extends OpenmrsService {
 	 * returns retired concepts, this method will simply return the first concept in the list returns by
 	 * the dao method; retired concepts can be excluded by setting the includeRetired parameter to false,
 	 * but the above logic still applies
-	 * 
+	 *
 	 * @param code the code associated with a concept within a given {@link ConceptSource}
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
 	 * @param includeRetired whether or not to include retired concepts
@@ -1953,4 +1954,78 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
+
+    /**
+	 * Fetches un retired drugs that match the specified search phrase. The logic matches on drug
+	 * names, concept names of the associated concepts or the concept reference term codes of the
+	 * drug reference term mappings
+	 * 
+	 * @param searchPhrase The string to match against
+	 * @param locale The locale to match against when searching in drug concept names
+	 * @param exactLocale If false then concepts with names in a broader locale will be matched e.g
+	 *            in case en_GB is passed in then en will be matched
+	 * @param includeRetired Specifies if retired drugs that match should be included or not
+	 * @return A list of matching drugs
+	 * @since 1.10
+	 * @should get drugs with names matching the search phrase
+	 * @should include retired drugs if includeRetired is set to true
+	 * @should get drugs linked to concepts with names that match the phrase
+	 * @should get drugs linked to concepts with names that match the phrase and locale
+	 * @should get drugs linked to concepts with names that match the phrase and related locales
+	 * @should get drugs that have mappings with reference term codes that match the phrase
+	 * @should return unique drugs
+	 * @should return all drugs with a matching term code or drug name or concept name
+	 * @should reject a null search phrase
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired);
+	
+	/**
+	 * Fetches all drugs with reference mappings to the specified concept source that match the
+	 * specified code and concept map types
+	 * 
+	 * @param code the code the reference term code to match on
+	 * @param conceptSource the concept source on which to match on
+	 * @param withAnyOfTheseTypes the ConceptMapTypes to match on
+	 * @param includeRetired specifies if retired drugs should be included or not
+	 * @since 1.10
+	 * @return the list of {@link Drug}
+	 * @throws APIException
+	 * @should get a list of all drugs that match on all the parameter values
+	 * @should return retired and non-retired drugs if includeRetired is set to true
+	 * @should return empty list if no matches are found
+	 * @should match on the code
+	 * @should match on the concept source
+	 * @should match on the map types
+	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
+	 * @should exclude duplicate matches
+	 * @should fail if source is null
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException;
+	
+	/**
+	 * Gets the "best" matching drug, i.e. matching the earliest ConceptMapType passed in e.g.
+	 * getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan)) If there are multiple
+	 * matches for the highest-priority ConceptMapType, throw an exception
+	 * 
+	 *
+	 * @param code the code the reference term code to match on
+	 * @param conceptSource the concept source to match on
+	 * @param withAnyOfTheseTypesOrOrderOfPreference the ConceptMapTypes to match on
+	 * @since 1.10
+	 * @return the {@link Drug}
+	 * @throws APIException
+	 * @should return a drug that matches the code and source
+	 * @should return a drug that matches the code and source and the best map type
+	 * @should fail if multiple drugs are found matching the best map type
+	 * @should return null if no match found
+	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
+	 * @should fail if source is null
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws APIException;
+	
 }

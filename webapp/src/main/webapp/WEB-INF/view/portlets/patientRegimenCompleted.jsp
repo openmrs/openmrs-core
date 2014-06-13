@@ -56,7 +56,7 @@
 								<td class="regimenCompletedOtherDrugFrequency">${drugOrder.frequency}</td>
 								<td class="regimenCompletedOtherStartDate"><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td class="regimenCompletedOtherAutoExpireDate"><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
-								<td class="regimenCompletedOtherDiscontinuedDate"><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="medium" /></td>
+								<td class="regimenCompletedOtherDiscontinuedDate"><openmrs:formatDate date="${drugOrder.dateStopped}" type="medium" /></td>
 								<td class="regimenCompletedOtherInstructions">${drugOrder.instructions}</td>
 								<td class="regimenCompletedOtherDiscontinuedReason">
 									<c:if test="${not empty drugOrder.discontinuedReason}">
@@ -134,7 +134,7 @@
 								<td class="patientRegimenDrugFrequencyData">${drugOrder.frequency}</td>
 								<td class="patientRegimenDrugStartDateData"><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td class="patientRegimenDrugAutoExpireDateData"><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
-								<td class="patientRegimenDrugDiscontinuedDateData"><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="medium" /></td>
+								<td class="patientRegimenDrugDiscontinuedDateData"><openmrs:formatDate date="${drugOrder.dateStopped}" type="medium" /></td>
 								<td class="patientRegimenDrugInstrucionData">${drugOrder.instructions}</td>
 								<td class="patientRegimenDrugDiscontinuedReasonData">
 									<c:if test="${not empty drugOrder.discontinuedReason}">
@@ -196,7 +196,7 @@
 								<td class="patientRegimenDrugFrequencyData">${drugOrder.frequency}</td>
 								<td class="patientRegimenDrugStartDateData"><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td class="patientRegimenDrugAutoExpireDateData"><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
-								<td class="patientRegimenDrugDiscontinuedDateData"><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="medium" /></td>
+								<td class="patientRegimenDrugDiscontinuedDateData"><openmrs:formatDate date="${drugOrder.dateStopped}" type="medium" /></td>
 								<td class="patientRegimenDrugInstrucionData">${drugOrder.instructions}</td>
 								<td class="patientRegimenDrugDiscontinuedReasonData">
 									<c:if test="${not empty drugOrder.discontinuedReason}">

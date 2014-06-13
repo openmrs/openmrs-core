@@ -18,7 +18,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -62,6 +64,9 @@ public class DatabaseUtil {
 	 * @param connectionDriver the database driver class name, such as "com.mysql.jdbc.Driver"
 	 * @throws ClassNotFoundException
 	 */
+	
+	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
+	
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
 			Class.forName(connectionDriver);
@@ -151,5 +156,29 @@ public class DatabaseUtil {
 		}
 		
 		return results;
+	}
+	
+	/**
+	 * Gets all unique values excluding nulls in the specified column and table
+	 * 
+	 * @param columnName the column
+	 * @param tableName the table
+	 * @param connection
+	 * @return
+	 * @throws Exception
+	 */
+	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,
+	        Connection connection) throws Exception {
+		Set<T> uniqueValues = new HashSet<T>();
+		final String alias = "unique_values";
+		String select = "SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName + " WHERE " + columnName
+		        + " IS NOT NULL";
+		List<List<Object>> rows = DatabaseUtil.executeSQL(connection, select, true);
+		for (List<Object> row : rows) {
+			//There can only be one column since we are selecting one
+			uniqueValues.add((T) row.get(0));
+		}
+		
+		return uniqueValues;
 	}
 }

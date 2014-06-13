@@ -17,17 +17,19 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.openmrs.order.OrderUtil;
 
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
  * "since the beginning of time" Otherwise the order starts on startDate If discontinued is non-null
- * and true, then the following fields should be ignored: autoExpireDate if discontinuedDate is null
- * then the order was discontinued "the instant after it began" otherwise it was given from its
- * starting date until discontinuedDate Otherwise (discontinued is null or false) if autoExpireDate
- * is null, the order is set to go forever otherwise the order goes until autoExpireDate the
- * following fields should be ignored: discontinuedBy discontinuedDate discontinuedReason It is an
- * error to have discontinued be true and have discontinuedDate be after autoExpireDate. However
- * this is not checked for in the database or the application.
+ * and true, then the following fields should be ignored: autoExpireDate if dateStopped is null then
+ * the order was discontinued "the instant after it began" otherwise it was given from its starting
+ * date until dateStopped Otherwise (discontinued is null or false) if autoExpireDate is null, the
+ * order is set to go forever otherwise the order goes until autoExpireDate the following fields
+ * should be ignored: discontinuedBy dateStopped discontinuedReason It is an error to have
+ * discontinued be true and have dateStopped be after autoExpireDate. However this is not checked
+ * for in the database or the application.
  * 
  * @version 1.0
  */
@@ -35,18 +37,28 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4334343L;
 	
-	private static final Log log = LogFactory.getLog(Order.class);
-	
+	/**
+	 * @since 1.9.2, 1.10
+	 */
 	public enum Urgency {
-		ROUTINE, STAT
+		ROUTINE, STAT, ON_SCHEDULED_DATE
 	}
+	
+	/**
+	 * @since 1.10
+	 */
+	public enum Action {
+		NEW, REVISE, DISCONTINUE, RENEW
+	}
+	
+	private static final Log log = LogFactory.getLog(Order.class);
 	
 	private Integer orderId;
 	
 	private Patient patient;
 	
 	private OrderType orderType;
-	
+
 	private Concept concept;
 	
 	private String instructions;
@@ -57,21 +69,38 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Encounter encounter;
 	
-	private User orderer;
+	private Provider orderer;
 	
-	private Boolean discontinued = false;
+	private Date dateStopped;
 	
-	private User discontinuedBy;
-	
-	private Date discontinuedDate;
-	
-	private Concept discontinuedReason;
+	private Concept orderReason;
 	
 	private String accessionNumber;
 	
-	private String discontinuedReasonNonCoded;
+	private String orderReasonNonCoded;
 	
 	private Urgency urgency = Urgency.ROUTINE;
+	
+	private String orderNumber;
+	
+	private String commentToFulfiller;
+	
+	private CareSetting careSetting;
+	
+	private Date scheduledDate;
+	
+	/**
+	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
+	 * to the original ampicillin order (the D/C gets its own order number)
+	 */
+	private Order previousOrder;
+	
+	/**
+	 * Represents the action being taken on an order.
+	 * 
+	 * @see org.openmrs.Order.Action
+	 */
+	private Action action = Action.NEW;
 	
 	// Constructors
 	
@@ -88,6 +117,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * Performs a shallow copy of this Order. Does NOT copy orderId.
 	 * 
 	 * @return a shallow copy of this Order
+	 * @should copy all fields
 	 */
 	public Order copy() {
 		return copyHelper(new Order());
@@ -111,24 +141,24 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setOrderer(getOrderer());
 		target.setCreator(getCreator());
 		target.setDateCreated(getDateCreated());
-		target.setDiscontinued(getDiscontinued());
-		target.setDiscontinuedDate(getDiscontinuedDate());
-		target.setDiscontinuedReason(getDiscontinuedReason());
-		target.setDiscontinuedBy(getDiscontinuedBy());
+		target.dateStopped = getDateStopped();
+		target.setOrderReason(getOrderReason());
+		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
 		target.setAccessionNumber(getAccessionNumber());
 		target.setVoided(isVoided());
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
 		target.setUrgency(getUrgency());
+		target.setCommentToFulfiller(getCommentToFulfiller());
+		target.previousOrder = getPreviousOrder();
+		target.action = getAction();
+		target.orderNumber = getOrderNumber();
+		target.setCareSetting(getCareSetting());
+		target.setChangedBy(getChangedBy());
+		target.setDateChanged(getDateChanged());
+		target.setScheduledDate(getScheduledDate());
 		return target;
-	}
-	
-	/**
-	 * true/false whether or not this is a drug order overridden in extending class drugOrders.
-	 */
-	public boolean isDrugOrder() {
-		return false;
 	}
 	
 	// Property accessors
@@ -162,60 +192,41 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the discontinued status.
-	 * @should get discontinued property
+	 * @return the scheduledDate
+	 * @since 1.10
 	 */
-	public Boolean getDiscontinued() {
-		return discontinued;
+	public Date getScheduledDate() {
+		return scheduledDate;
 	}
 	
 	/**
-	 * @param discontinued The discontinued status to set.
+	 * @param scheduledDate the date to set
+	 * @since 1.10
 	 */
-	public void setDiscontinued(Boolean discontinued) {
-		this.discontinued = discontinued;
+	public void setScheduledDate(Date scheduledDate) {
+		this.scheduledDate = scheduledDate;
 	}
 	
 	/**
-	 * @return Returns the discontinuedBy.
+	 * @return Returns the dateStopped.
+	 * @since 1.10
 	 */
-	public User getDiscontinuedBy() {
-		return discontinuedBy;
+	public Date getDateStopped() {
+		return dateStopped;
 	}
 	
 	/**
-	 * @param discontinuedBy The discontinuedBy to set.
+	 * @return Returns the orderReason.
 	 */
-	public void setDiscontinuedBy(User discontinuedBy) {
-		this.discontinuedBy = discontinuedBy;
+	public Concept getOrderReason() {
+		return orderReason;
 	}
 	
 	/**
-	 * @return Returns the discontinuedDate.
+	 * @param orderReason The orderReason to set.
 	 */
-	public Date getDiscontinuedDate() {
-		return discontinuedDate;
-	}
-	
-	/**
-	 * @param discontinuedDate The discontinuedDate to set.
-	 */
-	public void setDiscontinuedDate(Date discontinuedDate) {
-		this.discontinuedDate = discontinuedDate;
-	}
-	
-	/**
-	 * @return Returns the discontinuedReason.
-	 */
-	public Concept getDiscontinuedReason() {
-		return discontinuedReason;
-	}
-	
-	/**
-	 * @param discontinuedReason The discontinuedReason to set.
-	 */
-	public void setDiscontinuedReason(Concept discontinuedReason) {
-		this.discontinuedReason = discontinuedReason;
+	public void setOrderReason(Concept orderReason) {
+		this.orderReason = orderReason;
 	}
 	
 	/**
@@ -263,14 +274,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return Returns the orderer.
 	 */
-	public User getOrderer() {
+	public Provider getOrderer() {
 		return orderer;
 	}
 	
 	/**
 	 * @param orderer The orderer to set.
 	 */
-	public void setOrderer(User orderer) {
+	public void setOrderer(Provider orderer) {
 		this.orderer = orderer;
 	}
 	
@@ -289,20 +300,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the orderType.
-	 */
-	public OrderType getOrderType() {
-		return orderType;
-	}
-	
-	/**
-	 * @param orderType The orderType to set.
-	 */
-	public void setOrderType(OrderType orderType) {
-		this.orderType = orderType;
-	}
-	
-	/**
 	 * @return Returns the startDate.
 	 */
 	public Date getStartDate() {
@@ -317,17 +314,33 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the discontinuedReasonNonCoded
+	 * @return Returns the orderReasonNonCoded.
 	 */
-	public String getDiscontinuedReasonNonCoded() {
-		return discontinuedReasonNonCoded;
+	public String getOrderReasonNonCoded() {
+		return orderReasonNonCoded;
 	}
 	
 	/**
-	 * @param discontinuedReasonNonCoded the discontinuedReasonNonCoded to set
+	 * @param orderReasonNonCoded The orderReasonNonCoded to set.
 	 */
-	public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
-		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
+	public void setOrderReasonNonCoded(String orderReasonNonCoded) {
+		this.orderReasonNonCoded = orderReasonNonCoded;
+	}
+	
+	/**
+	 * @return the commentToFulfiller
+	 * @since 1.10
+	 */
+	public String getCommentToFulfiller() {
+		return commentToFulfiller;
+	}
+	
+	/**
+	 * @param commentToFulfiller The commentToFulfiller to set
+	 * @since 1.10
+	 */
+	public void setCommentToFulfiller(String commentToFulfiller) {
+		this.commentToFulfiller = commentToFulfiller;
 	}
 	
 	/**
@@ -348,11 +361,11 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 			return false;
 		}
 		
-		if (discontinued != null && discontinued) {
-			if (discontinuedDate == null)
+		if (isDiscontinuedRightNow()) {
+			if (dateStopped == null)
 				return checkDate.equals(startDate);
 			else
-				return checkDate.before(discontinuedDate);
+				return checkDate.before(dateStopped);
 			
 		} else {
 			if (autoExpireDate == null)
@@ -391,19 +404,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (checkDate == null)
 			checkDate = new Date();
 		
-		if (discontinued == null || !discontinued)
-			return false;
-		
 		if (startDate == null || checkDate.before(startDate)) {
 			return false;
 		}
-		if (discontinuedDate != null && discontinuedDate.after(checkDate)) {
+		if (dateStopped != null && dateStopped.after(checkDate)) {
+			return false;
+		}
+		if (dateStopped == null) {
 			return false;
 		}
 		
 		// guess we can't assume this has been filled correctly?
 		/*
-		 * if (discontinuedDate == null) { return false; }
+		 * if (dateStopped == null) { return false; }
 		 */
 		return true;
 	}
@@ -434,7 +447,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + orderType + " concept: " + concept;
+		String prefix = Action.DISCONTINUE == getAction() ? "DC " : "";
+		return prefix + "Order. orderId: " + orderId + " patient: " + patient + " concept: " + concept + " care setting: "
+		        + careSetting;
 	}
 	
 	/**
@@ -447,7 +462,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return the urgency
-	 * @since 1.10
+	 * @since 1.9.2
 	 */
 	public Urgency getUrgency() {
 		return urgency;
@@ -455,10 +470,172 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @param urgency the urgency to set
-	 * @since 1.10
+	 * @since 1.9.2
 	 */
 	public void setUrgency(Urgency urgency) {
 		this.urgency = urgency;
 	}
 	
+	/**
+	 * @return the orderNumber
+	 * @since 1.10
+	 */
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+	
+	/**
+	 * Gets the previous related order.
+	 * 
+	 * @since 1.10
+	 * @return the previous order.
+	 */
+	public Order getPreviousOrder() {
+		return HibernateUtil.getRealObjectFromProxy(previousOrder);
+	}
+	
+	/**
+	 * Sets the previous order.
+	 * 
+	 * @since 1.10
+	 * @param previousOrder the previous order to set.
+	 */
+	public void setPreviousOrder(Order previousOrder) {
+		this.previousOrder = previousOrder;
+	}
+	
+	/**
+	 * Gets the action
+	 * 
+	 * @return the action
+	 * @since 1.10
+	 */
+	public Action getAction() {
+		return action;
+	}
+	
+	/**
+	 * Sets the ation
+	 * 
+	 * @param action the action to set
+	 * @since 1.10
+	 */
+	public void setAction(Action action) {
+		this.action = action;
+	}
+	
+	/**
+	 * Gets the careSetting
+	 * 
+	 * @return the action
+	 * @since 1.10
+	 */
+	public CareSetting getCareSetting() {
+		return careSetting;
+	}
+	
+	/**
+	 * Sets the careSetting
+	 * 
+	 * @param careSetting the action to set
+	 * @since 1.10
+	 */
+	public void setCareSetting(CareSetting careSetting) {
+		this.careSetting = careSetting;
+	}
+	
+	/**
+	 * Get the {@link org.openmrs.OrderType}
+	 * 
+	 * @return the {@link org.openmrs.OrderType}
+	 */
+	public OrderType getOrderType() {
+		return orderType;
+	}
+	
+	/**
+	 * Set the {@link org.openmrs.OrderType}
+	 * 
+	 * @param orderType the {@link org.openmrs.OrderType}
+	 */
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
+	}
+	
+	/**
+	 * Creates a discontinuation order for this order, sets the previousOrder and action fields,
+	 * note that the discontinuation order needs to be saved for the discontinuation to take effect
+	 * 
+	 * @return the newly created order
+	 * @since 1.10
+	 * @should set all the relevant fields
+	 */
+	public Order cloneForDiscontinuing() {
+		Order newOrder = new Order();
+		newOrder.setCareSetting(getCareSetting());
+		newOrder.setConcept(getConcept());
+		newOrder.setAction(Action.DISCONTINUE);
+		newOrder.setPreviousOrder(this);
+		newOrder.setPatient(getPatient());
+		newOrder.setOrderType(getOrderType());
+		
+		return newOrder;
+	}
+	
+	/**
+	 * Creates an order for revision from this order, sets the previousOrder and action field.
+	 * 
+	 * @return the newly created order
+	 * @since 1.10
+	 * @should set all the relevant fields
+	 * @should set the relevant fields for a DC order
+	 */
+	public Order cloneForRevision() {
+		return cloneForRevisionHelper(new Order());
+	}
+	
+	/**
+	 * The purpose of this method is to allow subclasses of Order to delegate a portion of their
+	 * cloneForRevision() method back to the superclass, in case the base class implementation
+	 * changes.
+	 * 
+	 * @param target an Order that will have the state of <code>this</code> copied into it
+	 * @return Returns the Order that was passed in, with state copied into it
+	 */
+	protected Order cloneForRevisionHelper(Order target) {
+		if (getAction() == Action.DISCONTINUE) {
+			target.setAction(Action.DISCONTINUE);
+			target.setPreviousOrder(getPreviousOrder());
+			target.setStartDate(getStartDate());
+		} else {
+			target.setAction(Action.REVISE);
+			target.setPreviousOrder(this);
+			target.setAutoExpireDate(getAutoExpireDate());
+		}
+		target.setCareSetting(getCareSetting());
+		target.setConcept(getConcept());
+		target.setPatient(getPatient());
+		target.setOrderType(getOrderType());
+		target.setScheduledDate(getScheduledDate());
+		target.setInstructions(getInstructions());
+		target.setUrgency(getUrgency());
+		target.setCommentToFulfiller(getCommentToFulfiller());
+		target.setOrderReason(getOrderReason());
+		target.setOrderReasonNonCoded(getOrderReasonNonCoded());
+		
+		return target;
+	}
+	
+	/**
+	 * Checks whether this order's orderType matches or is a sub type of the specified one
+	 * 
+	 * @since 1.10
+	 * @param orderType the orderType to match on
+	 * @return true if the type of the order matches or is a sub type of the other order
+	 * @should true if it is the same or is a subtype
+	 * @should false if it neither the same nor a subtype
+	 */
+	public boolean isType(OrderType orderType) {
+		return OrderUtil.isType(orderType, this.orderType);
+	}
 }

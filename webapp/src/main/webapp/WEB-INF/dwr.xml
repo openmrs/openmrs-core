@@ -27,7 +27,6 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.LocationListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.RelationshipListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ListItem"/>
-		<convert converter="bean" match="org.openmrs.web.dwr.DrugOrderListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.DrugSetItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientProgramItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientStateItem"/>
@@ -178,30 +177,6 @@
 			<include method="getRelationships"/>
 			<include method="getRelationshipsToPerson"/>
 			<include method="getRelationshipsFromPerson"/>
-		</create>
-
-		<create creator="new" javascript="DWROrderService">
-			<param name="class" value="org.openmrs.web.dwr.DWROrderService"/>
-			<include method="createDrugOrder"/>
-			<include method="voidOrder"/>
-			<include method="discontinueOrder"/>
-			<include method="getDrugOrdersByPatientId"/>
-			<include method="getCurrentDrugOrdersByPatientId"/>
-			<include method="getCompletedDrugOrdersByPatientId"/>
-			<include method="getUnitsByDrugId"/>
-			<include method="getCurrentDrugSet" />
-			<include method="getCurrentDrugOrdersByPatientIdDrugSetId" />
-			<include method="getCompletedDrugSet" />
-			<include method="getCompletedDrugOrdersByPatientIdDrugSetId" />
-			<include method="voidCurrentDrugSet" />
-			<include method="voidCompletedDrugSet" />
-			<include method="discontinueDrugSet" />
-			<include method="getCurrentOtherDrugSet" />
-			<include method="getCurrentOtherDrugOrdersByPatientIdDrugSetId" />
-			<include method="getCompletedOtherDrugSet" />
-			<include method="getCompletedOtherDrugOrdersByPatientIdDrugSetId" />
-			<include method="voidCurrentDrugOrders" />
-			<include method="discontinueCurrentDrugOrders" />
 		</create>
 		
 		<create creator="new" javascript="DWRProgramWorkflowService">

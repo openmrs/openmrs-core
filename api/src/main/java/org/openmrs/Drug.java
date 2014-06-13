@@ -13,13 +13,12 @@
  */
 package org.openmrs;
 
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 
 /**
  * Drug
@@ -46,15 +45,16 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private String units;
 	
+	private String strength;
+	
 	private Concept concept;
 	
-	private Collection<DrugIngredient> ingredients;
-	
+	private Set<DrugReferenceMap> drugReferenceMaps;
+
 	// Constructors
 	
 	/** default constructor */
 	public Drug() {
-		ingredients = new LinkedHashSet<DrugIngredient>();
 	}
 	
 	/** constructor with id */
@@ -123,6 +123,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 *
 	 * @return Double
 	 */
+	@Deprecated
 	public Double getDoseStrength() {
 		return this.doseStrength;
 	}
@@ -132,6 +133,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 *
 	 * @param doseStrength
 	 */
+	@Deprecated
 	public void setDoseStrength(Double doseStrength) {
 		this.doseStrength = doseStrength;
 	}
@@ -141,6 +143,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 *
 	 * @return String
 	 */
+	@Deprecated
 	public String getUnits() {
 		return this.units;
 	}
@@ -150,8 +153,29 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 *
 	 * @param units
 	 */
+	@Deprecated
 	public void setUnits(String units) {
 		this.units = units;
+	}
+	
+	/**
+	 * Gets the strength
+	 *
+	 * @return String
+	 * @since 1.10
+	 */
+	public String getStrength() {
+		return strength;
+	}
+	
+	/**
+	 * Sets the strength
+	 *
+	 * @param strength
+	 * @since 1.10
+	 */
+	public void setStrength(String strength) {
+		this.strength = strength;
 	}
 	
 	/**
@@ -213,22 +237,6 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the ingredients
-	 * @since 1.10
-	 */
-	public Collection<DrugIngredient> getIngredients() {
-		return ingredients;
-	}
-	
-	/**
-	 * @param ingredients The ingredients to set
-	 * @since 1.10
-	 */
-	public void setIngredients(Collection<DrugIngredient> ingredients) {
-		this.ingredients = ingredients;
-	}
-	
-	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -259,5 +267,45 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 			return getConcept().getName().getName();
 		}
 		return "";
+	}
+	
+	/**
+	 * @return Returns the drugReferenceMaps.
+	 * @since 1.10
+	 */
+	public Set<DrugReferenceMap> getDrugReferenceMaps() {
+		if (drugReferenceMaps == null) {
+			drugReferenceMaps = new LinkedHashSet<DrugReferenceMap>();
+		}
+		return drugReferenceMaps;
+	}
+	
+	/**
+	 * @param drugReferenceMaps The drugReferenceMaps to set.
+	 * @since 1.10
+	 */
+	public void setDrugReferenceMaps(Set<DrugReferenceMap> drugReferenceMaps) {
+		this.drugReferenceMaps = drugReferenceMaps;
+	}
+	
+	/**
+	 * Add the given DrugReferenceMap object to this drug's list of drug reference mappings. If there is
+	 * already a corresponding DrugReferenceMap object for this concept, this one will not be added.
+	 *
+	 * @param drugReferenceMap
+	 * @since 1.10
+	 *
+	 * @should set drug as the drug to which a mapping is being added
+	 *
+	 * @should should not add duplicate drug reference maps
+	 */
+	public void addDrugReferenceMap(DrugReferenceMap drugReferenceMap) {
+		if (drugReferenceMap != null && !getDrugReferenceMaps().contains(drugReferenceMap)) {
+			drugReferenceMap.setDrug(this);
+			if (drugReferenceMap.getConceptMapType() == null) {
+				drugReferenceMap.setConceptMapType(Context.getConceptService().getDefaultConceptMapType());
+			}
+			getDrugReferenceMaps().add(drugReferenceMap);
+		}
 	}
 }

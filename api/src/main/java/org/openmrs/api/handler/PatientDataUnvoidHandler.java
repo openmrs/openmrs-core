@@ -13,10 +13,6 @@
  */
 package org.openmrs.api.handler;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -26,8 +22,10 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * This class deals with {@link Patient} objects when they are unvoided via the unvoid* method in an
@@ -63,9 +61,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			
 			//unvoid all the orders that got voided as a result of the patient getting voided
 			OrderService os = Context.getOrderService();
-			List<Patient> patients = new ArrayList<Patient>();
-			patients.add(patient);
-			List<Order> orders = os.getOrders(Order.class, patients, null, ORDER_STATUS.ANY, null, null, null);
+			List<Order> orders = os.getAllOrdersByPatient(patient);
 			if (CollectionUtils.isNotEmpty(orders)) {
 				for (Order order : orders) {
 					if (order.isVoided() && order.getDateVoided().equals(origParentVoidedDate)

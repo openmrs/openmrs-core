@@ -407,6 +407,10 @@ public final class Module {
 		return awareOfModulesMap == null ? null : new ArrayList<String>(awareOfModulesMap.keySet());
 	}
 	
+	public String getAwareOfModuleVersion(String awareOfModule) {
+		return awareOfModulesMap == null ? null : awareOfModulesMap.get(awareOfModule);
+	}
+	
 	/**
 	 * @return the requireOpenmrsVersion
 	 */
@@ -692,7 +696,6 @@ public final class Module {
 	
 	/**
 	 * Packages to scan for classes with JPA annotated classes.
-	 *
 	 * @return the set of packages to scan
 	 * @since 1.9.2, 1.10
 	 */

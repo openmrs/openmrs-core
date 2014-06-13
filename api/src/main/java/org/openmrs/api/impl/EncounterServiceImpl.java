@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -137,6 +138,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		// This also must be done before the save encounter so we can use the
 		// orig date
 		// after the save
+		Patient p = encounter.getPatient();
+		
 		if (!isNewEncounter) {
 			// fetch the datetime from the database prior to saving for this
 			// encounter
@@ -156,7 +159,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// to Obs that inherited their obsDatetime from the encounter in the
 			// first place
 			
-			Patient p = encounter.getPatient();
 			for (Obs obs : encounter.getAllObs(true)) {
 				// if the date was changed
 				if (OpenmrsUtil.compare(originalDate, newDate) != 0) {
@@ -181,18 +183,23 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 					obs.setPerson(p);
 				}
 			}
-			
-			// same goes for Orders
-			for (Order o : encounter.getOrders()) {
-				if (!p.equals(o.getPatient())) {
-					o.setPatient(p);
-				}
+		}
+		// same goes for Orders
+		for (Order o : encounter.getOrders()) {
+			if (!p.equals(o.getPatient())) {
+				o.setPatient(p);
 			}
 		}
 		
 		// do the actual saving to the database
 		dao.saveEncounter(encounter);
 		
+		// save the new orders
+		for (Order o : encounter.getOrders()) {
+			if (o.getOrderId() == null) {
+				Context.getOrderService().saveOrder(o, null);
+			}
+		}
 		return encounter;
 	}
 	
@@ -356,8 +363,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
-		//we expect the dateVoided to be already set by AOP logic at this point unless this method was called within the API, 
-		//this ensures that original ParentVoidedDate and the dateVoided of associated objects will always match for the 
+		//we expect the dateVoided to be already set by AOP logic at this point unless this method was called within the API,
+		//this ensures that original ParentVoidedDate and the dateVoided of associated objects will always match for the
 		//unvoid handler to work
 		if (encounter.getDateVoided() == null) {
 			encounter.setDateVoided(new Date());
@@ -438,6 +445,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			for (Obs o : observations) {
 				obsService.purgeObs(o);
 			}
+			Set<Order> orders = encounter.getOrders();
+			for (Order o : orders) {
+				Context.getOrderService().purgeOrder(o);
+			}
 		}
 		Context.getEncounterService().purgeEncounter(encounter);
 	}
@@ -448,7 +459,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public EncounterType saveEncounterType(EncounterType encounterType) {
 		//make sure the user has not turned off encounter types editing
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
-		
+
 		dao.saveEncounterType(encounterType);
 		return encounterType;
 	}
@@ -503,7 +514,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		//make sure the user has not turned off encounter types editing
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
-		
+
 		encounterType.setRetired(true);
 		encounterType.setRetireReason(reason);
 		return Context.getEncounterService().saveEncounterType(encounterType);
@@ -514,7 +525,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException {
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
-		
+
 		encounterType.setRetired(false);
 		return Context.getEncounterService().saveEncounterType(encounterType);
 	}
@@ -525,7 +536,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public void purgeEncounterType(EncounterType encounterType) throws APIException {
 		//make sure the user has not turned off encounter types editing
 		Context.getEncounterService().checkIfEncounterTypesAreLocked();
-		
+
 		dao.deleteEncounterType(encounterType);
 	}
 	
@@ -1049,7 +1060,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new EncounterTypeLockedException();
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterRolesByName(String)
 	 */

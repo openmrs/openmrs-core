@@ -17,7 +17,10 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -51,47 +54,94 @@ public class OrderValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if order is null
 	 * @should fail validation if order and encounter have different patients
-	 * @should fail validation if discontinued is null
 	 * @should fail validation if voided is null
 	 * @should fail validation if concept is null
 	 * @should fail validation if patient is null
-	 * @should fail validation if orderType is null
-	 * @should fail validation if startDate after discontinuedDate
+	 * @should fail validation if encounter is null
+	 * @should fail validation if orderer is null
+	 * @should fail validation if urgency is null
+	 * @should fail validation if action is null
+	 * @should fail validation if startDate after dateStopped
 	 * @should fail validation if startDate after autoExpireDate
+	 * @should fail validation if startDate is before encounter's encounterDatetime
+	 * @should fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE
+	 * @should fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE
+	 * @should fail validation if orderType.javaClass does not match order.class
+	 * @should pass validation if the class of the order is a subclass of orderType.javaClass
 	 * @should pass validation if all fields are correct
+	 * @should not allow a future startDate
 	 */
 	public void validate(Object obj, Errors errors) {
 		Order order = (Order) obj;
 		if (order == null) {
-			errors.rejectValue("order", "error.general");
+			errors.reject("error.general");
 		} else {
-			if (order.getEncounter() != null && order.getPatient() != null) {
-				if (!order.getEncounter().getPatient().equals(order.getPatient())) {
-					errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
-				}
-			}
-			
 			// for the following elements Order.hbm.xml says: not-null="true"
-			ValidationUtils.rejectIfEmpty(errors, "discontinued", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
-			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "orderType", "error.null");
-			
-			Date startDate = order.getStartDate();
-			if (startDate != null) {
-				Date discontinuedDate = order.getDiscontinuedDate();
-				if (discontinuedDate != null && startDate.after(discontinuedDate)) {
-					errors.rejectValue("startDate", "Order.error.startDateAfterDiscontinuedDate");
-					errors.rejectValue("discontinuedDate", "Order.error.startDateAfterDiscontinuedDate");
-				}
-				
-				Date autoExpireDate = order.getAutoExpireDate();
-				if (autoExpireDate != null && startDate.after(autoExpireDate)) {
-					errors.rejectValue("startDate", "Order.error.startDateAfterAutoExpireDate");
-					errors.rejectValue("autoExpireDate", "Order.error.startDateAfterAutoExpireDate");
-				}
+			//For DrugOrders, the api will set the concept to drug.concept
+			if (!DrugOrder.class.isAssignableFrom(order.getClass())) {
+				ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
 			}
+			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "encounter", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "orderer", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "urgency", "error.null");
+			ValidationUtils.rejectIfEmpty(errors, "action", "error.null");
+			
+			validateSamePatientInOrderAndEncounter(order, errors);
+			validateOrderTypeClass(order, errors);
+			validateStartDate(order, errors);
+			validateScheduledDate(order, errors);
+		}
+	}
+	
+	private void validateOrderTypeClass(Order order, Errors errors) {
+		OrderType orderType = order.getOrderType();
+		if (orderType != null && !orderType.getJavaClass().isAssignableFrom(order.getClass())) {
+			errors.rejectValue("orderType", "Order.error.orderTypeClassMismatchesOrderClass");
+		}
+	}
+	
+	private void validateStartDate(Order order, Errors errors) {
+		Date startDate = order.getStartDate();
+		if (startDate != null) {
+			if (startDate.after(new Date())) {
+				errors.rejectValue("startDate", "Order.error.startDateInFuture");
+				return;
+			}
+			Date dateStopped = order.getDateStopped();
+			if (dateStopped != null && startDate.after(dateStopped)) {
+				errors.rejectValue("startDate", "Order.error.startDateAfterDiscontinuedDate");
+				errors.rejectValue("dateStopped", "Order.error.startDateAfterDiscontinuedDate");
+			}
+			Date autoExpireDate = order.getAutoExpireDate();
+			if (autoExpireDate != null && startDate.after(autoExpireDate)) {
+				errors.rejectValue("startDate", "Order.error.startDateAfterAutoExpireDate");
+				errors.rejectValue("autoExpireDate", "Order.error.startDateAfterAutoExpireDate");
+			}
+			Encounter encounter = order.getEncounter();
+			if (encounter != null && encounter.getEncounterDatetime() != null
+			        && encounter.getEncounterDatetime().after(startDate)) {
+				errors.rejectValue("startDate", "Order.error.startDateAfterEncounterDatetime");
+			}
+		}
+	}
+	
+	private void validateSamePatientInOrderAndEncounter(Order order, Errors errors) {
+		if (order.getEncounter() != null && order.getPatient() != null) {
+			if (!order.getEncounter().getPatient().equals(order.getPatient()))
+				errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
+		}
+	}
+	
+	private void validateScheduledDate(Order order, Errors errors) {
+		boolean isUrgencyOnScheduledDate = (order.getUrgency() != null && order.getUrgency().equals(
+		    Order.Urgency.ON_SCHEDULED_DATE));
+		if (order.getScheduledDate() != null && !isUrgencyOnScheduledDate) {
+			errors.rejectValue("urgency", "Order.error.urgencyNotOnScheduledDate");
+		}
+		if (isUrgencyOnScheduledDate && order.getScheduledDate() == null) {
+			errors.rejectValue("scheduledDate", "Order.error.scheduledDateNullForOnScheduledDateUrgency");
 		}
 	}
 }

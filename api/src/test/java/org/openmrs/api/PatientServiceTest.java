@@ -43,10 +43,13 @@ import java.util.Vector;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -122,6 +125,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	protected static LocationService locationService = null;
 	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
@@ -134,6 +140,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		personService = Context.getPersonService();
 		adminService = Context.getAdministrationService();
 		locationService = Context.getLocationService();
+	}
+	
+	private void voidOrders(Collection<Patient> patientsWithOrders) {
+		OrderService os = Context.getOrderService();
+		for (Patient p : patientsWithOrders) {
+			List<Order> orders = os.getAllOrdersByPatient(p);
+			for (Order o : orders) {
+				o.setVoided(true);
+			}
+		}
 	}
 	
 	/**
@@ -587,7 +603,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should change user records of non preferred person to preferred person", method = "mergePatients(Patient,Patient)")
 	public void mergePatients_shouldChangeUserRecordsOfNonPreferredPersonToPreferredPerson() throws Exception {
 		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
-		Context.getPatientService().mergePatients(patientService.getPatient(6), patientService.getPatient(2));
+		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
+		Context.getPatientService().mergePatients(patientService.getPatient(6), notPreferred);
 		User user = Context.getUserService().getUser(2);
 		Assert.assertEquals(6, user.getPerson().getId().intValue());
 	}
@@ -603,6 +621,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		VisitService visitService = Context.getVisitService();
 		
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		Patient preferred = patientService.getPatient(6);
 		
 		// patient 2 (not preferred) has 3 unvoided visits (id = 1, 2, 3) and 1 voided visit (id = 6)
@@ -646,7 +665,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertThat(mergeLogData.getMovedVisits().size(), is(4));
 		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid(), visit2.getUuid(), visit3.getUuid(),
 		    visit6.getUuid()));
-		
+
 		assertThat(mergeLogData.getMovedEncounters().size(), is(encounterUuidsThatShouldBeMoved.size()));
 		assertThat(mergeLogData.getMovedEncounters(), containsInAnyOrder(encounterUuidsThatShouldBeMoved.toArray()));
 	}
@@ -673,7 +692,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should void non preferred person object", method = "mergePatients(Patient,Patient)")
 	public void mergePatients_shouldVoidNonPreferredPersonObject() throws Exception {
-		Context.getPatientService().mergePatients(patientService.getPatient(6), patientService.getPatient(2));
+		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
+		Context.getPatientService().mergePatients(patientService.getPatient(6), notPreferred);
 		Assert.assertTrue(Context.getPersonService().getPerson(2).isVoided());
 	}
 	
@@ -1827,6 +1848,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		patientService.mergePatients(preferred, notPreferred);
 	}
@@ -2291,6 +2313,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> notPreferred = new ArrayList<Patient>();
 		notPreferred.add(patientService.getPatient(7));
 		notPreferred.add(patientService.getPatient(8));
+		voidOrders(notPreferred);
 		patientService.mergePatients(preferred, notPreferred);
 		Assert.assertFalse(patientService.getPatient(6).isVoided());
 		Assert.assertTrue(patientService.getPatient(7).isVoided());
@@ -2450,9 +2473,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not create duplicate relationships", method = "mergePatients(Patient,Patient)")
 	public void mergePatients_shouldNotCreateDuplicateRelationships() throws Exception {
 		executeDataSet(PATIENT_RELATIONSHIPS_XML);
-		
+
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		// expected relationships before merge:
 		// * 2->1 (type 2)
@@ -2485,6 +2509,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		patientService.mergePatients(preferred, notPreferred);
 		
@@ -2504,6 +2529,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		//retrieve notPreferredPatient and save it with a new address
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonAddress address = new PersonAddress();
 		address.setAddress1("another address123");
 		address.setAddress2("another address234");
@@ -2541,6 +2567,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		//retrieve notPreferredPatient and save it with a new attribute
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonAttribute attribute = new PersonAttribute(2);
 		attribute.setValue("5089");
 		attribute.setAttributeType(personService.getPersonAttributeType(1));
@@ -2575,6 +2602,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		//retrieve notPreferredPatient and save it with a new identifier
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier("123-0");
 		patientIdentifier.setIdentifierType(patientService.getPatientIdentifierType(5));
@@ -2610,6 +2638,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		//retrieve notPreferredPatient and save it with an added name
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonName name = new PersonName("first1234", "middle", "last1234");
 		notPreferred.addName(name);
 		patientService.savePatient(notPreferred);
@@ -2632,36 +2661,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
-	 * @verifies audit created orders
-	 */
-	@Test
-	public void mergePatients_shouldAuditCreatedOrders() throws Exception {
-		
-		//retrieve patients
-		Patient preferred = patientService.getPatient(999);
-		Patient notPreferred = patientService.getPatient(2);
-		
-		//retrieve order for notPreferred patient
-		Order order = Context.getOrderService().getOrdersByPatient(notPreferred).get(0);
-		
-		//merge the two patients and retrieve the audit object
-		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
-		
-		//find the UUID of the order that was created for preferred patient as a result of the merge
-		String addedOrderUuid = null;
-		List<Order> orders = Context.getOrderService().getOrdersByPatient(preferred);
-		for (Order o : orders) {
-			if (o.getInstructions().equals(order.getInstructions())) {
-				addedOrderUuid = o.getUuid();
-			}
-		}
-		Assert.assertNotNull("expected new order was not found for the preferred patient after the merge", addedOrderUuid);
-		Assert.assertTrue("order creation not audited", isValueInList(addedOrderUuid, audit.getPersonMergeLogData()
-		        .getCreatedOrders()));
-	}
-	
-	/**
-	 * @see PatientService#mergePatients(Patient,Patient)
 	 * @verifies audit created patient programs
 	 */
 	@Test
@@ -2669,6 +2668,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve preferred  and notPreferredPatient patient
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		//retrieve program for notProferred patient
 		PatientProgram program = Context.getProgramWorkflowService().getPatientPrograms(notPreferred, null, null, null,
@@ -2702,6 +2702,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(PATIENT_RELATIONSHIPS_XML);
 		Patient preferred = patientService.getPatient(7);
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		//merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2731,6 +2732,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(PATIENT_RELATIONSHIPS_XML);
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		//merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2748,6 +2750,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve patients
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		//merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2765,7 +2768,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve patients
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(7);
-		
+        voidOrders(Collections.singleton(notPreferred));
+
 		//get an observation for notPreferred and make it independent from any encounter
 		Obs obs = Context.getObsService().getObs(7);
 		obs.setEncounter(null);
@@ -2794,6 +2798,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve patients
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		User user = Context.getUserService().getUser(501);
 		user.setPerson(notPreferred);
@@ -2821,6 +2826,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(preferred);
 		//merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior cause of death was not audited", Context.getConceptService().getConcept(3).getUuid(),
 		    audit.getPersonMergeLogData().getPriorCauseOfDeath());
@@ -2842,6 +2848,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior date of birth was not audited", cDate.getTime(), audit.getPersonMergeLogData()
 		        .getPriorDateOfBirth());
@@ -2862,6 +2869,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertTrue("prior estimated date of birth was not audited", audit.getPersonMergeLogData()
 		        .isPriorDateOfBirthEstimated());
@@ -2885,6 +2893,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior date of death was not audited", cDate.getTime(), audit.getPersonMergeLogData()
 		        .getPriorDateOfDeath());
@@ -2924,10 +2933,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(preferred);
 		//merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior gender was not audited", "M", audit.getPersonMergeLogData().getPriorGender());
 	}
-	
+
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 * @verifies not copy over duplicate patient identifiers
@@ -2951,6 +2961,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(preferred);
 		//merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
+        voidOrders(Collections.singleton(notPreferred));
 		// create identifier with the same values for the non preferred patient
 		PatientIdentifier nonPreferredIdentifier = new PatientIdentifier();
 		nonPreferredIdentifier.setIdentifier("9999-4");
@@ -2982,9 +2993,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not void relationships for same type and side with different relatives", method = "mergePatients(Patient,Patient)")
 	public void mergePatients_shouldNotVoidRelationshipsForSameTypeAndSideWithDifferentRelatives() throws Exception {
 		executeDataSet(PATIENT_RELATIONSHIPS_XML);
-		
+
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
 		
 		// expected relationships before merge:
 		// * 2->1 (type 2)
@@ -3262,7 +3274,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			assertThat(names, containsFullName("President John Fitzgerald Kennedy Esq."));
 		else
 			assertThat(names, containsFullName("John Fitzgerald Kennedy"));
-		
+
 	}
 	
 	@Test
@@ -3527,5 +3539,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
 		ps.purgePatientIdentifierType(pit);
+    }
+
+	/**
+	 * @verifies fail if not preferred patient has unvoided orders
+	 * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
+	 */
+	@Test
+	public void mergePatients_shouldFailIfNotPreferredPatientHasUnvoidedOrders() throws Exception {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Matchers
+		        .is("Cannot merge patients where the not preferred patient has unvoided orders"));
+		Patient preferredPatient = patientService.getPatient(8);
+		Patient notPreferredPatient = patientService.getPatient(7);
+		patientService.mergePatients(preferredPatient, notPreferredPatient);
 	}
 }

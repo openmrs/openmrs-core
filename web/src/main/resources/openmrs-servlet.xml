@@ -130,13 +130,6 @@
 		<property name="order"><value>99</value></property>
 		<property name="mappings">
 			<props>
-				<prop key="/admin/orders/order.list">orderList</prop>
-				<prop key="/admin/orders/orderDrug.list">orderListByPatient</prop>
-				<prop key="/admin/orders/orderDrug.form">orderDrugForm</prop>
-				<prop key="/admin/orders/order.form">orderForm</prop>
-				<prop key="/admin/orders/orderType.list">orderTypeList</prop>
-				<prop key="/admin/orders/orderType.form">orderTypeForm</prop>
-
 				<prop key="admin/patients/patient.form">patientForm</prop>
 				<prop key="admin/patients/mergePatients.form">mergePatientsForm</prop>
 				
@@ -228,11 +221,6 @@
 				<prop key="**/nameLayout.portlet">nameLayoutPortletController</prop>
 				<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 				<prop key="**/personRelationships.portlet">personRelationshipsPortletController</prop>
-				<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenCurrent.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenCompleted.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientEncounters.portlet">patientEncountersPortletController</prop>
 				<prop key="**/patientVisits.portlet">patientVisitsPortletController</prop>
 				<prop key="**/personFormEntry.portlet">personFormEntryPortletController</prop>
@@ -259,7 +247,6 @@
 	<bean id="globalPropertyPortletController" class="org.openmrs.web.controller.GlobalPropertyPortletController" />
 	<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController" />
 	<bean id="personRelationshipsPortletController" class="org.openmrs.web.controller.PersonRelationshipsPortletController" />
-	<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController" />
 	<bean id="patientEncountersPortletController" class="org.openmrs.web.controller.PatientEncountersPortletController" />
 	<bean id="patientVisitsPortletController" class="org.openmrs.web.controller.PatientVisitsPortletController" />
 	<bean id="personFormEntryPortletController" class="org.openmrs.web.controller.PersonFormEntryPortletController" />
@@ -312,78 +299,7 @@
 
    	<!-- ====== /Observation Sector ====== -->
 
-	<!-- ========================== -->
-	<!-- ====== Order Sector ====== -->
-	<!-- ========================== -->
-
-	<!-- ** Order Type ** -->
 	<!--this is the optional method of declaring values in the constructor-->
-	<!--<bean id="orderTypeList" class="org.openmrs.web.controller.OrderTypeListController" />-->
-	<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
-
-	<bean id="orderTypeList" class="org.openmrs.web.controller.order.OrderTypeListController">
-		<property name="commandName"><value>orderTypeList</value></property>
-		<property name="formView"><value>/admin/orders/orderTypeList</value></property>
-		<property name="successView"><value>orderType.list</value></property>
-	</bean>
-
-	<!--  Form Controller for the add/edit order types page -->
-	<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
-		<property name="commandName"><value>orderType</value></property>
-		<property name="validator">
-			<ref bean="orderTypeValidator" />
-		</property>
-		<property name="formView"><value>/admin/orders/orderTypeForm</value></property>
-		<property name="successView"><value>orderType.list</value></property>
-	</bean>
-	<!-- ** /Order Type ** -->
-	<!-- ====== /Order Sector ====== -->
-
-
-	<!-- ** Order ** -->
-	<bean id="orderList" class="org.openmrs.web.controller.order.OrderListController">
-		<property name="commandName"><value>orderList</value></property>
-		<property name="formView"><value>/admin/orders/orderList</value></property>
-		<property name="successView"><value>order.list</value></property>
-	</bean>
-
-	<!--  Form Controller for the add/edit order types page -->
-	<bean id="orderForm" class="org.openmrs.web.controller.order.OrderFormController">
-		<property name="commandName"><value>order</value></property>
-		<property name="validator">
-			<ref bean="orderValidator" />
-		</property>
-		<property name="formView"><value>/admin/orders/orderForm</value></property>
-		<property name="successView"><value>order.list</value></property>
-	</bean>
-
-	<bean id="orderDrugList" class="org.openmrs.web.controller.order.OrderDrugListController">
-		<property name="commandName"><value>orderDrugList</value></property>
-		<property name="formView"><value>/admin/orders/orderDrugList</value></property>
-		<property name="successView"><value>orderDrug.list</value></property>
-	</bean>
-
-	<!--  Form Controller for the add/edit order types page -->
-	<bean id="orderDrugForm" class="org.openmrs.web.controller.order.OrderDrugFormController">
-		<property name="commandName"><value>order</value></property>
-		<property name="validator">
-			<ref bean="drugOrderValidator" />
-		</property>
-		<property name="formView"><value>/admin/orders/orderDrugForm</value></property>
-		<property name="successView"><value>../../patientDashboard.form</value></property>
-	</bean>
-	<!-- ** /Order ** -->
-
-	<!-- ** Order Placement ** -->
-	<bean id="orderListByPatient"
-		class="org.openmrs.web.controller.order.OrderListByPatientController">
-		<property name="commandName"><value>orderDrugList</value></property>
-		<property name="formView"><value>/admin/orders/orderListByPatient</value></property>
-		<property name="successView"><value>orderDrug.list</value></property>
-	</bean>
-
-	<!-- ** /Order Placement ** -->
-	<!-- ====== /Order Sector ====== -->
 
 	<!-- ** Patient ** -->
 	<bean id="patientForm" class="org.openmrs.web.controller.patient.PatientFormController">
@@ -1066,9 +982,6 @@
 				<prop key="org.openmrs.Concept">
 					org.openmrs.web.taglib.fieldgen.ConceptHandler
 				</prop>
-				<prop key="org.openmrs.OrderType">
-					org.openmrs.web.taglib.fieldgen.OrderTypeHandler
-				</prop>
 				<prop key="org.openmrs.Encounter">
 					org.openmrs.web.taglib.fieldgen.EncounterHandler
 				</prop>
@@ -1079,9 +992,6 @@
 				</prop>
 				<prop key="org.openmrs.ProgramWorkflow">
 					org.openmrs.web.taglib.fieldgen.ProgramWorkflowHandler
-				</prop>
-				<prop key="org.openmrs.DrugOrder.discontinuedReason">
-					org.openmrs.web.taglib.fieldgen.GenericReasonHandler
 				</prop>
 				<prop key="org.openmrs.Patient.exitReason">
 					org.openmrs.web.taglib.fieldgen.GenericReasonHandler

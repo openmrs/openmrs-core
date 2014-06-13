@@ -65,6 +65,7 @@
 				<bean class="org.openmrs.api.impl.PersonNameGlobalPropertyListener" />
 				<ref bean="globalLocaleList" />
 				<ref bean="adminServiceTarget" />
+                <ref bean="orderServiceTarget" />
 			</list>
 		</property>
 	</bean>
@@ -767,7 +768,6 @@
 	<bean id="stateConversionValidator" class="org.openmrs.validator.StateConversionValidator" />
 	<bean id="taskValidator" class="org.openmrs.validator.SchedulerFormValidator" />
 	<bean id="obsValidator" class="org.openmrs.validator.ObsValidator" />
-	<bean id="orderTypeValidator" class="org.openmrs.validator.OrderTypeValidator" />
 	<bean id="orderValidator" class="org.openmrs.validator.OrderValidator" />
 	<bean id="drugOrderValidator" class="org.openmrs.validator.DrugOrderValidator" />
 	<bean id="requireNameValidator" class="org.openmrs.validator.RequireNameValidator"/>

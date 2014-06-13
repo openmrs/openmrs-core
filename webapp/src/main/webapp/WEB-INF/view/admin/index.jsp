@@ -88,13 +88,6 @@
 						<%@ include file="observations/localHeader.jsp" %>
 				</div>
 			</openmrs:hasPrivilege>
-			
-			<openmrs:hasPrivilege privilege="View Orders,Manage Order Types">
-				<div class="adminMenuList">
-					<h4><openmrs:message code="Order.header"/></h4>
-						<%@ include file="orders/localHeader.jsp" %>
-				</div>
-			</openmrs:hasPrivilege>
 
 			<openmrs:hasPrivilege privilege="View Scheduler,Manage Scheduler">
 				<div class="adminMenuList">

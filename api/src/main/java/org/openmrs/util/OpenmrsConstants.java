@@ -51,6 +51,8 @@ public final class OpenmrsConstants {
 	/**
 	 * This is the hard coded primary key of the order type for DRUG. This has to be done because
 	 * some logic in the API acts on this order type
+	 * 
+	 * @Deprecated
 	 */
 	public static final int ORDERTYPE_DRUG = 2;
 	
@@ -88,7 +90,7 @@ public final class OpenmrsConstants {
 	/**
 	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858) 
 	 * defined in MANIFEST.MF(specification-Vendor)
-	 * 
+	 *
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
@@ -881,7 +883,7 @@ public final class OpenmrsConstants {
 	        + "      <string>address1</string>\n" + "      <string>address2</string>\n"
 	        + "      <string>cityVillage stateProvince country postalCode</string>\n" + "    </lineByLineFormat>\n"
 	        + "  </org.openmrs.layout.web.address.AddressTemplate>";
-	
+
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
@@ -1020,7 +1022,7 @@ public final class OpenmrsConstants {
 	 * management form.
 	 */
 	public static final String GP_ALLERGY_REACTION_CONCEPT_CLASSES = "allergy.reaction.ConceptClasses";
-	
+
 	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
@@ -1055,7 +1057,24 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
 	
 	public static final String GP_MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
+
+	public static final String GP_NEXT_ORDER_NUMBER_SEED = "order.nextOrderNumberSeed";
 	
+	public static final String GP_ORDER_NUMBER_GENERATOR_BEAN_ID = "order.orderNumberGeneratorBeanId";
+	
+	/**
+	 * Specifies the uuid of the concept set where its members represent the possible drug routes
+	 */
+	public static final String GP_DRUG_ROUTES_CONCEPT_UUID = "order.drugRoutesConceptUuid";
+	
+	public static final String GP_DRUG_DOSING_UNITS_CONCEPT_UUID = "order.drugDosingUnitsConceptUuid";
+	
+	public static final String GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID = "order.drugDispensingUnitsConceptUuid";
+	
+	public static final String GP_DURATION_UNITS_CONCEPT_UUID = "order.durationUnitsConceptUuid";
+	
+	public static final String GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID = "order.testSpecimenSourcesConceptUuid";
+
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1078,7 +1097,7 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("dashboard.overview.showConcepts", "",
 		        "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
-		
+
 		props.add(new GlobalProperty(GP_DASHBOARD_CONCEPTS, "5497",
 		        "Comma delimited list of concepts ids to show on the patient header overview"));
 		
@@ -1504,7 +1523,7 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_ALLERGY_REACTION_CONCEPT_CLASSES, "Symptom",
 		        "A comma-separated list of the allowed concept classes for the reaction field of the allergy dialog"));
-		
+
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
 		
@@ -1519,7 +1538,27 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false",
 		        "Set to a value of true if you do not want allow editing patient identifier types, else set to false."));
+
+		props.add(new GlobalProperty(GP_NEXT_ORDER_NUMBER_SEED, "1", "The next order number available for assignment"));
 		
+		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
+		        "Specifies spring bean id of the order generator to use when assigning order numbers"));
+		
+		props.add(new GlobalProperty(GP_DRUG_ROUTES_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug routes"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DOSING_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug dosing units"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug dispensing units"));
+		
+		props.add(new GlobalProperty(GP_DURATION_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible duration units"));
+		
+		props.add(new GlobalProperty(GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible test specimen sources"));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}

@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 
-    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">   
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 
 	<class name="org.openmrs.Order" table="orders">
@@ -18,98 +18,97 @@
 			column="uuid" length="38" unique="true" />
 
 		<property name="instructions" type="java.lang.String" column="instructions" length="65535"/>
-		<property name="startDate" type="java.util.Date" column="start_date" length="19"/>
+		<property name="startDate" type="java.util.Date" column="start_date" length="19" not-null="true"/>
 		<property name="autoExpireDate" type="java.util.Date" column="auto_expire_date" length="19"/>
-		<property name="discontinued" type="java.lang.Boolean" column="discontinued" length="1" not-null="true"/>
-		<property name="discontinuedDate" type="java.util.Date" column="discontinued_date" length="19"/>
+		<property name="dateStopped" type="java.util.Date" column="date_stopped" length="19" access="field" />
 		<property name="accessionNumber" type="java.lang.String" column="accession_number" length="255" />
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19"/>
 		<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true"/>
 		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19"/>
 		<property name="voidReason" type="java.lang.String" column="void_reason" length="255"/>
-		<property name="discontinuedReasonNonCoded" type="java.lang.String" column="discontinued_reason_non_coded" length="255"/>
-
-		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="concept" class="org.openmrs.Concept" not-null="true">
-			<column name="concept_id" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to Encounter -->
-		<many-to-one name="encounter" class="org.openmrs.Encounter">
-			<column name="encounter_id" />
-		</many-to-one>
-
-		<!-- bi-directional many-to-one association to Encounter -->
-		<many-to-one name="patient" class="org.openmrs.Patient" not-null="true">
-			<column name="patient_id" />
-		</many-to-one>
-
-		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="discontinuedReason" class="org.openmrs.Concept" not-null="false">
-			<column name="discontinued_reason" />
-		</many-to-one>
-
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="orderer" class="org.openmrs.User">
-			<column name="orderer" />
-		</many-to-one>
-
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="voidedBy" class="org.openmrs.User">
-			<column name="voided_by" />
-		</many-to-one>
-
-		<!-- bi-directionalhttps://help.openmrs.org/customer/en/portal/private/cases/10230 many-to-one association to User -->
-		<many-to-one name="discontinuedBy" class="org.openmrs.User">
-			<column name="discontinued_by" />
-		</many-to-one>
-
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
-			<column name="creator" />
-		</many-to-one>
-
+		<property name="orderReasonNonCoded" type="java.lang.String" column="order_reason_non_coded" length="255"/>
+        <property name="orderNumber" type="string" column="order_number" length="50" not-null="true" access="field"/>
+        <property name="commentToFulfiller" type="string" column="comment_to_fulfiller" length="1024" />
+        <property name="scheduledDate" type="java.util.Date" column="scheduled_date" length="19" />
         <property name="urgency" column="urgency" length="50" not-null="true">
             <type name="org.openmrs.util.HibernateEnumType">
                 <param name="enumClassName">org.openmrs.Order$Urgency</param>
             </type>
         </property>
 
-		<!-- bi-directional many-to-one association to OrderType -->
-		<many-to-one name="orderType" class="org.openmrs.OrderType" not-null="true">
-			<column name="order_type_id" />
-		</many-to-one>
+        <property name="action" column="order_action" length="50" not-null="true">
+            <type name="org.openmrs.util.HibernateEnumType">
+                <param name="enumClassName">org.openmrs.Order$Action</param>
+            </type>
+        </property>
+
+        <many-to-one name="careSetting" column="care_setting" class="org.openmrs.CareSetting" not-null="true" />
+        
+        <many-to-one name="orderType" column="order_type_id" class="org.openmrs.OrderType" not-null="true" />
+
+        <!-- bi-directional many-to-one association to Order -->
+		<many-to-one name="previousOrder" class="org.openmrs.Order" column="previous_order_id" />
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="concept" column="concept_id" class="org.openmrs.Concept" not-null="true" />
+		<!-- bi-directional many-to-one association to Encounter -->
+		<many-to-one name="encounter" column="encounter_id" class="org.openmrs.Encounter" not-null="true" />
+
+		<!-- bi-directional many-to-one association to Encounter -->
+		<many-to-one name="patient" column="patient_id" class="org.openmrs.Patient" not-null="true" />
+
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="orderReason" class="org.openmrs.Concept" not-null="false" column="order_reason" />
+
+		<!-- bi-directional many-to-one association to Provider -->
+		<many-to-one name="orderer" class="org.openmrs.Provider" not-null="true" />
+
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
+
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
 
 		<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 
 			<key column="order_id" />
 
 			<property name="dose" type="double" column="dose" length="22"/>
-			<property name="equivalentDailyDose" type="double" column="equivalent_daily_dose" length="22"/>
-			<property name="units" type="java.lang.String" column="units" length="255"/>
-			<property name="frequency" type="java.lang.String" column="frequency" length="255"/>
-			<property name="prn" type="boolean" column="prn" length="1" not-null="true"/>
-			<property name="complex" type="boolean" column="complex" length="1" not-null="true"/>
-			<property name="quantity" type="int" column="quantity" length="11"/>
+            <many-to-one name="doseUnits" class="org.openmrs.Concept" column="dose_units" />
+			<many-to-one name="frequency" class="org.openmrs.OrderFrequency" column="frequency" />
+			<property name="asNeeded" type="boolean" column="as_needed" length="1" not-null="true"/>
+            <property name="asNeededCondition" type="string" column="as_needed_condition" length="255" />
+			<property name="quantity" type="double" column="quantity" length="22"/>
+			<many-to-one name="quantityUnits" class="org.openmrs.Concept" column="quantity_units" />
 			<!-- bi-directional many-to-one association to Drug -->
-			<many-to-one name="drug" class="org.openmrs.Drug" not-null="true">
-				<column name="drug_inventory_id" />
-			</many-to-one>
 
-        </joined-subclass>
-	
-		<joined-subclass name="org.openmrs.TestOrder" table="test_order" lazy="false">
-			<key column="order_id" not-null="true" on-delete="cascade" />
+			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false" column="drug_inventory_id" />
+            <property name="dosingType" column="dosing_type" length="50">
+                <type name="org.openmrs.util.HibernateEnumType">
+                    <param name="enumClassName">org.openmrs.DrugOrder$DosingType</param>
+                </type>
+            </property>
+            <property name="numRefills" type="int" column="num_refills" />
+            <property name="dosingInstructions" type="java.lang.String" column="dosing_instructions" length="65535"/>
+            <property name="duration" type="double" column="duration" length="22"/>
+            <many-to-one name="durationUnits" class="org.openmrs.Concept" column="duration_units" />
+            <many-to-one name="route" class="org.openmrs.Concept" />
+		</joined-subclass>
 
-            <many-to-one name="specimenSource" class="org.openmrs.Concept">
-                <column name="specimen_source" />
-            </many-to-one>
+        <joined-subclass name="org.openmrs.TestOrder" table="test_order" lazy="false">
+
+            <key column="order_id" not-null="true" on-delete="cascade" />
+
+            <many-to-one name="specimenSource" class="org.openmrs.Concept" column="specimen_source" />
 
             <property name="laterality" column="laterality" length="20" not-null="false">
                 <type name="org.openmrs.util.HibernateEnumType">
                     <param name="enumClassName">org.openmrs.TestOrder$Laterality</param>
                 </type>
             </property>
-    		<property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
-		</joined-subclass>
+            <property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
+            <property name="numberOfRepeats" type="int" column="number_of_repeats"/>
+            <many-to-one name="frequency" class="org.openmrs.OrderFrequency" />
+
+        </joined-subclass>
 	</class>
 </hibernate-mapping>

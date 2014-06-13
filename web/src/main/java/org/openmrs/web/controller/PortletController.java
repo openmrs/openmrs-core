@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
-import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -44,7 +42,6 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.util.StringUtils;
@@ -74,9 +71,6 @@ public class PortletController implements Controller {
 	 *          (List<Encounter>) patientEncounters
 	 *          (List<Visit>) patientVisits
 	 *          (List<Visit>) activeVisits
-	 *          (List<DrugOrder>) patientDrugOrders
-	 *          (List<DrugOrder>) currentDrugOrders
-	 *          (List<DrugOrder>) completedDrugOrders
 	 *          (Obs) patientWeight // most recent weight obs
 	 *          (Obs) patientHeight // most recent height obs
 	 *          (Double) patientBmi // BMI derived from most recent weight and most recent height
@@ -309,30 +303,6 @@ public class PortletController implements Controller {
 							}
 						}
 						model.put("patientReasonForExit", reasonForExitObs);
-						
-						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ORDERS)) {
-							List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);
-							model.put("patientDrugOrders", drugOrderList);
-							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
-							List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
-							Date rightNow = new Date();
-							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext();) {
-								DrugOrder next = iter.next();
-								if (next.isCurrent() || next.isFuture()) {
-									currentDrugOrders.add(next);
-								}
-								if (next.isDiscontinued(rightNow)) {
-									discontinuedDrugOrders.add(next);
-								}
-							}
-							model.put("currentDrugOrders", currentDrugOrders);
-							model.put("completedDrugOrders", discontinuedDrugOrders);
-							
-							List<RegimenSuggestion> standardRegimens = Context.getOrderService().getStandardRegimens();
-							if (standardRegimens != null) {
-								model.put("standardRegimens", standardRegimens);
-							}
-						}
 						
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_PROGRAMS)
 						        && Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENT_PROGRAMS)) {

@@ -21,7 +21,7 @@
         <property name="javax.persistence.validation.mode">none</property>
 
 		<!--  Hibernate Mapping files -->
-		
+
 		<!-- API -->
 		<mapping resource="org/openmrs/api/db/hibernate/ActiveListItem.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ActiveListType.hbm.xml" />
@@ -46,6 +46,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTermMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Drug.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DrugIngredient.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/DrugReferenceMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Field.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldAnswer.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldType.hbm.xml" />
@@ -71,6 +72,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/CareSetting.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Location.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationTag.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationAttributeType.hbm.xml" />
@@ -86,6 +88,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/PatientState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/SerializedObject.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
 
 		<!-- HL7 -->
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />

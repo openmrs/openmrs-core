@@ -15,21 +15,24 @@ package org.openmrs.validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ConceptClass;
 import org.openmrs.OrderType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.openmrs.order.OrderUtil;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates attributes on the {@link OrderType} object.
+ * Validates the {@link OrderType} class.
  * 
- * @since 1.5
+ * @since 1.10
  */
-@Handler(supports = { OrderType.class }, order = 50)
+@Handler(supports = { OrderType.class })
 public class OrderTypeValidator implements Validator {
 	
-	/** Log for this class and subclasses */
+	// Log for this class
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
@@ -37,29 +40,68 @@ public class OrderTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
+	@Override
 	public boolean supports(Class c) {
-		return c.equals(OrderType.class);
+		return OrderType.class.isAssignableFrom(c);
 	}
 	
 	/**
-	 * Checks the form object for any inconsistencies/errors
+	 * Validates an Order object
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
-	 * @should pass validation if all required fields have proper values
+	 * @should fail if the orderType object is null
+	 * @should fail if name is null
+	 * @should fail if name is empty
+	 * @should fail if name is whitespace
+	 * @should fail if name is a duplicate
+	 * @should fail if conceptClass is a duplicate
+	 * @should fail if parent is among its descendants
+	 * @should fail if parent is also a direct child
+	 * @should pass if all fields are correct for a new order type
+	 * @should pass if all fields are correct for an existing order type
+	 * @should be invoked when an order type is saved
 	 */
+	@Override
 	public void validate(Object obj, Errors errors) {
-		OrderType orderType = (OrderType) obj;
-		if (orderType == null) {
-			errors.rejectValue("orderType", "error.general");
+		if (obj == null || !(obj instanceof OrderType)) {
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + OrderType.class);
 		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			OrderType orderType = (OrderType) obj;
+			String name = orderType.getName();
+			if (!StringUtils.hasText(name)) {
+				errors.rejectValue("name", "error.name");
+				return;
+			}
+			
+			if (orderType.getParent() != null && OrderUtil.isType(orderType, orderType.getParent())) {
+				errors.rejectValue("parent", "OrderType.parent.amongDescendants", new Object[] { orderType.getName() },
+				    "Parent of " + orderType.getName() + " is among its descendants");
+			}
+			
+			OrderType duplicate = Context.getOrderService().getOrderTypeByName(name);
+			if (duplicate != null && !orderType.equals(duplicate)) {
+				errors.rejectValue("name", "OrderType.duplicate.name", "Duplicate order type name: " + name);
+			}
+			
+			for (OrderType ot : Context.getOrderService().getOrderTypes(true)) {
+				if (ot != null) {
+					//If this was an edit, skip past the order we are actually validating 
+					if (orderType.equals(ot)) {
+						continue;
+					}
+					int index = 0;
+					for (ConceptClass cc : ot.getConceptClasses()) {
+						if (cc != null && orderType.getConceptClasses().contains(cc)) {
+							errors.rejectValue("conceptClasses[" + index + "]", "OrderType.duplicate", new Object[] {
+							        cc.getName(), orderType.getName() }, cc.getName()
+							        + " is already associated to another order type:" + orderType.getName());
+						}
+						index++;
+					}
+				}
+			}
 		}
-		//log.debug("errors: " + errors.getAllErrors().toString());
 	}
-	
 }
