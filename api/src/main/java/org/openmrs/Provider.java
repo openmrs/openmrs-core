@@ -137,30 +137,4 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 			log.trace("Setting name for a provider who is already attached to a person");
 		}
 	}
-	
-	/**
-	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
-	 * @should return person full name if person is not null
-	 */
-	@Override
-	public String getName() {
-		if (getPerson() != null && getPerson().getPersonName() != null) {
-			return getPerson().getPersonName().getFullName();
-		} else {
-			return super.getName();
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.BaseOpenmrsMetadata#setName(java.lang.String)
-	 */
-	@Override
-	public void setName(String name) {
-		super.setName(name);
-		
-		//Trace message if we are setting a name when already attached to a person.
-		if (getPerson() != null && !StringUtils.isBlank(super.getName())) {
-			log.trace("Setting name for a provider who is already attached to a person");
-		}
-	}
 }

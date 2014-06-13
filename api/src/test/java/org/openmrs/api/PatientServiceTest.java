@@ -634,6 +634,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Visit visit5 = visitService.getVisit(5);
 		
 		List<String> encounterUuidsThatShouldBeMoved = new ArrayList<String>();
+		encounterUuidsThatShouldBeMoved.add(Context.getEncounterService().getEncounter(6).getUuid());
 		for (Visit v : Arrays.asList(visit1, visit2, visit3)) {
 			for (Encounter e : v.getEncounters()) {
 				encounterUuidsThatShouldBeMoved.add(e.getUuid());
@@ -665,7 +666,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertThat(mergeLogData.getMovedVisits().size(), is(4));
 		assertThat(mergeLogData.getMovedVisits(), containsInAnyOrder(visit1.getUuid(), visit2.getUuid(), visit3.getUuid(),
 		    visit6.getUuid()));
-
+		
 		assertThat(mergeLogData.getMovedEncounters().size(), is(encounterUuidsThatShouldBeMoved.size()));
 		assertThat(mergeLogData.getMovedEncounters(), containsInAnyOrder(encounterUuidsThatShouldBeMoved.toArray()));
 	}
@@ -2473,7 +2474,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not create duplicate relationships", method = "mergePatients(Patient,Patient)")
 	public void mergePatients_shouldNotCreateDuplicateRelationships() throws Exception {
 		executeDataSet(PATIENT_RELATIONSHIPS_XML);
-
+		
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
@@ -2768,8 +2769,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//retrieve patients
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(7);
-        voidOrders(Collections.singleton(notPreferred));
-
+		voidOrders(Collections.singleton(notPreferred));
+		
 		//get an observation for notPreferred and make it independent from any encounter
 		Obs obs = Context.getObsService().getObs(7);
 		obs.setEncounter(null);
@@ -2915,6 +2916,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
 		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertTrue("prior estimated date of death was not audited", audit.getPersonMergeLogData()
 		        .getPriorDateOfDeathEstimated());
@@ -2937,7 +2939,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		Assert.assertEquals("prior gender was not audited", "M", audit.getPersonMergeLogData().getPriorGender());
 	}
-
+	
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 * @verifies not copy over duplicate patient identifiers
@@ -2961,7 +2963,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(preferred);
 		//merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
-        voidOrders(Collections.singleton(notPreferred));
+		voidOrders(Collections.singleton(notPreferred));
 		// create identifier with the same values for the non preferred patient
 		PatientIdentifier nonPreferredIdentifier = new PatientIdentifier();
 		nonPreferredIdentifier.setIdentifier("9999-4");
@@ -2993,7 +2995,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not void relationships for same type and side with different relatives", method = "mergePatients(Patient,Patient)")
 	public void mergePatients_shouldNotVoidRelationshipsForSameTypeAndSideWithDifferentRelatives() throws Exception {
 		executeDataSet(PATIENT_RELATIONSHIPS_XML);
-
+		
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
@@ -3274,7 +3276,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			assertThat(names, containsFullName("President John Fitzgerald Kennedy Esq."));
 		else
 			assertThat(names, containsFullName("John Fitzgerald Kennedy"));
-
+		
 	}
 	
 	@Test
@@ -3539,8 +3541,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		createPatientIdentifierTypeLockedGPAndSetValue("true");
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
 		ps.purgePatientIdentifierType(pit);
-    }
-
+	}
+	
 	/**
 	 * @verifies fail if not preferred patient has unvoided orders
 	 * @see PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)

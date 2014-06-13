@@ -838,7 +838,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return drugs that are not retired", method = "getDrugs(String)")
 	public void getDrugs_shouldReturnDrugsThatAreNotRetired() throws Exception {
-		List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL" /* is not retired */);
+		List<Drug> drugs = Context.getConceptService().getDrugs("ASPIRIN" /* is not retired */);
 		Assert.assertFalse(drugs.get(0).isRetired());
 	}
 	
@@ -2606,7 +2606,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(35, allConcepts.size());
 		assertEquals(88, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(27, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
-
+		
 		//check desc order
 		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
 		
@@ -2626,7 +2626,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(33, allConcepts.size());
 		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(0).getName().getName());
 		assertEquals("tab (s)", allConcepts.get(allConcepts.size() - 1).getName().getName());
-
+		
 		//test the desc order
 		allConcepts = conceptService.getAllConcepts("name", false, false);
 		
@@ -2738,9 +2738,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		ConceptNameTag savedNameTag = cs.getConceptNameTag(id);
 		assertEquals(savedNameTag.getTag(), "dcba");
-    }
-    /**
-     * @verifies get drugs with names matching the search phrase
+	}
+	
+	/**
+	 * @verifies get drugs with names matching the search phrase
 	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
 	 */
 	@Test
@@ -2850,7 +2851,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldReturnUniqueDrugs() throws Exception {
 		//sanity check that drug.name and drug.concept.name will both match the search phrase
-		Drug drug = conceptService.getDrugByNameOrId("Aspirin");
+		Drug drug = conceptService.getDrugByNameOrId("ASPIRIN");
 		assertEquals(drug.getName().toLowerCase(), drug.getConcept().getName().getName().toLowerCase());
 		
 		List<Drug> drugs = conceptService.getDrugs("Asp", null, false, false);
