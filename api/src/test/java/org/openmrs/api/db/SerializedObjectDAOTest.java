@@ -35,8 +35,6 @@ import org.openmrs.test.Verifies;
  * is the {@link HibernateSerializedObjectDAO}.
  */
 @StartModule( { "org/openmrs/api/db/include/serialization.xstream-0.1.1.omod" })
-//Need to remove this annotation before merging back to trunk see https://tickets.openmrs.org/browse/SXS-4
-@Ignore
 public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	
 	private SerializedObjectDAO dao = null;

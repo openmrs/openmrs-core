@@ -365,7 +365,7 @@ public interface PatientService extends OpenmrsService {
 	 * Get all patientIdentifier types
 	 * <p>
 	 * Ordered same as {@link PatientIdentifierTypeDefaultComparator}.
-	 * 
+	 *
 	 * @return patientIdentifier types list
 	 * @throws APIException
 	 * @should fetch all non retired patient identifier types
@@ -378,7 +378,7 @@ public interface PatientService extends OpenmrsService {
 	 * Get all patientIdentifier types.
 	 * <p>
 	 * Ordered same as {@link PatientIdentifierTypeDefaultComparator}.
-	 * 
+	 *
 	 * @param includeRetired true/false whether retired types should be included
 	 * @return patientIdentifier types list
 	 * @throws APIException
@@ -393,7 +393,7 @@ public interface PatientService extends OpenmrsService {
 	 * Get all patientIdentifier types that match the given criteria
 	 * <p>
 	 * Ordered same as {@link PatientIdentifierTypeDefaultComparator}.
-	 * 
+	 *
 	 * @param name name of the type to match on
 	 * @param format the string format to match on
 	 * @param required if true, limits to only identifiers marked as required if false, only non
@@ -668,7 +668,6 @@ public interface PatientService extends OpenmrsService {
 	 * @should audit voided relationships
 	 * @should audit created relationships
 	 * @should audit moved independent observations
-	 * @should audit created orders
 	 * @should audit created identifiers
 	 * @should audit created names
 	 * @should audit created addresses
@@ -680,6 +679,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should audit prior date of birth estimated
 	 * @should audit prior gender
 	 * @should not copy over duplicate patient identifiers
+	 * @should fail if not preferred patient has unvoided orders
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException;

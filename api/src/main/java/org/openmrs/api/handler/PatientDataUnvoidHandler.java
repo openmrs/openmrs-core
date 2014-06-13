@@ -13,10 +13,6 @@
  */
 package org.openmrs.api.handler;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
@@ -27,6 +23,9 @@ import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * This class deals with {@link Patient} objects when they are unvoided via the unvoid* method in an
@@ -43,13 +42,14 @@ import org.openmrs.api.context.Context;
 @Handler(supports = Patient.class)
 public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(Patient patient, User originalVoidingUser, Date origParentVoidedDate, String unused) {
 		//can't be unvoiding a patient that doesn't exist in the database
 		if (patient.getId() != null) {
 			//unvoid all the encounter that got voided as a result of the patient getting voided
 			EncounterService es = Context.getEncounterService();
-			List<Encounter> encounters = es.getEncounters(patient, null, null, null, null, null, null, null, null, true);
+			List<Encounter> encounters = es.getEncounters(patient, null, null, null, null, null, null, true);
 			if (CollectionUtils.isNotEmpty(encounters)) {
 				for (Encounter encounter : encounters) {
 					if (encounter.isVoided() && encounter.getDateVoided().equals(origParentVoidedDate)
@@ -61,11 +61,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			
 			//unvoid all the orders that got voided as a result of the patient getting voided
 			OrderService os = Context.getOrderService();
-			List<Patient> patients = new ArrayList<Patient>();
-			patients.add(patient);
-			
-			// TODO: this method will not return voided orders!
-			List<Order> orders = os.getOrders(Order.class, patients, null, null, null, null, null, null);
+			List<Order> orders = os.getAllOrdersByPatient(patient);
 			if (CollectionUtils.isNotEmpty(orders)) {
 				for (Order order : orders) {
 					if (order.isVoided() && order.getDateVoided().equals(origParentVoidedDate)

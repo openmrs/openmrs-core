@@ -301,7 +301,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		List<EncounterType> list = new ArrayList<EncounterType>();
 		list.add(new EncounterType(1));
 		Cohort withOneType = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
-		Assert.assertEquals(1, withOneType.size());
+		Assert.assertEquals(2, withOneType.size());
 		list.add(new EncounterType(6));
 		Cohort withTwoTypes = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
 		Assert.assertEquals(2, withTwoTypes.size());
@@ -315,7 +315,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	public void getPatientsHavingEncounters_shouldGetAllPatientsWithEncountersWhenNoParametersSpecified() throws Exception {
 		Cohort withEncs = Context.getPatientSetService().getPatientsHavingEncounters((EncounterType) null, null, null, null,
 		    null, null, null);
-		Assert.assertEquals(1, withEncs.size());
+		Assert.assertEquals(2, withEncs.size());
 		Assert.assertTrue(withEncs.contains(7));
 	}
 	
@@ -328,7 +328,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		Cohort c = Context.getPatientSetService().getPatientsHavingEncounters(new ArrayList<EncounterType>(), null, null,
 		    null, null, null, null);
-		Assert.assertEquals(1, c.size());
+		Assert.assertEquals(2, c.size());
 		Assert.assertTrue(c.contains(7));
 	}
 	

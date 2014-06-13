@@ -14,51 +14,52 @@
 package org.openmrs;
 
 /**
- * This is a type of order that adds drug specific attributes.
+ * DrugOrder
  * 
  * @version 1.0
  */
 public class DrugOrder extends Order implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 72232L;
+	
+	/**
+	 * enum dosingType
+	 * 
+	 * @since 1.10
+	 */
+	public enum DosingType {
+		SIMPLE, FREE_TEXT;
+	}
 	
 	// Fields
 	
-	private Drug drug;
-	
 	private Double dose;
 	
-	private String doseUnits;
+	private Concept doseUnits;
 	
-	Boolean isStructuredDosing = false;
+	private OrderFrequency frequency;
 	
-	Double strength;
+	private Boolean asNeeded = false;
 	
-	String strengthUnits;
+	private Double quantity;
 	
-	Integer quantity;
+	private Concept quantityUnits;
 	
-	String quantityUnits;
+	private Drug drug;
 	
-	String frequency;
+	private String asNeededCondition;
 	
-	String brandName;
+	private DosingType dosingType = DosingType.SIMPLE;
 	
-	String dosageForm;
+	private Integer numRefills;
 	
-	String route;
+	private String dosingInstructions;
 	
-	Boolean asNeeded = false; // - Indicates PRN
+	private Double duration;
 	
-	String asNeededCondition;
+	private Concept durationUnits;
 	
-	String additionalInstructions;
-	
-	Integer duration;
-	
-	String durationUnits;
-	
-	Integer numRefills;
+	private Concept route;
 	
 	// Constructors
 	
@@ -71,13 +72,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.setOrderId(orderId);
 	}
 	
-	public DrugOrder(Integer orderId, String brandName) {
-		this.setOrderId(orderId);
-		this.setBrandName(brandName);
-	}
-	
 	/**
 	 * @see org.openmrs.Order#copy()
+	 * @should copy all drug order fields
 	 */
 	public DrugOrder copy() {
 		return copyHelper(new DrugOrder());
@@ -90,23 +87,18 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		super.copyHelper(target);
 		target.dose = getDose();
 		target.doseUnits = getDoseUnits();
+		target.frequency = getFrequency();
 		target.asNeeded = getAsNeeded();
+		target.asNeededCondition = getAsNeededCondition();
 		target.quantity = getQuantity();
 		target.quantityUnits = getQuantityUnits();
 		target.drug = getDrug();
-		
-		target.brandName = getBrandName();
-		target.isStructuredDosing = getIsStructuredDosing();
-		target.strength = getStrength();
-		target.strengthUnits = getStrengthUnits();
-		target.dosageForm = getDosageForm();
-		target.route = getRoute();
-		target.asNeededCondition = getAsNeededCondition();
-		target.additionalInstructions = getAdditionalInstructions();
-		target.numRefills = getNumRefills();
+		target.dosingType = getDosingType();
+		target.dosingInstructions = getDosingInstructions();
 		target.duration = getDuration();
 		target.durationUnits = getDurationUnits();
-		
+		target.setNumRefills(getNumRefills());
+		target.route = getRoute();
 		return target;
 	}
 	
@@ -117,35 +109,103 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	// Property accessors
 	
 	/**
-	 * Gets the dose units of this drug order
+	 * Gets the doseUnits of this drug order
 	 * 
 	 * @return doseUnits
 	 */
-	public String getDoseUnits() {
+	public Concept getDoseUnits() {
 		return this.doseUnits;
 	}
 	
 	/**
-	 * Sets the dose units of this drug order
+	 * Sets the doseUnits of this drug order
 	 * 
-	 * @param units
+	 * @param doseUnits
 	 */
-	public void setDoseUnits(String doseUnits) {
+	public void setDoseUnits(Concept doseUnits) {
 		this.doseUnits = doseUnits;
 	}
 	
 	/**
-	 * @return the asNeeded
+	 * Gets the frequency
+	 * 
+	 * @return frequency
+	 * @since 1.10 (signature changed)
+	 */
+	public OrderFrequency getFrequency() {
+		return this.frequency;
+	}
+	
+	/**
+	 * Sets the frequency
+	 * 
+	 * @param frequency
+	 * @since 1.10 (signature changed)
+	 */
+	public void setFrequency(OrderFrequency frequency) {
+		this.frequency = frequency;
+	}
+	
+	/**
+	 * @deprecated see {@link #getAsNeeded()}
+	 * @return Boolean
+	 */
+	@Deprecated
+	public Boolean getPrn() {
+		return getAsNeeded();
+	}
+	
+	/**
+	 * @deprecated see {@link #setAsNeeded(Boolean)}
+	 * @param prn
+	 */
+	@Deprecated
+	public void setPrn(Boolean prn) {
+		setAsNeeded(prn);
+	}
+	
+	/**
+	 * Returns true/false whether the drug is a "pro re nata" drug
+	 * 
+	 * @return Boolean
+	 * @since 1.10
 	 */
 	public Boolean getAsNeeded() {
 		return asNeeded;
 	}
 	
 	/**
-	 * @param asNeeded the asNeeded to set
+	 * @param asNeeded the value to set
+	 * @since 1.10
 	 */
 	public void setAsNeeded(Boolean asNeeded) {
 		this.asNeeded = asNeeded;
+	}
+	
+	/**
+	 * Gets whether this drug is complex
+	 * 
+	 * @return Boolean
+	 * @deprecated use {@link #getDosingType()}
+	 */
+	@Deprecated
+	public Boolean getComplex() {
+		return this.dosingType != DosingType.SIMPLE;
+	}
+	
+	/**
+	 * Sets whether this drug is complex
+	 * 
+	 * @param complex
+	 * @deprecated use {@link #setComplex(Boolean)}
+	 */
+	@Deprecated
+	public void setComplex(Boolean complex) {
+		if (complex) {
+			setDosingType(DosingType.FREE_TEXT);
+		} else {
+			setDosingType(DosingType.SIMPLE);
+		}
 	}
 	
 	/**
@@ -153,7 +213,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * 
 	 * @return quantity
 	 */
-	public Integer getQuantity() {
+	public Double getQuantity() {
 		return this.quantity;
 	}
 	
@@ -162,36 +222,24 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * 
 	 * @param quantity
 	 */
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
 	
 	/**
-	 * @return the quantityUnits
+	 * @since 1.10
+	 * @return concept
 	 */
-	public String getQuantityUnits() {
+	public Concept getQuantityUnits() {
 		return quantityUnits;
 	}
 	
 	/**
-	 * @param quantityUnits the quantityUnits to set
+	 * @since 1.10
+	 * @param quantityUnits
 	 */
-	public void setQuantityUnits(String quantityUnits) {
+	public void setQuantityUnits(Concept quantityUnits) {
 		this.quantityUnits = quantityUnits;
-	}
-	
-	/**
-	 * @return the frequency
-	 */
-	public String getFrequency() {
-		return frequency;
-	}
-	
-	/**
-	 * @param frequency the frequency to set
-	 */
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
 	}
 	
 	/**
@@ -213,228 +261,203 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * Sets the dose.
-	 * 
-	 * @param dose the dose to set.
-	 */
-	public void setDose(Double dose) {
-		this.dose = dose;
-	}
-	
-	/**
-	 * Gets the dose.
-	 * 
-	 * @return the dose.
-	 */
-	public Double getDose() {
-		return dose;
-	}
-	
-	public String toString() {
-		return "DrugOrder(" + getDose() + getDoseUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
-		        + " from " + getStartDate() + " to " + (getDiscontinued() ? getDiscontinuedDate() : getAutoExpireDate())
-		        + " orderNumber " + getOrderNumber() + " brandName " + getBrandName() + ")";
-	}
-	
-	/**
-	 * Gets the brand name.
-	 * 
-	 * @return the brand name.
-	 */
-	public String getBrandName() {
-		return brandName;
-	}
-	
-	/**
-	 * Sets the brand name.
-	 * 
-	 * @param brandName the brand name to set.
-	 */
-	public void setBrandName(String brandName) {
-		this.brandName = brandName;
-	}
-	
-	/**
-	 * Gets the strength.
-	 * 
-	 * @return the strength.
-	 */
-	public Double getStrength() {
-		return strength;
-	}
-	
-	/**
-	 * Sets the strength.
-	 * 
-	 * @param strength the strength to set.
-	 */
-	public void setStrength(Double strength) {
-		this.strength = strength;
-	}
-	
-	/**
-	 * Gets the strength units.
-	 * 
-	 * @return the strength units.
-	 */
-	public String getStrengthUnits() {
-		return strengthUnits;
-	}
-	
-	/**
-	 * Sets the strength units.
-	 * 
-	 * @param strengthUnits the strength units to set.
-	 */
-	public void setStrengthUnits(String strengthUnits) {
-		this.strengthUnits = strengthUnits;
-	}
-	
-	/**
-	 * Gets the dosage form.
-	 * 
-	 * @return the dosage form.
-	 */
-	public String getDosageForm() {
-		return dosageForm;
-	}
-	
-	/**
-	 * Sets the dosage form.
-	 * 
-	 * @param dosageForm the dosage form to set.
-	 */
-	public void setDosageForm(String dosageForm) {
-		this.dosageForm = dosageForm;
-	}
-	
-	/**
-	 * Gets the route.
-	 * 
-	 * @return the route.
-	 */
-	public String getRoute() {
-		return route;
-	}
-	
-	/**
-	 * Sets the route.
-	 * 
-	 * @param route the route to set.
-	 */
-	public void setRoute(String route) {
-		this.route = route;
-	}
-	
-	/**
-	 * Gets the as needed condition.
-	 * 
-	 * @return the as needed condition.
+	 * @return the asNeededCondition
+	 * @since 1.10
 	 */
 	public String getAsNeededCondition() {
 		return asNeededCondition;
 	}
 	
 	/**
-	 * Sets the as needed condition.
-	 * 
-	 * @param asNeededCondition the as needed condition to set.
+	 * @param asNeededCondition the asNeededCondition to set
+	 * @since 1.10
 	 */
 	public void setAsNeededCondition(String asNeededCondition) {
 		this.asNeededCondition = asNeededCondition;
 	}
 	
 	/**
-	 * Gets the additional instructions.
+	 * Gets the route
 	 * 
-	 * @return the additional instructions.
+	 * @since 1.10
 	 */
-	public String getAdditionalInstructions() {
-		return additionalInstructions;
+	public Concept getRoute() {
+		return route;
 	}
 	
 	/**
-	 * Sets the additional instructions.
+	 * Sets the route
 	 * 
-	 * @param additionalInstructions the additional instructions to set.
+	 * @param route
+	 * @since 1.10
 	 */
-	public void setAdditionalInstructions(String additionalInstructions) {
-		this.additionalInstructions = additionalInstructions;
+	public void setRoute(Concept route) {
+		this.route = route;
+	}
+	
+	public void setDose(Double dose) {
+		this.dose = dose;
+	}
+	
+	public Double getDose() {
+		return dose;
 	}
 	
 	/**
-	 * Gets the number of refills.
+	 * Gets the dosingType
 	 * 
-	 * @return the number of refills.
+	 * @since 1.10
+	 */
+	public DosingType getDosingType() {
+		return dosingType;
+	}
+	
+	/**
+	 * Sets the dosingType
+	 * 
+	 * @param dosingType the DosingType to set
+	 * @since 1.10
+	 */
+	public void setDosingType(DosingType dosingType) {
+		this.dosingType = dosingType;
+	}
+	
+	/**
+	 * Gets numRefills
+	 * 
+	 * @since 1.10
 	 */
 	public Integer getNumRefills() {
 		return numRefills;
 	}
 	
 	/**
-	 * Sets the number of refills.
+	 * Sets numRefills
 	 * 
-	 * @param numRefills the number of refills to set.
+	 * @param numRefills the numRefills to set
+	 * @since 1.10
 	 */
 	public void setNumRefills(Integer numRefills) {
 		this.numRefills = numRefills;
 	}
 	
 	/**
-	 * @see org.openmrs.Order#getId()
-	 */
-	public Integer getId() {
-		return getOrderId();
-	}
-	
-	/**
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
-	public void setId(Integer id) {
-		setOrderId(id);
-	}
-	
-	/**
-	 * Sets isStructuredDosing dosing of drug order
+	 * Sets the dosingInstructions
 	 * 
-	 * @param isStructuredDosing the value to set
+	 * @param dosingInstructions to set
+	 * @since 1.10
 	 */
-	public void setIsStructuredDosing(Boolean isStructuredDosing) {
-		this.isStructuredDosing = isStructuredDosing;
+	public void setDosingInstructions(String dosingInstructions) {
+		this.dosingInstructions = dosingInstructions;
 	}
 	
 	/**
-	 * @return unstructured dosing
+	 * Gets the dosingInstructions
+	 * 
+	 * @since 1.10
 	 */
-	public Boolean getIsStructuredDosing() {
-		return isStructuredDosing;
+	public String getDosingInstructions() {
+		return this.dosingInstructions;
 	}
 	
 	/**
-	 * @return the duration
+	 * Gets the duration of a Drug Order
+	 * 
+	 * @since 1.10
 	 */
-	public Integer getDuration() {
+	public Double getDuration() {
 		return duration;
 	}
 	
 	/**
-	 * @param duration the duration to set
+	 * Sets the duration of a Drug Order
+	 * 
+	 * @param duration to set
+	 * @since 1.10
 	 */
-	public void setDuration(Integer duration) {
+	public void setDuration(Double duration) {
 		this.duration = duration;
 	}
 	
 	/**
-	 * @return the durationUnits
+	 * Gets durationUnits of a Drug Order
+	 * 
+	 * @since 1.10
 	 */
-	public String getDurationUnits() {
+	public Concept getDurationUnits() {
 		return durationUnits;
 	}
 	
 	/**
-	 * @param durationUnits the durationUnits to set
+	 * Sets the durationUnits of a Drug Order
+	 * 
+	 * @param durationUnits
+	 * @since 1.10
 	 */
-	public void setDurationUnits(String durationUnits) {
+	public void setDurationUnits(Concept durationUnits) {
 		this.durationUnits = durationUnits;
 	}
+	
+	/**
+	 * @see org.openmrs.Order#cloneForDiscontinuing()
+	 * @should set all the relevant fields
+	 * @since 1.10
+	 */
+	@Override
+	public DrugOrder cloneForDiscontinuing() {
+		DrugOrder newOrder = new DrugOrder();
+		newOrder.setCareSetting(getCareSetting());
+		newOrder.setConcept(getConcept());
+		newOrder.setAction(Action.DISCONTINUE);
+		newOrder.setPreviousOrder(this);
+		newOrder.setPatient(getPatient());
+		newOrder.setDrug(getDrug());
+		newOrder.setOrderType(getOrderType());
+		return newOrder;
+	}
+	
+	/**
+	 * Creates a DrugOrder for revision from this order, sets the previousOrder, action field and
+	 * other drug order fields.
+	 * 
+	 * @return the newly created order
+	 * @since 1.10
+	 * @should set all the relevant fields
+	 * @should set the relevant fields for a DC order
+	 */
+	@Override
+	public DrugOrder cloneForRevision() {
+		return cloneForRevisionHelper(new DrugOrder());
+	}
+	
+	/**
+	 * @see Order#cloneForRevisionHelper(Order)
+	 */
+	protected DrugOrder cloneForRevisionHelper(DrugOrder target) {
+		super.cloneForRevisionHelper(target);
+		target.setDose(getDose());
+		target.setDoseUnits(getDoseUnits());
+		target.setFrequency(getFrequency());
+		target.setAsNeeded(getAsNeeded());
+		target.setAsNeededCondition(getAsNeededCondition());
+		target.setQuantity(getQuantity());
+		target.setQuantityUnits(getQuantityUnits());
+		target.setDrug(getDrug());
+		target.setDosingType(getDosingType());
+		target.setDosingInstructions(getDosingInstructions());
+		target.setDuration(getDuration());
+		target.setDurationUnits(getDurationUnits());
+		target.setRoute(getRoute());
+		target.setNumRefills(getNumRefills());
+		
+		return target;
+	}
+	
+	public String toString() {
+		String prefix = Action.DISCONTINUE == getAction() ? "DC " : "";
+		return prefix + "DrugOrder(" + getDose() + getDoseUnits() + " of "
+		        + (getDrug() != null ? getDrug().getName() : "[no drug]") + " from " + getStartDate() + " to "
+		        + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate()) + ")";
+	}
+	
 }

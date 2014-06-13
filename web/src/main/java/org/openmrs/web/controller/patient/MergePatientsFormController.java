@@ -29,9 +29,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -195,6 +197,18 @@ public class MergePatientsFormController extends SimpleFormController {
 		map.put("patient2", p2);
 		map.put("patientList", patientList);
 		map.put("modalMode", request.getParameter("modalMode"));
+		List<Integer> patientIdsWithUnvoidedOrders = new ArrayList<Integer>();
+		OrderService os = Context.getOrderService();
+		for (Patient pat : patientList) {
+			List<Order> orders = os.getAllOrdersByPatient(pat);
+			for (Order o : orders) {
+				if (!o.isVoided()) {
+					patientIdsWithUnvoidedOrders.add(pat.getId());
+					break;
+				}
+			}
+		}
+		map.put("patientIdsWithUnvoidedOrders", patientIdsWithUnvoidedOrders);
 		
 		return map;
 	}

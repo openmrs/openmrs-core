@@ -51,8 +51,8 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
 /**
- * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2 liqubaseConnection that will
- * be used for upgrade.
+ * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2
+ * liqubaseConnection that will be used for upgrade.
  */
 public class DatabaseUpgradeTestUtil {
 	
@@ -191,7 +191,7 @@ public class DatabaseUpgradeTestUtil {
 			
 			for (int i = 0; i < columnNames.length; i++) {
 				Object object = resultSet.getObject(i + 1);
-				columns.put(columnNames[i], object.toString());
+				columns.put(columnNames[i], object != null ? object.toString() : null);
 			}
 		}
 		

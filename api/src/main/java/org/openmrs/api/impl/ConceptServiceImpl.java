@@ -2335,4 +2335,51 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		//We need to fetch it in DAO since it must be done in the MANUAL fush mode to prevent pre-mature flushes.
 		return dao.getDefaultConceptMapType();
 	}
+	
+	/**
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired)
+	        throws APIException {
+		if (searchPhrase == null) {
+			throw new IllegalArgumentException("searchPhrase is required");
+		}
+		return dao.getDrugs(searchPhrase, locale, exactLocale, includeRetired);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getDrugsByMapping(String, ConceptSource, Collection,
+	 *      boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException {
+		
+		if (conceptSource == null) {
+			throw new APIException("ConceptSource is required");
+		}
+		if (withAnyOfTheseTypes == null) {
+			withAnyOfTheseTypes = Collections.EMPTY_LIST;
+		}
+		return dao.getDrugsByMapping(code, conceptSource, withAnyOfTheseTypes, includeRetired);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws APIException {
+		if (conceptSource == null) {
+			throw new APIException("ConceptSource is required");
+		}
+		if (withAnyOfTheseTypesOrOrderOfPreference == null) {
+			withAnyOfTheseTypesOrOrderOfPreference = Collections.EMPTY_LIST;
+		}
+		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference);
+	}
 }

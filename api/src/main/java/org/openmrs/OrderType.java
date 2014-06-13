@@ -13,27 +13,43 @@
  */
 package org.openmrs;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.annotation.Independent;
+import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
+
 /**
- * OrderType
- * 
- * @deprecated Will be removed in version 1.10
+ * OrderTypes are used to classify different types of Orders e.g to distinguish between Serology and
+ * Radiology TestOrders
+ *
  */
-@Deprecated
 public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 23232L;
 	
-	// Fields
-	
 	private Integer orderTypeId;
 	
-	// Constructors
+	private String javaClassName;
 	
-	/** default constructor */
+	private OrderType parent;
+	
+	@Independent
+	private Collection<ConceptClass> conceptClasses;
+	
+	/**
+	 * default constructor
+	 */
 	public OrderType() {
 	}
 	
-	/** constructor with id */
+	/**
+	 * Constructor with ID
+	 * 
+	 * @param orderTypeId the ID of the {@link org.openmrs.OrderType}
+	 */
 	public OrderType(Integer orderTypeId) {
 		this.orderTypeId = orderTypeId;
 	}
@@ -44,13 +60,13 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * 
 	 * @param name The name of this order Type
 	 * @param description A short description about this order type
+	 * @param javaClassName The fully qualified java class name
 	 */
-	public OrderType(String name, String description) {
+	public OrderType(String name, String description, String javaClassName) {
 		setName(name);
 		setDescription(description);
+		setJavaClassName(javaClassName);
 	}
-	
-	// Property accessors
 	
 	/**
 	 * @return Returns the orderTypeId.
@@ -67,7 +83,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	}
 	
 	/**
-	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -75,7 +90,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	}
 	
 	/**
-	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {
@@ -83,4 +97,87 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 		
 	}
 	
+	/**
+	 * @return Returns the Java className as String
+	 */
+	public String getJavaClassName() {
+		return javaClassName;
+	}
+	
+	/**
+	 * @param javaClassName The Java class to set as String
+	 */
+	public void setJavaClassName(String javaClassName) {
+		this.javaClassName = javaClassName;
+	}
+	
+	/**
+	 * @return Returns the {@link org.openmrs.OrderType}
+	 */
+	public OrderType getParent() {
+		return parent;
+	}
+	
+	/**
+	 * @param parent The {@link org.openmrs.OrderType} to set
+	 */
+	public void setParent(OrderType parent) {
+		this.parent = parent;
+	}
+	
+	/**
+	 * @return Get the {@link org.openmrs.ConceptClass}es
+	 */
+	public Collection<ConceptClass> getConceptClasses() {
+		if (conceptClasses == null) {
+			conceptClasses = new LinkedHashSet<ConceptClass>();
+		}
+		return conceptClasses;
+	}
+	
+	/**
+	 * @param conceptClasses the collection containing the {@link org.openmrs.ConceptClass}es
+	 */
+	public void setConceptClasses(Collection<ConceptClass> conceptClasses) {
+		this.conceptClasses = conceptClasses;
+	}
+	
+	/**
+	 * Convenience method that returns a {@link java.lang.Class} object for the associated
+	 * javaClassName
+	 * 
+	 * @return The Java class as {@link java.lang.Class}
+	 * @throws APIException
+	 */
+	public Class getJavaClass() throws APIException {
+		try {
+			return Context.loadClass(javaClassName);
+		}
+		catch (ClassNotFoundException e) {
+			//re throw as a runtime exception
+			throw new APIException("Failed to load class:" + javaClassName, e);
+		}
+	}
+	
+	/**
+	 * Convenience method that adds the specified concept class
+	 * 
+	 * @param conceptClass the ConceptClass to add
+	 * @should add the specified concept class
+	 * @should not add a duplicate concept class
+	 */
+	public void addConceptClass(ConceptClass conceptClass) {
+		getConceptClasses().add(conceptClass);
+	}
+	
+	/**
+	 * @see org.openmrs.BaseOpenmrsObject#toString()
+	 */
+	@Override
+	public String toString() {
+		if (StringUtils.isNotBlank(getName())) {
+			return getName();
+		}
+		return super.toString();
+	}
 }

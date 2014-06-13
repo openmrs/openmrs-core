@@ -97,7 +97,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		this.module = module;
 		
 		requiredModules = collectRequiredModuleImports(module);
-		collectAwareOfModuleImports();
+		awareOfModules = collectAwareOfModuleImports(module);
 		collectFilters();
 		libraryCache = new WeakHashMap<URI, File>();
 	}
@@ -230,6 +230,10 @@ public class ModuleClassLoader extends URLClassLoader {
 				for (Module requiredModule : collectRequiredModuleImports(module)) {
 					startedRelatedModules.put(requiredModule.getModuleId(), requiredModule.getVersion());
 				}
+				for (Module awareOfModule : collectAwareOfModuleImports(module)) {
+					startedRelatedModules.put(awareOfModule.getModuleId(), awareOfModule.getVersion());
+				}
+				
 				// recursively get files
 				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
@@ -395,17 +399,17 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * Get and cache the imports for this module. The imports should just be the modules that set as
 	 * "aware of" by this module
 	 */
-	protected void collectAwareOfModuleImports() {
+	protected static Module[] collectAwareOfModuleImports(Module module) {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
 		
-		for (String awareOfPackage : getModule().getAwareOfModules()) {
+		for (String awareOfPackage : module.getAwareOfModules()) {
 			Module awareOfModule = ModuleFactory.getModuleByPackage(awareOfPackage);
 			if (ModuleFactory.isModuleStarted(awareOfModule)) {
 				publicImportsMap.put(awareOfModule.getModuleId(), awareOfModule);
 			}
 		}
-		awareOfModules = publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
+		return publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
 		
 	}
 	
@@ -448,7 +452,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		requiredModules = collectRequiredModuleImports(getModule());
-		collectAwareOfModuleImports();
+		awareOfModules = collectAwareOfModuleImports(getModule());
 		// repopulate resource URLs
 		//resourceLoader = ModuleResourceLoader.get(getModule());
 		collectFilters();

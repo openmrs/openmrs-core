@@ -160,8 +160,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			
 			if (methodName.startsWith("void")) {
 				Voidable voidable = (Voidable) args[0];
+				Date dateVoided = voidable.getDateVoided() == null ? new Date() : voidable.getDateVoided();
 				String voidReason = (String) args[1];
-				recursivelyHandle(VoidHandler.class, voidable, voidReason);
+				recursivelyHandle(VoidHandler.class, voidable, Context.getAuthenticatedUser(), dateVoided, voidReason, null);
 				
 			} else if (methodName.startsWith("unvoid")) {
 				Voidable voidable = (Voidable) args[0];

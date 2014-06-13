@@ -40,6 +40,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
@@ -1999,5 +2000,119 @@ public class HibernateConceptDAO implements ConceptDAO {
 		finally {
 			sessionFactory.getCurrentSession().setFlushMode(previousFlushMode);
 		}
+	}
+	
+	/**
+	 * @see ConceptDAO#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Override
+	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
+		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
+		Disjunction searchPhraseDisjunction = Restrictions.disjunction();
+		searchPhraseDisjunction.add(Restrictions.ilike("drug.name", searchPhrase, MatchMode.ANYWHERE));
+		
+		//match on the concept names of the drug concepts
+		criteria.createAlias("drug.concept", "drugConcept", Criteria.LEFT_JOIN);
+		criteria.createAlias("drugConcept.names", "conceptName", Criteria.LEFT_JOIN);
+		Conjunction conceptNameConjunction = Restrictions.conjunction();
+		conceptNameConjunction.add(Restrictions.ilike("conceptName.name", searchPhrase, MatchMode.ANYWHERE));
+		if (locale != null) {
+			List<Locale> locales = new ArrayList<Locale>(2);
+			locales.add(locale);
+			//look in the broader locale too if exactLocale is false e.g en for en_GB
+			if (!exactLocale && StringUtils.isNotBlank(locale.getCountry())) {
+				locales.add(new Locale(locale.getLanguage()));
+			}
+			conceptNameConjunction.add(Restrictions.in("conceptName.locale", locales));
+		}
+		searchPhraseDisjunction.add(conceptNameConjunction);
+		
+		//match on the codes of the reference terms associated to the drug mappings
+		criteria.createAlias("drug.drugReferenceMaps", "map", Criteria.LEFT_JOIN);
+		criteria.createAlias("map.conceptReferenceTerm", "term", Criteria.LEFT_JOIN);
+		searchPhraseDisjunction.add(Restrictions.ilike("term.code", searchPhrase, MatchMode.ANYWHERE));
+		
+		criteria.add(searchPhraseDisjunction);
+		
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("drug.retired", false));
+		}
+		
+		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugsByMapping(String, ConceptSource, Collection,
+	 *      boolean)
+	 */
+	@Override
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException {
+		
+		Criteria criteria = createSearchDrugByMappingCriteria(code, conceptSource, includeRetired);
+		// match with any of the supplied collection of conceptMapTypes
+		if (withAnyOfTheseTypes.size() > 0) {
+			criteria.add(Restrictions.in("map.conceptMapType", withAnyOfTheseTypes));
+		}
+		//check whether retired on not retired drugs
+		return (List<Drug>) criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugs
+	 */
+	@Override
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws DAOException {
+		Criteria criteria = createSearchDrugByMappingCriteria(code, conceptSource, true);
+		
+		// match with any of the supplied collection or order of preference of conceptMapTypes
+		if (withAnyOfTheseTypesOrOrderOfPreference.size() > 0) {
+			for (ConceptMapType conceptMapType : withAnyOfTheseTypesOrOrderOfPreference) {
+				criteria.add(Restrictions.eq("map.conceptMapType", conceptMapType));
+				List<Drug> drugs = criteria.list();
+				if (drugs.size() > 1) {
+					throw new DAOException("There are multiple matches for the highest-priority ConceptMapType");
+				} else if (drugs.size() == 1) {
+					return drugs.get(0);
+				}
+				//reset for the next execution to avoid unwanted AND clauses on every found map type
+				criteria = createSearchDrugByMappingCriteria(code, conceptSource, true);
+			}
+		} else {
+			List<Drug> drugs = criteria.list();
+			if (drugs.size() > 1) {
+				throw new DAOException("There are multiple matches for the highest-priority ConceptMapType");
+			} else if (drugs.size() == 1) {
+				return drugs.get(0);
+			}
+		}
+		return null;
+	}
+	
+	private Criteria createSearchDrugByMappingCriteria(String code, ConceptSource conceptSource, boolean includeRetired) {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
+		searchCriteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
+		
+		//join to the drugReferenceMap table
+		searchCriteria.createAlias("drug.drugReferenceMaps", "map");
+		if (code != null || conceptSource != null) {
+			// join to the conceptReferenceTerm table
+			searchCriteria.createAlias("map.conceptReferenceTerm", "term");
+		}
+		// match the source code to the passed code
+		if (code != null) {
+			searchCriteria.add(Restrictions.eq("term.code", code));
+		}
+		// match the conceptSource to the passed in concept source, null accepted
+		if (conceptSource != null) {
+			searchCriteria.add(Restrictions.eq("term.conceptSource", conceptSource));
+		}
+		//check whether retired or not retired drugs
+		if (!includeRetired) {
+			searchCriteria.add(Restrictions.eq("drug.retired", false));
+		}
+		return searchCriteria;
 	}
 }
