@@ -27,7 +27,6 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.LocationListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.RelationshipListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ListItem"/>
-		<convert converter="bean" match="org.openmrs.web.dwr.DrugSetItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientProgramItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientStateItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
