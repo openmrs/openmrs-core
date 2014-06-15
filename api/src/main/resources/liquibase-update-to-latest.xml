@@ -7454,4 +7454,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="201306152043" author="harsz89">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent"/></not>
+        </preConditions>
+        <comment>Adding foreign key for constraint on order_type.parent column to orders.order_id column</comment>
+        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent" referencedTableName="orders" referencedColumnNames="order_id"/>
+    </changeSet>
 </databaseChangeLog>
