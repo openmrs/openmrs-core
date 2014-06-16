@@ -1745,10 +1745,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			excludeDatatypes = new Vector<ConceptDatatype>();
 		}
 		
-		List<ConceptSearchResult> concepts = dao.getConcepts(phrase, locales, includeRetired, requireClasses,
-		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept, null, null);
-		
-		return concepts.size();
+		return dao.getCountOfConcepts(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
+		    excludeDatatypes, answersToConcept);
 	}
 	
 	/**
