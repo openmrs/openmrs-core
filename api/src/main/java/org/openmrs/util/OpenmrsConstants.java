@@ -1464,7 +1464,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GP_SEARCH_WIDGET_DELAY_INTERVAL,
-		                "400",
+		                "300",
 		                "Specifies time interval in milliseconds when searching, between keyboard keyup event and triggering the search off, should be higher if most users are slow when typing so as to minimise the load on the server"));
 		
 		props
