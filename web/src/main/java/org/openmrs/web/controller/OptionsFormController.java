@@ -80,7 +80,7 @@ public class OptionsFormController extends SimpleFormController {
 		}
 		
 		if (opts.getSecretQuestionPassword().equals("") && opts.getSecretAnswerNew().isEmpty()
-		        && !opts.getSecretQuestionNew().isEmpty()) {
+		        && !opts.getSecretQuestionNew().equals(opts.getSecretQuestionCopy())) {
 			errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 		}
 		
@@ -174,7 +174,8 @@ public class OptionsFormController extends SimpleFormController {
 					
 					if (!errors.hasErrors()) {
 						us.changePassword(opts.getOldPassword(), password);
-						opts.setSecretQuestionPassword(password);
+						if (opts.getSecretQuestionPassword().equals(opts.getOldPassword()))
+							opts.setSecretQuestionPassword(password);
 						new UserProperties(user.getUserProperties()).setSupposedToChangePassword(false);
 					}
 				}
@@ -305,6 +306,7 @@ public class OptionsFormController extends SimpleFormController {
 			opts.setVerbose(new Boolean(props.get(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE)));
 			opts.setUsername(user.getUsername());
 			opts.setSecretQuestionNew(user.getSecretQuestion());
+			opts.setSecretQuestionCopy(user.getSecretQuestion());
 			
 			PersonName personName;
 			if (user.getPersonName() != null) {
