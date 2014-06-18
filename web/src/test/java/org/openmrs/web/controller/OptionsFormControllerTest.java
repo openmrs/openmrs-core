@@ -276,7 +276,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		request.setParameter("confirmPassword", "OpenMRS1");
 		ModelAndView mav = controller.handleRequest(request, response);
 		
-		if (oldPassword == loginCredential.getHashedPassword()){
+		if (oldPassword == loginCredential.getHashedPassword()) {
 			request.setParameter("secretQuestionNew", "");
 			mav = controller.handleRequest(request, response);
 		}
