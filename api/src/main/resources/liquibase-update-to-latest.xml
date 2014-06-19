@@ -6517,8 +6517,8 @@
 		</addColumn>
 	</changeSet>
 
-    <changeSet id="201401101645-TRUNK-4187" author="wyclif">
-        <preConditions onFail="HALT">
+    <changeSet id="201401101647-TRUNK-4187" author="wyclif">
+        <preConditions onFail="HALT" onFailMessage="Found unmapped drug order units or frequencies, for more details on how to fix this see http://tinyurl.com/k36lhuh">
             <customPrecondition className="org.openmrs.util.databasechange.CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts" />
         </preConditions>
         <comment>
@@ -6527,15 +6527,29 @@
         </comment>
     </changeSet>
 
-    <changeSet id="20140313-TRUNK-4283" author="dszafranek">
-        <preConditions onFail="HALT" onFailMessage="The start_date, encounter_id and orderer columns are required, please make sure all orders have these columns set.">
-            <sqlCheck expectedResult="0">SELECT COUNT(*) from orders where start_date is NULL or orderer is NULL or encounter_id is NULL</sqlCheck>
+    <changeSet id="20140314-TRUNK-4283" author="dszafranek, wyclif">
+        <preConditions onFail="HALT" onFailMessage="orders.start_date column is required as of version 1.10, for more details on how to fix this see http://tinyurl.com/k36lhuh">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) from orders where start_date is NULL</sqlCheck>
         </preConditions>
-        <comment>Checking that all orders have start_date, encounter_id and orderer columns set</comment>
+        <comment>Checking that all orders have start_date column set</comment>
     </changeSet>
 
-    <changeSet id="201403262139-TRUNK-4265" author="wyclif">
-        <preConditions onFail="HALT" onFailMessage="Please make sure that all drugs with dose strength have the units specified">
+    <changeSet id="20140315-TRUNK-4283" author="dszafranek, wyclif">
+        <preConditions onFail="HALT" onFailMessage="orders.orderer column is required as of version 1.10, for more details on how to fix this see http://tinyurl.com/k36lhuh">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) from orders where orderer is NULL</sqlCheck>
+        </preConditions>
+        <comment>Checking that all orders have orderer column set</comment>
+    </changeSet>
+
+    <changeSet id="20140316-TRUNK-4283" author="dszafranek, wyclif">
+        <preConditions onFail="HALT" onFailMessage="orders.encounter_id column is required as of version 1.10, for more details on how to fix this see http://tinyurl.com/k36lhuh">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) from orders where encounter_id is NULL</sqlCheck>
+        </preConditions>
+        <comment>Checking that all orders have encounter_id column set</comment>
+    </changeSet>
+
+    <changeSet id="201403262140-TRUNK-4265" author="wyclif">
+        <preConditions onFail="HALT" onFailMessage="Found drugs with dose strength specified but no units, for more details on how to fix this see http://tinyurl.com/k36lhuh">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(drug_id) FROM drug WHERE dose_strength IS NOT NULL AND (units IS NULL OR units = '')
             </sqlCheck>
@@ -6546,8 +6560,8 @@
     <!-- If the order_type table has already been updated(has the new columns added in 1.10),
         assume the admin has set up things properly, otherwise they should have exactly one order type
         row which MUST be for drug orders for the scripts to auto update the table for them -->
-    <changeSet id="201404091110" author="wyclif">
-        <preConditions onFail="HALT" onFailMessage="Cannot update order_type table, please see the 1.10 release notes for how to modify the order_type table before upgrading">
+    <changeSet id="201404091109" author="wyclif">
+        <preConditions onFail="HALT" onFailMessage="Cannot update order_type table, please see this page http://tinyurl.com/k36lhuh for how to modify the order_type table before upgrading">
             <or>
                 <and>
                     <columnExists tableName="order_type" columnName="java_class_name" />
