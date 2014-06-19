@@ -719,14 +719,6 @@ public final class Module {
 		sb.append(t.getMessage());
 		sb.append("\n");
 		
-		// loop over and append all stacktrace elements marking the "openmrs" ones 
-		for (StackTraceElement traceElement : t.getStackTrace()) {
-			if (traceElement.getClassName().contains("openmrs"))
-				sb.append(" ** ");
-			sb.append(traceElement);
-			sb.append("\n");
-		}
-		
 		this.startupErrorMessage = sb.toString();
 	}
 	
