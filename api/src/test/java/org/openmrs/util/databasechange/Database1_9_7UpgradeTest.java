@@ -129,7 +129,7 @@ public class Database1_9_7UpgradeTest {
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
 		createOrderEntryUpgradeFileWithTestData("");
 		expectedException.expect(IOException.class);
-		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101645-TRUNK-4187::wyclif";
+		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		expectedException.expectMessage(errorMsgSubString1);
 		String errorMsgSubString2 = "Your order entry upgrade settings file does not have mapping for mg";
 		expectedException.expectMessage(errorMsgSubString2);
@@ -145,7 +145,7 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=invalid");
 		
 		expectedException.expect(IOException.class);
-		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101645-TRUNK-4187::wyclif";
+		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		expectedException.expectMessage(errorMsgSubString1);
 		expectedException.expectMessage("For input string: \"invalid\"");
 		upgradeTestUtil.upgrade();
@@ -322,7 +322,7 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		expectedException.expect(IOException.class);
-		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262139-TRUNK-4265::wyclif";
+		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
 		expectedException.expectMessage(errorMsgSubString);
 		upgradeTestUtil.upgrade();
 	}
@@ -335,7 +335,7 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		expectedException.expect(IOException.class);
-		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262139-TRUNK-4265::wyclif";
+		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201403262140-TRUNK-4265::wyclif";
 		expectedException.expectMessage(errorMsgSubString);
 		upgradeTestUtil.upgrade();
 	}
@@ -349,7 +349,7 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		expectedException.expect(IOException.class);
-		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201404091110::wyclif";
+		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201404091109::wyclif";
 		expectedException.expectMessage(errorMsgSubString);
 		upgradeTestUtil.upgrade();
 	}
