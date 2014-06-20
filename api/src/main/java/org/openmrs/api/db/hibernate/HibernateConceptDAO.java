@@ -1685,6 +1685,44 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptByName(java.lang.String)
+	 */
+	@Override
+	public Concept getConceptByName(final String name) {
+		Locale locale = Context.getLocale();
+		Query query = sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptName cn where cn.name = :name and (cn.locale = :locale or cn.locale like :locale2)");
+		query.setParameter("name", name);
+		query.setParameter("locale", locale);
+		String a = locale.getLanguage() + "%";
+		query.setParameter("locale2", new Locale(a));
+		List<ConceptName> cn = query.list();
+		
+		if (cn.size() == 0) {
+			query.setParameter("name", name.toUpperCase());
+			cn = query.list();
+			if (cn.size() == 0)
+				return null;
+		}
+		
+		if (cn.size() > 1) {
+			log.warn("Multiple concepts found for '" + name + "'");
+			List<Concept> concepts = Lists.transform(cn, transformNameToConcept);
+			for (Concept c : concepts) {
+				if (c.getName(locale).getName().compareTo(name) == 0) {
+					return c;
+				}
+				for (ConceptName indexTerm : c.getIndexTermsForLocale(locale)) {
+					if (indexTerm.getName().compareTo(name) == 0) {
+						return c;
+					}
+				}
+			}
+		}
+		return cn.get(0).getConcept();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getDefaultConceptMapType()
 	 */
 	@Override
