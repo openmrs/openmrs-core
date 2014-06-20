@@ -61,6 +61,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Concept route;
 	
+	private String brandName;
+	
+	private Boolean dispenseAsWritten = Boolean.FALSE;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -99,6 +103,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.durationUnits = getDurationUnits();
 		target.setNumRefills(getNumRefills());
 		target.route = getRoute();
+		target.setBrandName(getBrandName());
+		target.setDispenseAsWritten(getDispenseAsWritten());
 		return target;
 	}
 	
@@ -399,6 +405,42 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
+	 * Gets the brandName
+	 * 
+	 * @return brandName
+	 * @since 1.10
+	 */
+	public String getBrandName() {
+		return brandName;
+	}
+	
+	/**
+	 * Sets the brandName
+	 * 
+	 * @since 1.10
+	 * @param brandName the brandName to set to
+	 */
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
+	
+	/**
+	 * @return true or false
+	 * @since 1.10
+	 */
+	public Boolean getDispenseAsWritten() {
+		return dispenseAsWritten;
+	}
+	
+	/**
+	 * @param dispenseAsWritten
+	 * @since 1.10
+	 */
+	public void setDispenseAsWritten(Boolean dispenseAsWritten) {
+		this.dispenseAsWritten = dispenseAsWritten;
+	}
+	
+	/**
 	 * @see org.openmrs.Order#cloneForDiscontinuing()
 	 * @should set all the relevant fields
 	 * @since 1.10
@@ -449,6 +491,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.setDurationUnits(getDurationUnits());
 		target.setRoute(getRoute());
 		target.setNumRefills(getNumRefills());
+		target.setBrandName(getBrandName());
+		target.setDispenseAsWritten(getDispenseAsWritten());
 		
 		return target;
 	}

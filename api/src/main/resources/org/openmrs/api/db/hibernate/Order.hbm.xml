@@ -92,6 +92,8 @@
             <property name="duration" type="double" column="duration" length="22"/>
             <many-to-one name="durationUnits" class="org.openmrs.Concept" column="duration_units" />
             <many-to-one name="route" class="org.openmrs.Concept" />
+            <property name="brandName" type="string" column="brand_name" length="255" />
+            <property name="dispenseAsWritten" type="boolean" column="dispense_as_written" length="0" not-null="true" />
 		</joined-subclass>
 
         <joined-subclass name="org.openmrs.TestOrder" table="test_order" lazy="false">
