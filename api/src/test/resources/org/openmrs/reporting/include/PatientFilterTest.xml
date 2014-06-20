@@ -4,7 +4,7 @@
   <concept_description concept_description_id="1" concept_id="1" description="A TB drug" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="2ce39a36-e93d-4489-9f31-259372244237"/>
   <concept_name concept_id="1" name="Isoniazid" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="a354c039-98ba-4351-bac9-f0cc4b2bc903" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <drug drug_id="1" concept_id="1" name="INH 300mg" combination="false" strength="300.0mg" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="e40c80cb-0a17-47fe-b64a-076b056f42e0"/>
-  <drug_order order_id="1" drug_inventory_id="1" dose="900.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE"/>
+  <drug_order order_id="1" drug_inventory_id="1" dose="900.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" dispense_as_written="0" />
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="d033b4e1-2a21-4265-943b-d5a0710a0c2d"/>
   <orders order_id="1" urgency="ROUTINE" order_action="NEW" concept_id="1" orderer="1" start_date="2005-01-01 00:00:00.0" auto_expire_date="2005-12-31 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" patient_id="2" uuid="f4740b0b-206c-48a4-a5b7-8a9024cb75d9" care_setting="1"/>
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
