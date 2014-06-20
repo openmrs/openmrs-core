@@ -42,7 +42,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.hibernate.search.FilterFactory;
+import org.openmrs.api.db.hibernate.search.TermsFilterFactory;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
@@ -75,7 +75,7 @@ import org.springframework.util.ObjectUtils;
  */
 @Root
 @Indexed
-@FullTextFilterDefs( { @FullTextFilterDef(name = "filterFactory", impl = FilterFactory.class) })
+@FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, java.io.Serializable, Attributable<Concept> {
 	
 	public static final long serialVersionUID = 57332L;

@@ -13,60 +13,64 @@
  */
 package org.openmrs.api.db.hibernate.search;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.TermQuery;
 import org.hibernate.search.annotations.Factory;
 import org.hibernate.search.annotations.Key;
-import org.hibernate.search.filter.StandardFilterKey;
 import org.hibernate.search.filter.FilterKey;
+import org.hibernate.search.filter.StandardFilterKey;
 
-import java.util.List;
-import java.util.Map;
-
-public class FilterFactory {
+public class TermsFilterFactory {
 	
-	private Map<String, Object> fieldMap;
+	private Set<Set<Term>> includeTerms = new HashSet<Set<Term>>();
 	
-	public void setFieldMap(Map<String, Object> map) {
-		this.fieldMap = map;
+	private Set<Term> excludeTerms = new HashSet<Term>();
+	
+	public void setIncludeTerms(Set<Set<Term>> terms) {
+		this.includeTerms = new HashSet<Set<Term>>(terms);
+	}
+	
+	public void setExcludeTerms(Set<Term> terms) {
+		this.excludeTerms = new HashSet<Term>(terms);
 	}
 	
 	@Key
 	public FilterKey getKey() {
 		StandardFilterKey key = new StandardFilterKey();
-		key.addParameter(fieldMap);
+		key.addParameter(includeTerms);
+		key.addParameter(excludeTerms);
 		return key;
 	}
 	
 	@Factory
 	public Filter getFilter() {
 		BooleanQuery query = new BooleanQuery();
-		for (Map.Entry<String, Object> entry : fieldMap.entrySet()) {
-			String field = entry.getKey();
-			Object value = entry.getValue();
-			if (value.getClass().isArray()) {
-				BooleanQuery arrayQuery = new BooleanQuery();
-				BooleanClause.Occur clause = (field.startsWith("-")) ? BooleanClause.Occur.MUST_NOT
-				        : BooleanClause.Occur.SHOULD;
-				if (clause == BooleanClause.Occur.MUST_NOT) {
-					arrayQuery.add(new MatchAllDocsQuery(), BooleanClause.Occur.MUST);
-					field = field.substring(1);
-				}
-				Object[] values = (Object[]) value;
-				for (Object val : values) {
-					arrayQuery.add(new TermQuery(new Term(field, val.toString())), clause);
-				}
-				query.add(arrayQuery, BooleanClause.Occur.MUST);
-			} else {
-				query.add(new TermQuery(new Term(field, value.toString())), BooleanClause.Occur.MUST);
+		
+		for (Set<Term> terms : includeTerms) {
+			BooleanQuery subquery = new BooleanQuery();
+			for (Term term : terms) {
+				subquery.add(new TermQuery(term), Occur.SHOULD);
 			}
+			query.add(subquery, Occur.MUST);
 		}
+		
+		if (includeTerms.isEmpty()) {
+			query.add(new MatchAllDocsQuery(), Occur.MUST);
+		}
+		
+		for (Term term : excludeTerms) {
+			query.add(new TermQuery(term), Occur.MUST_NOT);
+		}
+		
 		return new CachingWrapperFilter(new QueryWrapperFilter(query));
 	}
 }

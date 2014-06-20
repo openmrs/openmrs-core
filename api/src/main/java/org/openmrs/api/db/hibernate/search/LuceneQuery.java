@@ -13,9 +13,8 @@
  */
 package org.openmrs.api.db.hibernate.search;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -43,7 +42,9 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	private FullTextQuery fullTextQuery;
 	
-	private Map<String, Object> fieldMap;
+	private Set<Set<Term>> includeTerms = new HashSet<Set<Term>>();
+	
+	private Set<Term> excludeTerms = new HashSet<Term>();
 	
 	public static <T> LuceneQuery<T> newQuery(final String query, final Session session, final Class<T> type) {
 		return new LuceneQuery<T>(
@@ -70,26 +71,47 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		buildQuery();
 	}
 	
-	private void addFilter(String field, Object value) {
-		if (fieldMap == null) {
-			fieldMap = new HashMap<String, Object>();
-		}
-		fieldMap.put(field, value);
-		// update filters
-		fullTextQuery.enableFullTextFilter("filterFactory").setParameter("fieldMap", fieldMap);
-	}
-	
-	public LuceneQuery<T> filter(String field, Object value) {
+	public LuceneQuery<T> include(String field, Object value) {
 		if (value != null) {
-			addFilter(field, value);
+			include(field, new Object[] { value });
 		}
+		
 		return this;
 	}
 	
-	public LuceneQuery<T> filter(String field, Object[] values) {
+	public LuceneQuery<T> include(String field, Object[] values) {
 		if (values != null && values.length != 0) {
-			addFilter(field, values);
+			Set<Term> terms = new HashSet<Term>();
+			for (Object value : values) {
+				terms.add(new Term(field, value.toString()));
+			}
+			includeTerms.add(terms);
+			
+			fullTextQuery.enableFullTextFilter("termsFilterFactory").setParameter("includeTerms", includeTerms)
+			        .setParameter("excludeTerms", excludeTerms);
 		}
+		
+		return this;
+	}
+	
+	public LuceneQuery<T> exclude(String field, Object value) {
+		if (value != null) {
+			exclude(field, new Object[] { value });
+		}
+		
+		return this;
+	}
+	
+	public LuceneQuery<T> exclude(String field, Object[] values) {
+		if (values != null && values.length != 0) {
+			for (Object value : values) {
+				excludeTerms.add(new Term(field, value.toString()));
+			}
+			
+			fullTextQuery.enableFullTextFilter("termsFilterFactory").setParameter("includeTerms", includeTerms)
+			        .setParameter("excludeTerms", excludeTerms);
+		}
+		
 		return this;
 	}
 	
@@ -130,6 +152,10 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * Skip elements, values of which repeat in the given field.
 	 * <p>
 	 * Only the first element will be included in the results.
+	 * <p>
+	 * <b>Note:</b> For performance reasons you should call this method as last when constructing a
+	 * query. When called it will project the query and create a filter to eliminate
+	 * duplicates.
 	 * 
 	 * @param field
 	 * @return

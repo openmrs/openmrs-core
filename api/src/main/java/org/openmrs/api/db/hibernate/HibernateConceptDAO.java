@@ -599,8 +599,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).filter("concept.datatype.conceptDatatypeId", transformToIds(datatypes)).filter(
-		    "concept.conceptClass.conceptClassId", transformToIds(classes)).filter("concept.retired", "false").skipSame(
+		    ConceptName.class).include("concept.datatype.conceptDatatypeId", transformToIds(datatypes)).include(
+		    "concept.conceptClass.conceptClassId", transformToIds(classes)).include("concept.retired", "false").skipSame(
 		    "concept.conceptId").list();
 		
 		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
@@ -1346,10 +1346,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		LuceneQuery<ConceptName> luceneQuery = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).skipSame("concept.conceptId").filter("concept.conceptClass.conceptClassId",
-		    transformToIds(requireClasses)).filter("-concept.conceptClass.conceptClassId", transformToIds(excludeClasses))
-		        .filter("concept.datatype.conceptDatatypeId", transformToIds(requireDatatypes)).filter(
-		            "-concept.datatype.conceptDatatypeId", transformToIds(excludeDatatypes));
+		    ConceptName.class).include("concept.conceptClass.conceptClassId", transformToIds(requireClasses)).exclude(
+		    "concept.conceptClass.conceptClassId", transformToIds(excludeClasses)).include(
+		    "concept.datatype.conceptDatatypeId", transformToIds(requireDatatypes)).exclude(
+		    "concept.datatype.conceptDatatypeId", transformToIds(excludeDatatypes));
 		
 		if (answersToConcept != null) {
 			Collection<ConceptAnswer> answers = answersToConcept.getAnswers(false);
@@ -1359,13 +1359,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 				for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers(false)) {
 					ids.add(conceptAnswer.getAnswerConcept().getId());
 				}
-				luceneQuery.filter("concept.conceptId", ids.toArray(new Object[0]));
+				luceneQuery.include("concept.conceptId", ids.toArray(new Object[0]));
 			}
 		}
 		
 		if (!includeRetired) {
-			luceneQuery.filter("concept.retired", "false");
+			luceneQuery.include("concept.retired", "false");
 		}
+		
+		luceneQuery.skipSame("concept.conceptId");
 		
 		return luceneQuery;
 	}
