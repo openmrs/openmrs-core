@@ -7476,4 +7476,26 @@
         <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent" referencedTableName="orders" referencedColumnNames="order_id"/>
     </changeSet>
 
+    <changeSet id="201406201443" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="drug_order" columnName="brand_name" /></not>
+        </preConditions>
+        <comment>Add brand_name column to drug_order table</comment>
+        <addColumn tableName="drug_order">
+            <column name="brand_name" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="201406201444" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="drug_order" columnName="dispense_as_written" /></not>
+        </preConditions>
+        <comment>Add dispense_as_written column to drug_order table</comment>
+        <addColumn tableName="drug_order">
+            <column name="dispense_as_written" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
