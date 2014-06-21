@@ -504,4 +504,13 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		        + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate()) + ")";
 	}
 	
+	/**
+	 * Set dosing instructions to drug order
+	 * 
+	 * @param di dosing instruction object to fetch data
+	 * @since 1.10
+	 */
+	public void setDosing(DosingInstructions di) {
+		di.setDosingInstructions(this);
+	}
 }
