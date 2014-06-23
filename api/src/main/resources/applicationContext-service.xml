@@ -792,7 +792,9 @@
 	
 	<context:component-scan base-package="org.openmrs">
 		<context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
+		<context:include-filter type="custom" expression="org.openmrs.annotation.OpenmrsComponentIncludeFilter" />
 		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/> <!-- Excludes classes with unit test super classes -->
+		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter" />
 	</context:component-scan>
     
 </beans>
