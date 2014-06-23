@@ -617,15 +617,19 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (keywords) {
 			List<String> words = tokenizeName(escapedName, locales);
 			
-			query.append(" name:(" + StringUtils.join(words, " ") + ")^0.2");
 			//Put exact phrase higher
-			query.append(" OR name:(\"" + escapedName + "\")^0.6");
+			query.append(" name:(\"" + escapedName + "\")^0.6");
 			
-			//Include partial
-			query.append(" OR name:(" + StringUtils.join(words, "* ") + "*)^0.1");
-			
-			//Include similar
-			query.append(" OR name:(" + StringUtils.join(words, "~0.8 ") + "~0.8)^0.1");
+			if (!words.isEmpty()) {
+				//Include exact
+				query.append(" OR name:(" + StringUtils.join(words, " ") + ")^0.2");
+				
+				//Include partial
+				query.append(" OR name:(" + StringUtils.join(words, "* ") + "*)^0.1");
+				
+				//Include similar
+				query.append(" OR name:(" + StringUtils.join(words, "~0.8 ") + "~0.8)^0.1");
+			}
 		} else {
 			query.append(" name:\"" + escapedName + "\"");
 		}
@@ -646,24 +650,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		return query.toString();
 	}
-
+	
 	private List<String> tokenizeName(final String escapedName, final Set<Locale> locales) {
-	    List<String> words = new ArrayList<String>();
-	    words.addAll(Arrays.asList(escapedName.trim().split(" ")));
-	    
-	    Set<String> stopWords = new HashSet<String>();
-	    for (Locale locale : locales) {
-	        stopWords.addAll(Context.getConceptService().getConceptStopWords(locale));
-	    }
-	    
-	    for (Iterator<String> it = words.iterator(); it.hasNext();) {
-	        String word = it.next();
-	        if (stopWords.contains(word.toUpperCase())) {
-	        	it.remove();
-	        }
-	    }
-	    return words;
-    }
+		List<String> words = new ArrayList<String>();
+		words.addAll(Arrays.asList(escapedName.trim().split(" ")));
+		
+		Set<String> stopWords = new HashSet<String>();
+		for (Locale locale : locales) {
+			stopWords.addAll(Context.getConceptService().getConceptStopWords(locale));
+		}
+		
+		for (Iterator<String> it = words.iterator(); it.hasNext();) {
+			String word = it.next();
+			if (stopWords.contains(word.trim().toUpperCase())) {
+				it.remove();
+			}
+		}
+		return words;
+	}
 	
 	/**
 	 * gets questions for the given answer concept
