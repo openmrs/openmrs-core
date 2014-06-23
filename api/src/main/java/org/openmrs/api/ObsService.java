@@ -399,6 +399,53 @@ public interface ObsService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
+	 *
+	 * This method works exactly the same; it only adds accession number search criteria.
+	 * It effectively surpasses the above method; the old one is however kept for backward
+	 * compatibility reasons.
+	 *
+	 * @param whom List<Person> to restrict obs to (optional)
+	 * @param encounters List<Encounter> to restrict obs to (optional)
+	 * @param questions List<Concept> to restrict the obs to (optional)
+	 * @param answers List<Concept> to restrict the valueCoded to (optional)
+	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
+	 *            <code>whom</code> is an empty list (optional)
+	 * @param locations The org.openmrs.Location objects to restrict to (optional)
+	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
+	 *            obsDatetime (optional)
+	 * @param mostRecentN restrict the number of obs returned to this size (optional)
+	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
+	 * @param fromDate the earliest Obs date to get (optional)
+	 * @param toDate the latest Obs date to get (optional)
+	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
+	 * @param accessionNumber accession number (optional)
+	 * @return list of Observations that match all of the criteria given in the arguments
+	 * @throws APIException
+	 * @should compare dates using lte and gte
+	 * @should get all obs assigned to given encounters
+	 * @should get all obs with question concept in given questions parameter
+	 * @should get all obs with answer concept in given answers parameter
+	 * @should return all obs whose person is a person only
+	 * @should return obs whose person is a patient only
+	 * @should return obs whose person is a user only
+	 * @should return obs with location in given locations parameter
+	 * @should sort returned obs by obsDatetime if sort is empty
+	 * @should sort returned obs by conceptId if sort is concept
+	 * @should limit number of obs returned to mostReturnN parameter
+	 * @should return obs whose groupId is given obsGroupId
+	 * @should not include voided obs
+	 * @should include voided obs if includeVoidedObs is true
+	 */
+	@Authorized(PrivilegeConstants.VIEW_OBS)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
+	        String accessionNumber) throws APIException;
+	
+	/**
 	 * This method fetches the count of observations according to the criteria in the given
 	 * arguments. All arguments are optional and nullable. If more than one argument is non-null,
 	 * the result is equivalent to an "and"ing of the arguments. (e.g. if both a
@@ -442,6 +489,47 @@ public interface ObsService extends OpenmrsService {
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException;
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.util.Date, java.util.Date, boolean)
+	 *
+	 * This method works exactly the same; it only adds accession number search criteria.
+	 * It effectively surpasses the above method; the old one is however kept for backward
+	 * compatibility reasons.
+	 *
+	 * @param whom List<Person> to restrict obs to (optional)
+	 * @param encounters List<Encounter> to restrict obs to (optional)
+	 * @param questions List<Concept> to restrict the obs to (optional)
+	 * @param answers List<Concept> to restrict the valueCoded to (optional)
+	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
+	 *            <code>whom</code> is an empty list (optional)
+	 * @param locations The org.openmrs.Location objects to restrict to (optional) obsDatetime
+	 *            (optional)
+	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
+	 * @param fromDate the earliest Obs date to get (optional)
+	 * @param toDate the latest Obs date to get (optional)
+	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
+	 * @param accessionNumber accession number (optional)
+	 * @return list of Observations that match all of the criteria given in the arguments
+	 * @throws APIException
+	 * @should compare dates using lte and gte
+	 * @should get the count of all obs assigned to given encounters
+	 * @should get the count of all obs with question concept in given questions parameter
+	 * @should get the count of all obs with answer concept in given answers parameter
+	 * @should return the count of all obs whose person is a person only
+	 * @should return the count of all obs whose person is a patient only
+	 * @should return the count of obs whose person is a user only
+	 * @should return the count of obs with location in given locations parameter
+	 * @should return the count of obs whose groupId is given obsGroupId
+	 * @should not include count of voided obs
+	 * @should include count of voided obs if includeVoidedObs is true
+	 */
+	@Authorized(PrivilegeConstants.VIEW_OBS)
+	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+	        Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber) throws APIException;
 	
 	/**
 	 * This method searches the obs table based on the given <code>searchString</code>.
