@@ -1141,6 +1141,21 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	@Verifies(value = "should return count of obs with matching accession number", method = "getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)")
+	public void getObservationCount_shouldReturnCountOfObsWithMatchingAccessionNumber() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		Integer count = obsService.getObservationCount(null, null, null, null, null, null, null, null, null, false, "AN1");
+		
+		Assert.assertEquals(2, count.intValue());
+	}
+	
+	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
 	@Test
@@ -1172,6 +1187,30 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(8, obss.get(0).getObsId().intValue());
 		Assert.assertEquals(7, obss.get(1).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	@Verifies(value = "should only return observations with matching accession number", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)")
+	public void getObservations_shouldOnlyReturnedObsWithMatchingAccessionNumber() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss1 = obsService.getObservations(null, null, null, null, null, null, null, null, null, null, null,
+		    false, "AN1");
+		
+		List<Obs> obss2 = obsService.getObservations(Collections.singletonList(new Person(6)), null, null, null, null, null,
+		    null, null, null, null, null, false, "AN2");
+		
+		List<Obs> obss3 = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
+		    null, null, null, null, null, false, "AN2");
+		
+		Assert.assertEquals(2, obss1.size());
+		Assert.assertEquals(1, obss2.size());
+		Assert.assertEquals(0, obss3.size());
 	}
 	
 	/**
