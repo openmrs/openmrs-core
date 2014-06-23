@@ -38,7 +38,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
-import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.util.*;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
@@ -1725,7 +1724,6 @@ public class InitializationFilter extends StartupFilter {
 							if (wizardModel.createTables) {
 								Context.authenticate("admin", "test");
 								Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
-								SchedulerConstants.SCHEDULER_DEFAULT_PASSWORD = wizardModel.adminUserPassword;
 								Context.logout();
 							}
 						}

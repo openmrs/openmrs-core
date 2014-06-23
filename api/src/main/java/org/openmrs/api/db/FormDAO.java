@@ -273,6 +273,14 @@ public interface FormDAO {
 	public FieldType getFieldTypeByUuid(String uuid);
 	
 	/**
+	 * Return fieldType  associated with given name
+	 *
+	 * @param name Name of the fileType to query
+	 * @return fieldType object associate with given name
+	 */
+	public FieldType getFieldTypeByName(String name);
+	
+	/**
 	 * Auto generated method comment
 	 * 
 	 * @param uuid

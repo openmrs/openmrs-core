@@ -24,6 +24,8 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void setUp() throws Exception {
 		executeDataSet(PROVIDERS_INITIAL_XML);
 		
+		updateSearchIndex();
+		
 		if (dao == null)
 			// fetch the dao from the spring application context
 			dao = (HibernateConceptDAO) applicationContext.getBean("conceptDAO");
@@ -118,6 +120,32 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void getDrugs_shouldReturnDrugWhenPhraseMatchDrugNameEvenSerchDrugConceeptNameIsfalse() throws Exception {
 		
 		List<Drug> drugList = dao.getDrugs("Triomune-30", null, true, false, false, 0, 10);
+		Assert.assertEquals(1, drugList.size());
+		
+	}
+	
+	/**
+	 * @see HibernateConceptDAO#getDrugs(String)
+	 * @verifies return drug should not return retired
+	 */
+	@Test
+	@Verifies(value = "return drug should not return retired", method = "getDrugs(String)")
+	public void getDrugs_shouldNotReturnRetired() throws Exception {
+		
+		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME_RETIRED");
+		Assert.assertEquals(0, drugList.size());
+		
+	}
+	
+	/**
+	 * @see HibernateConceptDAO#getDrugs(String)
+	 * @verifies return drug should return non-retired
+	 */
+	@Test
+	@Verifies(value = "return drug should return non-retired", method = "getDrugs(String)")
+	public void getDrugs_shouldReturnNonRetired() throws Exception {
+		
+		List<Drug> drugList = dao.getDrugs("TEST_DRUG_NAME");
 		Assert.assertEquals(1, drugList.size());
 		
 	}

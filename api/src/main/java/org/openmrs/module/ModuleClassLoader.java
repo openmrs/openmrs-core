@@ -43,10 +43,12 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -93,8 +95,9 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		this.module = module;
-		collectRequiredModuleImports();
-		collectAwareOfModuleImports();
+		
+		requiredModules = collectRequiredModuleImports(module);
+		awareOfModules = collectAwareOfModuleImports(module);
 		collectFilters();
 		libraryCache = new WeakHashMap<URI, File>();
 	}
@@ -223,13 +226,32 @@ public class ModuleClassLoader extends URLClassLoader {
 			File libdir = new File(tmpModuleDir, "lib");
 			
 			if (libdir != null && libdir.exists()) {
+				Map<String, String> startedRelatedModules = new HashMap<String, String>();
+				for (Module requiredModule : collectRequiredModuleImports(module)) {
+					startedRelatedModules.put(requiredModule.getModuleId(), requiredModule.getVersion());
+				}
+				for (Module awareOfModule : collectAwareOfModuleImports(module)) {
+					startedRelatedModules.put(awareOfModule.getModuleId(), awareOfModule.getVersion());
+				}
+				
 				// recursively get files
 				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
-					if (log.isDebugEnabled()) {
-						log.debug("Adding file to results: " + file.getAbsolutePath());
+					URL fileUrl = ModuleUtil.file2url(file);
+					
+					boolean include = shouldResourceBeIncluded(module, fileUrl, OpenmrsConstants.OPENMRS_VERSION_SHORT,
+					    startedRelatedModules);
+					
+					if (include) {
+						if (log.isDebugEnabled()) {
+							log.debug("Including file in classpath: " + fileUrl);
+						}
+						result.add(fileUrl);
+					} else {
+						if (log.isDebugEnabled()) {
+							log.debug("Excluding file from classpath: " + fileUrl);
+						}
 					}
-					result.add(ModuleUtil.file2url(file));
 				}
 			}
 		}
@@ -243,6 +265,63 @@ public class ModuleClassLoader extends URLClassLoader {
 		// add each xml document to the url list
 		
 		return result;
+	}
+	
+	/**
+	 * Determines whether or not the given resource should be available on the classpath based on
+	 * OpenMRS version and/or modules' version. It uses the conditionalResources section specified in config.xml.
+	 *
+	 * Resources that are not mentioned as conditional resources are included by default.
+	 *
+	 * All conditions for a conditional resource to be included must match.
+	 *
+	 * @param module
+	 * @param fileUrl
+	 * @return true if it should be included
+	 * @should return true if file matches and openmrs version matches
+	 * @should return false if file matches but openmrs version does not
+	 * @should return true if file does not match and openmrs version does not match
+	 * @should return true if file matches and module version matches
+	 * @should return false if file matches and module version does not match
+	 * @should return false if file matches and openmrs version matches but module version does not match
+	 * @should return false if file matches and module not found
+	 * @should return true if file does not match and module version does not match
+	 */
+	static boolean shouldResourceBeIncluded(Module module, URL fileUrl, String openmrsVersion,
+	        Map<String, String> startedRelatedModules) {
+		boolean include = true; //all resources are included by default
+		
+		for (ModuleConditionalResource conditionalResource : module.getConditionalResources()) {
+			if (fileUrl.getPath().matches(".*" + conditionalResource.getPath() + "$")) {
+				include = false; //if a resource matches a path of contidionalResource then it must meet all conditions
+				
+				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsVersion())) { //openmrsVersion is optional
+					include = ModuleUtil.matchRequiredVersions(openmrsVersion, conditionalResource.getOpenmrsVersion());
+					
+					if (!include) {
+						return false;
+					}
+				}
+				
+				if (conditionalResource.getModules() != null) { //modules are optional
+					for (ModuleConditionalResource.ModuleAndVersion conditionalModuleResource : conditionalResource
+					        .getModules()) {
+						String moduleVersion = startedRelatedModules.get(conditionalModuleResource.getModuleId());
+						if (moduleVersion != null) {
+							include = ModuleUtil
+							        .matchRequiredVersions(moduleVersion, conditionalModuleResource.getVersion());
+							
+							if (!include) {
+								return false;
+							}
+						}
+					}
+					
+				}
+			}
+		}
+		
+		return include;
 	}
 	
 	/**
@@ -287,32 +366,32 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * Get and cache the imports for this module. The imports should just be the modules that set as
 	 * "required" by this module
 	 */
-	protected void collectRequiredModuleImports() {
+	protected static Module[] collectRequiredModuleImports(Module module) {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
 		
 		for (String moduleId : ModuleConstants.CORE_MODULES.keySet()) {
-			Module module = ModuleFactory.getModuleById(moduleId);
+			Module coreModule = ModuleFactory.getModuleById(moduleId);
 			
-			if (module == null && !ModuleUtil.ignoreCoreModules()) {
+			if (coreModule == null && !ModuleUtil.ignoreCoreModules()) {
 				log.error("Unable to find an openmrs core loaded module with id: " + moduleId);
 				throw new APIException(
 				        "Should not be here.  All 'core' required modules by the api should be started and their classloaders should be available");
 			}
 			
 			// if this is already the classloader for one of the core modules, don't put it on the import list
-			if (module != null && !moduleId.equals(this.getModule().getModuleId())) {
-				publicImportsMap.put(moduleId, module);
+			if (coreModule != null && !moduleId.equals(module.getModuleId())) {
+				publicImportsMap.put(moduleId, coreModule);
 			}
 		}
 		
-		for (String requiredPackage : getModule().getRequiredModules()) {
+		for (String requiredPackage : module.getRequiredModules()) {
 			Module requiredModule = ModuleFactory.getModuleByPackage(requiredPackage);
 			if (ModuleFactory.isModuleStarted(requiredModule)) {
 				publicImportsMap.put(requiredModule.getModuleId(), requiredModule);
 			}
 		}
-		requiredModules = publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
+		return publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
 		
 	}
 	
@@ -320,17 +399,17 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * Get and cache the imports for this module. The imports should just be the modules that set as
 	 * "aware of" by this module
 	 */
-	protected void collectAwareOfModuleImports() {
+	protected static Module[] collectAwareOfModuleImports(Module module) {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
 		
-		for (String awareOfPackage : getModule().getAwareOfModules()) {
+		for (String awareOfPackage : module.getAwareOfModules()) {
 			Module awareOfModule = ModuleFactory.getModuleByPackage(awareOfPackage);
 			if (ModuleFactory.isModuleStarted(awareOfModule)) {
 				publicImportsMap.put(awareOfModule.getModuleId(), awareOfModule);
 			}
 		}
-		awareOfModules = publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
+		return publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
 		
 	}
 	
@@ -371,8 +450,9 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 			log.debug(buf.toString());
 		}
-		collectRequiredModuleImports();
-		collectAwareOfModuleImports();
+		
+		requiredModules = collectRequiredModuleImports(getModule());
+		awareOfModules = collectAwareOfModuleImports(getModule());
 		// repopulate resource URLs
 		//resourceLoader = ModuleResourceLoader.get(getModule());
 		collectFilters();

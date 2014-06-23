@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.annotation.Independent;
 
 /**
  * A Location is a physical place, such as a hospital, a room, a clinic, or a district. Locations
@@ -70,6 +71,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	private Set<Location> childLocations;
 	
+	@Independent
 	private Set<LocationTag> tags;
 	
 	// Constructors

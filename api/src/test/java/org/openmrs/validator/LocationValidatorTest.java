@@ -129,4 +129,20 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("parentLocation"));
 	}
+	
+	/**
+	 * @see {@link org.openmrs.validator.LocationValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if location name is already exist", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfLocationNameAlreadyExist() throws Exception {
+		Location location = new Location();
+		location.setName("Unknown Location");
+		location.setDescription("desc");
+		
+		Errors errors = new BindException(location, "location");
+		new LocationValidator().validate(location, errors);
+		
+		Assert.assertTrue(errors.hasErrors());
+	}
 }

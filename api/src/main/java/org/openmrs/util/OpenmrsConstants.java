@@ -14,6 +14,7 @@
 package org.openmrs.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -49,6 +51,8 @@ public final class OpenmrsConstants {
 	/**
 	 * This is the hard coded primary key of the order type for DRUG. This has to be done because
 	 * some logic in the API acts on this order type
+	 * 
+	 * @Deprecated
 	 */
 	public static final int ORDERTYPE_DRUG = 2;
 	
@@ -77,101 +81,58 @@ public final class OpenmrsConstants {
 	/**
 	 * This holds the current openmrs code version in a short space-less string.<br/>
 	 * The format is:<br/>
-	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i >
+	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i
+	 * >
 	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion() != null ? THIS_PACKAGE
 	        .getSpecificationVersion() : (getBuildVersionShort() != null ? getBuildVersionShort() : getVersion());
 	
 	/**
-	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858) defined in
-	 *         MANIFEST.MF(specification-Vendor)
+	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858) 
+	 * defined in MANIFEST.MF(specification-Vendor)
+	 *
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersion() {
-		
-		Properties props = new Properties();
-		
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
-		
-		if (url == null) {
-			log.error("Unable to find MANIFEST.MF file built by maven");
-			return null;
-		}
-		
-		// Load the file
-		try {
-			props.load(url.openStream());
-			
-			return props.getProperty("Specification-Vendor");
-		}
-		catch (IOException e) {
-			log.error("Unable to get MANIFEST.MF file into manifest object");
-		}
-		
-		return null;
+		return getOpenmrsProperty("openmrs.version.long");
 	}
 	
 	/**
-	 * @return build version without alpha characters (eg: 1.10.0.24858) defined in MANIFEST.MF
-	 *         (specification-Version)
+	 * @return build version without alpha characters (eg: 1.10.0.24858) 
+	 * defined in MANIFEST.MF (specification-Version)
+	 *
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersionShort() {
-		
-		Properties props = new Properties();
-		
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
-		
-		if (url == null) {
-			log.error("Unable to find MANIFEST.MF file built by maven");
-			return null;
-		}
-		
-		// Load the file
-		try {
-			props.load(url.openStream());
-			
-			return props.getProperty("Specification-Version");
-		}
-		catch (IOException e) {
-			log.error("Unable to get MANIFEST.MF file into manifest object");
-		}
-		
-		return null;
+		return getOpenmrsProperty("openmrs.version.short");
 	}
 	
-	/**
-	 * Somewhat hacky method to fetch the version from the maven pom.properties file. <br/>
-	 * This method should not be used unless in a dev environment. The preferred way to get the
-	 * version is from the manifest in the api jar file. More detail is included in the properties
-	 * there.
-	 * 
-	 * @return version number defined in maven pom.xml file(s)
-	 * @see #OPENMRS_VERSION_SHORT
-	 * @see #OPENMRS_VERSION
-	 */
-	
 	private static String getVersion() {
-		Properties props = new Properties();
-		
-		// Get hold of the path to the properties file
-		// (Maven will make sure it's on the class path)
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource(
-		    "META-INF/maven/org.openmrs.api/openmrs-api/pom.properties");
-		if (url == null) {
-			log.error("Unable to find pom.properties file built by maven");
+		return getOpenmrsProperty("openmrs.version");
+	}
+	
+	public static String getOpenmrsProperty(String property) {
+		InputStream file = OpenmrsConstants.class.getClassLoader().getResourceAsStream("org/openmrs/api/openmrs.properties");
+		if (file == null) {
+			log.error("Unable to find the openmrs.properties file");
 			return null;
 		}
 		
-		// Load the file
 		try {
-			props.load(url.openStream());
-			return props.getProperty("version"); // this will return something like "1.9.0-SNAPSHOT" in dev environments
+			Properties props = new Properties();
+			props.load(file);
+			
+			file.close();
+			
+			return props.getProperty(property);
 		}
 		catch (IOException e) {
-			log.error("Unable to get pom.properties file into Properties object");
+			log.error("Unable to parse the openmrs.properties file", e);
+		}
+		finally {
+			IOUtils.closeQuietly(file);
 		}
 		
 		return null;
@@ -864,7 +825,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS = "minSearchCharacters";
 	
-	public static final int GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS = 3;
+	public static final int GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS = 2;
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "default_locale";
 	
@@ -901,6 +862,10 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
 	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "Form.forms.locked";
+	
+	public static final String GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED = "PersonAttributeType.locked";
+	
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED = "PatientIdentifierType.locked";
 	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
@@ -989,11 +954,6 @@ public final class OpenmrsConstants {
 	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
 	
 	/**
-	 * Global property name for the prefix used when creating order numbers.
-	 */
-	public static final String GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX = "orderEntry.orderNumberPrefix";
-	
-	/**
 	 * Global property name for the maximum number of results to return from a single search in the
 	 * search widgets
 	 */
@@ -1037,20 +997,17 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_METADATA_CASE_CONVERSION = "dashboard.metadata.caseConversion";
 	
 	/**
-	 * Global property name for the default ConceptMapType which is set automatically when no other
-	 * is set manually.
+	 * Global property name for the default ConceptMapType which is set automatically when no other is set manually.
 	 */
 	public static final String GP_DEFAULT_CONCEPT_MAP_TYPE = "concept.defaultConceptMapType";
 	
 	/**
-	 * Global property name of the allowed concept classes for the dosage form field of the concept
-	 * drug management form.
+	 * Global property name of the allowed concept classes for the dosage form field of the concept drug management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_DOSAGE_FORM_CONCEPT_CLASSES = "conceptDrug.dosageForm.conceptClasses";
 	
 	/**
-	 * Global property name of the allowed concept classes for the route field of the concept drug
-	 * management form.
+	 * Global property name of the allowed concept classes for the route field of the concept drug management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES = "conceptDrug.route.conceptClasses";
 	
@@ -1098,6 +1055,23 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
 	
 	public static final String GP_MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
+	
+	public static final String GP_NEXT_ORDER_NUMBER_SEED = "order.nextOrderNumberSeed";
+	
+	public static final String GP_ORDER_NUMBER_GENERATOR_BEAN_ID = "order.orderNumberGeneratorBeanId";
+	
+	/**
+	 * Specifies the uuid of the concept set where its members represent the possible drug routes
+	 */
+	public static final String GP_DRUG_ROUTES_CONCEPT_UUID = "order.drugRoutesConceptUuid";
+	
+	public static final String GP_DRUG_DOSING_UNITS_CONCEPT_UUID = "order.drugDosingUnitsConceptUuid";
+	
+	public static final String GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID = "order.drugDispensingUnitsConceptUuid";
+	
+	public static final String GP_DURATION_UNITS_CONCEPT_UUID = "order.durationUnitsConceptUuid";
+	
+	public static final String GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID = "order.testSpecimenSourcesConceptUuid";
 	
 	/**
 	 * @since 1.10
@@ -1398,7 +1372,7 @@ public final class OpenmrsConstants {
 		                "",
 		                "Comma separated list of the RelationshipTypes to show on the new/short patient form.  The list is defined like '3a, 4b, 7a'.  The number is the RelationshipTypeId and the 'a' vs 'b' part is which side of the relationship is filled in by the user."));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "3",
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "2",
 		        "Number of characters user must input before searching is started."));
 		
 		props
@@ -1478,9 +1452,6 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		                GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START,
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
-		
-		props.add(new GlobalProperty(GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, ORDER_NUMBER_DEFAULT_PREFIX,
-		        "Specifies the prefix used when creating order numbers"));
 		
 		props.add(new GlobalProperty(GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT, "false",
 		        "Enables or disables management of concept map types", BooleanDatatype.class, null));
@@ -1566,6 +1537,32 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_FORMS_LOCKED, "false",
 		        "Set to a value of true if you do not want any changes to be made on forms, else set to false."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false",
+		        "Set to a value of true if you do not want allow editing person attribute types, else set to false."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false",
+		        "Set to a value of true if you do not want allow editing patient identifier types, else set to false."));
+		
+		props.add(new GlobalProperty(GP_NEXT_ORDER_NUMBER_SEED, "1", "The next order number available for assignment"));
+		
+		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
+		        "Specifies spring bean id of the order generator to use when assigning order numbers"));
+		
+		props.add(new GlobalProperty(GP_DRUG_ROUTES_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug routes"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DOSING_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug dosing units"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug dispensing units"));
+		
+		props.add(new GlobalProperty(GP_DURATION_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible duration units"));
+		
+		props.add(new GlobalProperty(GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible test specimen sources"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
@@ -1817,8 +1814,6 @@ public final class OpenmrsConstants {
 	public static final String RAW_VIEW = "RAW_VIEW";
 	
 	public static final String TEXT_VIEW = "TEXT_VIEW";
-	
-	public static final String ORDER_NUMBER_DEFAULT_PREFIX = "OR:";
 	
 	/** The data type to return on failing to load a custom data type. */
 	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();

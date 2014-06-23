@@ -168,4 +168,15 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
 	}
+	
+	@Test
+	public void shouldStartBeforeAnotherModule() {
+		//module 1 should start before module 5
+		//module 5 should start before module 4
+		assertTrue(moduleTestData.getWillStartCallTime(MODULE5_ID) <= moduleTestData.getWillStartCallTime(MODULE4_ID));
+		assertTrue(moduleTestData.getWillStartCallTime(MODULE1_ID) <= moduleTestData.getWillStartCallTime(MODULE5_ID));
+		
+		assertTrue(moduleTestData.getStartedCallTime(MODULE5_ID) <= moduleTestData.getStartedCallTime(MODULE4_ID));
+		assertTrue(moduleTestData.getStartedCallTime(MODULE1_ID) <= moduleTestData.getStartedCallTime(MODULE5_ID));
+	}
 }

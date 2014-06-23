@@ -18,12 +18,15 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
@@ -69,6 +72,7 @@ public class ShortPatientFormValidator implements Validator {
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should fail if all name fields are empty or white space characters
 	 * @should fail if no identifiers are added
+	 * @should fail if patient identifiers contains more than one identifier for the same identifier type
 	 * @should fail if all identifiers have been voided
 	 * @should fail if any name has more than 50 characters
 	 * @should fail validation if deathdate is a future date
@@ -166,6 +170,10 @@ public class ShortPatientFormValidator implements Validator {
 				errors.reject("PatientIdentifier.error.insufficientIdentifiers");
 			}
 			
+		}
+		
+		if (PatientIdentifierValidator.hasMoreThanOneIdentifierForSameIdentifierType(shortPatientModel.getIdentifiers())) {
+			errors.reject("error.duplicateIdentifierTypes");
 		}
 		
 		// Make sure they chose a gender

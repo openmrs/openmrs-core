@@ -61,6 +61,8 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	
 	public static final String ORDER_SET_UUID = "baa7a1b8-a1ba-11e0-9616-705ab6a580e0";
 	
+	public static final String FREQUENCY_UUID = "8e071bfe-520c-44c0-a89b-538e9129b42a";
+	
 	// Fields
 	@DocumentId
 	private Integer conceptClassId;

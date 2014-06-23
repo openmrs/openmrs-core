@@ -252,4 +252,35 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		    "org.springframework.validation.BindingResult.opts");
 		Assert.assertTrue(bindingResult.hasErrors());
 	}
+	
+	@Test
+	public void shouldNotOverwriteUserSecretQuestionOrAnswerWhenChangingPassword() throws Exception {
+		LoginCredential loginCredential = userDao.getLoginCredential(user);
+		HttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		
+		request.setParameter("secretQuestionPassword", "test");
+		request.setParameter("secretQuestionNew", "easy question");
+		request.setParameter("secretAnswerNew", "easy answer");
+		request.setParameter("secretAnswerConfirm", "easy answer");
+		
+		controller.handleRequest(request, response);
+		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
+		Assert.assertEquals("easy answer", loginCredential.getSecretAnswer());
+		String oldPassword = loginCredential.getHashedPassword();
+		
+		request.removeAllParameters();
+		request.addParameter("secretQuestionNew", "easy question");
+		request.setParameter("oldPassword", "test");
+		request.setParameter("newPassword", "OpenMRS1");
+		request.setParameter("confirmPassword", "OpenMRS1");
+		ModelAndView mav = controller.handleRequest(request, response);
+		
+		if (oldPassword == loginCredential.getHashedPassword()) {
+			request.setParameter("secretQuestionNew", "");
+			mav = controller.handleRequest(request, response);
+		}
+		Assert.assertEquals("easy answer", loginCredential.getSecretAnswer());
+		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
+	}
 }

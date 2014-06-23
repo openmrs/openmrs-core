@@ -46,6 +46,8 @@ public class OptionsForm {
 	
 	private String secretQuestionNew = "";
 	
+	private String secretQuestionCopy = "";
+	
 	private String secretAnswerNew = "";
 	
 	private String secretAnswerConfirm = "";
@@ -137,6 +139,14 @@ public class OptionsForm {
 	
 	public void setSecretQuestionNew(String secretQuestionNew) {
 		this.secretQuestionNew = secretQuestionNew;
+	}
+	
+	public String getSecretQuestionCopy() {
+		return secretQuestionCopy;
+	}
+	
+	public void setSecretQuestionCopy(String secretQuestionCopy) {
+		this.secretQuestionCopy = secretQuestionCopy;
 	}
 	
 	public String getSecretAnswerConfirm() {

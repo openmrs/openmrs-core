@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,14 +39,15 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.ArrayList;
 
-import junit.framework.Assert;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.dbunit.dataset.IDataSet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -71,12 +74,12 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.test.annotation.ExpectedException;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -91,6 +94,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/api/include/ConceptServiceTest-initialConcepts.xml";
 	
 	protected static final String GET_CONCEPTS_BY_SET_XML = "org/openmrs/api/include/ConceptServiceTest-getConceptsBySet.xml";
+	
+	protected static final String GET_DRUG_MAPPINGS = "org/openmrs/api/include/ConceptServiceTest-getDrugMappings.xml";
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -854,14 +862,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getConceptService().getDrugByUuid("some invalid uuid"));
 	}
 	
+	@Test
+	@Verifies(value = "should return drugs that are not retired", method = "getDrugs(String)")
+	public void getDrugs_shouldReturnDrugsThatAreNotRetired() throws Exception {
+		List<Drug> drugs = Context.getConceptService().getDrugs("ASPIRIN" /* is not retired */);
+		Assert.assertFalse(drugs.get(0).isRetired());
+	}
+	
 	/**
 	 * @see {@link ConceptService#getDrugs(String)}
 	 */
 	@Test
-	@Verifies(value = "should return drugs that are retired", method = "getDrugs(String)")
-	public void getDrugs_shouldReturnDrugsThatAreRetired() throws Exception {
-		List<Drug> drugs = Context.getConceptService().getDrugs("NYQUIL" /* is retired */);
-		Assert.assertTrue(drugs.get(0).isRetired());
+	@Verifies(value = "should not return drugs that are retired", method = "getDrugs(String)")
+	public void getDrugs_shouldNotReturnDrugsThatAreRetired() throws Exception {
+		List<Drug> drugs = Context.getConceptService().getDrugs("TEST_DRUG_NAME_RETIRED" /* is retired */);
+		Assert.assertEquals(0, drugs.size());
 	}
 	
 	/**
@@ -1462,9 +1477,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
 	 */
-	@Test
+	@Test(expected = ConceptStopWordException.class)
 	@Verifies(value = "should fail if a duplicate conceptStopWord in a locale is added", method = "saveConceptStopWord(ConceptStopWord)")
-	@ExpectedException(ConceptStopWordException.class)
 	public void saveConceptStopWord_shouldFailIfADuplicateConceptStopWordInALocaleIsAdded() throws Exception {
 		ConceptStopWord conceptStopWord = new ConceptStopWord("A");
 		try {
@@ -2667,7 +2681,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldExcludeRetiredConceptsWhenSetIncludeRetiredToFalse() throws Exception {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, true, false);
 		
-		assertEquals(24, allConcepts.size());
+		assertEquals(33, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2679,14 +2693,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptField() throws Exception {
 		List<Concept> allConcepts = conceptService.getAllConcepts("dateCreated", true, true);
 		
-		assertEquals(25, allConcepts.size());
+		assertEquals(35, allConcepts.size());
 		assertEquals(88, allConcepts.get(0).getConceptId().intValue());
-		assertEquals(23, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
+		assertEquals(27, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 		
 		//check desc order
 		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
 		
-		assertEquals(25, allConcepts.size());
+		assertEquals(35, allConcepts.size());
 		assertEquals(23, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(88, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 	}
@@ -2699,15 +2713,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptNameField() throws Exception {
 		List<Concept> allConcepts = conceptService.getAllConcepts("name", true, false);
 		
-		assertEquals(24, allConcepts.size());
+		assertEquals(33, allConcepts.size());
 		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(0).getName().getName());
-		assertEquals("YES", allConcepts.get(allConcepts.size() - 1).getName().getName());
+		assertEquals("tab (s)", allConcepts.get(allConcepts.size() - 1).getName().getName());
 		
 		//test the desc order
 		allConcepts = conceptService.getAllConcepts("name", false, false);
 		
-		assertEquals(24, allConcepts.size());
-		assertEquals("YES", allConcepts.get(0).getName().getName());
+		assertEquals(33, allConcepts.size());
+		assertEquals("tab (s)", allConcepts.get(0).getName().getName());
 		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(allConcepts.size() - 1).getName().getName());
 	}
 	
@@ -2719,7 +2733,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdAndIncludeRetiredWhenGivenNoParameters() throws Exception {
 		final List<Concept> allConcepts = conceptService.getAllConcepts();
 		
-		assertEquals(25, allConcepts.size());
+		assertEquals(35, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2731,7 +2745,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdDescendingWhenSetAscParameterToFalse() throws Exception {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, false, true);
 		
-		assertEquals(25, allConcepts.size());
+		assertEquals(35, allConcepts.size());
 		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2764,5 +2778,411 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(concept.getSynonyms().isEmpty());
 		concept.removeName(concept.getSynonyms().iterator().next());
 		conceptService.saveConcept(concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test(expected = Exception.class)
+	@Verifies(value = "not save a concept name tag if tag is null, empty or whitespace", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldNotSaveATagIfItIsInvalid() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptNameTag faultyNameTag = cs.saveConceptNameTag(cnt);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "save a concept name tag if tag is supplied", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldSaveATagIfItIsSupplied() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		cnt.setTag("abcd");
+		cnt.setDescription("test");
+		ConceptService cs = Context.getConceptService();
+		
+		Integer id = cs.saveConceptNameTag(cnt).getId();
+		Context.flushSession();
+		Context.clearSession();
+		
+		ConceptNameTag savedNameTag = cs.getConceptNameTag(id);
+		assertEquals(savedNameTag.getTag(), "abcd");
+		assertEquals(savedNameTag.getDescription(), "test");
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptNameTag(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "save an edited concept name tag", method = "saveConceptNameTag(ConceptNameTag)")
+	public void saveConceptNameTag_shouldSaveAnEditedNameTag() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		ConceptNameTag cnt = cs.getConceptNameTag(1);
+		cnt.setTag("dcba");
+		
+		Integer id = cs.saveConceptNameTag(cnt).getId();
+		Context.flushSession();
+		Context.clearSession();
+		
+		ConceptNameTag savedNameTag = cs.getConceptNameTag(id);
+		assertEquals(savedNameTag.getTag(), "dcba");
+	}
+	
+	/**
+	 * @verifies get drugs with names matching the search phrase
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsWithNamesMatchingTheSearchPhrase() throws Exception {
+		//Should be case insensitive
+		List<Drug> drugs = conceptService.getDrugs("tri", null, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(2, drugs.get(0).getDrugId().intValue());
+		
+		//Should match any where in the drug name
+		drugs = conceptService.getDrugs("ri", null, false, false);
+		assertEquals(2, drugs.size());
+		assertThat(drugs, hasItems(conceptService.getDrug(2), conceptService.getDrug(3)));
+	}
+	
+	/**
+	 * @verifies include retired drugs if includeRetired is set to true
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldIncludeRetiredDrugsIfIncludeRetiredIsSetToTrue() throws Exception {
+		//Should be case insensitive
+		final String searchPhrase = "Nyq";
+		List<Drug> drugs = conceptService.getDrugs(searchPhrase, null, false, false);
+		assertEquals(0, drugs.size());
+		
+		drugs = conceptService.getDrugs(searchPhrase, null, false, true);
+		assertEquals(1, drugs.size());
+		assertEquals(11, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * @verifies get drugs linked to concepts with names that match the phrase
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhrase() throws Exception {
+		final Integer expectedDrugId = 2;
+		List<Drug> drugs = conceptService.getDrugs("stav", null, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(expectedDrugId, drugs.get(0).getDrugId());
+		
+		//should match anywhere in the concept name
+		drugs = conceptService.getDrugs("amiv", null, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(expectedDrugId, drugs.get(0).getDrugId());
+	}
+	
+	/**
+	 * @verifies get drugs linked to concepts with names that match the phrase and locale
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhraseAndLocale() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		final String searchPhrase = "some";
+		List<Drug> drugs = conceptService.getDrugs(searchPhrase, Locale.FRENCH, true, false);
+		assertEquals(0, drugs.size());
+		
+		drugs = conceptService.getDrugs(searchPhrase, Locale.CANADA_FRENCH, true, false);
+		assertEquals(1, drugs.size());
+		assertEquals(3, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * @verifies get drugs linked to concepts with names that match the phrase and related locales
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhraseAndRelatedLocales() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		final String searchPhrase = "another";
+		//Should look only in the exact locale if exactLocale is set to true
+		List<Drug> drugs = conceptService.getDrugs(searchPhrase, Locale.CANADA_FRENCH, true, false);
+		assertEquals(0, drugs.size());
+		
+		//Should look in broader locale if exactLocale is set to false
+		drugs = conceptService.getDrugs(searchPhrase, Locale.CANADA_FRENCH, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(3, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * @verifies get drugs that have mappings with reference term codes that match the phrase
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldGetDrugsThatHaveMappingsWithReferenceTermCodesThatMatchThePhrase() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		List<Drug> drugs = conceptService.getDrugs("XXXZZ", null, true, true);
+		assertEquals(1, drugs.size());
+		assertEquals(11, drugs.get(0).getDrugId().intValue());
+		
+		//should match the code anywhere
+		drugs = conceptService.getDrugs("XZZZ", null, true, true);
+		assertEquals(1, drugs.size());
+		assertEquals(11, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * Ensures that unique drugs are returned in situations where more than one searched fields
+	 * match e.g drug name and linked concept name match the search phrase
+	 * 
+	 * @verifies return unique drugs
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldReturnUniqueDrugs() throws Exception {
+		//sanity check that drug.name and drug.concept.name will both match the search phrase
+		Drug drug = conceptService.getDrugByNameOrId("ASPIRIN");
+		assertEquals(drug.getName().toLowerCase(), drug.getConcept().getName().getName().toLowerCase());
+		
+		List<Drug> drugs = conceptService.getDrugs("Asp", null, false, false);
+		assertEquals(1, drugs.size());
+		assertEquals(3, drugs.get(0).getDrugId().intValue());
+	}
+	
+	/**
+	 * @verifies return all drugs with a matching term code or drug name or concept name
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldReturnAllDrugsWithAMatchingTermCodeOrDrugNameOrConceptName() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		List<Drug> drugs = conceptService.getDrugs("ZZZ", null, false, true);
+		assertEquals(3, drugs.size());
+		Drug[] expectedDrugs = { conceptService.getDrug(3), conceptService.getDrug(11), conceptService.getDrug(444) };
+		assertThat(drugs, hasItems(expectedDrugs));
+	}
+	
+	/**
+	 * @verifies reject a null search phrase
+	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void getDrugs_shouldRejectANullSearchPhrase() throws Exception {
+		conceptService.getDrugs(null, null, false, false);
+	}
+	
+	/**
+	 * @verifies get a list of all drugs that match on all the parameter values
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldGetAListOfAllDrugsThatMatchOnAllTheParameterValues() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = new ArrayList<ConceptMapType>();
+		conceptMapTypeList.add(conceptService.getConceptMapType(1));
+		ConceptSource source = conceptService.getConceptSource(1);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", source, conceptMapTypeList, false);
+		assertEquals(1, drugs.size());
+		assertTrue(containsId(drugs, 2));
+	}
+	
+	/**
+	 * @verifies exclude duplicate matches
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldExcludeDuplicateMatches() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		//the expected matching drug has two mappings to different concept sources but same code
+		//so this test also ensure that we can never get back duplicates
+		ConceptSource source = conceptService.getConceptSource(1);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", source, conceptMapTypeList, false);
+		assertEquals(1, drugs.size());
+		assertTrue(containsId(drugs, 2));
+	}
+	
+	/**
+	 * @verifies return retired and non-retired drugs if includeRetired is set to true
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldReturnRetiredAndNonretiredDrugsIfIncludeRetiredIsSetToTrue() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", conceptService.getConceptSource(1),
+		    conceptMapTypeList, true);
+		assertEquals(2, drugs.size());
+		assertTrue(containsId(drugs, 2));
+		assertTrue(containsId(drugs, 11));
+	}
+	
+	/**
+	 * @verifies return empty list if no matches are found
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldReturnEmptyListIfNoMatchesAreFound() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		List<Drug> drugs = conceptService.getDrugsByMapping("some radom code", conceptService.getConceptSource(2),
+		    conceptMapTypeList, false);
+		assertTrue(drugs.isEmpty());
+	}
+	
+	/**
+	 * @verifies match on the code
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldMatchOnTheCode() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		ConceptSource source = conceptService.getConceptSource(1);
+		List<Drug> drugs = conceptService.getDrugsByMapping("WGT234", source, null, false);
+		assertEquals(1, drugs.size());
+		assertTrue(containsId(drugs, 2));
+	}
+	
+	/**
+	 * @verifies match on the concept source
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldMatchOnTheConceptSource() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<Drug> drugs = conceptService.getDrugsByMapping(null, conceptService.getConceptSource(2), null, false);
+		assertEquals(1, drugs.size());
+		assertTrue(containsId(drugs, 2));
+	}
+	
+	/**
+	 * @verifies match on the map types
+	 * @see ConceptService#getDrugsByMapping(String, ConceptSource, Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldMatchOnTheMapTypes() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		ConceptSource source = conceptService.getConceptSource(1);
+		List<Drug> drugs = conceptService.getDrugsByMapping(null, source, conceptMapTypeList, false);
+		assertEquals(2, drugs.size());
+		assertTrue(containsId(drugs, 2));
+		assertTrue(containsId(drugs, 3));
+		
+		drugs = conceptService.getDrugsByMapping(null, source, conceptMapTypeList, true);
+		assertEquals(3, drugs.size());
+		assertTrue(containsId(drugs, 2));
+		assertTrue(containsId(drugs, 3));
+		assertTrue(containsId(drugs, 11));
+	}
+	
+	/**
+	 * @verifies fail if no code and concept source and withAnyOfTheseTypes are provided
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
+	 */
+	@Test(expected = APIException.class)
+	public void getDrugsByMapping_shouldFailIfNoCodeAndConceptSourceAndWithAnyOfTheseTypesAreProvided() throws Exception {
+		conceptService.getDrugByMapping(null, null, null);
+	}
+	
+	/**
+	 * @verifies fail if source is null
+	 * @see ConceptService#getDrugsByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection, boolean)
+	 */
+	@Test
+	public void getDrugsByMapping_shouldFailIfSourceIsNull() throws Exception {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("ConceptSource is required");
+		conceptService.getDrugsByMapping("random", null, null, false);
+	}
+	
+	/**
+	 * @verifies return a drug that matches the code and source and the best map type
+	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 */
+	@Test
+	public void getDrugByMapping_shouldReturnADrugThatMatchesTheCodeAndSourceAndTheBestMapType() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		final Integer expectedDrugId = 2;
+		final ConceptSource source = conceptService.getConceptSource(2);
+		final ConceptMapType mapTypeWithMatch = conceptService.getConceptMapType(1);
+		final ConceptMapType mapTypeWithNoMatch = conceptService.getConceptMapType(2);
+		List<ConceptMapType> conceptMapTypeList = new ArrayList<ConceptMapType>();
+		conceptMapTypeList.add(mapTypeWithMatch);
+		conceptMapTypeList.add(mapTypeWithNoMatch);
+		Drug drug = conceptService.getDrugByMapping("WGT234", source, conceptMapTypeList);
+		assertEquals(expectedDrugId, drug.getDrugId());
+		
+		//Lets switch the order is the map types in the list to make sure that
+		//if there is no match on the first map type, the logic matches on the second
+		//sanity check that actually there will be no match on the first map type in the list
+		conceptMapTypeList.clear();
+		conceptMapTypeList.add(mapTypeWithNoMatch);
+		assertNull(conceptService.getDrugByMapping("WGT234", source, conceptMapTypeList));
+		
+		conceptMapTypeList.add(mapTypeWithMatch);
+		drug = conceptService.getDrugByMapping("WGT234", source, conceptMapTypeList);
+		assertEquals(expectedDrugId, drug.getDrugId());
+	}
+	
+	/**
+	 * @verifies fail if multiple drugs are found matching the best map type
+	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 */
+	@Test(expected = DAOException.class)
+	public void getDrugByMapping_shouldFailIfMultipleDrugsAreFoundMatchingTheBestMapType() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		ConceptSource source = conceptService.getConceptSource(1);
+		conceptService.getDrugByMapping("CD41003", source, Collections.singleton(conceptService.getConceptMapType(2)));
+	}
+	
+	/**
+	 * @verifies return null if no match found
+	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 */
+	@Test
+	public void getDrugByMapping_shouldReturnNullIfNoMatchFound() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(false, true);
+		Drug drug = conceptService.getDrugByMapping("random code", conceptService.getConceptSource(1), conceptMapTypeList);
+		assertNull(drug);
+	}
+	
+	/**
+	 * @verifies fail if no code and concept source and withAnyOfTheseTypes are provided
+	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 */
+	@Test(expected = APIException.class)
+	public void getDrugByMapping_shouldFailIfNoCodeAndConceptSourceAndWithAnyOfTheseTypesAreProvided() throws Exception {
+		conceptService.getDrugByMapping(null, null, Collections.EMPTY_LIST);
+	}
+	
+	/**
+	 * @verifies return a drug that matches the code and source
+	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 */
+	@Test
+	public void getDrugByMapping_shouldReturnADrugThatMatchesTheCodeAndSource() throws Exception {
+		executeDataSet(GET_DRUG_MAPPINGS);
+		final Integer expectedDrugId = 2;
+		Drug drug = conceptService.getDrugByMapping("WGT234", conceptService.getConceptSource(2), null);
+		assertEquals(expectedDrugId, drug.getDrugId());
+	}
+	
+	/**
+	 * @verifies fail if source is null
+	 * @see ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 */
+	@Test
+	public void getDrugByMapping_shouldFailIfSourceIsNull() throws Exception {
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("ConceptSource is required");
+		conceptService.getDrugByMapping("random", null, null);
 	}
 }

@@ -139,6 +139,12 @@
 			<td><openmrs:format user="${ visitAttributeType.creator }"/></td>
 		</tr>
 	</c:if>
+    <c:if test="${visitAttributeType.visitAttributeTypeId != null}">
+        <tr>
+            <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
+            <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${visitAttributeType.uuid}</sub></font></td>
+        </tr>
+    </c:if>
 </table>
 <br />
 

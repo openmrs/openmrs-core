@@ -952,6 +952,33 @@ public class ConceptTest {
 		assertEquals("Preferred", conceptNameExpectedPreferred.getName());
 	}
 	
+	@Test
+	public void getShortNameInLocale_shouldReturnTheBestShortNameForAConcept() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Giant cat", new Locale("en")));
+		concept.addName(new ConceptName("Gato gigante", new Locale("es", "MX")));
+		
+		ConceptName shortName1 = new ConceptName("Cat", new Locale("en"));
+		shortName1.setConceptNameType(ConceptNameType.SHORT);
+		concept.addName(shortName1);
+		
+		ConceptName shortName2 = new ConceptName("Gato", new Locale("es"));
+		shortName2.setConceptNameType(ConceptNameType.SHORT);
+		concept.addName(shortName2);
+		
+		Assert.assertEquals("Gato", concept.getShortNameInLocale(new Locale("es", "ES")).getName());
+	}
+	
+	@Test
+	@Verifies(value = "should return the language prefered name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
+	public void getPreferredName_shouldReturnTheBesLocalePreferred() throws Exception {
+		Concept testConcept = createMockConcept(1, Locale.US);
+		// preferred name in en
+		ConceptName preferredNameEN = createMockConceptName(4, new Locale("en"), null, true);
+		testConcept.addName(preferredNameEN);
+		Assert.assertEquals(preferredNameEN.getName(), testConcept.getPreferredName(Locale.US).getName());
+	}
+	
 	/**
 	 * Convenient factory method to create a populated Concept with a one fully specified name and
 	 * one short name

@@ -497,6 +497,14 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.FormDAO#getFieldTypeByName(java.lang.String)
+	 */
+	public FieldType getFieldTypeByName(String name) {
+		return (FieldType) sessionFactory.getCurrentSession().createQuery("from FieldType ft where ft.name = :name")
+		        .setString("name", name).uniqueResult();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.FormDAO#getFormByUuid(java.lang.String)
 	 */
 	public Form getFormByUuid(String uuid) {

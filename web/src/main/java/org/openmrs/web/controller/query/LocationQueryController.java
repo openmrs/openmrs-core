@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
@@ -103,17 +104,17 @@ public class LocationQueryController {
 			
 			Map<String, Object> attrs = new HashMap<String, Object>();
 			attrs.put("id", loc.getLocationId());
-			attrs.put("name", loc.getName());
+			attrs.put("name", getName(loc));
 			attrs.put("rel", nodeType);
 			
 			Map<String, Object> ret = new LinkedHashMap<String, Object>();
 			ret.put("attributes", attrs);
-			StringBuilder sb = new StringBuilder(loc.getName());
+			StringBuilder sb = new StringBuilder(getName(loc));
 			if (loc.getTags() != null && loc.getTags().size() > 0) {
 				sb.append(" (");
 				for (Iterator<LocationTag> i = loc.getTags().iterator(); i.hasNext();) {
 					LocationTag t = i.next();
-					sb.append(t.getName());
+					sb.append(getName(t));
 					if (i.hasNext()) {
 						sb.append(", ");
 					}
@@ -148,6 +149,15 @@ public class LocationQueryController {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Returns metadata name formatted if retired
+	 * @param metadata
+	 * @return
+	 */
+	private String getName(BaseOpenmrsMetadata metadata) {
+		return metadata.isRetired() ? "<strike>" + metadata.getName() + "</strike>" : metadata.getName();
 	}
 	
 	class HierarchyOptions {

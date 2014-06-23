@@ -37,6 +37,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -124,6 +125,9 @@ public class ModuleFileParser {
 			}
 			catch (Exception e) { /* pass */}
 		}
+	}
+	
+	ModuleFileParser() {
 	}
 	
 	/**
@@ -252,6 +256,7 @@ public class ModuleFileParser {
 			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL").trim());
 			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
 			module.setAwareOfModulesMap(getAwareOfModules(rootNode, configVersion));
+			module.setStartBeforeModulesMap(getStartBeforeModules(rootNode, configVersion));
 			
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
 			module.setExtensionNames(getExtensions(rootNode, configVersion));
@@ -269,6 +274,8 @@ public class ModuleFileParser {
 			module.setMandatory(getMandatory(rootNode, configVersion, jarfile));
 			
 			module.setFile(moduleFile);
+			
+			module.setConditionalResources(getConditionalResources(rootNode));
 		}
 		finally {
 			try {
@@ -288,6 +295,84 @@ public class ModuleFileParser {
 		}
 		
 		return module;
+	}
+	
+	/**
+	 * Parses conditionalResources tag.
+	 * @param rootNode
+	 * @return
+	 *
+	 * @should parse openmrsVersion and modules
+	 * @should parse conditionalResource with whitespace
+	 * @should throw exception if multiple conditionalResources tags found
+	 * @should throw exception if conditionalResources contains invalid tag
+	 * @should throw exception if path is blank
+	 */
+	List<ModuleConditionalResource> getConditionalResources(Element rootNode) {
+		List<ModuleConditionalResource> conditionalResources = new ArrayList<ModuleConditionalResource>();
+		
+		NodeList parentConditionalResources = rootNode.getElementsByTagName("conditionalResources");
+		
+		if (parentConditionalResources.getLength() == 0) {
+			return new ArrayList<ModuleConditionalResource>();
+		} else if (parentConditionalResources.getLength() > 1) {
+			throw new IllegalArgumentException("Found multiple conditionalResources tags. There can be only one.");
+		}
+		
+		NodeList conditionalResourcesNode = parentConditionalResources.item(0).getChildNodes();
+		
+		for (int i = 0; i < conditionalResourcesNode.getLength(); i++) {
+			Node conditionalResourceNode = conditionalResourcesNode.item(i);
+			
+			if ("#text".equals(conditionalResourceNode.getNodeName())) {
+				continue; //ignore text and whitespace in particular
+			}
+			
+			if (!"conditionalResource".equals(conditionalResourceNode.getNodeName())) {
+				throw new IllegalArgumentException("Found the " + conditionalResourceNode.getNodeName()
+				        + " node under conditionalResources. Only conditionalResource is allowed.");
+			}
+			
+			NodeList resourceElements = conditionalResourceNode.getChildNodes();
+			
+			ModuleConditionalResource resource = new ModuleConditionalResource();
+			conditionalResources.add(resource);
+			
+			for (int j = 0; j < resourceElements.getLength(); j++) {
+				Node resourceElement = resourceElements.item(j);
+				
+				if ("path".equals(resourceElement.getNodeName())) {
+					if (StringUtils.isBlank(resourceElement.getTextContent())) {
+						throw new IllegalArgumentException("The path of a conditional resource must not be blank");
+					}
+					resource.setPath(resourceElement.getTextContent());
+				} else if ("openmrsVersion".equals(resourceElement.getNodeName())) {
+					resource.setOpenmrsVersion(resourceElement.getTextContent());
+				} else if ("modules".equals(resourceElement.getNodeName())) {
+					NodeList modulesNode = resourceElement.getChildNodes();
+					for (int k = 0; k < modulesNode.getLength(); k++) {
+						Node moduleNode = modulesNode.item(k);
+						if ("module".equals(moduleNode.getNodeName())) {
+							NodeList moduleElements = moduleNode.getChildNodes();
+							
+							ModuleConditionalResource.ModuleAndVersion module = new ModuleConditionalResource.ModuleAndVersion();
+							resource.getModules().add(module);
+							for (int m = 0; m < moduleElements.getLength(); m++) {
+								Node moduleElement = moduleElements.item(m);
+								
+								if ("moduleId".equals(moduleElement.getNodeName())) {
+									module.setModuleId(moduleElement.getTextContent());
+								} else if ("version".equals(moduleElement.getNodeName())) {
+									module.setVersion(moduleElement.getTextContent());
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return conditionalResources;
 	}
 	
 	/**
@@ -314,58 +399,43 @@ public class ModuleFileParser {
 	 * @since 1.5
 	 */
 	private Map<String, String> getRequiredModules(Element root, String version) {
-		NodeList requiredModulesParents = root.getElementsByTagName("require_modules");
-		
-		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
-		
-		// TODO test require_modules section
-		if (requiredModulesParents.getLength() > 0) {
-			Node requiredModulesParent = requiredModulesParents.item(0);
-			
-			NodeList requiredModules = requiredModulesParent.getChildNodes();
-			
-			int i = 0;
-			while (i < requiredModules.getLength()) {
-				Node n = requiredModules.item(i);
-				if (n != null && "require_module".equals(n.getNodeName())) {
-					NamedNodeMap attributes = n.getAttributes();
-					Node versionNode = attributes.getNamedItem("version");
-					String reqVersion = versionNode == null ? null : versionNode.getNodeValue();
-					packageNamesToVersion.put(n.getTextContent().trim(), reqVersion);
-				}
-				i++;
-			}
-		}
-		return packageNamesToVersion;
+		return getModuleToVersionMap("require_modules", "require_module", root);
 	}
 	
 	/**
 	 * load in list of modules we are aware of.
 	 *
 	 * @param root element in the xml doc object
-	 * @param version of the config file
 	 * @return map from module package name to aware of version
 	 * @since 1.9
 	 */
 	private Map<String, String> getAwareOfModules(Element root, String version) {
-		NodeList awareOfModulesParents = root.getElementsByTagName("aware_of_modules");
+		return getModuleToVersionMap("aware_of_modules", "aware_of_module", root);
+	}
+	
+	private Map<String, String> getStartBeforeModules(Element root, String version) {
+		return getModuleToVersionMap("start_before_modules", "module", root);
+	}
+	
+	private Map<String, String> getModuleToVersionMap(String elementParentName, String elementName, Element root) {
+		
+		NodeList modulesParents = root.getElementsByTagName(elementParentName);
 		
 		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
 		
-		// TODO test aware_of_modules section
-		if (awareOfModulesParents.getLength() > 0) {
-			Node awareOfModulesParent = awareOfModulesParents.item(0);
+		if (modulesParents.getLength() > 0) {
+			Node modulesParent = modulesParents.item(0);
 			
-			NodeList awareOfModules = awareOfModulesParent.getChildNodes();
+			NodeList childModules = modulesParent.getChildNodes();
 			
 			int i = 0;
-			while (i < awareOfModules.getLength()) {
-				Node n = awareOfModules.item(i);
-				if (n != null && "aware_of_module".equals(n.getNodeName())) {
+			while (i < childModules.getLength()) {
+				Node n = childModules.item(i);
+				if (n != null && elementName.equals(n.getNodeName())) {
 					NamedNodeMap attributes = n.getAttributes();
 					Node versionNode = attributes.getNamedItem("version");
-					String awareOfVersion = versionNode == null ? null : versionNode.getNodeValue();
-					packageNamesToVersion.put(n.getTextContent().trim(), awareOfVersion);
+					String moduleVersion = versionNode == null ? null : versionNode.getNodeValue();
+					packageNamesToVersion.put(n.getTextContent().trim(), moduleVersion);
 				}
 				i++;
 			}

@@ -90,37 +90,34 @@ public class PatientProgramFormController implements Controller {
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.programRequired");
 			return new ModelAndView(new RedirectView(returnPage));
 		}
-		
-		if (!pws.getPatientPrograms(patient, program, null, completionDate, enrollmentDate, null, false).isEmpty()) {
+		if (enrollmentDate == null) {
+			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.enrollmentDateRequired");
+		} else if (!pws.getPatientPrograms(patient, program, null, completionDate, enrollmentDate, null, false).isEmpty()) {
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.already");
 		} else {
-			if (enrollmentDate == null) {
-				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.enrollmentDateRequired");
-			} else {
-				PatientProgram pp = new PatientProgram();
-				pp.setPatient(patient);
-				pp.setLocation(location);
-				pp.setProgram(program);
-				pp.setDateEnrolled(enrollmentDate);
-				pp.setDateCompleted(completionDate);
-				
-				// Set any initial states if passed in
-				for (ProgramWorkflow workflow : program.getAllWorkflows()) {
-					String stateIdStr = request.getParameter("initialState." + workflow.getProgramWorkflowId());
-					if (StringUtils.hasText(stateIdStr)) {
-						Integer stateId = Integer.valueOf(stateIdStr);
-						ProgramWorkflowState state = workflow.getState(stateId);
-						log.debug("Transitioning to state: " + state);
-						pp.transitionToState(state, enrollmentDate);
-					}
+			PatientProgram pp = new PatientProgram();
+			pp.setPatient(patient);
+			pp.setLocation(location);
+			pp.setProgram(program);
+			pp.setDateEnrolled(enrollmentDate);
+			pp.setDateCompleted(completionDate);
+			
+			// Set any initial states if passed in
+			for (ProgramWorkflow workflow : program.getAllWorkflows()) {
+				String stateIdStr = request.getParameter("initialState." + workflow.getProgramWorkflowId());
+				if (StringUtils.hasText(stateIdStr)) {
+					Integer stateId = Integer.valueOf(stateIdStr);
+					ProgramWorkflowState state = workflow.getState(stateId);
+					log.debug("Transitioning to state: " + state);
+					pp.transitionToState(state, enrollmentDate);
 				}
-				try {
-					ValidateUtil.validate(pp);
-					Context.getProgramWorkflowService().savePatientProgram(pp);
-				}
-				catch (APIException e) {
-					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
-				}
+			}
+			try {
+				ValidateUtil.validate(pp);
+				Context.getProgramWorkflowService().savePatientProgram(pp);
+			}
+			catch (APIException e) {
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 			}
 		}
 		return new ModelAndView(new RedirectView(returnPage));

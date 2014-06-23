@@ -47,6 +47,7 @@ import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
@@ -286,6 +287,11 @@ public class PatientFormController extends PersonFormController {
 				
 				try {
 					Context.getPatientService().savePatient(patient);
+				}
+				catch (ValidationException ve) {
+					log.error(ve);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, ve.getMessage());
+					isError = true;
 				}
 				catch (InvalidIdentifierFormatException iife) {
 					log.error(iife);

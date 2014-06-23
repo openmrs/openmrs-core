@@ -41,6 +41,7 @@ public class PersonAttributeTypeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null
+	 * @should fail validation if format is empty
 	 * @should fail validation if name already in use
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all fields are correct
@@ -48,6 +49,7 @@ public class PersonAttributeTypeValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		PersonAttributeType patObj = (PersonAttributeType) obj;
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "PersonAttributeType.error.nameEmpty");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "format", "PersonAttributeType.error.formatEmpty");
 		PersonService ps = Context.getPersonService();
 		PersonAttributeType pat = ps.getPersonAttributeTypeByName(patObj.getName());
 		if (pat != null && !pat.getUuid().equals(patObj.getUuid())) {

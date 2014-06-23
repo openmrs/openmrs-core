@@ -17,6 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptClass;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -48,6 +50,7 @@ public class ConceptClassValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if user is null or empty or whitespace
+	 * @should fail validation if name is already exist in non retired concept class
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
@@ -58,6 +61,12 @@ public class ConceptClassValidator implements Validator {
 			errors.rejectValue("conceptClass", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			if (!errors.hasErrors()) {
+				ConceptClass exist = Context.getConceptService().getConceptClassByName(cc.getName());
+				if (exist != null && !exist.isRetired() && !OpenmrsUtil.nullSafeEquals(cc.getUuid(), exist.getUuid())) {
+					errors.rejectValue("name", "conceptclass.duplicate.name");
+				}
+			}
 		}
 	}
 	

@@ -42,6 +42,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	private Date dateChanged;
 	
+	@Field
 	private Boolean retired = Boolean.FALSE;
 	
 	private Date dateRetired;

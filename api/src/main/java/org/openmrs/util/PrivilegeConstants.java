@@ -832,12 +832,6 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
 	public static final String DASHBOARD_VISITS = "Patient Dashboard - View Visits Section";
 	
-	@AddOnStartup(description = "Able to view order sets")
-	public static final String VIEW_ORDER_SETS = "View Order Sets";
-	
-	@AddOnStartup(description = "Able to add/edit/retire order sets")
-	public static final String MANAGE_ORDER_SETS = "Manage Order Sets";
-	
 	/**
 	 * @deprecated Use org.openmrs.util.PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES
 	 */
@@ -876,4 +870,15 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to assign System Developer role")
 	public static final String ASSIGN_SYSTEM_DEVELOPER_ROLE = "Assign System Developer Role";
+	
+	@AddOnStartup(description = "Able to view Order Frequencies")
+	public static final String VIEW_ORDER_FREQUENCIES = "View Order Frequencies";
+	
+	@AddOnStartup(description = "Able to add/edit/retire Order Frequencies")
+	public static final String MANAGE_ORDER_FREQUENCIES = "Manage Order Frequencies";
+	
+	public static final String PURGE_ORDER_FREQUENCIES = "Purge Order Frequencies";
+	
+	@AddOnStartup(description = "Able to view Care Settings")
+	public static final String VIEW_CARE_SETTINGS = "View Care Settings";
 }

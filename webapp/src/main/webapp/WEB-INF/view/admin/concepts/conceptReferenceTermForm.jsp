@@ -175,12 +175,6 @@ $j(document).ready( function() {
                 </spring:bind>
             </td>
         </tr>
-        <tr>
-         <c:if test="${conceptReferenceTerm.conceptReferenceTermId != null}">
-           <th class="alignRight"><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
-           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${conceptReferenceTerm.uuid}</sub></font></td>
-         </c:if>
-       </tr>
         </spring:nestedPath>
         <tr>
         	<th class="alignRight" valign="top" style="padding-top: 8px"><openmrs:message code="ConceptReferenceTerm.relatedTerms"/></th>
@@ -353,6 +347,12 @@ $j(document).ready( function() {
 			</td>
 		</tr>
 		</c:if>
+        <c:if test="${conceptReferenceTerm.conceptReferenceTermId != null}">
+            <tr>
+                <th class="alignRight"><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
+                <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${conceptReferenceTerm.uuid}</sub></font></td>
+            </tr>
+        </c:if>
        	<tr>
 			<th></th>
 			<td>

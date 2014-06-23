@@ -373,6 +373,16 @@ public interface FormService extends OpenmrsService {
 	public FieldType getFieldTypeByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Get FieldType by its name
+	 * @since 1.11
+	 * @param name
+	 * @return
+	 * @should find object given valid name
+	 * @should return null if no object found with given name
+	 */
+	public FieldType getFieldTypeByName(String name) throws APIException;
+	
+	/**
 	 * @deprecated use {@link #getAllForms()}
 	 */
 	@Deprecated

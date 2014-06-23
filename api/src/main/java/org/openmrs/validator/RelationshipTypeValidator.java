@@ -16,6 +16,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.RelationshipType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -46,6 +48,7 @@ public class RelationshipTypeValidator implements Validator {
 	 * @should fail validation if aIsToB(or A is To B) is null or empty or whitespace
 	 * @should fail validation if bIsToA(or B is To A) is null or empty or whitespace
 	 * @should pass validation if all required fields are set
+	 * @should fail validation if relationshipTypeName already exist
 	 */
 	public void validate(Object obj, Errors errors) {
 		RelationshipType relationshipType = (RelationshipType) obj;
@@ -54,6 +57,12 @@ public class RelationshipTypeValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "aIsToB", "RelationshipType.aIsToB.required");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bIsToA", "RelationshipType.bIsToA.required");
+			RelationshipType exist = Context.getPersonService().getRelationshipTypeByName(
+			    relationshipType.getaIsToB() + "/" + relationshipType.getbIsToA());
+			if (exist != null && !exist.isRetired()
+			        && !OpenmrsUtil.nullSafeEquals(relationshipType.getUuid(), exist.getUuid())) {
+				errors.reject("duplicate.relationshipType");
+			}
 		}
 	}
 }

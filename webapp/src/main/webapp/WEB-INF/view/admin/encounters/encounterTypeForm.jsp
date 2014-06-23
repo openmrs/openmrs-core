@@ -22,8 +22,7 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.belowTitle" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />
 
 <spring:hasBindErrors name="encounterType">
-	<openmrs:message htmlEscape="false" code="fix.error"/>
-	<br />
+    <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 <form method="post">
 <fieldset>

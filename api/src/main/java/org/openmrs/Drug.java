@@ -16,24 +16,20 @@ package org.openmrs;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Indexed;
+import org.openmrs.api.context.Context;
 
 /**
  * Drug
  */
 @Indexed
-public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, Orderable<DrugOrder> {
+public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 285L;
-	
-	private static final String IDENTIFIER_PREFIX = "org.openmrs.Drug:";
-	
-	private static final Log log = LogFactory.getLog(Drug.class);
 	
 	// Fields
 	@DocumentId
@@ -53,7 +49,11 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	
 	private String units;
 	
+	private String strength;
+	
 	private Concept concept;
+	
+	private Set<DrugReferenceMap> drugReferenceMaps;
 	
 	private Collection<DrugIngredient> ingredients;
 	
@@ -90,9 +90,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	}
 	
 	/**
-	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug:
-	 * DRUGNAME)
-	 *
+	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug: DRUGNAME)
+	 * 
 	 * @param locale
 	 * @return full drug name (with concept name appended)
 	 */
@@ -131,6 +130,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 *
 	 * @return Double
 	 */
+	@Deprecated
 	public Double getDoseStrength() {
 		return this.doseStrength;
 	}
@@ -140,6 +140,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 *
 	 * @param doseStrength
 	 */
+	@Deprecated
 	public void setDoseStrength(Double doseStrength) {
 		this.doseStrength = doseStrength;
 	}
@@ -149,6 +150,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 *
 	 * @return String
 	 */
+	@Deprecated
 	public String getUnits() {
 		return this.units;
 	}
@@ -158,8 +160,29 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	 *
 	 * @param units
 	 */
+	@Deprecated
 	public void setUnits(String units) {
 		this.units = units;
+	}
+	
+	/**
+	 * Gets the strength
+	 *
+	 * @return String
+	 * @since 1.10
+	 */
+	public String getStrength() {
+		return strength;
+	}
+	
+	/**
+	 * Sets the strength
+	 *
+	 * @param strength
+	 * @since 1.10
+	 */
+	public void setStrength(String strength) {
+		this.strength = strength;
 	}
 	
 	/**
@@ -255,44 +278,6 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	}
 	
 	/**
-	 * @see org.openmrs.Orderable#getUniqueIdentifier()
-	 */
-	@Override
-	public String getUniqueIdentifier() {
-		return "org.openmrs.Drug:" + drugId;
-	}
-	
-	/**
-	 * Gets a numeric identifier from a string identifier.
-	 *
-	 * @param identifier
-	 *            the string identifier.
-	 * @return the numeric identifier if it is a valid one, else null
-	 * @should return numeric identifier of valid string identifier
-	 * @should return null for an invalid string identifier
-	 * @should fail if null or empty passed in
-	 * @since 1.10
-	 */
-	public static Integer getNumericIdentifier(String identifier) {
-		if (StringUtils.isBlank(identifier)) {
-			throw new IllegalArgumentException("identifier cannot be null");
-		}
-		
-		if (!identifier.startsWith(IDENTIFIER_PREFIX)) {
-			return null;
-		}
-		
-		try {
-			return Integer.valueOf(identifier.substring(IDENTIFIER_PREFIX.length()));
-		}
-		catch (NumberFormatException ex) {
-			log.error("invalid unique identifier for Drug:" + identifier, ex);
-		}
-		
-		return null;
-	}
-	
-	/**
 	 * Convenience method that returns a display name for the drug, defaults to drug.name
 	 *
 	 * @return the display name
@@ -306,5 +291,45 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 			return getConcept().getName().getName();
 		}
 		return "";
+	}
+	
+	/**
+	 * @return Returns the drugReferenceMaps.
+	 * @since 1.10
+	 */
+	public Set<DrugReferenceMap> getDrugReferenceMaps() {
+		if (drugReferenceMaps == null) {
+			drugReferenceMaps = new LinkedHashSet<DrugReferenceMap>();
+		}
+		return drugReferenceMaps;
+	}
+	
+	/**
+	 * @param drugReferenceMaps The drugReferenceMaps to set.
+	 * @since 1.10
+	 */
+	public void setDrugReferenceMaps(Set<DrugReferenceMap> drugReferenceMaps) {
+		this.drugReferenceMaps = drugReferenceMaps;
+	}
+	
+	/**
+	 * Add the given DrugReferenceMap object to this drug's list of drug reference mappings. If there is
+	 * already a corresponding DrugReferenceMap object for this concept, this one will not be added.
+	 *
+	 * @param drugReferenceMap
+	 * @since 1.10
+	 *
+	 * @should set drug as the drug to which a mapping is being added
+	 *
+	 * @should should not add duplicate drug reference maps
+	 */
+	public void addDrugReferenceMap(DrugReferenceMap drugReferenceMap) {
+		if (drugReferenceMap != null && !getDrugReferenceMaps().contains(drugReferenceMap)) {
+			drugReferenceMap.setDrug(this);
+			if (drugReferenceMap.getConceptMapType() == null) {
+				drugReferenceMap.setConceptMapType(Context.getConceptService().getDefaultConceptMapType());
+			}
+			getDrugReferenceMaps().add(drugReferenceMap);
+		}
 	}
 }

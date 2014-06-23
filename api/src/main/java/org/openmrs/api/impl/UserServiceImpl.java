@@ -31,6 +31,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -320,6 +321,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		if (OpenmrsUtil.getCoreRoles().keySet().contains(role.getRole())) {
 			throw new APIException("Cannot delete a core role");
+		}
+		
+		if (role.hasChildRoles()) {
+			throw new CannotDeleteRoleWithChildrenException();
 		}
 		
 		dao.deleteRole(role);

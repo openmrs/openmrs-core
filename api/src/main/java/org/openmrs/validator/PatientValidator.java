@@ -14,11 +14,16 @@
 package org.openmrs.validator;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.annotation.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -63,6 +68,7 @@ public class PatientValidator extends PersonValidator {
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should fail validation if a preferred patient identifier is not chosen for voided patients
+	 * @should fail validation if patient identifiers contains more than one identifier for the same identifier type
 	 * @should not fail when patient has only one identifier and its not preferred
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -77,6 +83,10 @@ public class PatientValidator extends PersonValidator {
 		super.validate(obj, errors);
 		
 		Patient patient = (Patient) obj;
+		
+		if (PatientIdentifierValidator.hasMoreThanOneIdentifierForSameIdentifierType(patient.getActiveIdentifiers())) {
+			errors.reject("error.duplicateIdentifierTypes");
+		}
 		
 		// Make sure they chose a preferred ID
 		Boolean preferredIdentifierChosen = false;

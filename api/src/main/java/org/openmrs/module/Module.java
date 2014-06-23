@@ -71,6 +71,8 @@ public final class Module {
 	
 	private Map<String, String> awareOfModulesMap;
 	
+	private Map<String, String> startBeforeModulesMap;
+	
 	private List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
 	
 	private IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
@@ -95,6 +97,8 @@ public final class Module {
 	private Document log4j = null;
 	
 	private boolean mandatory = Boolean.FALSE;
+	
+	private List<ModuleConditionalResource> conditionalResources = new ArrayList<ModuleConditionalResource>();
 	
 	// keep a reference to the file that we got this module from so we can delete
 	// it if necessary
@@ -326,6 +330,17 @@ public final class Module {
 	}
 	
 	/**
+	 * @param requiredModule the requiredModule to add for this module
+	 * @param version version requiredModule
+	 * @should add module to required modules map
+	 */
+	public void addRequiredModule(String requiredModule, String version) {
+		if (requiredModulesMap != null) {
+			requiredModulesMap.put(requiredModule, version);
+		}
+	}
+	
+	/**
 	 * @param requiredModulesMap <code>Map<String,String></code> of the <code>requiredModule</code>s
 	 *            to set
 	 * @since 1.5
@@ -341,8 +356,33 @@ public final class Module {
 	 *
 	 * @return a map from required module to the version that is required
 	 */
-	public Map<String, String> setRequiredModulesMap() {
+	public Map<String, String> getRequiredModulesMap() {
 		return requiredModulesMap;
+	}
+	
+	/**
+	 * Sets modules that must start after this module
+	 * @param startBeforeModulesMap the startedBefore modules to set
+	 */
+	public void setStartBeforeModulesMap(Map<String, String> startBeforeModulesMap) {
+		this.startBeforeModulesMap = startBeforeModulesMap;
+	}
+	
+	/**
+	 * Gets modules which should start after this
+	 * @return map where key is module name and value is module version
+	 */
+	public Map<String, String> getStartBeforeModulesMap() {
+		return this.startBeforeModulesMap;
+	}
+	
+	/**
+	 * Gets names of modules which should start after this
+	 * @since 1.11
+	 * @return
+	 */
+	public List<String> getStartBeforeModules() {
+		return this.startBeforeModulesMap == null ? null : new ArrayList<String>(this.startBeforeModulesMap.keySet());
 	}
 	
 	/**
@@ -365,6 +405,10 @@ public final class Module {
 	 */
 	public List<String> getAwareOfModules() {
 		return awareOfModulesMap == null ? null : new ArrayList<String>(awareOfModulesMap.keySet());
+	}
+	
+	public String getAwareOfModuleVersion(String awareOfModule) {
+		return awareOfModulesMap == null ? null : awareOfModulesMap.get(awareOfModule);
 	}
 	
 	/**
@@ -652,7 +696,6 @@ public final class Module {
 	
 	/**
 	 * Packages to scan for classes with JPA annotated classes.
-	 *
 	 * @return the set of packages to scan
 	 * @since 1.9.2, 1.10
 	 */
@@ -762,5 +805,13 @@ public final class Module {
 		for (AdvicePoint advicePoint : advicePoints) {
 			advicePoint.disposeClassInstance();
 		}
+	}
+	
+	public List<ModuleConditionalResource> getConditionalResources() {
+		return conditionalResources;
+	}
+	
+	public void setConditionalResources(List<ModuleConditionalResource> conditionalResources) {
+		this.conditionalResources = conditionalResources;
 	}
 }

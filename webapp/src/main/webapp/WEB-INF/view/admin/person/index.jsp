@@ -12,7 +12,7 @@
 
 <script type="text/javascript">
 	$j(document).ready(function() {
-		new OpenmrsSearch("findPersons", false, doPersonSearch, doSelectionHandler, 
+		new OpenmrsSearch("findPersons", true, doPersonSearch, doSelectionHandler,
 				[	{fieldName:"givenName", header:omsgs.givenName},
 					{fieldName:"middleName", header:omsgs.middleName},
 					{fieldName:"familyName", header:omsgs.familyName},
@@ -25,15 +25,17 @@
                     searchPlaceholder:'<openmrs:message code="Person.search.placeholder" javaScriptEscape="true"/>'
                 });
 	});
-	
 	function doSelectionHandler(index, data) {
 		document.location = "person.form?personId=" + data.personId;
 	}
 	
 	//searchHandler for the Search widget
 	function doPersonSearch(text, resultHandler, getMatchCount, opts) {
-		DWRPersonService.findCountAndPeople(text, true, "", opts.start, opts.length, false, resultHandler);
+		DWRPersonService.findCountAndPeople(text, includeVoidedPersons(), "", opts.start, opts.length, false, resultHandler);
 	}
+    function includeVoidedPersons() {
+        return document.getElementById("includeVoided").checked;
+    }
 </script>
 
 <h2><openmrs:message code="Person.title"/></h2>
@@ -43,7 +45,8 @@
 <div>
 	<b class="boxHeader"><openmrs:message code="Person.find"/></b>
 	<div class="box">
-		<div class="searchWidgetContainer" id="findPersons"></div>
+        <div class="searchWidgetContainer" id="findPersons">
+        </div>
 	</div>
 </div>
 
