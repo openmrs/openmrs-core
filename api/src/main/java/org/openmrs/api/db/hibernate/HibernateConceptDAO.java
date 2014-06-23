@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -600,7 +601,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
 		    ConceptName.class).include("concept.datatype.conceptDatatypeId", transformToIds(datatypes)).include(
-		    "concept.conceptClass.conceptClassId", transformToIds(classes)).include("concept.retired", "false").skipSame(
+		    "concept.conceptClass.conceptClassId", transformToIds(classes)).include("concept.retired", false).skipSame(
 		    "concept.conceptId").list();
 		
 		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
@@ -609,22 +610,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	private String newNamesQuery(final Set<Locale> locales, final String name, final boolean keywords) {
-		final StringBuilder query = new StringBuilder();
+		final String escapedName = LuceneQuery.escapeQuery(name);
 		
+		final StringBuilder query = new StringBuilder();
 		query.append("(");
 		if (keywords) {
-			query.append(" name:(" + name + ")^0.2");
+			List<String> words = tokenizeName(escapedName, locales);
+			
+			query.append(" name:(" + StringUtils.join(words, " ") + ")^0.2");
 			//Put exact phrase higher
-			query.append(" OR name:(\"" + name + "\")^0.6");
+			query.append(" OR name:(\"" + escapedName + "\")^0.6");
 			
 			//Include partial
-			String[] words = name.trim().split(" ");
 			query.append(" OR name:(" + StringUtils.join(words, "* ") + "*)^0.1");
 			
 			//Include similar
 			query.append(" OR name:(" + StringUtils.join(words, "~0.8 ") + "~0.8)^0.1");
 		} else {
-			query.append(" name:\"" + LuceneQuery.escapeQuery(name) + "\"");
+			query.append(" name:\"" + escapedName + "\"");
 		}
 		query.append(")");
 		
@@ -643,6 +646,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		return query.toString();
 	}
+
+	private List<String> tokenizeName(final String escapedName, final Set<Locale> locales) {
+	    List<String> words = new ArrayList<String>();
+	    words.addAll(Arrays.asList(escapedName.trim().split(" ")));
+	    
+	    Set<String> stopWords = new HashSet<String>();
+	    for (Locale locale : locales) {
+	        stopWords.addAll(Context.getConceptService().getConceptStopWords(locale));
+	    }
+	    
+	    for (Iterator<String> it = words.iterator(); it.hasNext();) {
+	        String word = it.next();
+	        if (stopWords.contains(word.toUpperCase())) {
+	        	it.remove();
+	        }
+	    }
+	    return words;
+    }
 	
 	/**
 	 * gets questions for the given answer concept
@@ -1364,7 +1385,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		if (!includeRetired) {
-			luceneQuery.include("concept.retired", "false");
+			luceneQuery.include("concept.retired", false);
 		}
 		
 		luceneQuery.skipSame("concept.conceptId");

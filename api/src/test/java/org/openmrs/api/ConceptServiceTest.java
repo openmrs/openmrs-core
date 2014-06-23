@@ -2501,6 +2501,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return a search result for phrase with stop words", method = "getConcepts(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
 	public void getConcepts_shouldReturnASearchResultForPhraseWithStopWords() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		conceptService.saveConceptStopWord(new ConceptStopWord("OF", Locale.US));
+		
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("tuberculosis of knee", Collections
 		        .singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
 		
