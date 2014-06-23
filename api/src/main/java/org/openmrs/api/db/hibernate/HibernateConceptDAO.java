@@ -1689,37 +1689,47 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Concept getConceptByName(final String name) {
-		Locale locale = Context.getLocale();
-		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "from ConceptName cn where cn.name = :name and (cn.locale = :locale or cn.locale like :locale2)");
-		query.setParameter("name", name);
-		query.setParameter("locale", locale);
-		String a = locale.getLanguage() + "%";
-		query.setParameter("locale2", new Locale(a));
-		List<ConceptName> cn = query.list();
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptName.class);
 		
-		if (cn.size() == 0) {
-			query.setParameter("name", name.toUpperCase());
-			cn = query.list();
-			if (cn.size() == 0)
-				return null;
+		Locale locale = Context.getLocale();
+		Locale language = new Locale(locale.getLanguage() + "%");
+		criteria.add(Restrictions.or(Restrictions.eq("locale", locale), Restrictions.like("locale", language)));
+		
+		if (Context.getConceptService().isConceptNameSearchCaseSensitive()) {
+			criteria.add(Restrictions.ilike("name", name));
+		} else {
+			criteria.add(Restrictions.eq("name", name));
 		}
 		
-		if (cn.size() > 1) {
+		criteria.add(Restrictions.eq("voided", false));
+		
+		criteria.createAlias("concept", "concept");
+		criteria.add(Restrictions.eq("concept.retired", false));
+		
+		@SuppressWarnings("unchecked")
+		List<ConceptName> list = criteria.list();
+		
+		if (list.size() == 1) {
+			return list.get(0).getConcept();
+		} else {
 			log.warn("Multiple concepts found for '" + name + "'");
-			List<Concept> concepts = Lists.transform(cn, transformNameToConcept);
-			for (Concept c : concepts) {
-				if (c.getName(locale).getName().compareTo(name) == 0) {
-					return c;
+			
+			List<Concept> concepts = Lists.transform(list, transformNameToConcept);
+			for (Concept concept : concepts) {
+				for (ConceptName conceptName : concept.getNames(locale)) {
+					if (conceptName.getName().equalsIgnoreCase(name)) {
+						return concept;
+					}
 				}
-				for (ConceptName indexTerm : c.getIndexTermsForLocale(locale)) {
-					if (indexTerm.getName().compareTo(name) == 0) {
-						return c;
+				for (ConceptName indexTerm : concept.getIndexTermsForLocale(locale)) {
+					if (indexTerm.getName().equalsIgnoreCase(name)) {
+						return concept;
 					}
 				}
 			}
 		}
-		return cn.get(0).getConcept();
+		
+		return null;
 	}
 	
 	/**
