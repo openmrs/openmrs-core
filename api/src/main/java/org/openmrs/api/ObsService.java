@@ -377,20 +377,6 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
-	 * @should compare dates using lte and gte
-	 * @should get all obs assigned to given encounters
-	 * @should get all obs with question concept in given questions parameter
-	 * @should get all obs with answer concept in given answers parameter
-	 * @should return all obs whose person is a person only
-	 * @should return obs whose person is a patient only
-	 * @should return obs whose person is a user only
-	 * @should return obs with location in given locations parameter
-	 * @should sort returned obs by obsDatetime if sort is empty
-	 * @should sort returned obs by conceptId if sort is concept
-	 * @should limit number of obs returned to mostReturnN parameter
-	 * @should return obs whose groupId is given obsGroupId
-	 * @should not include voided obs
-	 * @should include voided obs if includeVoidedObs is true
 	 */
 	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
@@ -424,6 +410,20 @@ public interface ObsService extends OpenmrsService {
 	 * @param accessionNumber accession number (optional)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
+	 * @should compare dates using lte and gte
+	 * @should get all obs assigned to given encounters
+	 * @should get all obs with question concept in given questions parameter
+	 * @should get all obs with answer concept in given answers parameter
+	 * @should return all obs whose person is a person only
+	 * @should return obs whose person is a patient only
+	 * @should return obs whose person is a user only
+	 * @should return obs with location in given locations parameter
+	 * @should sort returned obs by obsDatetime if sort is empty
+	 * @should sort returned obs by conceptId if sort is concept
+	 * @should limit number of obs returned to mostReturnN parameter
+	 * @should return obs whose groupId is given obsGroupId
+	 * @should not include voided obs
+	 * @should include voided obs if includeVoidedObs is true
 	 * @should only return observations with matching accession number
 	 */
 	@Authorized(PrivilegeConstants.VIEW_OBS)
@@ -460,17 +460,6 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
-	 * @should compare dates using lte and gte
-	 * @should get the count of all obs assigned to given encounters
-	 * @should get the count of all obs with question concept in given questions parameter
-	 * @should get the count of all obs with answer concept in given answers parameter
-	 * @should return the count of all obs whose person is a person only
-	 * @should return the count of all obs whose person is a patient only
-	 * @should return the count of obs whose person is a user only
-	 * @should return the count of obs with location in given locations parameter
-	 * @should return the count of obs whose groupId is given obsGroupId
-	 * @should not include count of voided obs
-	 * @should include count of voided obs if includeVoidedObs is true
 	 */
 	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
@@ -501,6 +490,17 @@ public interface ObsService extends OpenmrsService {
 	 * @param accessionNumber accession number (optional)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
+	 * @should compare dates using lte and gte
+	 * @should get the count of all obs assigned to given encounters
+	 * @should get the count of all obs with question concept in given questions parameter
+	 * @should get the count of all obs with answer concept in given answers parameter
+	 * @should return the count of all obs whose person is a person only
+	 * @should return the count of all obs whose person is a patient only
+	 * @should return the count of obs whose person is a user only
+	 * @should return the count of obs with location in given locations parameter
+	 * @should return the count of obs whose groupId is given obsGroupId
+	 * @should not include count of voided obs
+	 * @should include count of voided obs if includeVoidedObs is true
 	 * @should return count of obs with matching accession number
 	 */
 	@Authorized(PrivilegeConstants.VIEW_OBS)
