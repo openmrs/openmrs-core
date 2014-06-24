@@ -193,7 +193,7 @@ public class UserFormController {
 			}
 			
 			if (password.length() == 0 && isNewUser(user)) {
-				errors.reject("error.password.weak");
+				errors.reject("options.login.password.null");
 			}
 			
 			//check password strength
