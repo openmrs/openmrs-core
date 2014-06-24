@@ -56,6 +56,7 @@ import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptInUseException;
 import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
@@ -2215,7 +2216,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection
 	 */
 	@Override
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
@@ -2227,5 +2229,40 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			withAnyOfTheseTypesOrOrderOfPreference = Collections.EMPTY_LIST;
 		}
 		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getOrderableConcepts(String, java.util.List, boolean,
+	 *      Integer, Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	        Integer start, Integer length) {
+		List<ConceptClass> mappedClasses = getConceptClassesOfOrderTypes();
+		if (mappedClasses.isEmpty()) {
+			return Collections.EMPTY_LIST;
+		}
+		if (locales == null) {
+			locales = new ArrayList<Locale>();
+			locales.add(Context.getLocale());
+		}
+		return dao.getConcepts(phrase, locales, false, mappedClasses, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+		    Collections.EMPTY_LIST, null, start, length);
+	}
+	
+	private List<ConceptClass> getConceptClassesOfOrderTypes() {
+		List<ConceptClass> mappedClasses = new ArrayList<ConceptClass>();
+		AdministrationService administrationService = Context.getAdministrationService();
+		List<List<Object>> result = administrationService.executeSQL(
+		    "SELECT DISTINCT concept_class_id FROM order_type_class_map", true);
+		for (List<Object> temp : result) {
+			for (Object value : temp) {
+				if (value != null) {
+					mappedClasses.add(this.getConceptClass((Integer) value));
+				}
+			}
+		}
+		return mappedClasses;
 	}
 }

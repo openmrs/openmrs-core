@@ -2114,4 +2114,19 @@ public interface ConceptService extends OpenmrsService {
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws APIException;
 	
+	/**
+	 * An Orderable concept is one where its conceptClass has a mapping in the order_type_class_map
+	 * table. This method searches for orderable concepts which match the specified arguments
+	 * 
+	 * @param phrase the phrase to match on
+	 * @param locales list of locales to match on
+	 * @param includeRetired include retired concepts or not
+	 * @param start start index of search results
+	 * @param length number of concept results to be returned
+	 * @return List of ConceptSearchResults
+	 * @since 1.10
+	 * @should get orderable concepts
+	 */
+	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	        Integer start, Integer length);
 }
