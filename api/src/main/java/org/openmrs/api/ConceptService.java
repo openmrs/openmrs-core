@@ -2028,4 +2028,19 @@ public interface ConceptService extends OpenmrsService {
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws APIException;
 	
+	/**
+	 * Searches for orderable concepts which match with given arguments.
+	 * This method query conceptClasses available in the order_type_class_map and delegate
+	 * ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,Integer, Integer) to query
+	 * matched concepts
+	 * @param phrase the phrase that concept name match
+	 * @param locales list of locales to search in concepts
+	 * @param includeRetired include retired concepts or not
+	 * @param start start index of search results
+	 * @param length number of concept results to be returned
+	 * @return ConceptSearchResult list match with given parameters
+	 * @since 1.10
+	 */
+	public List<ConceptSearchResult> getOrderables(String phrase, List<Locale> locales, boolean includeRetired,
+	        Integer start, Integer length);
 }

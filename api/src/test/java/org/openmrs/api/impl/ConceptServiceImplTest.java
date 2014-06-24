@@ -21,6 +21,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptNameType;
@@ -381,4 +384,38 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(concept.getName().getName(), "jwm");
 	}
 	
+	/**
+	 * @see ConceptServiceImpl#getOrderables(String, java.util.List, boolean, Integer, Integer)
+	 * Should return orderable concepts matched with given parameters
+	 * @throws Exception
+	 */
+	@Test
+	public void test_shouldGetOrderableConcepts() throws Exception {
+		/**
+		 *In current data set order_type_map table contains conceptClass 1 and 3. Using that adding two concepts to test
+		 * the functionality
+		 */
+		ConceptService cs = Context.getConceptService();
+		ConceptClass cc1 = cs.getConceptClass(1);
+		ConceptClass cc3 = cs.getConceptClass(3);
+		Locale locale = Locale.ENGLISH;
+		ConceptDatatype dt = cs.getConceptDatatype(4);
+		Concept c1 = new Concept();
+		ConceptName cn1a = new ConceptName("ONE TERM", locale);
+		c1.addName(cn1a);
+		c1.setConceptClass(cc1);
+		c1.setDatatype(dt);
+		cs.saveConcept(c1);
+		
+		Concept c2 = new Concept();
+		ConceptName cn2a = new ConceptName("ONE TO MANY", locale);
+		c2.addName(cn2a);
+		c2.setConceptClass(cc3);
+		c2.setDatatype(dt);
+		cs.saveConcept(c2);
+		
+		List<ConceptSearchResult> conceptSearchResultList = Context.getConceptService().getOrderables("one",
+		    Collections.singletonList(locale), true, 0, 10);
+		assertEquals(2, conceptSearchResultList.size());
+	}
 }
