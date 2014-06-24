@@ -123,7 +123,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 */
 	public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
 		if (StringUtils.isBlank(code)) {
-			return "";
+			return StringUtils.EMPTY;
 		}
 		
 		return activeMessageSource.getMessage(code, args, code, locale);
@@ -134,8 +134,8 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 *      java.lang.Object[], java.lang.String, java.util.Locale)
 	 */
 	public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
-		if (StringUtils.isBlank(code)) {
-			return "";
+		if (StringUtils.isBlank(code) && StringUtils.isBlank(defaultMessage)) {
+			return StringUtils.EMPTY;
 		}
 		
 		return activeMessageSource.getMessage(code, args, defaultMessage, locale);
