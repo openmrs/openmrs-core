@@ -1231,7 +1231,7 @@ public class OpenmrsUtil {
 			} else {
 				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
 					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-					if (!(new File(filepath)).canWrite()) {
+					if (!canWrite(new File(filepath))) {
 						log.warn("Unable to write to users home dir, fallback to: "
 						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
 						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
@@ -1239,7 +1239,7 @@ public class OpenmrsUtil {
 				} else {
 					filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
 					        + "OpenMRS";
-					if (!(new File(filepath)).canWrite()) {
+					if (!canWrite(new File(filepath))) {
 						log.warn("Unable to write to users home dir, fallback to: "
 						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
 						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + "OpenMRS";
@@ -1256,6 +1256,30 @@ public class OpenmrsUtil {
 		}
 		
 		return filepath;
+	}
+	
+	/**
+	 * Checks if we can write to a given folder.
+	 * 
+	 * @param folder the directory to check.
+	 * @return true if we can write to it, else false.
+	 */
+	private static boolean canWrite(File folder) {
+		try {
+			//We need to first create the folder if it does not exist, 
+			//else File.canWrite() will return false even when we
+			//have the necessary permissions.
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			
+			return folder.canWrite();
+		}
+		catch (SecurityException ex) {
+			//all we wanted to know is whether we have permissions
+		}
+
+		return false;
 	}
 	
 	/**
