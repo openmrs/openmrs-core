@@ -13,12 +13,19 @@
  */
 package org.openmrs.api.impl;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -28,12 +35,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.HashSet;
 
 /**
  * Unit tests for methods that are specific to the {@link ConceptServiceImpl}. General tests that
@@ -380,5 +381,4 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		assertNotEquals(concept.getName().getName(), nameWithSpaces);
 		assertEquals(concept.getName().getName(), "jwm");
 	}
-	
 }
