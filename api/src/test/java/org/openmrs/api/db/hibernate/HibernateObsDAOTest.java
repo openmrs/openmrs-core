@@ -60,17 +60,17 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		obsListExpected = session.createCriteria(Obs.class, "obs").addOrder(Order.desc("id")).list();
 		
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("id"), null, null, null, null,
-		    false);
+		    false, null);
 		Assert.assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 		
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("id desc"), null, null, null,
-		    null, false);
+		    null, false, null);
 		Assert.assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 		
 		//Order by id asc
 		obsListExpected = session.createCriteria(Obs.class, "obs").addOrder(Order.asc("id")).list();
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("id asc"), null, null, null,
-		    null, false);
+		    null, false, null);
 		Assert.assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 		
 		//Order by person_id asc and id desc
@@ -78,7 +78,7 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		    Order.desc("id")).list();
 		
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("person.id asc", "id"), null,
-		    null, null, null, false);
+		    null, null, null, false, null);
 		Assert.assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 		
 		//Order by person_id asc and id asc
@@ -86,7 +86,7 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		        .addOrder(Order.asc("id")).list();
 		
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("person.id asc", "id asc"),
-		    null, null, null, null, false);
+		    null, null, null, null, false, null);
 		Assert.assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 	}
 }
