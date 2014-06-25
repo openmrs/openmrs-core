@@ -10,6 +10,12 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
+$j(document).ready(function(){
+	var msgHolder = $j('#msgHolder');
+	if(!$j.trim(msgHolder.html()))
+		msgHolder.hide();
+});
+
 function toggleProviderDetails(){
 	
 	$j('.providerDetails').toggle();
@@ -17,9 +23,20 @@ function toggleProviderDetails(){
 	if($j('#providerName').is(":visible"))
 		$j('#linkToPerson').removeAttr('checked');
 	else
-		$j('#linkToPerson').attr('checked', 'checked');
+		$j('#linkToPerson').attr('checked', 'checked');		
 		
-		
+}
+
+function validateForm(){
+	var providerName = $j('#providerName');
+	var person = $j('#person_id');
+	var msg = '<openmrs:message code="Provider.error.personAndName.provided" />';
+	var result = true;
+	if(providerName.val().length > 0 && person.val().length > 0){
+		result = false;
+		$j('#msgHolder').html(msg).show();
+	}
+	return result;
 }
 </script>
 
@@ -48,7 +65,7 @@ function toggleProviderDetails(){
 </b>
 
 <div class="box">
-	<form method="post">
+	<form method="post" onSubmit="return validateForm()">
 		
 		<table cellpadding="3" cellspacing="0">
 			<tr>
@@ -77,9 +94,10 @@ function toggleProviderDetails(){
 				<td>
 					<spring:bind path="provider.name">			
 						<input type="text" name="${status.expression}" size="25" 
-							   value="${status.value}" />
-					   
-						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+							   value="${status.value}" id="providerName" />
+					   	<span class="error" id="msgHolder">
+							<c:if test="${status.errorMessage != ''}">${status.errorMessage}</c:if>
+					   	</span> 
 					</spring:bind>
 				</td>
 			</tr>
