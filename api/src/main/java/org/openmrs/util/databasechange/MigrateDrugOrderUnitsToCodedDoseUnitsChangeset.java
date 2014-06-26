@@ -15,6 +15,7 @@ package org.openmrs.util.databasechange;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.UpgradeUtil;
@@ -54,27 +56,39 @@ public class MigrateDrugOrderUnitsToCodedDoseUnitsChangeset implements CustomTas
 		try {
 			autoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
+			
 			updateDrugOrderStatement = connection.prepareStatement("update drug_order set dose_units = ? where units = ?");
+			
+			updateDrugOrderStatement.setNull(1, Types.INTEGER);
+			updateDrugOrderStatement.setNull(2, Types.CHAR);
+			updateDrugOrderStatement.executeUpdate();
+			updateDrugOrderStatement.clearParameters();
+			
 			for (String unit : uniqueUnits) {
-				Integer conceptIdForUnit = UpgradeUtil.getConceptIdForUnits(unit);
-				if (conceptIdForUnit == null) {
-					throw new CustomChangeException("No concept mapping found for unit: " + unit);
+				if (StringUtils.isBlank(unit)) {
+					updateDrugOrderStatement.setNull(1, Types.INTEGER);
+				} else {
+					Integer conceptIdForUnit = UpgradeUtil.getConceptIdForUnits(unit);
+					if (conceptIdForUnit == null) {
+						throw new CustomChangeException("No concept mapping found for unit: " + unit);
+					}
+					String dosingUnitsConceptSetUuid = UpgradeUtil.getGlobalProperty(connection.getUnderlyingConnection(),
+					    OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
+					List<Integer> dosingUnitsconceptIds = UpgradeUtil.getMemberSetIds(connection.getUnderlyingConnection(),
+					    dosingUnitsConceptSetUuid);
+					if (!dosingUnitsconceptIds.contains(conceptIdForUnit)) {
+						throw new CustomChangeException("Dosing unit '" + unit
+						        + "' is not among valid concepts defined in global property "
+						        + OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
+					}
+					
+					updateDrugOrderStatement.setInt(1, conceptIdForUnit);
 				}
-				String dosingUnitsConceptSetUuid = UpgradeUtil.getGlobalProperty(connection.getUnderlyingConnection(),
-				    OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
-				List<Integer> dosingUnitsconceptIds = UpgradeUtil.getMemberSetIds(connection.getUnderlyingConnection(),
-				    dosingUnitsConceptSetUuid);
-				if (!dosingUnitsconceptIds.contains(conceptIdForUnit)) {
-					throw new CustomChangeException("Dosing unit '" + unit
-					        + "' is not among valid concepts defined in global property "
-					        + OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
-				}
-				
-				updateDrugOrderStatement.setInt(1, conceptIdForUnit);
 				updateDrugOrderStatement.setString(2, unit);
 				updateDrugOrderStatement.executeUpdate();
 				updateDrugOrderStatement.clearParameters();
 			}
+			
 			connection.commit();
 		}
 		catch (DatabaseException e) {

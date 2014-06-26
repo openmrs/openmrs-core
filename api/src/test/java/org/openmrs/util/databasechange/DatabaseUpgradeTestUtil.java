@@ -38,6 +38,7 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -179,9 +180,15 @@ public class DatabaseUpgradeTestUtil {
 		}
 	}
 	
-	public List<Map<String, String>> select(String tableName, String... columnNames) throws SQLException {
-		PreparedStatement query = connection.prepareStatement("select " + StringUtils.join(columnNames, ", ") + " from "
-		        + tableName);
+	public List<Map<String, String>> select(String tableName, String where, String columnName, String... columnNames) throws SQLException {
+		String[] allColumnNames = ArrayUtils.addAll(new String[] { columnName }, columnNames);
+		
+		String sql = "select " + StringUtils.join(allColumnNames, ", ") + " from "
+		        + tableName;
+		if (!StringUtils.isBlank(where)) {
+			sql += " where " + where;
+		}
+		PreparedStatement query = connection.prepareStatement(sql);
 		ResultSet resultSet = query.executeQuery();
 		
 		List<Map<String, String>> results = new ArrayList<Map<String, String>>();
@@ -189,9 +196,9 @@ public class DatabaseUpgradeTestUtil {
 			Map<String, String> columns = new HashMap<String, String>();
 			results.add(columns);
 			
-			for (int i = 0; i < columnNames.length; i++) {
+			for (int i = 0; i < allColumnNames.length; i++) {
 				Object object = resultSet.getObject(i + 1);
-				columns.put(columnNames[i], object != null ? object.toString() : null);
+				columns.put(allColumnNames[i], object != null ? object.toString() : null);
 			}
 		}
 		
