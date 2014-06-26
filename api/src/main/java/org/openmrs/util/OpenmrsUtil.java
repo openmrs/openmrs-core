@@ -1278,7 +1278,7 @@ public class OpenmrsUtil {
 		catch (SecurityException ex) {
 			//all we wanted to know is whether we have permissions
 		}
-
+		
 		return false;
 	}
 	
