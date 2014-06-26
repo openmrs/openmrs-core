@@ -13,7 +13,9 @@
  */
 package org.openmrs.util.databasechange;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -43,7 +45,14 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public class Database1_9_7UpgradeTest {
 	
-	public final static String databasePath = "/org/openmrs/util/databasechange/openmrs-1.9.7.h2.db";
+	public static final String TEST_DATA_DIR = "/org/openmrs/util/databasechange/";
+	
+	public static final String UPGRADE_TEST_1_9_7_TO_1_10_DATASET = TEST_DATA_DIR
+	        + "database1_9To1_10UpgradeTest-dataSet.xml";
+	
+	public static final String STANDARD_TEST_1_9_7_DATASET = TEST_DATA_DIR + "standardTest-1.9.7-dataSet.xml";
+	
+	public final static String DATABASE_PATH = TEST_DATA_DIR + "openmrs-1.9.7.h2.db";
 	
 	private DatabaseUpgradeTestUtil upgradeTestUtil;
 	
@@ -102,7 +111,7 @@ public class Database1_9_7UpgradeTest {
 	
 	@Before
 	public void before() throws IOException, SQLException {
-		upgradeTestUtil = new DatabaseUpgradeTestUtil(databasePath);
+		upgradeTestUtil = new DatabaseUpgradeTestUtil(DATABASE_PATH);
 	}
 	
 	@After
@@ -114,10 +123,11 @@ public class Database1_9_7UpgradeTest {
 	public void shouldUpgradeFromClean1_9To1_10() throws IOException, SQLException {
 		upgradeTestUtil.upgrade();
 		
-		List<Map<String, String>> orderFrequencySelect = upgradeTestUtil.select("order_frequency", "order_frequency_id");
+		List<Map<String, String>> orderFrequencySelect = upgradeTestUtil.select("order_frequency", null,
+		    "order_frequency_id");
 		Assert.assertThat(orderFrequencySelect.size(), Matchers.is(0));
 		
-		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", "order_id");
+		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", null, "order_id");
 		Assert.assertThat(drugOrderSelect.size(), Matchers.is(0));
 		
 		//Test if the generated schema corresponds to Hibernate mappings
@@ -126,7 +136,7 @@ public class Database1_9_7UpgradeTest {
 	
 	@Test
 	public void shouldFailMigratingDrugOrdersIfUnitsToConceptsMappingsIsNotSet() throws IOException, SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		createOrderEntryUpgradeFileWithTestData("");
 		expectedException.expect(IOException.class);
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
@@ -139,8 +149,8 @@ public class Database1_9_7UpgradeTest {
 	@Test
 	public void shouldFailMigratingDrugOrdersIfUnitsToConceptsMappingsDoesNotPointToValidCodedDoseUnits()
 	        throws IOException, SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=invalid");
 		
@@ -153,16 +163,16 @@ public class Database1_9_7UpgradeTest {
 	
 	@Test
 	public void shouldMigrateDrugOrders() throws IOException, SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
-		List<Map<String, String>> orderFrequencySelect = upgradeTestUtil.select("order_frequency", "order_frequency_id",
-		    "concept_id");
+		List<Map<String, String>> orderFrequencySelect = upgradeTestUtil.select("order_frequency", null,
+		    "order_frequency_id", "concept_id");
 		Assert.assertThat(orderFrequencySelect.size(), Matchers.is(2));
 		
 		Map<String, String> conceptsToFrequencies = new HashMap<String, String>();
@@ -173,7 +183,7 @@ public class Database1_9_7UpgradeTest {
 		
 		Assert.assertThat(conceptsToFrequencies.keySet(), Matchers.containsInAnyOrder("113", "114"));
 		
-		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", "order_id", "frequency");
+		List<Map<String, String>> drugOrderSelect = upgradeTestUtil.select("drug_order", null, "order_id", "frequency");
 		
 		Assert.assertThat(drugOrderSelect, Matchers.containsInAnyOrder(row("order_id", "1", "frequency",
 		    conceptsToFrequencies.get("113")), row("order_id", "2", "frequency", conceptsToFrequencies.get("113")), row(
@@ -184,7 +194,7 @@ public class Database1_9_7UpgradeTest {
 	@Test(expected = Exception.class)
 	public void shouldFailIfAnyDrugOrderUnitsNotMappedToConceptsAreFound() throws Exception {
 		//sanity check that we have some unmapped drug order dose units
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
 		    upgradeTestUtil.getConnection());
 		Assert.assertTrue(uniqueUnits.size() > 0);
@@ -198,7 +208,7 @@ public class Database1_9_7UpgradeTest {
 	@Test(expected = Exception.class)
 	public void shouldFailIfAnyDrugOrderFrequenciesNotMappedToConceptsAreFound() throws Exception {
 		//sanity check that we have some unmapped drug order frequencies
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
 		    upgradeTestUtil.getConnection());
 		Assert.assertTrue(uniqueFrequencies.size() > 0);
@@ -212,7 +222,7 @@ public class Database1_9_7UpgradeTest {
 	@Test
 	public void shouldPassIfAllExistingDrugOrderUnitsAndFrequenciesAreMappedToConcepts() throws Exception {
 		//sanity check that we have some drug order dose units and frequencies in the test dataset
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		Set<String> uniqueUnits = DatabaseUtil.getUniqueNonNullColumnValues("units", "drug_order", String.class,
 		    upgradeTestUtil.getConnection());
 		Assert.assertTrue(uniqueUnits.size() > 0);
@@ -221,7 +231,7 @@ public class Database1_9_7UpgradeTest {
 		    upgradeTestUtil.getConnection());
 		Assert.assertTrue(uniqueFrequencies.size() > 0);
 		
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		
 		//set the mappings for all existing frequencies and dose units
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
@@ -234,8 +244,8 @@ public class Database1_9_7UpgradeTest {
 	
 	@Test
 	public void shouldConvertOrderersToBeingProvidersInsteadOfUsers() throws Exception {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		
 		//Check that we have some orders with no orderers
 		List<List<Object>> rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
@@ -281,13 +291,13 @@ public class Database1_9_7UpgradeTest {
 	
 	@Test
 	public void shouldConcatenateDoseStrengthAndUnits() throws IOException, SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		
-		List<Map<String, String>> drugs = upgradeTestUtil.select("drug", "strength");
+		List<Map<String, String>> drugs = upgradeTestUtil.select("drug", null, "strength");
 		
 		Assert.assertThat(drugs.size(), Matchers.is(3));
 		Assert.assertTrue(drugs.get(0).containsValue("1.0tab(s)"));
@@ -297,8 +307,8 @@ public class Database1_9_7UpgradeTest {
 	
 	@Test
 	public void shouldFailIfThereAreDrugsWithDoseStrengthAndNoNullUnits() throws IOException, SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithStrengthButNullUnits.xml");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
@@ -310,8 +320,8 @@ public class Database1_9_7UpgradeTest {
 	
 	@Test
 	public void shouldFailIfThereAreDrugsWithDoseStrengthAndNoBlankUnits() throws IOException, SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithStrengthButBlankUnits.xml");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
@@ -324,8 +334,8 @@ public class Database1_9_7UpgradeTest {
 	@Test
 	public void shouldFailIfThereAreAnyOrderTypesInTheDatabaseOtherThanDrugOrderTypeAndNoNewColumns() throws IOException,
 	        SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-otherOrderTypes.xml");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
@@ -338,9 +348,9 @@ public class Database1_9_7UpgradeTest {
 	@Test
 	public void shouldPassIfThereAreAnyOrderTypesInTheDatabaseOtherThanDrugOrderTypeAndTheNewColumnsExist()
 	        throws IOException, SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-otherOrderTypes.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
+		upgradeTestUtil.executeDataset("UpgradeTest-otherOrderTypes.xml");
 		upgradeTestUtil.getConnection().createStatement().executeUpdate(
 		    "alter table `order_type` add java_class_name varchar(255) default 'org.openmrs.Order'");
 		upgradeTestUtil.getConnection().createStatement().executeUpdate("alter table `order_type` add parent int(11)");
@@ -351,8 +361,8 @@ public class Database1_9_7UpgradeTest {
 	
 	@Test
 	public void shouldCreateDiscontinuationOrderForStoppedOrders() throws IOException, SQLException {
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		List<List<Object>> discontinuedOrders = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "SELECT count(*) order_id FROM orders WHERE discontinued = true", true);
@@ -387,5 +397,21 @@ public class Database1_9_7UpgradeTest {
 		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201406262015::wyclif";
 		expectedException.expectMessage(errorMsgSubString);
 		upgradeTestUtil.upgrade();
+	}
+	
+	@Test
+	public void shouldSetValuesToNullIfUnitsOrFrequencyBlank() throws Exception {
+		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
+		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
+		
+		upgradeTestUtil.executeDataset(TEST_DATA_DIR + "UpgradeTest-orderWithBlankUnitsOrFrequency.xml");
+		
+		upgradeTestUtil.upgrade();
+		
+		List<Map<String, String>> drug_orders = upgradeTestUtil.select("drug_order", "order_id = 6 or order_id = 7",
+		    "order_id", "dose_units", "frequency");
+		
+		assertThat(drug_orders, containsInAnyOrder(row("order_id", "6", "dose_units", null, "frequency", null), row(
+		    "order_id", "7", "dose_units", null, "frequency", null)));
 	}
 }
