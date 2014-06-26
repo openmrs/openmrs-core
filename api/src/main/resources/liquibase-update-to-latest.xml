@@ -7429,6 +7429,24 @@
         <comment>Checking if order_type table is already up to date or can be updated automatically</comment>
     </changeSet>
 
+    <changeSet id="201406211643-TRUNK-4401" author="harsz89">
+        <preConditions onFail="HALT" onFailMessage="discontinued orders cannot have null discontinued_date">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) from orders where discontinued = true and  discontinued_date is null
+            </sqlCheck>
+        </preConditions>
+        <comment>Checking all discontinued orders whether there exist null discontinued_date values</comment>
+    </changeSet>
+
+    <changeSet id="201406211703-TRUNK-4401" author="harsz89">
+        <preConditions onFail="HALT" onFailMessage="discontinued orders cannot have null discontinued_by values">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) from orders where discontinued = true and discontinued_by is null
+            </sqlCheck>
+        </preConditions>
+        <comment>Checking all discontinued orders whether there exist null discontinued_by values</comment>
+    </changeSet>
+    
     <changeSet id="201404091112" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="order_type" columnName="name" />
