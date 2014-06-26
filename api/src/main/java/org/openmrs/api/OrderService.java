@@ -314,7 +314,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the care setting
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
+	@Authorized(PrivilegeConstants.GET_CARE_SETTINGS)
 	public CareSetting getCareSetting(Integer careSettingId);
 	
 	/**
@@ -324,7 +324,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return CareSetting
 	 * @should return the care setting with the specified uuid
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
+	@Authorized(PrivilegeConstants.GET_CARE_SETTINGS)
 	public CareSetting getCareSettingByUuid(String uuid);
 	
 	/**
@@ -334,7 +334,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return CareSetting
 	 * @should return the care setting with the specified name
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
+	@Authorized(PrivilegeConstants.GET_CARE_SETTINGS)
 	public CareSetting getCareSettingByName(String name);
 	
 	/**
@@ -346,7 +346,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return only un retired care settings if includeRetired is set to false
 	 * @should return retired care settings if includeRetired is set to true
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CARE_SETTINGS)
+	@Authorized(PrivilegeConstants.GET_CARE_SETTINGS)
 	public List<CareSetting> getCareSettings(boolean includeRetired);
 	
 	/**
@@ -368,7 +368,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should return the order frequency that matches the specified id
 	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
+	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
 	
 	/**
@@ -379,7 +379,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should return the order frequency that matches the specified uuid
 	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
+	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
 	public OrderFrequency getOrderFrequencyByUuid(String uuid);
 	
 	/**
@@ -390,7 +390,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should return the order frequency that matches the specified concept
 	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
+	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
 	public OrderFrequency getOrderFrequencyByConcept(Concept concept);
 	
 	/**
@@ -402,7 +402,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return only non retired order frequencies if includeRetired is set to false
 	 * @should return all the order frequencies if includeRetired is set to true
 	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
+	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
 	
 	/**
@@ -425,7 +425,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should return unique frequencies
 	 * @should reject a null search phrase
 	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDER_FREQUENCIES)
+	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
 	        boolean includeRetired);
 	
