@@ -21,11 +21,14 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.UpgradeUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Set;
 
 public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements CustomTaskChange {
@@ -53,18 +56,28 @@ public class MigrateDrugOrderFrequencyToCodedOrderFrequencyChangeset implements 
 			connection.setAutoCommit(false);
 			updateDrugOrderStatement = connection
 			        .prepareStatement("update drug_order set frequency = ? where frequency_text = ?");
+			
+			updateDrugOrderStatement.setNull(1, Types.INTEGER);
+			updateDrugOrderStatement.setNull(2, Types.VARCHAR);
+			updateDrugOrderStatement.executeUpdate();
+			updateDrugOrderStatement.clearParameters();
+			
 			for (String frequency : uniqueFrequencies) {
-				Integer conceptIdForFrequency = UpgradeUtil.getConceptIdForUnits(frequency);
-				if (conceptIdForFrequency == null) {
-					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
+				if (StringUtils.isBlank(frequency)) {
+					updateDrugOrderStatement.setNull(1, Types.INTEGER);
+				} else {
+					Integer conceptIdForFrequency = UpgradeUtil.getConceptIdForUnits(frequency);
+					if (conceptIdForFrequency == null) {
+						throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
+					}
+					Integer orderFrequencyId = UpgradeUtil.getOrderFrequencyIdForConceptId(connection
+					        .getUnderlyingConnection(), conceptIdForFrequency);
+					if (orderFrequencyId == null) {
+						throw new CustomChangeException("No order frequency found for concept " + conceptIdForFrequency);
+					}
+					
+					updateDrugOrderStatement.setInt(1, orderFrequencyId);
 				}
-				Integer orderFrequencyId = UpgradeUtil.getOrderFrequencyIdForConceptId(connection.getUnderlyingConnection(),
-				    conceptIdForFrequency);
-				if (orderFrequencyId == null) {
-					throw new CustomChangeException("No order frequency found for concept " + conceptIdForFrequency);
-				}
-				
-				updateDrugOrderStatement.setInt(1, orderFrequencyId);
 				updateDrugOrderStatement.setString(2, frequency);
 				updateDrugOrderStatement.executeUpdate();
 				updateDrugOrderStatement.clearParameters();
