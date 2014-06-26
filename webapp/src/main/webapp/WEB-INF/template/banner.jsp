@@ -3,6 +3,7 @@
   <div id="logosmall"><img src="<%= request.getContextPath() %><spring:theme code="image.logo.text.small" />" alt="OpenMRS Logo" border="0"/></div>
 </a>  
 <table id="bannerbar">
+  <tr style="height:12px;"><td></td></tr>
   <tr>
     <td id="logocell"> <img src="<%= request.getContextPath() %><spring:theme code="image.logo.small" />" alt="" class="logo-reduced61" />
     </td>
