@@ -391,8 +391,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							orderNode.setAttribute("date_stopped", df.format(order.getDateStopped()));
 						}
 						if (order.getOrderReason() != null) {
-							orderNode.setAttribute("discontinued_reason", order.getOrderReason().getName(locale, false)
-							        .getName());
+							orderNode.setAttribute("order_reason", order.getOrderReason().getName(locale, false).getName());
 						}
 						
 						ordersNode.appendChild(orderNode);
@@ -1986,7 +1985,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	public Cohort getPatientsHavingDrugOrder(List<Drug> drugList, List<Concept> drugConceptList, Date startDateFrom,
-	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> discontinuedReason) {
+	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> orderReason) {
 		if (drugList != null && drugList.size() == 0)
 			drugList = null;
 		if (drugConceptList != null && drugConceptList.size() == 0)
@@ -2005,8 +2004,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (startDateTo != null)
 				sb.append(" and startDate <= :startDateTo ");
 		}
-		if (discontinuedReason != null && discontinuedReason.size() > 0)
-			sb.append(" and discontinuedReason.id in (:discontinuedReasonIdList) ");
+		if (orderReason != null && orderReason.size() > 0)
+			sb.append(" and orderReason.id in (:orderReasonIdList) ");
 		if (discontinued != null) {
 			if (discontinued == true) {
 				if (stopDateFrom != null && stopDateTo != null) {
@@ -2062,11 +2061,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			query.setDate("stopDateTo", stopDateTo);
 		if (discontinued != null)
 			query.setBoolean("discontinued", discontinued);
-		if (discontinuedReason != null && discontinuedReason.size() > 0) {
+		if (orderReason != null && orderReason.size() > 0) {
 			List<Integer> ids = new ArrayList<Integer>();
-			for (Concept c : discontinuedReason)
+			for (Concept c : orderReason)
 				ids.add(c.getConceptId());
-			query.setParameterList("discontinuedReasonIdList", ids);
+			query.setParameterList("orderReasonIdList", ids);
 		}
 		
 		return new Cohort(query.list());
