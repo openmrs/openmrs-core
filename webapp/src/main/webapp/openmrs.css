@@ -35,7 +35,7 @@ body {
 #bannerbar {
 	text-align:center;
 	line-height:40px;
-	margin-top:12px;
+	/*margin-top:12px;*/
 	width:100%;
 }
 img.logo-reduced61 {
@@ -62,7 +62,7 @@ img.bar-round-reduced50 {
 		display:inline;
 		line-height: 1.0em;
 		white-space: nowrap;
-		font-size: 1.3em;
+		font-size: 16px;
         font-family: Verdana,Arial,Helvetica,sans-serif;
 	}
 	.navList > li:first-child {
@@ -129,6 +129,7 @@ a:hover {
     text-align: right;
 	top: 0;
 	z-index: 10;
+	font-size: 12px;
 }
 	#userBar a:link, #userBar a:active, #userBar a:visited, #userBar a:hover,
 	#content a.offColor, #content a.offColor:link, #content a.offColor:active, #content a.offColor:visited, #content a.offColor:hover {
