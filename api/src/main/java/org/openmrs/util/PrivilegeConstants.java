@@ -157,7 +157,7 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to get Provider")
 	public static final String GET_PROVIDERS = "Get Providers";
 	
-	@AddOnStartup(description = "Able to get encounter roles")
+	@AddOnStartup(description = "Able to get encounter roVles")
 	public static final String GET_ENCOUNTER_ROLES = "Get Encounter Roles";
 	
 	/**
@@ -871,14 +871,14 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to assign System Developer role")
 	public static final String ASSIGN_SYSTEM_DEVELOPER_ROLE = "Assign System Developer Role";
 	
-	@AddOnStartup(description = "Able to view Order Frequencies")
-	public static final String GET_ORDER_FREQUENCIES = "View Order Frequencies";
+	@AddOnStartup(description = "Able to get Order Frequencies")
+	public static final String GET_ORDER_FREQUENCIES = "Get Order Frequencies";
 	
 	@AddOnStartup(description = "Able to add/edit/retire Order Frequencies")
 	public static final String MANAGE_ORDER_FREQUENCIES = "Manage Order Frequencies";
 	
 	public static final String PURGE_ORDER_FREQUENCIES = "Purge Order Frequencies";
 	
-	@AddOnStartup(description = "Able to view Care Settings")
-	public static final String GET_CARE_SETTINGS = "View Care Settings";
+	@AddOnStartup(description = "Able to get Care Settings")
+	public static final String GET_CARE_SETTINGS = "Get Care Settings";
 }
