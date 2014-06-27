@@ -56,25 +56,22 @@ public class OrderTest {
 				continue;
 			}
 			field.setAccessible(true);
-			Object fieldValue = null;
+			Object fieldValue = field.get(original);
 			
-			if (field.getType().isEnum()) {
-				fieldValue = field.getType().getEnumConstants()[0];
-			} else if (field.getType().equals(Boolean.class)) {
-				fieldValue = true;
-			} else if (field.getType().equals(Integer.class)) {
-				fieldValue = 10;
-			} else if (field.getType().equals(Double.class)) {
-				fieldValue = 5.0;
-			} else {
-				try {
+			if (fieldValue == null) {
+				if (field.getType().isEnum()) {
+					fieldValue = field.getType().getEnumConstants()[0];
+				} else if (field.getType().equals(Boolean.class)) {
+					fieldValue = true;
+				} else if (field.getType().equals(Integer.class)) {
+					fieldValue = 10;
+				} else if (field.getType().equals(Double.class)) {
+					fieldValue = 5.0;
+				} else {
 					fieldValue = field.getType().newInstance();
 				}
-				catch (InstantiationException e) {
-					fieldValue = null;
-				}
+				field.set(original, fieldValue);
 			}
-			field.set(original, fieldValue);
 		}
 		
 		Order copy = (Order) MethodUtils.invokeExactMethod(original, methodName, null);
