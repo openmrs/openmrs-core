@@ -35,8 +35,9 @@ public class DrugOrderTest {
 		DrugOrder order = new DrugOrder();
 		order.setPatient(new Patient());
 		order.setCareSetting(new CareSetting());
-		order.setConcept(new Concept());
-		order.setDrug(new Drug());
+		Drug drug = new Drug();
+		drug.setConcept(new Concept());
+		order.setDrug(drug);
 		order.setOrderType(new OrderType());
 		
 		DrugOrder dcOrder = (DrugOrder) order.cloneForDiscontinuing();
@@ -62,7 +63,13 @@ public class DrugOrderTest {
 	 */
 	@Test
 	public void copy_shouldCopyAllDrugOrderFields() throws Exception {
-		OrderTest.assertThatAllFieldsAreCopied(new DrugOrder(), null);
+		DrugOrder drugOrder = new DrugOrder();
+		Drug drug = new Drug();
+		drug.setConcept(new Concept());
+		drugOrder.setDrug(drug);
+		
+		OrderTest.assertThatAllFieldsAreCopied(drugOrder, null);
+		
 	}
 	
 	/**
@@ -71,7 +78,11 @@ public class DrugOrderTest {
 	 */
 	@Test
 	public void cloneForRevision_shouldSetAllTheRelevantFields() throws Exception {
-		OrderTest.assertThatAllFieldsAreCopied(new DrugOrder(), "cloneForRevision", "creator", "dateCreated", "action",
+		DrugOrder drugOrder = new DrugOrder();
+		Drug drug = new Drug();
+		drug.setConcept(new Concept());
+		drugOrder.setDrug(drug);
+		OrderTest.assertThatAllFieldsAreCopied(drugOrder, "cloneForRevision", "creator", "dateCreated", "action",
 		    "changedBy", "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber",
 		    "orderer", "previousOrder", "startDate", "dateStopped", "accessionNumber");
 	}

@@ -687,10 +687,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
+		order.setDrug(conceptService.getDrug(3));
 		order.setEncounter(encounterService.getEncounter(5));
 		order.setPatient(patientService.getPatient(7));
 		order.setOrderer(providerService.getProvider(1));
-		order.setConcept(conceptService.getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setOrderType(orderService.getOrderType(1));
@@ -727,10 +727,10 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setAction(Order.Action.DISCONTINUE);
 		order.setOrderReasonNonCoded("Discontinue this");
+		order.setDrug(conceptService.getDrug(3));
 		order.setEncounter(encounterService.getEncounter(5));
 		order.setPatient(Context.getPatientService().getPatient(7));
 		order.setOrderer(Context.getProviderService().getProvider(1));
-		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setOrderType(orderService.getOrderType(1));
