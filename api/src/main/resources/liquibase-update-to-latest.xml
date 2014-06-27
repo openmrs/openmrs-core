@@ -7383,9 +7383,14 @@
         <comment>Checking that all orders have start_date column set</comment>
     </changeSet>
 
-    <changeSet id="20140315-TRUNK-4283" author="dszafranek, wyclif">
+    <changeSet id="20140615-TRUNK-4283" author="dszafranek, wyclif">
         <preConditions onFail="HALT" onFailMessage="orders.orderer column is required as of version 1.10, for more details on how to fix this see https://wiki.openmrs.org/x/OALpAw">
-            <sqlCheck expectedResult="0">SELECT COUNT(*) from orders where orderer is NULL</sqlCheck>
+            <or>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) from orders where orderer is NULL</sqlCheck>
+                <not>
+                    <sqlCheck expectedResult="0">SELECT COUNT(*) from provider where name = 'Unknown Provider'</sqlCheck>
+                </not>
+            </or>
         </preConditions>
         <comment>Checking that all orders have orderer column set</comment>
     </changeSet>
@@ -7427,6 +7432,17 @@
             </or>
         </preConditions>
         <comment>Checking if order_type table is already up to date or can be updated automatically</comment>
+    </changeSet>
+
+    <changeSet id="201406262016" author="wyclif">
+        <preConditions onFail="HALT" onFailMessage="Order orderers need to have provider accounts in order to upgrade, for more details on how to fix this see https://wiki.openmrs.org/x/OALpAw">
+            <sqlCheck expectedResult="0">
+                SELECT count(o.order_id) FROM orders o, users u WHERE o.orderer = u.user_id
+                AND o.orderer IS NOT NULL
+                AND u.person_id NOT IN (SELECT DISTINCT person_id FROM provider where person_id is not null)
+            </sqlCheck>
+        </preConditions>
+        <comment>Checking that all users that created orders have provider accounts</comment>
     </changeSet>
 
     <changeSet id="201404091112" author="wyclif">
@@ -8187,25 +8203,6 @@
         </preConditions>
         <comment>Renaming orders.discontinued_reason_non_coded column to order_reason_non_coded</comment>
         <renameColumn tableName="orders" newColumnName="order_reason_non_coded" oldColumnName="discontinued_reason_non_coded" columnDataType="varchar(255)" />
-    </changeSet>
-
-    <changeSet id="201401161532-TRUNK-4202" author="k-joseph">
-        <preConditions onFail="MARK_RAN">
-            <not><sqlCheck expectedResult="0">select count(*) from orders</sqlCheck></not>
-        </preConditions>
-        <comment>Creating provider accounts for all users who have placed orders for patients and have no associated provider accounts</comment>
-        <sql>
-            INSERT INTO provider(person_id, identifier, creator, date_created, retired, uuid)
-            SELECT u.person_id, u.username, (SELECT user_id FROM users WHERE uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB'), CURRENT_TIMESTAMP , u.retired, generate-uuid
-            FROM users u JOIN orders o ON o.orderer = u.user_id
-            WHERE u.person_id NOT IN (SELECT DISTINCT person_id FROM provider) GROUP BY u.person_id
-        </sql>
-        <modifySql dbms="mysql"><replace replace="generate-uuid" with="UUID()" /></modifySql>
-        <modifySql dbms="h2"><replace replace="generate-uuid" with="random_uuid()" /></modifySql>
-        <modifySql dbms="oracle"><replace replace="generate-uuid" with="SYS_GUID()" /></modifySql>
-        <modifySql dbms="mssql"><replace replace="generate-uuid" with="NEWID()" /></modifySql>
-        <!-- On postgres the uuid-ossp module is required -->
-        <modifySql dbms="postgresql"><replace replace="generate-uuid" with="uuid_generate_v4()" /></modifySql>
     </changeSet>
 
     <changeSet id="201402051638-TRUNK-4202" author="wyclif">
