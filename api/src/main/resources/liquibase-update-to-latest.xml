@@ -7445,6 +7445,24 @@
         <comment>Checking that all users that created orders have provider accounts</comment>
     </changeSet>
 
+    <changeSet id="201406211643-TRUNK-4401" author="harsz89">
+        <preConditions onFail="HALT" onFailMessage="discontinued orders cannot have null discontinued_date values, for more details on how to fix this see https://wiki.openmrs.org/x/OALpAw">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) from orders where discontinued = true and  discontinued_date is null
+            </sqlCheck>
+        </preConditions>
+        <comment>Checking that all discontinued orders have the discontinued_date column set</comment>
+    </changeSet>
+
+    <changeSet id="201406211703-TRUNK-4401" author="harsz89">
+        <preConditions onFail="HALT" onFailMessage="discontinued orders cannot have null discontinued_by values, for more details on how to fix this see https://wiki.openmrs.org/x/OALpAw">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) from orders where discontinued = true and discontinued_by is null
+            </sqlCheck>
+        </preConditions>
+        <comment>Checking that all discontinued orders have the discontinued_by column set </comment>
+    </changeSet>
+
     <changeSet id="201404091112" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="order_type" columnName="name" />
