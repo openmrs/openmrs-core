@@ -279,26 +279,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail validation if drug concept is different from order concept", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDrugConceptIsDifferentFromOrderConcept() throws Exception {
-		DrugOrder order = new DrugOrder();
-		Drug drug = Context.getConceptService().getDrug(3);
-		Concept concept = Context.getConceptService().getConcept(792);
-		order.setDrug(drug);
-		order.setConcept(concept); // the actual concept which matches with drug is "88"
-		Assert.assertNotEquals(drug.getConcept(), concept);
-		
-		Errors errors = new BindException(order, "order");
-		new DrugOrderValidator().validate(order, errors);
-		
-		Assert.assertTrue(errors.hasFieldErrors("concept"));
-		Assert.assertTrue(errors.hasFieldErrors("drug"));
-	}
-	
-	/**
 	 * @verifies not require all fields for a discontinuation order
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
