@@ -246,7 +246,7 @@ public class Database1_9_7UpgradeTest {
 	public void shouldConvertOrderersToBeingProvidersInsteadOfUsers() throws Exception {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
-
+		
 		//Check that we have some orders with no orderers
 		List<List<Object>> rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "select order_id from orders where orderer is null", true);
@@ -392,13 +392,13 @@ public class Database1_9_7UpgradeTest {
 		upgradeTestUtil
 		        .executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithOrdererThatIsNotAProvider.xml");
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
-
+		
 		expectedException.expect(IOException.class);
-		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201406262015::wyclif";
+		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201406262016::wyclif";
 		expectedException.expectMessage(errorMsgSubString);
 		upgradeTestUtil.upgrade();
 	}
-
+	
 	@Test
 	public void shouldSetValuesToNullIfUnitsOrFrequencyBlank() throws Exception {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
