@@ -7434,8 +7434,8 @@
         <comment>Checking if order_type table is already up to date or can be updated automatically</comment>
     </changeSet>
 
-    <changeSet id="201406262015" author="wyclif">
-        <preConditions onFail="HALT" onFailMessage="Order creators need to have provider accounts in order to upgrade, for more details on how to fix this see https://wiki.openmrs.org/x/OALpAw">
+    <changeSet id="201406262016" author="wyclif">
+        <preConditions onFail="HALT" onFailMessage="Order orderers need to have provider accounts in order to upgrade, for more details on how to fix this see https://wiki.openmrs.org/x/OALpAw">
             <sqlCheck expectedResult="0">
                 SELECT count(o.order_id) FROM orders o, users u WHERE o.orderer = u.user_id
                 AND o.orderer IS NOT NULL
