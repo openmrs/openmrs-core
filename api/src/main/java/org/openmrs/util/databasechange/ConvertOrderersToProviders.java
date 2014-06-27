@@ -15,6 +15,7 @@ package org.openmrs.util.databasechange;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import liquibase.change.custom.CustomTaskChange;
@@ -59,6 +60,7 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 		final int batchSize = 1000;
 		int index = 0;
 		PreparedStatement updateStatement = null;
+		Statement statement = connection.createStatement();
 		Boolean autoCommit = null;
 		try {
 			autoCommit = connection.getAutoCommit();
@@ -83,6 +85,11 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 			if (supportsBatchUpdate) {
 				updateStatement.executeBatch();
 			}
+			
+			//Set the orderer for orders with null orderer to Unknown Provider
+			statement.execute("UPDATE orders SET orderer = "
+			        + "(SELECT provider_id FROM provider WHERE name ='Unknown Provider') " + "WHERE orderer IS NULL");
+			
 			connection.commit();
 		}
 		catch (DatabaseException e) {
@@ -97,6 +104,9 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 			}
 			if (updateStatement != null) {
 				updateStatement.close();
+			}
+			if (statement != null) {
+				statement.close();
 			}
 		}
 	}

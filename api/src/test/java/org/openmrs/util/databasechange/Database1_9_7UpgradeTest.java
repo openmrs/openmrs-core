@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -246,31 +246,21 @@ public class Database1_9_7UpgradeTest {
 	public void shouldConvertOrderersToBeingProvidersInsteadOfUsers() throws Exception {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
-		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/UpgradeTest-convertOrdererToProvider.xml");
-		
-		//Sanity check that we have 3 orders where orderer has no provider account
-		Set<Integer> personIdsWithNoProviderAccount = new HashSet<Integer>();
-		List<OrderAndPerson> ordersAndOrderersWithNoProviderAccount = new ArrayList<OrderAndPerson>();
+
+		//Check that we have some orders with no orderers
 		List<List<Object>> rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
-		    "select o.order_id, u.person_id from orders o join users u on o.orderer = u.user_id "
-		            + "where u.person_id not in (select distinct person_id from provider)", true);
-		for (List<Object> row : rows) {
-			ordersAndOrderersWithNoProviderAccount.add(new OrderAndPerson((Integer) row.get(0), (Integer) row.get(1)));
-			personIdsWithNoProviderAccount.add((Integer) row.get(1));
-		}
-		Assert.assertEquals(3, ordersAndOrderersWithNoProviderAccount.size());
-		Assert.assertEquals(2, personIdsWithNoProviderAccount.size());
-		Assert.assertThat(personIdsWithNoProviderAccount, Matchers.hasItems(101, 102));
+		    "select order_id from orders where orderer is null", true);
+		Assert.assertEquals(2, rows.size());
+		List<Integer> orderIdsWithNoOrderer = Arrays.asList((Integer) rows.get(0).get(0), (Integer) rows.get(1).get(0));
 		
-		//Sanity check that we have 1 order where orderer has a provider account
+		//Sanity check that we have orders with orderer column set
 		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
-		    "select o.order_id, o.orderer, u.person_id from orders o join users u on o.orderer = u.user_id "
-		            + "where u.person_id in (select distinct person_id from provider)", true);
+		    "select order_id, orderer from orders where orderer is not null", true);
 		List<OrderAndPerson> ordersAndOrderersWithAProviderAccount = new ArrayList<OrderAndPerson>();
 		for (List<Object> row : rows) {
 			ordersAndOrderersWithAProviderAccount.add(new OrderAndPerson((Integer) row.get(0), (Integer) row.get(1)));
 		}
-		Assert.assertEquals(9, ordersAndOrderersWithAProviderAccount.size());
+		Assert.assertEquals(3, ordersAndOrderersWithAProviderAccount.size());
 		
 		Set<Integer> originalProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider",
 		    Integer.class, upgradeTestUtil.getConnection());
@@ -278,11 +268,6 @@ public class Database1_9_7UpgradeTest {
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
-		
-		Set<Integer> newProviderIds = DatabaseUtil.getUniqueNonNullColumnValues("provider_id", "provider", Integer.class,
-		    upgradeTestUtil.getConnection());
-		//A provider account should have been created for each user with none
-		Assert.assertEquals(originalProviderIds.size() + personIdsWithNoProviderAccount.size(), newProviderIds.size());
 		
 		//That correct providers were set for each order, i.e the person record for the provider
 		//should match the that of the user account before upgrade
@@ -295,17 +280,13 @@ public class Database1_9_7UpgradeTest {
 			Assert.assertTrue(originalProviderIds.contains(rows.get(0).get(0)));
 		}
 		
-		//That correct providers were set for each order, i.e the person record for the created provider
-		//should match the that of the user account before upgrade
-		for (OrderAndPerson op : ordersAndOrderersWithNoProviderAccount) {
-			rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
-			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where o.order_id = "
-			            + op.getOrderId(), true);
-			Assert.assertEquals(1, rows.size());
-			Assert.assertEquals(op.getPersonId(), rows.get(0).get(1));
-			//The provider account shouldn't have been among the existing ones prior to upgrade
-			Assert.assertFalse(originalProviderIds.contains(rows.get(0).get(0)));
-		}
+		//The orderer column for orders with null orderers previously should be set to Unknown Provider
+		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
+		    "select order_id from orders where orderer = (Select provider_id from provider where name ='Unknown Provider')",
+		    true);
+		Assert.assertEquals(orderIdsWithNoOrderer.size(), rows.size());
+		Assert.assertTrue(orderIdsWithNoOrderer.contains(rows.get(0).get(0)));
+		Assert.assertTrue(orderIdsWithNoOrderer.contains(rows.get(1).get(0)));
 	}
 	
 	@Test
@@ -404,6 +385,20 @@ public class Database1_9_7UpgradeTest {
 		assertEquals(0L, newer.get(0).get(0));
 	}
 	
+	@Test
+	public void shouldFailIfThereAreOrderersWithNoAssociatedProviderAccounts() throws IOException, SQLException {
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/standardTest-1.9.7-dataSet.xml");
+		upgradeTestUtil.executeDataset("/org/openmrs/util/databasechange/database1_9To1_10UpgradeTest-dataSet.xml");
+		upgradeTestUtil
+		        .executeDataset("/org/openmrs/util/databasechange/UpgradeTest-orderWithOrdererThatIsNotAProvider.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
+
+		expectedException.expect(IOException.class);
+		String errorMsgSubString = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201406262015::wyclif";
+		expectedException.expectMessage(errorMsgSubString);
+		upgradeTestUtil.upgrade();
+	}
+
 	@Test
 	public void shouldSetValuesToNullIfUnitsOrFrequencyBlank() throws Exception {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
