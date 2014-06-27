@@ -629,6 +629,9 @@
 	<bean id="conceptSourceForm"
 		class="org.openmrs.web.controller.concept.ConceptSourceFormController">
 		<property name="commandName"><value>conceptSource</value></property>
+		<property name="validator">
+			<ref bean="conceptSourceValidator" />
+		</property>
 		<property name="formView"><value>/admin/concepts/conceptSourceForm</value></property>
 		<property name="successView"><value>conceptSource.list</value></property>
 	</bean>
