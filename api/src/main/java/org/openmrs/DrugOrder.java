@@ -89,23 +89,37 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	protected DrugOrder copyHelper(DrugOrder target) {
 		super.copyHelper(target);
-		target.dose = getDose();
-		target.doseUnits = getDoseUnits();
-		target.frequency = getFrequency();
-		target.asNeeded = getAsNeeded();
-		target.asNeededCondition = getAsNeededCondition();
-		target.quantity = getQuantity();
-		target.quantityUnits = getQuantityUnits();
-		target.drug = getDrug();
-		target.dosingType = getDosingType();
-		target.dosingInstructions = getDosingInstructions();
-		target.duration = getDuration();
-		target.durationUnits = getDurationUnits();
+		target.setDose(getDose());
+		target.setDoseUnits(getDoseUnits());
+		target.setFrequency(getFrequency());
+		target.setAsNeeded(getAsNeeded());
+		target.setAsNeededCondition(getAsNeededCondition());
+		target.setQuantity(getQuantity());
+		target.setQuantityUnits(getQuantityUnits());
+		target.setDrug(getDrug());
+		target.setDosingType(getDosingType());
+		target.setDosingInstructions(getDosingInstructions());
+		target.setDuration(getDuration());
+		target.setDurationUnits(getDurationUnits());
 		target.setNumRefills(getNumRefills());
-		target.route = getRoute();
+		target.setRoute(getRoute());
 		target.setBrandName(getBrandName());
 		target.setDispenseAsWritten(getDispenseAsWritten());
 		return target;
+	}
+	
+	@Override
+	public Concept getConcept() {
+		if (getDrug() != null) {
+			return getDrug().getConcept();
+		} else {
+			return null;
+		}
+	}
+	
+	@Override
+	public void setConcept(Concept concept) {
+		//concept is set only by setDrug to stay consistent
 	}
 	
 	public boolean isDrugOrder() {
@@ -264,6 +278,12 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDrug(Drug drug) {
 		this.drug = drug;
+		
+		if (drug == null) {
+			super.setConcept(null);
+		} else {
+			super.setConcept(drug.getConcept());
+		}
 	}
 	
 	/**
