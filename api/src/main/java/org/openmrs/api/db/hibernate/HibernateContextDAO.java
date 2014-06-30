@@ -476,6 +476,9 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 	}
 	
+	/**
+	 * @see ContextDAO#updateSearchIndex()
+	 */
 	@Override
 	public void updateSearchIndex() {
 		try {

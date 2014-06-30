@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
@@ -65,6 +66,11 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	@Autowired
 	ConceptService conceptService;
+	
+	@Before
+	public void updateSearchIndex() {
+		super.updateSearchIndex();
+	}
 	
 	/**
 	 * Checks that the conceptId query param gets a concept from the database
@@ -171,8 +177,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameSpecified() throws Exception {
-		updateSearchIndex();
-		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		
@@ -213,8 +217,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameAndDescriptionSpecifiedToCodeConcepts() throws Exception {
-		updateSearchIndex();
-		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -260,8 +262,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameAndDescriptionSpecifiedToNumericConcepts() throws Exception {
-		updateSearchIndex();
-		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -307,8 +307,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldAddConceptWithAllNamingSpecified() throws Exception {
-		updateSearchIndex();
-		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -361,8 +359,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldUpdateConceptWithNameAlreadyInSynonymList() throws Exception {
-		updateSearchIndex();
-		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -412,8 +408,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldUpdateConceptWithShortNameAlreadyInSynonymList() throws Exception {
-		updateSearchIndex();
-		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String EXPECTED_DESCRIPTION = "this is not really a concept";
@@ -538,8 +532,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldReplacePreviousDescription() throws Exception {
-		updateSearchIndex();
-		
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
 		final String EXPECTED_SHORT_NAME = "nonesuch";
 		final String ORIGINAL_DESCRIPTION = "this is indescribable";

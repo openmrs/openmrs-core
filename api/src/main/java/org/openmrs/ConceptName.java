@@ -49,6 +49,7 @@ import org.simpleframework.xml.Root;
 @Indexed
 @AnalyzerDef(name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
         @TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
+@Analyzer(definition = "ConceptNameAnalyzer")
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
@@ -60,7 +61,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	private Concept concept;
 	
 	@Field(index = Index.TOKENIZED)
-	@Analyzer(definition = "ConceptNameAnalyzer")
 	private String name;
 	
 	@Field(index = Index.UN_TOKENIZED)

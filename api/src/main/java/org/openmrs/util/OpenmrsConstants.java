@@ -1074,7 +1074,7 @@ public final class OpenmrsConstants {
 	public static final String GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID = "order.testSpecimenSourcesConceptUuid";
 	
 	/**
-	 * @since 1.10
+	 * @since 1.12
 	 */
 	public static final String GP_LAST_FULL_INDEX_DATE = "index.lastFullIndexDate";
 	

@@ -1888,7 +1888,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param name
 	 * @return true if it is a duplicate name
-	 * @since 1.10
+	 * @since 1.12
 	 */
 	public boolean isConceptNameDuplicate(ConceptName name);
 	
@@ -1898,6 +1898,7 @@ public interface ConceptService extends OpenmrsService {
 	 * It is an optimization parameter, which can speed up searching.
 	 * 
 	 * @return true if search is case sensitive
+	 * @since 1.12
 	 */
 	public boolean isConceptNameSearchCaseSensitive();
 	

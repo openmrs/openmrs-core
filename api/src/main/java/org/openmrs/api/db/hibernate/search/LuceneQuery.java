@@ -37,6 +37,8 @@ import com.google.common.collect.Sets;
 
 /**
  * Performs Lucene queries.
+ * 
+ * @since 1.12
  */
 public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
@@ -46,6 +48,14 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	private Set<Term> excludeTerms = new HashSet<Term>();
 	
+	/**
+	 * The preferred way to create a Lucene query using the query parser.
+	 * 
+	 * @param query
+	 * @param session
+	 * @param type
+	 * @return the Lucene query
+	 */
 	public static <T> LuceneQuery<T> newQuery(final String query, final Session session, final Class<T> type) {
 		return new LuceneQuery<T>(
 		                          session, type) {
@@ -61,6 +71,12 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		};
 	}
 	
+	/**
+	 * Escape any characters that can be interpreted by the query parser.
+	 * 
+	 * @param query
+	 * @return the escaped query
+	 */
 	public static String escapeQuery(final String query) {
 		return QueryParser.escape(query);
 	}
@@ -71,6 +87,13 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		buildQuery();
 	}
 	
+	/**
+	 * Include items with the given value in the specified field.
+	 * 
+	 * @param field
+	 * @param value
+	 * @return the query
+	 */
 	public LuceneQuery<T> include(String field, Object value) {
 		if (value != null) {
 			include(field, new Object[] { value });
@@ -79,6 +102,13 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return this;
 	}
 	
+	/**
+	 * Include items with any of the given values in the specified field.
+	 * 
+	 * @param field
+	 * @param values
+	 * @return the query
+	 */
 	public LuceneQuery<T> include(String field, Object[] values) {
 		if (values != null && values.length != 0) {
 			Set<Term> terms = new HashSet<Term>();
@@ -94,6 +124,13 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return this;
 	}
 	
+	/**
+	 * Exclude any items with the given value in the specified field.
+	 * 
+	 * @param field
+	 * @param value
+	 * @return the query
+	 */
 	public LuceneQuery<T> exclude(String field, Object value) {
 		if (value != null) {
 			exclude(field, new Object[] { value });
@@ -102,6 +139,13 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return this;
 	}
 	
+	/**
+	 * Exclude any items with the given values in the specified field.
+	 * 
+	 * @param field
+	 * @param values
+	 * @return the query
+	 */
 	public LuceneQuery<T> exclude(String field, Object[] values) {
 		if (values != null && values.length != 0) {
 			for (Object value : values) {
@@ -115,28 +159,41 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return this;
 	}
 	
-	private void buildQuery() {
-		Query query;
-		try {
-			query = prepareQuery();
-		}
-		catch (ParseException e) {
-			throw new IllegalStateException("Invalid query", e);
-		}
-		
-		fullTextQuery = getFullTextSession().createFullTextQuery(query, getType());
-		adjustFullTextQuery(fullTextQuery);
-	}
-	
+	/**
+	 * It is called by the constructor to get an instance of a query.
+	 * <p>
+	 * To construct the query you can use {@link #newQueryBuilder()} or {@link #newQueryParser()},
+	 * which are created for the proper type.
+	 * 
+	 * @return the query
+	 * @throws ParseException
+	 */
 	protected abstract Query prepareQuery() throws ParseException;
 	
+	/**
+	 * It is called by the constructor after creating {@link FullTextQuery}.
+	 * <p>
+	 * You can override it to adjust the full text query, e.g. add a filter.
+	 * 
+	 * @param fullTextQuery
+	 */
 	protected void adjustFullTextQuery(FullTextQuery fullTextQuery) {
 	}
 	
+	/**
+	 * You can use it in {@link #prepareQuery()}.
+	 * 
+	 * @return the query builder
+	 */
 	protected QueryBuilder newQueryBuilder() {
 		return getFullTextSession().getSearchFactory().buildQueryBuilder().forEntity(getType()).get();
 	}
 	
+	/**
+	 * You can use it in {@link #prepareQuery()}.
+	 * 
+	 * @return the query parser
+	 */
 	protected QueryParser newQueryParser() {
 		Analyzer analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
 		QueryParser queryParser = new QueryParser(Version.LUCENE_31, null, analyzer);
@@ -144,6 +201,11 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return queryParser;
 	}
 	
+	/**
+	 * Gives you access to the full text session.
+	 * 
+	 * @return the full text session
+	 */
 	protected FullTextSession getFullTextSession() {
 		return Search.getFullTextSession(getSession());
 	}
@@ -154,8 +216,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * Only the first element will be included in the results.
 	 * <p>
 	 * <b>Note:</b> For performance reasons you should call this method as last when constructing a
-	 * query. When called it will project the query and create a filter to eliminate
-	 * duplicates.
+	 * query. When called it will project the query and create a filter to eliminate duplicates.
 	 * 
 	 * @param field
 	 * @return
@@ -241,6 +302,19 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		Long first = (firstResult != null) ? Long.valueOf(firstResult) : null;
 		Long max = (maxResults != null) ? Long.valueOf(maxResults) : null;
 		return listPartProjection(first, max, fields);
+	}
+	
+	private void buildQuery() {
+		Query query;
+		try {
+			query = prepareQuery();
+		}
+		catch (ParseException e) {
+			throw new IllegalStateException("Invalid query", e);
+		}
+		
+		fullTextQuery = getFullTextSession().createFullTextQuery(query, getType());
+		adjustFullTextQuery(fullTextQuery);
 	}
 	
 	private void applyPartialResults(FullTextQuery fullTextQuery, Long firstResult, Long maxResults) {

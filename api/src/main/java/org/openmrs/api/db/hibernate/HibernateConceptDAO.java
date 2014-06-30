@@ -416,29 +416,25 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Drug> getDrugs(final String phrase) throws DAOException {
-		if (phrase.trim().isEmpty()) {
+		if (StringUtils.isBlank(phrase)) {
 			return Collections.emptyList();
 		}
 		
-		final String escapedPhrase = LuceneQuery.escapeQuery(phrase);
+		final String escapedPhrase = LuceneQuery.escapeQuery(phrase.trim());
 		
-		List<String> notEmptyWords = new ArrayList<String>();
+		List<String> tokenizedPhrase = new ArrayList<String>();
 		String[] words = escapedPhrase.split(" ");
 		for (String word : words) {
-			if (!word.trim().isEmpty()) {
-				notEmptyWords.add(word);
+			word = word.trim();
+			if (!word.isEmpty()) {
+				tokenizedPhrase.add(word);
 			}
 		}
 		
-		String query = "name:(\"" + escapedPhrase + "\")^0.6 OR name:(" + escapedPhrase + ")^0.2";
+		StringBuilder query = newNameQuery(tokenizedPhrase, escapedPhrase, true);
 		
-		if (!notEmptyWords.isEmpty()) {
-			query += "OR name:(" + StringUtils.join(notEmptyWords, "* ") + "*)^0.1 OR name:("
-			        + StringUtils.join(notEmptyWords, "~0.8 ") + "~0.8)^0.1";
-		}
-		
-		List<Drug> list = LuceneQuery.newQuery(query, sessionFactory.getCurrentSession(), Drug.class).exclude("retired",
-		    true).list();
+		List<Drug> list = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(), Drug.class).exclude(
+		    "retired", true).list();
 		
 		return list;
 	}
@@ -588,8 +584,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<Concept> getConcepts(final String name, final Locale loc, final boolean searchOnPhrase,
 	        final List<ConceptClass> classes, final List<ConceptDatatype> datatypes) throws DAOException {
 		
-		StringBuilder query = new StringBuilder();
-		
 		final Locale locale;
 		if (loc == null) {
 			locale = Context.getLocale();
@@ -597,59 +591,34 @@ public class HibernateConceptDAO implements ConceptDAO {
 			locale = loc;
 		}
 		
-		if (!StringUtils.isBlank(name)) {
-			if (searchOnPhrase) {
-				String search = newNamesQuery(Sets.newHashSet(locale), name, true);
-				query.append(search);
-			} else {
-				String search = newNamesQuery(Sets.newHashSet(locale), name, false);
-				query.append(search);
-			}
-		}
+		LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(name, !searchOnPhrase, Arrays.asList(locale),
+		    false, false, classes, null, datatypes, null, null);
 		
-		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).include("concept.datatype.conceptDatatypeId", transformToIds(datatypes)).include(
-		    "concept.conceptClass.conceptClassId", transformToIds(classes)).include("concept.retired", false).skipSame(
-		    "concept.conceptId").list();
+		List<ConceptName> names = conceptNameQuery.list();
 		
 		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
 		
 		return concepts;
 	}
 	
-	private String newNamesQuery(final Set<Locale> locales, final String name, final boolean keywords) {
+	private String newConceptNameQuery(final String name, final boolean searchKeywords, final Set<Locale> locales,
+	        final boolean searchExactLocale) {
 		final String escapedName = LuceneQuery.escapeQuery(name);
+		final List<String> tokenizedName = tokenizeConceptName(escapedName, locales);
 		
-		final StringBuilder query = new StringBuilder();
-		query.append("(");
-		if (keywords) {
-			List<String> words = tokenizeName(escapedName, locales);
-			
-			//Put exact phrase higher
-			query.append(" name:(\"" + escapedName + "\")^0.6");
-			
-			if (!words.isEmpty()) {
-				//Include exact
-				query.append(" OR name:(" + StringUtils.join(words, " ") + ")^0.2");
-				
-				//Include partial
-				query.append(" OR name:(" + StringUtils.join(words, "* ") + "*)^0.1");
-				
-				//Include similar
-				query.append(" OR name:(" + StringUtils.join(words, "~0.8 ") + "~0.8)^0.1");
-			}
-		} else {
-			query.append(" name:\"" + escapedName + "\"");
-		}
-		query.append(")");
+		final StringBuilder query = newNameQuery(tokenizedName, escapedName, searchKeywords);
 		
 		List<String> localeQueries = new ArrayList<String>();
 		for (Locale locale : locales) {
-			String localeQuery = locale.getLanguage() + "* ";
-			if (!StringUtils.isBlank(locale.getCountry())) {
-				localeQuery += " OR " + locale + "^2 ";
+			if (searchExactLocale) {
+				localeQueries.add(locale.toString());
+			} else {
+				String localeQuery = locale.getLanguage() + "* ";
+				if (!StringUtils.isBlank(locale.getCountry())) {
+					localeQuery += " OR " + locale + "^2 ";
+				}
+				localeQueries.add(localeQuery);
 			}
-			localeQueries.add(localeQuery);
 		}
 		query.append(" locale:(");
 		query.append(StringUtils.join(localeQueries, " OR "));
@@ -659,7 +628,32 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return query.toString();
 	}
 	
-	private List<String> tokenizeName(final String escapedName, final Set<Locale> locales) {
+	private StringBuilder newNameQuery(final List<String> tokenizedName, final String escapedName,
+	        final boolean searchKeywords) {
+		final StringBuilder query = new StringBuilder();
+		query.append("(");
+		if (searchKeywords) {
+			//Put exact phrase higher
+			query.append(" name:(\"" + escapedName + "\")^0.6");
+			
+			if (!tokenizedName.isEmpty()) {
+				//Include exact
+				query.append(" OR name:(" + StringUtils.join(tokenizedName, " ") + ")^0.2");
+				
+				//Include partial
+				query.append(" OR name:(" + StringUtils.join(tokenizedName, "* ") + "*)^0.1");
+				
+				//Include similar
+				query.append(" OR name:(" + StringUtils.join(tokenizedName, "~0.8 ") + "~0.8)^0.1");
+			}
+		} else {
+			query.append(" name:\"" + escapedName + "\"");
+		}
+		query.append(")");
+		return query;
+	}
+	
+	private List<String> tokenizeConceptName(final String escapedName, final Set<Locale> locales) {
 		List<String> words = new ArrayList<String>();
 		words.addAll(Arrays.asList(escapedName.trim().split(" ")));
 		
@@ -668,13 +662,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 			stopWords.addAll(Context.getConceptService().getConceptStopWords(locale));
 		}
 		
-		for (Iterator<String> it = words.iterator(); it.hasNext();) {
-			String word = it.next();
-			if (stopWords.contains(word.trim().toUpperCase())) {
-				it.remove();
+		List<String> tokenizedName = new ArrayList<String>();
+		
+		for (String word : words) {
+			word = word.trim();
+			
+			if (!word.isEmpty() && !stopWords.contains(word.toUpperCase())) {
+				tokenizedName.add(word);
 			}
 		}
-		return words;
+		
+		return tokenizedName;
 	}
 	
 	/**
@@ -1332,8 +1330,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        final List<ConceptDatatype> requireDatatypes, final List<ConceptDatatype> excludeDatatypes,
 	        final Concept answersToConcept, final Integer start, final Integer size) throws DAOException {
 		
-		LuceneQuery<ConceptName> query = createConceptNameQuery(phrase, locales, includeRetired, requireClasses,
-		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
+		LuceneQuery<ConceptName> query = newConceptNameLuceneQuery(phrase, true, locales, false, includeRetired,
+		    requireClasses, excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
 		
 		ListPart<ConceptName> names = query.listPart(start, size);
 		
@@ -1354,16 +1352,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException {
 		
-		LuceneQuery<ConceptName> query = createConceptNameQuery(phrase, locales, includeRetired, requireClasses,
-		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
+		LuceneQuery<ConceptName> query = newConceptNameLuceneQuery(phrase, true, locales, false, includeRetired,
+		    requireClasses, excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
 		
 		Long size = query.resultSize();
 		return size.intValue();
 	}
 	
-	private LuceneQuery<ConceptName> createConceptNameQuery(final String phrase, List<Locale> locales,
-	        boolean includeRetired, List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	        List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) {
+	private LuceneQuery<ConceptName> newConceptNameLuceneQuery(final String phrase, boolean searchKeywords,
+	        List<Locale> locales, boolean searchExactLocale, boolean includeRetired, List<ConceptClass> requireClasses,
+	        List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) {
 		final StringBuilder query = new StringBuilder();
 		
 		if (!StringUtils.isBlank(phrase)) {
@@ -1375,7 +1374,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				searchLocales = Sets.newHashSet(locales);
 			}
 			
-			query.append(newNamesQuery(searchLocales, phrase, true));
+			query.append(newConceptNameQuery(phrase, searchKeywords, searchLocales, searchExactLocale));
 		}
 		
 		LuceneQuery<ConceptName> luceneQuery = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
@@ -1687,30 +1686,20 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Concept> getConceptsByName(final String name, final Locale locale, final Boolean exactLocale) {
-		StringBuilder query = new StringBuilder();
 		
-		if (!StringUtils.isBlank(name)) {
-			final String searchPhrase = LuceneQuery.escapeQuery(name);
-			
-			final Locale searchLocale;
-			if (locale == null) {
-				searchLocale = Context.getLocale();
-			} else {
-				searchLocale = locale;
-			}
-			
-			if (exactLocale == null || exactLocale) {
-				query.append(" +name:").append("\"").append(searchPhrase).append("\"");
-				query.append(" +locale:").append(searchLocale);
-			} else {
-				query.append(newNamesQuery(Sets.newHashSet(searchLocale), searchPhrase, false));
-			}
+		List<Locale> locales = new ArrayList<Locale>();
+		if (locale == null) {
+			locales.add(Context.getLocale());
+		} else {
+			locales.add(locale);
 		}
 		
-		query.append(" +concept.retired:false");
+		boolean searchExactLocale = (exactLocale == null) ? false : exactLocale;
 		
-		final List<ConceptName> names = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).skipSame("concept.conceptId").list();
+		LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(name, true, locales, searchExactLocale, false,
+		    null, null, null, null, null);
+		
+		List<ConceptName> names = conceptNameQuery.list();
 		
 		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
 		

@@ -18,6 +18,7 @@ import java.util.Properties;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -123,33 +124,25 @@ public interface ContextDAO {
 	public void mergeDefaultRuntimeProperties(Properties runtimeProperties);
 	
 	/**
-	 * Creates search index.
+	 * Updates the search index if necessary.
+	 * <p>
+	 * The update is triggered if {@link OpenmrsConstants#GP_LAST_FULL_INDEX_DATE} is blank.
 	 */
 	public void setupSearchIndex();
 	
 	/**
-	 * Updates search index.
+	 * @see Context#updateSearchIndex()
 	 */
 	public void updateSearchIndex();
 	
 	/**
-	 * Updates a search index for the given object.
-	 * <p>
-	 * Not that it flushes the search index before a transaction is committed. If the transaction is
-	 * rolled back, changes to the index will not be reverted.
-	 * 
-	 * @param object
+	 * @see Context#updateSearchIndexForObject(Object)
 	 */
 	@Transactional
 	public void updateSearchIndexForObject(Object object);
 	
 	/**
-	 * Recreates a search index for objects of the given type.
-	 * <p>
-	 * Note that it flushes the Hibernate session and the search index before a transaction is
-	 * committed. If the transaction is rolled back, changes to the index will not be reverted.
-	 * 
-	 * @param type
+	 * @see Context#updateSearchIndexForType(Class)
 	 */
 	@Transactional
 	public void updateSearchIndexForType(Class<?> type);

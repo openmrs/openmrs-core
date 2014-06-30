@@ -15,9 +15,9 @@ package org.openmrs.api;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,14 +37,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.ArrayList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.dbunit.dataset.IDataSet;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -80,6 +79,7 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.validation.Errors;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -165,10 +165,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
 		// substring of the name
-		String partialNameToFetch = "So";
+		String partialNameToFetch = "Some";
 		
 		List<Concept> firstConceptsByPartialNameList = conceptService.getConceptsByName(partialNameToFetch);
-		assertTrue("You should be able to get the concept by partial name", containsId(firstConceptsByPartialNameList, 1));
+		assertThat(firstConceptsByPartialNameList, containsInAnyOrder(hasId(1), hasId(2)));
 	}
 	
 	/**

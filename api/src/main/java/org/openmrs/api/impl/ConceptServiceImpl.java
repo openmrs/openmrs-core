@@ -1680,12 +1680,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public void updateConceptIndexes(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
-		/*checkIfLocked();
 		Integer i = conceptIdStart;
 		ConceptService cs = Context.getConceptService();
 		while (i++ <= conceptIdEnd) {
-			updateConceptWord(cs.getConcept(i));
-		}*/
+			Concept concept = cs.getConcept(i);
+			if (concept != null) {
+				Context.updateSearchIndexForObject(concept);
+			}
+		}
 	}
 	
 	/**
@@ -2039,7 +2041,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public boolean isConceptNameSearchCaseSensitive() {
-		return "true".equals(Context.getAdministrationService().getGlobalProperty(
+		return Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE, "true"));
 	}
 	
