@@ -505,30 +505,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
-	 * @deprecated moved to ConceptServiceImpl
-	 */
-	@Deprecated
-	public void updateConceptWord(Concept concept) throws APIException {
-		Context.getConceptService().updateConceptWord(concept);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptServiceImpl
-	 */
-	@Deprecated
-	public void updateConceptWords() throws APIException {
-		Context.getConceptService().updateConceptWords();
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
-		Context.getConceptService().updateConceptWords(conceptIdStart, conceptIdEnd);
-	}
-	
-	/**
 	 * @deprecated moved to ConceptService
 	 */
 	@Deprecated

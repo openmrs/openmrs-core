@@ -63,9 +63,6 @@ import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
-
-import org.openmrs.scheduler.SchedulerService;
-import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
@@ -984,7 +981,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
 			mappedConcept.setDateChanged(new Date());
 			ValidateUtil.validate(mappedConcept);
-			updateConceptWord(mappedConcept);
 		}
 		
 		cp.setMappedConcept(mappedConcept);
@@ -1120,30 +1116,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<Concept> getConceptsWithDrugsInFormulary() {
 		return dao.getConceptsWithDrugsInFormulary();
-	}
-	
-	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptIndexes()
-	 */
-	@Deprecated
-	public void updateConceptWords() throws APIException {
-		Context.getConceptService().updateConceptIndexes();
-	}
-	
-	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptIndex(org.openmrs.Concept))
-	 */
-	@Deprecated
-	public void updateConceptWord(Concept concept) throws APIException {
-		Context.getConceptService().updateConceptIndex(concept);
-	}
-	
-	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptWords(java.lang.Integer, java.lang.Integer)
-	 */
-	@Deprecated
-	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
-		Context.getConceptService().updateConceptIndexes(conceptIdStart, conceptIdEnd);
 	}
 	
 	/**

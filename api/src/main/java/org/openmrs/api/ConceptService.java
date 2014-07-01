@@ -985,20 +985,6 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getConceptsWithDrugsInFormulary() throws APIException;
 	
 	/**
-	 * @deprecated since 1.8 use {@link #updateConceptIndex(org.openmrs.Concept)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
-	public void updateConceptWord(Concept concept) throws APIException;
-	
-	/**
-	 * @deprecated since 1.8 use {@link #updateConceptIndexes()}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
-	public void updateConceptWords() throws APIException;
-	
-	/**
 	 * Get ConceptNameTag by its UUID
 	 * 
 	 * @param uuid
@@ -1011,13 +997,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
-	
-	/**
-	 * @deprecated since 1.8use {@link #updateConceptIndexes(Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
-	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 	
 	/**
 	 * Get a ComplexConcept with the given conceptId
