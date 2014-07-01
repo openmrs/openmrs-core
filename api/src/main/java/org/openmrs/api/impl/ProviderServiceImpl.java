@@ -27,6 +27,7 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -280,5 +281,14 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Transactional(readOnly = true)
 	public Provider getProviderByIdentifier(String identifier) {
 		return dao.getProviderByIdentifier(identifier);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProviderService#getUnknownProvider()
+	 */
+	@Override
+	public Provider getUnknownProvider() {
+		return getProviderByUuid(Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID));
 	}
 }

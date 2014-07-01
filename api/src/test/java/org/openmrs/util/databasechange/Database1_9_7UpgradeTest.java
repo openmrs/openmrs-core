@@ -38,6 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -282,8 +283,10 @@ public class Database1_9_7UpgradeTest {
 		
 		//The orderer column for orders with null orderers previously should be set to Unknown Provider
 		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
-		    "select order_id from orders where orderer = (Select provider_id from provider where name ='Unknown Provider')",
-		    true);
+		    "select order_id from orders where orderer = (Select provider_id from provider where uuid ="
+		            + "(select property_value from global_property where property = '"
+		            + OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID + "'))", true);
+		
 		Assert.assertEquals(orderIdsWithNoOrderer.size(), rows.size());
 		Assert.assertTrue(orderIdsWithNoOrderer.contains(rows.get(0).get(0)));
 		Assert.assertTrue(orderIdsWithNoOrderer.contains(rows.get(1).get(0)));

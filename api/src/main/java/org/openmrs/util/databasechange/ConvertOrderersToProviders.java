@@ -28,6 +28,7 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
 import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This changeset creates provider accounts for orderers that have no providers accounts, and then
@@ -87,8 +88,9 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 			}
 			
 			//Set the orderer for orders with null orderer to Unknown Provider
-			statement.execute("UPDATE orders SET orderer = "
-			        + "(SELECT provider_id FROM provider WHERE name ='Unknown Provider') " + "WHERE orderer IS NULL");
+			statement.execute("UPDATE orders SET orderer = " + "(SELECT provider_id FROM provider WHERE uuid ="
+			        + "(SELECT property_value FROM global_property WHERE property = '" + ""
+			        + OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID + "')) " + "WHERE orderer IS NULL");
 			
 			connection.commit();
 		}
