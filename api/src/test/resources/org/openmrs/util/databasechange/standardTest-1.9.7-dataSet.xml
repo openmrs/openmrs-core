@@ -293,6 +293,7 @@
 	<global_property property="concept.true" property_value="7" uuid="6ed7aeb4-0663-11e1-8c99-2b4f0c4f671a"/>
 	<global_property property="concept.false" property_value="8" uuid="7abcc444-0663-11e1-8c99-2b4f0c4f671a"/>
 	<global_property property="concept.defaultConceptMapType" property_value="same-as" uuid="66263ff5-613a-11e1-a8b0-c80aa9edcf4e"/>
+    <global_property property="unknownProviderUuid" property_value="c2299800-cca9-11e0-9572-0800200c9a67" uuid="66263ff5-613a-11e1-a8b0-c80aa9edcf4f" />
 	<concept_stop_word concept_stop_word_id="1" word="A" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972eb"/>
 	<concept_stop_word concept_stop_word_id="2" word="AN" locale="en" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ec"/>
 	<concept_stop_word concept_stop_word_id="3" word="BUT" locale="en_GB" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ed"/>

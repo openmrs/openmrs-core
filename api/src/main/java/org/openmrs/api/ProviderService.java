@@ -329,4 +329,16 @@ public interface ProviderService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Provider getProviderByIdentifier(String identifier);
+	
+	/**
+	 * Gets the unknown provider account, i.e. the provider account that matches the uuid specified
+	 * as the value for the global property
+	 * {@link org.openmrs.util.OpenmrsConstants#GP_UNKNOWN_PROVIDER_UUID}
+	 * 
+	 * @return a {@link Provider}
+	 * @since 1.10
+	 * @should get the unknown provider account
+	 */
+	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	public Provider getUnknownProvider();
 }

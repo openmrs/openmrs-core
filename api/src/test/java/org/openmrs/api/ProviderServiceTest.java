@@ -25,6 +25,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
@@ -34,6 +35,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -561,5 +563,20 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should include retired providers if includeRetired is set to true", method = "getCountOfProviders(String,null)")
 	public void getCountOfProviders_shouldIncludeRetiredProvidersIfIncludeRetiredIsSetToTrue() throws Exception {
 		assertEquals(4, service.getCountOfProviders("provider").intValue());
+	}
+	
+	/**
+	 * @verifies get the unknown provider account
+	 * @see ProviderService#getUnknownProvider()
+	 */
+	@Test
+	public void getUnknownProvider_shouldGetTheUnknownProviderAccount() throws Exception {
+		Provider provider = new Provider();
+		provider.setName("Unknown Provider");
+		provider.setIdentifier("Test Unknown Provider");
+		provider = service.saveProvider(provider);
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID, provider.getUuid(), null);
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		assertEquals(provider, service.getUnknownProvider());
 	}
 }

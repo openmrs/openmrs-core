@@ -26,6 +26,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -260,5 +261,14 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	@Override
 	public Provider getProviderByIdentifier(String identifier) {
 		return dao.getProviderByIdentifier(identifier);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProviderService#getUnknownProvider()
+	 */
+	@Override
+	public Provider getUnknownProvider() {
+		return getProviderByUuid(Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID));
 	}
 }
