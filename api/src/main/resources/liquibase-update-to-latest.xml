@@ -7383,12 +7383,15 @@
         <comment>Checking that all orders have start_date column set</comment>
     </changeSet>
 
-    <changeSet id="20140615-TRUNK-4283" author="dszafranek, wyclif">
+    <changeSet id="20140625-TRUNK-4283" author="dszafranek, wyclif">
         <preConditions onFail="HALT" onFailMessage="orders.orderer column is required as of version 1.10, for more details on how to fix this see https://wiki.openmrs.org/x/OALpAw">
             <or>
-                <sqlCheck expectedResult="0">SELECT COUNT(*) from orders where orderer is NULL</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM orders WHERE orderer IS NULL</sqlCheck>
                 <not>
-                    <sqlCheck expectedResult="0">SELECT COUNT(*) from provider where name = 'Unknown Provider'</sqlCheck>
+                    <sqlCheck expectedResult="0">
+                        SELECT COUNT(*) FROM provider
+                        WHERE uuid = (SELECT property_value FROM global_property WHERE property = 'unknownProviderUuid')
+                    </sqlCheck>
                 </not>
             </or>
         </preConditions>

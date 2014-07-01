@@ -88,7 +88,7 @@ public final class OpenmrsConstants {
 	        .getSpecificationVersion() : (getBuildVersionShort() != null ? getBuildVersionShort() : getVersion());
 	
 	/**
-	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858) 
+	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858)
 	 * defined in MANIFEST.MF(specification-Vendor)
 	 *
 	 * @see #OPENMRS_VERSION_SHORT
@@ -99,7 +99,7 @@ public final class OpenmrsConstants {
 	}
 	
 	/**
-	 * @return build version without alpha characters (eg: 1.10.0.24858) 
+	 * @return build version without alpha characters (eg: 1.10.0.24858)
 	 * defined in MANIFEST.MF (specification-Version)
 	 *
 	 * @see #OPENMRS_VERSION_SHORT
@@ -1075,6 +1075,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID = "order.testSpecimenSourcesConceptUuid";
 	
+	public static final String GP_UNKNOWN_PROVIDER_UUID = "unknownProviderUuid";
+	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1558,6 +1560,8 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, "",
 		        "Specifies the uuid of the concept set where its members represent the possible test specimen sources"));
+		
+		props.add(new GlobalProperty(GP_UNKNOWN_PROVIDER_UUID, "", "Specifies the uuid of the Unknown Provider account"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
