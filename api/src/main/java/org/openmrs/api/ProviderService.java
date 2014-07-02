@@ -339,6 +339,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should get the unknown provider account
 	 */
-	@Authorized( { PrivilegeConstants.GET_PROVIDERS })
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PROVIDERS })
 	public Provider getUnknownProvider();
 }
