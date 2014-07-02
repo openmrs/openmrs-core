@@ -287,6 +287,7 @@ public class ProviderServiceImpl extends BaseOpenmrsService implements ProviderS
 	 * @see org.openmrs.api.ProviderService#getUnknownProvider()
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Provider getUnknownProvider() {
 		return getProviderByUuid(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID));
