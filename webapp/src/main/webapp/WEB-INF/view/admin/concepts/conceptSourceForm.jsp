@@ -15,6 +15,10 @@
 	<form method="post">
 </c:if>
 
+<spring:hasBindErrors name="conceptSource">
+    <openmrs_tag:errorNotify errors="${errors}" />
+</spring:hasBindErrors>
+
 <fieldset>
 <table>
 	<tr>
@@ -22,7 +26,7 @@
 		<td>
 			<spring:bind path="conceptSource.name">
 				<input type="text" name="name" value="<c:out value="${status.value}" />" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<c:if test="${status.errorMessage != ''}"><br/><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 		<td class="description"><openmrs:message code="ConceptSource.name.help"/></td>
@@ -42,7 +46,7 @@
 		<td>
 			<spring:bind path="conceptSource.description">
 				<textarea name="description" rows="3" cols="40"><c:out value="${status.value}" /></textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<c:if test="${status.errorMessage != ''}"><br/><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 		<td class="description"><openmrs:message code="ConceptSource.description.help"/></td>
