@@ -52,10 +52,10 @@ public class ConceptSourceValidator implements Validator {
 	 * @should pass validation if HL7 Code is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
-	public void validate(Object obj, Errors errors) {
-		ConceptSource conceptSource = (ConceptSource) obj;
-		if (conceptSource == null) {
-			errors.rejectValue("conceptSource", "error.general");
+	public void validate(Object obj, Errors errors) throws IllegalArgumentException {
+		if (obj == null || !(obj instanceof ConceptSource)) {
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type "
+			        + ConceptSource.class);
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description.required");
