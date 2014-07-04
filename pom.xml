@@ -815,6 +815,11 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.sonar</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>4.3.2</version>
+				</plugin>		
 			</plugins>
 		</pluginManagement>
 
@@ -1011,5 +1016,10 @@
 		<springVersion>3.2.7.RELEASE</springVersion>
 		<hibernateVersion>3.6.5.Final</hibernateVersion>
 		<customArgLineForTesting />
+		
+		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
+		<sonar.exclusions>src/main/java/org/openmrs/arden/**/*</sonar.exclusions>
+		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
+		<sonar.analysis.mode>incremental</sonar.analysis.mode>
 	</properties>
 </project>
