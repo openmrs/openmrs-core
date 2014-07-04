@@ -942,20 +942,22 @@
 		</profile>
 		<profile>
 			<id>sonar</id>
-			<plugins>
-				<plugin>
-       				<groupId>org.apache.maven.plugins</groupId>
-       				<artifactId>maven-surefire-plugin</artifactId>
-       				<configuration>
-						<excludes>
-							<!-- Exclude tests which fail with JaCoCo -->
-           					<exclude>**/Database1_9_7UpgradeTest.java</exclude>
-           					<exclude>**/OrderTest.java</exclude>
-           					<exclude>**/TestOrderTest.java</exclude>
-         				</excludes>
-					</configuration>
-     			</plugin>
-			</plugins>
+			<build>
+				<plugins>
+					<plugin>
+	       				<groupId>org.apache.maven.plugins</groupId>
+	       				<artifactId>maven-surefire-plugin</artifactId>
+	       				<configuration>
+							<excludes>
+								<!-- Exclude tests which fail with JaCoCo -->
+	           					<exclude>**/Database1_9_7UpgradeTest.java</exclude>
+	           					<exclude>**/OrderTest.java</exclude>
+	           					<exclude>**/TestOrderTest.java</exclude>
+	         				</excludes>
+						</configuration>
+	     			</plugin>
+				</plugins>
+			</build>
 			<properties>
 				<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
 				<sonar.exclusions>src/main/java/org/openmrs/arden/**/*</sonar.exclusions>
