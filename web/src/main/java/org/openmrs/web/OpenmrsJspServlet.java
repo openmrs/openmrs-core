@@ -51,7 +51,7 @@ public class OpenmrsJspServlet extends JspServlet {
 		try {
 			this.destroy();
 		}
-		catch (Throwable ex) {
+		catch (Exception ex) {
 			log.error(ex);
 		}
 	}
@@ -64,7 +64,7 @@ public class OpenmrsJspServlet extends JspServlet {
 			field.setAccessible(true);
 			init((ServletConfig) field.get(this));
 		}
-		catch (Throwable ex) {
+		catch (Exception ex) {
 			log.error(ex);
 		}
 	}
