@@ -24,6 +24,8 @@ import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicException;
 
+import com.google.common.base.Objects;
+
 /**
  * A result from the logic service. A result can be 0-to-n date-values pairs. You can treat the
  * result as a list or easily coerce it into a simple value as needed. <br/>
@@ -836,6 +838,15 @@ public class Result extends ArrayList<Result> {
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (isSingleResult()) {
+			return Objects.hashCode(datatype);
+		} else {
+			return super.hashCode();
+		}
 	}
 	
 	/**
