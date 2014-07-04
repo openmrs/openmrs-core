@@ -781,20 +781,42 @@ public class WebModuleUtil {
 	public static void stopModule(Module mod, ServletContext servletContext) {
 		stopModule(mod, servletContext, false);
 	}
-	
-	private static void stopTasks(Module mod) {
-		SchedulerService schedulerService = Context.getSchedulerService();
-		String PackageName = mod.getPackageName();
-		for (TaskDefinition task : schedulerService.getRegisteredTasks()) {
-			if (task.getTaskClass().startsWith(PackageName))
-				try {
-					schedulerService.shutdownTask(task);
-				}
-				catch (SchedulerException e) {
-					e.printStackTrace();
-				}
-		}
-	}
+
+    /** Stops all tasks started by given module
+    * @param mod
+    */
+    private static void stopTasks(Module mod) {
+
+        SchedulerService schedulerService = Context.getSchedulerService();
+
+        // Get module package name
+        String[] ModulePackageName = mod.getPackageName().split("\\.");
+        for (TaskDefinition task : schedulerService.getRegisteredTasks()) {
+
+            // get task package name
+            String[] TaskPackageName = task.getTaskClass().split("\\.");
+            boolean PackageNamesMatch = true;
+
+            // Compare
+            for (int i = 0; i < ModulePackageName.length; i++) {
+                if (ModulePackageName[i].equals(TaskPackageName[i]))
+                    continue;
+                else {
+                    PackageNamesMatch = false;
+                    break;
+                }
+            }
+            if (PackageNamesMatch)
+                try {
+                    // Stop if equal
+                    schedulerService.shutdownTask(task);
+                }
+                catch (SchedulerException e) {
+                    e.printStackTrace();
+                }
+        }
+    }
+
 	
 	/**
 	 * Reverses all visible activities done by startModule(org.openmrs.module.Module)
