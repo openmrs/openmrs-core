@@ -128,5 +128,4 @@ public class DoubleRange implements Comparable<DoubleRange> {
 		DoubleRange other = (DoubleRange) o;
 		return low.equals(other.low) && high.equals(other.high);
 	}
-	
 }

@@ -102,29 +102,24 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (orderContext != null) {
 				orderType = orderContext.getOrderType();
 			}
-            if (orderType == null) {
-                orderType = getOrderTypeByConcept(concept);
-            }
-            //Check if it is instance of DrugOrder
-            if(orderType == null && order instanceof DrugOrder) {
-                orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
-            }
-            //Check if it is an instance of TestOrder
-            if(orderType == null && order instanceof TestOrder) {
-                orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
-            }
-
+			if (orderType == null) {
+				orderType = getOrderTypeByConcept(concept);
+			}
+			//Check if it is instance of DrugOrder
+			if (orderType == null && order instanceof DrugOrder) {
+				orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+			}
+			//Check if it is an instance of TestOrder
+			if (orderType == null && order instanceof TestOrder) {
+				orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
+			}
+			
 			//this order's order type should match that of the previous
 			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
 				throw new APIException(
 				        "Cannot determine the order type of the order, make sure the concept's class is mapped to an order type");
 			}
-
-            //Check if order type java class matches the class stored in database
-            if (!orderType.getJavaClass().isAssignableFrom(order.getClass())) {
-                throw new APIException("Order type java class does not match the order class "+order.getClass().getName());
-            }
-
+			
 			order.setOrderType(orderType);
 		}
 		if (order.getCareSetting() == null) {
