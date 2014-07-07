@@ -1424,7 +1424,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertEquals(cd4Count, duplicateOrder.getConcept());
 		int initialActiveOrderCount = orderService.getActiveOrders(patient, null, null, null).size();
 		
-		Order order = new Order();
+		TestOrder order = new TestOrder();
 		order.setPatient(patient);
 		order.setCareSetting(orderService.getCareSetting(2));
 		order.setConcept(cd4Count);
@@ -1635,14 +1635,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldSetOrderTypeIfNullButMappedToTheConceptClass() throws Exception {
-		Order order = new Order();
+		TestOrder order = new TestOrder();
 		order.setPatient(patientService.getPatient(7));
 		order.setConcept(conceptService.getConcept(5497));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(orderService.getCareSetting(1));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
-		order = orderService.saveOrder(order, null);
+		orderService.saveOrder(order, null);
 		assertEquals(2, order.getOrderType().getOrderTypeId().intValue());
 	}
 	
@@ -1791,14 +1791,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldDefaultToCareSettingAndOrderTypeDefinedInTheOrderContextIfNull() throws Exception {
-		Order order = new Order();
+		Order order = new TestOrder();
 		order.setPatient(patientService.getPatient(7));
 		Concept trimune30 = conceptService.getConcept(792);
 		order.setConcept(trimune30);
 		order.setOrderer(providerService.getProvider(1));
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setStartDate(new Date());
-		OrderType expectedOrderType = orderService.getOrderType(3);
+		OrderType expectedOrderType = orderService.getOrderType(2);
 		CareSetting expectedCareSetting = orderService.getCareSetting(1);
 		OrderContext orderContext = new OrderContext();
 		orderContext.setOrderType(expectedOrderType);
@@ -2386,7 +2386,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldPassForADiscontinuationOrderWithNoPreviousOrder() throws Exception {
-		Order dcOrder = new Order();
+		TestOrder dcOrder = new TestOrder();
 		dcOrder.setAction(Action.DISCONTINUE);
 		dcOrder.setPatient(patientService.getPatient(2));
 		dcOrder.setCareSetting(orderService.getCareSetting(2));

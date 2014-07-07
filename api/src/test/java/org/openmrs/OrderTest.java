@@ -69,7 +69,8 @@ public class OrderTest {
 			} else {
 				try {
 					fieldValue = field.getType().newInstance();
-				} catch (InstantiationException e) {
+				}
+				catch (InstantiationException e) {
 					fieldValue = null;
 				}
 			}
