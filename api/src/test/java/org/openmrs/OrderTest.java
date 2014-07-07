@@ -67,7 +67,11 @@ public class OrderTest {
 			} else if (field.getType().equals(Double.class)) {
 				fieldValue = 5.0;
 			} else {
-				fieldValue = field.getType().newInstance();
+				try {
+					fieldValue = field.getType().newInstance();
+				} catch (InstantiationException e) {
+					fieldValue = null;
+				}
 			}
 			field.set(original, fieldValue);
 		}
