@@ -131,5 +131,4 @@ public class DoubleRange implements Comparable<DoubleRange> {
 		}
 		return false;
 	}
-	
 }
