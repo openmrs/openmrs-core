@@ -142,6 +142,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			discontinueExistingOrdersIfNecessary(order);
 		}
 		
+		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
+			throw new APIException("Order type class " + order.getOrderType().getJavaClass()
+			        + " does not match the order class " + order.getClass().getName());
+		}
+		
 		if (previousOrder != null) {
 			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
