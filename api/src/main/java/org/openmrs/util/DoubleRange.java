@@ -136,7 +136,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	@Override
 	public int hashCode() {
-	    return Objects.hashCode(low, high);
+		return Objects.hashCode(low, high);
 	}
 	
 }

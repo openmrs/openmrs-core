@@ -150,7 +150,7 @@ public final class Module {
 	
 	@Override
 	public int hashCode() {
-	    return Objects.hashCode(getModuleId());
+		return Objects.hashCode(getModuleId());
 	}
 	
 	/**
