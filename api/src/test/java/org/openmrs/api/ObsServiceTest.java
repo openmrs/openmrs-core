@@ -433,7 +433,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// end create gif file
 		ObsService os = Context.getObsService();
 		
-		Obs complexObs = os.getComplexObs(44, OpenmrsConstants.RAW_VIEW);
+		Obs complexObs = os.getComplexObs(44, ComplexObsHandler.RAW_VIEW);
 		
 		Assert.assertNotNull(complexObs);
 		Assert.assertTrue(complexObs.isComplex());

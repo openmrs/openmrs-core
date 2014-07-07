@@ -446,7 +446,10 @@
 			<td>
 				${status.value}<br/>
 				<a href="${hyperlinkView}" target="_blank"><openmrs:message code="Obs.viewCurrentComplexValue"/></a><br/>
-				${htmlView}<br/><br/>
+				<a href="${hyperlinkView}&download" target="_blank"><openmrs:message code="Obs.downloadCurrentComplexValue"/></a><br/>
+				<c:if test="${htmlView != null}">
+					${htmlView}<br/><br/>
+				</c:if>
 				<openmrs:message code="Obs.valueComplex.uploadNew"/>
 				<input type="file" name="complexDataFile" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

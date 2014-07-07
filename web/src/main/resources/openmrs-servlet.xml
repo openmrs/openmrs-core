@@ -1175,8 +1175,20 @@
         <property name="handlers">
             <map>
                 <entry>
+                    <key><value>BinaryDataHandler</value></key>
+                    <bean class="org.openmrs.web.controller.observation.handler.WebBinaryDataHandler"/>
+                </entry>
+                <entry>
+                    <key><value>BinaryStreamHandler</value></key>
+                    <bean class="org.openmrs.web.controller.observation.handler.WebBinaryStreamHandler"/>
+                </entry>
+                <entry>
                     <key><value>ImageHandler</value></key>
                     <bean class="org.openmrs.web.controller.observation.handler.WebImageHandler"/>
+                </entry>
+                <entry>
+                    <key><value>TextHandler</value></key>
+                    <bean class="org.openmrs.web.controller.observation.handler.WebTextHandler"/>
                 </entry>
             </map>
         </property>

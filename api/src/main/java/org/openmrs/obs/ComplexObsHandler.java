@@ -15,6 +15,7 @@ package org.openmrs.obs;
 
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Interface for handling complex obs. Implementing classes are responsible for the storage and
@@ -34,6 +35,19 @@ import org.openmrs.api.APIException;
  * @since 1.5
  */
 public interface ComplexObsHandler {
+	
+	// Complex observation views
+	public static final String RAW_VIEW = "RAW_VIEW";
+	
+	public static final String TITLE_VIEW = "TITLE_VIEW";
+	
+	public static final String TEXT_VIEW = "TEXT_VIEW";
+	
+	public static final String HTML_VIEW = "HTML_VIEW";
+	
+	public static final String PREVIEW_VIEW = "PREVIEW_VIEW";
+	
+	public static final String URI_VIEW = "URI_VIEW";
 	
 	/**
 	 * Save a complex obs. This extracts the ComplexData from an Obs, stores it to a location
@@ -68,4 +82,20 @@ public interface ComplexObsHandler {
 	 */
 	public boolean purgeComplexData(Obs obs);
 	
+	/**
+	 * Supported views getter
+	 *
+	 * @return all views supported by this handler
+	 * @since 1.12
+	 */
+	public String[] getSupportedViews();
+	
+	/**
+	 * View support check
+	 *
+	 * @param view view type defined by UI and view/handler
+	 * @return true if given view is supported by this handler
+	 * @since 1.12
+	 */
+	public boolean supportsView(String view);
 }

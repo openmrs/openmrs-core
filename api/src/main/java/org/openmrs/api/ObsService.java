@@ -678,6 +678,19 @@ public interface ObsService extends OpenmrsService {
 	public ComplexObsHandler getHandler(String key) throws APIException;
 	
 	/**
+	 * Get the ComplexObsHandler associated with a complex observation
+	 * Returns the ComplexObsHandler.
+	 * Returns null if the Obs.isComplexObs() is false or there is an error
+	 * instantiating the handler class.
+	 *
+	 * @param obs A complex Obs.
+	 * @return ComplexObsHandler for the complex Obs. or null on error.
+	 * @since 1.12
+	 * @should get handler associated with complex observation
+	 */
+	public ComplexObsHandler getHandler(Obs obs) throws APIException;
+	
+	/**
 	 * <u>Add</u> the given map to this service's handlers. This method registers each
 	 * ComplexObsHandler to this service. If the given String key exists, that handler is
 	 * overwritten with the given handler For most situations, this map is set via spring, see the

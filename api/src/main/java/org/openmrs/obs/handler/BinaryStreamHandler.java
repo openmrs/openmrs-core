@@ -21,6 +21,9 @@ import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.util.Assert;
+
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
@@ -35,6 +38,9 @@ import org.openmrs.util.OpenmrsUtil;
  * @since 1.8
  */
 public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHandler {
+	
+	/** Views supported by this handler */
+	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
 	public static final Log log = LogFactory.getLog(BinaryStreamHandler.class);
 	
@@ -57,26 +63,46 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
+		ComplexData complexData = null;
 		
-		try {
-			File file = getComplexDataFile(obs);
-			String[] names = obs.getValueComplex().split("\\|");
-			String originalFilename = names[0];
-			if ("download".equals(view)) {
+		// Raw stream
+		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
+			try {
+				File file = getComplexDataFile(obs);
+				String[] names = obs.getValueComplex().split("\\|");
+				String originalFilename = names[0];
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
+				
+				if (file.exists()) {
+					FileInputStream fileInputStream = new FileInputStream(file);
+					complexData = new ComplexData(originalFilename, fileInputStream);
+				} else {
+					log.error("Unable to find file associated with complex obs " + obs.getId());
+				}
 			}
-			
-			if (file.exists()) {
-				FileInputStream fileInputStream = new FileInputStream(file);
-				obs.setComplexData(new ComplexData(originalFilename, fileInputStream));
-			} else {
-				log.error("Unable to find file associated with complex obs " + obs.getId());
+			catch (Exception e) {
+				throw new APIException("An error occurred while trying to get binary complex obs.", e);
 			}
 		}
-		catch (Exception e) {
-			throw new APIException("An error occurred while trying to get binary complex obs.", e);
+		// No other view supported
+		// NOTE: if adding support for another view, don't forget to update supportedViews list above
+		else {
+			return null;
 		}
+		
+		Assert.notNull(complexData, "Complex data must not be null");
+		complexData.setMIMEType("application/octet-stream");
+		obs.setComplexData(complexData);
+		
 		return obs;
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+	 */
+	@Override
+	public String[] getSupportedViews() {
+		return supportedViews;
 	}
 	
 	/**

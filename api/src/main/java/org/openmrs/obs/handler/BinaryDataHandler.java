@@ -20,6 +20,9 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.util.Assert;
+
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
@@ -34,6 +37,9 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public class BinaryDataHandler extends AbstractHandler implements ComplexObsHandler {
 	
+	/** Views supported by this handler */
+	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
+	
 	public static final Log log = LogFactory.getLog(BinaryDataHandler.class);
 	
 	/**
@@ -45,7 +51,8 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	}
 	
 	/**
-	 * Currently supports all views
+	 * Currently supports the following views:
+	 * org.openmrs.obs.ComplexObsHandler#RAW_VIEW
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
@@ -55,24 +62,42 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		log.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
 		
-		// to handle problem with downloading/saving files with blank spaces or commas in their names
-		// also need to remove the "file" text appended to the end of the file name
-		String[] names = obs.getValueComplex().split("\\|");
-		String originalFilename = names[0];
-		if ("download".equals(view)) {
+		// Raw view (i.e. the file as is)
+		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
+			// to handle problem with downloading/saving files with blank spaces or commas in their names
+			// also need to remove the "file" text appended to the end of the file name
+			String[] names = obs.getValueComplex().split("\\|");
+			String originalFilename = names[0];
 			originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$", "");
+			
+			try {
+				complexData = new ComplexData(originalFilename, OpenmrsUtil.getFileAsBytes(file));
+			}
+			catch (IOException e) {
+				log.error("Trying to read file: " + file.getAbsolutePath(), e);
+			}
+			
+			obs.setComplexData(complexData);
+		}
+		// No other view supported
+		// NOTE: if adding support for another view, don't forget to update supportedViews list above
+		else {
+			return null;
 		}
 		
-		try {
-			complexData = new ComplexData(originalFilename, OpenmrsUtil.getFileAsBytes(file));
-		}
-		catch (IOException e) {
-			log.error("Trying to read file: " + file.getAbsolutePath(), e);
-		}
-		
+		Assert.notNull(complexData, "Complex data must not be null");
+		complexData.setMIMEType("application/octet-stream");
 		obs.setComplexData(complexData);
 		
 		return obs;
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+	 */
+	@Override
+	public String[] getSupportedViews() {
+		return supportedViews;
 	}
 	
 	/**

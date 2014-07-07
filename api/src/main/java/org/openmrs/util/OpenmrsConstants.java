@@ -1837,8 +1837,21 @@ public final class OpenmrsConstants {
 	public static final String LUHN_IDENTIFIER_VALIDATOR = LuhnIdentifierValidator.class.getName();
 	
 	// ComplexObsHandler views
+	
+	/**
+	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
+	 * 
+	 * @deprecated complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
+	 */
+	@Deprecated
 	public static final String RAW_VIEW = "RAW_VIEW";
 	
+	/**
+	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
+	 * 
+	 * @deprecated complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
+	 */
+	@Deprecated
 	public static final String TEXT_VIEW = "TEXT_VIEW";
 	
 	/** The data type to return on failing to load a custom data type. */
