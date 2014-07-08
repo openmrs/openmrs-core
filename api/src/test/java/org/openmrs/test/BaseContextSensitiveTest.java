@@ -75,6 +75,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.context.ContextConfiguration;
@@ -151,6 +152,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	/**
 	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
+	 * 
+	 * @since 1.11
 	 */
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
@@ -702,6 +705,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @throws Exception
 	 */
 	public void deleteAllData() throws Exception {
+		Context.clearSession();
+		
 		Connection connection = getConnection();
 		
 		turnOffDBConstraints(connection);
@@ -719,18 +724,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// do the actual deleting/truncating
 		DatabaseOperation.DELETE_ALL.execute(dbUnitConn, dataset);
 		
-		turnOnDBConstraints(connection);
-		
-		// clear the (hibernate) session to make sure nothing is cached, etc
-		Context.clearSession();
-		
-		// needed because the authenticatedUser is the only object that sticks
-		// around after tests and the clearSession call
-		if (Context.isSessionOpen())
-			Context.logout();
-		
-		//Commit, but note that it will be committed even earlier when turning on DB constraints
 		connection.commit();
+		
+		turnOnDBConstraints(connection);
 		
 		isBaseSetup = false;
 	}
@@ -796,17 +792,31 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		Context.clearSession();
 	}
 	
+	@After
+	public void clearSessionAfterEachTest() {
+		// clear the session to make sure nothing is cached, etc
+		Context.clearSession();
+		
+		// needed because the authenticatedUser is the only object that sticks
+		// around after tests and the clearSession call
+		if (Context.isSessionOpen())
+			Context.logout();
+	}
+	
 	/**
 	 * Called after each test class. This is called once per test class that extends
 	 * {@link BaseContextSensitiveTest}. Needed so that "unit of work" that is the test class is
 	 * surrounded by a pair of open/close session calls.
 	 * 
 	 * @throws Exception
-	 * @deprecated As of 1.10 it does nothing.
 	 */
 	@AfterClass
-	@Deprecated
 	public static void closeSessionAfterEachClass() throws Exception {
+		// close any modules that might have been loaded by the @StartModules class annotation
+		ModuleUtil.shutdown();
+		
+		// clean up the session so we don't leak memory
+		Context.closeSession();
 	}
 	
 	/**

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.validator.EncounterRoleValidator;
 import org.springframework.validation.BindException;
@@ -13,7 +14,7 @@ import org.springframework.validation.Errors;
 /**
  * Tests methods on the {@link EncounterTypeValidator} class.
  */
-public class EncounterTypeValidatorTest {
+public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}

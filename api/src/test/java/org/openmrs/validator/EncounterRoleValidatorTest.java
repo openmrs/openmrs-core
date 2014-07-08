@@ -21,6 +21,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -28,7 +29,7 @@ import org.springframework.validation.Errors;
 /**
  * Contains methods for testing {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}
  */
-public class EncounterRoleValidatorTest {
+public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}

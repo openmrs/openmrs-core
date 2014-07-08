@@ -13,6 +13,9 @@
  */
 package org.openmrs.api.context;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mockito.InjectMocks;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
@@ -31,9 +34,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.messagesource.MessageSourceService;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Helps to mock or spy on services. It can be used with {@link InjectMocks}. See
  * {@link org.openmrs.module.ModuleUtilTest} for example. In general you should always try to refactor code first so
@@ -41,7 +41,7 @@ import java.util.Map;
  * Context.get...Service with fields, which are injected through a constructor.
  *
  * @deprecated Avoid using this by not calling Context.get...Service() in your code.
- * @since 1.10
+ * @since 1.11
  */
 @Deprecated
 public class ContextMockHelper {
@@ -100,8 +100,12 @@ public class ContextMockHelper {
 		realServices.clear();
 		
 		if (userContextMocked) {
-			Context.setUserContext(realUserContext);
-			realUserContext = null;
+			if (realUserContext != null) {
+				Context.setUserContext(realUserContext);
+				realUserContext = null;
+			} else {
+				Context.clearUserContext();
+			}
 			userContextMocked = false;
 		}
 	}
@@ -210,6 +214,7 @@ public class ContextMockHelper {
 			catch (Exception e) {
 				//let's not fail if context is not configured
 			}
+			
 			userContextMocked = true;
 		}
 		
