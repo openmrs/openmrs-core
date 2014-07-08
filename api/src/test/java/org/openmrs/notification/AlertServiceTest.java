@@ -9,6 +9,30 @@ import org.openmrs.test.Verifies;
 
 public class AlertServiceTest extends BaseContextSensitiveTest {
 	
+	@Test
+	@Verifies(value = "should add an alert with message of length equals Text Max Length", method = "notifySuperUsers(String,Exception,null)")
+	public void notifySuperUsers_shouldAddAnAlertWithMessageOfLengthEqualsTextMaxLength() {
+		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", new Exception(), "test");
+		
+		Alert lastAlert = Context.getAlertService().getAlertsByUser(null).iterator().next();
+		
+		Assert.assertEquals(Alert.TEXT_MAX_LENGTH, lastAlert.getText().length());
+	}
+	
+	@Test
+	@Verifies(value = "should add an alert with message text if cause is null", method = "notifySuperUsers(String,Exception,null)")
+	public void notifySuperUsers_shouldAddAnAlertWithMessageTextIfCauseIsNull() {
+		
+		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, "test");
+		
+		Alert lastAlert = Context.getAlertService().getAlertsByUser(null).iterator().next();
+		
+		String expectedText = Context.getMessageSourceService().getMessage("Module.startupError.notification.message",
+		    new Object[] { "test" }, Context.getLocale());
+		
+		Assert.assertEquals(expectedText, lastAlert.getText());
+	}
+	
 	/**
 	 * @see {@link AlertService#notifySuperUsers(String,Exception,null)}
 	 * 
