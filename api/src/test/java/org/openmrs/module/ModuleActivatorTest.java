@@ -15,6 +15,7 @@ package org.openmrs.module;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -78,6 +79,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
+	@Ignore("TRUNK-4418 - Fix random failure of ModuleActivatorTest")
 	public void shouldStopDependantModulesOnStopModule() throws Exception {
 		//since module2 depends on module1, and module3 depends on module2
 		//stopping module1 should also stop both module2 and module3
