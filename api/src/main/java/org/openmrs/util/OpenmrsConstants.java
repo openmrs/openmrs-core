@@ -1030,7 +1030,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID = "order.testSpecimenSourcesConceptUuid";
 	
-	public static final String GP_UNKNOWN_PROVIDER_UUID = "unknownProviderUuid";
+	public static final String GP_UNKNOWN_PROVIDER_UUID = "provider.unknownProviderUuid";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
