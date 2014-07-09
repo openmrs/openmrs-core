@@ -6565,20 +6565,19 @@
         <comment>Checking if there are any drugs with the dose_strength specified but no units</comment>
     </changeSet>
 
-    <!-- If the order_type table has already been updated(has the new columns added in 1.10),
+    <!-- If the order_type table is empty, or has already been updated(has the new columns added in 1.10),
         assume the admin has set up things properly, otherwise they should have exactly one order type
         row which MUST be for drug orders for the scripts to auto update the table for them -->
-    <changeSet id="201404091109" author="wyclif">
+    <changeSet id="201404091110" author="wyclif">
         <preConditions onFail="HALT" onFailMessage="Cannot update order_type table, please see this page https://wiki.openmrs.org/x/OALpAw for how to modify the order_type table before upgrading">
             <or>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM order_type</sqlCheck>
                 <and>
                     <columnExists tableName="order_type" columnName="java_class_name" />
                     <columnExists tableName="order_type" columnName="parent" />
                 </and>
                 <and>
-                    <sqlCheck expectedResult="1">
-                        SELECT COUNT(*) FROM order_type
-                    </sqlCheck>
+                    <sqlCheck expectedResult="1">SELECT COUNT(*) FROM order_type</sqlCheck>
                     <sqlCheck expectedResult="1">
                         SELECT COUNT(*) FROM order_type WHERE uuid = '131168f4-15f5-102d-96e4-000c29c2a5d7';
                     </sqlCheck>
