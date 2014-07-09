@@ -27,7 +27,19 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.proxy.HibernateProxy;
-import org.openmrs.*;
+import org.openmrs.CareSetting;
+import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.Provider;
+import org.openmrs.TestOrder;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.OrderContext;
@@ -128,6 +140,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			order.setCareSetting(careSetting);
 		}
 		
+		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
+			throw new APIException("Order type class " + order.getOrderType().getJavaClass()
+			        + " does not match the order class " + order.getClass().getName());
+		}
+		
 		if (REVISE == order.getAction()) {
 			if (previousOrder == null) {
 				throw new APIException("Previous Order is required for a revised order");
@@ -135,11 +152,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			stopOrder(previousOrder, order.getStartDate());
 		} else if (DISCONTINUE == order.getAction()) {
 			discontinueExistingOrdersIfNecessary(order);
-		}
-		
-		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
-			throw new APIException("Order type class " + order.getOrderType().getJavaClass()
-			        + " does not match the order class " + order.getClass().getName());
 		}
 		
 		if (previousOrder != null) {
