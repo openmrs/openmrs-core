@@ -969,7 +969,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	        throws APIException {
 		
 		if (!StringUtils.hasLength(implementationId)) {
-			throw new APIException("The implementationid cannot be empty");
+			throw new APIException("The implementation ID cannot be empty");
 		}
 		if (!StringUtils.hasLength(description)) {
 			throw new APIException("The description cannot be empty");
