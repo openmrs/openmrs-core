@@ -51,7 +51,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
-import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -2071,63 +2070,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
-	 *           when given date exited is null
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw error when given date exited is null", method = "exitFromCare(Patient,Date,Concept)")
-	public void exitFromCare_shouldThrowErrorWhenGivenDateExitedIsNull() throws Exception {
-		// run with correctly-formed parameters first to make sure that the
-		// null is the problem when running with a null parameter
-		try {
-			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
-		}
-		catch (Exception e) {
-			fail("failed with correct parameters");
-		}
-		// now try a null date parameter
-		patientService.exitFromCare(patientService.getPatient(8), null, new Concept());
-	}
-	
-	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
-	 *           when given patient is null
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw error when given patient is null", method = "exitFromCare(Patient,Date,Concept)")
-	public void exitFromCare_shouldThrowErrorWhenGivenPatientIsNull() throws Exception {
-		// run with correctly-formed parameters first to make sure that the
-		// null is the problem when running with a null parameter
-		try {
-			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
-		}
-		catch (Exception e) {
-			fail("failed with correct parameters");
-		}
-		// now try a null patient parameter
-		patientService.exitFromCare(null, new Date(), new Concept());
-	}
-	
-	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
-	 *           when given reason for exist is null
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should throw error when given reason for exist is null", method = "exitFromCare(Patient,Date,Concept)")
-	public void exitFromCare_shouldThrowErrorWhenGivenReasonForExistIsNull() throws Exception {
-		// run with correctly-formed parameters first to make sure that the
-		// null is the problem when running with a null parameter
-		try {
-			patientService.exitFromCare(patientService.getPatient(7), new Date(), new Concept());
-		}
-		catch (Exception e) {
-			fail("failed with correct parameters");
-		}
-		// now try a null reason parameter
-		patientService.exitFromCare(patientService.getPatient(8), new Date(), null);
-	}
-	
-	/**
 	 * @see {@link PatientService#getPatients(String, String, java.util.List, boolean)}
 	 */
 	@Test
@@ -3478,6 +3420,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Creates a new Global Property to lock patient identifier types by setting its value
+	 * 
 	 * @param propertyValue value for patient identifier types locked GP
 	 */
 	public void createPatientIdentifierTypeLockedGPAndSetValue(String propertyValue) {
@@ -3487,7 +3430,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientService#savePatientIdentifierType(PatientIdentifierType)}}
+	 * @see {@link PatientService#savePatientIdentifierType(PatientIdentifierType)}
 	 * @throws PatientIdentifierTypeLockedException
 	 */
 	@Test(expected = PatientIdentifierTypeLockedException.class)
@@ -3502,7 +3445,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientService#retirePatientIdentifierType(PatientIdentifierType, String)}}
+	 * @see {@link PatientService#retirePatientIdentifierType(PatientIdentifierType, String)}
 	 * @throws PatientIdentifierTypeLockedException
 	 */
 	@Test(expected = PatientIdentifierTypeLockedException.class)
@@ -3516,7 +3459,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientService#unretirePatientIdentifierType(PatientIdentifierType)}}
+	 * @see {@link PatientService#unretirePatientIdentifierType(PatientIdentifierType)}
 	 * @throws PatientIdentifierTypeLockedException
 	 */
 	@Test(expected = PatientIdentifierTypeLockedException.class)
@@ -3530,7 +3473,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientService#purgePatientIdentifierType(PatientIdentifierType)}}
+	 * @see {@link PatientService#purgePatientIdentifierType(PatientIdentifierType)}
 	 * @throws PatientIdentifierTypeLockedException
 	 */
 	@Test(expected = PatientIdentifierTypeLockedException.class)
