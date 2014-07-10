@@ -2236,7 +2236,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *      Integer, Integer)
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        Integer start, Integer length) {
 		List<ConceptClass> mappedClasses = getConceptClassesOfOrderTypes();

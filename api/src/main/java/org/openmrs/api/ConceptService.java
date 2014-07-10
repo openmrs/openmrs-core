@@ -2127,6 +2127,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 * @should get orderable concepts
 	 */
+    @Transactional(readOnly = true)
 	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        Integer start, Integer length);
 }
