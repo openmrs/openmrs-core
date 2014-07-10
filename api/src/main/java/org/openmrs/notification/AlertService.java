@@ -184,6 +184,8 @@ public interface AlertService extends OpenmrsService {
 	 * @param messageCode The alert message code from messages.properties
 	 * @param cause The exception that was thrown, method will work if cause is null
 	 * @param messageArguments The arguments for the coded message
+	 * @should add an alert with message of length equals Text Max Length
+	 * @should add an alert with message text if cause is null
 	 * @should add an alert to the database
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
