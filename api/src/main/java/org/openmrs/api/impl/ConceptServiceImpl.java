@@ -61,6 +61,7 @@ import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.ConceptsLockedException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
@@ -2381,5 +2382,27 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			withAnyOfTheseTypesOrOrderOfPreference = Collections.EMPTY_LIST;
 		}
 		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getOrderables(String, java.util.List, boolean, Integer, Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptSearchResult> getOrderables(String phrase, List<Locale> locales, boolean includeRetired,
+	        Integer start, Integer length) {
+		List<ConceptClass> mappedClasses = new ArrayList<ConceptClass>();
+		AdministrationService administrationService = Context.getAdministrationService();
+		List<List<Object>> result = administrationService.executeSQL(
+		    "SELECT DISTINCT concept_class_id FROM order_type_class_map", true);
+		for (List<Object> temp : result) {
+			for (Object value : temp) {
+				if (value != null) {
+					mappedClasses.add(this.getConceptClass((Integer) value));
+				}
+			}
+		}
+		return dao.getConcepts(phrase, locales, false, mappedClasses, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+		    Collections.EMPTY_LIST, null, start, length);
 	}
 }
