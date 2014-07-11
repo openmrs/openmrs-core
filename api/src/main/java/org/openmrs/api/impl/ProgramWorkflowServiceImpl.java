@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  * invoked by itself. Spring injection is used to inject this implementation into the
  * ServiceContext. Which implementation is injected is determined by the spring application context
  * file: /metadata/api/spring/applicationContext.xml
- * 
+ *
  * @see org.openmrs.api.ProgramWorkflowService
  */
 @Transactional
@@ -217,7 +217,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @deprecated use{@link #unretireProgram(Program program)}
+	 * @deprecated use{@link #unretireProgram(Program program)} 
 	 * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
 	@Deprecated
@@ -449,7 +449,51 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      org.openmrs.Concept, java.util.Date)
 	 */
 	public void triggerStateConversion(Patient patient, Concept trigger, Date dateConverted) {
-		throw new APIException("No longer supported, this functionality was moved to the exit from care module");
+		
+		// Check input parameters
+		if (patient == null) {
+			throw new APIException("Attempting to convert state of an invalid patient");
+		}
+		if (trigger == null) {
+			throw new APIException("Attempting to convert state for a patient without a valid trigger concept");
+		}
+		if (dateConverted == null) {
+			throw new APIException("Invalid date for converting patient state");
+		}
+		
+		for (PatientProgram patientProgram : getPatientPrograms(patient, null, null, null, null, null, false)) {
+			//skip past patient programs that already completed
+			if (patientProgram.getDateCompleted() == null) {
+				Set<ProgramWorkflow> workflows = patientProgram.getProgram().getWorkflows();
+				for (ProgramWorkflow workflow : workflows) {
+					// (getWorkflows() is only returning over nonretired workflows)
+					PatientState patientState = patientProgram.getCurrentState(workflow);
+					
+					// #1080 cannot exit patient from care  
+					// Should allow a transition from a null state to a terminal state
+					// Or we should require a user to ALWAYS add an initial workflow/state when a patient is added to a program
+					ProgramWorkflowState currentState = (patientState != null) ? patientState.getState() : null;
+					ProgramWorkflowState transitionState = workflow.getState(trigger);
+					
+					log.debug("Transitioning from current state [" + currentState + "]");
+					log.debug("|---> Transitioning to final state [" + transitionState + "]");
+					
+					if (transitionState != null && workflow.isLegalTransition(currentState, transitionState)) {
+						patientProgram.transitionToState(transitionState, dateConverted);
+						log.debug("State Conversion Triggered: patientProgram=" + patientProgram + " transition from "
+						        + currentState + " to " + transitionState + " on " + dateConverted);
+					}
+				}
+				
+				// #1068 - Exiting a patient from care causes "not-null property references
+				// a null or transient value: org.openmrs.PatientState.dateCreated". Explicitly
+				// calling the savePatientProgram() method will populate the metadata properties.
+				// 
+				// #1067 - We should explicitly save the patient program rather than let 
+				// Hibernate do so when it flushes the session.
+				Context.getProgramWorkflowService().savePatientProgram(patientProgram);
+			}
+		}
 	}
 	
 	/**

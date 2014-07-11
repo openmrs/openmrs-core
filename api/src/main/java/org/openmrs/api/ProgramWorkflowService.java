@@ -454,10 +454,9 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
-	 * @deprecated moved to exit from care module
 	 * Triggers any ConceptStateConversion that exists for the passed <code>reasonForExit</code>
 	 * concept and any ProgramWorkflow in the PatientPrograms for the <code>patient</code>
-	 *
+	 * 
 	 * @param patient - the Patient to trigger the ConceptStateConversion on
 	 * @param reasonForExit - the Concept to trigger the ConceptStateConversion
 	 * @param dateConverted - the Date of the ConceptStateConversion
@@ -468,7 +467,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should fail if date converted is invalid
 	 * @should skip past patient programs that are already completed
 	 */
-	@Deprecated
 	public void triggerStateConversion(Patient patient, Concept reasonForExit, Date dateConverted) throws APIException;
 	
 	/**

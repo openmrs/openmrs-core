@@ -39,6 +39,7 @@ import org.openmrs.activelist.Problem;
 import org.openmrs.activelist.ProblemModifier;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.IdentifierNotUniqueException;
@@ -56,7 +57,7 @@ import org.openmrs.util.OpenmrsConstants;
 /**
  * DWR patient methods. The methods in here are used in the webapp to get data from the database via
  * javascript calls.
- * 
+ *
  * @see PatientService
  */
 public class DWRPatientService implements GlobalPropertyListener {
@@ -68,7 +69,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	/**
 	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
 	 * search. Else, do a name search
-	 * 
+	 *
 	 * @param searchValue string to be looked for
 	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return Collection<Object> of PatientListItem or String
@@ -92,7 +93,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	/**
 	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
 	 * search. Else, do a name search
-	 * 
+	 *
 	 * @see PatientService#getPatients(String, String, List, boolean, int, Integer)
 	 * @param searchValue string to be looked for
 	 * @param includeVoided true/false whether or not to included voided patients
@@ -172,7 +173,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * matching patients (depending on values of start and length parameters) while the keys are are
 	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
 	 * matches will be returned from the start index if specified.
-	 * 
+	 *
 	 * @param searchValue patient name or identifier
 	 * @param start the beginning index
 	 * @param length the number of matching patients to return
@@ -303,7 +304,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	/**
 	 * Convenience method for dwr/javascript to convert a patient id into a Patient object (or at
 	 * least into data about the patient)
-	 * 
+	 *
 	 * @param patientId the {@link Patient#getPatientId()} to match on
 	 * @return a truncated Patient object in the form of a PatientListItem
 	 */
@@ -321,7 +322,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * find all patients with duplicate attributes (searchOn)
-	 * 
+	 *
 	 * @param searchOn
 	 * @return list of patientListItems
 	 */
@@ -354,7 +355,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
 	 * @param patientId
 	 * @param identifierType
 	 * @param identifier
@@ -434,7 +435,140 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Auto generated method comment
-	 * 
+	 *
+	 * @param patientId
+	 * @param reasonForExitId
+	 * @param dateOfExit
+	 * @param causeOfDeath
+	 * @param otherReason
+	 * @return
+	 */
+	public String exitPatientFromCare(Integer patientId, Integer exitReasonId, String exitDateStr,
+	        Integer causeOfDeathConceptId, String otherReason) {
+		log.debug("Entering exitfromcare with [" + patientId + "] [" + exitReasonId + "] [" + exitDateStr + "]");
+		String ret = "";
+		
+		PatientService ps = Context.getPatientService();
+		ConceptService cs = Context.getConceptService();
+		
+		Patient patient = null;
+		try {
+			patient = ps.getPatient(patientId);
+		}
+		catch (Exception e) {
+			patient = null;
+		}
+		
+		if (patient == null) {
+			ret = "Unable to find valid patient with the supplied identification information - cannot exit patient from care";
+		}
+		
+		// Get the exit reason concept (if possible)
+		Concept exitReasonConcept = null;
+		try {
+			exitReasonConcept = cs.getConcept(exitReasonId);
+		}
+		catch (Exception e) {
+			exitReasonConcept = null;
+		}
+		
+		// Exit reason error handling
+		if (exitReasonConcept == null) {
+			ret = "Unable to locate reason for exit in dictionary - cannot exit patient from care";
+		}
+		
+		// Parse the exit date
+		Date exitDate = null;
+		if (exitDateStr != null) {
+			SimpleDateFormat sdf = Context.getDateFormat();
+			try {
+				exitDate = sdf.parse(exitDateStr);
+			}
+			catch (ParseException e) {
+				exitDate = null;
+			}
+		}
+		
+		// Exit date error handling
+		if (exitDate == null) {
+			ret = "Invalid date supplied - cannot exit patient from care without a valid date.";
+		}
+		
+		// If all data is provided as expected
+		if (patient != null && exitReasonConcept != null && exitDate != null) {
+			
+			// need to check first if this is death or not
+			String patientDiedConceptId = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
+			
+			Concept patientDiedConcept = null;
+			if (patientDiedConceptId != null) {
+				patientDiedConcept = cs.getConcept(patientDiedConceptId);
+			}
+			
+			// If there is a concept for death in the dictionary
+			if (patientDiedConcept != null) {
+				
+				// If the exist reason == patient died
+				if (exitReasonConcept.equals(patientDiedConcept)) {
+					
+					Concept causeOfDeathConcept = null;
+					try {
+						causeOfDeathConcept = cs.getConcept(causeOfDeathConceptId);
+					}
+					catch (Exception e) {
+						causeOfDeathConcept = null;
+					}
+					
+					// Cause of death concept exists
+					if (causeOfDeathConcept != null) {
+						try {
+							ps.processDeath(patient, exitDate, causeOfDeathConcept, otherReason);
+						}
+						catch (Exception e) {
+							log.warn("Caught error", e);
+							ret = "Internal error while trying to process patient death - unable to proceed. Cause: "
+							        + e.getMessage();
+						}
+					}
+					// cause of death concept does not exist
+					else {
+						ret = "Unable to locate cause of death in dictionary - cannot proceed";
+					}
+				}
+
+				// Otherwise, we process this as an exit
+				else {
+					try {
+						ps.exitFromCare(patient, exitDate, exitReasonConcept);
+					}
+					catch (Exception e) {
+						log.warn("Caught error", e);
+						ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time. Cause: "
+						        + e.getMessage();
+					}
+				}
+			}
+
+			// If the system does not recognize death as a concept, then we exit from care
+			else {
+				try {
+					ps.exitFromCare(patient, exitDate, exitReasonConcept);
+				}
+				catch (Exception e) {
+					log.warn("Caught error", e);
+					ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time. Cause: "
+					        + e.getMessage();
+				}
+			}
+			log.debug("Exited from care, it seems");
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Auto generated method comment
+	 *
 	 * @param patientId
 	 * @param locationId
 	 * @return
@@ -462,7 +596,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Creates an Allergy Item
-	 * 
+	 *
 	 * @param patientId
 	 * @param allergenId
 	 * @param type
@@ -486,7 +620,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Save an Allergy
-	 * 
+	 *
 	 * @param activeListItemId
 	 * @param allergenId Concept ID
 	 * @param type
@@ -508,7 +642,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Resolve an allergy
-	 * 
+	 *
 	 * @param activeListId
 	 * @param resolved
 	 * @param reason
@@ -521,7 +655,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Voids the Allergy
-	 * 
+	 *
 	 * @param activeListId
 	 * @param reason
 	 */
@@ -535,7 +669,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Creates a Problem Item
-	 * 
+	 *
 	 * @param patientId
 	 * @param problemId
 	 * @param status
@@ -553,7 +687,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Saves the Problem
-	 * 
+	 *
 	 * @param activeListId
 	 * @param problemId
 	 * @param status
@@ -572,7 +706,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Remove a problem, sets the end date
-	 * 
+	 *
 	 * @param activeListId
 	 * @param resolved
 	 * @param reason
@@ -587,7 +721,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Voids the Problem
-	 * 
+	 *
 	 * @param activeListId
 	 * @param reason
 	 */
@@ -601,7 +735,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Simple utility method to parse the date object into the correct, local format
-	 * 
+	 *
 	 * @param date
 	 * @return
 	 */
@@ -638,7 +772,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	
 	/**
 	 * Fetch the max results value from the global properties table
-	 * 
+	 *
 	 * @return Integer value for the person search max results global property
 	 */
 	private static Integer getMaximumSearchResults() {

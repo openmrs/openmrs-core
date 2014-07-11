@@ -696,7 +696,6 @@ public interface PatientService extends OpenmrsService {
 	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException, SerializationException;
 	
 	/**
-	 * @deprecated moved to exit from care module
 	 * Convenience method to establish that a patient has left the care center. This API call is
 	 * responsible for: 1) Closing workflow statuses 2) Terminating programs 3) Discontinuing orders
 	 * 4) Flagging patient table (if applicable) 5) Creating any relevant observations about the
@@ -716,7 +715,6 @@ public interface PatientService extends OpenmrsService {
 	 * @should throw error when given reason for exist is null
 	 * @should be tested more thoroughly
 	 */
-	@Deprecated
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) throws APIException;
 	

@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptStateConversion;
+import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
@@ -385,6 +386,29 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		program = Context.getProgramWorkflowService().saveProgram(program);
 		Assert.assertEquals("new description", program.getDescription());
+	}
+	
+	/**
+	 * @see {@link ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)}
+	 */
+	@Test
+	@Verifies(value = "should skip past patient programs that are already completed", method = "triggerStateConversion(Patient,Concept,Date)")
+	public void triggerStateConversion_shouldSkipPastPatientProgramsThatAreAlreadyCompleted() throws Exception {
+		Integer patientProgramId = 1;
+		PatientProgram pp = pws.getPatientProgram(patientProgramId);
+		Date originalDateCompleted = new Date();
+		pp.setDateCompleted(originalDateCompleted);
+		pp = pws.savePatientProgram(pp);
+		
+		Concept diedConcept = cs.getConcept(16);
+		//sanity check to ensure the patient died is a possible state in one of the work flows
+		Assert.assertNotNull(pp.getProgram().getWorkflow(1).getState(diedConcept));
+		
+		Thread.sleep(10);//delay so that we have a time difference
+		pws.triggerStateConversion(pp.getPatient(), diedConcept, new Date());
+		
+		pp = pws.getPatientProgram(patientProgramId);
+		Assert.assertEquals(originalDateCompleted, pp.getDateCompleted());
 	}
 	
 	@Test
