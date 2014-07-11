@@ -13,14 +13,9 @@
  */
 package org.openmrs.order;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.OrderType;
-import org.openmrs.Patient;
-import org.openmrs.api.APIException;
 
 /**
  * Contains convenience methods for working with Orders.
@@ -28,22 +23,6 @@ import org.openmrs.api.APIException;
 public class OrderUtil {
 	
 	private static final Log log = LogFactory.getLog(OrderUtil.class);
-	
-	/**
-	 * @deprecated as of 1.10 where an encounter and provider are require to discontinue an order
-	 * @param patient
-	 * @param discontinueReason
-	 * @param discontinueDate
-	 * @should discontinue all orders for the given patient if none are yet discontinued
-	 * @should not affect orders that were already discontinued on the specified date
-	 * @should not affect orders that end before the specified date
-	 * @should not affect orders that start after the specified date
-	 */
-	@Deprecated
-	public static void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
-		throw new APIException(
-		        "No longer supported as of 1.10, because an encounter and orderer are required to discontinue an order");
-	}
 	
 	/**
 	 * Checks whether orderType2 matches or is a sub type of orderType1
