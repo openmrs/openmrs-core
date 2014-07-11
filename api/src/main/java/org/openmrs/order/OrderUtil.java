@@ -20,18 +20,17 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 
 /**
  * Contains convenience methods for working with Orders.
- *
  */
 public class OrderUtil {
 	
 	private static final Log log = LogFactory.getLog(OrderUtil.class);
 	
 	/**
-	 * Discontinues all current orders for the given <code>patient</code>
-	 *
+	 * @deprecated as of 1.10 where an encounter and provider are require to discontinue an order
 	 * @param patient
 	 * @param discontinueReason
 	 * @param discontinueDate
@@ -40,14 +39,10 @@ public class OrderUtil {
 	 * @should not affect orders that end before the specified date
 	 * @should not affect orders that start after the specified date
 	 */
+	@Deprecated
 	public static void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
-		if (log.isDebugEnabled()) {
-			log.debug("In discontinueAll with patient " + patient + " and concept " + discontinueReason + " and date "
-			        + discontinueDate);
-		}
-		
-		//TODO discontinue all active drug orders for a patient
-		//See https://tickets.openmrs.org/browse/TRUNK-4185
+		throw new APIException(
+		        "No longer supported as of 1.10, because an encounter and orderer are required to discontinue an order");
 	}
 	
 	/**
