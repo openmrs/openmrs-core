@@ -1039,8 +1039,8 @@
 		<customArgLineForTesting />
 		
 		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
-		<sonar.exclusions>src/main/java/org/openmrs/arden/**/*</sonar.exclusions>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
+		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>incremental</sonar.analysis.mode>
 	</properties>
 </project>
