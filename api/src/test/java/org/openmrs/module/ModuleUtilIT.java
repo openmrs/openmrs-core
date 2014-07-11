@@ -92,22 +92,6 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#checkOpenmrsCoreModulesStarted()}
-	 */
-	@Test(expected = OpenmrsCoreModuleException.class)
-	@Verifies(value = "should throw ModuleException if a core module is not started", method = "checkOpenmrsCoreModulesStarted()")
-	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfACoreModuleIsNotStarted() throws Exception {
-		
-		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "false");
-		try {
-			ModuleUtil.checkOpenmrsCoreModulesStarted();
-		}
-		finally {
-			runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
-		}
-	}
-	
-	/**
 	 * @see {@link ModuleUtil#getMandatoryModules()}
 	 */
 	@Test

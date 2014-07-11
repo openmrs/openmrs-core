@@ -5,7 +5,6 @@
 		<version>1.12.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs-release-test</artifactId>
 	<name>openmrs-release-test</name>
     <description>Jbehave release testing infrastructure to test trunk.
@@ -118,7 +117,7 @@
 		<profile>
             <!-- This profile is used to run all the tests in the release test server. This will delete and recreates
             the database with demo data and runs all the jbehave tests-->
-			<id>integration-test</id>
+			<id>release-test</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>

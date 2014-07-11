@@ -38,7 +38,6 @@
 		<module>api</module>
 		<module>web</module>
 		<module>webapp</module>
-		<module>release-test</module>
 	</modules>
 
 	<dependencyManagement>
@@ -600,6 +599,11 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.5</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>2.4</version>
 				</plugin>
@@ -861,14 +865,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.5</version>
 				<configuration>
-					<includes>
-						<include>**/*Test.java</include>
-					</includes>
-					<excludes>
-     					<exclude>**/*PerformanceTest.java</exclude>
-          			</excludes>
+					<failIfNoTests>false</failIfNoTests>
 					<argLine>-Duser.language=en -Duser.region=US -Xmx512m -XX:MaxPermSize=512m ${customArgLineForTesting}</argLine>
 				</configuration>
 			</plugin>
@@ -881,58 +879,75 @@
 	
 	<profiles>
 		<profile>
-			<id>integration</id>
+			<id>skip-default-test</id>
 			<build>
 				<plugins>
 					<plugin>
         				<groupId>org.apache.maven.plugins</groupId>
         				<artifactId>maven-surefire-plugin</artifactId>
-        				<configuration>
-							<includes>
-            					<include>**/*IT.java</include>
-            					<include>**/*Test.java</include>
-          					</includes>
-          					<excludes>
-          						<exclude>**/*PerformanceIT.java</exclude>
-            					<exclude>**/*PerformanceTest.java</exclude>
-          					</excludes>
-						</configuration>
+        				<executions>
+        					<execution>
+        						<id>default-test</id>
+        						<configuration>
+        							<skipTests>true</skipTests>
+        						</configuration>
+        					</execution>
+        				</executions>
+        			</plugin>
+        		</plugins>
+        	</build>
+		</profile>
+		<profile>
+			<id>integration-test</id>
+			<build>
+				<plugins>
+					<plugin>
+        				<groupId>org.apache.maven.plugins</groupId>
+        				<artifactId>maven-surefire-plugin</artifactId>
+        				<executions>
+							<execution>
+								<id>integration-test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+		            					<include>**/*IT.java</include>
+		          					</includes>
+								</configuration>
+							</execution>
+						</executions>
       				</plugin>
 				</plugins>
 			</build>
 		</profile>
 		<profile>
-			<id>integration-only</id>
+			<id>performance-test</id>
+			<!-- Uncomment if you want to run performance tests from Eclipse
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation> 
+			-->
 			<build>
 				<plugins>
 					<plugin>
         				<groupId>org.apache.maven.plugins</groupId>
         				<artifactId>maven-surefire-plugin</artifactId>
-        				<configuration>
-							<includes>
-            					<include>**/*IT.java</include>
-          					</includes>
-          					<excludes>
-          						<exclude>**/*PerformanceIT.java</exclude>
-          					</excludes>
-						</configuration>
-      				</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>performance-only</id>
-			<build>
-				<plugins>
-					<plugin>
-        				<groupId>org.apache.maven.plugins</groupId>
-        				<artifactId>maven-surefire-plugin</artifactId>
-        				<configuration>
-							<includes>
-            					<include>**/*PerformanceIT.java</include>
-            					<include>**/*PerformanceTest.java</include>
-          					</includes>
-						</configuration>
+        				<executions>
+							<execution>
+								<id>performance-test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*PT.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
       				</plugin>
 				</plugins>
 			</build>
@@ -941,29 +956,10 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>sonar</id>
-			<build>
-				<plugins>
-					<plugin>
-	       				<groupId>org.apache.maven.plugins</groupId>
-	       				<artifactId>maven-surefire-plugin</artifactId>
-	       				<configuration>
-							<excludes>
-								<!-- Exclude tests which fail with JaCoCo -->
-	           					<exclude>**/Database1_9_7UpgradeTest.java</exclude>
-	           					<exclude>**/OrderTest.java</exclude>
-	           					<exclude>**/TestOrderTest.java</exclude>
-	         				</excludes>
-						</configuration>
-	     			</plugin>
-				</plugins>
-			</build>
-			<properties>
-				<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
-				<sonar.exclusions>src/main/java/org/openmrs/arden/**/*</sonar.exclusions>
-				<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
-				<sonar.analysis.mode>incremental</sonar.analysis.mode>
-			</properties>
+			<id>release-test</id>
+			<modules>
+				<module>release-test</module>
+			</modules>
 		</profile>
 	</profiles>
 
@@ -1041,5 +1037,10 @@
 		<springVersion>3.2.7.RELEASE</springVersion>
 		<hibernateVersion>3.6.5.Final</hibernateVersion>
 		<customArgLineForTesting />
+		
+		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
+		<sonar.exclusions>src/main/java/org/openmrs/arden/**/*</sonar.exclusions>
+		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
+		<sonar.analysis.mode>incremental</sonar.analysis.mode>
 	</properties>
 </project>

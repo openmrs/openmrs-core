@@ -37,7 +37,7 @@ import com.carrotsearch.junitbenchmarks.annotation.BenchmarkHistoryChart;
  */
 @SkipBaseSetup
 @BenchmarkHistoryChart
-public class ConceptServicePerformanceIT extends BaseContextSensitiveTest {
+public class ConceptServicePT extends BaseContextSensitiveTest {
 	
 	@Rule
 	public TestRule benchmarkRule = new BenchmarkRule();
@@ -50,15 +50,16 @@ public class ConceptServicePerformanceIT extends BaseContextSensitiveTest {
 	@Before
 	public void loadDictionary() throws Exception {
 		if (!dictionaryLoaded) {
-			executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
-			executeLargeDataSet("org/openmrs/contrib/mvpconceptdictionary/dbunit.xml");
+			initializeInMemoryDatabase();
 			
-			authenticate();
+			executeLargeDataSet("org/openmrs/contrib/mvpconceptdictionary/dbunit.xml");
 			
 			getConnection().commit();
 			
 			dictionaryLoaded = true;
 		}
+		
+		authenticate();
 	}
 	
 	@Test

@@ -317,7 +317,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>performance-only</id>
+			<id>performance-test</id>
 			<dependencies>
 				<dependency>
 					<groupId>org.openmrs.contrib</groupId>
