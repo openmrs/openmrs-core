@@ -192,7 +192,7 @@ public class Database1_9_7UpgradeTest {
 		    conceptsToFrequencies.get("113")), row("order_id", "5", "frequency", conceptsToFrequencies.get("114"))));
 	}
 	
-	@Test(expected = Exception.class)
+	@Test
 	public void shouldFailIfAnyDrugOrderUnitsNotMappedToConceptsAreFound() throws Exception {
 		//sanity check that we have some unmapped drug order dose units
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
@@ -203,10 +203,14 @@ public class Database1_9_7UpgradeTest {
 		//map the frequencies only
 		createOrderEntryUpgradeFileWithTestData("1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
+		expectedException.expect(IOException.class);
+		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
+		expectedException.expectMessage(errorMsgSubString1);
+		
 		upgradeTestUtil.upgrade();
 	}
 	
-	@Test(expected = Exception.class)
+	@Test
 	public void shouldFailIfAnyDrugOrderFrequenciesNotMappedToConceptsAreFound() throws Exception {
 		//sanity check that we have some unmapped drug order frequencies
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
@@ -216,6 +220,10 @@ public class Database1_9_7UpgradeTest {
 		
 		//map the dose units only
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112");
+		
+		expectedException.expect(IOException.class);
+		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
+		expectedException.expectMessage(errorMsgSubString1);
 		
 		upgradeTestUtil.upgrade();
 	}
