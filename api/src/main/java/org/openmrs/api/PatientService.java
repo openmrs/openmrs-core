@@ -379,7 +379,7 @@ public interface PatientService extends OpenmrsService {
 	 * Get all patientIdentifier types
 	 * <p>
 	 * Ordered same as {@link org.openmrs.comparator.PatientIdentifierTypeDefaultComparator}.
-	 * 
+	 *
 	 * @return patientIdentifier types list
 	 * @throws APIException
 	 * @should fetch all non retired patient identifier types
@@ -393,7 +393,7 @@ public interface PatientService extends OpenmrsService {
 	 * Get all patientIdentifier types
 	 * <p>
 	 * Ordered same as {@link org.openmrs.comparator.PatientIdentifierTypeDefaultComparator}.
-	 * 
+	 *
 	 * @param includeRetired true/false whether retired types should be included
 	 * @return patientIdentifier types list
 	 * @throws APIException
@@ -409,7 +409,7 @@ public interface PatientService extends OpenmrsService {
 	 * Get all patientIdentifier types that match the given criteria
 	 * <p>
 	 * Ordered same as {@link org.openmrs.comparator.PatientIdentifierTypeDefaultComparator}.
-	 * 
+	 *
 	 * @param name name of the type to match on
 	 * @param format the string format to match on
 	 * @param required if true, limits to only identifiers marked as required if false, only non
@@ -585,7 +585,7 @@ public interface PatientService extends OpenmrsService {
 	 * from the specified starting position. Implementations can use this string to search on name,
 	 * identifier, etc Voided patients are not returned in search results If start is 0 and length
 	 * is not specified, then all matches are returned
-	 * 
+	 *
 	 * @param query the string to search on
 	 * @param start the starting index
 	 * @param length the number of patients to return
@@ -723,11 +723,9 @@ public interface PatientService extends OpenmrsService {
 	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException, SerializationException;
 	
 	/**
-	 * Convenience method to establish that a patient has left the care center. This API call is
-	 * responsible for: 1) Closing workflow statuses 2) Terminating programs 3) Discontinuing orders
-	 * 4) Flagging patient table (if applicable) 5) Creating any relevant observations about the
-	 * patient TODO keep this in the PatientService? Or move to appropriate service?
-	 * 
+	 * @deprecated as of 1.10 and moved to exit from care module. This method is no longer supported
+	 *             because previously the patient's active orders would get discontinued in the
+	 *             process which is no longer happening
 	 * @param patient - the patient who has exited care
 	 * @param dateExited - the declared date/time of the patient's exit
 	 * @param reasonForExit - the concept that corresponds with why the patient has been declared as
@@ -735,13 +733,13 @@ public interface PatientService extends OpenmrsService {
 	 * @throws APIException
 	 * @should save reason for exit observation for given patient
 	 * @should set death date and cause when given reason for exit equals death
-	 * @should discontinue all orders associated with given patient
-	 * @should terminate all program workflows associated with given paitent
+	 * @should terminate all program workflows associated with given patient
 	 * @should throw error when given patient is null
 	 * @should throw error when given date exited is null
 	 * @should throw error when given reason for exist is null
 	 * @should be tested more thoroughly
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) throws APIException;
 	
@@ -1004,7 +1002,7 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Return the number of unvoided patients with names or patient identifiers starting with or
 	 * equal to the specified text
-	 * 
+	 *
 	 * @param query the string to search on
 	 * @return the number of patients matching the given search phrase
 	 * @since 1.8

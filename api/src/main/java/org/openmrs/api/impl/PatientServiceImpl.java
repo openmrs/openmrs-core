@@ -61,7 +61,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.order.OrderUtil;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
@@ -1081,9 +1080,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// need to terminate any applicable programs
 		Context.getProgramWorkflowService().triggerStateConversion(patient, reasonForExit, dateExited);
-		
-		// need to discontinue any open orders for this patient
-		OrderUtil.discontinueAllOrders(patient, reasonForExit, dateExited);
 	}
 	
 	/**
