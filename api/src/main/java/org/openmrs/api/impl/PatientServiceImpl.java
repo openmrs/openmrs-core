@@ -62,7 +62,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.order.OrderUtil;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
@@ -78,7 +77,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Default implementation of the patient service. This class should not be used on its own. The
  * current OpenMRS implementation should be fetched from the Context via
  * <code>Context.getPatientService()</code>
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.PatientService
  * @see org.openmrs.api.PersonService
@@ -105,7 +104,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
-	 *
+	 * 
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	@Override
@@ -580,7 +579,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * TODO: Add changedBy and DateChanged columns to table patient_identifier_type
-	 *
+	 * 
 	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
@@ -735,7 +734,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * This default implementation simply looks at the OpenMRS internal id (patient_id). If the id
 	 * is null, assume this patient isn't found. If the patient_id is not null, try and find that id
 	 * in the database
-	 *
+	 * 
 	 * @see org.openmrs.api.PatientService#getPatientByExample(org.openmrs.Patient)
 	 */
 	@Transactional(readOnly = true)
@@ -775,7 +774,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * generate a relationship hash for use in mergePatients; follows the convention:
 	 * [relationshipType][A|B][relativeId]
-	 *
+	 * 
 	 * @param rel relationship under consideration
 	 * @param primary the focus of the hash
 	 * @return hash depicting relevant information to avoid duplicates
@@ -791,7 +790,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * <code>preferred</code> 2) Copies data (gender/birthdate/names/ids/etc) from
 	 * <code>nonPreferred</code> to <code>preferred</code> iff the data is missing or null in
 	 * <code>preferred</code> 3) <code>notPreferred</code> is marked as voided
-	 *
+	 * 
 	 * @param preferred
 	 * @param notPreferred
 	 * @throws APIException
@@ -1158,7 +1157,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * Change user associations for notPreferred to preferred person.
-	 *
+	 * 
 	 * @param preferred
 	 * @param notPreferred
 	 * @param mergedData a patient merge audit data object to update
@@ -1186,7 +1185,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * <li>Flagging patient table</li>
 	 * <li>Creating any relevant observations about the patient (if applicable)</li>
 	 * </ol>
-	 *
+	 * 
 	 * @param patient - the patient who has exited care
 	 * @param dateExited - the declared date/time of the patient's exit
 	 * @param reasonForExit - the concept that corresponds with why the patient has been declared as
@@ -1212,14 +1211,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// need to terminate any applicable programs
 		Context.getProgramWorkflowService().triggerStateConversion(patient, reasonForExit, dateExited);
-		
-		// need to discontinue any open orders for this patient
-		OrderUtil.discontinueAllOrders(patient, reasonForExit, dateExited);
 	}
 	
 	/**
 	 * TODO: Patients should actually be allowed to exit multiple times
-	 *
+	 * 
 	 * @param patient
 	 * @param exitDate
 	 * @param cause
@@ -1293,7 +1289,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * This is the way to establish that a patient has died. In addition to exiting the patient from
 	 * care (see above), this method will also set the appropriate patient characteristics to
 	 * indicate that they have died, when they died, etc.
-	 *
+	 * 
 	 * @param patient - the patient who has died
 	 * @param dateDied - the declared date/time of the patient's death
 	 * @param causeOfDeath - the concept that corresponds with the reason the patient died
@@ -1498,7 +1494,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * ADDs identifierValidators, doesn't replace them
-	 *
+	 * 
 	 * @param identifierValidators
 	 */
 	public void setIdentifierValidators(Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
