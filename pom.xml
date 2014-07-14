@@ -578,7 +578,7 @@
 			<dependency>
 				<groupId>org.openmrs.contrib</groupId>
 				<artifactId>mvpconceptdictionary</artifactId>
-				<version>1.9.3-20120727</version> 
+				<version>1.12.0-5a9ecce-20120727</version> 
 			</dependency>
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>

@@ -56,6 +56,8 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 			
 			getConnection().commit();
 			
+			updateSearchIndex();
+			
 			dictionaryLoaded = true;
 		}
 		
