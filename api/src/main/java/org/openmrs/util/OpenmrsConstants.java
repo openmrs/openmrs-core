@@ -15,6 +15,7 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -1076,9 +1077,16 @@ public final class OpenmrsConstants {
 	public static final String GP_UNKNOWN_PROVIDER_UUID = "provider.unknownProviderUuid";
 	
 	/**
-	 * @since 1.12
+	 * @since 1.11
 	 */
-	public static final String GP_LAST_FULL_INDEX_DATE = "index.lastFullIndexDate";
+	public static final String GP_SEARCH_INDEX_VERSION = "search.indexVersion";
+	
+	/**
+	 * Indicates the version of the search index. The index will be rebuilt, if the version changes.
+	 * 
+	 * @since 1.11
+	 */
+	public static final Integer SEARCH_INDEX_VERSION = 1;
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1532,7 +1540,8 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
 		
-		props.add(new GlobalProperty(GP_LAST_FULL_INDEX_DATE, "", "Indicates the last time the full index was built"));
+		props.add(new GlobalProperty(GP_SEARCH_INDEX_VERSION, "",
+		        "Indicates the index version. If it is blank, the index needs to be rebuilt."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true",
 		        "true/false whether or not to allow visits of a given patient to overlap", BooleanDatatype.class, null));

@@ -469,9 +469,9 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void setupSearchIndex() {
-		String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_LAST_FULL_INDEX_DATE, "");
+		String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION, "");
 		
-		if (StringUtils.isBlank(gp)) {
+		if (!OpenmrsConstants.SEARCH_INDEX_VERSION.toString().equals(gp)) {
 			updateSearchIndex();
 		}
 	}
@@ -486,11 +486,11 @@ public class HibernateContextDAO implements ContextDAO {
 			Search.getFullTextSession(sessionFactory.getCurrentSession()).createIndexer().startAndWait();
 			
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-			    OpenmrsConstants.GP_LAST_FULL_INDEX_DATE);
+			    OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			if (gp == null) {
-				gp = new GlobalProperty(OpenmrsConstants.GP_LAST_FULL_INDEX_DATE);
+				gp = new GlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			}
-			gp.setPropertyValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			gp.setPropertyValue(OpenmrsConstants.SEARCH_INDEX_VERSION.toString());
 			Context.getAdministrationService().saveGlobalProperty(gp);
 			log.info("Finished updating the search index");
 		}

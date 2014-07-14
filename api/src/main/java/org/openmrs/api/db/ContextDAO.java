@@ -126,7 +126,8 @@ public interface ContextDAO {
 	/**
 	 * Updates the search index if necessary.
 	 * <p>
-	 * The update is triggered if {@link OpenmrsConstants#GP_LAST_FULL_INDEX_DATE} is blank.
+	 * The update is triggered if {@link OpenmrsConstants#GP_SEARCH_INDEX_VERSION} is blank
+	 * or the value does not match {@link OpenmrsConstants#SEARCH_INDEX_VERSION}.
 	 */
 	public void setupSearchIndex();
 	
