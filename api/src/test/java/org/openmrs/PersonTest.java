@@ -23,16 +23,21 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
+import com.google.common.collect.Sets;
+
 /**
  * This class should test all methods on the person object.<br/>
  * <br/>
- * This class does not touch the database, so it does not need to extend the normal openmrs BaseTest
+ * This class does not touch the database, so it does not need to extend the
+ * normal openmrs BaseTest
  */
 public class PersonTest extends BaseContextSensitiveTest {
 	
@@ -248,8 +253,10 @@ public class PersonTest extends BaseContextSensitiveTest {
 		assertTrue("There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size(),
 		    p.getAttributes().size() == 2);
 		
-		// (we must change the value here as well, because logic says that there is no
-		// point in adding an attribute that has the same value/type...even if the void
+		// (we must change the value here as well, because logic says that there
+		// is no
+		// point in adding an attribute that has the same value/type...even if
+		// the void
 		// status is different)
 		pa3.setValue(pa1.getValue() + "addition to make sure the value is different");
 		pa3.setVoided(true);
@@ -279,8 +286,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test that setting a person's age correctly sets their birth date and records that this is
-	 * inexact
+	 * Test that setting a person's age correctly sets their birth date and
+	 * records that this is inexact
 	 * 
 	 * @throws Exception
 	 */
@@ -536,5 +543,197 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAddress(pa2);
 		
 		Assert.assertEquals(1, p.getAddresses().size());
+	}
+	
+	/**
+	 * @see Person#getPersonAddress()
+	 * @verifies get not-voided person address if preferred address does not
+	 *           exist
+	 */
+	@Test
+	public void getPersonAddress_shouldGetNotvoidedPersonAddressIfPreferredAddressDoesNotExist() throws Exception {
+		
+		// addresses
+		PersonAddress voidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(true).build();
+		
+		// addresses
+		PersonAddress notVoidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(false).build();
+		
+		PersonAddress expectedPersonAddress = notVoidedAddress;
+		Set<PersonAddress> personAddresses = Sets.newHashSet(voidedAddress, notVoidedAddress);
+		
+		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
+	}
+	
+	/**
+	 * @see Person#getPersonAddress()
+	 * @verifies get preferred and not-voided person address if exist
+	 */
+	@Test
+	public void getPersonAddress_shouldGetPreferredAndNotvoidedPersonAddressIfExist() throws Exception {
+		
+		// addresses
+		PersonAddress voidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(true).build();
+		
+		PersonAddress preferredNotVoidedAddress = PersonAddressBuilder.newBuilder().withPreferred(true).withVoided(false)
+		        .build();
+		
+		PersonAddress expectedPersonAddress = preferredNotVoidedAddress;
+		HashSet<PersonAddress> personAddresses = Sets.newHashSet(voidedAddress, preferredNotVoidedAddress);
+		
+		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
+		
+	}
+	
+	/**
+	 * @see Person#getPersonAddress()
+	 * @verifies get voided person address if person is voided and not-voided address does not exist
+	 */
+	@Test
+	public void getPersonAddress_shouldGetVoidedPersonAddressIfPersonIsVoidedAndNotvoidedAddressDoesNotExist()
+	        throws Exception {
+		
+		// addresses
+		PersonAddress voidedAddress1 = PersonAddressBuilder.newBuilder().withVoided(true).build();
+		PersonAddress voidedAddress2 = PersonAddressBuilder.newBuilder().withVoided(true).build();
+		
+		Set<PersonAddress> personAddresses = Sets.newHashSet(voidedAddress1, voidedAddress2);
+		
+		Person person = new Person();
+		person.setVoided(true);
+		person.setAddresses(personAddresses);
+		
+		PersonAddress actualPersonAddress = person.getPersonAddress();
+		
+		assertTrue(actualPersonAddress.isVoided());
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 * @verifies get not-voided person name if preferred address does not exist
+	 */
+	@Test
+	public void getPersonName_shouldGetNotvoidedPersonNameIfPreferredAddressDoesNotExist() throws Exception {
+		
+		PersonName notVoidedName = PersonNameBuilder.newBuilder().withVoided(false).build();
+		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		
+		PersonName expectedPersonName = notVoidedName;
+		
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, Sets.newHashSet(notVoidedName, voidedName));
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 * @verifies get preferred and not-voided person name if exist
+	 */
+	@Test
+	public void getPersonName_shouldGetPreferredAndNotvoidedPersonNameIfExist() throws Exception {
+		
+		PersonName preferredNotVoidedName = PersonNameBuilder.newBuilder().withPreferred(true).withVoided(false).build();
+		PersonName notVoidedName = PersonNameBuilder.newBuilder().withVoided(false).build();
+		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		
+		PersonName expectedPersonName = preferredNotVoidedName;
+		
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, Sets.newHashSet(preferredNotVoidedName, notVoidedName,
+		    voidedName));
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 * @verifies get voided person address if person is voided and not-voided address does not exist
+	 */
+	@Test
+	public void getPersonName_shouldGetVoidedPersonAddressIfPersonIsVoidedAndNotvoidedAddressDoesNotExist() throws Exception {
+		
+		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		
+		PersonName expectedPersonName = voidedName;
+		
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, Sets.newHashSet(voidedName));
+		
+	}
+	
+	private void checkGetPersonAddressResultForVoidedPerson(PersonAddress expectedPersonAddress,
+	        Set<PersonAddress> personAddresses) {
+		
+		Person person = new Person();
+		person.setAddresses(personAddresses);
+		person.setVoided(true);
+		
+		PersonAddress actualPersonAddress = person.getPersonAddress();
+		
+		assertEquals(expectedPersonAddress, actualPersonAddress);
+	}
+	
+	private void checkGetPersonNameResultForVoidedPerson(PersonName expectedPersonAddress, Set<PersonName> personAddresses) {
+		
+		Person person = new Person();
+		person.setVoided(true);
+		
+		for (PersonName personName : personAddresses) {
+			person.addName(personName);
+		}
+		
+		PersonName actualPersonName = person.getPersonName();
+		
+		assertEquals(expectedPersonAddress, actualPersonName);
+	}
+	
+	// helper class
+	private static class PersonNameBuilder {
+		
+		private PersonName personAddress;
+		
+		private PersonNameBuilder() {
+			personAddress = new PersonName();
+		}
+		
+		public static PersonNameBuilder newBuilder() {
+			return new PersonNameBuilder();
+		}
+		
+		public PersonNameBuilder withVoided(boolean voided) {
+			personAddress.setVoided(voided);
+			return this;
+		}
+		
+		public PersonNameBuilder withPreferred(boolean preferred) {
+			personAddress.setPreferred(preferred);
+			return this;
+		}
+		
+		public PersonName build() {
+			return personAddress;
+		}
+	}
+	
+	// helper class
+	private static class PersonAddressBuilder {
+		
+		private PersonAddress personAddress;
+		
+		private PersonAddressBuilder() {
+			personAddress = new PersonAddress();
+		}
+		
+		public static PersonAddressBuilder newBuilder() {
+			return new PersonAddressBuilder();
+		}
+		
+		public PersonAddressBuilder withVoided(boolean voided) {
+			personAddress.setVoided(voided);
+			return this;
+		}
+		
+		public PersonAddressBuilder withPreferred(boolean preferred) {
+			personAddress.setPreferred(preferred);
+			return this;
+		}
+		
+		public PersonAddress build() {
+			return personAddress;
+		}
 	}
 }
