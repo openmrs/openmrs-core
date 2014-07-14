@@ -13,42 +13,16 @@
  */
 package org.openmrs.order;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.OrderType;
-import org.openmrs.Patient;
 
 /**
  * Contains convenience methods for working with Orders.
- *
  */
 public class OrderUtil {
 	
 	private static final Log log = LogFactory.getLog(OrderUtil.class);
-	
-	/**
-	 * Discontinues all current orders for the given <code>patient</code>
-	 *
-	 * @param patient
-	 * @param discontinueReason
-	 * @param discontinueDate
-	 * @should discontinue all orders for the given patient if none are yet discontinued
-	 * @should not affect orders that were already discontinued on the specified date
-	 * @should not affect orders that end before the specified date
-	 * @should not affect orders that start after the specified date
-	 */
-	public static void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
-		if (log.isDebugEnabled()) {
-			log.debug("In discontinueAll with patient " + patient + " and concept " + discontinueReason + " and date "
-			        + discontinueDate);
-		}
-		
-		//TODO discontinue all active drug orders for a patient
-		//See https://tickets.openmrs.org/browse/TRUNK-4185
-	}
 	
 	/**
 	 * Checks whether orderType2 matches or is a sub type of orderType1

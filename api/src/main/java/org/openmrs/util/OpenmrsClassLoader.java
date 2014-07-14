@@ -363,7 +363,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				field.setAccessible(true);
 				field.set(cacheManager, null);
 			}
-			catch (Throwable ex) {
+			catch (Exception ex) {
 				log.error(ex.getMessage(), ex);
 			}
 		}
@@ -470,7 +470,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 					log.info("onShutdown Stopping thread: " + thread.getName());
 					thread.stop();
 				}
-				catch (Throwable ex) {
+				catch (Exception ex) {
 					log.error(ex.getMessage(), ex);
 				}
 			}

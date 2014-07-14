@@ -20,14 +20,14 @@
 		<property name="instructions" type="java.lang.String" column="instructions" length="65535"/>
 		<property name="startDate" type="java.util.Date" column="start_date" length="19" not-null="true"/>
 		<property name="autoExpireDate" type="java.util.Date" column="auto_expire_date" length="19"/>
-		<property name="dateStopped" type="java.util.Date" column="date_stopped" length="19" access="field" />
+		<property name="dateStopped" type="java.util.Date" column="date_stopped" length="19" access="field"/>
 		<property name="accessionNumber" type="java.lang.String" column="accession_number" length="255" />
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19"/>
 		<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true"/>
 		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19"/>
 		<property name="voidReason" type="java.lang.String" column="void_reason" length="255"/>
 		<property name="orderReasonNonCoded" type="java.lang.String" column="order_reason_non_coded" length="255"/>
-        <property name="orderNumber" type="string" column="order_number" length="50" not-null="true" access="field"/>
+        <property name="orderNumber" type="string" column="order_number" length="50" not-null="true" access="field" />
         <property name="commentToFulfiller" type="string" column="comment_to_fulfiller" length="1024" />
         <property name="scheduledDate" type="java.util.Date" column="scheduled_date" length="19" />
         <property name="urgency" column="urgency" length="50" not-null="true">
@@ -49,7 +49,7 @@
         <!-- bi-directional many-to-one association to Order -->
 		<many-to-one name="previousOrder" class="org.openmrs.Order" column="previous_order_id" />
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="concept" column="concept_id" class="org.openmrs.Concept" not-null="true" />
+		<many-to-one name="concept" column="concept_id" class="org.openmrs.Concept" not-null="true" access="field" />
 		<!-- bi-directional many-to-one association to Encounter -->
 		<many-to-one name="encounter" column="encounter_id" class="org.openmrs.Encounter" not-null="true" />
 
@@ -81,7 +81,7 @@
 			<many-to-one name="quantityUnits" class="org.openmrs.Concept" column="quantity_units" />
 			<!-- bi-directional many-to-one association to Drug -->
 
-			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false" column="drug_inventory_id" />
+			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false" column="drug_inventory_id" access="field"/>
             <property name="dosingType" column="dosing_type" length="50">
                 <type name="org.openmrs.util.HibernateEnumType">
                     <param name="enumClassName">org.openmrs.DrugOrder$DosingType</param>
@@ -93,7 +93,7 @@
             <many-to-one name="durationUnits" class="org.openmrs.Concept" column="duration_units" />
             <many-to-one name="route" class="org.openmrs.Concept" />
             <property name="brandName" type="string" column="brand_name" length="255" />
-            <property name="dispenseAsWritten" type="boolean" column="dispense_as_written" length="0" not-null="true" />
+            <property name="dispenseAsWritten" type="boolean" column="dispense_as_written" length="1" not-null="true" />
 		</joined-subclass>
 
         <joined-subclass name="org.openmrs.TestOrder" table="test_order" lazy="false">

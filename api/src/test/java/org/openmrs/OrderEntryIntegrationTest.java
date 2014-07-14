@@ -360,7 +360,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldAllowRetrospectiveDataEntryOfOrders() throws Exception {
-		Order order = new Order();
+		Order order = new TestOrder();
 		order.setPatient(patientService.getPatient(2));
 		order.setCareSetting(orderService.getCareSetting(2));
 		order.setConcept(conceptService.getConcept(5089));

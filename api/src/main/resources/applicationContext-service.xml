@@ -762,6 +762,7 @@
 	<bean id="encounterTypeValidator" class="org.openmrs.validator.EncounterTypeValidator" />
 	<bean id="conceptClassValidator" class="org.openmrs.validator.ConceptClassValidator" />
 	<bean id="conceptDatatypeValidator" class="org.openmrs.validator.ConceptDatatypeValidator" />
+	<bean id="conceptSourceValidator" class="org.openmrs.validator.ConceptSourceValidator" />
 	<bean id="formEditValidator" class="org.openmrs.validator.FormValidator" />
 	<bean id="fieldTypeValidator" class="org.openmrs.validator.FieldTypeValidator" />
 	<bean id="programValidator" class="org.openmrs.validator.ProgramValidator" />

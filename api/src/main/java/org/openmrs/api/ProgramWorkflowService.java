@@ -97,7 +97,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param name the exact name of the program to match on
 	 * @return Program matching the <code>name</code> to Program.name
 	 * @throws APIException
-	 * @throws ProgramNameDuplicatedException when there are more than one program in the dB with the given name.
+	 * @throws ProgramNameDuplicatedException when there are more than one program in the dB with
+	 *             the given name.
 	 * @should return program when name matches
 	 * @should return null when program does not exist with given name
 	 * @should fail when two programs found with same name
@@ -172,8 +173,9 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public void purgeProgram(Program program, boolean cascade) throws APIException;
 	
 	/**
-	 * Retires the given program 
-	 * @deprecated use {@link retireProgram(Program program,String reason)} 
+	 * Retires the given program
+	 * 
+	 * @deprecated use {@link retireProgram(Program program,String reason)}
 	 * @param program Program to be retired
 	 * @return the Program which has been retired
 	 * @throws APIException
@@ -186,7 +188,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public Program retireProgram(Program program) throws APIException;
 	
 	/**
-	 * Retires the given program	
+	 * Retires the given program
+	 * 
 	 * @param program Program to be retired
 	 * @param reason String for retiring the program
 	 * @return the Program which has been retired
@@ -201,7 +204,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Unretires the given program
 	 * 
-	 * @deprecated use {@link unretireProgram(Program program)} 
+	 * @deprecated use {@link unretireProgram(Program program)}
 	 * @param program Program to be unretired
 	 * @return the Program which has been unretired
 	 * @throws APIException
@@ -454,9 +457,9 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
-	 * Triggers any ConceptStateConversion that exists for the passed <code>reasonForExit</code>
-	 * concept and any ProgramWorkflow in the PatientPrograms for the <code>patient</code>
-	 * 
+	 * @deprecated as of 1.10, because the only place in core where it was called was
+	 *             PatientService#exitFromCare(Patient patient, Date dateExited, Concept
+	 *             reasonForExit) which was moved to exit from care module
 	 * @param patient - the Patient to trigger the ConceptStateConversion on
 	 * @param reasonForExit - the Concept to trigger the ConceptStateConversion
 	 * @param dateConverted - the Date of the ConceptStateConversion
@@ -467,6 +470,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should fail if date converted is invalid
 	 * @should skip past patient programs that are already completed
 	 */
+	@Deprecated
 	public void triggerStateConversion(Patient patient, Concept reasonForExit, Date dateConverted) throws APIException;
 	
 	/**

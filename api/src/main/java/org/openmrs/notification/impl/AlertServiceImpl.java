@@ -251,12 +251,15 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 			for (StackTraceElement traceElement : cause.getStackTrace()) {
 				stackTrace.append(traceElement);
 				stackTrace.append("\n");
-				if (stackTrace.length() >= 512) {
+				if (stackTrace.length() >= Alert.TEXT_MAX_LENGTH) {
 					break;
 				}
 			}
 			
-			message = message + ": " + stackTrace.substring(0, Alert.TEXT_MAX_LENGTH - message.length() - 2);
+			message = message + ":" + stackTrace;
+			
+			//limit message to Alert.TEXT_MAX_LENGTH
+			message = message.substring(0, Math.min(message.length(), Alert.TEXT_MAX_LENGTH));
 		}
 		
 		//Send an alert to all administrators

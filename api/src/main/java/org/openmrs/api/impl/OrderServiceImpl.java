@@ -38,6 +38,7 @@ import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
+import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.GlobalPropertyListener;
@@ -94,11 +95,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Reject if there is an active order for the same orderable
 		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
 		Concept concept = order.getConcept();
-		if (concept == null && isDrugOrder) {
-			concept = ((DrugOrder) order).getDrug().getConcept();
-			order.setConcept(concept);
-		}
-		
 		if (!isDiscontinueOrReviseOrder(order)) {
 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
 			for (Order o : activeOrders) {
@@ -116,11 +112,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (orderType == null) {
 				orderType = getOrderTypeByConcept(concept);
 			}
+			//Check if it is instance of DrugOrder
+			if (orderType == null && order instanceof DrugOrder) {
+				orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID);
+			}
+			//Check if it is an instance of TestOrder
+			if (orderType == null && order instanceof TestOrder) {
+				orderType = Context.getOrderService().getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID);
+			}
+			
 			//this order's order type should match that of the previous
 			if (orderType == null || (previousOrder != null && !orderType.equals(previousOrder.getOrderType()))) {
 				throw new APIException(
 				        "Cannot determine the order type of the order, make sure the concept's class is mapped to an order type");
 			}
+			
 			order.setOrderType(orderType);
 		}
 		if (order.getCareSetting() == null) {
@@ -132,6 +138,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("Cannot determine the care setting of the order");
 			}
 			order.setCareSetting(careSetting);
+		}
+		
+		if (!order.getOrderType().getJavaClass().isAssignableFrom(order.getClass())) {
+			throw new APIException("Order type class " + order.getOrderType().getJavaClass()
+			        + " does not match the order class " + order.getClass().getName());
 		}
 		
 		if (REVISE == order.getAction()) {
@@ -159,10 +170,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("Cannot change the patient of an order");
 			} else if (!rowData.get(1).equals(previousOrder.getCareSetting().getCareSettingId())) {
 				throw new APIException("Cannot change the careSetting of an order");
-			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
-				throw new APIException("Cannot change the concept of an order");
 			} else if (isPreviousDrugOrder && !rowData.get(3).equals(((DrugOrder) previousOrder).getDrug().getDrugId())) {
 				throw new APIException("Cannot change the drug of a drug order");
+			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
+				throw new APIException("Cannot change the concept of an order");
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders

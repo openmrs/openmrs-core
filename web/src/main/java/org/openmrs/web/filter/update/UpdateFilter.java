@@ -380,7 +380,7 @@ public class UpdateFilter extends StartupFilter {
 					}
 				}
 			}
-			catch (Throwable t2) {
+			catch (Exception t2) {
 				log.error("Error while trying to authenticate as super user (voided version)", e);
 			}
 		}

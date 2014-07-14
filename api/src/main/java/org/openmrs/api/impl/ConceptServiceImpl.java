@@ -55,6 +55,7 @@ import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptInUseException;
 import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
@@ -73,7 +74,7 @@ import com.google.common.collect.Lists;
 
 /**
  * Default Implementation of ConceptService service layer classes
- *
+ * 
  * @see org.openmrs.api.ConceptService to access these methods
  */
 @Transactional
@@ -494,7 +495,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * Generic getConcepts method (used internally) to get concepts matching a on name
-	 *
+	 * 
 	 * @param name
 	 * @param loc
 	 * @param searchOnPhrase
@@ -1075,7 +1076,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * Convenience method
-	 *
+	 * 
 	 * @param parent
 	 * @param subList
 	 * @return
@@ -1128,7 +1129,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * Utility method used by getConceptsInSet(Concept concept)
-	 *
+	 * 
 	 * @param concept
 	 * @param ret
 	 * @param alreadySeen
@@ -1445,7 +1446,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * voided ones) and if the datatype of the concept has changed, an exception indicating that the
 	 * datatype cannot be modified will be reported if the concept is attached to an observation.
 	 * This method will only allow changing boolean concepts to coded.
-	 *
+	 * 
 	 * @param concept
 	 * @throws ConceptInUseException
 	 */
@@ -1466,7 +1467,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	/**
 	 * Utility method which loads the previous version of a concept to check if the datatype has
 	 * changed.
-	 *
+	 * 
 	 * @param concept to be modified
 	 * @return boolean indicating change in the datatype
 	 */
@@ -1519,7 +1520,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	/**
 	 * Utility method which loads the previous version of a conceptName to check if the name
 	 * property of the given conceptName has changed.
-	 *
+	 * 
 	 * @param conceptName to be modified
 	 * @return boolean indicating change in the name property
 	 */
@@ -1531,7 +1532,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * Creates a copy of a conceptName
-	 *
+	 * 
 	 * @param conceptName the conceptName to be cloned
 	 * @return the cloned conceptName
 	 */
@@ -2049,7 +2050,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -2062,5 +2064,40 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			withAnyOfTheseTypesOrOrderOfPreference = Collections.EMPTY_LIST;
 		}
 		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getOrderableConcepts(String, java.util.List, boolean,
+	 *      Integer, Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	        Integer start, Integer length) {
+		List<ConceptClass> mappedClasses = getConceptClassesOfOrderTypes();
+		if (mappedClasses.isEmpty()) {
+			return Collections.EMPTY_LIST;
+		}
+		if (locales == null) {
+			locales = new ArrayList<Locale>();
+			locales.add(Context.getLocale());
+		}
+		return dao.getConcepts(phrase, locales, false, mappedClasses, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+		    Collections.EMPTY_LIST, null, start, length);
+	}
+	
+	private List<ConceptClass> getConceptClassesOfOrderTypes() {
+		List<ConceptClass> mappedClasses = new ArrayList<ConceptClass>();
+		AdministrationService administrationService = Context.getAdministrationService();
+		List<List<Object>> result = administrationService.executeSQL(
+		    "SELECT DISTINCT concept_class_id FROM order_type_class_map", true);
+		for (List<Object> temp : result) {
+			for (Object value : temp) {
+				if (value != null) {
+					mappedClasses.add(this.getConceptClass((Integer) value));
+				}
+			}
+		}
+		return mappedClasses;
 	}
 }

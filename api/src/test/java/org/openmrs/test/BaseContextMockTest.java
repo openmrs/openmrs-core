@@ -30,7 +30,7 @@ import org.openmrs.module.ModuleUtilTest;
  * Context.get...Service() calls by annotating fields with {@link Mock}.
  * 
  * @see ModuleUtilTest
- * @since 1.10
+ * @since 1.11
  */
 public abstract class BaseContextMockTest {
 	
