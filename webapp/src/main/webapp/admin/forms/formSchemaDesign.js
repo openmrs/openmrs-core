@@ -90,8 +90,9 @@ dojo.addOnLoad( function(){
 		
 			// selected a concept from the search popup
 			cSelection.hiddenInputNode.value = obj.conceptId;
+			cSelection.hiddenCodedDatatype.value = obj.isCodedDatatype;
 			cSelection.displayNode.innerHTML = obj.name;
-			
+			setSelectMultiple(cSelection.hiddenCodedDatatype.value);
 			//search.clearSearch();
 	});
 		
@@ -420,9 +421,10 @@ function editClicked(node) {
 			if (tree.fieldTypeInput.options[i].value == data["fieldType"])
 				tree.fieldTypeInput.options[i].selected = true;
 		}
-		chooseFieldType(tree.fieldTypeInput.value);
 		cSelection.hiddenInputNode.value = data["conceptId"];
+		cSelection.hiddenCodedDatatype.value = data["isCodedDatatype"];
 		cSelection.displayNode.innerHTML = data["conceptName"];
+		chooseFieldType(tree.fieldTypeInput.value);
 		
 		if (data["fieldId"]) {
 			tree.fieldIdInput.value = data["fieldId"];
@@ -481,14 +483,29 @@ function chooseFieldType(fieldTypeId) {
 	if (fieldTypeId == 1) { // == 'Concept'
 		$('concept').style.display = "";
 		$('database').style.display = "none";
+		setSelectMultiple(cSelection.hiddenCodedDatatype.value);
 	}
 	else if (fieldTypeId == 2) { // -- db element
 		$('database').style.display = "";
 		$('concept').style.display = "none";
+		$('selectMultiple').disabled = "true";
+		$('selectMultiple').checked = "";
 	}
 	else {
 		$('concept').style.display = "none";
 		$('database').style.display = "none";
+		$('selectMultiple').disabled = "true";
+		$('selectMultiple').checked = "";
+	}
+}
+
+function setSelectMultiple(isCodedDatatype) {
+	if (isCodedDatatype == "true") {
+		$('selectMultiple').disabled = "";
+	}
+	else{
+		$('selectMultiple').disabled = "true";
+		$('selectMultiple').checked = "";
 	}
 }
 
@@ -551,6 +568,7 @@ function editFieldForThisForm() {
 	try {
 		tree.fieldIdInput.value = "";
 		setFieldDisabled(false);
+		setSelectMultiple(cSelection.hiddenCodedDatatype.value);
 		tree.fieldNameInput.focus();
 		tree.numFormsTag.innerHTML = "1";
 	}
@@ -623,7 +641,6 @@ function save(target, formNotUsed) {
 		*/
 		
 		if (changed) {
-		
 			if (!formNotUsed) {
 				if ($('concept').style.display != "none") {
 					if (!cSelection.hiddenInputNode.value) {
@@ -635,7 +652,9 @@ function save(target, formNotUsed) {
 					data["conceptId"] = data["conceptName"] = '';
 					data["tableName"] = data["attributeName"] = '';
 					data["conceptId"] = cSelection.hiddenInputNode.value;
-					data["conceptName"] = cSelection.displayNode.innerHTML;					}
+					data["conceptName"] = cSelection.displayNode.innerHTML;
+					data["isCodedDatatype"] = cSelection.hiddenCodedDatatype.value;
+				}
 				else {
 					data["tableName"] = tree.tableNameInput.value;
 					data["attributeName"] = tree.attributeNameInput.value;
@@ -923,6 +942,7 @@ function getData(obj) {
 		data["label"] = "CONCEPT." + obj.name;
 		data.title = "Concept Id: " + obj.conceptId;
 		data.isSet = obj.isSet;
+		data.isCodedDatatype = obj.isCodedDatatype;
 		data["numForms"] = 1;
 	}
 	// or object is a fieldListItem
@@ -935,6 +955,7 @@ function getData(obj) {
 		data["conceptId"] = obj.concept ? obj.concept.conceptId : null;
 		data["conceptName"] = obj.concept ? obj.concept.name : null;
 		data["isSet"] = obj.concept ? obj.concept.isSet : false;
+		data["isCodedDatatype"] = obj.concept ? obj.concept.isCodedDatatype : false;
 		data["tableName"] = obj.table;
 		data["attributeName"] = obj.attribute;
 		data["defaultValue"] = obj.defaultValue;

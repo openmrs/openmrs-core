@@ -66,6 +66,8 @@ public class ConceptListItem {
 	
 	private Boolean isNumeric;
 	
+	private Boolean isCodedDatatype;
+	
 	private Double hiAbsolute;
 	
 	private Double hiCritical;
@@ -154,6 +156,7 @@ public class ConceptListItem {
 			if (conceptDescription != null) {
 				description = WebUtil.escapeHTML(conceptDescription.getDescription());
 			}
+			isCodedDatatype = concept.getDatatype().isCoded();
 			retired = concept.isRetired();
 			hl7Abbreviation = concept.getDatatype().getHl7Abbreviation();
 			className = concept.getConceptClass().getName();
@@ -345,4 +348,11 @@ public class ConceptListItem {
 		this.isNumeric = isNumeric;
 	}
 	
+	public Boolean getIsCodedDatatype() {
+		return isCodedDatatype;
+	}
+	
+	public void setIsCodedDatatype(boolean isCodedDatatype) {
+		this.isCodedDatatype = isCodedDatatype;
+	}
 }
