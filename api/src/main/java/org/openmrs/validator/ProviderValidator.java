@@ -67,8 +67,11 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should be valid if only name is set
 	 * @should reject a provider if it has fewer than min occurs of an attribute
 	 * @should reject a provider if it has more than max occurs of an attribute
-     * @should pass if an identifier for a new or existing provider is a duplicate identifier
-     */
+	 * @should accept duplicate identifier if the existing provider is not retired
+	 * @should accept duplicate identifier if the existing provider is retired
+	 * @should accept a duplicate identifier for a new provider which is not retired
+	 * @should accept a duplicate identifier for a new provider which is retired
+	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
 			log.debug(this.getClass().getName() + ".validate...");

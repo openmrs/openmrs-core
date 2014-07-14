@@ -228,8 +228,8 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProviderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should accept the identifier for an existing provider if it is changed to a duplicate value", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfAnIdentifierForAnExistingProviderIsChangedToADuplicateValue() throws Exception {
+	@Verifies(value = "should accept duplicate identifier if the existing provider is not retired", method = "validate(Object,Errors)")
+	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsNotRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(200);
 		
@@ -239,30 +239,13 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerValidator.validate(existingProviderToEdit, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
-
-	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should not reject a duplicate identifier for a new provider", method = "validate(Object,Errors)")
-	public void validate_shouldNotRejectADuplicateIdentifierForANewProvider() throws Exception {
-		Provider duplicateProvider = providerService.getProvider(1);
-		Assert.assertFalse(duplicateProvider.isRetired());
-		
-		Provider provider = new Provider();
-		provider.setIdentifier(duplicateProvider.getIdentifier());
-		provider.setName("name");
-		
-		providerValidator.validate(provider, errors);
-		Assert.assertFalse(errors.hasFieldErrors("identifier"));
-	}
 	
 	/**
 	 * @see {@link ProviderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should accept duplicate identifier even if the existing provider is retired", method = "validate(Object,Errors)")
-	public void validate_shouldPassForADuplicateIdentifierIfTheExistingProviderIsRetired() throws Exception {
+	@Verifies(value = "should accept duplicate identifier if the existing provider is retired", method = "validate(Object,Errors)")
+	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateRetiredProvider = providerService.getProvider(201);
 		Assert.assertTrue(duplicateRetiredProvider.isRetired());
@@ -278,8 +261,25 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProviderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should pass if the provider we are validating has a duplicate identifier and is retired", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheProviderWeAreValidatingHasADuplicateIdentifierAndIsRetired() throws Exception {
+	@Verifies(value = "should accept a duplicate identifier for a new provider which is not retired", method = "validate(Object,Errors)")
+	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsNotRetired() throws Exception {
+		Provider duplicateProvider = providerService.getProvider(1);
+		Assert.assertFalse(duplicateProvider.isRetired());
+		
+		Provider provider = new Provider();
+		provider.setIdentifier(duplicateProvider.getIdentifier());
+		provider.setName("name");
+		
+		providerValidator.validate(provider, errors);
+		Assert.assertFalse(errors.hasFieldErrors("identifier"));
+	}
+	
+	/**
+	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should accept a duplicate identifier for a new provider which is retired", method = "validate(Object,Errors)")
+	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(1);
 		Assert.assertFalse(duplicateProvider.isRetired());
