@@ -67,13 +67,10 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should be valid if only name is set
 	 * @should reject a provider if it has fewer than min occurs of an attribute
 	 * @should reject a provider if it has more than max occurs of an attribute
-	 * @should pass for a duplicate identifier if the existing provider is retired
-	 * @should pass if an identifier for an existing provider is changed to a unique value
-	 * @should fail if an identifier for an existing provider is changed to a duplicate value
-	 * @should reject a duplicate identifier for a new provider
-	 * @should pass if the provider we are validating has a duplicate identifier and is retired
-	 * @should fail for a duplicate identifier if the existing provider is retired
-	 * @should fail if the provider we are validating has a duplicate identifier and is retired
+	 * @should accept duplicate identifier if the existing provider is not retired
+	 * @should accept duplicate identifier if the existing provider is retired
+	 * @should accept a duplicate identifier for a new provider which is not retired
+	 * @should accept a duplicate identifier for a new provider which is retired
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
@@ -88,14 +85,6 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 		
 		if (provider.getPerson() == null && StringUtils.isBlank(provider.getName())) {
 			errors.rejectValue("name", "Provider.error.personOrName.required");
-		}
-		
-		//if this is a retired existing provider, skip this
-		//check if this provider has a unique identifier
-		boolean isUnique = Context.getProviderService().isProviderIdentifierUnique(provider);
-		if (!isUnique) {
-			errors.rejectValue("identifier", "Provider.error.duplicateIdentifier",
-			    new Object[] { provider.getIdentifier() }, null);
 		}
 		
 		if (provider.isRetired() && StringUtils.isEmpty(provider.getRetireReason())) {
