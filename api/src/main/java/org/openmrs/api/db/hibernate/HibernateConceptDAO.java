@@ -634,17 +634,26 @@ public class HibernateConceptDAO implements ConceptDAO {
 		query.append("(");
 		if (searchKeywords) {
 			//Put exact phrase higher
-			query.append(" name:(\"" + escapedName + "\")^0.6");
+			query.append(" name:(\"" + escapedName + "\")^0.7");
 			
 			if (!tokenizedName.isEmpty()) {
-				//Include exact
-				query.append(" OR name:(" + StringUtils.join(tokenizedName, " ") + ")^0.2");
-				
-				//Include partial
-				query.append(" OR name:(" + StringUtils.join(tokenizedName, "* ") + "*)^0.1");
-				
-				//Include similar
-				query.append(" OR name:(" + StringUtils.join(tokenizedName, "~0.8 ") + "~0.8)^0.1");
+				query.append(" OR (");
+				for (String token : tokenizedName) {
+					query.append(" (name:(");
+					
+					//Include exact
+					query.append(token);
+					query.append(")^0.6 OR name:(");
+					
+					//Include partial
+					query.append(token);
+					query.append("*)^0.3 OR name:(");
+					
+					//Include similar
+					query.append(token);
+					query.append("~0.8)^0.1)");
+				}
+				query.append(")^0.3");
 			}
 		} else {
 			query.append(" name:\"" + escapedName + "\"");
