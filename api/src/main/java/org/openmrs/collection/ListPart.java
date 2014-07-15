@@ -20,7 +20,7 @@ import java.util.List;
  * It is a wrapper for a partial list, which stores additional info about the current part and the
  * whole.
  * 
- * @since 1.12
+ * @since 1.11
  */
 public class ListPart<E> extends CollectionPart<E> {
 	

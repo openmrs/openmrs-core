@@ -24,7 +24,7 @@ import org.openmrs.collection.ListPart;
 /**
  * Wraps around a query to provide common result methods.
  * 
- * @since 1.12
+ * @since 1.11
  */
 public abstract class SearchQuery<T> {
 	

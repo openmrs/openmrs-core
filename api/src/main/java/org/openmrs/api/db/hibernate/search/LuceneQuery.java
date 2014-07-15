@@ -38,7 +38,7 @@ import com.google.common.collect.Sets;
 /**
  * Performs Lucene queries.
  * 
- * @since 1.12
+ * @since 1.11
  */
 public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
  * It is a wrapper for a partial collection, which stores additional info about the current part and
  * the whole.
  * 
- * @since 1.12
+ * @since 1.11
  */
 public abstract class CollectionPart<E> {
 	

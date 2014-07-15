@@ -24,7 +24,7 @@ import org.openmrs.collection.ListPart;
 /**
  * Performs criteria queries.
  * 
- * @since 1.12
+ * @since 1.11
  */
 public abstract class CriteriaQuery<T> extends SearchQuery<T> {
 	

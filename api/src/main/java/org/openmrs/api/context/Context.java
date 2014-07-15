@@ -1361,7 +1361,7 @@ public class Context {
 	 * The method is designated to be used in tests, which rollback transactions. Note that if the
 	 * transaction is rolled back, changes to the index will not be reverted.
 	 * 
-	 * @since 1.12
+	 * @since 1.11
 	 */
 	public static void updateSearchIndex() {
 		getContextDAO().updateSearchIndex();
@@ -1372,7 +1372,7 @@ public class Context {
 	 * 
 	 * @see #updateSearchIndex()
 	 * @param type
-	 * @since 1.12
+	 * @since 1.11
 	 */
 	public static void updateSearchIndexForType(Class<?> type) {
 		getContextDAO().updateSearchIndexForType(type);
@@ -1383,7 +1383,7 @@ public class Context {
 	 * 
 	 * @see #updateSearchIndex()
 	 * @param object
-	 * @since 1.12
+	 * @since 1.11
 	 */
 	public static void updateSearchIndexForObject(Object object) {
 		getContextDAO().updateSearchIndexForObject(object);
