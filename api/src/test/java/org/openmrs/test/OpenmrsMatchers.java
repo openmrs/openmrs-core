@@ -17,6 +17,8 @@ import static org.hamcrest.Matchers.is;
 
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
+import org.openmrs.Concept;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.OpenmrsObject;
 
 /**
@@ -56,6 +58,23 @@ public class OpenmrsMatchers {
 			@Override
 			protected String featureValueOf(final OpenmrsObject actual) {
 				return actual.getUuid();
+			}
+		};
+	}
+	
+	/**
+	 * Matches by concept.
+	 * 
+	 * @param concept
+	 * @return the concept
+	 */
+	public static Matcher<ConceptSearchResult> hasConcept(final Matcher<Concept> concept) {
+		return new FeatureMatcher<ConceptSearchResult, Concept>(
+		                                                        concept, "concept", "concept") {
+			
+			@Override
+			protected Concept featureValueOf(ConceptSearchResult actual) {
+				return actual.getConcept();
 			}
 		};
 	}

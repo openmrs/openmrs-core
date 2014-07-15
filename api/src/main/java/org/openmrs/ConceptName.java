@@ -87,6 +87,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	
 	private ConceptNameType conceptNameType;
 	
+	@Field
 	private Boolean localePreferred = false;
 	
 	// Constructors

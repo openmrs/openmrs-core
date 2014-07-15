@@ -606,7 +606,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 		final String escapedName = LuceneQuery.escapeQuery(name);
 		final List<String> tokenizedName = tokenizeConceptName(escapedName, locales);
 		
-		final StringBuilder query = newNameQuery(tokenizedName, escapedName, searchKeywords);
+		final StringBuilder query = new StringBuilder();
+		
+		query.append("((");
+		final StringBuilder nameQuery = newNameQuery(tokenizedName, escapedName, searchKeywords);
+		query.append(nameQuery);
+		query.append(" localePreferred:true)^0.8 OR (");
+		query.append(nameQuery);
+		query.append(")^0.2)");
 		
 		List<String> localeQueries = new ArrayList<String>();
 		for (Locale locale : locales) {

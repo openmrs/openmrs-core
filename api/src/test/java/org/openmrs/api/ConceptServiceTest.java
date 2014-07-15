@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
@@ -25,6 +26,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
+import static org.openmrs.test.OpenmrsMatchers.hasConcept;
 import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.ArrayList;
@@ -3216,5 +3218,30 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<ConceptSearchResult> conceptSearchResultList = Context.getConceptService().getOrderableConcepts("one",
 		    Collections.singletonList(locale), true, null, null);
 		assertEquals(2, conceptSearchResultList.size());
+	}
+	
+	/**
+	 * @see ConceptService#getConcepts(String,List,boolean,List,List,List,List,Concept,Integer,Integer)
+	 * @verifies return preferred names higher
+	 */
+	@Test
+	public void getConcepts_shouldReturnPreferredNamesHigher() throws Exception {
+		Concept hivProgram = conceptService.getConceptByName("hiv program");
+		ConceptName synonym = new ConceptName("synonym", Context.getLocale());
+		hivProgram.addName(synonym);
+		conceptService.saveConcept(hivProgram);
+		
+		Concept mdrTbProgram = conceptService.getConceptByName("mdr-tb program");
+		synonym = new ConceptName("synonym", Context.getLocale());
+		synonym.setLocalePreferred(true);
+		mdrTbProgram.addName(synonym);
+		conceptService.saveConcept(mdrTbProgram);
+		
+		updateSearchIndex();
+		
+		List<ConceptSearchResult> concepts = conceptService.getConcepts("synonym", null, false, null, null, null, null,
+		    null, null, null);
+		
+		assertThat(concepts, contains(hasConcept(is(mdrTbProgram)), hasConcept(is(hivProgram))));
 	}
 }
