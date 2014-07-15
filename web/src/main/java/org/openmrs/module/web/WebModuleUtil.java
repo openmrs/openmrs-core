@@ -62,6 +62,9 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.filter.ModuleFilterConfig;
 import org.openmrs.module.web.filter.ModuleFilterDefinition;
 import org.openmrs.module.web.filter.ModuleFilterMapping;
+import org.openmrs.scheduler.SchedulerException;
+import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
@@ -779,6 +782,41 @@ public class WebModuleUtil {
 		stopModule(mod, servletContext, false);
 	}
 	
+	/** Stops all tasks started by given module
+	 * @param mod
+	 */
+	private static void stopTasks(Module mod) {
+		
+		SchedulerService schedulerService = Context.getSchedulerService();
+		
+		// Get module package name
+		String[] ModulePackageName = mod.getPackageName().split("\\.");
+		for (TaskDefinition task : schedulerService.getRegisteredTasks()) {
+			
+			// get task package name
+			String[] TaskPackageName = task.getTaskClass().split("\\.");
+			boolean PackageNamesMatch = true;
+			
+			// Compare
+			for (int i = 0; i < ModulePackageName.length; i++) {
+				if (ModulePackageName[i].equals(TaskPackageName[i]))
+					continue;
+				else {
+					PackageNamesMatch = false;
+					break;
+				}
+			}
+			if (PackageNamesMatch)
+				try {
+					// Stop if equal
+					schedulerService.shutdownTask(task);
+				}
+				catch (SchedulerException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+	
 	/**
 	 * Reverses all visible activities done by startModule(org.openmrs.module.Module)
 	 *
@@ -819,7 +857,8 @@ public class WebModuleUtil {
 		
 		// remove the module's filters and filter mappings
 		unloadFilters(mod);
-		
+		// stop tasks associated with module
+		stopTasks(mod);
 		// remove this module's entries in the dwr xml file
 		InputStream inputStream = null;
 		try {
