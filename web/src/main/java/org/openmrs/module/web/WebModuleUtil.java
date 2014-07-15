@@ -795,17 +795,7 @@ public class WebModuleUtil {
 			
 			// get task package name
 			String[] TaskPackageName = task.getTaskClass().split("\\.");
-			boolean PackageNamesMatch = true;
-			
-			// Compare
-			for (int i = 0; i < ModulePackageName.length; i++) {
-				if (ModulePackageName[i].equals(TaskPackageName[i]))
-					continue;
-				else {
-					PackageNamesMatch = false;
-					break;
-				}
-			}
+			boolean PackageNamesMatch = CompareTaskAndModuleName(ModulePackageName, TaskPackageName);
 			if (PackageNamesMatch)
 				try {
 					// Stop if equal
@@ -815,6 +805,26 @@ public class WebModuleUtil {
 					e.printStackTrace();
 				}
 		}
+	}
+	
+	/**
+	 * Compares two given package names. Extracted from WebModuleUtil#stopTasks(Module) only for test reasons
+	 * @param modulePackageName
+	 * @param taskPackageName
+	 * @return true if params match
+	 */
+	public static boolean CompareTaskAndModuleName(String[] modulePackageName, String[] taskPackageName) {
+		boolean packageNamesMatch = true;
+		
+		for (int i = 0; i < modulePackageName.length; i++) {
+			if (modulePackageName[i].equals(taskPackageName[i]))
+				continue;
+			else {
+				packageNamesMatch = false;
+				break;
+			}
+		}
+		return packageNamesMatch;
 	}
 	
 	/**
