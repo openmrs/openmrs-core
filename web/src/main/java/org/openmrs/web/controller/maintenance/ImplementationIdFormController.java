@@ -55,8 +55,7 @@ public class ImplementationIdFormController extends SimpleFormController {
 		}
 		catch (APIException e) {
 			log.warn("Unable to set implementation id", e);
-			// Display a generic fix.error message at the top and provide error descriptions next to form fields
-			req.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "fix.error");
+            req.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "fix.error");
 			return showForm(req, response, exceptions);
 		}
 		
