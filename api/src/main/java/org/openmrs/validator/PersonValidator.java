@@ -50,7 +50,6 @@ public class PersonValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if gender is blank
 	 * @should fail validation if birthdate makes patient older that 120 years old
 	 * @should fail validation if birthdate is a future date
 	 * @should fail validation if voidReason is blank when patient is voided
@@ -67,8 +66,6 @@ public class PersonValidator implements Validator {
 		}
 		
 		Person person = (Person) target;
-		
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
 		
 		boolean atLeastOneNonVoidPersonNameLeft = false;
 		for (PersonName personName : person.getNames()) {

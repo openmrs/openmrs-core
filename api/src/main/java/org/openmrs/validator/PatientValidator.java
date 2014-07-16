@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.springframework.validation.ValidationUtils;
 import org.openmrs.annotation.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -83,6 +84,8 @@ public class PatientValidator extends PersonValidator {
 		super.validate(obj, errors);
 		
 		Patient patient = (Patient) obj;
+		
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
 		
 		if (PatientIdentifierValidator.hasMoreThanOneIdentifierForSameIdentifierType(patient.getActiveIdentifiers())) {
 			errors.reject("error.duplicateIdentifierTypes");
