@@ -1,10 +1,7 @@
 package org.openmrs.module.web;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -110,6 +107,45 @@ public class WebModuleUtilTest {
 			scanner.close();
 		
 		assertTrue(found);
+	}
+	
+	/**
+	 * @see WebModuleUtil#CompareTaskAndModuleName(String[], String[])
+	 * @verifies Module package name different from task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void CompareTaskAndModuleName_shouldReturnFalseForDifferentPackageNames() throws Exception {
+		String[] modulePackageName = { "a", "b" };
+		String[] taskPackageName = { "a", "bc" };
+		boolean result = WebModuleUtil.CompareTaskAndModuleName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#CompareTaskAndModuleName(String[], String[])
+	 * @verifies Module package name longer than task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void CompareTaskAndModuleName_shouldReturnFalseForLongerModulePackageName() throws Exception {
+		String[] modulePackageName = { "a", "b", "c" };
+		String[] taskPackageName = { "a", "bc" };
+		boolean result = WebModuleUtil.CompareTaskAndModuleName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#CompareTaskAndModuleName(String[], String[])
+	 * @verifies Module package name shorter task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void CompareTaskAndModuleName_shouldReturnTrueForLongerTaskPackageName() throws Exception {
+		String[] modulePackageName = { "a", "b", "c" };
+		String[] taskPackageName = { "a", "b", "c", "d" };
+		boolean result = WebModuleUtil.CompareTaskAndModuleName(modulePackageName, taskPackageName);
+		assertTrue(result);
 	}
 	
 	/**
