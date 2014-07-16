@@ -19,6 +19,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -96,21 +97,6 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonValidator#validate(Object,Errors)
-	 * @verifies fail validation if gender is blank
-	 */
-	@Test
-	@Verifies(value = "should fail validation if gender is blank", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfGenderIsBlank() throws Exception {
-		Patient pa = new Patient(1);
-		Errors errors = new BindException(pa, "patient");
-		validator.validate(pa, errors);
-		
-		Assert.assertTrue(errors.hasFieldErrors("gender"));
-		
-	}
-	
-	/**
-	 * @see PersonValidator#validate(Object,Errors)
 	 * @verifies fail validation if voidReason is blank when patient is voided
 	 */
 	@Test
@@ -136,4 +122,20 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(pa, errors);
 		Assert.assertTrue(errors.hasFieldErrors("names"));
 	}
+	
+	/**
+	 * @see {@link org.openmrs.validator.PersonValidator#validate(Object,Errors)}
+	 * @verifies pass validation if gender is blank for Persons
+	 */
+	@Test
+	@Verifies(value = "should pass validation if gender is blank for Persons", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfGenderIsBlankForPersons() throws Exception {
+		Person person = new Person(1);
+		Errors errors = new BindException(person, "person");
+		PersonValidator personValidator = new PersonValidator();
+		personValidator.validate(person, errors);
+		
+		Assert.assertFalse(errors.hasFieldErrors("gender"));
+	}
+	
 }

@@ -50,11 +50,11 @@ public class PersonValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if gender is blank
 	 * @should fail validation if birthdate makes patient older that 120 years old
 	 * @should fail validation if birthdate is a future date
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
+	 * @should pass validation if gender is blank for Persons
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -67,8 +67,6 @@ public class PersonValidator implements Validator {
 		}
 		
 		Person person = (Person) target;
-		
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
 		
 		boolean atLeastOneNonVoidPersonNameLeft = false;
 		for (PersonName personName : person.getNames()) {
@@ -94,19 +92,7 @@ public class PersonValidator implements Validator {
 			}
 		}
 		
-		// check birth date against future dates and really old dates
-		if (person.getBirthdate() != null) {
-			if (person.getBirthdate().after(new Date())) {
-				errors.rejectValue("birthdate", "error.date.future");
-			} else {
-				Calendar c = Calendar.getInstance();
-				c.setTime(new Date());
-				c.add(Calendar.YEAR, -120); // person cannot be older than 120 years old
-				if (person.getBirthdate().before(c.getTime())) {
-					errors.rejectValue("birthdate", "error.date.nonsensical");
-				}
-			}
-		}
+		validateBirthDate(errors, person.getBirthdate());
 		
 		if (person.isVoided()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
@@ -116,6 +102,27 @@ public class PersonValidator implements Validator {
 		}
 		
 		ValidateUtil.validateFieldLengths(errors, Person.class, "gender");
+	}
+	
+	/**
+	 * Checks if the birth date specified is in the future or older than 120 years old..
+	 *
+	 * @param birthDate The birthdate to validate.
+	 * @param errors Stores information about errors encountered during validation.
+	 */
+	private void validateBirthDate(Errors errors, Date birthDate) {
+		if (birthDate != null) {
+			if (birthDate.after(new Date())) {
+				errors.rejectValue("birthdate", "error.date.future");
+			} else {
+				Calendar c = Calendar.getInstance();
+				c.setTime(new Date());
+				c.add(Calendar.YEAR, -120);
+				if (birthDate.before(c.getTime())) {
+					errors.rejectValue("birthdate", "error.date.nonsensical");
+				}
+			}
+		}
 	}
 	
 }
