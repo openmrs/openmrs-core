@@ -812,11 +812,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@AfterClass
 	public static void closeSessionAfterEachClass() throws Exception {
-		// close any modules that might have been loaded by the @StartModules class annotation
-		ModuleUtil.shutdown();
-		
 		// clean up the session so we don't leak memory
-		Context.closeSession();
+		if (Context.isSessionOpen()) {
+			Context.closeSession();
+		}
 	}
 	
 	/**

@@ -120,7 +120,13 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 		StartModule startModuleAnnotation = testContext.getTestClass().getAnnotation(StartModule.class);
 		
 		if (startModuleAnnotation != null) {
+			if (!Context.isSessionOpen()) {
+				Context.openSession();
+			}
+			
 			ModuleUtil.shutdown();
+			
+			Context.closeSession();
 		}
 	}
 }
