@@ -257,7 +257,6 @@ public class ModuleUtil {
 	 * @should not match when version has wild card and is outside boundary
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
-		Integer maxRevisionNumber = Integer.MAX_VALUE;
 		if (versionRange != null && !versionRange.equals("")) {
 			String[] ranges = versionRange.split(",");
 			for (String range : ranges) {
@@ -293,7 +292,7 @@ public class ModuleUtil {
 					
 					// if the upper contains "*" then change it to maxRevisionNumber
 					if (upperBound.indexOf("*") > 0)
-						upperBound = upperBound.replaceAll("\\*", maxRevisionNumber.toString());
+						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
 					
 					int lowerReturn = compareVersion(version, lowerBound);
 					
