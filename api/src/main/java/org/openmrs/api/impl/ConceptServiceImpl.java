@@ -283,8 +283,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concept.setDateChanged(new Date());
 		concept.setChangedBy(Context.getAuthenticatedUser());
 		
-		concept.setDateChanged(new Date());
-		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
 		// add/remove entries in the concept_word table (used for searching)
@@ -1676,7 +1674,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public void updateConceptIndexes() throws APIException {
-		Context.updateSearchIndexForType(Concept.class);
+		Context.updateSearchIndexForType(ConceptName.class);
 	}
 	
 	/**

@@ -266,7 +266,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// "application_data_directory" runtime property is set
 		String appDataDir = servletContext.getInitParameter("application.data.directory");
 		if (StringUtils.hasLength(appDataDir)) {
-			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = appDataDir;
+			OpenmrsUtil.setApplicationDataDirectory(appDataDir);
 		}
 	}
 	

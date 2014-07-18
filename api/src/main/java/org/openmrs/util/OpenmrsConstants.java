@@ -192,7 +192,9 @@ public final class OpenmrsConstants {
 	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
 	 * @see OpenmrsUtil#getApplicationDataDirectory()
 	 * @see OpenmrsUtil#startup(java.util.Properties)
+	 * @deprecated as of 1.11 use {@link OpenmrsUtil#getApplicationDataDirectory()}
 	 */
+	@Deprecated
 	public static String APPLICATION_DATA_DIRECTORY = null;
 	
 	/**

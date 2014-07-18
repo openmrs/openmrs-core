@@ -1390,7 +1390,9 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptIdEnd ends update with this concept_id
 	 * @throws APIException
 	 * @since 1.8
+	 * @deprecated as of 1.11 call {@link #updateConceptIndexes()} or {@link #updateConceptIndex(Concept)
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptIndexes(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 	
