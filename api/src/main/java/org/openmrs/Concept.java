@@ -30,11 +30,19 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.FullTextFilterDef;
+import org.hibernate.search.annotations.FullTextFilterDefs;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.ContainedIn;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.search.TermsFilterFactory;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
@@ -66,6 +74,8 @@ import org.springframework.util.ObjectUtils;
  * @see ConceptService
  */
 @Root
+@Indexed
+@FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, java.io.Serializable, Attributable<Concept> {
 	
 	public static final long serialVersionUID = 57332L;
@@ -74,8 +84,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	// Fields
 	
+	@DocumentId
 	private Integer conceptId;
 	
+	@Field
 	private Boolean retired = false;
 	
 	private User retiredBy;
@@ -84,8 +96,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	private String retireReason;
 	
+	@IndexedEmbedded
 	private ConceptDatatype datatype;
 	
+	@IndexedEmbedded
 	private ConceptClass conceptClass;
 	
 	private Boolean set = false;
@@ -101,6 +115,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	private Date dateChanged;
 	
 	@AllowDirectAccess
+	@ContainedIn
 	private Collection<ConceptName> names;
 	
 	@AllowDirectAccess
@@ -463,7 +478,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * Gets the name explicitly marked as preferred in a locale with a matching language code.
 	 *
-	 * @param country ISO-3166 two letter language code
+	 * @param language ISO-3166 two letter language code
 	 * @return the preferred name, or null if no match is found
 	 * @deprecated use {@link #getPreferredName(Locale)}
 	 */
@@ -909,7 +924,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * Sets the specified name as the fully specified name for the locale and the current fully
 	 * specified (if any) ceases to be the fully specified name for the locale.
 	 *
-	 * @param newFullySpecifiedName the new fully specified name to set
+	 * @param fullySpecifiedName the new fully specified name to set
 	 * @should set the concept name type of the specified name to fully specified
 	 * @should convert the previous fully specified name if any to a synonym
 	 * @should add the name to the list of names if it not among them before
@@ -990,7 +1005,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * This method is deprecated, it always returns the shortName from the locale with a matching
 	 * language code.
 	 *
-	 * @param country ISO-3166 two letter language code
+	 * @param language ISO-3166 two letter language code
 	 * @return the short name, or null if none has been explicitly set
 	 * @deprecated use {@link #getShortNameInLocale(Locale)} or
 	 *             {@link #getShortestName(Locale, Boolean)}
@@ -1059,7 +1074,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * This method is deprecated, it returns a list with only one shortName for the locale if any is
 	 * found, otherwise the list will be empty.
 	 *
-	 * @param the locale where to find the shortName
+	 * @param locale the locale where to find the shortName
 	 * @return a list containing a single shortName for the locale if any is found
 	 * @deprecated because each concept has only one short name per locale.
 	 * @see #getShortNameInLocale(Locale)

@@ -15,6 +15,7 @@ package org.openmrs;
 
 import java.io.Serializable;
 
+import org.hibernate.search.annotations.Indexed;
 import org.openmrs.obs.ComplexObsHandler;
 
 /**
@@ -22,6 +23,7 @@ import org.openmrs.obs.ComplexObsHandler;
  *
  * @since 1.5
  */
+@Indexed
 public class ConceptComplex extends Concept implements Serializable {
 	
 	public static final long serialVersionUID = 473231233L;

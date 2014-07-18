@@ -19,8 +19,24 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.analysis.LowerCaseFilterFactory;
+import org.apache.solr.analysis.StandardFilterFactory;
+import org.apache.solr.analysis.StandardTokenizerFactory;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Similarity;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.search.ConceptNameSimilarity;
+import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -32,23 +48,33 @@ import org.simpleframework.xml.Root;
  * locale.
  */
 @Root
+@Indexed
+@AnalyzerDef(name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+        @TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
+@Analyzer(definition = "ConceptNameAnalyzer")
+@Similarity(impl = ConceptNameSimilarity.class)
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
-	// Fields
+	@DocumentId
 	private Integer conceptNameId;
 	
+	@IndexedEmbedded
 	private Concept concept;
 	
+	@Field(index = Index.TOKENIZED)
 	private String name;
 	
+	@Field(index = Index.UN_TOKENIZED)
+	@FieldBridge(impl = LocaleFieldBridge.class)
 	private Locale locale; // ABK: upgraded from a plain string to a full locale object
 	
 	private User creator;
 	
 	private Date dateCreated;
 	
+	@Field
 	private Boolean voided = false;
 	
 	private User voidedBy;
@@ -61,6 +87,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	
 	private ConceptNameType conceptNameType;
 	
+	@Field
 	private Boolean localePreferred = false;
 	
 	// Constructors

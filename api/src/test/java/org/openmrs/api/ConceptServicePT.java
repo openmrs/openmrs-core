@@ -15,6 +15,8 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.is;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 
 import java.util.List;
@@ -56,6 +58,8 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 			
 			getConnection().commit();
 			
+			updateSearchIndex();
+			
 			dictionaryLoaded = true;
 		}
 		
@@ -74,5 +78,12 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 		Concept concept = conceptService.getConceptByName("hiv positive");
 		
 		assertThat(concept, hasId(138571));
+	}
+	
+	@Test
+	public void shouldReturnDiabetesMellitusFirstForDiabetesMellit() {
+		List<Concept> concepts = conceptService.getConceptsByName("diabetes mellit", null, false);
+		
+		assertThat(concepts.get(0).getName().getName(), equalToIgnoringCase("diabetes mellitus"));
 	}
 }

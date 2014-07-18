@@ -573,12 +573,6 @@ public class OpenmrsUtil {
 		}
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
 		
-		// set the application data directory
-		val = p.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
-		if (val != null) {
-			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = val;
-		}
-		
 		// set global log level
 		applyLogLevels();
 		
@@ -1207,27 +1201,39 @@ public class OpenmrsUtil {
 	/**
 	 * <pre>
 	 * Returns the application data directory. Searches for the value first 
-	 * in the "application_data_directory" runtime property, then in the servlet
+	 * in the "OPENMRS_APPLICATION_DATA_DIRECTORY" system property and "application_data_directory" runtime property, then in the servlet
 	 * init parameter "application.data.directory." If not found, returns:
 	 * a) "{user.home}/.OpenMRS" on UNIX-based systems
 	 * b) "{user.home}\Application Data\OpenMRS" on Windows
-	 *
-	 * Path can be set via systemproperty OPENMRS_APPLICATION_DATA_DIRECTORY
-	 * for development purposes.
+	 * 
 	 * </pre>
 	 *
 	 * @return The path to the directory on the file system that will hold miscellaneous data about
 	 *         the application (runtime properties, modules, etc)
 	 */
 	public static String getApplicationDataDirectory() {
+		String filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
 		
-		String filepath = null;
-		if (System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY") != null) {
-			filepath = System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
+		String systemProperty = System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
+		//System and runtime property take precedence
+		if (systemProperty != null) {
+			filepath = systemProperty;
 		} else {
-			
-			if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
-				filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
+			String runtimeProperty = Context.getRuntimeProperties().getProperty(
+			    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+			if (runtimeProperty != null) {
+				filepath = runtimeProperty;
+			}
+		}
+		
+		if (filepath == null) {
+			if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
+				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
+				if (!(new File(filepath)).canWrite()) {
+					log.warn("Unable to write to users home dir, fallback to: "
+					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
+					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
+				}
 			} else {
 				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
 					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
@@ -1245,9 +1251,9 @@ public class OpenmrsUtil {
 						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + "OpenMRS";
 					}
 				}
-				
-				filepath = filepath + File.separator;
 			}
+			
+			filepath = filepath + File.separator;
 		}
 		
 		File folder = new File(filepath);
@@ -1255,7 +1261,22 @@ public class OpenmrsUtil {
 			folder.mkdirs();
 		}
 		
+		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = filepath;
+		
 		return filepath;
+	}
+	
+	/**
+	 * Can be used to override default application data directory.
+	 * <p>
+	 * Note that it will not override application data directory
+	 * provided as a system property.
+	 * 
+	 * @param path
+	 * @since 1.11
+	 */
+	public static void setApplicationDataDirectory(String path) {
+		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = path;
 	}
 	
 	/**
@@ -2683,9 +2704,10 @@ public class OpenmrsUtil {
 		}
 		
 		// next look in the OpenMRS application data directory
-		pathName = OpenmrsUtil.getApplicationDataDirectory() + pathName;
+		File file = new File(getApplicationDataDirectory(), pathName);
+		pathName = file.getAbsolutePath();
 		log.debug("Attempting to look for property file from: " + pathName);
-		if (new File(pathName).exists()) {
+		if (file.exists()) {
 			return pathName;
 		} else {
 			log.warn("Unable to find properties file: " + pathName);

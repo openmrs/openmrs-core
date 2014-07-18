@@ -18,6 +18,7 @@ import java.util.Properties;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -121,4 +122,29 @@ public interface ContextDAO {
 	 * @param runtimeProperties The current user specific runtime properties
 	 */
 	public void mergeDefaultRuntimeProperties(Properties runtimeProperties);
+	
+	/**
+	 * Updates the search index if necessary.
+	 * <p>
+	 * The update is triggered if {@link OpenmrsConstants#GP_SEARCH_INDEX_VERSION} is blank
+	 * or the value does not match {@link OpenmrsConstants#SEARCH_INDEX_VERSION}.
+	 */
+	public void setupSearchIndex();
+	
+	/**
+	 * @see Context#updateSearchIndex()
+	 */
+	public void updateSearchIndex();
+	
+	/**
+	 * @see Context#updateSearchIndexForObject(Object)
+	 */
+	@Transactional
+	public void updateSearchIndexForObject(Object object);
+	
+	/**
+	 * @see Context#updateSearchIndexForType(Class)
+	 */
+	@Transactional
+	public void updateSearchIndexForType(Class<?> type);
 }

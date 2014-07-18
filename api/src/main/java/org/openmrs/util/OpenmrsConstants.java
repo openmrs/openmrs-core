@@ -15,6 +15,7 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -191,7 +192,9 @@ public final class OpenmrsConstants {
 	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
 	 * @see OpenmrsUtil#getApplicationDataDirectory()
 	 * @see OpenmrsUtil#startup(java.util.Properties)
+	 * @deprecated as of 1.11 use {@link OpenmrsUtil#getApplicationDataDirectory()}
 	 */
+	@Deprecated
 	public static String APPLICATION_DATA_DIRECTORY = null;
 	
 	/**
@@ -1048,8 +1051,6 @@ public final class OpenmrsConstants {
 	 */
 	public static final String AUTO_CLOSE_VISITS_TASK_NAME = "Auto Close Visits Task";
 	
-	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "concept.IndexUpdateTask.lastConceptUpdated";
-	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 	
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
@@ -1076,6 +1077,18 @@ public final class OpenmrsConstants {
 	public static final String GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID = "order.testSpecimenSourcesConceptUuid";
 	
 	public static final String GP_UNKNOWN_PROVIDER_UUID = "provider.unknownProviderUuid";
+	
+	/**
+	 * @since 1.11
+	 */
+	public static final String GP_SEARCH_INDEX_VERSION = "search.indexVersion";
+	
+	/**
+	 * Indicates the version of the search index. The index will be rebuilt, if the version changes.
+	 * 
+	 * @since 1.11
+	 */
+	public static final Integer SEARCH_INDEX_VERSION = 2;
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1437,7 +1450,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GP_SEARCH_WIDGET_DELAY_INTERVAL,
-		                "400",
+		                "300",
 		                "Specifies time interval in milliseconds when searching, between keyboard keyup event and triggering the search off, should be higher if most users are slow when typing so as to minimise the load on the server"));
 		
 		props
@@ -1528,6 +1541,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
+		
+		props.add(new GlobalProperty(GP_SEARCH_INDEX_VERSION, "",
+		        "Indicates the index version. If it is blank, the index needs to be rebuilt."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true",
 		        "true/false whether or not to allow visits of a given patient to overlap", BooleanDatatype.class, null));

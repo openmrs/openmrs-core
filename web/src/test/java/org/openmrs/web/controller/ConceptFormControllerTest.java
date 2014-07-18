@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptComplex;
@@ -52,7 +53,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -66,6 +66,11 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	@Autowired
 	ConceptService conceptService;
+	
+	@Before
+	public void updateSearchIndex() {
+		super.updateSearchIndex();
+	}
 	
 	/**
 	 * Checks that the conceptId query param gets a concept from the database
@@ -471,6 +476,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
+		
+		updateSearchIndex();
 		
 		Concept actualConcept = cs.getConceptByName("new name");
 		assertNotNull(actualConcept);

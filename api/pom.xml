@@ -132,16 +132,14 @@
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-ehcache</artifactId>
       </dependency>
-      <!-- Removed until work on TRUNK-425 is complete
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-search</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-search-analyzers</artifactId>
+         <groupId>org.apache.lucene</groupId>
+         <artifactId>lucene-queries</artifactId>
       </dependency>
-      -->
       <dependency>
          <groupId>dom4j</groupId>
          <artifactId>dom4j</artifactId>

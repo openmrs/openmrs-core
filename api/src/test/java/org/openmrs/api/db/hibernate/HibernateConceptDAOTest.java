@@ -24,6 +24,8 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	public void setUp() throws Exception {
 		executeDataSet(PROVIDERS_INITIAL_XML);
 		
+		updateSearchIndex();
+		
 		if (dao == null)
 			// fetch the dao from the spring application context
 			dao = (HibernateConceptDAO) applicationContext.getBean("conceptDAO");

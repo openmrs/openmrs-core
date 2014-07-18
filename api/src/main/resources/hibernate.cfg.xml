@@ -6,18 +6,6 @@
 <hibernate-configuration>
 
 	<session-factory>
-		<!-- Hibernate Search configuration -->
-		<property name="hibernate.search.default.directory_provider">
-			org.hibernate.search.store.FSDirectoryProvider
-		</property>
-		<!-- TODO: change this to just "lucene-index" where does it go then?
-		           (because windows machines don't put "~" in the same place as the app data dir)
-		     TODO: add this to the openmrs-runtime properties wiki page as an option
-		-->
-		<property name="hibernate.search.default.indexBase">
-			~/.OpenMRS/lucene-index/ 
-		</property>
-
         <property name="javax.persistence.validation.mode">none</property>
 
 		<!--  Hibernate Mapping files -->
@@ -38,7 +26,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStateConversion.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSet.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptMap.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptWord.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStopWord.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSource.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTerm.hbm.xml" />

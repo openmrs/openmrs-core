@@ -23,13 +23,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Manage Concepts">
-		<li <c:if test='<%= request.getRequestURI().contains("conceptIndex") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/concepts/conceptIndex.form">
-				<openmrs:message code="ConceptWord.manage"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Concept Classes">
 		<li <c:if test='<%= request.getRequestURI().contains("Class") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/concepts/conceptClass.list">
