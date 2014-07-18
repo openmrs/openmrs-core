@@ -8407,5 +8407,12 @@
         </comment>
         <dropTable tableName="concept_word"/>
     </changeSet>
+    
+    <changeSet id="20140718-TRUNK-2999-remove_update_concept_index_task" author="rkorytkowski">
+		<comment>Deleting the update concept index task</comment>
+		<delete tableName="scheduler_task_config">
+			<where>schedulable_class =  'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'</where>
+		</delete>
+	</changeSet>
 
 </databaseChangeLog>
