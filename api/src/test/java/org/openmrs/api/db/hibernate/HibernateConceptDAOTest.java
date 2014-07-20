@@ -68,6 +68,24 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean)
+	 * @verifies returns a drug regardless of case sensitivity
+	 */
+	@Test
+	@Verifies(value = "return a drug if drug name is passed with upper or lower case", method = "getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)")
+	public void getDrugs_shouldReturnDrugIf_EitherDrugNameIsUpperOrLowerCase() throws Exception {
+		Session session5 = sessionFactory.getCurrentSession();
+		session5.beginTransaction();
+		
+		List<Drug> drugList1 = dao.getDrugs("Triomune-30", null, true);
+		Assert.assertEquals(1, drugList1.size());
+		
+		List<Drug> drugList2 = dao.getDrugs("triomune-30", null, true);
+		Assert.assertEquals(1, drugList2.size());
+		
+	}
+	
+	/**
 	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
 	 * @verifies return a drug if phrase match drug_name No need to match both concept_name and
 	 *           drug_name
