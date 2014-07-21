@@ -23,6 +23,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,8 +53,15 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	// time to wait for concurrent tasks to execute, should only wait this long if there's a test failure
 	public static final long CONCURRENT_TASK_WAIT_MS = 30000;
 	
+	public static Logger log = LogManager.getLogger(SchedulerServiceTest.class);
+	
 	@Before
 	public void setUp() throws Exception {
+		// Temporary logger level changes to debug TRUNK-4212
+		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.DEBUG);
+		LogManager.getLogger("org.openmrs.api").setLevel(Level.DEBUG);
+		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.DEBUG);
+		log.debug("SchedulerServiceTest setup() start");
 		Context.flushSession();
 		
 		Collection<TaskDefinition> tasks = Context.getSchedulerService().getRegisteredTasks();
@@ -61,6 +72,15 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		Context.flushSession();
 		getConnection().commit(); // tasks reappear at the start of the next test otherwise
+		log.debug("SchedulerServiceTest setup() complete");
+	}
+	
+	@After
+	public void cleanUp() throws Exception {
+		// Temporary logger level changes to debug TRUNK-4212
+		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.WARN);
+		LogManager.getLogger("org.openmrs.api").setLevel(Level.WARN);
+		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.WARN);
 	}
 	
 	@Test
@@ -335,6 +355,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldSaveLastExecutionTime() throws Exception {
+		log.debug("shouldSaveLastExecutionTime start");
 		final String NAME = "StoreExecutionTime Task";
 		SchedulerService service = Context.getSchedulerService();
 		
@@ -343,7 +364,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setStartOnStartup(false);
 		td.setTaskClass(StoreExecutionTimeTask.class.getName());
 		td.setStartTime(null);
-		td.setRepeatInterval(new Long(0));//0 indicates single execution
+		td.setRepeatInterval(0l);//0 indicates single execution
 		synchronized (TASK_TEST_METHOD_LOCK) {
 			latch = new CountDownLatch(1);
 			service.saveTaskDefinition(td);
@@ -351,22 +372,25 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			
 			// wait for the task to execute
 			assertTrue("task didn't execute", latch.await(CONCURRENT_TASK_WAIT_MS, TimeUnit.MILLISECONDS));
-			
-			// wait for the SchedulerService to update the execution time
-			for (int x = 0; x < 100; x++) {
-				// refetch the task
-				td = service.getTaskByName(NAME);
-				if (td.getLastExecutionTime() != null) {
-					break;
-				}
-				Thread.sleep(200);
-			}
-			assertNotNull(
-			    "actualExecutionTime is null, so either the SessionTask.execute method hasn't finished or didn't get run",
-			    actualExecutionTime);
-			assertNotNull("lastExecutionTime is null, so the SchedulerService didn't save it", td.getLastExecutionTime());
-			assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td
-			        .getLastExecutionTime().getTime() / 1000, 1);
 		}
+		
+		log.debug("shouldSaveLastExecutionTime task done");
+		
+		// wait for the SchedulerService to update the execution time
+		for (int x = 0; x < 100; x++) {
+			// refetch the task
+			td = service.getTaskByName(NAME);
+			if (td.getLastExecutionTime() != null) {
+				log.debug("shouldSaveLastExecutionTime wait done");
+				break;
+			}
+			Thread.sleep(200);
+		}
+		assertNotNull(
+		    "actualExecutionTime is null, so either the SessionTask.execute method hasn't finished or didn't get run",
+		    actualExecutionTime);
+		assertNotNull("lastExecutionTime is null, so the SchedulerService didn't save it", td.getLastExecutionTime());
+		assertEquals("Last execution time in seconds is wrong", actualExecutionTime / 1000, td.getLastExecutionTime()
+		        .getTime() / 1000, 1);
 	}
 }
