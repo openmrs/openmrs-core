@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Calendar;
 
 import org.junit.Test;
+import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -60,6 +61,10 @@ public class TimerSchedulerServiceImplTest extends BaseContextSensitiveTest {
 		
 		TimerSchedulerServiceImpl t = new TimerSchedulerServiceImpl();
 		clientTask = t.scheduleTask(taskDefinition);
+		
+		// without this commit there seems to be a table lock left on the SCHEDULER_TASK_CONFIG table, see TRUNK-4212
+		Context.flushSession();
+		getConnection().commit();
 		
 		// Assert that the clientTask is not null, i.e. the sheduleTask was able to successfully schedule in case of zero repeatInterval.
 		assertNotNull(
