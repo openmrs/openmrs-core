@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
+import org.openmrs.ConceptSource;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -284,5 +285,64 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		
 		//the term for second mapping should be rejected
 		Assert.assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[1].termB"));
+	}
+	
+	/**
+	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if the duplicate name is for a term same concept source but retired", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfTheDuplicateNameIsForATermFromSameConceptSourceButRetired() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		ConceptSource source = Context.getConceptService().getConceptSource(1);
+		
+		ConceptReferenceTerm retiredTerm = cs.getConceptReferenceTermByName("retired name", source);
+		Assert.assertTrue(retiredTerm.isRetired());
+		
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		//set to a duplicate name for a term from another source
+		term.setName("retired name");
+		term.setCode("retired code");
+		term.setConceptSource(source);
+		Errors errors = new BindException(term, "term");
+		new ConceptReferenceTermValidator().validate(term, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should save both concept reference terms if one is retired", method = "validate(Object,Errors)")
+	public void validate_shouldSaveBothConceptReferenceTermsIfOneIsRetired() throws Exception {
+		Errors errors;
+		ConceptService cs = Context.getConceptService();
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		String name = "test reference term";
+		String code = "ref-term";
+		ConceptSource conceptSource = Context.getConceptService().getConceptSource(1);
+		//set to a duplicate name for a term from another source
+		term.setName(name);
+		term.setCode(code);
+		term.setRetired(true);
+		term.setRetireReason("test");
+		term.setConceptSource(conceptSource);
+		errors = new BindException(term, "term");
+		new ConceptReferenceTermValidator().validate(term, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+		cs.saveConceptReferenceTerm(term);
+		
+		term = new ConceptReferenceTerm();
+		term.setName(name);
+		term.setCode(code);
+		term.setConceptSource(conceptSource);
+		errors = new BindException(term, "term");
+		new ConceptReferenceTermValidator().validate(term, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+		cs.saveConceptReferenceTerm(term);
+		
+		ConceptReferenceTerm savedTerm = cs.getConceptReferenceTermByCode(code, conceptSource);
+		Assert.assertEquals(code, savedTerm.getCode());
+		Assert.assertEquals(name, savedTerm.getName());
 	}
 }

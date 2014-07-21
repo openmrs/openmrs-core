@@ -64,6 +64,8 @@ public class ConceptReferenceTermValidator implements Validator {
 	 * @should fail if termB of a concept reference term map is not set
 	 * @should fail if a term is mapped to itself
 	 * @should fail if a term is mapped multiple times to the same term
+	 * @should pass if the duplicate name is for a term same concept source but retired
+	 * @should save both concept reference terms if one is retired
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		
@@ -91,7 +93,8 @@ public class ConceptReferenceTermValidator implements Validator {
 		ConceptReferenceTerm termWithDuplicateCode = Context.getConceptService().getConceptReferenceTermByCode(code,
 		    conceptReferenceTerm.getConceptSource());
 		if (termWithDuplicateCode != null) {
-			if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getUuid(), conceptReferenceTerm.getUuid())) {
+			if (!termWithDuplicateCode.isRetired()
+			        && !OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getUuid(), conceptReferenceTerm.getUuid())) {
 				errors.rejectValue("code", "ConceptReferenceTerm.duplicate.code",
 				    "Duplicate concept reference term code in its concept source: " + code);
 			}

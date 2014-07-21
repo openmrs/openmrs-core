@@ -1569,6 +1569,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
 		criteria.add(Restrictions.eq("code", code));
 		criteria.add(Restrictions.eq("conceptSource", conceptSource));
+		criteria.add(Restrictions.eq("retired", Boolean.FALSE));
 		List terms = criteria.list();
 		if (terms.size() == 0) {
 			return null;
