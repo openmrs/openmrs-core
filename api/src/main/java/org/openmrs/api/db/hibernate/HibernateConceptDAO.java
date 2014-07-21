@@ -392,7 +392,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		}
 		if (drugName != null) {
-			searchCriteria.add(Restrictions.eq("drug.name", drugName));
+			searchCriteria.add(Restrictions.eq("drug.name", drugName).ignoreCase());
 		}
 		return (List<Drug>) searchCriteria.list();
 	}
