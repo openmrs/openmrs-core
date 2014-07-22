@@ -52,6 +52,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
+import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
@@ -247,6 +248,13 @@ public class ModuleUtil {
 	 * @should return false when required version with wild card on one end beyond openmrs version
 	 * @should return false when single entry required version beyond openmrs version
 	 * @should allow release type in the version
+	 * @should match when revision number is below maximum revision number
+	 * @should not match when revision number is above maximum revision number
+	 * @should correctly set upper and lower limit for versionRange with qualifiers and wild card
+	 * @should match when version has wild card plus qualifier and is within boundary
+	 * @should not match when version has wild card plus qualifier and is outside boundary
+	 * @should match when version has wild card and is within boundary
+	 * @should not match when version has wild card and is outside boundary
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
 		if (versionRange != null && !versionRange.equals("")) {
@@ -282,10 +290,9 @@ public class ModuleUtil {
 					if (lowerBound.indexOf("*") > 0)
 						lowerBound = lowerBound.replaceAll("\\*", "0");
 					
-					// if the upper contains "*" then change it to 999
-					// assuming 999 will be the max revision number for openmrs
+					// if the upper contains "*" then change it to maxRevisionNumber
 					if (upperBound.indexOf("*") > 0)
-						upperBound = upperBound.replaceAll("\\*", "999");
+						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
 					
 					int lowerReturn = compareVersion(version, lowerBound);
 					
@@ -392,8 +399,8 @@ public class ModuleUtil {
 			for (int x = 0; x < versions.size(); x++) {
 				String verNum = versions.get(x).trim();
 				String valNum = values.get(x).trim();
-				Integer ver = NumberUtils.toInt(verNum, 0);
-				Integer val = NumberUtils.toInt(valNum, 0);
+				Long ver = NumberUtils.toLong(verNum, 0);
+				Long val = NumberUtils.toLong(valNum, 0);
 				
 				int ret = ver.compareTo(val);
 				if (ret != 0) {
@@ -808,6 +815,7 @@ public class ModuleUtil {
 		}
 		
 		OpenmrsClassLoader.saveState();
+		SchedulerUtil.shutdown();
 		ServiceContext.destroyInstance();
 		
 		try {
@@ -835,6 +843,7 @@ public class ModuleUtil {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		OpenmrsClassLoader.restoreState();
+		SchedulerUtil.startup(Context.getRuntimeProperties());
 		
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 		

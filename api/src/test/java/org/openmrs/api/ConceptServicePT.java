@@ -15,6 +15,8 @@ package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.is;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 
 import java.util.List;
@@ -37,7 +39,7 @@ import com.carrotsearch.junitbenchmarks.annotation.BenchmarkHistoryChart;
  */
 @SkipBaseSetup
 @BenchmarkHistoryChart
-public class ConceptServicePerformanceIT extends BaseContextSensitiveTest {
+public class ConceptServicePT extends BaseContextSensitiveTest {
 	
 	@Rule
 	public TestRule benchmarkRule = new BenchmarkRule();
@@ -50,15 +52,18 @@ public class ConceptServicePerformanceIT extends BaseContextSensitiveTest {
 	@Before
 	public void loadDictionary() throws Exception {
 		if (!dictionaryLoaded) {
-			executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
-			executeLargeDataSet("org/openmrs/contrib/mvpconceptdictionary/dbunit.xml");
+			initializeInMemoryDatabase();
 			
-			authenticate();
+			executeLargeDataSet("org/openmrs/contrib/mvpconceptdictionary/dbunit.xml");
 			
 			getConnection().commit();
 			
+			updateSearchIndex();
+			
 			dictionaryLoaded = true;
 		}
+		
+		authenticate();
 	}
 	
 	@Test
@@ -73,5 +78,12 @@ public class ConceptServicePerformanceIT extends BaseContextSensitiveTest {
 		Concept concept = conceptService.getConceptByName("hiv positive");
 		
 		assertThat(concept, hasId(138571));
+	}
+	
+	@Test
+	public void shouldReturnDiabetesMellitusFirstForDiabetesMellit() {
+		List<Concept> concepts = conceptService.getConceptsByName("diabetes mellit", null, false);
+		
+		assertThat(concepts.get(0).getName().getName(), equalToIgnoringCase("diabetes mellitus"));
 	}
 }

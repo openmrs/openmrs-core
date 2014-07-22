@@ -13,6 +13,8 @@
  */
 package org.openmrs.util;
 
+import com.google.common.base.Objects;
+
 /**
  * Represents a bounded or unbounded numeric range. By default the range is closed (ake inclusive)
  * on the low end and open (aka exclusive) on the high end: mathematically "[low, high)". (I'm not
@@ -131,4 +133,10 @@ public class DoubleRange implements Comparable<DoubleRange> {
 		}
 		return false;
 	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(low, high);
+	}
+	
 }

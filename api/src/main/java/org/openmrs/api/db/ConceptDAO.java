@@ -37,7 +37,6 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
-import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
 import org.openmrs.api.APIException;
@@ -57,7 +56,7 @@ public interface ConceptDAO {
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#purgeConcept(org.openmrs.Concept)
-	 * @should delete concept and related conceptWords from datastore
+	 * @should purge concept
 	 */
 	public void purgeConcept(Concept concept) throws DAOException;
 	
@@ -111,16 +110,6 @@ public interface ConceptDAO {
 	        List<ConceptDatatype> datatypes) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptWords(String, List, boolean, List, List, List,
-	 *      List, Concept, Integer, Integer)
-	 * @throws DAOException
-	 */
-	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
-	        throws DAOException;
-	
-	/**
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
 	 *      Integer, Integer)
 	 * @throws DAOException
@@ -131,6 +120,10 @@ public interface ConceptDAO {
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
 	        throws DAOException;
+	
+	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptAnswer(java.lang.Integer)
@@ -289,12 +282,6 @@ public interface ConceptDAO {
 	 */
 	public List<Concept> getConceptsWithDrugsInFormulary() throws DAOException;
 	
-	/**
-	 * @see org.openmrs.api.ConceptService#updateConceptWord(org.openmrs.Concept)
-	 * @should update conceptWords for this concept in datastore
-	 */
-	public void updateConceptWord(Concept concept) throws DAOException;
-	
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
 	
 	public ConceptNameTag getConceptNameTag(Integer i);
@@ -369,8 +356,6 @@ public interface ConceptDAO {
 	public ConceptSet getConceptSetByUuid(String uuid);
 	
 	public ConceptSource getConceptSourceByUuid(String uuid);
-	
-	public ConceptWord getConceptWordByUuid(String uuid);
 	
 	/**
 	 * Auto generated method comment
@@ -468,24 +453,6 @@ public interface ConceptDAO {
 	public List<ConceptStopWord> getAllConceptStopWords();
 	
 	/**
-	 * Get the count of matching conceptWords
-	 * 
-	 * @param phrase text to search on
-	 * @param locales the locales to restrict to
-	 * @param includeRetired Specifies whether to include retired concepts
-	 * @param requireClasses List<ConceptClass> to restrict to
-	 * @param excludeClasses List<ConceptClass> to leave out of results
-	 * @param requireDatatypes List<ConceptDatatype> to restrict to
-	 * @param excludeDatatypes List<ConceptDatatype> to leave out of results
-	 * @param answersToConcept all results will be a possible answer to this concept
-	 * @param forUniqueConcepts Specifies if conceptWords that are associated to multiple
-	 *            conceptWords should be counted one or more times.
-	 */
-	public Long getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, boolean forUniqueConcepts);
-	
-	/**
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
 	 */
 	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
@@ -496,34 +463,6 @@ public interface ConceptDAO {
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException;
-	
-	/**
-	 * Computes and returns the weight of a conceptWord. The weight is computed independent of
-	 * locale and any phrase
-	 * 
-	 * @param word the word for which to compute the weight
-	 * @return the weight of the word
-	 * @should assign a higher weight to a shorter word if both words are equal to concept name
-	 * @should assign zero weight if the word is not among the concept name words
-	 * @should weigh a word for an index term higher than that of a preferred name
-	 * @should weigh a word for an index term higher than that of a fully specified name
-	 * @should weigh a word for a preferred fullySpecified higher than that of a plain
-	 *         fullySpecified name
-	 * @should weigh a word for a preferred fullySpecified higher than that of a plain preferred
-	 *         name
-	 * @should weigh a word for a preferred name higher than that of a fully specified name
-	 * @should weigh a word for a fully specified name higher than that of a synonym
-	 * @should weigh a word for a synonym higher than that of a short name
-	 * @should assign a higher weight to a shorter word if both words are at the start of the
-	 *         concept name
-	 * @should weigh a word for a shorter concept name higher than that of a longer concept name
-	 * @should weigh a word equal to a concept name higher than one that matches the start of the
-	 *         concept name
-	 * @should weigh words closer to the start higher than those closer to the end of the concept
-	 *         name
-	 * @should weigh words when jvm is run in a locale with a different decimal separator character
-	 */
-	public Double weighConceptWord(ConceptWord word);
 	
 	/**
 	 * @see ConceptService#getDrugsByIngredient(Concept)
@@ -650,6 +589,11 @@ public interface ConceptDAO {
 	public List<Concept> getConceptsByName(String name, Locale locale, Boolean exactLocal);
 	
 	/**
+	 * @see ConceptService#getConceptByName(String)
+	 */
+	public Concept getConceptByName(String name);
+	
+	/**
 	 * It is in the DAO, because it must be done in the MANUAL flush mode to prevent premature
 	 * flushes in {@link ConceptService#saveConcept(Concept)}. It will be removed in 1.10 when we
 	 * have a better way to manage flush modes.
@@ -657,6 +601,11 @@ public interface ConceptDAO {
 	 * @see ConceptService#getDefaultConceptMapType()
 	 */
 	public ConceptMapType getDefaultConceptMapType() throws DAOException;
+	
+	/**
+	 * @see ConceptService#isConceptNameDuplicate(ConceptName)
+	 */
+	public boolean isConceptNameDuplicate(ConceptName name);
 	
 	/**
 	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)

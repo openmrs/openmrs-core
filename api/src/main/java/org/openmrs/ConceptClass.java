@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Indexed;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
@@ -20,6 +22,7 @@ import org.simpleframework.xml.Root;
  * ConceptClass
  */
 @Root(strict = false)
+@Indexed
 public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 33473L;
@@ -61,7 +64,7 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	public static final String FREQUENCY_UUID = "8e071bfe-520c-44c0-a89b-538e9129b42a";
 	
 	// Fields
-	
+	@DocumentId
 	private Integer conceptClassId;
 	
 	// Constructors

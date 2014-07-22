@@ -184,7 +184,7 @@ public class TestInstallUtil {
 					String appDataDirectory = Context.getRuntimeProperties().getProperty(
 					    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
 					if (StringUtils.isNotBlank(appDataDirectory)) {
-						OpenmrsConstants.APPLICATION_DATA_DIRECTORY = appDataDirectory;
+						OpenmrsUtil.setApplicationDataDirectory(appDataDirectory);
 					}
 					
 					File moduleRepository = OpenmrsUtil.getDirectoryInApplicationDataDirectory(moduleRepositoryFolder);

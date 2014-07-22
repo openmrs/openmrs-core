@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -104,6 +105,15 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 		}
 		catch (IOException e) {
 			log.fatal("Unable to load default hibernate properties", e);
+		}
+		
+		log.debug("Replacing variables in hibernate properties");
+		final String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
+		for (Entry<Object, Object> entry : config.getProperties().entrySet()) {
+			String value = (String) entry.getValue();
+			
+			value = value.replace("%APPLICATION_DATA_DIRECTORY%", applicationDataDirectory);
+			entry.setValue(value);
 		}
 		
 		log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: " + chainingInterceptor);

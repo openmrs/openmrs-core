@@ -13,6 +13,9 @@
  */
 package org.openmrs.web.controller.observation.handler;
 
+import java.util.Locale;
+
+import org.openmrs.api.context.Context;
 import org.openmrs.Obs;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.handler.ImageHandler;
@@ -50,12 +53,14 @@ public class WebImageHandler extends ImageHandler {
 	public Obs getObs(Obs obs, String view) {
 		
 		if (WebConstants.HYPERLINK_VIEW.equals(view)) {
-			ComplexData cd = new ComplexData(obs.getValueAsString(null), getHyperlink(obs));
+			Locale locale = Context.getLocale();
+			ComplexData cd = new ComplexData(obs.getValueAsString(locale), getHyperlink(obs));
 			obs.setComplexData(cd);
 			return obs;
 		} else if (WebConstants.HTML_VIEW.equals(view)) {
 			String imgtag = "<img src='" + getHyperlink(obs) + "'/>";
-			ComplexData cd = new ComplexData(obs.getValueAsString(null), imgtag);
+			Locale locale = Context.getLocale();
+			ComplexData cd = new ComplexData(obs.getValueAsString(locale), imgtag);
 			obs.setComplexData(cd);
 			return obs;
 		} else {

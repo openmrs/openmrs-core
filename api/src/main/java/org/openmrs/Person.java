@@ -682,6 +682,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return the "preferred" person name.
 	 * @see #getNames()
 	 * @see PersonName#isPreferred()
+	 * 
+	 * @should get preferred and not-voided person name if exist
+	 * @should get not-voided person name if preferred address does not exist
+	 * @should get voided person address if not-voided address does not exist
 	 */
 	public PersonName getPersonName() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
@@ -697,7 +701,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 					return name;
 				}
 			}
-			return null;
+			
+			if (isVoided() && !getNames().isEmpty()) {
+				return getNames().iterator().next();
+			}
 		}
 		return null;
 	}
@@ -757,6 +764,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return the "preferred" person address.
 	 * @see #getAddresses()
 	 * @see PersonAddress#isPreferred()
+	 * 
+	 * @should get preferred and not-voided person address if exist
+	 * @should get not-voided person address if preferred address does not exist
+	 * @should get voided person address if not-voided address does not exist
 	 */
 	public PersonAddress getPersonAddress() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
@@ -772,7 +783,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 					return addr;
 				}
 			}
-			return null;
+			
+			if (isVoided() && !getAddresses().isEmpty()) {
+				return getAddresses().iterator().next();
+			}
 		}
 		return null;
 	}

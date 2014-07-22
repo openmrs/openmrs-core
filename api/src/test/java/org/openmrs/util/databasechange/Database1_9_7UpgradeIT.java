@@ -44,7 +44,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Tests database upgrade from OpenMRS 1.9.7.
  */
-public class Database1_9_7UpgradeTest {
+public class Database1_9_7UpgradeIT {
 	
 	public static final String TEST_DATA_DIR = "/org/openmrs/util/databasechange/";
 	

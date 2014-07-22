@@ -30,6 +30,10 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.w3c.dom.Document;
 
+import com.google.common.base.Objects;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashCodes;
+
 /**
  * Generic module class that openmrs manipulates
  *
@@ -142,6 +146,11 @@ public final class Module {
 			return getModuleId().equals(mod.getModuleId());
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getModuleId());
 	}
 	
 	/**

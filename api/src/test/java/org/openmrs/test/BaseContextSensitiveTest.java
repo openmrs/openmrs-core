@@ -70,13 +70,17 @@ import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.module.ModuleConstants;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -151,6 +155,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	/**
 	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
+	 * 
+	 * @since 1.11
 	 */
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
@@ -274,7 +280,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
 			        .getAbsolutePath());
-			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = tempappdir.getAbsolutePath();
+			OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
 		}
 		catch (IOException e) {
 			log.error("Unable to create temp dir", e);
@@ -702,6 +708,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @throws Exception
 	 */
 	public void deleteAllData() throws Exception {
+		Context.clearSession();
+		
 		Connection connection = getConnection();
 		
 		turnOffDBConstraints(connection);
@@ -721,16 +729,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		turnOnDBConstraints(connection);
 		
-		// clear the (hibernate) session to make sure nothing is cached, etc
-		Context.clearSession();
-		
-		// needed because the authenticatedUser is the only object that sticks
-		// around after tests and the clearSession call
-		if (Context.isSessionOpen())
-			Context.logout();
-		
-		//Commit, but note that it will be committed even earlier when turning on DB constraints
 		connection.commit();
+		
+		updateSearchIndex();
 		
 		isBaseSetup = false;
 	}
@@ -782,6 +783,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 					//Commit so that it is not rolled back after a test.
 					getConnection().commit();
 					
+					updateSearchIndex();
+					
 					isBaseSetup = true;
 				}
 				
@@ -796,17 +799,46 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		Context.clearSession();
 	}
 	
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { Concept.class, Drug.class };
+	}
+	
+	/**
+	 * It needs to be call if you want to do a concept search after you modify a concept in a test.
+	 * 
+	 * It is because index is automatically updated only after transaction is committed, which happens
+	 * only at the end of a test in our transactional tests.
+	 */
+	public void updateSearchIndex() {
+		for (Class<?> indexType : getIndexedTypes()) {
+			Context.updateSearchIndexForType(indexType);
+		}
+	}
+	
+	@After
+	public void clearSessionAfterEachTest() {
+		// clear the session to make sure nothing is cached, etc
+		Context.clearSession();
+		
+		// needed because the authenticatedUser is the only object that sticks
+		// around after tests and the clearSession call
+		if (Context.isSessionOpen())
+			Context.logout();
+	}
+	
 	/**
 	 * Called after each test class. This is called once per test class that extends
 	 * {@link BaseContextSensitiveTest}. Needed so that "unit of work" that is the test class is
 	 * surrounded by a pair of open/close session calls.
 	 * 
 	 * @throws Exception
-	 * @deprecated As of 1.10 it does nothing.
 	 */
 	@AfterClass
-	@Deprecated
 	public static void closeSessionAfterEachClass() throws Exception {
+		// clean up the session so we don't leak memory
+		if (Context.isSessionOpen()) {
+			Context.closeSession();
+		}
 	}
 	
 	/**

@@ -15,6 +15,8 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.hibernate.search.annotations.Field;
+
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
  * system and descriptive data such as data types &mdash; a relationship type or encounter type.
@@ -27,7 +29,7 @@ import java.util.Date;
 public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
-	
+	@Field
 	private String name;
 	
 	private String description;
@@ -40,6 +42,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	private Date dateChanged;
 	
+	@Field
 	private Boolean retired = Boolean.FALSE;
 	
 	private Date dateRetired;

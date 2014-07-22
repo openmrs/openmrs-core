@@ -48,7 +48,7 @@ public class TimerSchedulerTask extends TimerTask {
 		try {
 			Daemon.executeScheduledTask(task);
 		}
-		catch (Throwable t) {
+		catch (Exception t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.
 			// Suppress error in order to keep the scheduler's Timer from completely failing.
 			log.error(

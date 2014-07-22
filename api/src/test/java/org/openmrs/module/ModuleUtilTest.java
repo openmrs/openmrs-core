@@ -272,6 +272,89 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should match when revision number is below maximum revision number", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldMatchWhenRevisionNumberIsBelowMaximumRevisionNumber() {
+		String openmrsVersion = "1.4.1111";
+		String requiredVersion = "1.4.*";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should not match when revision number is above maximum revision number", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldNotMatchWhenRevisionNumberIsAboveMaximumRevisionNumber() {
+		Long revisionNumber = (long) Integer.MAX_VALUE + 2;
+		String openmrsVersion = "1.4." + revisionNumber;
+		String requiredVersion = "1.4.*";
+		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should not match when version has wild card and is outside boundary", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldNotMatchWhenVersionHasWildCardAndIsOutsideBoundary() {
+		String openmrsVersion = "1.*.4";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should match when version has wild card and is within boundary", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldMatchWhenVersionHasWildCardAndIsWithinBoundary() {
+		String openmrsVersion = "1.4.*";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should not match when version has wild card plus qualifier and is outside boundary", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldNotMatchWhenVersionHasWildPlusQualifierCardAndIsOutsideBoundary() {
+		String openmrsVersion = "1.*.4-SNAPSHOT";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should match when version has wild card plus qualifier and is within boundary", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldMatchWhenVersionHasWildCardPlusQualifierAndIsWithinBoundary() {
+		String openmrsVersion = "1.4.*-SNAPSHOT";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should correctly set upper and lower limit for versionRange with qualifiers and wild card", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldCorrectlySetUpperAndLoweLimitForVersionRangeWithQualifiersAndWildCard() {
+		String openmrsVersion = "1.4.11111";
+		String requiredVersion = "1.4.200 - 1.4.*-SNAPSHOT";
+		Long revisionNumber = (long) Integer.MAX_VALUE + 2;
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+		requiredVersion = "1.4.*-SNAPSHOT - 1.4.*";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+		openmrsVersion = "1.4." + revisionNumber;
+		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#getPathForResource(org.openmrs.module.Module,String)}
 	 */
 	@Test

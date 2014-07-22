@@ -243,7 +243,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// start the scheduled tasks
 			SchedulerUtil.startup(getRuntimeProperties());
 		}
-		catch (Throwable t) {
+		catch (Exception t) {
 			Context.shutdown();
 			WebModuleUtil.shutdownModules(servletContext);
 			throw new ServletException(t);
@@ -266,7 +266,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// "application_data_directory" runtime property is set
 		String appDataDir = servletContext.getInitParameter("application.data.directory");
 		if (StringUtils.hasLength(appDataDir)) {
-			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = appDataDir;
+			OpenmrsUtil.setApplicationDataDirectory(appDataDir);
 		}
 	}
 	
@@ -558,7 +558,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				}
 			}
 		}
-		catch (Throwable e) {
+		catch (Exception e) {
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
 			e.printStackTrace();
 		}
@@ -592,7 +592,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @throws ModuleMustStartException if the context cannot restart due to a
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Throwable {
+	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {
 		Log log = LogFactory.getLog(Listener.class);
 		
 		List<Module> startedModules = new ArrayList<Module>();
@@ -632,7 +632,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 							try {
 								ModuleFactory.stopModule(mod, true, true);
 							}
-							catch (Throwable t3) {
+							catch (Exception t3) {
 								// just keep going if we get an error shutting down.  was probably caused by the module 
 								// that actually got us to this point!
 								log.trace("Unable to shutdown module:" + mod, t3);
@@ -646,7 +646,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					throw new MandatoryModuleException(ex.getModuleId(), "Got an error while starting a mandatory module: "
 					        + e.getMessage() + ". Check the server logs for more information");
 				}
-				catch (Throwable t2) {
+				catch (Exception t2) {
 					// a mandatory or core module is causing spring to fail to start up.  We don't want those
 					// stopped so we must report this error to the higher authorities
 					log.warn("caught another error: ", t2);

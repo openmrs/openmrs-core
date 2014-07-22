@@ -290,10 +290,12 @@ public class DWRFormService {
 		Concept concept = new Concept();
 		ConceptName conceptName = new ConceptName();
 		Boolean isSet = false;
+		Boolean isCodedDatatype = false;
 		if (field.getConcept() != null) {
 			concept = field.getConcept();
 			conceptName = concept.getName(locale);
 			isSet = concept.isSet();
+			isCodedDatatype = concept.getDatatype().isCoded();
 		}
 		
 		if (log.isDebugEnabled()) {
@@ -312,8 +314,8 @@ public class DWRFormService {
 		        + "conceptName: \"" + WebUtil.escapeQuotesAndNewlines(conceptName.getName()) + "\", " + "tableName: \""
 		        + field.getTableName() + "\", " + "attributeName: \"" + field.getAttributeName() + "\", "
 		        + "defaultValue: \"" + WebUtil.escapeQuotesAndNewlines(field.getDefaultValue()) + "\", "
-		        + "selectMultiple: " + field.getSelectMultiple() + ", " + "numForms: " + size + ", " + "isSet: " + isSet
-		        + ", " +
+		        + "selectMultiple: " + field.getSelectMultiple() + ", " + "isCodedDatatype: " + isCodedDatatype + ", "
+		        + "numForms: " + size + ", " + "isSet: " + isSet + ", " +
 
 		        "fieldNumber: " + ff.getFieldNumber() + ", " + "fieldPart: \""
 		        + (ff.getFieldPart() == null ? "" : WebUtil.escapeQuotesAndNewlines(ff.getFieldPart())) + "\", "
