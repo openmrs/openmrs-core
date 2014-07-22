@@ -409,7 +409,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @param accessionNumber accession number (optional)
 	 * @return list of Observations that match all of the criteria given in the arguments
-	 * @since 1.12
+	 * @since 1.11
 	 * @throws APIException
 	 * @should compare dates using lte and gte
 	 * @should get all obs assigned to given encounters
@@ -490,7 +490,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @param accessionNumber accession number (optional)
 	 * @return list of Observations that match all of the criteria given in the arguments
-	 * @since 1.12
+	 * @since 1.11
 	 * @throws APIException
 	 * @should compare dates using lte and gte
 	 * @should get the count of all obs assigned to given encounters
