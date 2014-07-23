@@ -90,11 +90,10 @@ public class PersonValidator implements Validator {
 				index++;
 			}
 		}
-
-        isBirthDateValid(errors, person.getBirthdate());
-
-
-        if (person.isVoided()) {
+		
+		isBirthDateValid(errors, person.getBirthdate());
+		
+		if (person.isVoided()) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		}
 		if (person.isDead()) {
@@ -103,26 +102,26 @@ public class PersonValidator implements Validator {
 		
 		ValidateUtil.validateFieldLengths(errors, Person.class, "gender");
 	}
-
-    /**
-     * Checks if the birth date specified is in the future or older than 120 years old..
-     *
-     * @param birthDate The birthdate to validate.
-     * @param errors Stores information about errors encountered during validation.
-     */
-    private void isBirthDateValid(Errors errors, Date birthDate) {
-        if (birthDate != null) {
-            if (birthDate.after(new Date())) {
-                errors.rejectValue("birthdate", "error.date.future");
-            } else {
-                Calendar c = Calendar.getInstance();
-                c.setTime(new Date());
-                c.add(Calendar.YEAR, -120);
-                if (birthDate.before(c.getTime())) {
-                    errors.rejectValue("birthdate", "error.date.nonsensical");
-                }
-            }
-        }
-    }
-
+	
+	/**
+	 * Checks if the birth date specified is in the future or older than 120 years old..
+	 *
+	 * @param birthDate The birthdate to validate.
+	 * @param errors Stores information about errors encountered during validation.
+	 */
+	private void isBirthDateValid(Errors errors, Date birthDate) {
+		if (birthDate != null) {
+			if (birthDate.after(new Date())) {
+				errors.rejectValue("birthdate", "error.date.future");
+			} else {
+				Calendar c = Calendar.getInstance();
+				c.setTime(new Date());
+				c.add(Calendar.YEAR, -120);
+				if (birthDate.before(c.getTime())) {
+					errors.rejectValue("birthdate", "error.date.nonsensical");
+				}
+			}
+		}
+	}
+	
 }

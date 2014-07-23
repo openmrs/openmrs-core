@@ -89,6 +89,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		pName.setFamilyName("Patient");
 		patient.addName(pName);
 		patient.setGender("male");
+		patient.setBirthdate(new Date());
 		PersonAddress pAddress = new PersonAddress();
 		pAddress.setAddress1("123 My street");
 		pAddress.setAddress2("Apt 402");
@@ -148,6 +149,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	        throws Exception {
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierType(5);
 		Patient patient = Context.getPatientService().getPatient(8);
+		patient.setBirthdate(new Date());
 		PatientIdentifier patientIdentifier1 = new PatientIdentifier();
 		patientIdentifier1.setLocation(new Location(1));
 		patientIdentifier1.setIdentifier("012345678");
@@ -181,6 +183,20 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		validator.validate(pa, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("gender"));
+	}
+	
+	/**
+	 * @see {@link org.openmrs.validator.PatientValidator#validate(Object,Errors)}
+	 * @verifies fail validation if birthdate is blank
+	 */
+	@Test
+	@Verifies(value = "should fail validation if birthdate is blank", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfBirthdateIsBlank() throws Exception {
+		Patient pa = new Patient(1);
+		Errors errors = new BindException(pa, "patient");
+		validator.validate(pa, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("birthdate"));
 	}
 	
 }

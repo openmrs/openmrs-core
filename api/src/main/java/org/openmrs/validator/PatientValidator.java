@@ -63,6 +63,7 @@ public class PatientValidator extends PersonValidator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if gender is blank
+	 * @should fail validation if birthdate is blank
 	 * @should fail validation if birthdate makes patient older that 120 years old
 	 * @should fail validation if birthdate is a future date
 	 * @should fail validation if a preferred patient identifier is not chosen
@@ -86,6 +87,8 @@ public class PatientValidator extends PersonValidator {
 		Patient patient = (Patient) obj;
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "Person.gender.required");
+		
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "Person.birthdate.required");
 		
 		if (PatientIdentifierValidator.hasMoreThanOneIdentifierForSameIdentifierType(patient.getActiveIdentifiers())) {
 			errors.reject("error.duplicateIdentifierTypes");
