@@ -3244,4 +3244,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		assertThat(concepts, contains(hasConcept(is(mdrTbProgram)), hasConcept(is(hivProgram))));
 	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptReferenceTermByCode(String,ConceptSource)}
+	 */
+	@Test
+	@Verifies(value = "should only return a non-retired concept reference term", method = "getConceptReferenceTermByCode(String,ConceptSource)")
+	public void getConceptReferenceTermByCode_shouldOnlyReturnANonRetiredConceptReferenceTerm() throws Exception {
+		ConceptReferenceTerm term = Context.getConceptService().getConceptReferenceTermByCode("retired code",
+		    new ConceptSource(1));
+		Assert.assertNull(term);
+	}
 }

@@ -1730,6 +1730,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.9
 	 * @throws APIException
 	 * @should return a concept reference term that matches the given code from the given source
+	 * @should only return a non-retired concept reference term
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public ConceptReferenceTerm getConceptReferenceTermByCode(String code, ConceptSource conceptSource) throws APIException;
