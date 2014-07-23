@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -47,6 +49,45 @@ public class WebModuleUtilTest {
 	private Properties propertiesWritten;
 	
 	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
+	
+	/**
+	 * @see WebModuleUtil#CompareTaskAndModuleName(String[], String[])
+	 * @verifies Module package name different from task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void CompareTaskAndModuleName_shouldReturnFalseForDifferentPackageNames() throws Exception {
+		String[] modulePackageName = { "a", "b" };
+		String[] taskPackageName = { "a", "bc" };
+		boolean result = WebModuleUtil.CompareTaskAndModuleName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#CompareTaskAndModuleName(String[], String[])
+	 * @verifies Module package name longer than task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void CompareTaskAndModuleName_shouldReturnFalseForLongerModulePackageName() throws Exception {
+		String[] modulePackageName = { "a", "b", "c" };
+		String[] taskPackageName = { "a", "bc" };
+		boolean result = WebModuleUtil.CompareTaskAndModuleName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#CompareTaskAndModuleName(String[], String[])
+	 * @verifies Module package name shorter task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void CompareTaskAndModuleName_shouldReturnTrueForLongerTaskPackageName() throws Exception {
+		String[] modulePackageName = { "a", "b", "c" };
+		String[] taskPackageName = { "a", "b", "c", "d" };
+		boolean result = WebModuleUtil.CompareTaskAndModuleName(modulePackageName, taskPackageName);
+		assertTrue(result);
+	}
 	
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
