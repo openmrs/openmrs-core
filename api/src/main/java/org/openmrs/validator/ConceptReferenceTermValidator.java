@@ -75,14 +75,18 @@ public class ConceptReferenceTermValidator implements Validator {
 		ConceptReferenceTerm conceptReferenceTerm = (ConceptReferenceTerm) obj;
 		
 		String code = conceptReferenceTerm.getCode();
+		boolean hasBlankFields = false;
 		if (!StringUtils.hasText(code)) {
 			errors.rejectValue("code", "ConceptReferenceTerm.error.codeRequired",
 			    "The code property is required for a concept reference term");
-			return;
+			hasBlankFields = true;
 		}
 		if (conceptReferenceTerm.getConceptSource() == null) {
 			errors.rejectValue("conceptSource", "ConceptReferenceTerm.error.sourceRequired",
 			    "The conceptSource property is required for a concept reference term");
+			hasBlankFields = true;
+		}
+		if (hasBlankFields) {
 			return;
 		}
 		
