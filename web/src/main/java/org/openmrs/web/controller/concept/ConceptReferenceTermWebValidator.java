@@ -15,6 +15,7 @@ package org.openmrs.web.controller.concept;
 
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
+import org.openmrs.ConceptSource;
 import org.openmrs.validator.ConceptReferenceTermValidator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -34,10 +35,10 @@ public class ConceptReferenceTermWebValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		ConceptReferenceTerm conceptReferenceTerm = (ConceptReferenceTerm) target;
-		if (conceptReferenceTerm.getConceptSource().getId() == null) {
+		ConceptSource conceptSource = conceptReferenceTerm.getConceptSource();
+		if (conceptSource != null && conceptSource.getId() == null) {
 			errors.rejectValue("conceptSource", "ConceptReferenceTerm.source.notInDatabase",
 			    "Only existing concept reference sources can be used");
-			
 		}
 		if (conceptReferenceTerm.getConceptReferenceTermMaps() != null) {
 			int mapsIndex = 0;
