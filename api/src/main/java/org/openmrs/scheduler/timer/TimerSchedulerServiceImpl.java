@@ -340,11 +340,13 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 		// The real list of scheduled tasks is kept up-to-date in the scheduledTasks map
 		// TODO change the index for the scheduledTasks map to be the TaskDefinition rather than the ID
 		List<TaskDefinition> list = new ArrayList<TaskDefinition>();
-		Set<Integer> taskIds = scheduledTasks.keySet();
-		for (Integer id : taskIds) {
-			TaskDefinition task = getTask(id);
-			log.debug("Adding scheduled task " + id + " to list (" + task.getRepeatInterval() + ")");
-			list.add(task);
+		if (scheduledTasks != null) {
+			Set<Integer> taskIds = scheduledTasks.keySet();
+			for (Integer id : taskIds) {
+				TaskDefinition task = getTask(id);
+				log.debug("Adding scheduled task " + id + " to list (" + task.getRepeatInterval() + ")");
+				list.add(task);
+			}
 		}
 		return list;
 		
