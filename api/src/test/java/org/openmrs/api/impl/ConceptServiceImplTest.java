@@ -373,4 +373,16 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	@Test
+	public void saveConcept_shouldTrimWhitespacesInConceptName() throws Exception {
+		//Given
+		Concept concept = new Concept();
+		String nameWithSpaces = "  jwm  ";
+		concept.addName(new ConceptName(nameWithSpaces, new Locale("en", "US")));
+		//When
+		Context.getConceptService().saveConcept(concept);
+		//Then
+		Assert.assertNotEquals(concept.getName().getName(), nameWithSpaces);
+		Assert.assertEquals(concept.getName().getName(), "jwm");
+	}
 }
