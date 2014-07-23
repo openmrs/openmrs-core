@@ -762,6 +762,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier patientIdentifier = new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1));
 		patientIdentifier.setPreferred(true);
 		patient.addIdentifier(patientIdentifier);
+		patient.setBirthdate(new Date());
 		patientService.savePatient(patient);
 	}
 	
@@ -827,6 +828,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = new Patient();
 		patient.setGender("M");
 		patient.setPatientId(2);
+		patient.setBirthdate(new Date());
 		// patient.setCreator(new User(1));
 		// patient.setDateCreated date_created="2005-09-22 00:00:00.0"
 		// changed_by="1" date_changed="2008-08-18 12:29:59.0"
@@ -3323,6 +3325,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addIdentifier(identifier);
 		PersonName name = new PersonName("givenName", "middleName", "familyName");
 		patient.addName(name);
+		patient.setBirthdate(new Date());
 		PersonAddress address = new PersonAddress();
 		address.setAddress1("some address");
 		patient.addAddress(address);
@@ -3362,6 +3365,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferredAddress.setPreferred(true);
 		patient.addAddress(address);
 		patient.addAddress(preferredAddress);
+		patient.setBirthdate(new Date());
 		
 		patientService.savePatient(patient);
 		Assert.assertTrue(preferredIdentifier.isPreferred());
@@ -3404,6 +3408,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferredAddress.setVoided(true);
 		patient.addAddress(address);
 		patient.addAddress(preferredAddress);
+		patient.setBirthdate(new Date());
 		
 		patientService.savePatient(patient);
 		Assert.assertFalse(preferredIdentifier.isPreferred());

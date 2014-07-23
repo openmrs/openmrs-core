@@ -92,7 +92,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean,Date)}
 	 */
 	@Test
-	@Verifies(value = "should not get patients born after effectiveDate", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean,Date)")
+	@Verifies(value = "should return patients born before an effectiveDate", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean,Date)")
 	public void getPatientsByCharacteristics_shouldNotGetPatientBornAfterEffectiveDate() throws Exception {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Cohort cohort = null;
