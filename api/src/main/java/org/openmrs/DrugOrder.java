@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.OpenmrsUtil;
+
 /**
  * DrugOrder
  * 
@@ -532,5 +534,27 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDosing(DosingInstructions di) {
 		di.setDosingInstructions(this);
+	}
+
+	/**
+	 * Checks whether orderable of this drug order is same as other order
+	 *
+	 * @since 1.10
+	 * @param otherOrder the other order to match on
+	 * @return true if the drug of the orders match
+	 * @should false if the concept of the orders do not match
+	 * @should false if the drug of the orders do not match
+	 * @should false if other order is null
+	 * @should false if other order is not a drug order
+	 * @should false if drugs are different but have same concept
+	 */
+	@Override
+	public boolean hasSameOrderableAs(Order otherOrder) {
+		if (!super.hasSameOrderableAs(otherOrder))
+			return false;
+		if (!(otherOrder instanceof DrugOrder))
+			return false;
+		DrugOrder otherDrugOrder = (DrugOrder) otherOrder;
+		return OpenmrsUtil.nullSafeEquals(this.getDrug(), otherDrugOrder.getDrug());
 	}
 }
