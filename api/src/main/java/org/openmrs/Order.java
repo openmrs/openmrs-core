@@ -13,13 +13,13 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
+import org.openmrs.util.OpenmrsUtil;
+
+import java.util.Date;
 
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
@@ -658,6 +658,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	public boolean hasSameOrderableAs(Order otherOrder) {
 		if (otherOrder == null)
 			return false;
-		return ObjectUtils.equals(this.getConcept(), otherOrder.getConcept());
+		return OpenmrsUtil.nullSafeEquals(this.getConcept(), otherOrder.getConcept());
 	}
 }
