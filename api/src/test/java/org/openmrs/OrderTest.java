@@ -22,10 +22,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.junit.Test;
@@ -251,5 +248,48 @@ public class OrderTest {
 		assertNull(clone.getAutoExpireDate());
 		assertNull(clone.getDateStopped());
 		assertNull(clone.getAccessionNumber());
+	}
+
+    /**
+     * @verifies false if the concept of the orders do not match
+     * @see Order#hasSameOrderableAs(Order)
+     */
+    @Test
+	public void hasSameOrderableAs_shouldBeFalseIfConceptsDoNotMatch() {
+		Order order = new Order();
+		order.setConcept(new Concept(123));
+
+		Order otherOrder = new Order();
+		otherOrder.setConcept(new Concept(456));
+
+		assertFalse(order.hasSameOrderableAs(otherOrder));
+	}
+
+    /**
+     * @verifies false if other order is null
+     * @see Order#hasSameOrderableAs(Order)
+     */
+	@Test
+	public void hasSameOrderableAs_shouldBeFalseIfOtherOrderIsNull() {
+		Order order = new Order();
+		order.setConcept(new Concept(123));
+
+		assertFalse(order.hasSameOrderableAs(null));
+	}
+
+    /**
+     * @verifies true if the concept of the orders match
+     * @see Order#hasSameOrderableAs(Order)
+     */
+	@Test
+	public void hasSameOrderableAs_shouldBeTrueIfConceptsMatch() {
+		Order order = new Order();
+		Concept concept = new Concept();
+		order.setConcept(concept);
+
+		Order otherOrder = new Order();
+		otherOrder.setConcept(concept);
+
+		assertTrue(order.hasSameOrderableAs(otherOrder));
 	}
 }
