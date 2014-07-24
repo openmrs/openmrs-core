@@ -13,7 +13,7 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang3.ObjectUtils;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * DrugOrder
@@ -555,6 +555,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		if (!(otherOrder instanceof DrugOrder))
 			return false;
 		DrugOrder otherDrugOrder = (DrugOrder) otherOrder;
-		return ObjectUtils.equals(this.getDrug(), otherDrugOrder.getDrug());
+		return OpenmrsUtil.nullSafeEquals(this.getDrug(), otherDrugOrder.getDrug());
 	}
 }
