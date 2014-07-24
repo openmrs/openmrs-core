@@ -1405,10 +1405,78 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setCareSetting(duplicateOrder.getCareSetting());
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Cannot have more than one active order for the same concept and care setting");
+		expectedException.expectMessage("Cannot have more than one active order for the same orderable and care setting");
 		orderService.saveOrder(order, null);
 	}
 	
+	/**
+	 * @verifies pass if an active drug order for the same concept and care setting but different form exists
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassIfAnActiveOrderForTheSameConceptAndCareSettingButDifferentFormExists() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrdersWitSameConceptAndDifferentFormAndStrength.xml");
+		final Patient patient = patientService.getPatient(2);
+		final Concept paracetamol = conceptService.getConcept(1000);
+		//sanity check that we have an active order for the same concept
+		DrugOrder existingOrder = (DrugOrder) orderService.getOrder(1000);
+		assertTrue(existingOrder.isCurrent());
+		assertEquals(paracetamol, existingOrder.getConcept());
+		//New Drug order
+		DrugOrder order = new DrugOrder();
+		order.setPatient(patient);
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(paracetamol);
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(existingOrder.getCareSetting());
+		order.setDrug(conceptService.getDrug(3001));
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingInstructions("2 for 5 days");
+		order.setQuantity(10.0);
+		order.setQuantityUnits(conceptService.getConcept(51));
+		order.setNumRefills(2);
+
+		Order savedDrugOrder = orderService.saveOrder(order, null);
+
+		assertNotNull(orderService.getOrder(savedDrugOrder.getOrderId()));
+	}
+
+	/**
+	 * @verifies pass if an active drug order for the same concept and care setting but different strength exists
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassIfAnActiveOrderForTheSameConceptAndCareSettingButDifferentStrengthExists()
+	        throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrdersWitSameConceptAndDifferentFormAndStrength.xml");
+		final Patient patient = patientService.getPatient(2);
+		final Concept paracetamol = conceptService.getConcept(1000);
+		//sanity check that we have an active order for the same concept
+		DrugOrder existingOrder = (DrugOrder) orderService.getOrder(1000);
+		assertTrue(existingOrder.isCurrent());
+		assertEquals(paracetamol, existingOrder.getConcept());
+
+		//New Drug order
+		DrugOrder order = new DrugOrder();
+		order.setPatient(patient);
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(paracetamol);
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(existingOrder.getCareSetting());
+		order.setDrug(conceptService.getDrug(3002));
+		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingInstructions("2 for 5 days");
+		order.setQuantity(10.0);
+		order.setQuantityUnits(conceptService.getConcept(51));
+		order.setNumRefills(2);
+
+		Order savedDrugOrder = orderService.saveOrder(order, null);
+
+		assertNotNull(orderService.getOrder(savedDrugOrder.getOrderId()));
+	}
+
 	/**
 	 * @verifies pass if an active order for the same concept exists in a different care setting
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
