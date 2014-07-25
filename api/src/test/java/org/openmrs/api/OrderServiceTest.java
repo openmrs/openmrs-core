@@ -1410,7 +1410,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass if an active drug order for the same concept and care setting but different formulation exists
+	 * @verifies pass if an active drug order for the same concept and care setting but different
+	 *           formulation exists
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
@@ -1445,7 +1446,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
-	public void saveOrder_shouldFailIfAnActiveOrderForTheSanmeDrugFormulationExists() throws Exception {
+	public void saveOrder_shouldFailIfAnActiveDrugOrderForTheSameDrugFormulationExists() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrdersWitSameConceptAndDifferentFormAndStrength.xml");
 		final Patient patient = patientService.getPatient(2);
 		//sanity check that we have an active order for the same concept
@@ -1467,7 +1468,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot have more than one active order for the same orderable and care setting");
-		Order savedDrugOrder = orderService.saveOrder(order, null);
+		orderService.saveOrder(order, null);
 	}
 	
 	/**

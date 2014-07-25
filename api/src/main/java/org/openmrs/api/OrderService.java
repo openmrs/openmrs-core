@@ -88,6 +88,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should pass if an active order for the same concept exists in a different care setting
 	 * @should set Order type of Drug Order to drug order if not set and concept not mapped
 	 * @should set Order type of Test Order to test order if not set and concept not mapped
+	 * @should fail if an active drug order for the same drug formulation exists
+	 * @should pass if an active order for the same concept exists in a different care setting
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
