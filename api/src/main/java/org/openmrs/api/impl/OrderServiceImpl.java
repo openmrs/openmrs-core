@@ -95,6 +95,17 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Reject if there is an active order for the same orderable
 		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
 		Concept concept = order.getConcept();
+		if (concept == null && isDrugOrder) {
+			DrugOrder dOrder = (DrugOrder) order;
+			if (dOrder.getDrug() != null) {
+				concept = dOrder.getDrug().getConcept();
+				dOrder.setConcept(concept);
+			}
+		}
+		if (concept == null) {
+			throw new APIException("concept is required for an order");
+		}
+		
 		if (!isDiscontinueOrReviseOrder(order)) {
 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
 			for (Order activeOrder : activeOrders) {
@@ -170,10 +181,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("Cannot change the patient of an order");
 			} else if (!rowData.get(1).equals(previousOrder.getCareSetting().getCareSettingId())) {
 				throw new APIException("Cannot change the careSetting of an order");
-			} else if (isPreviousDrugOrder && !rowData.get(3).equals(((DrugOrder) previousOrder).getDrug().getDrugId())) {
-				throw new APIException("Cannot change the drug of a drug order");
 			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
 				throw new APIException("Cannot change the concept of an order");
+			} else if (isPreviousDrugOrder && !rowData.get(3).equals(((DrugOrder) previousOrder).getDrug().getDrugId())) {
+				throw new APIException("Cannot change the drug of a drug order");
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders

@@ -48,7 +48,7 @@
         <!-- bi-directional many-to-one association to Order -->
 		<many-to-one name="previousOrder" class="org.openmrs.Order" column="previous_order_id" />
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="concept" column="concept_id" class="org.openmrs.Concept" not-null="true" access="field" />
+		<many-to-one name="concept" column="concept_id" class="org.openmrs.Concept" not-null="true" />
 		<!-- bi-directional many-to-one association to Encounter -->
 		<many-to-one name="encounter" column="encounter_id" class="org.openmrs.Encounter" not-null="true" />
 

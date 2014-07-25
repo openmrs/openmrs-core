@@ -27,6 +27,7 @@ import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -279,6 +280,26 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if drug concept is different from order concept", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDrugConceptIsDifferentFromOrderConcept() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Drug drug = Context.getConceptService().getDrug(3);
+		Concept concept = Context.getConceptService().getConcept(792);
+		order.setDrug(drug);
+		order.setConcept(concept); // the actual concept which matches with drug is "88"
+		Assert.assertNotEquals(drug.getConcept(), concept);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("concept"));
+		Assert.assertTrue(errors.hasFieldErrors("drug"));
+	}
+	
+	/**
 	 * @verifies not require all fields for a discontinuation order
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -395,5 +416,60 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		Assert.assertTrue(errors.hasFieldErrors("route"));
 		Assert.assertEquals("DrugOrder.error.routeNotAmongAllowedConcepts", errors.getFieldError("route").getCode());
+	}
+	
+	/**
+	 * @verifies fail if concept is null and drug is not specified
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfConceptIsNullAndDrugIsNotSpecified() throws Exception {
+		DrugOrder order = new DrugOrder();
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("concept"));
+	}
+	
+	/**
+	 * @verifies fail if concept is null and cannot infer it from drug
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfConceptIsNullAndCannotInferItFromDrug() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Drug drug = Context.getConceptService().getDrug(3);
+		drug.setConcept(null);
+		order.setDrug(drug);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("concept"));
+	}
+	
+	/**
+	 * @verifies pass if concept is null and drug is set
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassIfConceptIsNullAndDrugIsSet() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setCareSetting(Context.getOrderService().getCareSetting(2));
+		order.setEncounter(Context.getEncounterService().getEncounter(3));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		Drug drug = Context.getConceptService().getDrug(3);
+		order.setDrug(drug);
+		order.setConcept(null);
+		FreeTextDosingInstructions di = new FreeTextDosingInstructions();
+		di.setInstructions("testing");
+		di.setDosingInstructions(order);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		
+		Assert.assertFalse(errors.hasFieldErrors());
 	}
 }
