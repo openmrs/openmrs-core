@@ -73,6 +73,9 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should pass validation if all fields are correct
 	 * @should not require all fields for a discontinuation order
 	 * @should fail if route is not a valid concept
+	 * @should fail if concept is null and drug is not specified
+	 * @should fail if concept is null and cannot infer it from drug
+	 * @should pass if concept is null and drug is set
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
@@ -86,9 +89,16 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			if (order.getAction() != Order.Action.DISCONTINUE) {
 				ValidationUtils.rejectIfEmpty(errors, "dosingType", "error.null");
 			}
-			if (order.getDrug() != null)
-				ValidationUtils.rejectIfEmpty(errors, "drug.concept", "error.null");
+			if (order.getDrug() == null || order.getDrug().getConcept() == null) {
+				ValidationUtils.rejectIfEmpty(errors, "concept", "error.null");
+			}
 			
+			if (order.getConcept() != null && order.getDrug() != null && order.getDrug().getConcept() != null) {
+				if (!order.getDrug().getConcept().equals(order.getConcept())) {
+					errors.rejectValue("drug", "error.general");
+					errors.rejectValue("concept", "error.concept");
+				}
+			}
 			if (order.getAction() != Order.Action.DISCONTINUE && order.getDosingType() != null) {
 				if (order.getDosingType().equals(DrugOrder.DosingType.SIMPLE)) {
 					ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
