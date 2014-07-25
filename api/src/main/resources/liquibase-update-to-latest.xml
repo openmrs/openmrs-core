@@ -8415,4 +8415,12 @@
 		</delete>
 	</changeSet>
 
+    <changeSet id="20140724-1528" author="wyclif">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="drug_order" columnName="drug_inventory_id" />
+        </preConditions>
+        <comment>Dropping default value for drug_order.drug_inventory_id </comment>
+        <dropDefaultValue tableName="drug_order" columnName="drug_inventory_id" columnDataType="int" />
+    </changeSet>
+
 </databaseChangeLog>

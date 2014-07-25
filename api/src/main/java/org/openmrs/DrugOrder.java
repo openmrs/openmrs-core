@@ -108,20 +108,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		return target;
 	}
 	
-	@Override
-	public Concept getConcept() {
-		if (getDrug() != null) {
-			return getDrug().getConcept();
-		} else {
-			return null;
-		}
-	}
-	
-	@Override
-	public void setConcept(Concept concept) {
-		//concept is set only by setDrug to stay consistent
-	}
-	
 	public boolean isDrugOrder() {
 		return true;
 	}
@@ -278,11 +264,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDrug(Drug drug) {
 		this.drug = drug;
-		
-		if (drug == null) {
-			super.setConcept(null);
-		} else {
-			super.setConcept(drug.getConcept());
+		if (drug != null && getConcept() == null) {
+			setConcept(drug.getConcept());
 		}
 	}
 	
