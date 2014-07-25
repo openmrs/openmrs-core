@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -47,6 +48,45 @@ public class WebModuleUtilTest {
 	private Properties propertiesWritten;
 	
 	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskModuleName(String[], String[])
+	 * @verifies Module package name different from task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskModuleName_shouldReturnFalseForDifferentPackageNames() throws Exception {
+		String[] modulePackageName = { "org", "openmrs", "logic", "task" };
+		String[] taskPackageName = { "org", "openmrs", "logic", "taskInitializeLogicRuleProvidersTask" };
+		boolean result = WebModuleUtil.isModulePackageNameInTaskModuleName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskModuleName(String[], String[])
+	 * @verifies Module package name longer than task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskModuleName_shouldReturnFalseForLongerModulePackageName() throws Exception {
+		String[] modulePackageName = { "org", "openmrs", "logic", "task" };
+		String[] taskPackageName = { "org", "openmrs", "logic" };
+		boolean result = WebModuleUtil.isModulePackageNameInTaskModuleName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskModuleName(String[], String[])
+	 * @verifies Module package name shorter task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskModuleName_shouldReturnTrueForLongerTaskPackageName() throws Exception {
+		String[] modulePackageName = { "org", "openmrs", "logic", "task" };
+		String[] taskPackageName = { "org", "openmrs", "logic", "task", "InitializeLogicRuleProvidersTask" };
+		boolean result = WebModuleUtil.isModulePackageNameInTaskModuleName(modulePackageName, taskPackageName);
+		assertTrue(result);
+	}
 	
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
