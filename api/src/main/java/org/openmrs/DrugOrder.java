@@ -518,25 +518,30 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	public void setDosing(DosingInstructions di) {
 		di.setDosingInstructions(this);
 	}
-
+	
 	/**
 	 * Checks whether orderable of this drug order is same as other order
-	 *
+	 * 
 	 * @since 1.10
 	 * @param otherOrder the other order to match on
-	 * @return true if the drug of the orders match
-	 * @should false if the concept of the orders do not match
-	 * @should false if the drug of the orders do not match
-	 * @should false if other order is null
-	 * @should false if other order is not a drug order
-	 * @should false if drugs are different but have same concept
+	 * @return true if the drugs match
+	 * @should return false if the other order is null
+	 * @should return false if the other order is not a drug order
+	 * @should return false if both drugs are null and the concepts are different
+	 * @should return false if the concepts match and only this has a drug
+	 * @should return false if the concepts match and only the other has a drug
+	 * @should return false if the concepts match and drugs are different and not null
+	 * @should return true if both drugs are null and the concepts match
+	 * @should return true if the drugs match
 	 */
 	@Override
 	public boolean hasSameOrderableAs(Order otherOrder) {
-		if (!super.hasSameOrderableAs(otherOrder))
+		if (!super.hasSameOrderableAs(otherOrder)) {
 			return false;
-		if (!(otherOrder instanceof DrugOrder))
+		}
+		if (!(otherOrder instanceof DrugOrder)) {
 			return false;
+		}
 		DrugOrder otherDrugOrder = (DrugOrder) otherOrder;
 		return OpenmrsUtil.nullSafeEquals(this.getDrug(), otherDrugOrder.getDrug());
 	}

@@ -13,12 +13,15 @@
  */
 package org.openmrs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 
 import org.junit.Test;
 import org.openmrs.order.OrderUtilTest;
-
-import static org.junit.Assert.*;
 
 /**
  * Contains tests for DrugOrder
@@ -109,92 +112,143 @@ public class DrugOrderTest {
 		assertNull(clone.getDateStopped());
 		assertNull(clone.getAccessionNumber());
 	}
-
-
-    /**
-     * @verifies false if the concept of the orders do not match
-     * @see DrugOrder#hasSameOrderableAs(Order)
-     */
+	
+	/**
+	 * @verifies return false if the other order is null
+	 * @see DrugOrder#hasSameOrderableAs(Order)
+	 */
 	@Test
-	public void hasSameOrderableAs_shouldBeFalseIfConceptsDoNotMatch() {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheOtherOrderIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
-		Drug drug1 = new Drug();
-		drug1.setConcept(new Concept(123));
-		order.setDrug(drug1);
-
-		DrugOrder otherOrder = new DrugOrder();
-		Drug drug2 = new Drug();
-		drug2.setConcept(new Concept(456));
-		otherOrder.setDrug(drug2);
-
-		assertFalse(order.hasSameOrderableAs(otherOrder));
-	}
-
-    /**
-     * @verifies false if other order is not a drug order
-     * @see DrugOrder#hasSameOrderableAs(Order)
-     */
-	@Test
-	public void hasSameOrderableAs_shouldBeFalseIfOtherOrderIsNotADrugOrder() {
-		DrugOrder order = new DrugOrder();
-		Drug drug1 = new Drug();
-		Concept concept = new Concept(123);
-		drug1.setConcept(concept);
-		order.setDrug(drug1);
-
-		Order otherOrder = new Order();
-		otherOrder.setConcept(concept);
-
-		assertFalse(order.hasSameOrderableAs(otherOrder));
-	}
-
-    /**
-     * @verifies false if other order is null
-     * @see DrugOrder#hasSameOrderableAs(Order)
-     */
-	@Test
-	public void hasSameOrderableAs_shouldBeFalseIfOtherOrderIsNull() {
-		DrugOrder order = new DrugOrder();
-		order.setConcept(new Concept(123));
-
+		order.setConcept(new Concept());
+		
 		assertFalse(order.hasSameOrderableAs(null));
 	}
-
-    /**
-     * @verifies false if drugs are different but have same concept
-     * @see DrugOrder#hasSameOrderableAs(Order)
-     */
+	
+	/**
+	 * @verifies return false if the other order is not a drug order
+	 * @see DrugOrder#hasSameOrderableAs(Order)
+	 */
 	@Test
-	public void hasSameOrderableAs_shouldBeFalseIfDrugsAreDifferentButConceptsMatch() {
+	public void hasSameOrderableAs_shouldReturnFalseIfTheOtherOrderIsNotADrugOrder() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Drug drug1 = new Drug();
+		Concept concept = new Concept();
+		drug1.setConcept(concept);
+		order.setDrug(drug1);
+		
+		Order otherOrder = new Order();
+		otherOrder.setConcept(concept);
+		
+		assertFalse(order.hasSameOrderableAs(otherOrder));
+	}
+	
+	/**
+	 * @verifies return false if both drugs are null and the concepts are different
+	 * @see DrugOrder#hasSameOrderableAs(Order)
+	 */
+	@Test
+	public void hasSameOrderableAs_shouldReturnFalseIfBothDrugsAreNullAndTheConceptsAreDifferent() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setConcept(new Concept());
+		
+		DrugOrder otherOrder = new DrugOrder();
+		otherOrder.setConcept(new Concept());
+		
+		assertFalse(order.hasSameOrderableAs(otherOrder));
+	}
+	
+	/**
+	 * @verifies return false if the concepts match and only this has a drug
+	 * @see DrugOrder#hasSameOrderableAs(Order)
+	 */
+	@Test
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndOnlyThisHasADrug() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		Drug drug1 = new Drug();
 		drug1.setConcept(concept);
 		order.setDrug(drug1);
-
+		
+		DrugOrder otherOrder = new DrugOrder();
+		otherOrder.setConcept(concept);
+		assertEquals(order.getConcept(), otherOrder.getConcept());//sanity check
+		
+		assertFalse(order.hasSameOrderableAs(otherOrder));
+	}
+	
+	/**
+	 * @verifies return false if the concepts match and only the other has a drug
+	 * @see DrugOrder#hasSameOrderableAs(Order)
+	 */
+	@Test
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndOnlyTheOtherHasADrug() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Concept concept = new Concept();
+		order.setConcept(concept);
+		
+		DrugOrder otherOrder = new DrugOrder();
+		Drug drug1 = new Drug();
+		drug1.setConcept(concept);
+		otherOrder.setDrug(drug1); //should set the concept
+		assertEquals(order.getConcept(), otherOrder.getConcept());//sanity check
+		
+		assertFalse(order.hasSameOrderableAs(otherOrder));
+	}
+	
+	/**
+	 * @verifies return false if the concepts match and drugs are different and not null
+	 * @see DrugOrder#hasSameOrderableAs(Order)
+	 */
+	@Test
+	public void hasSameOrderableAs_shouldReturnFalseIfTheConceptsMatchAndDrugsAreDifferentAndNotNull() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Concept concept = new Concept();
+		Drug drug1 = new Drug();
+		drug1.setConcept(concept);
+		order.setDrug(drug1); //should set concept
+		
 		DrugOrder otherOrder = new DrugOrder();
 		Drug drug2 = new Drug();
 		drug2.setConcept(concept);
 		otherOrder.setDrug(drug2);
-
+		//sanity check
+		assertTrue(order.getConcept() != null && otherOrder.getConcept() != null);
+		
 		assertFalse(order.hasSameOrderableAs(otherOrder));
 	}
-
-    /**
-     * @verifies true if the drug of the orders match
-     * @see DrugOrder#hasSameOrderableAs(Order)
-     */
+	
+	/**
+	 * @verifies return true if both drugs are null and the concepts match
+	 * @see DrugOrder#hasSameOrderableAs(Order)
+	 */
 	@Test
-	public void hasSameOrderableAs_shouldBeTrueIfDrugsMatch() {
+	public void hasSameOrderableAs_shouldReturnTrueIfBothDrugsAreNullAndTheConceptsMatch() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Concept concept = new Concept();
+		order.setConcept(concept);
+		
+		DrugOrder otherOrder = new DrugOrder();
+		otherOrder.setConcept(concept);
+		
+		assertTrue(order.hasSameOrderableAs(otherOrder));
+	}
+	
+	/**
+	 * @verifies return true if the drugs match
+	 * @see DrugOrder#hasSameOrderableAs(Order)
+	 */
+	@Test
+	public void hasSameOrderableAs_shouldReturnTrueIfTheDrugsMatch() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Concept concept = new Concept();
 		Drug drug1 = new Drug();
 		drug1.setConcept(concept);
 		order.setDrug(drug1);
-
+		
 		DrugOrder otherOrder = new DrugOrder();
 		otherOrder.setDrug(drug1);
-
+		
 		assertTrue(order.hasSameOrderableAs(otherOrder));
 	}
 }
