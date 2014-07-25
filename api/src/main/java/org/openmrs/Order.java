@@ -13,13 +13,13 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.Date;
 
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
@@ -643,21 +643,22 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	public boolean isType(OrderType orderType) {
 		return OrderUtil.isType(orderType, this.orderType);
 	}
-
+	
 	/**
 	 * Checks whether orderable of this order is same as other order
-	 *
+	 * 
 	 * @see org.openmrs.DrugOrder for overridden behaviour
-	 *
 	 * @since 1.10
 	 * @param otherOrder the other order to match on
 	 * @return true if the concept of the orders match
-	 * @should false if the concept of the orders do not match
-	 * @should false if other order is null
+	 * @should return false if the concept of the orders do not match
+	 * @should return false if other order is null
+	 * @should return true if the orders have the same concept
 	 */
 	public boolean hasSameOrderableAs(Order otherOrder) {
-		if (otherOrder == null)
+		if (otherOrder == null) {
 			return false;
+		}
 		return OpenmrsUtil.nullSafeEquals(this.getConcept(), otherOrder.getConcept());
 	}
 }
