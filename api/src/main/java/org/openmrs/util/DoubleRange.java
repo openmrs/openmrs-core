@@ -13,7 +13,7 @@
  */
 package org.openmrs.util;
 
-import com.google.common.base.Objects;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Represents a bounded or unbounded numeric range. By default the range is closed (ake inclusive)
@@ -136,7 +136,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(low, high);
+		return new HashCodeBuilder().append(low).append(high).build();
 	}
 	
 }

@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package com.openmrs;
+package org.openmrs;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

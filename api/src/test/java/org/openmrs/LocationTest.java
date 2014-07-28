@@ -13,18 +13,16 @@
  */
 package org.openmrs;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
-
-import com.google.common.collect.Sets;
-
-import static org.hamcrest.Matchers.*;
 
 public class LocationTest {
 	
@@ -59,17 +57,18 @@ public class LocationTest {
 		Location childOnfLocationTwo = new Location();
 		
 		//make child-parent relations
-		rootLocation.setChildLocations(Sets.newHashSet(locationOne, locationTwo));
+		rootLocation.setChildLocations(new HashSet<Location>(Arrays.asList(locationOne, locationTwo)));
 		
-		locationOne.setChildLocations(Sets.newHashSet(childOflocationOne));
-		locationTwo.setChildLocations(Sets.newHashSet(childOnfLocationTwo));
+		locationOne.setChildLocations(new HashSet<Location>(Arrays.asList(childOflocationOne)));
+		locationTwo.setChildLocations(new HashSet<Location>(Arrays.asList(childOnfLocationTwo)));
 		
 		childOflocationOne.setChildLocations(new HashSet<Location>());
 		childOnfLocationTwo.setChildLocations(new HashSet<Location>());
 		
 		Set<Location> descendantLocations = rootLocation.getDescendantLocations(true);
 		
-		Set<Location> expectedLocations = Sets.newHashSet(locationOne, locationTwo, childOflocationOne, childOnfLocationTwo);
+		Set<Location> expectedLocations = new HashSet<Location>(Arrays.asList(locationOne, locationTwo, childOflocationOne,
+		    childOnfLocationTwo));
 		Assert.assertThat(descendantLocations, equalTo(expectedLocations));
 		
 	}
@@ -89,11 +88,11 @@ public class LocationTest {
 		Location firstChildOfRetiredLocation = new Location();
 		
 		//make child-parent relations
-		rootLocation.setChildLocations(Sets.newHashSet(nonRetiredLocation, retiredLocation));
+		rootLocation.setChildLocations(new HashSet<Location>(Arrays.asList(nonRetiredLocation, retiredLocation)));
 		
-		nonRetiredLocation.setChildLocations(Sets
-		        .newHashSet(firstChildOfNonRetiredLocation, secondChildOfNonRetiredLocation));
-		retiredLocation.setChildLocations(Sets.newHashSet(firstChildOfRetiredLocation));
+		nonRetiredLocation.setChildLocations(new HashSet<Location>(Arrays.asList(firstChildOfNonRetiredLocation,
+		    secondChildOfNonRetiredLocation)));
+		retiredLocation.setChildLocations(new HashSet<Location>(Arrays.asList(firstChildOfRetiredLocation)));
 		
 		firstChildOfNonRetiredLocation.setChildLocations(new HashSet<Location>());
 		secondChildOfNonRetiredLocation.setChildLocations(new HashSet<Location>());
@@ -103,8 +102,8 @@ public class LocationTest {
 		//action
 		Set<Location> descendantLocations = rootLocation.getDescendantLocations(false);
 		
-		Set<Location> expectedLocations = Sets.newHashSet(nonRetiredLocation, firstChildOfNonRetiredLocation,
-		    secondChildOfNonRetiredLocation);
+		Set<Location> expectedLocations = new HashSet<Location>(Arrays.asList(nonRetiredLocation,
+		    firstChildOfNonRetiredLocation, secondChildOfNonRetiredLocation));
 		
 		Assert.assertThat(descendantLocations, equalTo(expectedLocations));
 	}

@@ -33,8 +33,6 @@ import org.hibernate.search.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.openmrs.collection.ListPart;
 
-import com.google.common.collect.Sets;
-
 /**
  * Performs Lucene queries.
  * 
@@ -226,7 +224,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		
 		List<Object> documents = listProjection(idPropertyName, field);
 		
-		Set<Object> uniqueFieldValues = Sets.newHashSet();
+		Set<Object> uniqueFieldValues = new HashSet<Object>();
 		TermsFilter termsFilter = new TermsFilter();
 		for (Object document : documents) {
 			Object[] row = (Object[]) document;
