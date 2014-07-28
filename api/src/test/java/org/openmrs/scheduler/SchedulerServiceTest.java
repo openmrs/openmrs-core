@@ -59,6 +59,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	public void setUp() throws Exception {
 		// Temporary logger level changes to debug TRUNK-4212
 		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.DEBUG);
+        LogManager.getLogger("org.hibernate.type").setLevel(Level.TRACE);
 		LogManager.getLogger("org.openmrs.api").setLevel(Level.DEBUG);
 		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.DEBUG);
 		log.debug("SchedulerServiceTest setup() start");
@@ -79,6 +80,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	public void cleanUp() throws Exception {
 		// Temporary logger level changes to debug TRUNK-4212
 		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.WARN);
+        LogManager.getLogger("org.hibernate.type").setLevel(Level.WARN);
 		LogManager.getLogger("org.openmrs.api").setLevel(Level.WARN);
 		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.WARN);
 	}
@@ -267,6 +269,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void saveTask_shouldSaveTaskToTheDatabase() throws Exception {
+		log.debug("saveTask_shouldSaveTaskToTheDatabase start");
 		SchedulerService service = Context.getSchedulerService();
 		
 		TaskDefinition def = new TaskDefinition();
@@ -277,13 +280,22 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		def.setTaskClass(LatchExecuteTask.class.getName());
 		
 		synchronized (TASK_TEST_METHOD_LOCK) {
-			int size = service.getRegisteredTasks().size();
+			Collection<TaskDefinition> tasks = service.getRegisteredTasks();
+			for (TaskDefinition task : tasks) {
+				log.debug("Task dump 1: " + task);
+			}
+			int size = tasks.size();
 			service.saveTask(def);
-			Assert.assertEquals(size + 1, service.getRegisteredTasks().size());
+			tasks = service.getRegisteredTasks();
+			for (TaskDefinition task : tasks) {
+				log.debug("Task dump 2:" + task);
+			}
+			Assert.assertEquals(size + 1, tasks.size());
 		}
 		
 		def = service.getTaskByName(TASK_NAME);
 		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
+		log.debug("saveTask_shouldSaveTaskToTheDatabase end");
 	}
 	
 	/**
