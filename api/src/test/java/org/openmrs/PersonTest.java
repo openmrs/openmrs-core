@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -31,13 +32,10 @@ import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
-import com.google.common.collect.Sets;
-
 /**
  * This class should test all methods on the person object.<br/>
  * <br/>
- * This class does not touch the database, so it does not need to extend the
- * normal openmrs BaseTest
+ * This class does not touch the database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonTest extends BaseContextSensitiveTest {
 	
@@ -286,8 +284,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test that setting a person's age correctly sets their birth date and
-	 * records that this is inexact
+	 * Test that setting a person's age correctly sets their birth date and records that this is
+	 * inexact
 	 * 
 	 * @throws Exception
 	 */
@@ -547,8 +545,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see Person#getPersonAddress()
-	 * @verifies get not-voided person address if preferred address does not
-	 *           exist
+	 * @verifies get not-voided person address if preferred address does not exist
 	 */
 	@Test
 	public void getPersonAddress_shouldGetNotvoidedPersonAddressIfPreferredAddressDoesNotExist() throws Exception {
@@ -560,7 +557,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonAddress notVoidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(false).build();
 		
 		PersonAddress expectedPersonAddress = notVoidedAddress;
-		Set<PersonAddress> personAddresses = Sets.newHashSet(voidedAddress, notVoidedAddress);
+		Set<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress, notVoidedAddress));
 		
 		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
 	}
@@ -579,7 +576,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 		        .build();
 		
 		PersonAddress expectedPersonAddress = preferredNotVoidedAddress;
-		HashSet<PersonAddress> personAddresses = Sets.newHashSet(voidedAddress, preferredNotVoidedAddress);
+		HashSet<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress,
+		    preferredNotVoidedAddress));
 		
 		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
 		
@@ -597,7 +595,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonAddress voidedAddress1 = PersonAddressBuilder.newBuilder().withVoided(true).build();
 		PersonAddress voidedAddress2 = PersonAddressBuilder.newBuilder().withVoided(true).build();
 		
-		Set<PersonAddress> personAddresses = Sets.newHashSet(voidedAddress1, voidedAddress2);
+		Set<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress1, voidedAddress2));
 		
 		Person person = new Person();
 		person.setVoided(true);
@@ -620,7 +618,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonName expectedPersonName = notVoidedName;
 		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, Sets.newHashSet(notVoidedName, voidedName));
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(notVoidedName,
+		    voidedName)));
 	}
 	
 	/**
@@ -636,8 +635,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonName expectedPersonName = preferredNotVoidedName;
 		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, Sets.newHashSet(preferredNotVoidedName, notVoidedName,
-		    voidedName));
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(
+		    preferredNotVoidedName, notVoidedName, voidedName)));
 	}
 	
 	/**
@@ -651,7 +650,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		PersonName expectedPersonName = voidedName;
 		
-		checkGetPersonNameResultForVoidedPerson(expectedPersonName, Sets.newHashSet(voidedName));
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(voidedName)));
 		
 	}
 	

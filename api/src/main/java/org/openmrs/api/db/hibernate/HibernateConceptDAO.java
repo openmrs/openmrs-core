@@ -77,10 +77,6 @@ import org.openmrs.collection.ListPart;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 /**
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
  * <br/>
@@ -93,14 +89,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private SessionFactory sessionFactory;
-	
-	private final Function<ConceptName, Concept> transformNameToConcept = new Function<ConceptName, Concept>() {
-		
-		@Override
-		public Concept apply(ConceptName name) {
-			return name.getConcept();
-		}
-	};
 	
 	/**
 	 * Sets the session factory
@@ -596,7 +584,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		List<ConceptName> names = conceptNameQuery.list();
 		
-		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
+		List<Concept> concepts = transformNamesToConcepts(names);
+		
+		return concepts;
+	}
+	
+	private List<Concept> transformNamesToConcepts(List<ConceptName> names) {
+		List<Concept> concepts = new ArrayList<Concept>();
+		
+		for (ConceptName name : names) {
+			concepts.add(name.getConcept());
+		}
 		
 		return concepts;
 	}
@@ -1351,14 +1349,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		ListPart<ConceptName> names = query.listPart(start, size);
 		
-		List<ConceptSearchResult> results = Lists.transform(names.getList(),
-		    new Function<ConceptName, ConceptSearchResult>() {
-			    
-			    @Override
-			    public ConceptSearchResult apply(ConceptName conceptName) {
-				    return new ConceptSearchResult(phrase, conceptName.getConcept(), conceptName);
-			    }
-		    });
+		List<ConceptSearchResult> results = new ArrayList<ConceptSearchResult>();
+		
+		for (ConceptName name : names.getList()) {
+			results.add(new ConceptSearchResult(phrase, name.getConcept(), name));
+		}
 		
 		return results;
 	}
@@ -1385,9 +1380,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 			final Set<Locale> searchLocales;
 			
 			if (locales == null) {
-				searchLocales = Sets.newHashSet(Context.getLocale());
+				searchLocales = new HashSet<Locale>(Arrays.asList(Context.getLocale()));
 			} else {
-				searchLocales = Sets.newHashSet(locales);
+				searchLocales = new HashSet<Locale>(locales);
 			}
 			
 			query.append(newConceptNameQuery(phrase, searchKeywords, searchLocales, searchExactLocale));
@@ -1717,7 +1712,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		List<ConceptName> names = conceptNameQuery.list();
 		
-		final List<Concept> concepts = Lists.transform(names, transformNameToConcept);
+		final List<Concept> concepts = transformNamesToConcepts(names);
 		
 		return concepts;
 	}
@@ -1752,7 +1747,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		} else {
 			log.warn("Multiple concepts found for '" + name + "'");
 			
-			List<Concept> concepts = Lists.transform(list, transformNameToConcept);
+			List<Concept> concepts = transformNamesToConcepts(list);
 			for (Concept concept : concepts) {
 				for (ConceptName conceptName : concept.getNames(locale)) {
 					if (conceptName.getName().equalsIgnoreCase(name)) {

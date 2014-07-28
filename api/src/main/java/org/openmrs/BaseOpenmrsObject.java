@@ -15,7 +15,8 @@ package org.openmrs;
 
 import java.util.UUID;
 
-import com.google.common.base.Objects;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br/>
@@ -99,7 +100,7 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	 */
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("hashCode", Integer.toHexString(hashCode())).add("uuid", getUuid())
-		        .omitNullValues().toString();
+		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("hashCode",
+		    Integer.toHexString(hashCode())).append("uuid", getUuid()).build();
 	}
 }

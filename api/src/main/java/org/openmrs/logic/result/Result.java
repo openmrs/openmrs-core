@@ -18,13 +18,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicException;
-
-import com.google.common.base.Objects;
 
 /**
  * A result from the logic service. A result can be 0-to-n date-values pairs. You can treat the
@@ -843,7 +842,7 @@ public class Result extends ArrayList<Result> {
 	@Override
 	public int hashCode() {
 		if (isSingleResult()) {
-			return Objects.hashCode(datatype);
+			return new HashCodeBuilder().append(datatype).hashCode();
 		} else {
 			return super.hashCode();
 		}

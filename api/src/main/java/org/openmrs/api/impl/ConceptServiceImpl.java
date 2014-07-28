@@ -17,6 +17,7 @@ import static org.apache.commons.lang.StringUtils.contains;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -69,8 +70,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import com.google.common.collect.Lists;
 
 /**
  * Default Implementation of ConceptService service layer classes
@@ -1565,7 +1564,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<ConceptSearchResult> findConceptAnswers(String phrase, Locale locale, Concept concept) throws APIException {
 		
-		List<ConceptSearchResult> concepts = getConcepts(phrase, Lists.newArrayList(locale), false, null, null, null, null,
+		List<ConceptSearchResult> concepts = getConcepts(phrase, Arrays.asList(locale), false, null, null, null, null,
 		    concept, null, null);
 		
 		return concepts;

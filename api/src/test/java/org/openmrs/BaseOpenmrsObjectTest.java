@@ -170,8 +170,8 @@ public class BaseOpenmrsObjectTest {
 	public void toString_shouldIncludeUuidIfNotNull() throws Exception {
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
 		
-		assertEquals("BaseOpenmrsObjectMock{hashCode=" + Integer.toHexString(o.hashCode()) + ", uuid=" + o.getUuid() + "}",
-		    o.toString());
+		assertEquals("BaseOpenmrsObjectTest.BaseOpenmrsObjectMock[hashCode=" + Integer.toHexString(o.hashCode()) + ",uuid="
+		        + o.getUuid() + "]", o.toString());
 	}
 	
 	/**
@@ -186,6 +186,7 @@ public class BaseOpenmrsObjectTest {
 		
 		//when
 		//then
-		assertEquals("BaseOpenmrsObjectMock{hashCode=" + Integer.toHexString(o.hashCode()) + "}", o.toString());
+		assertEquals("BaseOpenmrsObjectTest.BaseOpenmrsObjectMock[hashCode=" + Integer.toHexString(o.hashCode())
+		        + ",uuid=<null>]", o.toString());
 	}
 }

@@ -11,13 +11,14 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package com.openmrs;
+package org.openmrs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
-
-import com.google.common.collect.Lists;
 
 /**
  * Validate Java properties files.
@@ -52,7 +51,7 @@ public class PropertiesFileValidator {
 
 	private List<String> filterKeysWithMultipleValues(MultiMap keyValuesMap) {
 
-		List<String> result = Lists.newArrayList();
+		List<String> result = new ArrayList<String>();
 
 		for (Object entryObject : keyValuesMap.entrySet()) {
 			// apache commons multimap in version 3.* do not use generics (
@@ -99,7 +98,7 @@ public class PropertiesFileValidator {
 
 		String line = null;
 
-		List<String> result = Lists.newArrayList();
+		List<String> result = new ArrayList<String>();
 
 		while ((line = bufferedReader.readLine()) != null) {
 			result.add(line);

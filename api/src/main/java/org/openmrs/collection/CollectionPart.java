@@ -15,7 +15,7 @@ package org.openmrs.collection;
 
 import java.util.Collection;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.Validate;
 
 /**
  * It is a wrapper for a partial collection, which stores additional info about the current part and
@@ -35,7 +35,7 @@ public abstract class CollectionPart<E> {
 	
 	public CollectionPart(Collection<E> collection, Long firstElement, Long maxElements, Long totalElements,
 	    Boolean totalElementsExact) {
-		Preconditions.checkNotNull(collection);
+		Validate.notNull(collection);
 		
 		if (firstElement == null) {
 			this.firstElement = 0L;

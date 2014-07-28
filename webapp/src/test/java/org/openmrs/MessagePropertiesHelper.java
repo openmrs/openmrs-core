@@ -11,12 +11,11 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package com.openmrs;
+package org.openmrs;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 /**
  * Helper class to ease list message properties filepaths.
@@ -39,7 +38,7 @@ public class MessagePropertiesHelper {
 		
 		String[] allFilesInDirectory = new File(MESSAGES_FILE_FOLDER).list();
 		
-		List<String> result = Lists.newArrayList();
+		List<String> result = new ArrayList<String>();
 		for (String fileName : allFilesInDirectory) {
 			if(fileName.matches(MESSAGE_PROPERTIES_FILENAME_REGEX)){
 				result.add(MESSAGES_FILE_FOLDER + fileName);
