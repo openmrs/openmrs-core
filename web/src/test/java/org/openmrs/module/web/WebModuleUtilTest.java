@@ -16,6 +16,8 @@ import java.util.Properties;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 
@@ -28,6 +30,58 @@ public class WebModuleUtilTest {
 	
 	private Properties propertiesWritten;
 	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskPackageName(String, String) 
+	 * @verifies Module package name different from task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskPackageName_shouldReturnFalseForDifferentPackageNames() throws Exception {
+		String modulePackageName = "org.openmrs.logic.task";
+		String taskPackageName = "org.openmrs.logic.taskInitializeLogicRuleProvidersTask";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskPackageName(String, String) 
+	 * @verifies Module package name longer than task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskPackageName_shouldReturnFalseForLongerModulePackageName() throws Exception {
+		String modulePackageName = "org.openmrs.logic.task";
+		String taskPackageName = "org.openmrs.logic";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskPackageName(String, String) 
+	 * @verifies Module package name shorter task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskPackageName_shouldReturnTrueForLongerTaskPackageName() throws Exception {
+		String modulePackageName = "org.openmrs.module.xforms";
+		String taskPackageName = "org.openmrs.module.xforms.ProcessXformsQueueTask";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+		assertTrue(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskPackageName(String, String)
+	 * @verifies Module package name shorter task package name
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskPackageName_shouldReturnFalseForEmptyPackageNames() throws Exception {
+		String modulePackageName = "";
+		String taskPackageName = "";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+		assertFalse(result);
+	}
+
 	/**
 	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
 	 * @verifies prefix messages with module id

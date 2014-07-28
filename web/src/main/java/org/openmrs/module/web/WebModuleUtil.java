@@ -55,6 +55,9 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.filter.ModuleFilterConfig;
 import org.openmrs.module.web.filter.ModuleFilterDefinition;
 import org.openmrs.module.web.filter.ModuleFilterMapping;
+import org.openmrs.scheduler.SchedulerException;
+import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
@@ -325,6 +328,55 @@ public class WebModuleUtil {
 		
 		// we aren't processing this module, so a context refresh is not necessary
 		return false;
+	}
+	
+	/** Stops all tasks started by given module
+	 * @param mod
+	 */
+	private static void stopTasks(Module mod) {
+		
+		SchedulerService schedulerService = Context.getSchedulerService();
+		
+		// Get module package name
+		String modulePackageName = mod.getPackageName();
+		for (TaskDefinition task : schedulerService.getRegisteredTasks()) {
+			
+			// get task package name
+			String taskPackageName = task.getTaskClass();
+			boolean PackageNamesMatch = isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+			if (PackageNamesMatch)
+				try {
+					schedulerService.shutdownTask(task);
+				}
+				catch (SchedulerException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	/**
+	 * Checks if module package name is in task module name
+	 * @param modulePackageName name of given package
+	 * @param taskPackageName name of given task
+	 * @return true if it's in
+	 */
+	public static boolean isModulePackageNameInTaskPackageName(String modulePackageName, String taskPackageName) {
+		
+		if (modulePackageName.equals("") || taskPackageName.equals(""))
+			return false;
+		String[] splitModulePackageName = modulePackageName.split("\\.");
+		String[] splitTaskPackageName = taskPackageName.split("\\.");
+		
+		boolean packageNamesMatch = true;
+		for (int i = 0; i < splitModulePackageName.length; i++) {
+			if (splitTaskPackageName.length > i && splitModulePackageName[i].equals(splitTaskPackageName[i]))
+				continue;
+			else {
+				packageNamesMatch = false;
+				break;
+			}
+		}
+		return packageNamesMatch;
 	}
 	
 	/**
