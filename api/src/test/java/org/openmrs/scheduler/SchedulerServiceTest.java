@@ -59,7 +59,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	public void setUp() throws Exception {
 		// Temporary logger level changes to debug TRUNK-4212
 		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.DEBUG);
-        LogManager.getLogger("org.hibernate.type").setLevel(Level.TRACE);
+		LogManager.getLogger("org.hibernate.type").setLevel(Level.TRACE);
 		LogManager.getLogger("org.openmrs.api").setLevel(Level.DEBUG);
 		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.DEBUG);
 		log.debug("SchedulerServiceTest setup() start");
@@ -80,7 +80,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	public void cleanUp() throws Exception {
 		// Temporary logger level changes to debug TRUNK-4212
 		LogManager.getLogger("org.hibernate.SQL").setLevel(Level.WARN);
-        LogManager.getLogger("org.hibernate.type").setLevel(Level.WARN);
+		LogManager.getLogger("org.hibernate.type").setLevel(Level.WARN);
 		LogManager.getLogger("org.openmrs.api").setLevel(Level.WARN);
 		LogManager.getLogger("org.openmrs.scheduler").setLevel(Level.WARN);
 	}

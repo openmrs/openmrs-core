@@ -32,6 +32,11 @@
 		<url>https://github.com/openmrs/openmrs-core</url>
 	</scm>
 
+	<ciManagement>
+		<system>Bamboo</system>
+		<url>https://ci.openmrs.org/browse/TRUNK</url>
+	</ciManagement>
+
 	<modules>
 		<module>tools</module>
 		<module>test</module>
