@@ -39,6 +39,10 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 	
 	private static volatile Map<EncounterType, VisitType> encounterVisitMapping;
 	
+	private static void setEncounterVisitMapping(Map<EncounterType, VisitType> encounterVisitMapping) {
+		ExistingOrNewVisitAssignmentHandler.encounterVisitMapping = encounterVisitMapping;
+	}
+	
 	/**
 	 * @see org.openmrs.api.handler.ExistingVisitAssignmentHandler#getDisplayName(java.util.Locale)
 	 */
@@ -72,7 +76,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		
 		if (encounterVisitMapping == null) {
 			//initial one-time setup
-			encounterVisitMapping = new HashMap<EncounterType, VisitType>();
+			setEncounterVisitMapping(new HashMap<EncounterType, VisitType>());
 			Context.getAdministrationService().addGlobalPropertyListener(this);
 		}
 		
@@ -84,7 +88,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 			Map<EncounterType, VisitType> newMap = new HashMap<EncounterType, VisitType>(encounterVisitMapping);
 			newMap.put(encounter.getEncounterType(), visitType);
 			
-			encounterVisitMapping = newMap;
+			setEncounterVisitMapping(newMap);
 		}
 		visit.setVisitType(visitType);
 		
@@ -150,12 +154,12 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 	
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		encounterVisitMapping = new HashMap<EncounterType, VisitType>();
+		setEncounterVisitMapping(new HashMap<EncounterType, VisitType>());
 	}
 	
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		encounterVisitMapping = new HashMap<EncounterType, VisitType>();
+		setEncounterVisitMapping(new HashMap<EncounterType, VisitType>());
 	}
 	
 }
