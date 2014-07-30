@@ -216,16 +216,16 @@
   <order_type order_type_id="17" name="Plain Order" java_class_name="org.openmrs.Order" description="Plain order" creator="1" date_created="2008-08-15 15:49:04.0" retired="0" uuid="dd3fb1d0-ae06-11e3-a5e2-0800200c9a77"/>
   <order_type_class_map order_type_id="2" concept_class_id="1"/>
   <order_type_class_map order_type_id="1" concept_class_id="3"/>
-  <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
-  <drug_order order_id="111" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
-  <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+  <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+  <drug_order order_id="111" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+  <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <drug_order order_id="22" drug_inventory_id="2" as_needed="0" brand_name="some brand name" dispense_as_written="1" />
   <drug_order order_id="222" drug_inventory_id="2" as_needed="0" dispense_as_written="0" />
-  <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
-  <drug_order order_id="4" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+  <drug_order order_id="3" drug_inventory_id="2" dose="2.0" dose_units="51" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+  <drug_order order_id="4" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <drug_order order_id="44" drug_inventory_id="3" as_needed="0" dispense_as_written="0" />
-  <drug_order order_id="444" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
-  <drug_order order_id="5" drug_inventory_id="11" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+  <drug_order order_id="444" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
+  <drug_order order_id="5" drug_inventory_id="11" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <encounter_role encounter_role_id="1" name="Unknown" description="Unknown encounter role for legacy providers with no encounter role set" creator="1" retired="false" date_created="2011-08-18 14:00:00.0" uuid="a0b03050-c99b-11e0-9572-0800200c9a66" />
   <provider provider_id="1" person_id="1" identifier="Test" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c2299800-cca9-11e0-9572-0800200c9a66" />
   <encounter encounter_id="3" encounter_type="2" patient_id="7" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="6519d653-393b-4118-9c83-a3715b82d4ac"/>

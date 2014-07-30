@@ -7531,4 +7531,12 @@
         <renameColumn tableName="orders" newColumnName="date_activated" oldColumnName="start_date" columnDataType="datetime" />
     </changeSet>
 
+    <changeSet id="20140719-TRUNK-4445-update_dosing_type_to_varchar_255" author="mihir">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="dosing_type" tableName="drug_order" />
+        </preConditions>
+        <comment>Increase size of dosing type column to 255 characters</comment>
+        <modifyDataType tableName="drug_order" columnName="dosing_type" newDataType="varchar(255)" />
+    </changeSet>
+
 </databaseChangeLog>
