@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
@@ -283,7 +284,7 @@ public class ObsTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return proper DateFormat", method = "getValueAsString()")
+	@Verifies(value = "should return Date in yyyy-MM-dd format", method = "getValueAsString()")
 	public void getValueAsString_shouldReturnProperDateFormat() throws Exception {
 		Obs obs = new Obs();
 		obs.setValueDatetime(new Date());
@@ -294,7 +295,7 @@ public class ObsTest {
 		obs.setConcept(cn);
 		
 		Date utilDate = new Date();
-		DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String dateString = dateFormat.format(utilDate);
 		Assert.assertEquals(dateString, obs.getValueAsString(Locale.US));
 	}
