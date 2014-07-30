@@ -30,7 +30,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link DrugOrder} class.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { DrugOrder.class }, order = 50)
@@ -41,7 +41,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
@@ -51,16 +51,16 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if asNeeded is null
 	 * @should fail validation if dosingType is null
 	 * @should fail validation if drug concept is different from order concept
-	 * @should fail validation if dose is null for SIMPLE dosingType
-	 * @should fail validation if doseUnits is null for SIMPLE dosingType
-	 * @should fail validation if route is null for SIMPLE dosingType
-	 * @should fail validation if frequency is null for SIMPLE dosingType
+	 * @should fail validation if dose is null for DOSING_TYPE_SIMPLE dosingType
+	 * @should fail validation if doseUnits is null for DOSING_TYPE_SIMPLE dosingType
+	 * @should fail validation if route is null for DOSING_TYPE_SIMPLE dosingType
+	 * @should fail validation if frequency is null for DOSING_TYPE_SIMPLE dosingType
 	 * @should fail validation if dosingInstructions is null for FREE_TEXT dosingType
 	 * @should fail validation if numberOfRefills is null for outpatient careSetting
 	 * @should fail validation if quantity is null for outpatient careSetting
@@ -76,6 +76,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail if concept is null and drug is not specified
 	 * @should fail if concept is null and cannot infer it from drug
 	 * @should pass if concept is null and drug is set
+	 * @should not validate a custom dosing type against any other dosing type validation
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
@@ -100,12 +101,12 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				}
 			}
 			if (order.getAction() != Order.Action.DISCONTINUE && order.getDosingType() != null) {
-				if (order.getDosingType().equals(DrugOrder.DosingType.SIMPLE)) {
+				if (order.getDosingType().equals(DrugOrder.DOSING_TYPE_SIMPLE)) {
 					ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-				} else {
+				} else if (order.getDosingType().equals(DrugOrder.DOSING_TYPE_FREE_TEXT) || order.getDosingType() == null) {
 					ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
 					    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeOther");
 				}

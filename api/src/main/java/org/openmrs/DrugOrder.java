@@ -24,14 +24,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 72232L;
 	
-	/**
-	 * enum dosingType
-	 * 
-	 * @since 1.10
-	 */
-	public enum DosingType {
-		SIMPLE, FREE_TEXT;
-	}
+	public static final String DOSING_TYPE_SIMPLE = "SIMPLE";
+	
+	public static final String DOSING_TYPE_FREE_TEXT = "FREE_TEXT";
 	
 	// Fields
 	
@@ -51,7 +46,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String asNeededCondition;
 	
-	private DosingType dosingType = DosingType.SIMPLE;
+	private String dosingType = DOSING_TYPE_SIMPLE;
 	
 	private Integer numRefills;
 	
@@ -198,7 +193,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	@Deprecated
 	public Boolean getComplex() {
-		return this.dosingType != DosingType.SIMPLE;
+		return this.dosingType != DOSING_TYPE_SIMPLE;
 	}
 	
 	/**
@@ -210,9 +205,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	@Deprecated
 	public void setComplex(Boolean complex) {
 		if (complex) {
-			setDosingType(DosingType.FREE_TEXT);
+			setDosingType(DOSING_TYPE_FREE_TEXT);
 		} else {
-			setDosingType(DosingType.SIMPLE);
+			setDosingType(DOSING_TYPE_SIMPLE);
 		}
 	}
 	
@@ -319,17 +314,17 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * 
 	 * @since 1.10
 	 */
-	public DosingType getDosingType() {
+	public String getDosingType() {
 		return dosingType;
 	}
 	
 	/**
 	 * Sets the dosingType
 	 * 
-	 * @param dosingType the DosingType to set
+	 * @param dosingType the dosingType to set
 	 * @since 1.10
 	 */
-	public void setDosingType(DosingType dosingType) {
+	public void setDosingType(String dosingType) {
 		this.dosingType = dosingType;
 	}
 	

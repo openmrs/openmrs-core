@@ -695,7 +695,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setOrderType(orderService.getOrderType(1));
 		order.setStartDate(new Date());
-		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDosingType(DrugOrder.DOSING_TYPE_SIMPLE);
 		order.setDose(500.0);
 		order.setDoseUnits(conceptService.getConcept(50));
 		order.setFrequency(orderService.getOrderFrequency(1));
@@ -735,7 +735,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(3));
 		order.setOrderType(orderService.getOrderType(1));
 		order.setStartDate(new Date());
-		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDosingType(DrugOrder.DOSING_TYPE_SIMPLE);
 		order.setDose(500.0);
 		order.setDoseUnits(conceptService.getConcept(50));
 		order.setFrequency(orderService.getOrderFrequency(1));
@@ -829,7 +829,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setCareSetting(orderToDiscontinue.getCareSetting());
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setStartDate(new Date());
-		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDosingType(DrugOrder.DOSING_TYPE_SIMPLE);
 		order.setDose(orderToDiscontinue.getDose());
 		order.setDoseUnits(orderToDiscontinue.getDoseUnits());
 		order.setRoute(orderToDiscontinue.getRoute());
@@ -1430,7 +1430,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(existingOrder.getCareSetting());
 		order.setDrug(conceptService.getDrug(3001));
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
 		order.setDosingInstructions("2 for 5 days");
 		order.setQuantity(10.0);
 		order.setQuantityUnits(conceptService.getConcept(51));
@@ -1460,7 +1460,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(existingOrder.getCareSetting());
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
 		order.setDosingInstructions("2 for 5 days");
 		order.setQuantity(10.0);
 		order.setQuantityUnits(conceptService.getConcept(51));
@@ -2132,7 +2132,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		order.setStartDate(encounter.getEncounterDatetime());
 		order.setOrderType(orderType);
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
 		order.setInstructions("None");
 		order.setDosingInstructions("Test Instruction");
 		orderService.saveOrder(order, null);
@@ -2513,7 +2513,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setOrderer(Context.getProviderService().getProvider(1));
 		drugOrder.setStartDate(encounter.getEncounterDatetime());
 		drugOrder.setDrug(drug);
-		drugOrder.setDosingType(DrugOrder.DosingType.SIMPLE);
+		drugOrder.setDosingType(DrugOrder.DOSING_TYPE_SIMPLE);
 		drugOrder.setDose(300.0);
 		drugOrder.setDoseUnits(conceptService.getConcept(50));
 		drugOrder.setQuantity(20.0);

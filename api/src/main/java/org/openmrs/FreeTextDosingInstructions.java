@@ -20,7 +20,7 @@ import java.util.Locale;
  */
 public class FreeTextDosingInstructions implements DosingInstructions {
 	
-	private DrugOrder.DosingType type = DrugOrder.DosingType.FREE_TEXT;
+	private String type = DrugOrder.DOSING_TYPE_FREE_TEXT;
 	
 	private String instructions;
 	
@@ -28,7 +28,7 @@ public class FreeTextDosingInstructions implements DosingInstructions {
 	 * @see DosingInstructions#getType()
 	 */
 	@Override
-	public DrugOrder.DosingType getType() {
+	public String getType() {
 		return this.type;
 	}
 	

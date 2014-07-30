@@ -22,9 +22,9 @@ public interface DosingInstructions {
 	
 	/**
 	 * Report the type of dosing instructions
-	 * @return DosingType ENUM
+	 * @return dosingType String
 	 */
-	public DrugOrder.DosingType getType();
+	public String getType();
 	
 	/**
 	 * Get human-readable version of dosing instructions for a particular locale

@@ -20,7 +20,7 @@ import java.util.Locale;
  */
 public class SimpleDosingInstructions implements DosingInstructions {
 	
-	private DrugOrder.DosingType type = DrugOrder.DosingType.SIMPLE;
+	private String type = DrugOrder.DOSING_TYPE_SIMPLE;
 	
 	private Double dose;
 	
@@ -44,7 +44,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	 * @see DosingInstructions#getType()
 	 */
 	@Override
-	public DrugOrder.DosingType getType() {
+	public String getType() {
 		return this.type;
 	}
 	
