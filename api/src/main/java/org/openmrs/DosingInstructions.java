@@ -13,18 +13,17 @@
  */
 package org.openmrs;
 
+import org.springframework.validation.Errors;
+
 import java.util.Locale;
 
 /**
+ * DosingInstructions required for different types of DosingTypes can
+ * be modelled using an implementation of this interface. Any class which
+ * implements this interface should have a default constructor.
  * @since 1.10
  */
 public interface DosingInstructions {
-	
-	/**
-	 * Report the type of dosing instructions
-	 * @return DosingType ENUM
-	 */
-	public DrugOrder.DosingType getType();
 	
 	/**
 	 * Get human-readable version of dosing instructions for a particular locale
@@ -50,5 +49,7 @@ public interface DosingInstructions {
 	 * @return DosingInstructions created from DrugOrder
 	 * @throws Exception if dosing type of passing order is not matched with dosing type of implementing dosing instruction
 	 */
-	public DosingInstructions getDosingInstructions(DrugOrder order) throws Exception;
+	public DosingInstructions getDosingInstructions(DrugOrder order);
+	
+	public void validate(DrugOrder order, Errors errors);
 }

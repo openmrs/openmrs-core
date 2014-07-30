@@ -13,14 +13,16 @@
  */
 package org.openmrs;
 
+import org.openmrs.api.APIException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+
 import java.util.Locale;
 
 /**
  * @since 1.10
  */
 public class SimpleDosingInstructions implements DosingInstructions {
-	
-	private DrugOrder.DosingType type = DrugOrder.DosingType.SIMPLE;
 	
 	private Double dose;
 	
@@ -39,14 +41,6 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	private String asNeededCondition;
 	
 	private String administrationInstructions;
-	
-	/**
-	 * @see DosingInstructions#getType()
-	 */
-	@Override
-	public DrugOrder.DosingType getType() {
-		return this.type;
-	}
 	
 	/**
 	 * @see DosingInstructions#getDosingInstructionsAsString(java.util.Locale)
@@ -87,7 +81,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	 */
 	@Override
 	public void setDosingInstructions(DrugOrder order) {
-		order.setDosingType(this.type);
+		order.setDosingType(this.getClass());
 		order.setDose(this.dose);
 		order.setDoseUnits(this.doseUnits);
 		order.setRoute(this.route);
@@ -103,22 +97,31 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
 	 */
 	@Override
-	public DosingInstructions getDosingInstructions(DrugOrder order) throws Exception {
-		if (this.getType() != order.getDosingType()) {
-			throw new Exception("Dosing type of drug order is mismatched. Expected:" + this.getType() + " but received:"
-			        + order.getDosingType());
+	public DosingInstructions getDosingInstructions(DrugOrder order) {
+		if (!order.getDosingType().equals(this.getClass())) {
+			throw new APIException("Dosing type of drug order is mismatched. Expected:" + this.getClass().getName()
+			        + " but received:" + order.getDosingType());
 		}
-		SimpleDosingInstructions di = new SimpleDosingInstructions();
-		di.setDose(order.getDose());
-		di.setDoseUnits(order.getDoseUnits());
-		di.setRoute(order.getRoute());
-		di.setFrequency(order.getFrequency());
-		di.setDuration(order.getDuration());
-		di.setDurationUnits(order.getDurationUnits());
-		di.setAsNeeded(order.getAsNeeded());
-		di.setAsNeededCondition(order.getAsNeededCondition());
-		di.setAdministrationInstructions(order.getInstructions());
-		return di;
+		SimpleDosingInstructions simpleDosingInstructions = new SimpleDosingInstructions();
+		simpleDosingInstructions.setDose(order.getDose());
+		simpleDosingInstructions.setDoseUnits(order.getDoseUnits());
+		simpleDosingInstructions.setRoute(order.getRoute());
+		simpleDosingInstructions.setFrequency(order.getFrequency());
+		simpleDosingInstructions.setDuration(order.getDuration());
+		simpleDosingInstructions.setDurationUnits(order.getDurationUnits());
+		simpleDosingInstructions.setAsNeeded(order.getAsNeeded());
+		simpleDosingInstructions.setAsNeededCondition(order.getAsNeededCondition());
+		simpleDosingInstructions.setAdministrationInstructions(order.getInstructions());
+		return simpleDosingInstructions;
+	}
+	
+	@Override
+	public void validate(DrugOrder order, Errors errors) {
+		ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
+		ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
+		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
+		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
+		
 	}
 	
 	public Double getDose() {

@@ -13,6 +13,10 @@
  */
 package org.openmrs;
 
+import org.openmrs.api.APIException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+
 import java.util.Locale;
 
 /**
@@ -20,17 +24,7 @@ import java.util.Locale;
  */
 public class FreeTextDosingInstructions implements DosingInstructions {
 	
-	private DrugOrder.DosingType type = DrugOrder.DosingType.FREE_TEXT;
-	
 	private String instructions;
-	
-	/**
-	 * @see DosingInstructions#getType()
-	 */
-	@Override
-	public DrugOrder.DosingType getType() {
-		return this.type;
-	}
 	
 	/**
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
@@ -45,7 +39,7 @@ public class FreeTextDosingInstructions implements DosingInstructions {
 	 */
 	@Override
 	public void setDosingInstructions(DrugOrder order) {
-		order.setDosingType(this.getType());
+		order.setDosingType(this.getClass());
 		order.setDosingInstructions(this.getInstructions());
 	}
 	
@@ -53,14 +47,21 @@ public class FreeTextDosingInstructions implements DosingInstructions {
 	 * @see DosingInstructions#getDosingInstructions(DrugOrder)
 	 */
 	@Override
-	public DosingInstructions getDosingInstructions(DrugOrder order) throws Exception {
-		if (this.getType() != order.getDosingType()) {
-			throw new Exception("Dosing type of drug order is mismatched. Expected:" + this.getType() + " but received:"
+	public DosingInstructions getDosingInstructions(DrugOrder order) throws APIException {
+		if (!order.getDosingType().equals(this.getClass())) {
+			throw new APIException("Dosing type of drug order is mismatched. Expected:" + this.getClass() + " but received:"
 			        + order.getDosingType());
 		}
-		FreeTextDosingInstructions ftdi = new FreeTextDosingInstructions();
-		ftdi.setInstructions(order.getDosingInstructions());
-		return ftdi;
+		FreeTextDosingInstructions freeTextDosingInstructions = new FreeTextDosingInstructions();
+		freeTextDosingInstructions.setInstructions(order.getDosingInstructions());
+		return freeTextDosingInstructions;
+	}
+	
+	@Override
+	public void validate(DrugOrder order, Errors errors) {
+		ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
+		    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeFreeText");
+		
 	}
 	
 	public String getInstructions() {
