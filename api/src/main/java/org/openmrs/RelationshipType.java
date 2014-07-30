@@ -46,6 +46,8 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	
 	private String bIsToA;
 	
+	private String description;
+	
 	private Integer weight = 0;
 	
 	private Boolean preferred = false;
@@ -150,6 +152,20 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	 */
 	public void setbIsToA(String bisToA) {
 		bIsToA = bisToA;
+	}
+	
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
 	}
 	
 	/**
