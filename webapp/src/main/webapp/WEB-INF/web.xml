@@ -34,6 +34,10 @@
         <param-name>application.data.directory</param-name>
         <param-value></param-value>
     </context-param>
+    <context-param>
+    	<param-name>log4jExposeWebAppRoot</param-name>
+    	<param-value>false</param-value>
+    </context-param>
 	<!-- // End init parameters -->
 
     <context-param>

@@ -47,7 +47,7 @@ public class InitializationWizardModel {
 	 * Default database name to use unless user specifies another in the wizard or they are creating
 	 * a test installation
 	 */
-	public static final String DEFAULT_DATABASE_NAME = "openmrs";
+	public static final String DEFAULT_DATABASE_NAME = WebConstants.WEBAPP_NAME;
 	
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
