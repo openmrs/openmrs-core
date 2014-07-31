@@ -34,7 +34,7 @@
 
 	<ciManagement>
 		<system>Bamboo</system>
-		<url>https://ci.openmrs.org/browse/TRUNK</url>
+		<url>https://ci.openmrs.org/browse/TRUNK-MASTER</url>
 	</ciManagement>
 
 	<modules>
