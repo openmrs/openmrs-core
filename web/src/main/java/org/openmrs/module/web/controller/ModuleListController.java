@@ -203,8 +203,7 @@ public class ModuleListController extends SimpleFormController {
 					ModuleFactory.startModule(module);
 				}
 				Listener.performWebStartOfModules(modules, request.getSession().getServletContext());
-			}
-			else {
+			} else {
 				ModuleUtil.checkForModuleUpdates();
 			}
 		} else if (action.equals(msa.getMessage("Module.installUpdate"))) {
