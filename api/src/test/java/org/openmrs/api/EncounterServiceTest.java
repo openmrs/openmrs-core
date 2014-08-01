@@ -538,7 +538,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		TestOrder order = new TestOrder();
 		order.setConcept(Context.getConceptService().getConcept(5497));
 		order.setPatient(new Patient(2));
-		order.setStartDate(new Date());
+		order.setDateActivated(new Date());
 		order.setOrderType(os.getOrderType(2));
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		Field field = Order.class.getDeclaredField("orderNumber");

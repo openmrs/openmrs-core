@@ -137,7 +137,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (encounters.size() > 0)
 			crit.add(Restrictions.in("encounter", encounters));
 		
-		crit.addOrder(org.hibernate.criterion.Order.desc("startDate"));
+		crit.addOrder(org.hibernate.criterion.Order.desc("dateActivated"));
 		
 		return crit.list();
 	}

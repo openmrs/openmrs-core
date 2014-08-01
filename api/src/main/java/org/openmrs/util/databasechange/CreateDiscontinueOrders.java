@@ -62,7 +62,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			insertStatement = connection
 			        .prepareStatement("Insert into orders(previous_order_id, concept_id, patient_id, encounter_id, "
 			                + "creator, date_created, discontinued_reason, discontinued_reason_non_coded, "
-			                + "uuid, order_action, orderer, order_number, order_type_id, start_date, auto_expire_date) "
+			                + "uuid, order_action, orderer, order_number, order_type_id, date_activated, auto_expire_date) "
 			                + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			for (DiscontinuedOrder discontinuedOrder : discontinuedOrders) {
 				insertStatement.setInt(1, discontinuedOrder.previousOrderId);
@@ -78,8 +78,8 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				setIntOrNull(insertStatement, 11, discontinuedOrder.discontinuedById);
 				insertStatement.setString(12, discontinuedOrder.orderNumber);
 				insertStatement.setInt(13, discontinuedOrder.orderTypeId);
-				insertStatement.setDate(14, discontinuedOrder.dateStarted);
-				insertStatement.setDate(15, discontinuedOrder.dateStarted);
+				insertStatement.setDate(14, discontinuedOrder.dateActivated);
+				insertStatement.setDate(15, discontinuedOrder.dateActivated);
 				insertStatement.addBatch();
 				
 				if (index % batchSize == 0) {
@@ -182,7 +182,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 		
 		public String discontinuedReasonNonCoded;
 		
-		public Date dateStarted;
+		public Date dateActivated;
 		
 		public int discontinuedById;
 		
@@ -205,7 +205,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			this.encounterId = encounterId;
 			this.discontinuedReasonId = discontinuedReasonId;
 			this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
-			this.dateStarted = dateStopped;
+			this.dateActivated = dateStopped;
 			this.discontinuedById = discontinuedById;
 			this.dateCreated = dateStopped;
 			this.orderNumber = String.valueOf(orderId).concat("-DC");

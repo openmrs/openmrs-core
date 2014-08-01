@@ -90,7 +90,7 @@ public class OrderValidator implements Validator {
 			
 			validateSamePatientInOrderAndEncounter(order, errors);
 			validateOrderTypeClass(order, errors);
-			validateStartDate(order, errors);
+			validateDateActivated(order, errors);
 			validateScheduledDate(order, errors);
 		}
 	}
@@ -102,27 +102,27 @@ public class OrderValidator implements Validator {
 		}
 	}
 	
-	private void validateStartDate(Order order, Errors errors) {
-		Date startDate = order.getStartDate();
+	private void validateDateActivated(Order order, Errors errors) {
+		Date startDate = order.getDateActivated();
 		if (startDate != null) {
 			if (startDate.after(new Date())) {
-				errors.rejectValue("startDate", "Order.error.startDateInFuture");
+				errors.rejectValue("dateActivated", "Order.error.dateActivatedInFuture");
 				return;
 			}
 			Date dateStopped = order.getDateStopped();
 			if (dateStopped != null && startDate.after(dateStopped)) {
-				errors.rejectValue("startDate", "Order.error.startDateAfterDiscontinuedDate");
-				errors.rejectValue("dateStopped", "Order.error.startDateAfterDiscontinuedDate");
+				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterDiscontinuedDate");
+				errors.rejectValue("dateStopped", "Order.error.dateActivatedAfterDiscontinuedDate");
 			}
 			Date autoExpireDate = order.getAutoExpireDate();
 			if (autoExpireDate != null && startDate.after(autoExpireDate)) {
-				errors.rejectValue("startDate", "Order.error.startDateAfterAutoExpireDate");
-				errors.rejectValue("autoExpireDate", "Order.error.startDateAfterAutoExpireDate");
+				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterAutoExpireDate");
+				errors.rejectValue("autoExpireDate", "Order.error.dateActivatedAfterAutoExpireDate");
 			}
 			Encounter encounter = order.getEncounter();
 			if (encounter != null && encounter.getEncounterDatetime() != null
 			        && encounter.getEncounterDatetime().after(startDate)) {
-				errors.rejectValue("startDate", "Order.error.startDateAfterEncounterDatetime");
+				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterEncounterDatetime");
 			}
 		}
 	}
