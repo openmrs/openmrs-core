@@ -45,6 +45,7 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -195,7 +196,19 @@ public class ModuleListController extends SimpleFormController {
 				}
 			}
 		} else if (moduleId.equals("")) {
-			ModuleUtil.checkForModuleUpdates();
+			if (action.equals(msa.getMessage("Module.startAll"))) {
+				
+				WebModuleUtil.shutdownModules(request.getSession().getServletContext());
+				
+				Collection<Module> modulesInOrder = ModuleFactory.getModulesInStartOrder();
+				for (Module module : modulesInOrder) {
+					ModuleFactory.startModule(module);
+				}
+				
+				Listener.performWebStartOfModules(modulesInOrder, request.getSession().getServletContext());
+			} else {
+				ModuleUtil.checkForModuleUpdates();
+			}
 		} else if (action.equals(msa.getMessage("Module.installUpdate"))) {
 			// download and install update
 			if (!ModuleUtil.allowAdmin()) {

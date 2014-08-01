@@ -1607,4 +1607,64 @@ public class ModuleFactory {
 		}
 		return dependentModules;
 	}
+	
+	/**
+	 * Gets a list of modules in the order they are supposed to be started.
+	 * 
+	 * @return the module list
+	 * @since 1.11.0
+	 */
+	public static Collection<Module> getModulesInStartOrder() {
+		List<String> moduleOrder = new ArrayList<String>();
+		
+		Collection<Module> modules = ModuleFactory.getLoadedModules();
+		for (Module module : modules) {
+			int moduleIndex = moduleOrder.indexOf(module.getPackageName());
+			if (moduleIndex == -1) {
+				moduleOrder.add(module.getPackageName());
+				moduleIndex = moduleOrder.indexOf(module.getPackageName());
+			}
+			
+			List<String> moduleIds = module.getRequiredModules();
+			for (String pkg : moduleIds) {
+				int index = moduleOrder.indexOf(pkg);
+				if (index == -1) {
+					//required module is not yet in the list
+					//add it before the current module
+					moduleOrder.add(moduleIndex, pkg);
+					moduleIndex = moduleOrder.indexOf(module.getPackageName());
+				} else if (index > moduleIndex) {
+					//required module is after the current module
+					//so move it before
+					moduleOrder.remove(pkg);
+					moduleOrder.add(moduleIndex, pkg);
+					moduleIndex = moduleOrder.indexOf(module.getPackageName());
+				}
+				//else required module is before current module as it should be
+			}
+			
+			moduleIds = module.getStartBeforeModules();
+			for (String pkg : moduleIds) {
+				int index = moduleOrder.indexOf(pkg);
+				if (index == -1) {
+					//module is not yet in the list
+					//add it after the current module
+					moduleOrder.add(moduleIndex + 1, pkg);
+				} else if (index < moduleIndex) {
+					//module is before the current module
+					//so move it after
+					moduleOrder.remove(pkg);
+					moduleOrder.add(moduleIndex + 1, pkg);
+				}
+				//else module is after current module as it should be
+			}
+		}
+		
+		Collection<Module> modulesInOrder = new ArrayList<Module>();
+		for (String pkg : moduleOrder) {
+			modulesInOrder.add(ModuleFactory.getModuleByPackage(pkg));
+		}
+		
+		return modulesInOrder;
+	}
 }
