@@ -383,8 +383,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 						if (order.getInstructions() != null) {
 							orderNode.setAttribute("instructions", order.getInstructions());
 						}
-						if (order.getStartDate() != null) {
-							orderNode.setAttribute("start_date", df.format(order.getStartDate()));
+						if (order.getDateActivated() != null) {
+							orderNode.setAttribute("date_activated", df.format(order.getDateActivated()));
 						}
 						if (order.getAutoExpireDate() != null) {
 							orderNode.setAttribute("auto_expire_date", df.format(order.getAutoExpireDate()));
@@ -1790,7 +1790,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<String> whereClauses = new ArrayList<String>();
 		whereClauses.add("o.voided = false");
 		if (toDate != null) {
-			whereClauses.add("o.start_date <= :toDate");
+			whereClauses.add("o.date_activated <= :toDate");
 		}
 		if (fromDate != null) {
 			whereClauses.add("(o.auto_expire_date is null or o.auto_expire_date > :fromDate)");

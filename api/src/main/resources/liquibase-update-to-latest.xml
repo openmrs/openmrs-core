@@ -8422,5 +8422,13 @@
         <comment>Dropping default value for drug_order.drug_inventory_id </comment>
         <dropDefaultValue tableName="drug_order" columnName="drug_inventory_id" columnDataType="int" />
     </changeSet>
+    <changeSet id="20140801-TRUNK-4443-rename_order_start_date_to_date_activated" author="bharti">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="start_date" tableName="orders" />
+        </preConditions>
+        <comment>Renaming the start_date in order table to date_activated</comment>
+        <renameColumn tableName="orders" newColumnName="date_activated" oldColumnName="start_date" columnDataType="datetime" />
+    </changeSet>
+
 
 </databaseChangeLog>
