@@ -99,7 +99,7 @@ public class OrderTest {
 		Order o = new Order();
 		assertFalse("order without dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
 		
-		o.setStartDate(ymd.parse("2007-01-01"));
+		o.setDateActivated(ymd.parse("2007-01-01"));
 		assertFalse("shouldn't be discontinued before start date", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("order without no end dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
 		
@@ -128,7 +128,7 @@ public class OrderTest {
 		Order o = new Order();
 		assertTrue("startDate==null && no end date should always be current", o.isCurrent(ymd.parse("2007-10-26")));
 		
-		o.setStartDate(ymd.parse("2007-01-01"));
+		o.setDateActivated(ymd.parse("2007-01-01"));
 		assertFalse("shouldn't be current before startDate", o.isCurrent(ymd.parse("2006-10-26")));
 		assertTrue("should be current after startDate", o.isCurrent(ymd.parse("2007-10-26")));
 		
@@ -195,7 +195,7 @@ public class OrderTest {
 	public void cloneForRevision_shouldSetAllTheRelevantFields() throws Exception {
 		assertThatAllFieldsAreCopied(new Order(), "cloneForRevision", "creator", "dateCreated", "action", "changedBy",
 		    "dateChanged", "voided", "dateVoided", "voidedBy", "voidReason", "encounter", "orderNumber", "orderer",
-		    "previousOrder", "startDate", "dateStopped", "accessionNumber");
+		    "previousOrder", "dateActivated", "dateStopped", "accessionNumber");
 	}
 	
 	/**
@@ -238,7 +238,7 @@ public class OrderTest {
 		Order order = new Order();
 		order.setAction(Order.Action.DISCONTINUE);
 		Date date = new Date();
-		order.setStartDate(date);
+		order.setDateActivated(date);
 		order.setPreviousOrder(new Order());
 		order.setAutoExpireDate(date);
 		order.setAccessionNumber("some number");
@@ -246,7 +246,7 @@ public class OrderTest {
 		
 		Order clone = order.cloneForRevision();
 		assertEquals(Order.Action.DISCONTINUE, clone.getAction());
-		assertEquals(order.getStartDate(), clone.getStartDate());
+		assertEquals(order.getDateActivated(), clone.getDateActivated());
 		assertEquals(order.getPreviousOrder(), clone.getPreviousOrder());
 		assertNull(clone.getAutoExpireDate());
 		assertNull(clone.getDateStopped());
