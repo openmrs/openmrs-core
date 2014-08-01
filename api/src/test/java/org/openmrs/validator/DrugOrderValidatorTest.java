@@ -28,6 +28,7 @@ import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
+import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -100,7 +101,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setOrderer(Context.getProviderService().getProvider(1));
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setInstructions("Instructions");
 		order.setDosingInstructions("Test Instruction");
 		order.setPatient(patient);
@@ -171,7 +172,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDoseIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_SIMPLE);
+		order.setDosingType(SimpleDosingInstructions.class);
 		order.setDose(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -185,7 +186,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDoseUnitsIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_SIMPLE);
+		order.setDosingType(SimpleDosingInstructions.class);
 		order.setDoseUnits(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -199,7 +200,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfRouteIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_SIMPLE);
+		order.setDosingType(SimpleDosingInstructions.class);
 		order.setRoute(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -213,7 +214,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfFrequencyIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_SIMPLE);
+		order.setDosingType(SimpleDosingInstructions.class);
 		order.setFrequency(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -227,7 +228,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDosingInstructionsIsNullForFREE_TEXTDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDosingInstructions(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -241,7 +242,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDoseUnitsIsNullWhenDoseIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDose(20.0);
 		order.setDoseUnits(null);
 		Errors errors = new BindException(order, "order");
@@ -256,7 +257,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfQuantityUnitsIsNullWhenQuantityIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setQuantity(20.0);
 		order.setQuantityUnits(null);
 		Errors errors = new BindException(order, "order");
@@ -271,7 +272,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDurationUnitsIsNullWhenDurationIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(20.0);
 		order.setDurationUnits(null);
 		Errors errors = new BindException(order, "order");
@@ -334,7 +335,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugDosingUnits())));
 		
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5.0);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
@@ -357,7 +358,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugDispensingUnits())));
 		
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5.0);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
@@ -380,7 +381,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertThat(concept, not(isIn(Context.getOrderService().getDurationUnits())));
 		
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5.0);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
@@ -403,7 +404,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugRoutes())));
 		
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DOSING_TYPE_FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5.0);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);

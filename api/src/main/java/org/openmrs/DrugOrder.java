@@ -17,16 +17,12 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * DrugOrder
- * 
+ *
  * @version 1.0
  */
 public class DrugOrder extends Order implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 72232L;
-	
-	public static final String DOSING_TYPE_SIMPLE = "SIMPLE";
-	
-	public static final String DOSING_TYPE_FREE_TEXT = "FREE_TEXT";
 	
 	// Fields
 	
@@ -46,7 +42,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String asNeededCondition;
 	
-	private String dosingType = DOSING_TYPE_SIMPLE;
+	private Class<? extends DosingInstructions> dosingType = FreeTextDosingInstructions.class;
 	
 	private Integer numRefills;
 	
@@ -113,7 +109,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the doseUnits of this drug order
-	 * 
+	 *
 	 * @return doseUnits
 	 */
 	public Concept getDoseUnits() {
@@ -122,7 +118,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the doseUnits of this drug order
-	 * 
+	 *
 	 * @param doseUnits
 	 */
 	public void setDoseUnits(Concept doseUnits) {
@@ -131,7 +127,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the frequency
-	 * 
+	 *
 	 * @return frequency
 	 * @since 1.10 (signature changed)
 	 */
@@ -141,7 +137,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the frequency
-	 * 
+	 *
 	 * @param frequency
 	 * @since 1.10 (signature changed)
 	 */
@@ -169,7 +165,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Returns true/false whether the drug is a "pro re nata" drug
-	 * 
+	 *
 	 * @return Boolean
 	 * @since 1.10
 	 */
@@ -186,34 +182,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * Gets whether this drug is complex
-	 * 
-	 * @return Boolean
-	 * @deprecated use {@link #getDosingType()}
-	 */
-	@Deprecated
-	public Boolean getComplex() {
-		return this.dosingType != DOSING_TYPE_SIMPLE;
-	}
-	
-	/**
-	 * Sets whether this drug is complex
-	 * 
-	 * @param complex
-	 * @deprecated use {@link #setComplex(Boolean)}
-	 */
-	@Deprecated
-	public void setComplex(Boolean complex) {
-		if (complex) {
-			setDosingType(DOSING_TYPE_FREE_TEXT);
-		} else {
-			setDosingType(DOSING_TYPE_SIMPLE);
-		}
-	}
-	
-	/**
 	 * Gets the quantity
-	 * 
+	 *
 	 * @return quantity
 	 */
 	public Double getQuantity() {
@@ -222,7 +192,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the quantity
-	 * 
+	 *
 	 * @param quantity
 	 */
 	public void setQuantity(Double quantity) {
@@ -247,7 +217,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the drug
-	 * 
+	 *
 	 * @return drug
 	 */
 	public Drug getDrug() {
@@ -256,7 +226,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the drug
-	 * 
+	 *
 	 * @param drug
 	 */
 	public void setDrug(Drug drug) {
@@ -284,7 +254,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the route
-	 * 
+	 *
 	 * @since 1.10
 	 */
 	public Concept getRoute() {
@@ -293,7 +263,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the route
-	 * 
+	 *
 	 * @param route
 	 * @since 1.10
 	 */
@@ -311,26 +281,31 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the dosingType
-	 * 
+	 *
 	 * @since 1.10
 	 */
-	public String getDosingType() {
+	public Class<? extends DosingInstructions> getDosingType() {
 		return dosingType;
 	}
 	
 	/**
 	 * Sets the dosingType
-	 * 
+	 *
 	 * @param dosingType the dosingType to set
 	 * @since 1.10
 	 */
-	public void setDosingType(String dosingType) {
+	public void setDosingType(Class<? extends DosingInstructions> dosingType) {
 		this.dosingType = dosingType;
+	}
+	
+	public DosingInstructions getDosingInstructionsObject() throws IllegalAccessException, InstantiationException {
+		DosingInstructions instructions = getDosingType().newInstance();
+		return instructions.getDosingInstructions(this);
 	}
 	
 	/**
 	 * Gets numRefills
-	 * 
+	 *
 	 * @since 1.10
 	 */
 	public Integer getNumRefills() {
@@ -339,7 +314,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets numRefills
-	 * 
+	 *
 	 * @param numRefills the numRefills to set
 	 * @since 1.10
 	 */
@@ -349,7 +324,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the dosingInstructions
-	 * 
+	 *
 	 * @param dosingInstructions to set
 	 * @since 1.10
 	 */
@@ -359,7 +334,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the dosingInstructions
-	 * 
+	 *
 	 * @since 1.10
 	 */
 	public String getDosingInstructions() {
@@ -368,7 +343,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the duration of a Drug Order
-	 * 
+	 *
 	 * @since 1.10
 	 */
 	public Double getDuration() {
@@ -377,7 +352,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the duration of a Drug Order
-	 * 
+	 *
 	 * @param duration to set
 	 * @since 1.10
 	 */
@@ -387,7 +362,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets durationUnits of a Drug Order
-	 * 
+	 *
 	 * @since 1.10
 	 */
 	public Concept getDurationUnits() {
@@ -396,7 +371,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the durationUnits of a Drug Order
-	 * 
+	 *
 	 * @param durationUnits
 	 * @since 1.10
 	 */
@@ -406,7 +381,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Gets the brandName
-	 * 
+	 *
 	 * @return brandName
 	 * @since 1.10
 	 */
@@ -416,7 +391,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Sets the brandName
-	 * 
+	 *
 	 * @since 1.10
 	 * @param brandName the brandName to set to
 	 */
@@ -461,7 +436,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/**
 	 * Creates a DrugOrder for revision from this order, sets the previousOrder, action field and
 	 * other drug order fields.
-	 * 
+	 *
 	 * @return the newly created order
 	 * @since 1.10
 	 * @should set all the relevant fields
@@ -506,7 +481,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Set dosing instructions to drug order
-	 * 
+	 *
 	 * @param di dosing instruction object to fetch data
 	 * @since 1.10
 	 */
@@ -516,7 +491,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	/**
 	 * Checks whether orderable of this drug order is same as other order
-	 * 
+	 *
 	 * @since 1.10
 	 * @param otherOrder the other order to match on
 	 * @return true if the drugs match

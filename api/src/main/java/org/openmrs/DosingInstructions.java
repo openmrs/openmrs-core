@@ -13,18 +13,14 @@
  */
 package org.openmrs;
 
+import org.openmrs.api.APIException;
+
 import java.util.Locale;
 
 /**
  * @since 1.10
  */
 public interface DosingInstructions {
-	
-	/**
-	 * Report the type of dosing instructions
-	 * @return dosingType String
-	 */
-	public String getType();
 	
 	/**
 	 * Get human-readable version of dosing instructions for a particular locale
@@ -50,5 +46,5 @@ public interface DosingInstructions {
 	 * @return DosingInstructions created from DrugOrder
 	 * @throws Exception if dosing type of passing order is not matched with dosing type of implementing dosing instruction
 	 */
-	public DosingInstructions getDosingInstructions(DrugOrder order) throws Exception;
+	public DosingInstructions getDosingInstructions(DrugOrder order);
 }

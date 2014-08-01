@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.Locale;
 
 import org.junit.Test;
 import org.openmrs.order.OrderUtilTest;
@@ -253,17 +254,37 @@ public class DrugOrderTest {
 	}
 	
 	@Test
-	public void shouldSetDefaultDosingTypeToSimple() throws Exception {
+	public void shouldSetDefaultDosingTypeToFreeText() throws Exception {
 		DrugOrder drugOrder = new DrugOrder();
-		assertEquals(DrugOrder.DOSING_TYPE_SIMPLE, drugOrder.getDosingType());
+		assertEquals(FreeTextDosingInstructions.class, drugOrder.getDosingType());
+	}
+	
+	public static class CustomDosingInstructions implements DosingInstructions {
+		
+		@Override
+		public String getDosingInstructionsAsString(Locale locale) {
+			return null;
+		}
+		
+		@Override
+		public void setDosingInstructions(DrugOrder order) {
+			
+		}
+		
+		@Override
+		public DosingInstructions getDosingInstructions(DrugOrder order) {
+			return this;
+		}
 	}
 	
 	@Test
 	public void shouldAllowToSetCustomDosingTypes() throws Exception {
 		DrugOrder drugOrder = new DrugOrder();
-		assertEquals(DrugOrder.DOSING_TYPE_SIMPLE, drugOrder.getDosingType());
-		final String CUSTOM_DOSING_TYPE = "CUSTOM DOSING TYPE";
-		drugOrder.setDosingType(CUSTOM_DOSING_TYPE);
-		assertEquals(CUSTOM_DOSING_TYPE, drugOrder.getDosingType());
+		assertEquals(FreeTextDosingInstructions.class, drugOrder.getDosingType());
+		CustomDosingInstructions customDosingInstructions = new CustomDosingInstructions();
+		drugOrder.setDosingType(customDosingInstructions.getClass());
+		DosingInstructions dosingInstructionsObject = drugOrder.getDosingInstructionsObject();
+		assertEquals(customDosingInstructions.getClass(), dosingInstructionsObject.getClass());
+		assertEquals(customDosingInstructions.getClass(), drugOrder.getDosingType());
 	}
 }

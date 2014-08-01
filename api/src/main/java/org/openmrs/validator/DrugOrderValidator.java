@@ -17,10 +17,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.CareSetting;
-import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
-import org.openmrs.Order;
+import org.openmrs.*;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
@@ -101,12 +98,12 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				}
 			}
 			if (order.getAction() != Order.Action.DISCONTINUE && order.getDosingType() != null) {
-				if (order.getDosingType().equals(DrugOrder.DOSING_TYPE_SIMPLE)) {
+				if (order.getDosingType().equals(SimpleDosingInstructions.class)) {
 					ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 					ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-				} else if (order.getDosingType().equals(DrugOrder.DOSING_TYPE_FREE_TEXT) || order.getDosingType() == null) {
+				} else if (order.getDosingType().equals(FreeTextDosingInstructions.class) || order.getDosingType() == null) {
 					ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
 					    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeOther");
 				}
