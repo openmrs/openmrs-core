@@ -240,6 +240,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	@SuppressWarnings("unchecked")
 	public List<Order> getActiveOrders(Patient patient, List<OrderType> orderTypes, CareSetting careSetting, Date asOfDate) {
 		Criteria crit = createOrderCriteria(patient, careSetting, orderTypes, false, false);
+		crit.add(Restrictions.le("dateActivated", asOfDate));
 		
 		Disjunction dateStoppedAndAutoExpDateDisjunction = Restrictions.disjunction();
 		Criterion stopAndAutoExpDateAreBothNull = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions
