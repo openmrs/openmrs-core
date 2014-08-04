@@ -204,7 +204,7 @@ public class ModuleListController extends SimpleFormController {
 				for (Module module : modulesInOrder) {
 					ModuleFactory.startModule(module);
 				}
-				
+
 				Listener.performWebStartOfModules(modulesInOrder, request.getSession().getServletContext());
 			} else {
 				ModuleUtil.checkForModuleUpdates();
