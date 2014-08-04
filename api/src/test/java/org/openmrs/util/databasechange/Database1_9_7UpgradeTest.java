@@ -392,7 +392,8 @@ public class Database1_9_7UpgradeTest {
 		
 		List<List<Object>> newer = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE' AND "
-		            + "(start_date IS NULL OR orderer IS NULL OR encounter_id IS NULL OR previous_order_id IS NULL)", true);
+		            + "(date_activated IS NULL OR orderer IS NULL OR encounter_id IS NULL OR previous_order_id IS NULL)",
+		    true);
 		assertEquals(0L, newer.get(0).get(0));
 	}
 	
