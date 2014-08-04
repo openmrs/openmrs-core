@@ -659,9 +659,8 @@ public class PersonTest extends BaseContextSensitiveTest {
 	 * @verifies return null if person is not-voided and have voided address
 	 */
 	@Test
-	public void getPersonAddress_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedAddress()
-			throws Exception {
-
+	public void getPersonAddress_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedAddress() throws Exception {
+		
 		PersonAddress firstPersonAddress = PersonAddressBuilder.newBuilder().withVoided(true).build();
 		PersonAddress secondPersonAddress = PersonAddressBuilder.newBuilder().withVoided(true).build();
 		
@@ -671,15 +670,14 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNull(notVoidedPerson.getPersonAddress());
 	}
-
+	
 	/**
 	 * @see Person#getPersonName()
 	 * @verifies return null if person is not-voided and have voided names
 	 */
 	@Test
-	public void getPersonName_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedNames()
-			throws Exception {
-
+	public void getPersonName_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedNames() throws Exception {
+		
 		PersonName firstVoidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
 		PersonName secondVoidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
 		
