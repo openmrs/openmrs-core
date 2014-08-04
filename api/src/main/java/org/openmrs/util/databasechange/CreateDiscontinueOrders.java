@@ -78,8 +78,8 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				setIntOrNull(insertStatement, 11, discontinuedOrder.discontinuedById);
 				insertStatement.setString(12, discontinuedOrder.orderNumber);
 				insertStatement.setInt(13, discontinuedOrder.orderTypeId);
-				insertStatement.setDate(14, discontinuedOrder.dateStarted);
-				insertStatement.setDate(15, discontinuedOrder.dateStarted);
+				insertStatement.setDate(14, discontinuedOrder.dateActivated);
+				insertStatement.setDate(15, discontinuedOrder.dateActivated);
 				insertStatement.addBatch();
 				
 				if (index % batchSize == 0) {
@@ -182,7 +182,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 		
 		public String discontinuedReasonNonCoded;
 		
-		public Date dateStarted;
+		public Date dateActivated;
 		
 		public int discontinuedById;
 		
@@ -205,7 +205,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 			this.encounterId = encounterId;
 			this.discontinuedReasonId = discontinuedReasonId;
 			this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
-			this.dateStarted = dateStopped;
+			this.dateActivated = dateStopped;
 			this.discontinuedById = discontinuedById;
 			this.dateCreated = dateStopped;
 			this.orderNumber = String.valueOf(orderId).concat("-DC");

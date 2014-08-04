@@ -89,8 +89,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getOrderId() != null) {
 			throw new APIException("Cannot edit an existing order, you need to revise it instead");
 		}
-		if (order.getStartDate() == null) {
-			order.setStartDate(new Date());
+		if (order.getDateActivated() == null) {
+			order.setDateActivated(new Date());
 		}
 		//Reject if there is an active order for the same orderable
 		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
@@ -160,7 +160,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (previousOrder == null) {
 				throw new APIException("Previous Order is required for a revised order");
 			}
-			stopOrder(previousOrder, order.getStartDate());
+			stopOrder(previousOrder, order.getDateActivated());
 		} else if (DISCONTINUE == order.getAction()) {
 			discontinueExistingOrdersIfNecessary(order);
 		}
@@ -215,7 +215,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			
 			//DC orders should auto expire upon creating them
 			if (DISCONTINUE == order.getAction()) {
-				order.setAutoExpireDate(order.getStartDate());
+				order.setAutoExpireDate(order.getDateActivated());
 			}
 		}
 		
@@ -279,7 +279,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Mark previousOrder as discontinued if it is not already
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null) {
-			stopOrder(previousOrder, order.getStartDate());
+			stopOrder(previousOrder, order.getDateActivated());
 			return;
 		}
 		
@@ -306,7 +306,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			
 			if (shouldMarkAsDiscontinued) {
 				order.setPreviousOrder(activeOrder);
-				stopOrder(activeOrder, order.getStartDate());
+				stopOrder(activeOrder, order.getDateActivated());
 				break;
 			}
 		}
@@ -371,7 +371,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				final String action = DISCONTINUE == order.getAction() ? "discontinuation" : "revision";
 				throw new APIException("Cannot unvoid a " + action + " order if the previous order is no longer active");
 			}
-			stopOrder(previousOrder, order.getStartDate());
+			stopOrder(previousOrder, order.getDateActivated());
 		}
 		
 		return saveOrderInternal(order, null);
@@ -616,7 +616,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (discontinueDate == null) {
 			discontinueDate = new Date();
 		}
-		newOrder.setStartDate(discontinueDate);
+		newOrder.setDateActivated(discontinueDate);
 		return saveOrderInternal(newOrder, null);
 	}
 	
@@ -635,7 +635,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (discontinueDate == null) {
 			discontinueDate = new Date();
 		}
-		newOrder.setStartDate(discontinueDate);
+		newOrder.setDateActivated(discontinueDate);
 		return saveOrderInternal(newOrder, null);
 	}
 	

@@ -8422,6 +8422,14 @@
         <comment>Dropping default value for drug_order.drug_inventory_id </comment>
         <dropDefaultValue tableName="drug_order" columnName="drug_inventory_id" columnDataType="int" />
     </changeSet>
+    <changeSet id="20140801-TRUNK-4443-rename_order_start_date_to_date_activated" author="bharti">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="start_date" tableName="orders" />
+        </preConditions>
+        <comment>Renaming the start_date in order table to date_activated</comment>
+        <renameColumn tableName="orders" newColumnName="date_activated" oldColumnName="start_date" columnDataType="datetime" />
+    </changeSet>
+
 
     <changeSet id="20140718-TRUNK-4445-update_dosing_type_to_varchar_255" author="mihir">
         <comment>Increase size of dosing type column to 255 characters</comment>

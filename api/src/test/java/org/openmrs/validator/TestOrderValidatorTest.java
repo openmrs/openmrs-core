@@ -46,7 +46,7 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		Encounter encounter = new Encounter();
 		encounter.setPatient(patient);
 		order.setEncounter(encounter);
-		order.setStartDate(new Date());
+		order.setDateActivated(new Date());
 		order.setSpecimenSource(specimenSource);
 		
 		Errors errors = new BindException(order, "order");
@@ -76,7 +76,7 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		Encounter encounter = new Encounter();
 		encounter.setPatient(patient);
 		order.setEncounter(encounter);
-		order.setStartDate(new Date());
+		order.setDateActivated(new Date());
 		order.setSpecimenSource(specimenSource);
 		
 		Errors errors = new BindException(order, "order");

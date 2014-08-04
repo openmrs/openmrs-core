@@ -22,8 +22,8 @@ import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Dates should be interpreted as follows: If startDate is null then the order has been going on
- * "since the beginning of time" Otherwise the order starts on startDate If discontinued is non-null
+ * Dates should be interpreted as follows: If dateActivated is null then the order has been going on
+ * "since the beginning of time" Otherwise the order starts on dateActivated If discontinued is non-null
  * and true, then the following fields should be ignored: autoExpireDate if dateStopped is null then
  * the order was discontinued "the instant after it began" otherwise it was given from its starting
  * date until dateStopped Otherwise (discontinued is null or false) if autoExpireDate is null, the
@@ -64,7 +64,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private String instructions;
 	
-	private Date startDate;
+	private Date dateActivated;
 	
 	private Date autoExpireDate;
 	
@@ -136,7 +136,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setOrderType(getOrderType());
 		target.setConcept(getConcept());
 		target.setInstructions(getInstructions());
-		target.setStartDate(getStartDate());
+		target.setDateActivated(getDateActivated());
 		target.setAutoExpireDate(getAutoExpireDate());
 		target.setEncounter(getEncounter());
 		target.setOrderer(getOrderer());
@@ -301,17 +301,17 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the startDate.
+	 * @return Returns the dateActivated.
 	 */
-	public Date getStartDate() {
-		return startDate;
+	public Date getDateActivated() {
+		return dateActivated;
 	}
 	
 	/**
-	 * @param startDate The startDate to set.
+	 * @param dateActivated The dateActivated to set.
 	 */
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setDateActivated(Date dateActivated) {
+		this.dateActivated = dateActivated;
 	}
 	
 	/**
@@ -358,13 +358,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 			checkDate = new Date();
 		}
 		
-		if (startDate != null && checkDate.before(startDate)) {
+		if (dateActivated != null && checkDate.before(dateActivated)) {
 			return false;
 		}
 		
 		if (isDiscontinuedRightNow()) {
 			if (dateStopped == null)
-				return checkDate.equals(startDate);
+				return checkDate.equals(dateActivated);
 			else
 				return checkDate.before(dateStopped);
 			
@@ -386,7 +386,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (checkDate == null)
 			checkDate = new Date();
 		
-		return startDate != null && checkDate.before(startDate);
+		return dateActivated != null && checkDate.before(dateActivated);
 	}
 	
 	public boolean isFuture() {
@@ -405,7 +405,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (checkDate == null)
 			checkDate = new Date();
 		
-		if (startDate == null || checkDate.before(startDate)) {
+		if (dateActivated == null || checkDate.before(dateActivated)) {
 			return false;
 		}
 		if (dateStopped != null && dateStopped.after(checkDate)) {
@@ -607,7 +607,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		if (getAction() == Action.DISCONTINUE) {
 			target.setAction(Action.DISCONTINUE);
 			target.setPreviousOrder(getPreviousOrder());
-			target.setStartDate(getStartDate());
+			target.setDateActivated(getDateActivated());
 		} else {
 			target.setAction(Action.REVISE);
 			target.setPreviousOrder(this);

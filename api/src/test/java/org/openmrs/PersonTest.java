@@ -654,6 +654,40 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * @see Person#getPersonAddress()
+	 * @verifies return null if person is not-voided and have voided address
+	 */
+	@Test
+	public void getPersonAddress_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedAddress() throws Exception {
+		
+		PersonAddress firstPersonAddress = PersonAddressBuilder.newBuilder().withVoided(true).build();
+		PersonAddress secondPersonAddress = PersonAddressBuilder.newBuilder().withVoided(true).build();
+		
+		Person notVoidedPerson = new Person();
+		notVoidedPerson.addAddress(firstPersonAddress);
+		notVoidedPerson.addAddress(secondPersonAddress);
+		
+		Assert.assertNull(notVoidedPerson.getPersonAddress());
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 * @verifies return null if person is not-voided and have voided names
+	 */
+	@Test
+	public void getPersonName_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedNames() throws Exception {
+		
+		PersonName firstVoidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		PersonName secondVoidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		
+		Person notVoidedPerson = new Person();
+		notVoidedPerson.addName(firstVoidedName);
+		notVoidedPerson.addName(secondVoidedName);
+		
+		Assert.assertNull(notVoidedPerson.getPersonName());
+	}
+	
 	private void checkGetPersonAddressResultForVoidedPerson(PersonAddress expectedPersonAddress,
 	        Set<PersonAddress> personAddresses) {
 		
@@ -683,10 +717,10 @@ public class PersonTest extends BaseContextSensitiveTest {
 	// helper class
 	private static class PersonNameBuilder {
 		
-		private PersonName personAddress;
+		private PersonName personName;
 		
 		private PersonNameBuilder() {
-			personAddress = new PersonName();
+			personName = new PersonName();
 		}
 		
 		public static PersonNameBuilder newBuilder() {
@@ -694,17 +728,17 @@ public class PersonTest extends BaseContextSensitiveTest {
 		}
 		
 		public PersonNameBuilder withVoided(boolean voided) {
-			personAddress.setVoided(voided);
+			personName.setVoided(voided);
 			return this;
 		}
 		
 		public PersonNameBuilder withPreferred(boolean preferred) {
-			personAddress.setPreferred(preferred);
+			personName.setPreferred(preferred);
 			return this;
 		}
 		
 		public PersonName build() {
-			return personAddress;
+			return personName;
 		}
 	}
 	

@@ -82,17 +82,17 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if startDate is before encounter's encounterDatetime
+	 * @verifies fail validation if dateActivated is before encounter's encounterDatetime
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfStartDateIsBeforeEncountersEncounterDatetime() throws Exception {
+	public void validate_shouldFailValidationIfdateActivatedIsBeforeEncountersEncounterDatetime() throws Exception {
 		Date encounterDate = new Date();
 		Date orderDate = DateUtils.addDays(encounterDate, -1);
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
 		encounter.setEncounterDatetime(encounterDate);
 		Order order = new Order();
-		order.setStartDate(orderDate);
+		order.setDateActivated(orderDate);
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setEncounter(encounter);
@@ -100,7 +100,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("startDate"));
+		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
 	}
 	
 	/**
@@ -237,21 +237,21 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if startDate after dateStopped", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfStartDateAfterDateStopped() throws Exception {
+	@Verifies(value = "should fail validation if dateActivated after dateStopped", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDateActivatedAfterDateStopped() throws Exception {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
-		order.setStartDate(new Date());
+		order.setDateActivated(new Date());
 		OrderUtilTest.setDateStopped(order, cal.getTime());
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("startDate"));
+		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
 		Assert.assertTrue(errors.hasFieldErrors("dateStopped"));
 	}
 	
@@ -259,21 +259,21 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if startDate after autoExpireDate", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfStartDateAfterAutoExpireDate() throws Exception {
+	@Verifies(value = "should fail validation if dateActivated after autoExpireDate", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfDateActivatedAfterAutoExpireDate() throws Exception {
 		Order order = new Order();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setOrderer(Context.getProviderService().getProvider(1));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
-		order.setStartDate(new Date());
+		order.setDateActivated(new Date());
 		order.setAutoExpireDate(cal.getTime());
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("startDate"));
+		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
 		Assert.assertTrue(errors.hasFieldErrors("autoExpireDate"));
 	}
 	
@@ -376,7 +376,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setPatient(patient);
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
-		order.setStartDate(cal.getTime());
+		order.setDateActivated(cal.getTime());
 		order.setAutoExpireDate(new Date());
 		order.setCareSetting(new CareSetting());
 		order.setEncounter(encounter);
@@ -391,11 +391,11 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies not allow a future startDate
+	 * @verifies not allow a future dateActivated
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldNotAllowAFutureStartDate() throws Exception {
+	public void validate_shouldNotAllowAFutureDateActivated() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
 		TestOrder order = new TestOrder();
 		order.setPatient(patient);
@@ -406,12 +406,12 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		order.setCareSetting(orderService.getCareSetting(1));
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR_OF_DAY, 1);
-		order.setStartDate(cal.getTime());
+		order.setDateActivated(cal.getTime());
 		
 		Errors errors = new BindException(order, "order");
 		new OrderValidator().validate(order, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("startDate"));
-		Assert.assertEquals("Order.error.startDateInFuture", errors.getFieldError("startDate").getCode());
+		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
+		Assert.assertEquals("Order.error.dateActivatedInFuture", errors.getFieldError("dateActivated").getCode());
 	}
 }

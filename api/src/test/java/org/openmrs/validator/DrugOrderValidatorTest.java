@@ -110,7 +110,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounter);
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
-		order.setStartDate(cal.getTime());
+		order.setDateActivated(cal.getTime());
 		order.setAutoExpireDate(new Date());
 		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
 		order.setDrug(Context.getConceptService().getDrug(3));
@@ -490,7 +490,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounter);
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
-		order.setStartDate(cal.getTime());
+		order.setDateActivated(cal.getTime());
 		order.setAutoExpireDate(new Date());
 		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
 		order.setDrug(Context.getConceptService().getDrug(3));

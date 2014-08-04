@@ -103,7 +103,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setPatient(patient);
 		order.setCareSetting(careSetting);
 		order.setOrderer(Context.getProviderService().getProvider(1));
-		order.setStartDate(encounter.getEncounterDatetime());
+		order.setDateActivated(encounter.getEncounterDatetime());
 		order.setDrug(conceptService.getDrug(2));
 		order.setDosingType(SimpleDosingInstructions.class);
 		order.setDose(300.0);
@@ -139,7 +139,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setCareSetting(careSetting);
 		Encounter encounter = encounterService.getEncounter(3);
 		order.setEncounter(encounter);
-		order.setStartDate(encounter.getEncounterDatetime());
+		order.setDateActivated(encounter.getEncounterDatetime());
 		order.setClinicalHistory("Patient had a negative reaction to the test in the past");
 		order.setFrequency(orderService.getOrderFrequency(3000));
 		order.setSpecimenSource(conceptService.getConcept(22));
@@ -204,7 +204,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setInstructions("Take after a meal");
-		revisedOrder.setStartDate(new Date());
+		revisedOrder.setDateActivated(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
@@ -286,7 +286,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setInstructions("Take after a meal");
-		revisedOrder.setStartDate(new Date());
+		revisedOrder.setDateActivated(new Date());
 		revisedOrder.setOrderer(providerService.getProvider(1));
 		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
@@ -343,7 +343,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		Order newDcOrder = originalDCOrder.cloneForRevision();
 		newDcOrder.setEncounter(originalDCOrder.getEncounter());
 		newDcOrder.setOrderer(originalDCOrder.getOrderer());
-		newDcOrder.setStartDate(newStartDate);
+		newDcOrder.setDateActivated(newStartDate);
 		orderService.voidOrder(originalDCOrder, "To be replace with a new one");
 		assertNull(originalDCOrder.getDateStopped());
 		orderService.saveOrder(newDcOrder, null);
@@ -368,7 +368,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setOrderer(providerService.getProvider(1));
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DAY_OF_WEEK, -1);
-		order.setStartDate(cal.getTime());
+		order.setDateActivated(cal.getTime());
 		orderService.saveOrder(order, null);
 		
 		cal.add(Calendar.HOUR_OF_DAY, -1);
