@@ -29,6 +29,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.CustomDosingInstructions;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -472,5 +473,34 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		
 		Assert.assertFalse(errors.hasFieldErrors());
+	}
+	
+	@Test
+	@Verifies(value = "should fail validation if brandName is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfBrandNameIsNotSetForCustomDosingInstructions() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = new Encounter();
+		Patient patient = Context.getPatientService().getPatient(2);
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDosingType(CustomDosingInstructions.class);
+		order.setInstructions("Instructions");
+		order.setPatient(patient);
+		encounter.setPatient(patient);
+		order.setEncounter(encounter);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setStartDate(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
+		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order.setQuantity(2.00);
+		order.setQuantityUnits(Context.getConceptService().getConcept(51));
+		order.setNumRefills(10);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("brandName"));
 	}
 }

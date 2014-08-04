@@ -14,6 +14,8 @@
 package org.openmrs;
 
 import org.openmrs.api.APIException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 import java.util.Locale;
 
@@ -111,6 +113,15 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		simpleDosingInstructions.setAsNeededCondition(order.getAsNeededCondition());
 		simpleDosingInstructions.setAdministrationInstructions(order.getInstructions());
 		return simpleDosingInstructions;
+	}
+	
+	@Override
+	public void validate(DrugOrder order, Errors errors) {
+		ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
+		ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
+		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
+		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
+		
 	}
 	
 	public Double getDose() {

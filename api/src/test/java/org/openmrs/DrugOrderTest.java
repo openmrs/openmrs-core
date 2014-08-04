@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.openmrs.order.OrderUtilTest;
+import org.springframework.validation.Errors;
 
 /**
  * Contains tests for DrugOrder
@@ -257,24 +258,6 @@ public class DrugOrderTest {
 	public void shouldSetDefaultDosingTypeToFreeText() throws Exception {
 		DrugOrder drugOrder = new DrugOrder();
 		assertEquals(FreeTextDosingInstructions.class, drugOrder.getDosingType());
-	}
-	
-	public static class CustomDosingInstructions implements DosingInstructions {
-		
-		@Override
-		public String getDosingInstructionsAsString(Locale locale) {
-			return null;
-		}
-		
-		@Override
-		public void setDosingInstructions(DrugOrder order) {
-			
-		}
-		
-		@Override
-		public DosingInstructions getDosingInstructions(DrugOrder order) {
-			return this;
-		}
 	}
 	
 	@Test

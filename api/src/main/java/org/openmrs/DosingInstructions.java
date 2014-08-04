@@ -14,6 +14,7 @@
 package org.openmrs;
 
 import org.openmrs.api.APIException;
+import org.springframework.validation.Errors;
 
 import java.util.Locale;
 
@@ -47,4 +48,6 @@ public interface DosingInstructions {
 	 * @throws Exception if dosing type of passing order is not matched with dosing type of implementing dosing instruction
 	 */
 	public DosingInstructions getDosingInstructions(DrugOrder order);
+	
+	public void validate(DrugOrder order, Errors errors);
 }

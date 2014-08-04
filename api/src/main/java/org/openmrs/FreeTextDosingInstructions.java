@@ -14,6 +14,8 @@
 package org.openmrs;
 
 import org.openmrs.api.APIException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 import java.util.Locale;
 
@@ -53,6 +55,13 @@ public class FreeTextDosingInstructions implements DosingInstructions {
 		FreeTextDosingInstructions freeTextDosingInstructions = new FreeTextDosingInstructions();
 		freeTextDosingInstructions.setInstructions(order.getDosingInstructions());
 		return freeTextDosingInstructions;
+	}
+	
+	@Override
+	public void validate(DrugOrder order, Errors errors) {
+		ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
+		    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeOther");
+		
 	}
 	
 	public String getInstructions() {

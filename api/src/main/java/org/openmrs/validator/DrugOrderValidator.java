@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.*;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
@@ -98,14 +99,15 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				}
 			}
 			if (order.getAction() != Order.Action.DISCONTINUE && order.getDosingType() != null) {
-				if (order.getDosingType().equals(SimpleDosingInstructions.class)) {
-					ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
-					ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
-					ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
-					ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-				} else if (order.getDosingType().equals(FreeTextDosingInstructions.class) || order.getDosingType() == null) {
-					ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
-					    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeOther");
+				try {
+					DosingInstructions dosingInstructions = order.getDosingInstructionsObject();
+					dosingInstructions.validate(order, errors);
+				}
+				catch (IllegalAccessException e) {
+					throw new APIException(e);
+				}
+				catch (InstantiationException e) {
+					throw new APIException(e);
 				}
 			}
 			validateFieldsForOutpatientCareSettingType(order, errors);
