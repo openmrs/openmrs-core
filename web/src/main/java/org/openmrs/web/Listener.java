@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -538,16 +539,20 @@ public final class Listener extends ContextLoaderListener {
 	
 	/**
 	 * Call WebModuleUtil.startModule on each started module
-	 * 
+	 *
 	 * @param servletContext
 	 * @throws ModuleMustStartException if the context cannot restart due to a
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Throwable {
-		Log log = LogFactory.getLog(Listener.class);
-		
+	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {		
 		List<Module> startedModules = new ArrayList<Module>();
 		startedModules.addAll(ModuleFactory.getStartedModules());
+		performWebStartOfModules(startedModules, servletContext);
+	}
+	
+	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext) throws ModuleMustStartException, Exception {
+		Log log = LogFactory.getLog(Listener.class);
+
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
 			try {
@@ -555,8 +560,8 @@ public final class Listener extends ContextLoaderListener {
 				/* delayContextRefresh */true);
 				someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
 			}
-			catch (Throwable t) {
-				mod.setStartupErrorMessage("Unable to start module", t);
+			catch (Exception e) {
+				mod.setStartupErrorMessage("Unable to start module", e);
 			}
 		}
 		
@@ -568,12 +573,13 @@ public final class Listener extends ContextLoaderListener {
 				// pass this up to the calling method so that openmrs loading stops
 				throw ex;
 			}
-			catch (Throwable t) {
-				Throwable rootCause = getActualRootCause(t, true);
-				if (rootCause != null)
+			catch (Exception e) {
+				Throwable rootCause = getActualRootCause(e, true);
+				if (rootCause != null) {
 					log.fatal("Unable to refresh the spring application context.  Root Cause was:", rootCause);
-				else
-					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
+				} else {
+					log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", e);
+				}
 				
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
@@ -582,7 +588,7 @@ public final class Listener extends ContextLoaderListener {
 							try {
 								ModuleFactory.stopModule(mod, true, true);
 							}
-							catch (Throwable t3) {
+							catch (Exception t3) {
 								// just keep going if we get an error shutting down.  was probably caused by the module 
 								// that actually got us to this point!
 								log.trace("Unable to shutdown module:" + mod, t3);
@@ -594,9 +600,9 @@ public final class Listener extends ContextLoaderListener {
 				catch (MandatoryModuleException ex) {
 					// pass this up to the calling method so that openmrs loading stops
 					throw new MandatoryModuleException(ex.getModuleId(), "Got an error while starting a mandatory module: "
-					        + t.getMessage() + ". Check the server logs for more information");
+					        + e.getMessage() + ". Check the server logs for more information");
 				}
-				catch (Throwable t2) {
+				catch (Exception t2) {
 					// a mandatory or core module is causing spring to fail to start up.  We don't want those
 					// stopped so we must report this error to the higher authorities
 					log.warn("caught another error: ", t2);
