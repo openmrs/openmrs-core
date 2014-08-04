@@ -197,12 +197,15 @@ public class ModuleListController extends SimpleFormController {
 			}
 		} else if (moduleId.equals("")) {
 			if (action.equals(msa.getMessage("Module.startAll"))) {
+				
 				WebModuleUtil.shutdownModules(request.getSession().getServletContext());
-				Collection<Module> modules = ModuleFactory.getLoadedModules();
-				for (Module module : modules) {
+				
+				Collection<Module> modulesInOrder = ModuleFactory.getModulesInStartOrder();
+				for (Module module : modulesInOrder) {
 					ModuleFactory.startModule(module);
 				}
-				Listener.performWebStartOfModules(modules, request.getSession().getServletContext());
+
+				Listener.performWebStartOfModules(modulesInOrder, request.getSession().getServletContext());
 			} else {
 				ModuleUtil.checkForModuleUpdates();
 			}
