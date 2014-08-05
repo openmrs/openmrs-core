@@ -96,7 +96,7 @@ public class PatientProgramValidator implements Validator {
 		
 		Date today = new Date();
 		if (patientProgram.getDateEnrolled() != null && today.before(patientProgram.getDateEnrolled())) {
-			errors.rejectValue("dateEnrolled", "error.patientProgram.startDateCannotBeInFuture");
+			errors.rejectValue("dateEnrolled", "error.patientProgram.enrolledDateDateCannotBeInFuture");
 		}
 		
 		if (patientProgram.getDateCompleted() != null && today.before(patientProgram.getDateCompleted())) {
@@ -106,7 +106,7 @@ public class PatientProgramValidator implements Validator {
 		// if enrollment or complete date of program is in future or complete date has come before enroll date we should throw error
 		if (patientProgram.getDateEnrolled() != null
 		        && OpenmrsUtil.compareWithNullAsLatest(patientProgram.getDateCompleted(), patientProgram.getDateEnrolled()) < 0) {
-			errors.rejectValue("dateCompleted", "error.patientProgram.endDateCannotBeforeStartDate");
+			errors.rejectValue("dateCompleted", "error.patientProgram.enrolledDateShouldBeBeforecompletionDate");
 		}
 		
 		Set<ProgramWorkflow> workFlows = patientProgram.getProgram().getWorkflows();
