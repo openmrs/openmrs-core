@@ -242,18 +242,34 @@ public class HibernateOrderDAO implements OrderDAO {
 		Criteria crit = createOrderCriteria(patient, careSetting, orderTypes, false, false);
 		crit.add(Restrictions.le("dateActivated", asOfDate));
 		
-		Disjunction dateStoppedAndAutoExpDateDisjunction = Restrictions.disjunction();
-		Criterion stopAndAutoExpDateAreBothNull = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions
+		/*
+		 * This section will generate disjunction of following conjunctions
+		 *
+		 * (dateStopped==null && autoExpireDate==null && dateActivated>=asOfDate) ||
+		 * (dateStopped==null && autoExpireDate>=asOfDate && dateActivated<=asOfDate) ||
+		 * (dateStopped>=asOfDate && dateActivated>=asOfDate)
+		 */
+		Disjunction activeOrderDisjunction = Restrictions.disjunction();
+		
+		// Generation of conjunction (dateStopped==null && autoExpireDate==null && dateActivated>=asOfDate)
+		Criterion startEndDateNull = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions
 		        .isNull("autoExpireDate"));
-		dateStoppedAndAutoExpDateDisjunction.add(stopAndAutoExpDateAreBothNull);
+		Criterion startEndDateNullCriterionWithStartDate = Restrictions.and(startEndDateNull, Restrictions.le(
+		    "dateActivated", asOfDate));
+		activeOrderDisjunction.add(startEndDateNullCriterionWithStartDate);
 		
-		Criterion autoExpireDateEqualToOrAfterAsOfDate = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions
-		        .ge("autoExpireDate", asOfDate));
-		dateStoppedAndAutoExpDateDisjunction.add(autoExpireDateEqualToOrAfterAsOfDate);
+		// Generation of conjunction (dateStopped==null && autoExpireDate>=asOfDate && dateActivated<=asOfDate)
+		Criterion autoExpireAndAsOfDate = Restrictions.and(Restrictions.isNull("dateStopped"), Restrictions.ge(
+		    "autoExpireDate", asOfDate));
+		Criterion autoExoDateAndStartDateWithAsOfDate = Restrictions.and(autoExpireAndAsOfDate, Restrictions.le(
+		    "dateActivated", asOfDate));
+		activeOrderDisjunction.add(autoExoDateAndStartDateWithAsOfDate);
 		
-		dateStoppedAndAutoExpDateDisjunction.add(Restrictions.ge("dateStopped", asOfDate));
-		
-		crit.add(dateStoppedAndAutoExpDateDisjunction);
+		// Generation of conjunction (dateStopped<=asOfDate && dateActivated>=asOfDate)
+		Criterion asOfDateBetweenStartAndStopDate = Restrictions.and(Restrictions.ge("dateStopped", asOfDate), Restrictions
+		        .le("dateActivated", asOfDate));
+		activeOrderDisjunction.add(asOfDateBetweenStartAndStopDate);
+		crit.add(activeOrderDisjunction);
 		
 		return crit.list();
 	}
