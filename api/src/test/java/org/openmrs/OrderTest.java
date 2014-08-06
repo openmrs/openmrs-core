@@ -100,16 +100,16 @@ public class OrderTest {
 		assertFalse("order without dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
 		
 		o.setDateActivated(ymd.parse("2007-01-01"));
-		assertFalse("shouldn't be discontinued before start date", o.isDiscontinued(ymd.parse("2006-10-26")));
+		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("order without no end dates shouldn't be discontinued", o.isDiscontinued(ymd.parse("2007-10-26")));
 		
 		o.setAutoExpireDate(ymd.parse("2007-12-31"));
-		assertFalse("shouldn't be discontinued before start date", o.isDiscontinued(ymd.parse("2006-10-26")));
+		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("shouldn't be discontinued before autoExpireDate", o.isDiscontinued(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be discontinued after autoExpireDate", o.isDiscontinued(ymd.parse("2008-10-26")));
 		
 		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
-		assertFalse("shouldn't be discontinued before start date", o.isDiscontinued(ymd.parse("2006-10-26")));
+		assertFalse("shouldn't be discontinued before date activated", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("shouldn't be discontinued before dateStopped", o.isDiscontinued(ymd.parse("2007-10-26")));
 		assertTrue("should be discontinued after dateStopped", o.isDiscontinued(ymd.parse("2007-11-26")));
 		
@@ -126,25 +126,25 @@ public class OrderTest {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Order o = new Order();
-		assertTrue("startDate==null && no end date should always be current", o.isCurrent(ymd.parse("2007-10-26")));
+		assertTrue("dateActivated==null && no end date should always be current", o.isCurrent(ymd.parse("2007-10-26")));
 		
 		o.setDateActivated(ymd.parse("2007-01-01"));
-		assertFalse("shouldn't be current before startDate", o.isCurrent(ymd.parse("2006-10-26")));
-		assertTrue("should be current after startDate", o.isCurrent(ymd.parse("2007-10-26")));
+		assertFalse("shouldn't be current before dateActivated", o.isCurrent(ymd.parse("2006-10-26")));
+		assertTrue("should be current after dateActivated", o.isCurrent(ymd.parse("2007-10-26")));
 		
 		o.setAutoExpireDate(ymd.parse("2007-12-31"));
-		assertFalse("shouldn't be current before startDate", o.isCurrent(ymd.parse("2006-10-26")));
-		assertTrue("should be current between startDate and autoExpireDate", o.isCurrent(ymd.parse("2007-10-26")));
+		assertFalse("shouldn't be current before dateActivated", o.isCurrent(ymd.parse("2006-10-26")));
+		assertTrue("should be current between dateActivated and autoExpireDate", o.isCurrent(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after autoExpireDate", o.isCurrent(ymd.parse("2008-10-26")));
 		
 		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
-		assertFalse("shouldn't be current before startDate", o.isCurrent(ymd.parse("2006-10-26")));
-		assertTrue("should be current between startDate and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
+		assertFalse("shouldn't be current before dateActivated", o.isCurrent(ymd.parse("2006-10-26")));
+		assertTrue("should be current between dateActivated and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after dateStopped", o.isCurrent(ymd.parse("2007-11-26")));
 		
 		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
-		assertFalse("shouldn't be current before startDate", o.isCurrent(ymd.parse("2006-10-26")));
-		assertTrue("should be current between startDate and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
+		assertFalse("shouldn't be current before dateActivated", o.isCurrent(ymd.parse("2006-10-26")));
+		assertTrue("should be current between dateActivated and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after dateStopped", o.isCurrent(ymd.parse("2007-11-26")));
 	}
 	
