@@ -13,10 +13,17 @@
  */
 package org.openmrs.api.context;
 
+import static org.mockito.Mockito.when;
+
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mockito.InjectMocks;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
+import org.openmrs.Role;
+import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
@@ -33,12 +40,16 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.util.RoleConstants;
 
 /**
  * Helps to mock or spy on services. It can be used with {@link InjectMocks}. See
  * {@link org.openmrs.module.ModuleUtilTest} for example. In general you should always try to refactor code first so
  * that this class is not needed. In practice it is mostly enough to replace calls to
  * Context.get...Service with fields, which are injected through a constructor.
+ * <p>
+ * ContextMockHelper is available in tests extending {@link org.openmrs.test.BaseContextMockTest} and
+ * {@link org.openmrs.test.BaseContextSensitiveTest}.
  *
  * @deprecated Avoid using this by not calling Context.get...Service() in your code.
  * @since 1.11
@@ -91,6 +102,27 @@ public class ContextMockHelper {
 	boolean userContextMocked = false;
 	
 	public ContextMockHelper() {
+	}
+	
+	public void authenticateMockUser() {
+		User user = new User();
+		user.setUuid("1010d442-e134-11de-babe-001e378eb67e");
+		user.setUserId(1);
+		user.setUsername("admin");
+		user.addRole(new Role(RoleConstants.SUPERUSER));
+		
+		Person person = new Person();
+		person.setUuid("6adb7c42-cfd2-4301-b53b-ff17c5654ff7");
+		person.setId(1);
+		person.addName(new PersonName("Bob", "", "Smith"));
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(1980, 01, 01);
+		person.setBirthdate(calendar.getTime());
+		person.setGender("male");
+		user.setPerson(person);
+		
+		when(userContext.getAuthenticatedUser()).thenReturn(user);
+		when(userContext.isAuthenticated()).thenReturn(true);
 	}
 	
 	public void revertMocks() {
