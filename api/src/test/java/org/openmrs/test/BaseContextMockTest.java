@@ -13,14 +13,11 @@
  */
 package org.openmrs.test;
 
-import static org.mockito.Mockito.when;
-
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openmrs.User;
 import org.openmrs.api.context.ContextMockHelper;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.module.ModuleUtilTest;
@@ -37,9 +34,6 @@ public abstract class BaseContextMockTest {
 	@Mock
 	protected UserContext userContext;
 	
-	@Mock
-	protected User authenticatedUser;
-	
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
 	
@@ -50,7 +44,7 @@ public abstract class BaseContextMockTest {
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
 		
-		when(userContext.getAuthenticatedUser()).thenReturn(authenticatedUser);
+		contextMockHelper.authenticateMockUser();
 	}
 	
 	@After
