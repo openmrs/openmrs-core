@@ -315,6 +315,24 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * @return Returns the startDate.
+	 * @deprecated use {@link #getDateActivated()}
+	 */
+	@Deprecated
+	public Date getStartDate() {
+		return this.getDateActivated();
+	}
+	
+	/**
+	 * @param startDate The startDate to set.
+	 * @deprecated use {@link #setDateActivated(java.util.Date)}
+	 */
+	@Deprecated
+	public void setStartDate(Date startDate) {
+		this.setDateActivated(startDate);
+	}
+	
+	/**
 	 * @return Returns the orderReasonNonCoded.
 	 */
 	public String getOrderReasonNonCoded() {
