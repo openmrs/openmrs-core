@@ -61,15 +61,15 @@ public class OrderValidator implements Validator {
 	 * @should fail validation if orderer is null
 	 * @should fail validation if urgency is null
 	 * @should fail validation if action is null
-	 * @should fail validation if startDate after dateStopped
-	 * @should fail validation if startDate after autoExpireDate
-	 * @should fail validation if startDate is before encounter's encounterDatetime
+	 * @should fail validation if dateActivated after dateStopped
+	 * @should fail validation if dateActivated after autoExpireDate
+	 * @should fail validation if dateActivated is before encounter's encounterDatetime
 	 * @should fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE
 	 * @should fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE
 	 * @should fail validation if orderType.javaClass does not match order.class
 	 * @should pass validation if the class of the order is a subclass of orderType.javaClass
 	 * @should pass validation if all fields are correct
-	 * @should not allow a future startDate
+	 * @should not allow a future dateActivated
 	 */
 	public void validate(Object obj, Errors errors) {
 		Order order = (Order) obj;
@@ -103,25 +103,25 @@ public class OrderValidator implements Validator {
 	}
 	
 	private void validateDateActivated(Order order, Errors errors) {
-		Date startDate = order.getDateActivated();
-		if (startDate != null) {
-			if (startDate.after(new Date())) {
+		Date dateActivated = order.getDateActivated();
+		if (dateActivated != null) {
+			if (dateActivated.after(new Date())) {
 				errors.rejectValue("dateActivated", "Order.error.dateActivatedInFuture");
 				return;
 			}
 			Date dateStopped = order.getDateStopped();
-			if (dateStopped != null && startDate.after(dateStopped)) {
+			if (dateStopped != null && dateActivated.after(dateStopped)) {
 				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterDiscontinuedDate");
 				errors.rejectValue("dateStopped", "Order.error.dateActivatedAfterDiscontinuedDate");
 			}
 			Date autoExpireDate = order.getAutoExpireDate();
-			if (autoExpireDate != null && startDate.after(autoExpireDate)) {
+			if (autoExpireDate != null && dateActivated.after(autoExpireDate)) {
 				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterAutoExpireDate");
 				errors.rejectValue("autoExpireDate", "Order.error.dateActivatedAfterAutoExpireDate");
 			}
 			Encounter encounter = order.getEncounter();
 			if (encounter != null && encounter.getEncounterDatetime() != null
-			        && encounter.getEncounterDatetime().after(startDate)) {
+			        && encounter.getEncounterDatetime().after(dateActivated)) {
 				errors.rejectValue("dateActivated", "Order.error.dateActivatedAfterEncounterDatetime");
 			}
 		}
