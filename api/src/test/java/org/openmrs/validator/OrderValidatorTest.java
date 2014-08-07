@@ -86,7 +86,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfdateActivatedIsBeforeEncountersEncounterDatetime() throws Exception {
+	public void validate_shouldFailValidationIfDateActivatedIsBeforeEncountersEncounterDatetime() throws Exception {
 		Date encounterDate = new Date();
 		Date orderDate = DateUtils.addDays(encounterDate, -1);
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
