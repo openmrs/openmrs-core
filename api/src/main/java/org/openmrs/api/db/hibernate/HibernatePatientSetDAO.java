@@ -13,6 +13,33 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.CacheMode;
@@ -62,38 +89,12 @@ import org.openmrs.api.db.PatientSetDAO;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 /**
  * Hibernate specific implementation of the PatientSetDAO. <br/>
  * <br/>
  * This class should not be instantiated. Rather, it is injected into the PatientSetService by
  * Spring.
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.PatientSetService
  * @see org.openmrs.api.db.PatientSetDAO
@@ -109,7 +110,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Set sessionFactory.getCurrentSession() factory
-	 *
+	 * 
 	 * @param sessionFactory SessionFactory to set
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -209,7 +210,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Note that the formatting may depend on locale
-	 *
+	 * 
 	 * @deprecated
 	 */
 	@Deprecated
@@ -467,7 +468,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * given program, workflow, and state, within a given date range
-	 *
+	 * 
 	 * @param program The program the patient must have been in
 	 * @param stateList List of states the patient must have been in (implies a workflow) (can be
 	 *            null)
@@ -838,7 +839,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * within <code>startTime</code> and <code>endTime</code>
-	 *
+	 * 
 	 * @param conceptId
 	 * @param startTime
 	 * @param endTime
@@ -1342,7 +1343,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
-	 *
+	 * 
 	 * @param patients the patients to filter by (null will return all encounters for all patients)
 	 * @param forms the forms to filter by
 	 */
@@ -1776,7 +1777,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * Returns a Map from patientId to a Collection of drugIds for drugs active for the patients on
 	 * that date If patientIds is null then do this for all patients Does not return anything for
 	 * voided patients
-	 *
+	 * 
 	 * @throws DAOException
 	 */
 	@SuppressWarnings("unchecked")
@@ -1926,11 +1927,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			criteria.add(Restrictions.in("concept", drugConcepts));
 		}
 		criteria.add(Restrictions.eq("voided", false));
-		criteria.add(Restrictions.le("startDate", now));
+		criteria.add(Restrictions.le("dateActivated", now));
 		criteria.add(Restrictions.and(Restrictions.or(Restrictions.isNull("autoExpireDate"), Restrictions.gt(
 		    "autoExpireDate", now)), Restrictions
 		        .or(Restrictions.isNull("dateStopped"), Restrictions.gt("dateStopped", now))));
-		criteria.addOrder(org.hibernate.criterion.Order.asc("startDate"));
+		criteria.addOrder(org.hibernate.criterion.Order.asc("dateActivated"));
 		log.debug("criteria: " + criteria);
 		List<DrugOrder> temp = criteria.list();
 		for (DrugOrder regimen : temp) {
@@ -1965,7 +1966,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			criteria.add(Restrictions.in("concept", drugConcepts));
 		}
 		criteria.add(Restrictions.eq("voided", false));
-		criteria.addOrder(org.hibernate.criterion.Order.asc("startDate"));
+		criteria.addOrder(org.hibernate.criterion.Order.asc("dateActivated"));
 		log.debug("criteria: " + criteria);
 		List<DrugOrder> temp = criteria.list();
 		for (DrugOrder regimen : temp) {
@@ -2095,13 +2096,13 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" and concept.id in (:drugConceptIdList) ");
 		}
 		if (startDateFrom != null && startDateTo != null) {
-			sb.append(" and startDate between :startDateFrom and :startDateTo ");
+			sb.append(" and dateActivated between :startDateFrom and :startDateTo ");
 		} else {
 			if (startDateFrom != null) {
-				sb.append(" and startDate >= :startDateFrom ");
+				sb.append(" and dateActivated >= :startDateFrom ");
 			}
 			if (startDateTo != null) {
-				sb.append(" and startDate <= :startDateTo ");
+				sb.append(" and dateActivated <= :startDateTo ");
 			}
 		}
 		if (orderReason != null && orderReason.size() > 0) {
@@ -2237,7 +2238,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/**
-	 *
 	 * @see org.openmrs.api.db.PatientSetDAO#getPatientsByRelationship(org.openmrs.RelationshipType,
 	 *      boolean, boolean, org.openmrs.Person)
 	 */
