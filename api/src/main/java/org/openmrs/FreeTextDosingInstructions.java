@@ -60,7 +60,7 @@ public class FreeTextDosingInstructions implements DosingInstructions {
 	@Override
 	public void validate(DrugOrder order, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "dosingInstructions",
-		    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeOther");
+		    "DrugOrder.error.dosingInstructionsIsNullForDosingTypeFreeText");
 		
 	}
 	

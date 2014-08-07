@@ -17,7 +17,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.*;
+import org.openmrs.CareSetting;
+import org.openmrs.DosingInstructions;
+import org.openmrs.DrugOrder;
+import org.openmrs.Order;
+import org.openmrs.Concept;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
@@ -55,10 +59,10 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if asNeeded is null
 	 * @should fail validation if dosingType is null
 	 * @should fail validation if drug concept is different from order concept
-	 * @should fail validation if dose is null for DOSING_TYPE_SIMPLE dosingType
-	 * @should fail validation if doseUnits is null for DOSING_TYPE_SIMPLE dosingType
-	 * @should fail validation if route is null for DOSING_TYPE_SIMPLE dosingType
-	 * @should fail validation if frequency is null for DOSING_TYPE_SIMPLE dosingType
+	 * @should fail validation if dose is null for SimpleDosingInstructions dosingType
+	 * @should fail validation if doseUnits is null for SimpleDosingInstructions dosingType
+	 * @should fail validation if route is null for SimpleDosingInstructions dosingType
+	 * @should fail validation if frequency is null for SimpleDosingInstructions dosingType
 	 * @should fail validation if dosingInstructions is null for FREE_TEXT dosingType
 	 * @should fail validation if numberOfRefills is null for outpatient careSetting
 	 * @should fail validation if quantity is null for outpatient careSetting
@@ -75,6 +79,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail if concept is null and cannot infer it from drug
 	 * @should pass if concept is null and drug is set
 	 * @should not validate a custom dosing type against any other dosing type validation
+	 * @should should apply validation for a custom dosing type
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
@@ -99,16 +104,8 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				}
 			}
 			if (order.getAction() != Order.Action.DISCONTINUE && order.getDosingType() != null) {
-				try {
-					DosingInstructions dosingInstructions = order.getDosingInstructionsObject();
-					dosingInstructions.validate(order, errors);
-				}
-				catch (IllegalAccessException e) {
-					throw new APIException(e);
-				}
-				catch (InstantiationException e) {
-					throw new APIException(e);
-				}
+				DosingInstructions dosingInstructions = order.getDosingInstructionsInstance();
+				dosingInstructions.validate(order, errors);
 			}
 			validateFieldsForOutpatientCareSettingType(order, errors);
 			validatePairedFields(order, errors);

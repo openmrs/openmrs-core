@@ -19,11 +19,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.Locale;
 
 import org.junit.Test;
 import org.openmrs.order.OrderUtilTest;
-import org.springframework.validation.Errors;
 
 /**
  * Contains tests for DrugOrder
@@ -257,16 +255,16 @@ public class DrugOrderTest {
 	@Test
 	public void shouldSetDefaultDosingTypeToFreeText() throws Exception {
 		DrugOrder drugOrder = new DrugOrder();
-		assertEquals(FreeTextDosingInstructions.class, drugOrder.getDosingType());
+		assertEquals(SimpleDosingInstructions.class, drugOrder.getDosingType());
 	}
 	
 	@Test
 	public void shouldAllowToSetCustomDosingTypes() throws Exception {
 		DrugOrder drugOrder = new DrugOrder();
-		assertEquals(FreeTextDosingInstructions.class, drugOrder.getDosingType());
+		assertEquals(SimpleDosingInstructions.class, drugOrder.getDosingType());
 		CustomDosingInstructions customDosingInstructions = new CustomDosingInstructions();
 		drugOrder.setDosingType(customDosingInstructions.getClass());
-		DosingInstructions dosingInstructionsObject = drugOrder.getDosingInstructionsObject();
+		DosingInstructions dosingInstructionsObject = drugOrder.getDosingInstructionsInstance();
 		assertEquals(customDosingInstructions.getClass(), dosingInstructionsObject.getClass());
 		assertEquals(customDosingInstructions.getClass(), drugOrder.getDosingType());
 	}

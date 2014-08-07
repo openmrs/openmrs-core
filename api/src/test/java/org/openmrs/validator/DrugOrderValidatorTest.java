@@ -167,7 +167,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if dose is null for DOSING_TYPE_SIMPLE dosingType
+	 * @verifies fail validation if dose is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -181,7 +181,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if doseUnits is null for DOSING_TYPE_SIMPLE dosingType
+	 * @verifies fail validation if doseUnits is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -195,7 +195,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if route is null for DOSING_TYPE_SIMPLE dosingType
+	 * @verifies fail validation if route is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -209,7 +209,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if frequency is null for DOSING_TYPE_SIMPLE dosingType
+	 * @verifies fail validation if frequency is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
@@ -476,7 +476,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should fail validation if brandName is null", method = "validate(Object,Errors)")
+	@Verifies(value = "should apply validation for a custom dosing type", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfBrandNameIsNotSetForCustomDosingInstructions() throws Exception {
 		DrugOrder order = new DrugOrder();
 		Encounter encounter = new Encounter();

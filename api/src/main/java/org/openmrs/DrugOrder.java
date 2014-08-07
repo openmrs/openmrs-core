@@ -42,7 +42,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String asNeededCondition;
 	
-	private Class<? extends DosingInstructions> dosingType = FreeTextDosingInstructions.class;
+	private Class<? extends DosingInstructions> dosingType = SimpleDosingInstructions.class;
 	
 	private Integer numRefills;
 	
@@ -298,9 +298,22 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.dosingType = dosingType;
 	}
 	
-	public DosingInstructions getDosingInstructionsObject() throws IllegalAccessException, InstantiationException {
-		DosingInstructions instructions = getDosingType().newInstance();
-		return instructions.getDosingInstructions(this);
+	/**
+	 * Gets the dosingInstructions instance
+	 *
+	 * @since 1.10
+	 */
+	public DosingInstructions getDosingInstructionsInstance() {
+		try {
+			DosingInstructions instructions = getDosingType().newInstance();
+			return instructions.getDosingInstructions(this);
+		}
+		catch (InstantiationException e) {
+			throw new IllegalStateException(e);
+		}
+		catch (IllegalAccessException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 	
 	/**
