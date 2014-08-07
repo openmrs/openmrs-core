@@ -13,12 +13,14 @@
  */
 package org.openmrs;
 
-import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 
 import java.util.Locale;
 
 /**
+ * DosingInstructions required for different types of DosingTypes can
+ * be modelled using an implementation of this interface. Any class which
+ * implements this interface should have a default constructor.
  * @since 1.10
  */
 public interface DosingInstructions {
