@@ -15,6 +15,7 @@ package org.openmrs.order;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Order;
 import org.openmrs.OrderType;
 
 /**
@@ -51,6 +52,43 @@ public class OrderUtil {
 			
 		}
 		return false;
+	}
+	
+	/**
+	 * Checks whether schedule of this order overlaps with schedule of other order
+	 *
+	 * @since 1.10
+	 * @param order1, order2 orders to match
+	 * @should return false if any of the orders is voided
+	 * @should return true if order1 and order2 do not have end date
+	 * @should return true if order1 and order2 have same dates
+	 * @should return false if order1 ends before order2 starts
+	 * @should return false if order1 ends when order2 starts
+	 * @should return false if order1 starts after order2
+	 * @should return false if order1 starts when order2 ends
+	 * @should return true if order1 stops after the order2 has already been activated
+	 * @should return true if order1 starts when the order2 is active
+	 * @should return true if order1 starts before order2 and ends after order2
+	 */
+	public static boolean checkScheduleOverlap(Order order1, Order order2) {
+		if (order1.getVoided() == true || order2.getVoided() == true) {
+			return false;
+		}
+		if (order2.getEffectiveStopDate() == null && order1.getEffectiveStopDate() == null) {
+			return true;
+		}
+		
+		if (order2.getEffectiveStopDate() == null) {
+			return order1.getEffectiveStopDate().after(order2.getEffectiveStartDate());
+		}
+		
+		if (order1.getEffectiveStopDate() == null) {
+			return order1.getEffectiveStartDate().after(order2.getEffectiveStartDate())
+			        && order1.getEffectiveStartDate().before(order2.getEffectiveStopDate());
+		}
+		
+		return order1.getEffectiveStartDate().before(order2.getEffectiveStopDate())
+		        && order1.getEffectiveStopDate().after(order2.getEffectiveStartDate());
 	}
 	
 }
