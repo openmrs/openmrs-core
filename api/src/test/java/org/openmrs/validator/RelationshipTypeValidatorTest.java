@@ -74,6 +74,29 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see RelationshipTypeValidator#validate(Object,Errors)
+	 * @verifies fail validation if description is null or empty or whitespace
+	 */
+	@Test
+	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+		RelationshipType type = new RelationshipType();
+		
+		Errors errors = new BindException(type, "type");
+		new RelationshipTypeValidator().validate(type, errors);
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		
+		type.setDescription("");
+		errors = new BindException(type, "type");
+		new RelationshipTypeValidator().validate(type, errors);
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		
+		type.setDescription(" ");
+		errors = new BindException(type, "type");
+		new RelationshipTypeValidator().validate(type, errors);
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+	}
+	
+	/**
 	 * Test for all the field being set to some values
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 * @verifies pass validation if all required fields are set
@@ -83,6 +106,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		RelationshipType type = new RelationshipType();
 		type.setaIsToB("A is To B");
 		type.setbIsToA("B is To A");
+		type.setDescription("Description");
 		
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
