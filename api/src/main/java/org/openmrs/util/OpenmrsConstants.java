@@ -15,7 +15,6 @@ package org.openmrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -864,7 +863,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
-	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "Form.forms.locked";
+	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "forms.locked";
 	
 	public static final String GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED = "PersonAttributeType.locked";
 	

@@ -161,7 +161,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		// Map of /Old FormFieldId/ to /New FormField Object/
 		//TreeMap<Integer, FormField> formFieldMap = new TreeMap<Integer, FormField>();
 		//formFieldMap.put(null, null); //for parentless formFields
-		
+		checkIfFormsAreLocked();
 		// get original form id for reference later
 		Integer originalFormId = form.getFormId();
 		
