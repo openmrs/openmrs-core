@@ -45,7 +45,6 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -194,15 +193,21 @@ public class ModuleListController extends SimpleFormController {
 
 		else if (moduleId.equals("")) {
 			if (action.equals(msa.getMessage("Module.startAll"))) {
-				
-				WebModuleUtil.shutdownModules(request.getSession().getServletContext());
-				
+				boolean someModuleNeedsARefresh = false;
 				Collection<Module> modulesInOrder = ModuleFactory.getModulesInStartOrder();
 				for (Module module : modulesInOrder) {
+					if (ModuleFactory.isModuleStarted(module)) {
+						continue;
+					}
+					
 					ModuleFactory.startModule(module);
+					boolean thisModuleCausesRefresh = WebModuleUtil.startModule(module, getServletContext(), true);
+					someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
 				}
 				
-				Listener.performWebStartOfModules(modulesInOrder, request.getSession().getServletContext());
+				if (someModuleNeedsARefresh) {
+					WebModuleUtil.refreshWAC(getServletContext(), false, null);
+				}
 			} else {
 				ModuleUtil.checkForModuleUpdates();
 			}
