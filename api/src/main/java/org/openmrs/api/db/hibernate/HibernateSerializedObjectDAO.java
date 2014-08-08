@@ -196,6 +196,22 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		if (serializer == null) {
 			serializer = getSerializer(serializedObject);
 		}
+		
+		if (object instanceof Auditable) {
+			Auditable auditableObj = (Auditable) object;
+			if (auditableObj.getCreator() == null) {
+				auditableObj.setCreator(Context.getAuthenticatedUser());
+			}
+			serializedObject.setCreator(auditableObj.getCreator());
+			
+			if (auditableObj.getDateCreated() == null) {
+				auditableObj.setDateCreated(new Date());
+			}
+			serializedObject.setDateCreated(auditableObj.getDateCreated());
+			serializedObject.setChangedBy(auditableObj.getChangedBy());
+			serializedObject.setDateChanged(auditableObj.getDateChanged());
+		}
+		
 		String data = null;
 		try {
 			data = serializer.serialize(object);
@@ -209,20 +225,6 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		serializedObject.setSubtype(object.getClass().getName());
 		serializedObject.setSerializationClass(serializer.getClass());
 		serializedObject.setSerializedData(data);
-		
-		if (object instanceof Auditable) {
-			Auditable auditableObj = (Auditable) object;
-			serializedObject.setCreator(auditableObj.getCreator());
-			serializedObject.setDateCreated(auditableObj.getDateCreated());
-			if (serializedObject.getCreator() == null) {
-				serializedObject.setCreator(Context.getAuthenticatedUser());
-			}
-			if (serializedObject.getDateCreated() == null) {
-				serializedObject.setDateCreated(new Date());
-			}
-			serializedObject.setChangedBy(auditableObj.getChangedBy());
-			serializedObject.setDateChanged(auditableObj.getDateChanged());
-		}
 		
 		if (object instanceof OpenmrsMetadata) {
 			OpenmrsMetadata metaObj = (OpenmrsMetadata) object;

@@ -14,6 +14,7 @@
 package org.openmrs.api.db;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -86,6 +87,20 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(data.getId());
 		ReportSchema newData = dao.getObject(ReportSchema.class, data.getId());
 		assertEquals("NewReport", newData.getName());
+	}
+	
+	@Test
+	@Verifies(value = "should set auditable fields before serializing", method = "saveObject(OpenmrsObject)")
+	public void saveObject_shouldSetAuditableFieldsBeforeSerializing() throws Exception {
+		ReportSchema data = new ReportSchema();
+		data.setName("NewReport");
+		data.setDescription("This is to test saving a report");
+		data = dao.saveObject(data);
+		Assert.assertNotNull(data.getId());
+		ReportSchema newData = dao.getObject(ReportSchema.class, data.getId());
+		assertEquals("NewReport", newData.getName());
+		assertNotNull(newData.getCreator());
+		assertNotNull(newData.getDateCreated());
 	}
 	
 	@Test(expected = DAOException.class)

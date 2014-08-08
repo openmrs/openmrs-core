@@ -117,6 +117,7 @@ public interface SerializedObjectDAO {
 	 * @throws DAOException
 	 * @should save the passed object if supported
 	 * @should throw an exception if object not supported
+	 * @should set auditable fields before serializing
 	 */
 	public <T extends OpenmrsObject> T saveObject(T object, OpenmrsSerializer serializer) throws DAOException;
 	
