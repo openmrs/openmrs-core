@@ -147,8 +147,8 @@ public class FormFormController extends SimpleFormController {
 				}
 			}
 			catch (FormsLockedException e) {
-				log.error("Form.forms.locked", e);
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.forms.locked");
+				log.error("forms.locked", e);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "forms.locked");
 				if (form.getFormId() != null) {
 					view = "formEdit.form?formId=" + form.getFormId();
 				}

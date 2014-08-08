@@ -923,4 +923,32 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		assertNull(fs.getForm(1));
 	}
+	
+	/**
+	 * @see {@link FormService#duplicateForm(Form)}}
+	 * @throws FormsLockedException
+	 */
+	@Test(expected = FormsLockedException.class)
+	@Verifies(method = "duplicateForm(Form)", value = "should throw an error when trying to duplicate a form while forms are locked")
+	public void duplicateForm_shouldThrowAnErrorWhenTryingToDuplicateFormWhileFormsAreLocked() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValue("true");
+		
+		Form form = fs.getForm(1);
+		fs.duplicateForm(form);
+	}
+	
+	/**
+	 * @see {@link FormService#duplicateForm(Form)}
+	 */
+	@Test
+	@Verifies(method = "duplicateForm(Form)", value = "should duplicate given form successfully")
+	public void duplicateForm_shouldDuplicateGivenFormSuccessfully() throws Exception {
+		FormService fs = Context.getFormService();
+		createFormsLockedGPAndSetValue("false");
+		
+		Form form = fs.getForm(1);
+		Form duplicateForm = fs.duplicateForm(form);
+		assertEquals(form, duplicateForm);
+	}
 }

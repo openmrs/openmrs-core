@@ -255,6 +255,7 @@ public interface FormService extends OpenmrsService {
 	 * @should clear changed details and update creation details
 	 * @should give a new uuid to the duplicated form
 	 * @should copy resources for old form to new form
+	 * @should throw an error when trying to duplicate a form while forms are locked
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Form duplicateForm(Form form) throws APIException;

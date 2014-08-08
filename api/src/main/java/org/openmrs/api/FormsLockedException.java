@@ -30,7 +30,7 @@ public class FormsLockedException extends APIException {
 	 * delete a form
 	 */
 	public FormsLockedException() {
-		this("Form.forms.locked");
+		this("forms.locked");
 	}
 	
 	/**

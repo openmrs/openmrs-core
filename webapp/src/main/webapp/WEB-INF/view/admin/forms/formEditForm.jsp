@@ -160,10 +160,10 @@
    </tr>
 </table>
 <br />
+<openmrs:globalProperty key="forms.locked" var="formsLocked"/>
 <c:if test="${not empty param.duplicate}">
-	<input type="submit" name="action" value="<openmrs:message code="Form.create.duplicate"/>">
+	<input type="submit" name="action" value="<openmrs:message code="Form.create.duplicate"/>" <c:if test="${formsLocked == 'true'}">disabled</c:if>>
 </c:if>
-<openmrs:globalProperty key="Form.forms.locked" var="formsLocked"/>
 <c:if test="${empty param.duplicate}">
 	<input type="submit" name="action" value="<openmrs:message code="Form.save"/>" <c:if test="${formsLocked == 'true'}">disabled</c:if>>
 	
