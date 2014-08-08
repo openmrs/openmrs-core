@@ -7,7 +7,8 @@
 
 <h2><openmrs:message code="PatientIdentifierType.manage.title"/></h2>
 
-<a href="patientIdentifierType.form"><openmrs:message code="PatientIdentifierType.add"/></a>
+<openmrs:globalProperty key="patientIdentifierTypes.locked" var="PatientIdentifierTypesLocked"/>
+<a <c:if test="${PatientIdentifierTypesLocked != 'true'}"> href="patientIdentifierType.form" </c:if>><openmrs:message code="PatientIdentifierType.add" /></a>
 
 <br /><br />
 

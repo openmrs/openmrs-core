@@ -19,7 +19,7 @@
 
 <h2><openmrs:message code="PatientIdentifierType.title"/></h2>
 
-<openmrs:globalProperty key="PatientIdentifierType.locked" var="PatientIdentifierTypesLocked"/>
+<openmrs:globalProperty key="patientIdentifierTypes.locked" var="PatientIdentifierTypesLocked"/>
 
 <c:if test="${patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId}">
 	<form action="" method="post">
