@@ -4,11 +4,11 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-	<!-- 
-		See http://www.liquibase.org/manual/home#available_database_refactorings 
-		for a list of supported elements and attributes 
+	<!--
+		See http://www.liquibase.org/manual/home#available_database_refactorings
+		for a list of supported elements and attributes
 	-->
-	
+
 	<changeSet id="0" author="bwolfe">
 		<preConditions onError="MARK_RAN" onFail="MARK_RAN">
 			<sqlCheck expectedResult="The update-to-latest.sql file needs to be run on this db.">
@@ -22,7 +22,7 @@
 			<param name="sqlFile">update-to-1.4.2.01-db.mysqldiff.sql</param>
 		</customChange>
 	</changeSet>
-	
+
 	<changeSet id="1" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
@@ -34,7 +34,7 @@
 			<column name="edit_privilege" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="2" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit"/></not>
@@ -47,7 +47,7 @@
 			baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
 			referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
-	
+
 	<changeSet id="200811261102" author="bwolfe" dbms="mysql">
 		<comment>
 			Fix field property for new Tribe person attribute
@@ -57,7 +57,7 @@
 			<where>default_value='$!{patient.getTribe().getTribeId()}^$!{patient.getTribe().getName()}'</where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="200805281223" author="bmckown" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_complex"/></not>
@@ -71,12 +71,12 @@
 			</column>
 			<column name="handler" type="varchar(255)"/>
 		</createTable>
-		
+
 		<addForeignKeyConstraint constraintName="concept_attributes"
 			baseTableName="concept_complex" baseColumnNames="concept_id"
-			referencedTableName="concept" referencedColumnNames="concept_id"/>		
+			referencedTableName="concept" referencedColumnNames="concept_id"/>
 	</changeSet>
-	
+
 	<changeSet id="200805281224" author="bmckown" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="obs" columnName="value_complex"/></not>
@@ -88,7 +88,7 @@
 			<column name="value_complex" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="200805281225" author="bmckown" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
@@ -108,7 +108,7 @@
 			<column name="date_created" valueDate="2008-05-28T12:25:34" />
 		</insert>
 	</changeSet>
-	
+
 	<changeSet id="200805281226" author="bmckown" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="complex_obs"/>
@@ -119,7 +119,7 @@
 		<dropTable tableName="complex_obs"/>
 		<dropTable tableName="mime_type"/>
 	</changeSet>
-	
+
 	<changeSet id="200809191226" author="smbugua" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="hl7_in_archive" columnName="message_state"/></not>
@@ -147,7 +147,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200901101524" author="Knoll_Frank" dbms="mysql">
 		<comment>
 			Changing datatype of drug.retire_reason from DATETIME to varchar(255)
@@ -156,7 +156,7 @@
 		    <column name="retire_reason" type="varchar(255)"/>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200901130950" author="bwolfe" dbms="mysql">
 		<comment>
 			Remove Manage Tribes and View Tribes privileges from all roles
@@ -168,7 +168,7 @@
 			<where>privilege='View Tribes' and not exists (select * from privilege where privilege = 'View Tribes')</where>
 		</delete>
 	</changeSet>
-	
+
 	<changeSet id="200901130951" author="bwolfe" dbms="mysql">
 		<comment>
 			Remove Manage Mime Types, View Mime Types, and Purge Mime Types privilege
@@ -180,7 +180,7 @@
 			<where>privilege in ('Manage Mime Types', 'View Mime Types', 'Purge Mime Types')</where>
 		</delete>
 	</changeSet>
-	
+
 	<changeSet id="200901161126" author="bwolfe" dbms="mysql">
 		<comment>
 			Removed the database_version global property
@@ -189,7 +189,7 @@
 			<where>property = 'database_version'</where>
 		</delete>
 	</changeSet>
-	
+
 	<changeSet id="20090121-0949" author="bwolfe" dbms="mysql">
 		<comment>
 			Switched the default xslt to use PV1-19 instead of PV1-1
@@ -203,7 +203,7 @@
 			]]>
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="20090122-0853" author="bwolfe" dbms="mysql">
 		<preConditions onFail="CONTINUE">
 			<not><dbms type="hsql" /></not> <!-- skip over this changeset in unit tests -->
@@ -212,31 +212,31 @@
 			Remove duplicate concept name tags
 		</comment>
 		<sql>
-			UPDATE 
-				concept_name_tag_map map 
-			SET 
-				concept_name_tag_id = (SELECT 
+			UPDATE
+				concept_name_tag_map map
+			SET
+				concept_name_tag_id = (SELECT
 										 min(concept_name_tag_id)
 									   FROM concept_name_tag
-									   WHERE 
+									   WHERE
 									     tag = (select tag from concept_name_tag where concept_name_tag_id = map.concept_name_tag_id)
 									  );
 		</sql>
 		<!-- Copy the concept_name_map_ids to a new table -->
 		<addLookupTable
 			existingTableName="concept_name_tag" existingColumnName="concept_name_tag_id"
-			newTableName="tmp_concept_name_tag_duplicates" newColumnName="concept_name_tag_id" 
+			newTableName="tmp_concept_name_tag_duplicates" newColumnName="concept_name_tag_id"
 			newColumnDataType="int" constraintName="concept_name_tag_ids_dupes"/>
-		
+
 		<dropForeignKeyConstraint
 			constraintName="concept_name_tag_ids_dupes"
 			baseTableName="concept_name_tag"/>
-		
+
 		<!-- Leave only ids that have duplicates in the table -->
 		<delete tableName="tmp_concept_name_tag_duplicates">
 			<where>concept_name_tag_id not in (select concept_name_tag_id from concept_name_tag where tag in (select tag from concept_name_tag group by tag having count(*) > 1))</where>
 		</delete>
-		
+
 		<!-- Now delete all  -->
 		<delete tableName="concept_name_tag">
 			<where>
@@ -247,7 +247,7 @@
 		</delete>
 		<dropTable tableName="tmp_concept_name_tag_duplicates" />
 	</changeSet>
-	
+
 	<changeSet id="20090123-0305" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -259,7 +259,7 @@
 		</comment>
 		<addUniqueConstraint tableName="concept_name_tag" columnNames="tag" constraintName="concept_name_tag_unique_tags"/>
 	</changeSet>
-	
+
 	<changeSet id="20090224-1229" author="Keelhaul+bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="location_tag"/></not>
@@ -295,7 +295,7 @@
 			baseTableName="location_tag" baseColumnNames="retired_by"
 			referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
-	
+
 	<changeSet id="20090224-1250" author="Keelhaul+bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="location_tag_map"/></not>
@@ -321,7 +321,7 @@
 			columnNames="location_id,location_tag_id"
 			constraintName="key_for_location_tag_map"/>
 	</changeSet>
-	
+
 	<changeSet id="20090224-1256" author="Keelhaul+bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="location" columnName="parent_location"/></not>
@@ -336,7 +336,7 @@
 			baseTableName="location" baseColumnNames="parent_location"
 			referencedTableName="location" referencedColumnNames="location_id"/>
 	</changeSet>
-	
+
 	<changeSet id="20090225-1551" author="dthomas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location_tag" columnName="name"/>
@@ -358,8 +358,8 @@
 			<column name="password" type="varchar(128)"/>
 			<column name="salt" type="varchar(128)"/>
 		</ext:modifyColumn>
-	</changeSet>	
-	
+	</changeSet>
+
 	<changeSet id="20090301-1259" author="bwolfe" dbms="mysql">
 		<comment>
 			Fixes the description for name layout global property
@@ -373,7 +373,7 @@
 			<where>property='layout.name.format' and property_value='Format in which to display the person names.  Valid values are short, long'</where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="20090214-2246" author="isherman" dbms="mysql">
 		<comment>
 			Add weight and cd4 to patientGraphConcepts user property (mysql specific)
@@ -381,15 +381,15 @@
 		<sql>
 			UPDATE user_property
 				SET property_value = CONCAT(
-					'-', 
+					'-',
 					(SELECT property_value FROM global_property WHERE property = 'concept.weight'),
 					'-',
 					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count'),
 					property_value
-				) WHERE property = 'patientGraphConcepts';			
+				) WHERE property = 'patientGraphConcepts';
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="20090214-2247" author="isherman">
 		<validCheckSum><comment>Fixing sql extra bracket</comment>3:e4eeb4a09c2ab695bbde832cd7b6047d</validCheckSum>
 		<validCheckSum>3:27ccd45178be533e880f88abbae24c2d</validCheckSum>
@@ -406,8 +406,8 @@
 		</comment>
 		<sql>
 			UPDATE user_property
-				SET property_value = 
-					'-' || 
+				SET property_value =
+					'-' ||
 					(SELECT property_value FROM global_property WHERE property = 'concept.weight') ||
 					'-' ||
 					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') ||
@@ -418,7 +418,7 @@
 			<replace replace="||" with="+"/>
 		</modifySql>
 	</changeSet>
-	
+
 	<changeSet id="20090316-1008" author="vanand" dbms="mysql">
 		<validCheckSum>cf32d07af2933e9a3555395737b5142</validCheckSum><!-- old checksum before adding in person.birthdate_estimated cleanup -->
 		<validCheckSum>fcdde237e04473db1e6fd16f56bf80e9</validCheckSum><!-- new checksum after adding in person.birthdate_estimated cleanup -->
@@ -519,22 +519,22 @@
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</ext:modifyColumn>		
+		</ext:modifyColumn>
 		<ext:modifyColumn tableName="form_field">
 			<column name="required" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</ext:modifyColumn>		
+		</ext:modifyColumn>
 		<ext:modifyColumn tableName="location_tag">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</ext:modifyColumn>		
+		</ext:modifyColumn>
 		<ext:modifyColumn tableName="obs">
 			<column name="voided" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
 			</column>
-		</ext:modifyColumn>		
+		</ext:modifyColumn>
 		<ext:modifyColumn tableName="order_type">
 			<column name="retired" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
@@ -663,18 +663,18 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200903210905" author="mseaton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="serialized_object"/></not>
 		</preConditions>
 		<comment>
 			Add a table to enable generic storage of serialized objects
-		</comment>		
+		</comment>
 		<createTable tableName="serialized_object">
 			<column name="serialized_object_id" type="int" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true"/>
-			</column>			
+			</column>
 			<column name="name" type="varchar(255)">
 				<constraints nullable="false"/>
 			</column>
@@ -706,13 +706,13 @@
 			<column name="retired_by" type="int"/>
 			<column name="retire_reason" type="varchar(1000)"/>
 		</createTable>
-		<addForeignKeyConstraint constraintName="serialized_object_creator" 
+		<addForeignKeyConstraint constraintName="serialized_object_creator"
 					baseTableName="serialized_object" baseColumnNames="creator"
 					referencedTableName="users" referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="serialized_object_changed_by" 
+		<addForeignKeyConstraint constraintName="serialized_object_changed_by"
 					baseTableName="serialized_object" baseColumnNames="changed_by"
 					referencedTableName="users" referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="serialized_object_retired_by" 
+		<addForeignKeyConstraint constraintName="serialized_object_retired_by"
 					baseTableName="serialized_object" baseColumnNames="retired_by"
 					referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
@@ -720,14 +720,14 @@
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="serialized_object"/>
 		</preConditions>
-		<comment>(Fixed)Add a table to enable generic storage of serialized objects</comment>		
+		<comment>(Fixed)Add a table to enable generic storage of serialized objects</comment>
 		<ext:modifyColumn tableName="serialized_object">
 			<column name="retired" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false"/>
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200904091023" author="bwolfe" dbms="mysql">
 		<comment>
 			Remove Manage Tribes and View Tribes privileges from the privilege table and role_privilege table.
@@ -736,34 +736,34 @@
 		<delete tableName="role_privilege">
 			<where>privilege='Manage Tribes'</where>
 		</delete>
-		
+
 		<delete tableName="role_privilege">
 			<where>privilege='View Tribes'</where>
 		</delete>
-		
+
 		<delete tableName="privilege">
 			<where>privilege='Manage Tribes'</where>
 		</delete>
-		
+
 		<delete tableName="privilege">
 			<where>privilege='View Tribes'</where>
 		</delete>
 	</changeSet>
-	
+
 	<changeSet author="Cory McCarthy" id="20090408-1298" dbms="mysql">
 		<comment>Changed the datatype for encounter_type to 'text' instead of just 50 chars</comment>
 		<ext:modifyColumn tableName="encounter_type">
 			<column name="description" type="text" />
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200905150814" author="bwolfe" dbms="mysql">
 		<comment>Deleting invalid concept words</comment>
 		<delete tableName="concept_word">
 			<where>concept_name_id = 0</where>
 		</delete>
 	</changeSet>
-	
+
 	<changeSet id="200905071626" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -777,7 +777,7 @@
 			<column name="concept_id" />
 		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="20090402-1515-38-cohort" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="cohort" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to cohort table</comment>
@@ -1688,7 +1688,7 @@
 		<comment>Dropping foreign key on concept_set.concept_id table</comment>
 		<dropForeignKeyConstraint baseTableName="concept_set" constraintName="is_a" />
 	</changeSet>
-	
+
 	<changeSet id="20090414-0805" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_set" columnName="concept_set_id"/></not>
@@ -1696,7 +1696,7 @@
 		<comment>Dropping primary key on concept set table</comment>
 		<dropPrimaryKey tableName="concept_set" />
 	</changeSet>
-	
+
 	<changeSet id="20090414-0806" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_set" columnName="concept_set_id"/></not>
@@ -1704,7 +1704,7 @@
 		<comment>Adding new integer primary key to concept set table</comment>
 		<addColumn tableName="concept_set">
 			<column name="concept_set_id" type="int(11)" autoIncrement="true">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_set_pk" 
+				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_set_pk"
 							 unique="true" uniqueConstraintName="concept_set_id_unique" />
 			</column>
 		</addColumn>
@@ -1731,12 +1731,12 @@
 		<comment>Dropping foreign key on patient_identifier.patient_id column</comment>
 		<dropForeignKeyConstraint baseTableName="patient_identifier" constraintName="identifies_patient" />
 	</changeSet>
-	
+
 	<changeSet id="20090414-0808b" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="patient_identifier" columnName="patient_identifier_id"/></not>
 		</preConditions>
-		<comment>Dropping non-integer primary key on patient identifier table before adding a new integer primary key</comment> 
+		<comment>Dropping non-integer primary key on patient identifier table before adding a new integer primary key</comment>
 		<dropPrimaryKey tableName="patient_identifier" />
 	</changeSet>
 
@@ -1747,7 +1747,7 @@
 		<comment>Adding new integer primary key to patient identifier table</comment>
 		<addColumn tableName="patient_identifier">
 			<column name="patient_identifier_id" type="int(11)" autoIncrement="true">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="patient_identifier_pk" 
+				<constraints nullable="false" primaryKey="true" primaryKeyName="patient_identifier_pk"
 							 unique="true" uniqueConstraintName="patient_identifier_id_unique" />
 			</column>
 		</addColumn>
@@ -1785,14 +1785,14 @@
 		</comment>
 		<customChange class="org.openmrs.util.databasechange.GenerateUuid">
 			<param name="tableNames">
-				cohort concept concept_answer concept_class concept_datatype concept_description 
+				cohort concept concept_answer concept_class concept_datatype concept_description
 				concept_reference_map concept_name concept_name_tag concept_proposal
 				concept_set concept_reference_source concept_state_conversion drug
-				encounter encounter_type field field_answer field_type form form_field global_property hl7_in_archive 
-				hl7_in_error hl7_in_queue hl7_source location location_tag note notification_alert 
-				notification_template obs order_type orders patient_identifier 
-				patient_identifier_type patient_program patient_state person person_address person_attribute 
-				person_attribute_type person_name privilege program program_workflow program_workflow_state relationship 
+				encounter encounter_type field field_answer field_type form form_field global_property hl7_in_archive
+				hl7_in_error hl7_in_queue hl7_source location location_tag note notification_alert
+				notification_template obs order_type orders patient_identifier
+				patient_identifier_type patient_program patient_state person person_address person_attribute
+				person_attribute_type person_name privilege program program_workflow program_workflow_state relationship
 				relationship_type report_object report_schema_xml role serialized_object
 			</param>
 			<param name="columnName" value="uuid"/>
@@ -1803,7 +1803,7 @@
 			</param>
 		</customChange>
 	</changeSet>
-	
+
 	<changeSet id="20090402-1518" author="bwolfe">
 		<validCheckSum>64e353f08027fb48155b5be8a69cfca</validCheckSum> <!-- Checksum when datatype was "uuid" -->
 		<validCheckSum>dfaf705d7776613e619dedf3e06d7640</validCheckSum><!-- New checksum when datatype is "char(38)" -->
@@ -1814,9 +1814,9 @@
                     </and>
 		</preConditions>
 		<comment>
-			Now that UUID generation is done, set the uuid columns to not "NOT NULL" 
+			Now that UUID generation is done, set the uuid columns to not "NOT NULL"
 		</comment>
-		
+
 		<addNotNullConstraint tableName="cohort" columnName="uuid" columnDataType="char(38)"/>
 		<addNotNullConstraint tableName="concept" columnName="uuid" columnDataType="char(38)" />
 		<addNotNullConstraint tableName="concept_answer" columnName="uuid" columnDataType="char(38)" />
@@ -1871,7 +1871,7 @@
 		<addNotNullConstraint tableName="serialized_object" columnName="uuid" columnDataType="char(38)" />
 	</changeSet>
 
-	
+
 	<changeSet id="20090402-1519-cohort" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><indexExists indexName="cohort_uuid_index"/></not></preConditions>
 		<comment>Creating unique index on cohort.uuid column</comment>
@@ -2243,7 +2243,7 @@
 			<column name="uuid" />
 		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="20090414-0811a" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyName="word_for" />
@@ -2251,7 +2251,7 @@
 		<comment>Dropping foreign key on concept_word.concept_id column</comment>
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for" />
 	</changeSet>
-	
+
 	<changeSet id="20090428-0811aa" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
@@ -2259,7 +2259,7 @@
 		<comment>Removing concept_word.concept_name_id foreign key so that primary key can be changed to concept_word_id</comment>
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for_name" />
 	</changeSet>
-	
+
 	<changeSet id="20090414-0811b" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
@@ -2267,7 +2267,7 @@
 		<comment>Dropping non-integer primary key on concept word table before adding new integer one</comment>
 		<dropPrimaryKey tableName="concept_word" />
 	</changeSet>
-	
+
 	<changeSet id="20090414-0812" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
@@ -2275,7 +2275,7 @@
 		<comment>Adding integer primary key to concept word table</comment>
 		<addColumn tableName="concept_word">
 			<column name="concept_word_id" type="int(11)" autoIncrement="true">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_word_pk" 
+				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_word_pk"
 							 unique="true" uniqueConstraintName="concept_word_id_unique" />
 			</column>
 		</addColumn>
@@ -2283,7 +2283,7 @@
 			<append value=" FIRST" />
 		</modifySql>
 	</changeSet>
-	
+
 	<changeSet id="20090414-0812b" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="word_for_name"/></not>
@@ -2291,7 +2291,7 @@
 		<comment>Re-adding foreign key for concept_word.concept_name_id</comment>
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_name_id" constraintName="word_for_name" referencedTableName="concept_name" referencedColumnNames="concept_name_id"/>
 	</changeSet>
-	
+
 	<changeSet id="20090428-0854" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -2301,18 +2301,18 @@
 		<comment>Adding foreign key for concept_word.concept_id column</comment>
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_id" constraintName="word_for" referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
-	
+
 	<changeSet id="200905150821" author="bwolfe" dbms="mysql">
 		<comment>Deleting duplicate concept word keys</comment>
 		<sql>delete from concept_word
              where
                concept_word_id not in (
-                              select 
+                              select
                                 concept_word_id
                               from (select
                                       min(concept_word_id) as concept_word_id
                                     from
-                                      concept_word 
+                                      concept_word
                                     group by
                                       concept_id, word, locale
                                    ) as tmp_concept_word_dupes
@@ -2320,13 +2320,13 @@
               <!-- complicated sql needed to get around deleting from a table and doing a select from it -->
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="200904271042" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_word" columnName="synonym"/></preConditions>
 		<comment>Remove the now unused synonym column</comment>
 		<dropColumn tableName="concept_word" columnName="synonym"/>
 	</changeSet>
-	
+
 	<changeSet id="200902142212" author="ewolodzko" dbms="mysql">
                 <preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute_type" columnName="sort_weight"/></not></preConditions>
 		<comment>
@@ -2336,7 +2336,7 @@
 			<column name="sort_weight" type="int" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="200902142213" author="ewolodzko" dbms="mysql">
 		<validCheckSum>3:ace82a1ecb3a0c3246e39f0bebe38423</validCheckSum> <!-- original checksum -->
 		<validCheckSum>3:288804e42d575fe62c852ed9daa9d59d</validCheckSum> <!-- current checksum with TRUNK-4025 fix-->
@@ -2349,7 +2349,7 @@
 			]]>
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="200906301606" author="bwolfe" dbms="mysql">
 		<comment>
 			Change person_attribute_type.sort_weight from an integer to a float
@@ -2358,12 +2358,12 @@
 			<column name="sort_weight" type="double" />
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200907161638-1" author="bwolfe" dbms="mysql">
 		<comment>Change obs.value_numeric from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="obs"><column name="value_numeric" type="double" /></ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200907161638-2" author="bwolfe" dbms="mysql">
 		<comment>Change concept_numeric columns from a double(22,0) type to a double</comment>
 		<ext:modifyColumn tableName="concept_numeric">
@@ -2375,17 +2375,17 @@
 			<column name="low_absolute" type="double" />
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200907161638-3" author="bwolfe" dbms="mysql">
 		<comment>Change concept_set.sort_weight from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="concept_set"><column name="sort_weight" type="double" /></ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200907161638-4" author="bwolfe" dbms="mysql">
 		<comment>Change concept_set_derived.sort_weight from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="concept_set_derived"><column name="sort_weight" type="double" /></ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200907161638-5" author="bwolfe" dbms="mysql">
 		<comment>Change drug table columns from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="drug" >
@@ -2394,7 +2394,7 @@
 			<column name="minimum_daily_dose" type="double" />
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200907161638-6" author="bwolfe" dbms="mysql">
 		<comment>Change drug_order.dose from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="drug_order">
@@ -2402,7 +2402,7 @@
 			<column name="equivalent_daily_dose" type="double" />
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20100128-1" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
@@ -2418,8 +2418,8 @@
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 		<modifySql><replace replace="name-of-uuid-function" with="current_timestamp * 99999999999999"/></modifySql>
-	</changeSet>	
-	
+	</changeSet>
+
 	<changeSet id="20100128-2" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted id="20090803-1" author="jkariuki" changeLogFile="liquibase-update-to-latest.xml"/>
@@ -2430,7 +2430,7 @@
 			<where>role='Administrator'</where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="20100128-3" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted id="20090803-1" author="jkariuki" changeLogFile="liquibase-update-to-latest.xml"/>
@@ -2440,7 +2440,7 @@
 			<where>role='Administrator'</where>
 		</delete>
 	</changeSet>
-	    
+
 	<changeSet id="20090831-1039-38-scheduler_task_config" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="scheduler_task_config" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to scheduler_task_config table</comment>
@@ -2448,7 +2448,7 @@
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20090831-1040-scheduler_task_config" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /></or></preConditions>
 		<comment>Generating UUIDs for all rows in scheduler_task_config table via built in uuid function.</comment>
@@ -2459,7 +2459,7 @@
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
-	
+
 	<changeSet id="20090831-1041-scheduler_task_config" author="bwolfe">
 		<validCheckSum><comment>Fixed missing id from scheduler_task_config</comment>3:25127273b2d501664ce325922b0c7db2</validCheckSum>
 		<validCheckSum>3:0db7f5c882500d1fac41550a1184073c</validCheckSum>
@@ -2485,15 +2485,15 @@
 			</param>
 		</customChange>
 	</changeSet>
-	
+
 	<changeSet id="20090831-1042-scheduler_task_config" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><dbms type="mssql" /></not></preConditions>
 		<comment>
-			Now that UUID generation is done for scheduler_task_config, set the uuid column to not "NOT NULL" 
+			Now that UUID generation is done for scheduler_task_config, set the uuid column to not "NOT NULL"
 		</comment>
 		<addNotNullConstraint tableName="scheduler_task_config" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
-	
+
 	<changeSet id="20090831-1043-scheduler_task_config" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><indexExists indexName="scheduler_task_config_uuid_index"/></not></preConditions>
 		<comment>Creating unique index on scheduler_task_config.uuid column</comment>
@@ -2501,7 +2501,7 @@
 			<column name="uuid" />
 		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="20090907-1" author="Knoll_Frank" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="date_voided"/></preConditions>
 		<comment>Rename the concept_source.date_voided column to date_retired</comment>
@@ -2509,12 +2509,12 @@
 	</changeSet>
 	<changeSet id="20090907-2a" author="Knoll_Frank" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><foreignKeyConstraintExists foreignKeyName="user_who_voided_concept_source"/></preConditions>
-		<comment>Remove the concept_source.voided_by foreign key constraint</comment>	
+		<comment>Remove the concept_source.voided_by foreign key constraint</comment>
 		<dropForeignKeyConstraint baseTableName="concept_source" constraintName="user_who_voided_concept_source" />
 	</changeSet>
 	<changeSet id="20090907-2b" author="Knoll_Frank" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="voided_by"/></preConditions>
-		<comment>Rename the concept_source.voided_by column to retired_by</comment>	
+		<comment>Rename the concept_source.voided_by column to retired_by</comment>
 		<renameColumn tableName="concept_source" oldColumnName="voided_by" newColumnName="retired_by" columnDataType="int" />
 		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users" />
 	</changeSet>
@@ -2528,7 +2528,7 @@
 		<comment>Rename the concept_source.void_reason column to retire_reason</comment>
 		<renameColumn tableName="concept_source" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="varchar(255)" />
 	</changeSet>
-	
+
 	<changeSet id="200908291938-1" author="dthomas" dbms="mysql">
 		<comment>set hl7_code in ConceptSource to nullable column</comment>
 		<ext:modifyColumn tableName="concept_source">
@@ -2537,7 +2537,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200908291938-2a" author="dthomas" dbms="mysql">
 		<comment>set retired in ConceptSource to tinyint(1) not null</comment>
 		<ext:modifyColumn tableName="concept_source">
@@ -2546,7 +2546,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-1" author="bwolfe">
 		<comment>Setting core field types to have standard UUIDs</comment>
 		<update tableName="field_type"><column name="uuid" value="8d5e7d7c-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '1' and name = 'Concept'</where></update>
@@ -2555,7 +2555,7 @@
 		<update tableName="field_type"><column name="uuid" value="8d5e852e-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '4' and name = 'Miscellaneous Set'</where></update>
 		<update tableName="field_type"><column name="uuid" value="8d5e86fa-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '5' and name = 'Section'</where></update>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-2" author="bwolfe">
 		<validCheckSum><comment>Escape character for SQL Server</comment>3:3132d4cbfaab0c0b612c3fe1c55bd0f1</validCheckSum>
 		<validCheckSum>3:58c30dc9bab676050d5e08cc9484f9fc</validCheckSum>
@@ -2571,7 +2571,7 @@
 			<replace replace="\'" with="''"/>
 		</modifySql>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-3" author="bwolfe">
 		<comment>Setting core encounter types to have standard UUIDs</comment>
 		<update tableName="encounter_type"><column name="uuid" value="8d5b27bc-c2cc-11de-8d13-0010c6dffd0f"/><where>encounter_type_id= '1' and name = 'ADULTINITIAL'</where></update>
@@ -2579,7 +2579,7 @@
 		<update tableName="encounter_type"><column name="uuid" value="8d5b2dde-c2cc-11de-8d13-0010c6dffd0f"/><where>encounter_type_id= '3' and name = 'PEDSINITIAL'</where></update>
 		<update tableName="encounter_type"><column name="uuid" value="8d5b3108-c2cc-11de-8d13-0010c6dffd0f"/><where>encounter_type_id= '4' and name = 'PEDSRETURN'</where></update>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-4" author="bwolfe">
 		<comment>Setting core concept datatypes to have standard UUIDs</comment>
 		<update tableName="concept_datatype"><column name="uuid" value="8d4a4488-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '1' and name = 'Numeric'</where></update>
@@ -2595,7 +2595,7 @@
 		<update tableName="concept_datatype"><column name="uuid" value="8d4a606c-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '12' and name = 'Structured Numeric'</where></update>
 		<update tableName="concept_datatype"><column name="uuid" value="8d4a6242-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '13' and name = 'Complex'</where></update>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-5" author="bwolfe">
 		<comment>Setting core relationship types to have standard UUIDs</comment>
 		<update tableName="relationship_type"><column name="uuid" value="8d919b58-c2cc-11de-8d13-0010c6dffd0f"/><where> relationship_type_id = '1' and a_is_to_b = 'Doctor' and b_is_to_a = 'Patient'</where></update>
@@ -2603,7 +2603,7 @@
 		<update tableName="relationship_type"><column name="uuid" value="8d91a210-c2cc-11de-8d13-0010c6dffd0f"/><where> relationship_type_id = '3' and a_is_to_b = 'Parent' and b_is_to_a = 'Child'</where></update>
 		<update tableName="relationship_type"><column name="uuid" value="8d91a3dc-c2cc-11de-8d13-0010c6dffd0f"/><where> relationship_type_id = '4' and a_is_to_b = 'Aunt/Uncle' and b_is_to_a = 'Niece/Nephew'</where></update>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-6" author="bwolfe">
 		<comment>Setting core concept classes to have standard UUIDs</comment>
 		<update tableName="concept_class"><column name="uuid" value="8d4907b2-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '1' and name = 'Test'</where></update>
@@ -2622,23 +2622,23 @@
 		<update tableName="concept_class"><column name="uuid" value="8d492d0a-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '14' and name = 'Specimen'</where></update>
 		<update tableName="concept_class"><column name="uuid" value="8d492ee0-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '15' and name = 'Misc Order'</where></update>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-7" author="bwolfe">
 		<comment>Setting core patient identifier types to have standard UUIDs</comment>
 		<update tableName="patient_identifier_type"><column name="uuid" value="8d79403a-c2cc-11de-8d13-0010c6dffd0f"/><where>patient_identifier_type_id= '2' and name = 'Old Identification Number'</where></update>
 		<update tableName="patient_identifier_type"><column name="uuid" value="8d793bee-c2cc-11de-8d13-0010c6dffd0f"/><where>patient_identifier_type_id= '1' and name = 'OpenMRS Identification Number'</where></update>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-8" author="bwolfe">
 		<comment>Setting core location to have standard UUIDs</comment>
 		<update tableName="location"><column name="uuid" value="8d6c993e-c2cc-11de-8d13-0010c6dffd0f"/><where>location_id= '1' and name = 'Unknown Location'</where></update>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-9" author="bwolfe">
 		<comment>Setting core hl7 source to have standard UUIDs</comment>
 		<update tableName="hl7_source"><column name="uuid" value="8d6b8bb6-c2cc-11de-8d13-0010c6dffd0f"/><where>hl7_source_id= '1' and name = 'LOCAL'</where></update>
 	</changeSet>
-	
+
 	<changeSet id="200910271049-10" author="bwolfe">
 		<comment>Setting core roles to have standard UUIDs</comment>
 		<update tableName="role"><column name="uuid" value="774b2af3-6437-4e5a-a310-547554c7c65c"/><where> role = 'Anonymous'</where></update>
@@ -2646,10 +2646,10 @@
 		<update tableName="role"><column name="uuid" value="8d94f280-c2cc-11de-8d13-0010c6dffd0f"/><where> role = 'Provider'</where></update>
 		<update tableName="role"><column name="uuid" value="8d94f852-c2cc-11de-8d13-0010c6dffd0f"/><where> role = 'System Developer'</where></update>
 	</changeSet>
-	
-	<changeSet id="200912071501-1" author="arthurs"> 
-		<comment>Change name for patient.searchMaxResults global property to person.searchMaxResults</comment> 
-		<update tableName="global_property"><column name="property" value="person.searchMaxResults"/><where> property = 'patient.searchMaxResults'</where></update> 
+
+	<changeSet id="200912071501-1" author="arthurs">
+		<comment>Change name for patient.searchMaxResults global property to person.searchMaxResults</comment>
+		<update tableName="global_property"><column name="property" value="person.searchMaxResults"/><where> property = 'patient.searchMaxResults'</where></update>
 	</changeSet>
 
 	<changeSet id="200912141552" author="madanmohan" dbms="mysql">
@@ -2668,7 +2668,7 @@
 			baseTableName="encounter" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-		
+
 	<changeSet id="200912141553" author="madanmohan" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -2682,20 +2682,20 @@
 			<column name="date_changed" type="datetime" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="200912211118" author="nribeka" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="concept_derived" columnName="language" />
 			</not>
 		</preConditions>
-		<comment>Adding language column to concept_derived table</comment> 
+		<comment>Adding language column to concept_derived table</comment>
 		<addColumn tableName="concept_derived">
     		<column name="language" type="varchar(255)">
     			<constraints nullable="false" />
     		</column>
 		</addColumn>
-	</changeSet>	
+	</changeSet>
 
 	<changeSet id="200912031842" author="djazayeri" dbms="mysql">
 		<!-- This is safe to re-run, and the pre-condition is hard to write, so I'm not writing one -->
@@ -2704,7 +2704,7 @@
 		<addForeignKeyConstraint baseTableName="encounter" baseColumnNames="provider_id" constraintName="encounter_provider"
                                  referencedTableName="person" referencedColumnNames="person_id"/>
 	</changeSet>
-	
+
 	<changeSet id="201102280948" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
@@ -2715,7 +2715,7 @@
 		<comment>Removing the foreign key from users.user_id to person.person_id if it still exists</comment>
 		<dropForeignKeyConstraint baseTableName="users" constraintName="person_id_for_user"/>
 	</changeSet>
-	
+
 	<changeSet id="200912031846-1" author="djazayeri" dbms="mysql">
 		<validCheckSum>3aff267520eec4d52e81ef7614b2da3</validCheckSum>
 		<validCheckSum>11f84b948fc7731d1ffb6869980e6cb</validCheckSum>
@@ -2761,7 +2761,7 @@
 								 referencedTableName="person" referencedColumnNames="person_id"/>
 		<addAutoIncrement tableName="users" columnName="user_id" columnDataType="int"/>
 	</changeSet>
-	
+
 	<changeSet id="200912091819" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -2792,7 +2792,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="200912091820" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
@@ -2808,7 +2808,7 @@
 			<column name="retire_reason" valueNumeric="void_reason"/>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="200912091821" author="djazayeri" dbms="mysql">
 		<preConditions onFail="HALT">
 			<and>
@@ -2826,7 +2826,7 @@
 		<dropColumn tableName="users" columnName="date_voided"/>
 		<dropColumn tableName="users" columnName="void_reason"/>
 	</changeSet>
-	
+
 	<changeSet id="200912140038" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="users" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to users table</comment>
@@ -2874,36 +2874,36 @@
 		<comment>Adding not null constraint to users.uuid</comment>
 		<addNotNullConstraint tableName="users" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
-	
+
 	<changeSet id="200912151032" author="n.nehete" dbms="mysql">
 		<preConditions onFail="HALT">
 			<sqlCheck expectedResult="All encounters have a non-null encounter type.">
 				<![CDATA[
-					SELECT case when count(*) > 0 
-							then 'There are rows in the encounter table with an empty encounter type.  Encounter type is a required field and must be populated.  These encounters need to be fixed manually by setting an appropriate encounter type.' 
-							else 'All encounters have a non-null encounter type.' end 
+					SELECT case when count(*) > 0
+							then 'There are rows in the encounter table with an empty encounter type.  Encounter type is a required field and must be populated.  These encounters need to be fixed manually by setting an appropriate encounter type.'
+							else 'All encounters have a non-null encounter type.' end
 					FROM encounter where encounter_type is null;
 				]]>
 			</sqlCheck>
-		</preConditions>	
+		</preConditions>
 		<comment>Encounter Type should not be null when saving an Encounter</comment>
 		<addNotNullConstraint tableName="encounter" columnName="encounter_type" columnDataType="int" />
-	</changeSet>	
-	
+	</changeSet>
+
 	<changeSet id="201001072007" author="upul" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="scheduler_task_config" columnName="last_execution_time"/></not>
 		</preConditions>
 		<comment>
 			Add last execution time column to scheduler_task_config table
-		</comment>		
+		</comment>
 		<addColumn tableName="scheduler_task_config">
 			<column name="last_execution_time" type="DATETIME">
 				<constraints nullable="true"/>
 			</column>
 		</addColumn>
-	</changeSet>    	
-	
+	</changeSet>
+
 	<changeSet id="20091001-1023" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -2917,7 +2917,7 @@
 			</column>
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20091001-1024" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -2929,7 +2929,7 @@
 			<column name="retired_by" type="int"/>
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20091001-1025" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="user_who_retired_relationship_type"/></not>
@@ -2941,7 +2941,7 @@
 			baseTableName="relationship_type" baseColumnNames="retired_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-	
+
 	<changeSet id="20091001-1026" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -2953,7 +2953,7 @@
 			<column name="date_retired" type="datetime" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20091001-1027" author="rcrichton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -2986,7 +2986,7 @@
 		<sql>
 			<![CDATA[
 				DELETE concept_complex FROM concept_complex
-				INNER JOIN concept ON concept.concept_id = concept_complex.concept_id 
+				INNER JOIN concept ON concept.concept_id = concept_complex.concept_id
 				AND concept.datatype_id NOT IN (5, 13)
 			]]>
 		</sql>
@@ -2997,14 +2997,14 @@
 			Prune concepts rows orphaned in concept_derived tables
 		</comment>
 		<sql>
-			<![CDATA[			
+			<![CDATA[
 				DELETE concept_derived FROM concept_derived
-				INNER JOIN concept ON concept.concept_id = concept_derived.concept_id 
-				AND concept.datatype_id <> 11	
+				INNER JOIN concept ON concept.concept_id = concept_derived.concept_id
+				AND concept.datatype_id <> 11
 			]]>
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="20100306-095513a" author="thilini.hg" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyName="alert_assigned_to_user"/>
@@ -3012,7 +3012,7 @@
 		<comment>Dropping unused foreign key from notification alert table</comment>
 		<dropForeignKeyConstraint baseTableName="notification_alert" constraintName="alert_assigned_to_user"/>
 	</changeSet>
-	
+
 	<changeSet id="20100306-095513b" author="thilini.hg" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="notification_alert" columnName="user_id"/>
@@ -3020,7 +3020,7 @@
 		<comment>Dropping unused user_id column from notification alert table</comment>
 		<dropColumn tableName="notification_alert" columnName="user_id"/>
 	</changeSet>
-	
+
 	<changeSet id="20100322-0908" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3035,7 +3035,7 @@
 			<column name="sort_weight" valueNumeric="concept_answer_id"/>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="20100412-2217" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_alert_recipient" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to notification_alert_recipient table</comment>
@@ -3080,15 +3080,15 @@
 			</param>
 		</customChange>
 	</changeSet>
-	
+
 	<changeSet id="20100412-2220" author="bwolfe">
 		<preConditions><not><dbms type="mssql"/></not></preConditions>
 		<comment>
-			Now that UUID generation is done, set the notification_alert_recipient.uuid column to not "NOT NULL" 
+			Now that UUID generation is done, set the notification_alert_recipient.uuid column to not "NOT NULL"
 		</comment>
 		<addNotNullConstraint tableName="notification_alert_recipient" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
-	
+
 	<changeSet id="20100413-1509" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location_tag" columnName="tag"/>
@@ -3099,7 +3099,7 @@
 		<renameColumn tableName="location_tag"
    			 oldColumnName="tag" newColumnName="name" columnDataType="varchar(50)"/>
 	</changeSet>
-	
+
 	<changeSet id="20110922-0551" author="sunbiz" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted changeLogFile="liquibase-update-to-latest.xml" author="bwolfe" id="20100427-1334"/>
@@ -3109,7 +3109,7 @@
 			<column name="property" type="varchar(255)" />
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20100423-1402" author="slorenz" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3122,7 +3122,7 @@
 			<column name="encounter_datetime"/>
 		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="20100423-1406" author="slorenz" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3134,15 +3134,15 @@
 			<column name="obs_datetime"/>
 		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="20100426-1111-remove-not-null-personid-contraint" author="dkayiwa" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="users" columnName="person_id"/>
 		</preConditions>
 		<comment>Drop the not null person id contraint</comment>
-		<dropNotNullConstraint tableName="users" columnName="person_id" columnDataType="int"/>				
+		<dropNotNullConstraint tableName="users" columnName="person_id" columnDataType="int"/>
 	</changeSet>
-	
+
 	<changeSet id="20100426-1947" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
@@ -3161,7 +3161,7 @@
 			<column name="uuid" value="A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"/>
 		</insert>
 	</changeSet>
-	
+
 	<changeSet id="20100513-1947" author="syhaas">
 		<comment>Removing scheduler.username and scheduler.password global properties</comment>
 		<delete tableName="global_property">
@@ -3191,12 +3191,12 @@
 			<column name="uuid" value="131168f4-15f5-102d-96e4-000c29c2a5d7" />
 		</insert>
 	</changeSet>
-	
+
 	<changeSet id="20100517-1545" author="wyclif and djazayeri" dbms="mysql">
 		<comment>Switch boolean concepts/observations to be stored as coded</comment>
-		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>				
+		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>
 	</changeSet>
-	
+
 	<changeSet id="20100526-1025" author="Harsha.cse" dbms="mysql">
 		<comment>
 			Drop Not-Null constraint from location column in Encounter and Obs table
@@ -3225,7 +3225,7 @@
 			<where>message_state IN (0,1)</where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="20100323-192043" author="ricardosbarbosa" dbms="mysql">
 		<comment>
 			Removing the duplicate privilege 'Add Concept Proposal' in favor of 'Add Concept Proposals'
@@ -3237,11 +3237,11 @@
 		<delete tableName="role_privilege"><where>privilege='Add Concept Proposal'</where></delete>
 		<delete tableName="privilege"><where>privilege='Add Concept Proposal'</where></delete>
 	</changeSet>
-		
+
 	<changeSet id="20100330-190413" author="ricardosbarbosa" dbms="mysql">
 		<comment>
 			Removing the duplicate privilege 'Edit Concept Proposal' in favor of 'Edit Concept Proposals'
-		</comment>		
+		</comment>
 		<update tableName="role_privilege">
 			<column name="privilege">Edit Concept Proposals</column>
 			<where>privilege = 'Edit Concept Proposal' and not exists (select * from (select role, privilege from role_privilege) rp2 where rp2.role = role and rp2.privilege = 'Edit Concept Proposals')</where>
@@ -3249,7 +3249,7 @@
 		<delete tableName="role_privilege"><where>privilege='Edit Concept Proposal'</where></delete>
 		<delete tableName="privilege"><where>privilege='Edit Concept Proposal'</where></delete>
 	</changeSet>
-	
+
 
 	<changeSet id="20100525-818-1" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
@@ -3297,7 +3297,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20100525-818-2" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3371,7 +3371,7 @@
 			</column>
 			</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20100525-818-3" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3391,7 +3391,7 @@
 			baseTableName="active_list_allergy" baseColumnNames="reaction_concept_id"
 			referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
-	
+
 	<changeSet id="20100525-818-4" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3407,7 +3407,7 @@
 			<column name="sort_weight" type="double"/>
 		</createTable>
 	</changeSet>
-	
+
 	<changeSet id="20100525-818-5" author="syhaas" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
@@ -3438,7 +3438,7 @@
 			<column name="uuid" value="a0c7422b-6a99-11df-a648-37a07f9c90fb" />
 		</insert>
 	</changeSet>
-	
+
 	<changeSet id="20100607-1550a" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3474,7 +3474,7 @@
 			<foreignKeyConstraintExists foreignKeyName="mapped_concept_name_tag"/>
 		</preConditions>
 		<comment>Dropping foreign key constraint on concept_name_tag_map.concept_name_tag_id</comment>
-		<dropForeignKeyConstraint baseTableName="concept_name_tag_map" constraintName="mapped_concept_name_tag"/>		
+		<dropForeignKeyConstraint baseTableName="concept_name_tag_map" constraintName="mapped_concept_name_tag"/>
 	</changeSet>
 
 	<changeSet id="20100607-1550d" author="wyclif">
@@ -3492,7 +3492,7 @@
 		</update>
 		<delete tableName="concept_name_tag_map">
 			<where>concept_name_tag_id = 2</where>
-		</delete>	
+		</delete>
 		<delete tableName="concept_name_tag">
 			<where>concept_name_tag_id = 2</where>
 		</delete>
@@ -3511,12 +3511,12 @@
 		</preConditions>
 		<comment>
 			Converting concept names with preferred concept name tags to preferred and fully specified names
-		</comment>    	
+		</comment>
 		<update tableName="concept_name">
             <column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<column name="locale_preferred" valueBoolean="true"/>
 			<where>
-				concept_name_id IN (SELECT concept_name_id FROM concept_name_tag cnt, concept_name_tag_map cntm 
+				concept_name_id IN (SELECT concept_name_id FROM concept_name_tag cnt, concept_name_tag_map cntm
 				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred%')
 			</where>
 		</update>
@@ -3529,17 +3529,17 @@
 	</changeSet>
 
 	<changeSet id="20100607-1550g" author="wyclif">
-		<preConditions onFail="MARK_RAN">				
+		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
 					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id IN (1,3)
 				</sqlCheck>
-			</not>	
+			</not>
 		</preConditions>
-		<comment>Deleting 'default' and 'synonym' concept name tags</comment>		
+		<comment>Deleting 'default' and 'synonym' concept name tags</comment>
 		<delete tableName="concept_name_tag_map">
 			<where>concept_name_tag_id IN (1,3)</where>
-		</delete>	
+		</delete>
 		<delete tableName="concept_name_tag">
 			<where>concept_name_tag_id IN (1,3)</where>
 		</delete>
@@ -3548,20 +3548,20 @@
 	<changeSet id="20100607-1550h" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept WHERE retired = FALSE</sqlCheck></not>
-		</preConditions>				
+		</preConditions>
 		<comment>Validating and attempting to fix invalid concepts and ConceptNames</comment>
-		<customChange class="org.openmrs.util.databasechange.ConceptValidatorChangeSet"/>				
+		<customChange class="org.openmrs.util.databasechange.ConceptValidatorChangeSet"/>
 	</changeSet>
-	
+
 	<changeSet id="20100607-1550i" author="wyclif" dbms="mysql">
-		<preConditions onFail="MARK_RAN">			
+		<preConditions onFail="MARK_RAN">
 			<not>
 				<foreignKeyConstraintExists foreignKeyName="mapped_concept_name_tag"/>
 			</not>
 		</preConditions>
 		<comment>Restoring foreign key constraint on concept_name_tag_map.concept_name_tag_id</comment>
-		<addForeignKeyConstraint referencedTableName="concept_name_tag" baseColumnNames="concept_name_tag_id" 
-								baseTableName="concept_name_tag_map" referencedColumnNames="concept_name_tag_id" 
+		<addForeignKeyConstraint referencedTableName="concept_name_tag" baseColumnNames="concept_name_tag_id"
+								baseTableName="concept_name_tag_map" referencedColumnNames="concept_name_tag_id"
 								constraintName="mapped_concept_name_tag"/>
 	</changeSet>
 
@@ -3574,7 +3574,7 @@
 			<column name="error_details" type="mediumtext" />
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="201008021047" author="bwolfe" failOnError="false" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -3588,10 +3588,10 @@
 			<column name="family_name2" />
 		</createIndex>
 	</changeSet>
-	
-	<changeSet id="201008201345" author="mseaton">			
+
+	<changeSet id="201008201345" author="mseaton">
 		<comment>Validates Program Workflow States for possible configuration problems and reports warnings</comment>
-		<customChange class="org.openmrs.util.databasechange.ProgramValidatorChangeSet"/>				
+		<customChange class="org.openmrs.util.databasechange.ProgramValidatorChangeSet"/>
 	</changeSet>
 
 	<changeSet id="201008242121" author="misha680" dbms="mysql">
@@ -3602,7 +3602,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20100924-1110" author="mseaton" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="patient_program" columnName="location_id"/></not>
@@ -3625,7 +3625,7 @@
 		<comment>Remove the now unused default_charge column</comment>
 		<dropColumn tableName="concept" columnName="default_charge"/>
 	</changeSet>
-	
+
 	<changeSet id="201010051745" author="wyclif">
 		<comment>Setting the global property 'patient.identifierRegex' to an empty string</comment>
 		<update tableName="global_property">
@@ -3633,7 +3633,7 @@
 			<where>property = 'patient.identifierRegex' AND property_value = '^0*@SEARCH@([A-Z]+-[0-9])?$' </where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="201010051746" author="wyclif">
 		<comment>Setting the global property 'patient.identifierSuffix' to an empty string</comment>
 		<update tableName="global_property">
@@ -3641,7 +3641,7 @@
 			<where>property = 'patient.identifierSuffix' AND property_value = '%' </where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="201010151054" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_published_index" /></not>
@@ -3651,7 +3651,7 @@
 			<column name="published" />
 		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="201010151055" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_retired_index" /></not>
@@ -3659,9 +3659,9 @@
 		<comment>Adding index to form.retired column</comment>
 		<createIndex tableName="form" indexName="form_retired_index">
 			<column name="retired" />
-		</createIndex>	
+		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="201010151056" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_published_and_retired_index" /></not>
@@ -3670,9 +3670,9 @@
 		<createIndex tableName="form" indexName="form_published_and_retired_index">
 			<column name="published" />
 			<column name="retired" />
-		</createIndex>	
+		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="201010261143" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="neighborhood_cell"/>
@@ -3681,7 +3681,7 @@
 		<renameColumn tableName="person_address"
 			oldColumnName="neighborhood_cell" newColumnName="address3" columnDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="201010261145" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="township_division"/>
@@ -3690,7 +3690,7 @@
 		<renameColumn tableName="person_address"
 			oldColumnName="township_division" newColumnName="address4" columnDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="201010261147" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="subregion"/>
@@ -3699,7 +3699,7 @@
 		<renameColumn tableName="person_address"
 			oldColumnName="subregion" newColumnName="address5" columnDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="201010261149" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="region"/>
@@ -3708,7 +3708,7 @@
 		<renameColumn tableName="person_address"
 			oldColumnName="region" newColumnName="address6" columnDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="201010261151" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="neighborhood_cell"/>
@@ -3717,7 +3717,7 @@
 		<renameColumn tableName="location"
 			oldColumnName="neighborhood_cell" newColumnName="address3" columnDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="201010261153" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="township_division"/>
@@ -3726,7 +3726,7 @@
 		<renameColumn tableName="location"
 			oldColumnName="township_division" newColumnName="address4" columnDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="201010261156" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="subregion"/>
@@ -3735,7 +3735,7 @@
 		<renameColumn tableName="location"
 			oldColumnName="subregion" newColumnName="address5" columnDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="201010261159" author="crecabarren" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="region"/>
@@ -3744,7 +3744,7 @@
 		<renameColumn tableName="location"
 			oldColumnName="region" newColumnName="address6" columnDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="201012092009" author="djazayeri" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><changeSetExecuted id="201012092009" author="djazayeri" changeLogFile="liquibase-update-to-latest.xml"/></not>
@@ -3761,7 +3761,7 @@
 		<ext:modifyColumn tableName="location"><column name="state_province" type="varchar(255)"/></ext:modifyColumn>
 		<ext:modifyColumn tableName="location"><column name="county_district" type="varchar(255)"/></ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="201011011600" author="jkeiper" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="hl7_in_archive_message_state_idx" /></not>
@@ -3771,12 +3771,12 @@
 			<column name="message_state" />
 		</createIndex>
 	</changeSet>
-		
+
 	<changeSet id="201011011605" author="jkeiper">
 		<comment>Moving "deleted" HL7s from HL7 archive table to queue table</comment>
-		<customChange class="org.openmrs.util.databasechange.MoveDeletedHL7sChangeSet"/>				
+		<customChange class="org.openmrs.util.databasechange.MoveDeletedHL7sChangeSet"/>
 	</changeSet>
-	
+
 	<changeSet id="20101209-1721" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="weight"/></not>
@@ -3786,7 +3786,7 @@
 			<column name="weight" type="double" defaultValueNumeric="1" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20101209-1722" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="concept_word_weight_index" /></not>
@@ -3796,7 +3796,7 @@
 			<column name="weight" />
 		</createIndex>
 	</changeSet>
-		
+
 	<changeSet id="20101209-1723" author="wyclif" dbms="mysql">
 		<validCheckSum>db17937286d48f680b2be16bee24e62</validCheckSum> <!-- old checksum without specifying date_created -->
 		<validCheckSum>4d67c48557f5665a8c2be7e87e22913</validCheckSum> <!-- current checksum with date_created property added -->
@@ -3822,8 +3822,8 @@
 		<validCheckSum>3:5b57be46af9578a59fb2b4f2af24c816</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="1">
-				SELECT COUNT(*) FROM scheduler_task_config 
-				WHERE schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask' 
+				SELECT COUNT(*) FROM scheduler_task_config
+				WHERE schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'
 				AND start_on_startup = FALSE;
 		</sqlCheck>
 		</preConditions>
@@ -3842,7 +3842,7 @@
 		<comment>Removing concept that are concept derived and the datatype</comment>
 		<delete tableName="concept_derived" />
 	</changeSet>
-	
+
 	<changeSet id="201012081717" author="nribeka" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_derived" />
@@ -3850,7 +3850,7 @@
 		<comment>Removing concept derived tables</comment>
 		<dropTable tableName="concept_derived"/>
 	</changeSet>
-	
+
 	<changeSet id="201011051300" author="bwolfe" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="alert_date_to_expire_idx" /></not>
@@ -3868,7 +3868,7 @@
 			<column name="date_changed" type="DATETIME" />
 		</addColumn>
 	</changeSet>
-	
+
 
 	<changeSet id="20100603-1625-2-person_address" author="sapna" dbms="mysql">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="changed_by"/></not></preConditions>
@@ -3880,7 +3880,7 @@
 			baseTableName="person_address" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-	
+
 	<changeSet id="20110218-1206" author="rubailly" dbms="mysql">
 		<preConditions>
 			<not>
@@ -3975,19 +3975,19 @@
 			<column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc" />
 		</insert>
 	</changeSet>
-	
+
 	<changeSet id="201118012301" author="lkellett" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="orders" columnName="discontinued_reason_non_coded"/></not>
 		</preConditions>
 		<comment>
-			Adding the discontinued_reason_non_coded column to orders.  
+			Adding the discontinued_reason_non_coded column to orders.
 		</comment>
 		<addColumn tableName="orders">
 			<column name="discontinued_reason_non_coded" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20110125-1435" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_address" columnName="start_date"/></not>
@@ -3997,7 +3997,7 @@
 			<column name="start_date" type="datetime" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20110125-1436" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_address" columnName="end_date"/></not>
@@ -4026,7 +4026,7 @@
 			baseTableName="patient_identifier" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-    
+
     <changeSet id="20110201-1626-1" author="arahulkmit">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship" columnName="date_changed"/></not></preConditions>
 		<comment>Adding "date_changed" column to relationship table</comment>
@@ -4045,7 +4045,7 @@
 			baseTableName="relationship" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-	
+
 	<changeSet id="201101221453" author="suho" dbms="mysql">
 		<comment>Increasing the serialized_data column of serialized_object to hold mediumtext</comment>
 		<ext:modifyColumn tableName="serialized_object">
@@ -4054,7 +4054,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="201101121434" author="gbalaji,gobi" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="obs" columnName="date_started"/>
@@ -4062,15 +4062,15 @@
 		<comment>Dropping unused date_started column from obs table</comment>
 		<dropColumn tableName="obs" columnName="date_started"/>
 	</changeSet>
-	
+
 	<changeSet id="201102081800" author="gbalaji,gobi" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="obs" columnName="date_stopped"/>			
+			<columnExists tableName="obs" columnName="date_stopped"/>
 		</preConditions>
 		<comment>Dropping unused date_stopped column from obs table</comment>
 		<dropColumn tableName="obs" columnName="date_stopped"/>
 	</changeSet>
-	
+
 	<changeSet id="20110124-1030" author="surangak" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -4121,13 +4121,13 @@
 		<addForeignKeyConstraint constraintName="person_merge_log_loser"
 			baseTableName="person_merge_log" baseColumnNames="loser_person_id"
 			referencedTableName="person" referencedColumnNames="person_id"
-			/>	
+			/>
 		<addForeignKeyConstraint constraintName="person_merge_log_creator"
 			baseTableName="person_merge_log" baseColumnNames="creator"
 			referencedTableName="users" referencedColumnNames="user_id"
 			/>
     </changeSet>
-    
+
 	<changeSet id="20110329-2317" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="role_privilege" />
@@ -4137,7 +4137,7 @@
 			<where>role='Anonymous' AND privilege='View Encounters'</where>
 		</delete>
 	</changeSet>
-	
+
 	<changeSet id="20110329-2318" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="role_privilege" />
@@ -4147,7 +4147,7 @@
 			<where>role='Anonymous' AND privilege='View Observations'</where>
 		</delete>
 	</changeSet>
-	
+
 	<changeSet id="20090224-1002-create-visit_type" author="dkayiwa" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit_type"/></not>
@@ -4184,14 +4184,14 @@
 		<addForeignKeyConstraint constraintName="visit_type_creator"
 			baseTableName="visit_type" baseColumnNames="creator"
 			referencedTableName="users" referencedColumnNames="user_id"/>
-		<addForeignKeyConstraint constraintName="visit_type_changed_by" 
+		<addForeignKeyConstraint constraintName="visit_type_changed_by"
 			baseTableName="visit_type" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id"/>
 		<addForeignKeyConstraint constraintName="visit_type_retired_by"
 			baseTableName="visit_type" baseColumnNames="retired_by"
 			referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
-	
+
 	<changeSet id="20100419-1209" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit" /> </not>
@@ -4252,7 +4252,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20101209-10000-encounter-add-visit-id-column" author="dkayiwa" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="encounter" columnName="visit_id"/></not>
@@ -4265,31 +4265,31 @@
 			baseTableName="encounter" baseColumnNames="visit_id"
 			referencedTableName="visit" referencedColumnNames="visit_id" />
 	</changeSet>
-	
+
 	<changeSet id="201101271456-add-startdate-to-relationship" author="misha680" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="relationship" columnName="start_date"/></not>
 		</preConditions>
 		<comment>
-			Adding the start_date column to relationship.  
+			Adding the start_date column to relationship.
 		</comment>
 		<addColumn tableName="relationship">
 			<column name="start_date" type="datetime" defaultValue="null" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="201101271456-add-enddate-to-relationship" author="misha680" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="relationship" columnName="end_date"/></not>
 		</preConditions>
 		<comment>
-			Adding the end_date column to relationship.  
+			Adding the end_date column to relationship.
 		</comment>
 		<addColumn tableName="relationship">
 			<column name="end_date" type="datetime" defaultValue="null" />
 		</addColumn>
 	</changeSet>
-	
+
     <changeSet id="20110425-1600-create-visit-attribute-type-table" author="djazayeri" dbms="mysql">
     	<validCheckSum>3:fbdd2c69187f89a0abc7f27ee138441a</validCheckSum>
     	<validCheckSum>3:3cf419ea9657f9a072881cafb2543d77</validCheckSum>
@@ -4339,7 +4339,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-		
+
 	<changeSet id="201110051353-fix-visit-attribute-type-columns" author="djazayeri">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="visit_attribute_type" columnName="datatype_config"/></not>
@@ -4413,7 +4413,7 @@
 			<column name="format" type="varchar(255)" defaultValue="null"/>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20110926-1200" author="raff">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_source"/>
@@ -4430,7 +4430,7 @@
 			update concept_source set hl7_code = NULL where hl7_code like ''
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="20110708-2105" author="cta" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -4540,7 +4540,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="201110072042-fix-location-attribute-type-columns" author="djazayeri">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="location_attribute_type" columnName="datatype_config"/></not>
@@ -4553,7 +4553,7 @@
 			<column name="preferred_handler" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-	
+
 
     <changeSet id="20110817-1601-create-location-attribute-table" author="djazayeri">
         <validCheckSum>3:564e414d29bdccd1bf770252ccd11431</validCheckSum>
@@ -4605,7 +4605,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-    
+
 	<changeSet id="201109301703" author="suho">
 		<preConditions onFail="MARK_RAN">
 			<and>
@@ -5046,7 +5046,7 @@
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030a" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
@@ -5056,7 +5056,7 @@
 		<comment>Renaming the concept_source table to concept_reference_source</comment>
 		<renameTable oldTableName="concept_source" newTableName="concept_reference_source"/>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030b" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_reference_term" /></not>
@@ -5066,7 +5066,7 @@
 			<column name="concept_reference_term_id" type="int" autoIncrement="true" >
 				<constraints nullable="false" primaryKey="true"/>
 			</column>
-			<column name="concept_source_id" type="int"><constraints nullable="false"/></column>			
+			<column name="concept_source_id" type="int"><constraints nullable="false"/></column>
 			<column name="name" type="varchar(255)" />
 			<column name="code" type="varchar(255)"><constraints nullable="false"/></column>
 			<column name="version" type="varchar(255)" />
@@ -5081,17 +5081,17 @@
 			<column name="retire_reason" type="varchar(255)" />
 			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
 		</createTable>
-		<addForeignKeyConstraint constraintName="mapped_user_creator" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_creator"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_reference_term" baseColumnNames="creator" />
-		<addForeignKeyConstraint constraintName="mapped_user_changed" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_changed"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_reference_term" baseColumnNames="changed_by" />
-		<addForeignKeyConstraint constraintName="mapped_user_retired" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_retired"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_reference_term" baseColumnNames="retired_by" />
-		<addForeignKeyConstraint constraintName="mapped_concept_source" 
-			referencedTableName="concept_reference_source" referencedColumnNames="concept_source_id" 
+		<addForeignKeyConstraint constraintName="mapped_concept_source"
+			referencedTableName="concept_reference_source" referencedColumnNames="concept_source_id"
 			baseTableName="concept_reference_term" baseColumnNames="concept_source_id" />
 	</changeSet>
 	<changeSet id="20110301-1030b-fix" author="sunbiz">
@@ -5102,7 +5102,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030c" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_map_type" /></not>
@@ -5127,14 +5127,14 @@
 			<column name="retire_reason" type="varchar(255)" />
 			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
 		</createTable>
-		<addForeignKeyConstraint constraintName="mapped_user_creator_concept_map_type" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_creator_concept_map_type"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_map_type" baseColumnNames="creator" />
-		<addForeignKeyConstraint constraintName="mapped_user_changed_concept_map_type" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_changed_concept_map_type"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_map_type" baseColumnNames="changed_by" />
-		<addForeignKeyConstraint constraintName="mapped_user_retired_concept_map_type" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_retired_concept_map_type"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_map_type" baseColumnNames="retired_by" />
 	</changeSet>
 	<changeSet id="20110301-1030c-fix" author="sunbiz">
@@ -5151,7 +5151,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030d" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
@@ -5161,7 +5161,7 @@
 		<comment>Renaming the concept_map table to concept_reference_map</comment>
 		<renameTable oldTableName="concept_map" newTableName="concept_reference_map"/>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030e" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_reference_map" columnName="concept_reference_term_id" /></not>
@@ -5171,13 +5171,13 @@
 			<column name="concept_reference_term_id" type="int"><constraints nullable="false"/></column>
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20110919-0638" author="sunbiz">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_map_type" columnName="isHidden"/></preConditions>
 		<comment>Renaming concept_map_type.isHidden to is_hidden</comment>
 		<renameColumn tableName="concept_map_type" oldColumnName="isHidden" newColumnName="is_hidden" columnDataType="boolean"/>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030f" author="wyclif" dbms="mysql">
 		<validCheckSum><comment>Initial version with random UUIDs</comment>3:97128f92a883840dc2ba1a55a01cd4a3</validCheckSum>
 		<validCheckSum><comment>Corrected version with predefined UUIDs</comment>3:5faead5506cbcde69490fef985711d66</validCheckSum>
@@ -5188,45 +5188,45 @@
 		<comment>Inserting core concept map types</comment>
 		<customChange class="org.openmrs.util.databasechange.AddConceptMapTypesChangeset">
 			<param name="visibleConceptMapTypes">
-				SAME-AS|35543629-7d8c-11e1-909d-c80aa9edcf4e, NARROWER-THAN|43ac5109-7d8c-11e1-909d-c80aa9edcf4e, BROADER-THAN|4b9d9421-7d8c-11e1-909d-c80aa9edcf4e, 
-				Associated finding|55e02065-7d8c-11e1-909d-c80aa9edcf4e, Associated morphology|605f4a61-7d8c-11e1-909d-c80aa9edcf4e, 
-				Associated procedure|6eb1bfce-7d8c-11e1-909d-c80aa9edcf4e, Associated with|781bdc8f-7d8c-11e1-909d-c80aa9edcf4e, 
-				Causative agent|808f9e19-7d8c-11e1-909d-c80aa9edcf4e, Finding site|889c3013-7d8c-11e1-909d-c80aa9edcf4e, 
+				SAME-AS|35543629-7d8c-11e1-909d-c80aa9edcf4e, NARROWER-THAN|43ac5109-7d8c-11e1-909d-c80aa9edcf4e, BROADER-THAN|4b9d9421-7d8c-11e1-909d-c80aa9edcf4e,
+				Associated finding|55e02065-7d8c-11e1-909d-c80aa9edcf4e, Associated morphology|605f4a61-7d8c-11e1-909d-c80aa9edcf4e,
+				Associated procedure|6eb1bfce-7d8c-11e1-909d-c80aa9edcf4e, Associated with|781bdc8f-7d8c-11e1-909d-c80aa9edcf4e,
+				Causative agent|808f9e19-7d8c-11e1-909d-c80aa9edcf4e, Finding site|889c3013-7d8c-11e1-909d-c80aa9edcf4e,
 				Has specimen|929600b9-7d8c-11e1-909d-c80aa9edcf4e, Laterality|999c6fc0-7d8c-11e1-909d-c80aa9edcf4e, Severity|a0e52281-7d8c-11e1-909d-c80aa9edcf4e
 			</param>
 			<param name="hiddenConceptMapTypes">
-				Access|f9e90b29-7d8c-11e1-909d-c80aa9edcf4e, After|01b60e29-7d8d-11e1-909d-c80aa9edcf4e, Clinical course|5f7c3702-7d8d-11e1-909d-c80aa9edcf4e, 
-				Component|67debecc-7d8d-11e1-909d-c80aa9edcf4e, Direct device|718c00da-7d8d-11e1-909d-c80aa9edcf4e, 
-				Direct morphology|7b9509cb-7d8d-11e1-909d-c80aa9edcf4e, Direct substance|82bb495d-7d8d-11e1-909d-c80aa9edcf4e, 
-				Due to|8b77f7d3-7d8d-11e1-909d-c80aa9edcf4e, Episodicity|94a81179-7d8d-11e1-909d-c80aa9edcf4e, 
-				Finding context|9d23c22e-7d8d-11e1-909d-c80aa9edcf4e, Finding informer|a4524368-7d8d-11e1-909d-c80aa9edcf4e, 
-				Finding method|af089254-7d8d-11e1-909d-c80aa9edcf4e, Has active ingredient|b65aa605-7d8d-11e1-909d-c80aa9edcf4e, 
-				Has definitional manifestation|c2b7b2fa-7d8d-11e1-909d-c80aa9edcf4,	Has dose form|cc3878e6-7d8d-11e1-909d-c80aa9edcf4e, 
-				Has focus|d67c5840-7d8d-11e1-909d-c80aa9edcf4e, Has intent|de2fb2c5-7d8d-11e1-909d-c80aa9edcf4e, 
-				Has interpretation|e758838b-7d8d-11e1-909d-c80aa9edcf4e, Indirect device|ee63c142-7d8d-11e1-909d-c80aa9edcf4e, 
-				Indirect morphology|f4f36681-7d8d-11e1-909d-c80aa9edcf4e, Interprets|fc7f5fed-7d8d-11e1-909d-c80aa9edcf4e, 
-				Measurement method|06b11d79-7d8e-11e1-909d-c80aa9edcf4e, Method|0efb4753-7d8e-11e1-909d-c80aa9edcf4e, 
-				Occurrence|16e7b617-7d8e-11e1-909d-c80aa9edcf4e, Part of|1e82007b-7d8e-11e1-909d-c80aa9edcf4e, 
-				Pathological process|2969915e-7d8e-11e1-909d-c80aa9edcf4e, Priority|32d57796-7d8e-11e1-909d-c80aa9edcf4e, 
-				Procedure context|3f11904c-7d8e-11e1-909d-c80aa9edcf4e, Procedure device|468c4aa3-7d8e-11e1-909d-c80aa9edcf4e, 
-				Procedure morphology|5383e889-7d8e-11e1-909d-c80aa9edcf4e, Procedure site|5ad2655d-7d8e-11e1-909d-c80aa9edcf4e, 
-				Procedure site - Direct|66085196-7d8e-11e1-909d-c80aa9edcf4e, Procedure site - Indirect|7080e843-7d8e-11e1-909d-c80aa9edcf4e, 
-				Property|76bfb796-7d8e-11e1-909d-c80aa9edcf4e, Recipient category|7e7d00e4-7d8e-11e1-909d-c80aa9edcf4e, 
-				Revision status|851e14c1-7d8e-11e1-909d-c80aa9edcf4e, Route of administration|8ee5b13d-7d8e-11e1-909d-c80aa9edcf4e, 
-				Scale type|986acf48-7d8e-11e1-909d-c80aa9edcf4e, Specimen procedure|a6937642-7d8e-11e1-909d-c80aa9edcf4e, 
-				Specimen source identity|b1d6941e-7d8e-11e1-909d-c80aa9edcf4e, Specimen source morphology|b7c793c1-7d8e-11e1-909d-c80aa9edcf4e, 
-				Specimen source topography|be9f9eb8-7d8e-11e1-909d-c80aa9edcf4e, Specimen substance|c8f2bacb-7d8e-11e1-909d-c80aa9edcf4e, 
-				Subject of information|d0664c4f-7d8e-11e1-909d-c80aa9edcf4e, Subject relationship context|dace9d13-7d8e-11e1-909d-c80aa9edcf4e, 
-				Surgical approach|e3cd666d-7d8e-11e1-909d-c80aa9edcf4e, Temporal context|ed96447d-7d8e-11e1-909d-c80aa9edcf4e, 
-				Time aspect|f415bcce-7d8e-11e1-909d-c80aa9edcf4e, Using access device|fa9538a9-7d8e-11e1-909d-c80aa9edcf4e, 
-				Using device|06588655-7d8f-11e1-909d-c80aa9edcf4e, Using energy|0c2ae0bc-7d8f-11e1-909d-c80aa9edcf4e, 
-				Using substance|13d2c607-7d8f-11e1-909d-c80aa9edcf4e, IS A|1ce7a784-7d8f-11e1-909d-c80aa9edcf4e, 
+				Access|f9e90b29-7d8c-11e1-909d-c80aa9edcf4e, After|01b60e29-7d8d-11e1-909d-c80aa9edcf4e, Clinical course|5f7c3702-7d8d-11e1-909d-c80aa9edcf4e,
+				Component|67debecc-7d8d-11e1-909d-c80aa9edcf4e, Direct device|718c00da-7d8d-11e1-909d-c80aa9edcf4e,
+				Direct morphology|7b9509cb-7d8d-11e1-909d-c80aa9edcf4e, Direct substance|82bb495d-7d8d-11e1-909d-c80aa9edcf4e,
+				Due to|8b77f7d3-7d8d-11e1-909d-c80aa9edcf4e, Episodicity|94a81179-7d8d-11e1-909d-c80aa9edcf4e,
+				Finding context|9d23c22e-7d8d-11e1-909d-c80aa9edcf4e, Finding informer|a4524368-7d8d-11e1-909d-c80aa9edcf4e,
+				Finding method|af089254-7d8d-11e1-909d-c80aa9edcf4e, Has active ingredient|b65aa605-7d8d-11e1-909d-c80aa9edcf4e,
+				Has definitional manifestation|c2b7b2fa-7d8d-11e1-909d-c80aa9edcf4,	Has dose form|cc3878e6-7d8d-11e1-909d-c80aa9edcf4e,
+				Has focus|d67c5840-7d8d-11e1-909d-c80aa9edcf4e, Has intent|de2fb2c5-7d8d-11e1-909d-c80aa9edcf4e,
+				Has interpretation|e758838b-7d8d-11e1-909d-c80aa9edcf4e, Indirect device|ee63c142-7d8d-11e1-909d-c80aa9edcf4e,
+				Indirect morphology|f4f36681-7d8d-11e1-909d-c80aa9edcf4e, Interprets|fc7f5fed-7d8d-11e1-909d-c80aa9edcf4e,
+				Measurement method|06b11d79-7d8e-11e1-909d-c80aa9edcf4e, Method|0efb4753-7d8e-11e1-909d-c80aa9edcf4e,
+				Occurrence|16e7b617-7d8e-11e1-909d-c80aa9edcf4e, Part of|1e82007b-7d8e-11e1-909d-c80aa9edcf4e,
+				Pathological process|2969915e-7d8e-11e1-909d-c80aa9edcf4e, Priority|32d57796-7d8e-11e1-909d-c80aa9edcf4e,
+				Procedure context|3f11904c-7d8e-11e1-909d-c80aa9edcf4e, Procedure device|468c4aa3-7d8e-11e1-909d-c80aa9edcf4e,
+				Procedure morphology|5383e889-7d8e-11e1-909d-c80aa9edcf4e, Procedure site|5ad2655d-7d8e-11e1-909d-c80aa9edcf4e,
+				Procedure site - Direct|66085196-7d8e-11e1-909d-c80aa9edcf4e, Procedure site - Indirect|7080e843-7d8e-11e1-909d-c80aa9edcf4e,
+				Property|76bfb796-7d8e-11e1-909d-c80aa9edcf4e, Recipient category|7e7d00e4-7d8e-11e1-909d-c80aa9edcf4e,
+				Revision status|851e14c1-7d8e-11e1-909d-c80aa9edcf4e, Route of administration|8ee5b13d-7d8e-11e1-909d-c80aa9edcf4e,
+				Scale type|986acf48-7d8e-11e1-909d-c80aa9edcf4e, Specimen procedure|a6937642-7d8e-11e1-909d-c80aa9edcf4e,
+				Specimen source identity|b1d6941e-7d8e-11e1-909d-c80aa9edcf4e, Specimen source morphology|b7c793c1-7d8e-11e1-909d-c80aa9edcf4e,
+				Specimen source topography|be9f9eb8-7d8e-11e1-909d-c80aa9edcf4e, Specimen substance|c8f2bacb-7d8e-11e1-909d-c80aa9edcf4e,
+				Subject of information|d0664c4f-7d8e-11e1-909d-c80aa9edcf4e, Subject relationship context|dace9d13-7d8e-11e1-909d-c80aa9edcf4e,
+				Surgical approach|e3cd666d-7d8e-11e1-909d-c80aa9edcf4e, Temporal context|ed96447d-7d8e-11e1-909d-c80aa9edcf4e,
+				Time aspect|f415bcce-7d8e-11e1-909d-c80aa9edcf4e, Using access device|fa9538a9-7d8e-11e1-909d-c80aa9edcf4e,
+				Using device|06588655-7d8f-11e1-909d-c80aa9edcf4e, Using energy|0c2ae0bc-7d8f-11e1-909d-c80aa9edcf4e,
+				Using substance|13d2c607-7d8f-11e1-909d-c80aa9edcf4e, IS A|1ce7a784-7d8f-11e1-909d-c80aa9edcf4e,
 				MAY BE A|267812a3-7d8f-11e1-909d-c80aa9edcf4e, MOVED FROM|2de3168e-7d8f-11e1-909d-c80aa9edcf4e,
 				MOVED TO|32f0fd99-7d8f-11e1-909d-c80aa9edcf4e, REPLACED BY|3b3b9a7d-7d8f-11e1-909d-c80aa9edcf4e, WAS A|41a034da-7d8f-11e1-909d-c80aa9edcf4e
 			</param>
 		</customChange>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030g" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
@@ -5237,11 +5237,11 @@
 		<addColumn tableName="concept_reference_map">
 			<column name="concept_map_type_id" type="int" defaultValue="1"><constraints nullable="false"/></column>
 		</addColumn>
-		<addForeignKeyConstraint constraintName="mapped_concept_map_type" 
-			referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" 
+		<addForeignKeyConstraint constraintName="mapped_concept_map_type"
+			referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id"
 			baseTableName="concept_reference_map" baseColumnNames="concept_map_type_id" />
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030h" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
@@ -5252,11 +5252,11 @@
 		<addColumn tableName="concept_reference_map">
 			<column name="changed_by" type="int"/>
 		</addColumn>
-		<addForeignKeyConstraint constraintName="mapped_user_changed_ref_term" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_changed_ref_term"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_reference_map" baseColumnNames="changed_by" />
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030i" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<and>
@@ -5268,7 +5268,7 @@
 			<column name="date_changed" type="DATETIME" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030j" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_reference_term_map" /></not>
@@ -5287,23 +5287,23 @@
 			<column name="date_changed" type="DATETIME" />
 			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
 		</createTable>
-		<addForeignKeyConstraint constraintName="mapped_term_a" 
-			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" 
+		<addForeignKeyConstraint constraintName="mapped_term_a"
+			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id"
 			baseTableName="concept_reference_term_map" baseColumnNames="term_a_id" />
-		<addForeignKeyConstraint constraintName="mapped_term_b" 
-			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" 
+		<addForeignKeyConstraint constraintName="mapped_term_b"
+			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id"
 			baseTableName="concept_reference_term_map" baseColumnNames="term_b_id" />
-		<addForeignKeyConstraint constraintName="mapped_concept_map_type_ref_term_map" 
-			referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" 
+		<addForeignKeyConstraint constraintName="mapped_concept_map_type_ref_term_map"
+			referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id"
 			baseTableName="concept_reference_term_map" baseColumnNames="a_is_to_b_id" />
-		<addForeignKeyConstraint constraintName="mapped_user_creator_ref_term_map" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_creator_ref_term_map"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_reference_term_map" baseColumnNames="creator" />
-		<addForeignKeyConstraint constraintName="mapped_user_changed_ref_term_map" 
-			referencedTableName="users" referencedColumnNames="user_id" 
+		<addForeignKeyConstraint constraintName="mapped_user_changed_ref_term_map"
+			referencedTableName="users" referencedColumnNames="user_id"
 			baseTableName="concept_reference_term_map" baseColumnNames="changed_by" />
 	</changeSet>
-		
+
 	<changeSet id="20110301-1030m" author="wyclif" dbms="mysql">
 		<validCheckSum><comment>Initial SQL version</comment>3:523b32f95b74186733ebf2be0ef4ba7f</validCheckSum>
 		<validCheckSum><comment>Changed to Java</comment>3:b286407bfcdf3853512cb15009c816f1</validCheckSum>
@@ -5316,17 +5316,17 @@
 		<comment>Creating concept reference terms from existing rows in the concept_reference_map table</comment>
 		<customChange class="org.openmrs.util.databasechange.MigrateConceptReferenceTermChangeSet" />
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030n" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyName="mapped_concept_reference_term" /></not>
 		</preConditions>
 		<comment>Adding foreign key constraint to concept_reference_map.concept_reference_term_id column</comment>
-		<addForeignKeyConstraint constraintName="mapped_concept_reference_term" 
-			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" 
+		<addForeignKeyConstraint constraintName="mapped_concept_reference_term"
+			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id"
 			baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id" />
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030o" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyName="map_source"/>
@@ -5334,7 +5334,7 @@
 		<comment>Dropping foreign key constraint on concept_reference_map.source column</comment>
 		<dropForeignKeyConstraint baseTableName="concept_reference_map"  constraintName="map_source"/>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030p" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="source"/>
@@ -5342,7 +5342,7 @@
 		<comment>Dropping concept_reference_map.source column</comment>
 		<dropColumn tableName="concept_reference_map" columnName="source"/>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030q" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="source_code"/>
@@ -5350,7 +5350,7 @@
 		<comment>Dropping concept_reference_map.source_code column</comment>
 		<dropColumn tableName="concept_reference_map" columnName="source_code"/>
 	</changeSet>
-	
+
 	<changeSet id="20110301-1030r" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="comment"/>
@@ -5365,7 +5365,7 @@
 		</preConditions>
 		<comment>Remove ON DELETE CASCADE from relationship table for person_a</comment>
 		<dropForeignKeyConstraint baseTableName="relationship" constraintName="person_a" />
-		<addForeignKeyConstraint baseColumnNames="person_a" baseTableName="relationship" constraintName="person_a_is_person" 
+		<addForeignKeyConstraint baseColumnNames="person_a" baseTableName="relationship" constraintName="person_a_is_person"
             deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
 	</changeSet>
 
@@ -5375,10 +5375,10 @@
 		</preConditions>
 		<comment>Remove ON DELETE CASCADE from relationship table for person_b</comment>
 		<dropForeignKeyConstraint baseTableName="relationship" constraintName="person_b" />
-		<addForeignKeyConstraint baseColumnNames="person_b" baseTableName="relationship" constraintName="person_b_is_person" 
+		<addForeignKeyConstraint baseColumnNames="person_b" baseTableName="relationship" constraintName="person_b_is_person"
             deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
 	</changeSet>
-        
+
 	<changeSet id="20090316-1008-fix" author="sunbiz" dbms="mysql">
 		<comment>(Fixed)Changing from smallint to BOOLEAN type on BOOLEAN properties</comment>
 		<ext:modifyColumn tableName="cohort">
@@ -5470,22 +5470,22 @@
 			<column name="retired" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false" />
 			</column>
-		</ext:modifyColumn>		
+		</ext:modifyColumn>
 		<ext:modifyColumn tableName="form_field">
 			<column name="required" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false" />
 			</column>
-		</ext:modifyColumn>		
+		</ext:modifyColumn>
 		<ext:modifyColumn tableName="location_tag">
 			<column name="retired" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false" />
 			</column>
-		</ext:modifyColumn>		
+		</ext:modifyColumn>
 		<ext:modifyColumn tableName="obs">
 			<column name="voided" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false" />
 			</column>
-		</ext:modifyColumn>		
+		</ext:modifyColumn>
 		<ext:modifyColumn tableName="order_type">
 			<column name="retired" type="boolean" defaultValueBoolean="false">
 				<constraints nullable="false" />
@@ -5610,7 +5610,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	
+
 	<changeSet id="201109152336" author="bwolfe">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="1">
@@ -5633,7 +5633,7 @@
 		</comment>
 		<sql>
 			<![CDATA[
-				UPDATE person_attribute set voided = true, void_reason = 'Empty values not allowed', 
+				UPDATE person_attribute set voided = true, void_reason = 'Empty values not allowed',
 				date_voided = date_created, voided_by = creator
 				WHERE value = ''
 				AND voided = false
@@ -5685,7 +5685,7 @@
  		<addForeignKeyConstraint constraintName="provider_person_id_fk"
  			baseTableName="provider" baseColumnNames="person_id"
  			referencedTableName="person" referencedColumnNames="person_id" />
- 
+
  		<addForeignKeyConstraint constraintName="provider_retired_by_fk"
  			baseTableName="provider" baseColumnNames="retired_by"
  			referencedTableName="users" referencedColumnNames="user_id" />
@@ -5704,7 +5704,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-  	
+
      <changeSet id="20110510-11702-create-provider-attribute-type-table" author="zabil">
      	 <validCheckSum>3:d96f09404f0aeea2956206b8941c55d0</validCheckSum>
      	 <validCheckSum>3:dabb301881068d6f011eeefb026c46a7</validCheckSum>
@@ -5771,7 +5771,7 @@
 			<column name="preferred_handler" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
-     
+
      <changeSet id="20110628-1400-create-provider-attribute-table" author="kishoreyekkanti">
          <validCheckSum>3:6b869e17f82b860055f27d0953a42f63</validCheckSum>
          <validCheckSum>3:298aaacafd48547be294f4c9b7c40d35</validCheckSum>
@@ -5872,7 +5872,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
- 
+
      <changeSet id="20110811-1205-create-encounter-provider-table" author="sree/vishnu">
          <validCheckSum>3:694e9f92781b1a42d18d6af65d8e6c14</validCheckSum>
          <validCheckSum>3:e20ca5412e37df98c58a39552aafb5ad</validCheckSum>
@@ -5918,7 +5918,7 @@
 			</column>
 		</ext:modifyColumn>
 	 </changeSet>
-     
+
      <changeSet id="20110819-1455-insert-unknown-encounter-role" author="raff">
 	     	<preConditions onFail="MARK_RAN">
  			<sqlCheck expectedResult="0">
@@ -5939,7 +5939,7 @@
 			<prepend value="SELECT setval('encounter_role_encounter_role_id_seq', (SELECT MAX(encounter_role_id) FROM encounter_role)+1);"/>
 		</modifySql>
      </changeSet>
-     
+
      <changeSet id="20110825-1000-creating-providers-for-persons-from-encounter" author="raff" dbms="mysql">
      	<validCheckSum>3:d0da8b0b930623f6c62e2bd02bc2523b</validCheckSum>
      	<validCheckSum><comment>Changing identifier from person.person_id to user.system_id</comment>3:cccc02519a766bd8fde048cea13d307c</validCheckSum>
@@ -5953,40 +5953,40 @@
  		<comment>Creating providers for persons from the encounter table</comment>
  		<sql>
  			insert into provider(person_id, identifier, creator, date_created, retired, uuid)
- 				select distinct person.person_id, CONCAT('prov', SUBSTRING(person.uuid, 5)), 1, CURRENT_TIMESTAMP, false, CONCAT('prov', SUBSTRING(person.uuid, 5)) 
+ 				select distinct person.person_id, CONCAT('prov', SUBSTRING(person.uuid, 5)), 1, CURRENT_TIMESTAMP, false, CONCAT('prov', SUBSTRING(person.uuid, 5))
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
  					left join users as user on user.person_id = person.person_id
  				where user.person_id is null and encounter.provider_id not in (select person_id from provider);
- 				
+
  			insert into provider(person_id, identifier, creator, date_created, retired, retired_by, date_retired, retire_reason, uuid)
  				select distinct person.person_id, user.system_id, 1, CURRENT_TIMESTAMP, user.retired, user.retired_by, user.date_retired, user.retire_reason, CONCAT('prov', SUBSTRING(person.uuid, 5))
  				from person as person
  					inner join encounter as encounter on encounter.provider_id = person.person_id
- 					left join (select max(users.user_id) as user_id, users.system_id, users.person_id, users.retired, users.retired_by, users.date_retired, users.retire_reason 
- 							from users as users group by users.person_id) as user 
+ 					left join (select max(users.user_id) as user_id, users.system_id, users.person_id, users.retired, users.retired_by, users.date_retired, users.retire_reason
+ 							from users as users group by users.person_id) as user
  						on person.person_id = user.person_id
  				where user.user_id is not null and encounter.provider_id not in (select person_id from provider);
          </sql>
  	</changeSet>
-     
+
      <changeSet id="20110825-1000-migrating-providers-to-encounter-provider" author="raff" dbms="mysql">
      	<preConditions onFail="MARK_RAN">
  			<columnExists tableName="encounter" columnName="provider_id"/>
  		</preConditions>
  		<comment>Migrating providers from the encounter table to the encounter_provider table</comment>
- 		<sql>			
- 			insert into encounter_provider(provider_id, encounter_id, encounter_role_id, creator, date_created, voided, uuid) 
- 				select distinct provider.provider_id, encounter.encounter_id, encounter_role.encounter_role_id, 
+ 		<sql>
+ 			insert into encounter_provider(provider_id, encounter_id, encounter_role_id, creator, date_created, voided, uuid)
+ 				select distinct provider.provider_id, encounter.encounter_id, encounter_role.encounter_role_id,
  					encounter.creator, encounter.date_created, encounter.voided, encounter.uuid
- 				from encounter as encounter 
- 					inner join encounter_role as encounter_role 
+ 				from encounter as encounter
+ 					inner join encounter_role as encounter_role
  						on encounter_role.uuid = "a0b03050-c99b-11e0-9572-0800200c9a66"
  					inner join provider as provider on encounter.provider_id = provider.person_id
  				where encounter.encounter_id not in (select encounter_id from encounter_provider);
          </sql>
  	</changeSet>
- 	
+
  	<changeSet id="20110825-1000-drop-provider-id-column-from-encounter-table" author="raff">
  		<preConditions onFail="MARK_RAN">
  			<columnExists tableName="encounter" columnName="provider_id"/>
@@ -5995,7 +5995,7 @@
  		<dropForeignKeyConstraint baseTableName="encounter" constraintName="encounter_provider"/>
          <dropColumn tableName="encounter" columnName="provider_id"/>
  	</changeSet>
- 	
+
 	<changeSet id="20111008-0938-1" author="djazayeri">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="global_property" columnName="datatype" /></not>
@@ -6004,7 +6004,7 @@
 		<addColumn tableName="global_property">
 			<column name="datatype" type="varchar(255)" />
 		</addColumn>
-	</changeSet> 	
+	</changeSet>
 
 	<changeSet id="20111008-0938-2" author="djazayeri">
 		<preConditions onFail="MARK_RAN">
@@ -6034,7 +6034,7 @@
 		<addColumn tableName="global_property">
 			<column name="handler_config" type="text" />
 		</addColumn>
-	</changeSet> 	
+	</changeSet>
 
     <changeSet id="201110091820-a" author="jkeiper">
 		<preConditions onFail="MARK_RAN">
@@ -6055,7 +6055,7 @@
             <column name="template" type="text"/>
         </addColumn>
 	</changeSet>
-	
+
 	<changeSet id="20110326-1" author="Knoll_Frank">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="obs" columnName="previous_version"/></not>
@@ -6063,11 +6063,11 @@
 		<comment>
 			Add obs.previous_version column (TRUNK-420)
 		</comment>
-		
+
 		<addColumn tableName="obs">
 			<column name="previous_version" type="int" />
 		</addColumn>
-		
+
 		<addForeignKeyConstraint constraintName="previous_version"
 			baseTableName="obs" baseColumnNames="previous_version"
 			referencedTableName="obs" referencedColumnNames="obs_id"
@@ -6104,7 +6104,7 @@
 				<constraints nullable="false"/>
 			</column>
 			<column name="name" type="varchar(255)">
-				<constraints nullable="false"/> 
+				<constraints nullable="false"/>
 			</column>
 			<column name="value_reference" type="text">
 				<constraints nullable="false"/>
@@ -6120,7 +6120,7 @@
 		<addForeignKeyConstraint constraintName="form_resource_form_fk"
             baseTableName="form_resource" baseColumnNames="form_id" referencedTableName="form"
             referencedColumnNames="form_id" />
-		<addUniqueConstraint tableName="form_resource" 
+		<addUniqueConstraint tableName="form_resource"
 			constraintName="unique_form_and_name" columnNames="form_id,name" />
 	</changeSet>
 
@@ -6131,7 +6131,7 @@
 		<comment>
 			Fix all the old void_reason content and add in the new previous_version to the matching obs row (POTENTIALLY VERY SLOW FOR LARGE OBS TABLES)
 		</comment>
-		
+
 		<sql>
 			UPDATE obs,
 					(SELECT obs_id AS previous_version,
@@ -6141,7 +6141,7 @@
 					WHERE obs.obs_id = TMP_TAB.new_obs;
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="20111128-1601" author="wyclif" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
@@ -6163,11 +6163,11 @@
 			<column name="uuid" value="8c17b376-1a2b-11e1-a51a-00248140a5eb" />
 		</insert>
 	</changeSet>
-	
+
 	<changeSet id="20111209-1400-deleting-non-existing-roles-from-role-role-table" author="raff">
 		<comment>Deleting non-existing roles from the role_role table</comment>
 		<sql>
-			DELETE FROM role_role WHERE parent_role NOT IN (SELECT role FROM role) 
+			DELETE FROM role_role WHERE parent_role NOT IN (SELECT role FROM role)
 				OR child_role NOT IN (SELECT role FROM role);
 		</sql>
 	</changeSet>
@@ -6181,27 +6181,27 @@
 			</not>
 		</preConditions>
 		<comment>Associating daemon user with a person</comment>
- 		<sql>	
+ 		<sql>
  			insert into person (gender, birthdate_estimated, dead, creator, date_created, voided, uuid)
  			values ( '', false, false, 1, '2011-12-12', false, 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB');
- 				
+
  			insert into person_name (preferred, person_id, given_name, family_name, creator, date_created, voided, uuid)
- 			select true, person_id, 'daemon', 'daemon', 1, '2011-12-12', false, 'C4F30A1B-5EB9-11DF-A648-37A07F9C90FB'  
+ 			select true, person_id, 'daemon', 'daemon', 1, '2011-12-12', false, 'C4F30A1B-5EB9-11DF-A648-37A07F9C90FB'
  			from person where uuid = 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB';
- 			
- 			update users set person_id = (select person_id from person where uuid = 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB') 
+
+ 			update users set person_id = (select person_id from person where uuid = 'B4F30A1B-5EB9-11DF-A648-37A07F9C90FB')
  			where person_id IS NULL AND uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB';
          </sql>
  	</changeSet>
- 	
+
  	<changeSet id="20100426-1111-add-not-null-personid-contraint" author="dkayiwa" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="users" columnName="person_id"/>
 		</preConditions>
 		<comment>Add the not null person id contraint</comment>
-		<addNotNullConstraint tableName="users" columnName="person_id" columnDataType="int"/>				
+		<addNotNullConstraint tableName="users" columnName="person_id" columnDataType="int"/>
 	</changeSet>
-	
+
  	<changeSet id="20111214-1500-setting-super-user-gender" author="raff">
      	<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="1">
@@ -6209,11 +6209,11 @@
 			</sqlCheck>
 		</preConditions>
 		<comment>Setting super user gender</comment>
- 		<sql>	
+ 		<sql>
  			update person set gender = 'M' where person_id = 1;
  		</sql>
  	</changeSet>
-	
+
 	<changeSet id="20111218-1830" author="abbas">
 		<validCheckSum>3:4cf83ec393438309efc80e0ba7fedf55</validCheckSum>
 		<validCheckSum>3:5f096b88988f19d9d3e596c03fba2b90</validCheckSum>
@@ -6226,7 +6226,7 @@
 			Add unique uuid constraint and attributes inherited from BaseOpenmrsData to the person_merge_log table
 		</comment>
 		<addUniqueConstraint tableName="person_merge_log"
-			columnNames="uuid" constraintName="person_merge_log_unique_uuid" />		
+			columnNames="uuid" constraintName="person_merge_log_unique_uuid" />
 		<addColumn tableName="person_merge_log">
 			<column name="changed_by" type="int" />
 		</addColumn>
@@ -6265,7 +6265,7 @@
 			</column>
 		</ext:modifyColumn>
 	</changeSet>
-	 	
+
 	<changeSet id="20111218-2274" author="gsluthra">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="1">
@@ -6278,7 +6278,7 @@
 			<where>concept_id=679 and description='Blood test to measure the number of white blood cells.'</where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="20111219-1404" author="bwolfe">
 		<comment>Fix empty descriptions on relationship types</comment>
 		<update tableName="relationship_type">
@@ -6286,7 +6286,7 @@
 			<where>description is null or description = ''</where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="20111222-1659" author="djazayeri">
 		<comment>Create clob_datatype_storage table</comment>
 		<createTable tableName="clob_datatype_storage">
@@ -6304,16 +6304,16 @@
 			<column name="uuid" />
 		</createIndex>
 	</changeSet>
-	
+
 	<changeSet id="201202020847" author="abbas">
 		<comment>Change merged_data column type to CLOB in person_merge_log table</comment>
 		<modifyDataType tableName="person_merge_log" columnName="merged_data" newDataType="CLOB"/>
-		<!-- modifyDataType has a bug causing the column to lose notNull constraint. 
+		<!-- modifyDataType has a bug causing the column to lose notNull constraint.
 		see: http://liquibase.jira.com/browse/CORE-670
 		temp fix, add the not null constraint after modifying the data type -->
 		<addNotNullConstraint tableName="person_merge_log" columnName="merged_data" columnDataType="CLOB"/>
 	</changeSet>
-	
+
 	<changeSet id="20120322-1510" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -6330,7 +6330,7 @@
 		<comment>Increase size of drug name column to 255 characters</comment>
 		<modifyDataType tableName="drug" columnName="name" newDataType="varchar(255)"/>
 	</changeSet>
-	
+
 	<changeSet id="20120504-1000" author="raff">
 		<preConditions onFail="HALT">
 			<sqlCheck expectedResult="0">
@@ -6413,7 +6413,7 @@
 			referencedTableName="concept" referencedColumnNames="concept_id"
 			baseTableName="drug_ingredient" baseColumnNames="ingredient_id" />
 	</changeSet>
-	
+
 	<changeSet id="200912141000-drug-add-date-changed" author="dkayiwa">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -6427,7 +6427,7 @@
 			<column name="date_changed" type="datetime" />
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="200912141001-drug-add-changed-by" author="dkayiwa">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -6444,497 +6444,497 @@
 			baseTableName="drug" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-	
+
 	<changeSet id="10-insert-new-app-privileges" author="dkayiwa">
 		<comment>Inserting the new application privileges</comment>
 		<sql>
-			insert into privilege (privilege, description, uuid) 
+			insert into privilege (privilege, description, uuid)
 			select 'Patient Overview - View Patient Actions', 'Able to view the Patient Actions portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a264'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Patient Actions') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Patient Overview - View Programs', 'Able to view the Programs portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a263'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Programs') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Patient Overview - View Relationships', 'Able to view the Relationships portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a262'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Relationships') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Patient Overview - View Allergies', 'Able to view the Allergies portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a261'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Allergies') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Patient Overview - View Problem List', 'Able to view the Problem List portlet on the patient overview tab', 'd05118c6-2490-4d78-a41a-390e3596a260'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Patient Overview - View Problem List') limit 1;
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="11-insert-new-api-privileges" author="dkayiwa">
 		<comment>Inserting the new API privileges</comment>
 		<sql>
-			insert into privilege (privilege, description, uuid) 
+			insert into privilege (privilege, description, uuid)
 			select 'Get Concepts', 'Able to get concept entries', 'd05118c6-2490-4d78-a41a-390e3596a251'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concepts') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Concept Proposals', 'Able to get concept proposals to the system', 'd05118c6-2490-4d78-a41a-390e3596a250'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Proposals') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Users', 'Able to get users in OpenMRS', 'd05118c6-2490-4d78-a41a-390e3596a249'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Users') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Encounters', 'Able to get patient encounters', 'd05118c6-2490-4d78-a41a-390e3596a248'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Encounters') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Encounter Types', 'Able to get encounter types', 'd05118c6-2490-4d78-a41a-390e3596a247'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Encounter Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Locations', 'Able to get locations', 'd05118c6-2490-4d78-a41a-390e3596a246'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Locations') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Observations', 'Able to get patient observations', 'd05118c6-2490-4d78-a41a-390e3596a245'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Observations') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Patients', 'Able to get patients', 'd05118c6-2490-4d78-a41a-390e3596a244'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Patients') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Patient Identifiers', 'Able to get patient identifiers', 'd05118c6-2490-4d78-a41a-390e3596a243'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Patient Identifiers') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Patient Cohorts', 'Able to get patient cohorts', 'd05118c6-2490-4d78-a41a-390e3596a242'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Patient Cohorts') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Orders', 'Able to get orders', 'd05118c6-2490-4d78-a41a-390e3596a241'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Orders') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Forms', 'Able to get forms', 'd05118c6-2490-4d78-a41a-390e3596a240'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Forms') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Identifier Types', 'Able to get patient identifier types', 'd05118c6-2490-4d78-a41a-390e3596a239'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Identifier Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Concept Classes', 'Able to get concept classes', 'd05118c6-2490-4d78-a41a-390e3596a238'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Classes') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Concept Datatypes', 'Able to get concept datatypes', 'd05118c6-2490-4d78-a41a-390e3596a237'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Datatypes') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Privileges', 'Able to get user privileges', 'd05118c6-2490-4d78-a41a-390e3596a236'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Privileges') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Roles', 'Able to get user roles', 'd05118c6-2490-4d78-a41a-390e3596a235'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Roles') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Field Types', 'Able to get field types', 'd05118c6-2490-4d78-a41a-390e3596a234'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Field Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Order Types', 'Able to get order types', 'd05118c6-2490-4d78-a41a-390e3596a233'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Order Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Relationship Types', 'Able to get relationship types', 'd05118c6-2490-4d78-a41a-390e3596a232'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Relationship Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Concept Sources', 'Able to get concept sources', 'd05118c6-2490-4d78-a41a-390e3596a231'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Sources') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Concept Map Types', 'Able to get concept map types', 'd05118c6-2490-4d78-a41a-390e3596a230'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Map Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Concept Reference Terms', 'Able to get concept reference terms', 'd05118c6-2490-4d78-a41a-390e3596a229'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Concept Reference Terms') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Programs', 'Able to get patient programs', 'd05118c6-2490-4d78-a41a-390e3596a228'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Programs') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Patient Programs', 'Able to get which programs that patients are in', 'd05118c6-2490-4d78-a41a-390e3596a227'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Patient Programs') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Global Properties', 'Able to get global properties on the administration screen', 'd05118c6-2490-4d78-a41a-390e3596a226'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Global Properties') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Person Attribute Types', 'Able to get person attribute types', 'd05118c6-2490-4d78-a41a-390e3596a225'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Person Attribute Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get People', 'Able to get person objects', 'd05118c6-2490-4d78-a41a-390e3596a224'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get People') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Relationships', 'Able to get relationships', 'd05118c6-2490-4d78-a41a-390e3596a223'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Relationships') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Database Changes', 'Able to get database changes from the admin screen', 'd05118c6-2490-4d78-a41a-390e3596a222'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Database Changes') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Problems', 'Able to get problems', 'd05118c6-2490-4d78-a41a-390e3596a221'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Problems') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Allergies', 'Able to get allergies', 'd05118c6-2490-4d78-a41a-390e3596a220'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Allergies') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get HL7 Source', 'Able to get an HL7 Source', 'd05118c6-2490-4d78-a41a-390e3596a219'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get HL7 Source') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get HL7 Inbound Queue', 'Able to get an HL7 Queue item', 'd05118c6-2490-4d78-a41a-390e3596a218'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Queue') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get HL7 Inbound Archive', 'Able to get an HL7 archive item', 'd05118c6-2490-4d78-a41a-390e3596a217'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Archive') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get HL7 Inbound Exception', 'Able to get an HL7 error item', 'd05118c6-2490-4d78-a41a-390e3596a216'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get HL7 Inbound Exception') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Visit Types', 'Able to get visit types', 'd05118c6-2490-4d78-a41a-390e3596a215'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Visit Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Visits', 'Able to get visits', 'd05118c6-2490-4d78-a41a-390e3596a214'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Visits') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Visit Attribute Types', 'Able to get visit attribute types', 'd05118c6-2490-4d78-a41a-390e3596a213'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Visit Attribute Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Location Attribute Types', 'Able to get location attribute types', 'd05118c6-2490-4d78-a41a-390e3596a212'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Location Attribute Types') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Providers', 'Able to get Providers', 'd05118c6-2490-4d78-a41a-390e3596a211'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Providers') limit 1;
-			
-			insert into privilege (privilege, description, uuid) 
+
+			insert into privilege (privilege, description, uuid)
 			select 'Get Encounter Roles', 'Able to get encounter roles', 'd05118c6-2490-4d78-a41a-390e3596a210'
 			from privilege
 			where not exists (select privilege from privilege where privilege = 'Get Encounter Roles') limit 1;
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="1-grant-new-dashboard-overview-tab-app-privileges" author="dkayiwa">
 		<comment>Granting the new patient overview tab application privileges</comment>
 		<sql>
-			insert into role_privilege (role, privilege) 
+			insert into role_privilege (role, privilege)
 			select role, 'Patient Overview - View Patient Actions' from role_privilege rp
 			where rp.privilege = 'Patient Dashboard - View Overview Section'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Patient Actions' and rp2.role=rp.role);
-		
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Patient Overview - View Programs' from role_privilege rp
 			where rp.privilege = 'View Patient Programs'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Programs' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Patient Overview - View Relationships' from role_privilege rp
 			where rp.privilege = 'View Relationships'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Relationships' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Patient Overview - View Allergies' from role_privilege rp
 			where rp.privilege = 'View Allergies'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Allergies' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Patient Overview - View Problem List' from role_privilege rp
 			where rp.privilege = 'View Problems'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Patient Overview - View Problem List' and rp2.role=rp.role);
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="2-role-assign-new-api-privileges-to-renamed-ones" author="dkayiwa">
 		<comment>Assigning the new API-level privileges to roles that used to have the renamed privileges</comment>
 		<sql>
-			insert into role_privilege (role, privilege) 
+			insert into role_privilege (role, privilege)
 			select role, 'Get Concepts' from role_privilege rp
 			where rp.privilege = 'View Concepts'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concepts' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Concept Proposals' from role_privilege rp
 			where rp.privilege = 'View Concept Proposals'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Proposals' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Users' from role_privilege rp
 			where rp.privilege = 'View Users'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Users' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Encounters' from role_privilege rp
 			where rp.privilege = 'View Encounters'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounters' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Encounter Types' from role_privilege rp
 			where rp.privilege = 'View Encounter Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounter Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Locations' from role_privilege rp
 			where rp.privilege = 'View Locations'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Locations' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Observations' from role_privilege rp
 			where rp.privilege = 'View Observations'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Observations' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Patients' from role_privilege rp
 			where rp.privilege = 'View Patients'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patients' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Patient Identifiers' from role_privilege rp
 			where rp.privilege = 'View Patient Identifiers'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Identifiers' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Patient Cohorts' from role_privilege rp
 			where rp.privilege = 'View Patient Cohorts'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Cohorts' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Orders' from role_privilege rp
 			where rp.privilege = 'View Orders'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Orders' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Forms' from role_privilege rp
 			where rp.privilege = 'View Forms'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Forms' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Identifier Types' from role_privilege rp
 			where rp.privilege = 'View Identifier Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Identifier Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Concept Classes' from role_privilege rp
 			where rp.privilege = 'View Concept Classes'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Classes' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Concept Datatypes' from role_privilege rp
 			where rp.privilege = 'View Concept Datatypes'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Datatypes' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Privileges' from role_privilege rp
 			where rp.privilege = 'View Privileges'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Privileges' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Roles' from role_privilege rp
 			where rp.privilege = 'View Roles'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Roles' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Field Types' from role_privilege rp
 			where rp.privilege = 'View Field Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Field Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Order Types' from role_privilege rp
 			where rp.privilege = 'View Order Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Order Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Relationship Types' from role_privilege rp
 			where rp.privilege = 'View Relationship Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Relationship Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Concept Sources' from role_privilege rp
 			where rp.privilege = 'View Concept Sources'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Sources' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Concept Map Types' from role_privilege rp
 			where rp.privilege = 'View Concept Map Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Map Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Concept Reference Terms' from role_privilege rp
 			where rp.privilege = 'View Concept Reference Terms'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Concept Reference Terms' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Programs' from role_privilege rp
 			where rp.privilege = 'View Programs'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Programs' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Patient Programs' from role_privilege rp
 			where rp.privilege = 'View Patient Programs'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Patient Programs' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Global Properties' from role_privilege rp
 			where rp.privilege = 'View Global Properties'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Global Properties' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Person Attribute Types' from role_privilege rp
 			where rp.privilege = 'View Person Attribute Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Person Attribute Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get People' from role_privilege rp
 			where rp.privilege = 'View People'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get People' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Relationships' from role_privilege rp
 			where rp.privilege = 'View Relationships'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Relationships' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Database Changes' from role_privilege rp
 			where rp.privilege = 'View Database Changes'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Database Changes' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Problems' from role_privilege rp
 			where rp.privilege = 'View Problems'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Problems' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Allergies' from role_privilege rp
 			where rp.privilege = 'View Allergies'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Allergies' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get HL7 Source' from role_privilege rp
 			where rp.privilege = 'View HL7 Source'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Source' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get HL7 Inbound Queue' from role_privilege rp
 			where rp.privilege = 'View HL7 Inbound Queue'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Queue' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get HL7 Inbound Archive' from role_privilege rp
 			where rp.privilege = 'View HL7 Inbound Archive'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Archive' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get HL7 Inbound Exception' from role_privilege rp
 			where rp.privilege = 'View HL7 Inbound Exception'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get HL7 Inbound Exception' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Visit Types' from role_privilege rp
 			where rp.privilege = 'View Visit Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visit Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Visits' from role_privilege rp
 			where rp.privilege = 'View Visits'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visits' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Visit Attribute Types' from role_privilege rp
 			where rp.privilege = 'View Visit Attribute Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Visit Attribute Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Location Attribute Types' from role_privilege rp
 			where rp.privilege = 'View Location Attribute Types'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Location Attribute Types' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Providers' from role_privilege rp
 			where rp.privilege = 'View Providers'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Providers' and rp2.role=rp.role);
-			
-			insert into role_privilege (role, privilege) 
+
+			insert into role_privilege (role, privilege)
 			select role, 'Get Encounter Roles' from role_privilege rp
 			where rp.privilege = 'View Encounter Roles'
 			and not exists (select role, privilege from role_privilege rp2 where rp2.privilege='Get Encounter Roles' and rp2.role=rp.role);
 		</sql>
 	</changeSet>
-	
+
 	<changeSet id="1-increase-privilege-col-size-privilege" author="dkayiwa">
         <validCheckSum>3:b5f33650ea723f2304f40fd60fde36df</validCheckSum><!-- old -->
         <validCheckSum>3:6ecff8787eca17532e310087cfd65a06</validCheckSum><!-- New after fixing bug where we have to first drop constraints -->
@@ -6957,7 +6957,7 @@
                                  baseTableName="role_privilege" baseColumnNames="privilege"
                                  referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
-	
+
 	<changeSet id="2-increase-privilege-col-size-rol-privilege" author="dkayiwa">
         <validCheckSum>3:96a937a1719f8e7a98ad682a5608f54b</validCheckSum><!-- old -->
         <validCheckSum>3:6fc0247ae054fedeb32a4af3775046f4</validCheckSum><!-- New after fixing bug where we have to first drop constraints -->
@@ -6977,14 +6977,14 @@
                                  baseTableName="role_privilege" baseColumnNames="privilege"
                                  referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
-	
+
 	<changeSet id="201205241728-1" author="mvorobey">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="encounter_type" columnName="view_privilege"/></not>
 		</preConditions>
 		<comment>
 			Add optional property view_privilege to encounter_type table
-		</comment>		
+		</comment>
 		<addColumn tableName="encounter_type">
 			<column name="view_privilege" type="varchar(255)">
 				<constraints nullable="true"/>
@@ -6994,14 +6994,14 @@
 			baseTableName="encounter_type" baseColumnNames="view_privilege"
 			referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
-	
+
 	<changeSet id="201205241728-2" author="mvorobey">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="encounter_type" columnName="edit_privilege"/></not>
 		</preConditions>
 		<comment>
 			Add optional property edit_privilege to encounter_type table
-		</comment>		
+		</comment>
 		<addColumn tableName="encounter_type">
 			<column name="edit_privilege" type="varchar(255)">
 				<constraints nullable="true"/>
@@ -7011,7 +7011,7 @@
 			baseTableName="encounter_type" baseColumnNames="edit_privilege"
 			referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
-	
+
 	<changeSet id="3-increase-privilege-col-size-person_attribute_type" author="dkayiwa">
 		<validCheckSum>3:f8e6499f5839e64223d9fb7cbe8cdbc6</validCheckSum><!-- TRUNK-3909 -->
 		<preConditions onFail="MARK_RAN">
@@ -7027,7 +7027,7 @@
 		<addForeignKeyConstraint baseTableName="person_attribute_type" baseColumnNames="edit_privilege" constraintName="privilege_which_can_edit"
                                  referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
-	
+
 	<changeSet id="20120613-0930" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="provider" columnName="identifier" />
@@ -7037,7 +7037,7 @@
 		</comment>
 		<dropNotNullConstraint tableName="provider" columnName="identifier" columnDataType="varchar(255)" />
 	</changeSet>
-	
+
 	<changeSet id="20101209-1353" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="drug_order" columnName="as_needed"/>
@@ -7095,7 +7095,7 @@
                                  baseTableName="test_order" baseColumnNames="specimen_source"
                                  referencedTableName="concept" referencedColumnNames="concept_id" />
     </changeSet>
-    
+
     <changeSet id="20121016-1504" author="wyclif">
     	<validCheckSum>3:ca4bde46e2fe247d1d4d227a539ff465</validCheckSum><!-- TRUNK-3909 -->
 		<preConditions onFail="MARK_RAN">
@@ -7124,7 +7124,7 @@
 			<where>name='Auto Close Visits Task'</where>
 		</update>
 	</changeSet>
-	
+
 	<changeSet id="20121025-TRUNK-213" author="lluismf">
 		<comment>Normalize varchar length of locale columns</comment>
 		<ext:modifyColumn tableName="concept_stop_word">
@@ -7134,7 +7134,7 @@
 			<column name="locale" type="varchar(50)"/>
 		</ext:modifyColumn>
 	</changeSet>
-    
+
     <changeSet id="20121021-TRUNK-333" author="lluismf">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_set_derived" />
@@ -7142,14 +7142,14 @@
 		<comment>Removing concept set derived table</comment>
 		<dropTable tableName="concept_set_derived"/>
 	</changeSet>
-	
+
 	<changeSet id="20121109-TRUNK-3474" author="patandre">
 		<comment>
 			Dropping not null constraint from concept_class.description column
 		</comment>
 		<dropNotNullConstraint tableName="concept_class" columnName="description" columnDataType="varchar(255)" />
 	</changeSet>
-	
+
 	<changeSet id="20121112-TRUNK-3474" author="patandre">
 		<comment>
 			Dropping not null constraint from concept_datatype.description column
@@ -7252,7 +7252,7 @@
 			<column name="display_precision" type="int" />
 		</addColumn>
 	</changeSet>
-	
+
  	<changeSet id="20130809-TRUNK-4044-duplicateEncounterRoleChangeSet" author="surangak">
 		<preConditions onFail="MARK_RAN">
 		<not>
@@ -7266,7 +7266,7 @@
 		<comment>Custom changesets to identify and resolve duplicate EncounterRole names</comment>
 		<customChange class="org.openmrs.util.databasechange.DuplicateEncounterRoleNameChangeSet"></customChange>
 	</changeSet>
-	
+
 	<changeSet id="20130809-TRUNK-4044-duplicateEncounterTypeChangeSet" author="surangak">
 		<preConditions onFail="MARK_RAN">
 		<not>
@@ -7288,11 +7288,11 @@
 			</not>
 		</preConditions>
 		<comment>
-			Adding the unique constraint to the encounter_type.name column 
+			Adding the unique constraint to the encounter_type.name column
 		</comment>
 		<addUniqueConstraint tableName="encounter_type" columnNames="name" constraintName="encounter_type_unique_name"/>
 	</changeSet>
-	
+
 		<changeSet id="20130809-TRUNK-4044-encounter_role_unique_name_constraint" author="surangak">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -7300,7 +7300,7 @@
 			</not>
 		</preConditions>
 		<comment>
-			Adding the unique constraint to the encounter_role.name column 
+			Adding the unique constraint to the encounter_role.name column
 		</comment>
 		<addUniqueConstraint tableName="encounter_role" columnNames="name" constraintName="encounter_role_unique_name"/>
 	</changeSet>
@@ -7321,7 +7321,7 @@
 			baseTableName="location_tag" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-		
+
 	<changeSet id="201401040438-TRUNK-3919" author="dkithmal">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -7351,7 +7351,7 @@
 			baseTableName="location" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-		
+
 	<changeSet id="201401040442-TRUNK-3919" author="dkithmal">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -8363,7 +8363,7 @@
             </column>
         </addColumn>
     </changeSet>
-	
+
 	<changeSet id="201402120720-TRUNK-3902" author="k-joseph">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_numeric" columnName="precise"/></not>
@@ -8397,7 +8397,7 @@
         </comment>
         <addUniqueConstraint tableName="location_attribute_type" columnNames="name" constraintName="location_attribute_type_unique_name"/>
     </changeSet>
-    
+
     <changeSet id="20140715-TRUNK-2999-remove_concept_word" author="rkorytkowski">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="concept_word"/>
@@ -8407,7 +8407,7 @@
         </comment>
         <dropTable tableName="concept_word"/>
     </changeSet>
-    
+
     <changeSet id="20140718-TRUNK-2999-remove_update_concept_index_task" author="rkorytkowski">
 		<comment>Deleting the update concept index task</comment>
 		<delete tableName="scheduler_task_config">
@@ -8431,4 +8431,8 @@
     </changeSet>
 
 
+    <changeSet id="20140718-TRUNK-4445-update_dosing_type_to_varchar_255" author="mihir">
+        <comment>Increase size of dosing type column to 255 characters</comment>
+        <modifyDataType tableName="drug_order" columnName="dosing_type" newDataType="varchar(255)"/>
+    </changeSet>
 </databaseChangeLog>

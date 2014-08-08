@@ -82,11 +82,7 @@
 			<!-- bi-directional many-to-one association to Drug -->
 
 			<many-to-one name="drug" class="org.openmrs.Drug" not-null="false" column="drug_inventory_id" access="field"/>
-            <property name="dosingType" column="dosing_type" length="50">
-                <type name="org.openmrs.util.HibernateEnumType">
-                    <param name="enumClassName">org.openmrs.DrugOrder$DosingType</param>
-                </type>
-            </property>
+            <property name="dosingType" type="java.lang.Class" column="dosing_type"  length="255"/>
             <property name="numRefills" type="int" column="num_refills" />
             <property name="dosingInstructions" type="java.lang.String" column="dosing_instructions" length="65535"/>
             <property name="duration" type="double" column="duration" length="22"/>

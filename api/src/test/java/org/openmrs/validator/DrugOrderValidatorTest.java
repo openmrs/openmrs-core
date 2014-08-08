@@ -28,6 +28,8 @@ import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
+import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.CustomDosingInstructions;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -100,7 +102,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setOrderer(Context.getProviderService().getProvider(1));
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setInstructions("Instructions");
 		order.setDosingInstructions("Test Instruction");
 		order.setPatient(patient);
@@ -165,13 +167,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if dose is null for SIMPLE dosingType
+	 * @verifies fail validation if dose is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfDoseIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDosingType(SimpleDosingInstructions.class);
 		order.setDose(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -179,13 +181,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if doseUnits is null for SIMPLE dosingType
+	 * @verifies fail validation if doseUnits is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfDoseUnitsIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDosingType(SimpleDosingInstructions.class);
 		order.setDoseUnits(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -193,13 +195,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if route is null for SIMPLE dosingType
+	 * @verifies fail validation if route is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfRouteIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDosingType(SimpleDosingInstructions.class);
 		order.setRoute(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -207,13 +209,13 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail validation if frequency is null for SIMPLE dosingType
+	 * @verifies fail validation if frequency is null for SimpleDosingInstructions dosingType
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFrequencyIsNullForSIMPLEDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.SIMPLE);
+		order.setDosingType(SimpleDosingInstructions.class);
 		order.setFrequency(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -227,7 +229,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDosingInstructionsIsNullForFREE_TEXTDosingType() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDosingInstructions(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -241,7 +243,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDoseUnitsIsNullWhenDoseIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDose(20.0);
 		order.setDoseUnits(null);
 		Errors errors = new BindException(order, "order");
@@ -256,7 +258,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfQuantityUnitsIsNullWhenQuantityIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setQuantity(20.0);
 		order.setQuantityUnits(null);
 		Errors errors = new BindException(order, "order");
@@ -271,7 +273,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfDurationUnitsIsNullWhenDurationIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(20.0);
 		order.setDurationUnits(null);
 		Errors errors = new BindException(order, "order");
@@ -334,7 +336,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugDosingUnits())));
 		
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5.0);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
@@ -357,7 +359,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugDispensingUnits())));
 		
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5.0);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
@@ -380,7 +382,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertThat(concept, not(isIn(Context.getOrderService().getDurationUnits())));
 		
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5.0);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
@@ -403,7 +405,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		assertThat(concept, not(isIn(Context.getOrderService().getDrugRoutes())));
 		
 		DrugOrder order = new DrugOrder();
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDuration(5.0);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
@@ -471,5 +473,34 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		
 		Assert.assertFalse(errors.hasFieldErrors());
+	}
+	
+	@Test
+	@Verifies(value = "should apply validation for a custom dosing type", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfBrandNameIsNotSetForCustomDosingInstructions() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = new Encounter();
+		Patient patient = Context.getPatientService().getPatient(2);
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDosingType(CustomDosingInstructions.class);
+		order.setInstructions("Instructions");
+		order.setPatient(patient);
+		encounter.setPatient(patient);
+		order.setEncounter(encounter);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
+		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order.setQuantity(2.00);
+		order.setQuantityUnits(Context.getConceptService().getConcept(51));
+		order.setNumRefills(10);
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("brandName"));
 	}
 }

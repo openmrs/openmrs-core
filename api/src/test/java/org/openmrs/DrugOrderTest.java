@@ -251,4 +251,21 @@ public class DrugOrderTest {
 		
 		assertTrue(order.hasSameOrderableAs(otherOrder));
 	}
+	
+	@Test
+	public void shouldSetDefaultDosingTypeToFreeText() throws Exception {
+		DrugOrder drugOrder = new DrugOrder();
+		assertEquals(SimpleDosingInstructions.class, drugOrder.getDosingType());
+	}
+	
+	@Test
+	public void shouldAllowToSetCustomDosingTypes() throws Exception {
+		DrugOrder drugOrder = new DrugOrder();
+		assertEquals(SimpleDosingInstructions.class, drugOrder.getDosingType());
+		CustomDosingInstructions customDosingInstructions = new CustomDosingInstructions();
+		drugOrder.setDosingType(customDosingInstructions.getClass());
+		DosingInstructions dosingInstructionsObject = drugOrder.getDosingInstructionsInstance();
+		assertEquals(customDosingInstructions.getClass(), dosingInstructionsObject.getClass());
+		assertEquals(customDosingInstructions.getClass(), drugOrder.getDosingType());
+	}
 }
