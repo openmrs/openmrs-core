@@ -156,7 +156,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Allows mocking services returned by Context. See {@link ContextMockHelper}
 	 * 
-	 * @since 1.11
+	 * @since 1.11, 1.10, 1.9.9
 	 */
 	@InjectMocks
 	protected ContextMockHelper contextMockHelper;
@@ -186,7 +186,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Initializes fields annotated with {@link Mock}.
 	 * 
-	 * @since 1.10
+	 * @since 1.11, 1.10, 1.9.9
 	 */
 	@Before
 	public void initMocks() {
@@ -194,7 +194,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
-	 * @since 1.10
+	 * @since 1.11, 1.10, 1.9.9
 	 */
 	@After
 	public void revertContextMocks() {

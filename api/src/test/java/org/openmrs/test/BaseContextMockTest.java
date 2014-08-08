@@ -23,11 +23,11 @@ import org.openmrs.api.context.UserContext;
 import org.openmrs.module.ModuleUtilTest;
 
 /**
- * Tests extending this class have a mocked UserContext and User. In addition you can mock
+ * Tests extending this class have a mocked authenticated UserContext. In addition you can mock
  * Context.get...Service() calls by annotating fields with {@link Mock}.
  * 
  * @see ModuleUtilTest
- * @since 1.11
+ * @since 1.11, 1.10, 1.9.9
  */
 public abstract class BaseContextMockTest {
 	
@@ -43,8 +43,6 @@ public abstract class BaseContextMockTest {
 	@Before
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
-		
-		contextMockHelper.authenticateMockUser();
 	}
 	
 	@After

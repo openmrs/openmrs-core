@@ -52,7 +52,7 @@ import org.openmrs.util.RoleConstants;
  * {@link org.openmrs.test.BaseContextSensitiveTest}.
  *
  * @deprecated Avoid using this by not calling Context.get...Service() in your code.
- * @since 1.11
+ * @since 1.11, 1.10, 1.9.9
  */
 @Deprecated
 public class ContextMockHelper {
@@ -118,7 +118,7 @@ public class ContextMockHelper {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(1980, 01, 01);
 		person.setBirthdate(calendar.getTime());
-		person.setGender("male");
+		person.setGender("M");
 		user.setPerson(person);
 		
 		when(userContext.getAuthenticatedUser()).thenReturn(user);
@@ -252,6 +252,7 @@ public class ContextMockHelper {
 		
 		Context.setUserContext(userContext);
 		this.userContext = userContext;
+		authenticateMockUser();
 	}
 	
 }
