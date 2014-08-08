@@ -866,7 +866,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "Form.forms.locked";
 	
-	public static final String GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED = "PersonAttributeType.locked";
+	public static final String GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED = "personAttributeTypes.locked";
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED = "PatientIdentifierType.locked";
 	

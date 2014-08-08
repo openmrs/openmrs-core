@@ -134,7 +134,7 @@
 </table>
 <input type="hidden" name="personAttributeTypeId:int" value="${personAttributeType.personAttributeTypeId}">
 <br />
-<openmrs:globalProperty key="PersonAttributeType.locked" var="PersonAttributeTypesLocked"/>
+<openmrs:globalProperty key="personAttributeTypes.locked" var="PersonAttributeTypesLocked"/>
 <input type="submit" value="<openmrs:message code="PersonAttributeType.save"/>" name="save" <c:if test="${PersonAttributeTypesLocked == 'true'}"> disabled</c:if>>
 </fieldset>
 </form>

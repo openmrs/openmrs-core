@@ -7,7 +7,8 @@
 
 <h2><openmrs:message code="PersonAttributeType.manage.title"/></h2>
 
-<a href="personAttributeType.form"><openmrs:message code="PersonAttributeType.add"/></a>
+<openmrs:globalProperty key="personAttributeTypes.locked" var="PersonAttributeTypesLocked"/>
+<a <c:if test="${PersonAttributeTypesLocked != 'true'}"> href="personAttributeType.form"</c:if>><openmrs:message code="PersonAttributeType.add"/></a>
 
 <br /><br />
 
