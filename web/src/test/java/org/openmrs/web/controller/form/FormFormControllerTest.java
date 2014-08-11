@@ -39,6 +39,7 @@ import java.net.URLConnection;
 public class FormFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	private FormService formService;
+	
 	private FormFormController controller;
 	
 	@Before
@@ -74,19 +75,20 @@ public class FormFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertSame(controller.getFormView(), mav.getViewName());
 		Assert.assertNotNull(formService.getForm(1));
 	}
-
+	
 	@Test
 	public void shouldNotDuplicateAFormWhenFormsAreLocked() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/admin/forms/formEdit.form?duplicate=true&formId=1");
+		MockHttpServletRequest request = new MockHttpServletRequest("POST",
+		        "/admin/forms/formEdit.form?duplicate=true&formId=1");
 		request.setSession(new MockHttpSession(null));
 		HttpServletResponse response = new MockHttpServletResponse();
 		controller.handleRequest(request, response);
-
+		
 		request.addParameter("name", "TRUNK");
 		request.addParameter("version", "1");
 		request.addParameter("action", "Form.Duplicate");
 		request.setContentType("application/x-www-form-urlencoded");
-
+		
 		ModelAndView mav = controller.handleRequest(request, response);
 		Assert.assertEquals("The duplicate attempt should have failed!", "index.htm", mav.getViewName());
 		Assert.assertNotEquals("formEdit.form", mav.getViewName());

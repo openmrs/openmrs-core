@@ -2007,10 +2007,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#isConceptNameSearchCaseSensitive()
+	 * @see org.openmrs.api.ConceptService#isConceptNameTableCaseSensitive()
 	 */
 	@Override
-	public boolean isConceptNameSearchCaseSensitive() {
+	public boolean isConceptNameTableCaseSensitive() {
 		return Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE, "true"));
 	}
