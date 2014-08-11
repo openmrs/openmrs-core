@@ -56,7 +56,6 @@ import org.openmrs.util.PrivilegeConstants;
  *
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
- * 
  * To get a single concept:
  * 
  * <pre>
@@ -69,7 +68,6 @@ import org.openmrs.util.PrivilegeConstants;
  * 
  * String name = concept.getPreferredName(Context.getLocale()).getName();
  * </pre>
- * 
  * To save a concept to the database
  * 
  * <pre>
@@ -1390,7 +1388,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptIdEnd ends update with this concept_id
 	 * @throws APIException
 	 * @since 1.8
-	 * @deprecated as of 1.11 call {@link #updateConceptIndexes()} or {@link #updateConceptIndex(Concept)
+	 * @deprecated as of 1.11 call {@link #updateConceptIndexes()} or
+	 *             {@link #updateConceptIndex(Concept)
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
@@ -1867,6 +1866,16 @@ public interface ConceptService extends OpenmrsService {
 	
 	/**
 	 * Determines if the given concept name is a duplicate.
+	 * <p>
+	 * Concept name is considered duplicate if it is a default non-retired name for a non-voided concept and
+	 * there is another name, which is:
+	 * <ol>
+	 * <li>equal ignoring case</li>
+	 * <li>non voided</li>
+	 * <li>in same locale or in same general language</li>
+	 * <li>non-retired and different concept</li>
+	 * <li>default name for concept</li>
+	 * </ol>
 	 * 
 	 * @param name
 	 * @return true if it is a duplicate name
@@ -1875,14 +1884,16 @@ public interface ConceptService extends OpenmrsService {
 	public boolean isConceptNameDuplicate(ConceptName name);
 	
 	/**
-	 * Reads a GP which specifies if the case is ignored by the db when searching for concept names.
+	 * Reads a GP which specifies if concept names are stored in a case sensitive way in the database.
 	 * <p>
-	 * It is an optimization parameter, which can speed up searching.
+	 * It is an optimization parameter for MySQL, which can speed up searching if set to <b>false</b>.
+	 * <p>
+	 * It is set to <b>true</b> by default.
 	 * 
-	 * @return true if search is case sensitive
+	 * @return true if names in concept name table are case sensitive
 	 * @since 1.11
 	 */
-	public boolean isConceptNameSearchCaseSensitive();
+	public boolean isConceptNameTableCaseSensitive();
 	
 	/**
 	 * Fetches un retired drugs that match the specified search phrase. The logic matches on drug
@@ -1939,7 +1950,6 @@ public interface ConceptService extends OpenmrsService {
 	 * getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan)) If there are multiple
 	 * matches for the highest-priority ConceptMapType, throw an exception
 	 * 
-	 *
 	 * @param code the code the reference term code to match on
 	 * @param conceptSource the concept source to match on
 	 * @param withAnyOfTheseTypesOrOrderOfPreference the ConceptMapTypes to match on

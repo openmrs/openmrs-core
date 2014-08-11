@@ -16,6 +16,9 @@ package org.openmrs.api.db.hibernate.search;
 import org.apache.lucene.index.FieldInvertState;
 import org.apache.lucene.search.DefaultSimilarity;
 
+/**
+ * It modifies default scoring algorithm so that the shorter the matching name is the better.
+ */
 public class ConceptNameSimilarity extends DefaultSimilarity {
 	
 	private static final long serialVersionUID = 1L;

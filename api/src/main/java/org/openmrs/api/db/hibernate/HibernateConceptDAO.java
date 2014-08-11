@@ -81,7 +81,7 @@ import org.openmrs.util.OpenmrsConstants;
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
  * <br/>
  * Use the {@link ConceptService} to access these methods
- *
+ * 
  * @see ConceptService
  */
 public class HibernateConceptDAO implements ConceptDAO {
@@ -92,7 +92,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * Sets the session factory
-	 *
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -140,7 +140,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * Convenience method that will check this concept for subtype values (ConceptNumeric,
 	 * ConceptDerived, etc) and insert a line into that subtable if needed. This prevents a
 	 * hibernate ConstraintViolationException
-	 *
+	 * 
 	 * @param concept the concept that will be inserted
 	 */
 	private void insertRowIntoSubclassIfNecessary(Concept concept) {
@@ -691,7 +691,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * gets questions for the given answer concept
-	 *
+	 * 
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByAnswer(org.openmrs.Concept)
 	 */
 	@SuppressWarnings("unchecked")
@@ -834,7 +834,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * returns a list of n-generations of parents of a concept in a concept set
-	 *
+	 * 
 	 * @param Concept current
 	 * @return List<Concept>
 	 * @throws DAOException
@@ -1292,9 +1292,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @should return a drug if either the drug name or concept name matches the phase not both
 	 * @should return distinct drugs
-	 * @should return a drug, if phrase match concept_name No need to match both concept_name and drug_name
+	 * @should return a drug, if phrase match concept_name No need to match both concept_name and
+	 *         drug_name
 	 * @should return drug when phrase match drug_name even searchDrugConceptNames is false
-	 * @should return a drug if phrase match drug_name No need to match both concept_name and drug_name
+	 * @should return a drug if phrase match drug_name No need to match both concept_name and
+	 *         drug_name
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -1728,7 +1730,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Locale language = new Locale(locale.getLanguage() + "%");
 		criteria.add(Restrictions.or(Restrictions.eq("locale", locale), Restrictions.like("locale", language)));
 		
-		if (Context.getConceptService().isConceptNameSearchCaseSensitive()) {
+		if (Context.getConceptService().isConceptNameTableCaseSensitive()) {
 			criteria.add(Restrictions.ilike("name", name));
 		} else {
 			criteria.add(Restrictions.eq("name", name));
@@ -1799,11 +1801,18 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public boolean isConceptNameDuplicate(ConceptName name) {
-		if (!name.isFullySpecifiedName() || !name.isLocalePreferred()) {
+		if (name.isVoided()) {
 			return false;
 		}
-		if (name.getConcept() != null && name.getConcept().isRetired()) {
-			return false;
+		if (name.getConcept() != null) {
+			if (name.getConcept().isRetired()) {
+				return false;
+			}
+			
+			//If it is not a default name for a concept
+			if (!name.getConcept().getName(name.getLocale()).equals(name)) {
+				return false;
+			}
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptName.class);
@@ -1811,25 +1820,29 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.or(Restrictions.eq("locale", name.getLocale()), Restrictions.eq("locale", new Locale(name
 		        .getLocale().getLanguage()))));
-		if (Context.getConceptService().isConceptNameSearchCaseSensitive()) {
+		if (Context.getConceptService().isConceptNameTableCaseSensitive()) {
 			criteria.add(Restrictions.ilike("name", name.getName()));
 		} else {
 			criteria.add(Restrictions.eq("name", name.getName()));
 		}
 		
-		criteria.add(Restrictions.or(Restrictions.eq("conceptNameType", ConceptNameType.FULLY_SPECIFIED), Restrictions.eq(
-		    "localePreferred", true)));
+		List<ConceptName> candidateNames = criteria.list();
 		
-		criteria.createAlias("concept", "concept");
-		criteria.add(Restrictions.eq("concept.retired", false));
-		if (name.getConcept() != null && name.getConcept().getConceptId() != null) {
-			criteria.add(Restrictions.ne("concept.conceptId", name.getConcept().getConceptId()));
+		for (ConceptName candidateName : candidateNames) {
+			if (candidateName.getConcept().isRetired()) {
+				continue;
+			}
+			if (candidateName.getConcept().equals(name.getConcept())) {
+				continue;
+			}
+			
+			//If it is a default name for a concept
+			if (candidateName.getConcept().getName(candidateName.getLocale()).equals(candidateName)) {
+				return true;
+			}
 		}
 		
-		criteria.setProjection(Projections.rowCount());
-		long rowCount = ((Number) criteria.uniqueResult()).longValue();
-		
-		return rowCount != 0L;
+		return false;
 	}
 	
 	/**

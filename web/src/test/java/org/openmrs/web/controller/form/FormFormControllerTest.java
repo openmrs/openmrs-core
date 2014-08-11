@@ -74,4 +74,5 @@ public class FormFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertSame(controller.getFormView(), mav.getViewName());
 		Assert.assertNotNull(formService.getForm(1));
 	}
+	
 }
