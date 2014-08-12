@@ -51,6 +51,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -396,7 +397,7 @@ public class WebModuleUtil {
 					schedulerService.shutdownTask(task);
 				}
 				catch (SchedulerException e) {
-					e.printStackTrace();
+					log.error("Couldn't stop task:" + task + " with module: " + mod);
 				}
 		}
 	}
@@ -409,7 +410,7 @@ public class WebModuleUtil {
 	 */
 	public static boolean isModulePackageNameInTaskPackageName(String modulePackageName, String taskPackageName) {
 		
-		if (modulePackageName.equals("") || taskPackageName.equals(""))
+		if (StringUtils.isBlank(modulePackageName) || StringUtils.isBlank(taskPackageName))
 			return false;
 		String[] splitModulePackageName = modulePackageName.split("\\.");
 		String[] splitTaskPackageName = taskPackageName.split("\\.");
@@ -871,6 +872,9 @@ public class WebModuleUtil {
 		
 		// remove the module's filters and filter mappings
 		unloadFilters(mod);
+		
+		// stop all tasks associated with mod
+		stopTasks(mod);
 		
 		// remove this module's entries in the dwr xml file
 		InputStream inputStream = null;
