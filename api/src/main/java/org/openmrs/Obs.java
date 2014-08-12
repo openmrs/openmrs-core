@@ -903,7 +903,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return first part of valueComplex for complex obs
 	 * @should return first part of valueComplex for non null valueComplexes
 	 * @should return non precise values for NumericConcepts
-	 * @should return proper DateFormat
+	 * @should return date in correct format
 	 */
 	public String getValueAsString(Locale locale) {
 		//branch on hl7 abbreviations
@@ -946,7 +946,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 					}
 				}
 			} else if (abbrev.equals("DT"))
-				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE));
+				return (getValueDatetime() == null ? "" : dateFormat.format(getValueDatetime()));
 			else if (abbrev.equals("TM"))
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIME));
 			else if (abbrev.equals("TS"))
