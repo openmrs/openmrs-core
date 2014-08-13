@@ -657,4 +657,27 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		return OpenmrsUtil.nullSafeEquals(this.getConcept(), otherOrder.getConcept());
 	}
+	
+	/**
+	 * A convenience method to return period start date for order.
+	 * @since 1.10
+	 *
+	 * @should return scheduledDate if Urgency is Scheduled
+	 * @should return dateActivated if Urgency is not Scheduled
+	 */
+	public Date getEffectiveStartDate() {
+		return this.urgency == Urgency.ON_SCHEDULED_DATE ? this.getScheduledDate() : this.getDateActivated();
+	}
+	
+	/**
+	 * A convenience method to return period end date for order.
+	 * @since 1.10
+	 *
+	 * @should return dateStopped if dateStopped is not null
+	 * @should return autoExpireDate if dateStopped is null
+	 */
+	public Date getEffectiveStopDate() {
+		return this.getDateStopped() != null ? this.getDateStopped() : this.getAutoExpireDate();
+	}
+	
 }

@@ -47,6 +47,7 @@ import org.openmrs.api.OrderNumberGenerator;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Propagation;
@@ -92,7 +93,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getDateActivated() == null) {
 			order.setDateActivated(new Date());
 		}
-		//Reject if there is an active order for the same orderable
+		//Reject if there is an active order for the same orderable with overlapping schedule
 		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
 		Concept concept = order.getConcept();
 		if (concept == null && isDrugOrder) {
@@ -109,8 +110,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (!isDiscontinueOrReviseOrder(order)) {
 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
 			for (Order activeOrder : activeOrders) {
-				if (order.hasSameOrderableAs(activeOrder)) {
-					throw new APIException("Cannot have more than one active order for the same orderable and care setting");
+				if (order.hasSameOrderableAs(activeOrder) && OrderUtil.checkScheduleOverlap(order, activeOrder)) {
+					throw new APIException(
+					        "Cannot have more than one active order for the same orderable and care setting at same time");
 				}
 			}
 		}
