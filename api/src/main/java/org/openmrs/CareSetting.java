@@ -14,7 +14,19 @@
 package org.openmrs;
 
 /**
- *  @since 1.10
+ * Care Setting defines the scope of care for any piece of data within the medical record. Clinical
+ * data (treatments, notes, etc.) apply within their associated care setting. Implementations
+ * working within a single context (e.g., within a single clinic, a set of coordinated clinics, or a
+ * single hospital) may use a single Care Setting for all of their data. Implementations providing
+ * care across different care settings (e.g., within clinics and within hospital) may need to define
+ * multiple care settings in order to, for example, keep orders within one care setting from
+ * affecting orders in the other care setting. Active order lists are scoped to a single care
+ * setting. In the simplest example, an implementation would define a care setting for each basic
+ * type of setting (INPATIENT, OUTPATIENT, EMERGENCY) they use. If an implementation provides care
+ * in two separate hospitals that function independently, then they would use two separate care
+ * settings like "Hospital A" and "Hospital B".
+ * 
+ * @since 1.10
  */
 public class CareSetting extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
