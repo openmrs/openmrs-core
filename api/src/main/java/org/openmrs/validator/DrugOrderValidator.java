@@ -25,6 +25,7 @@ import org.openmrs.Order;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -110,6 +111,16 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			validateFieldsForOutpatientCareSettingType(order, errors);
 			validatePairedFields(order, errors);
 			validateUnitsAreAmongAllowedConcepts(errors, order);
+			validateForRequireDrug(errors);
+		}
+	}
+	
+	private void validateForRequireDrug(Errors errors) {
+		//Reject if global property is set to specify a formulation for drug order
+		boolean requireDrug = Context.getAdministrationService().getGlobalPropertyValue(
+		    OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, false);
+		if (requireDrug) {
+			ValidationUtils.rejectIfEmpty(errors, "drug", "DrugOrder.error.drugIsRequired");
 		}
 	}
 	
