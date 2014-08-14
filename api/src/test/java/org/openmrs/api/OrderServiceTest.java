@@ -29,6 +29,8 @@ import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -1500,6 +1502,49 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(order, null);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(++initialActiveOrderCount, activeOrders.size());
+	}
+	
+	/**
+	 * @verifies roll the autoExpireDate to the end of the day if it has no time component
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldRollTheAutoExpireDateToTheEndOfTheDayIfItHasNoTimeComponent() throws Exception {
+		Order order = new TestOrder();
+		order.setPatient(patientService.getPatient(2));
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(conceptService.getConcept(5089));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
+		order.setDateActivated(dateformat.parse("14/08/2014"));
+		order.setAutoExpireDate(dateformat.parse("18/08/2014"));
+		
+		orderService.saveOrder(order, null);
+		dateformat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.S");
+		assertEquals(dateformat.parse("18/08/2014 23:59:59.999"), order.getAutoExpireDate());
+	}
+	
+	/**
+	 * @verifies not change the autoExpireDate if it has a time component
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldNotChangeTheAutoExpireDateIfItHasATimeComponent() throws Exception {
+		Order order = new TestOrder();
+		order.setPatient(patientService.getPatient(2));
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(conceptService.getConcept(5089));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		order.setDateActivated(new Date());
+		DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		order.setDateActivated(dateformat.parse("14/08/2014 10:00:00"));
+		Date autoExpireDate = dateformat.parse("18/08/2014 10:00:00");
+		order.setAutoExpireDate(autoExpireDate);
+		
+		orderService.saveOrder(order, null);
+		assertEquals(autoExpireDate, order.getAutoExpireDate());
 	}
 	
 	/**
