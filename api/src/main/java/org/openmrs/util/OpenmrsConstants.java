@@ -840,7 +840,9 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_ADDRESS_TEMPLATE = "layout.address.format";
 	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
-	
+
+	public static final String GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG = "drugOrder.requireDrug";
+
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
@@ -1456,7 +1458,10 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
-		
+
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "false",
+		        "Set to value true if you need to specify a formulation(Drug) when creating a drug order."));
+
 		props.add(new GlobalProperty(GP_NEXT_ORDER_NUMBER_SEED, "1", "The next order number available for assignment"));
 		
 		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
