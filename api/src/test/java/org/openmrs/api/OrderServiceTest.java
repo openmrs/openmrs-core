@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -1500,6 +1501,59 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(order, null);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(++initialActiveOrderCount, activeOrders.size());
+	}
+	
+	/**
+	 * @verifies roll the autoExpireDate to the end of the day if it has no time component
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldRollTheAutoExpireDateToTheEndOfTheDayIfItHasNoTimeComponent() throws Exception {
+		Order order = new TestOrder();
+		order.setPatient(patientService.getPatient(2));
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(conceptService.getConcept(5089));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		order.setDateActivated(new Date());
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(order.getDateActivated());
+		cal.add(Calendar.DAY_OF_WEEK, 4);
+		//remove time component
+		Date autoExpireDate = DateUtils.truncate(cal.getTime(), Calendar.DATE);
+		order.setAutoExpireDate(autoExpireDate);
+		
+		orderService.saveOrder(order, null);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		cal.set(Calendar.MILLISECOND, 999);
+		assertEquals(cal.getTime(), order.getAutoExpireDate());
+	}
+	
+	/**
+	 * @verifies not change the autoExpireDate if it has a time component
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldNotChangeTheAutoExpireDateIfItHasATimeComponent() throws Exception {
+		Order order = new TestOrder();
+		order.setPatient(patientService.getPatient(2));
+		order.setCareSetting(orderService.getCareSetting(2));
+		order.setConcept(conceptService.getConcept(5089));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		order.setDateActivated(new Date());
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(order.getDateActivated());
+		cal.add(Calendar.DAY_OF_WEEK, 4);
+		//set the time just in case this test is run at 00:00:00
+		cal.set(Calendar.HOUR_OF_DAY, 11);
+		Date autoExpireDate = cal.getTime();
+		order.setAutoExpireDate(autoExpireDate);
+		
+		orderService.saveOrder(order, null);
+		assertEquals(autoExpireDate, order.getAutoExpireDate());
 	}
 	
 	/**
