@@ -29,6 +29,8 @@ import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +39,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -1515,20 +1516,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(conceptService.getConcept(5089));
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setOrderer(providerService.getProvider(1));
-		order.setDateActivated(new Date());
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(order.getDateActivated());
-		cal.add(Calendar.DAY_OF_WEEK, 4);
-		//remove time component
-		Date autoExpireDate = DateUtils.truncate(cal.getTime(), Calendar.DATE);
-		order.setAutoExpireDate(autoExpireDate);
+		DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
+		order.setDateActivated(dateformat.parse("14/08/2014"));
+		order.setAutoExpireDate(dateformat.parse("18/08/2014"));
 		
 		orderService.saveOrder(order, null);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 59);
-		cal.set(Calendar.SECOND, 59);
-		cal.set(Calendar.MILLISECOND, 999);
-		assertEquals(cal.getTime(), order.getAutoExpireDate());
+		dateformat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.S");
+		assertEquals(dateformat.parse("18/08/2014 23:59:59.999"), order.getAutoExpireDate());
 	}
 	
 	/**
@@ -1544,12 +1538,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setOrderer(providerService.getProvider(1));
 		order.setDateActivated(new Date());
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(order.getDateActivated());
-		cal.add(Calendar.DAY_OF_WEEK, 4);
-		//set the time just in case this test is run at 00:00:00
-		cal.set(Calendar.HOUR_OF_DAY, 11);
-		Date autoExpireDate = cal.getTime();
+		DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		order.setDateActivated(dateformat.parse("14/08/2014 10:00:00"));
+		Date autoExpireDate = dateformat.parse("18/08/2014 10:00:00");
 		order.setAutoExpireDate(autoExpireDate);
 		
 		orderService.saveOrder(order, null);
