@@ -1549,7 +1549,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass if an active drug order for the same drug formulation exists beyond new order's schedule
+	 * @verifies pass if an active drug order for the same drug formulation exists beyond new
+	 *           order's schedule
 	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
@@ -1567,7 +1568,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounterService.getEncounter(6));
 		order.setOrderer(providerService.getProvider(1));
 		order.setCareSetting(existingOrder.getCareSetting());
-		order.setDosingType(DrugOrder.DosingType.FREE_TEXT);
+		order.setDosingType(FreeTextDosingInstructions.class);
 		order.setDosingInstructions("2 for 10 days");
 		order.setQuantity(10.0);
 		order.setQuantityUnits(conceptService.getConcept(51));

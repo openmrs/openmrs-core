@@ -298,10 +298,10 @@ public class OrderTest {
 	
 	/**
 	 * @verifies return scheduledDate if Urgency is Scheduled
-	 * @see Order#getEffectiveStartDate
+	 * @see Order#getEffectiveStartDate()
 	 */
 	@Test
-	public void getPeriodStartDate_shouldReturnScheduledDateWhenUrgencyIsScheduled() throws Exception {
+	public void getEffectiveStartDate_shouldReturnScheduledDateIfUrgencyIsScheduled() throws Exception {
 		Order order = new Order();
 		Date date = DateUtils.addDays(new Date(), 2);
 		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
@@ -313,10 +313,10 @@ public class OrderTest {
 	
 	/**
 	 * @verifies return dateActivated if Urgency is not Scheduled
-	 * @see Order#getEffectiveStartDate
+	 * @see Order#getEffectiveStartDate()
 	 */
 	@Test
-	public void getPeriodStartDate_shouldReturnDateActivatedWhenUrgencyIsNotScheduled() throws Exception {
+	public void getEffectiveStartDate_shouldReturnDateActivatedIfUrgencyIsNotScheduled() throws Exception {
 		Order order = new Order();
 		Date date = new Date();
 		order.setScheduledDate(DateUtils.addDays(date, 2));
@@ -327,29 +327,28 @@ public class OrderTest {
 	
 	/**
 	 * @verifies return dateStopped if dateStopped is not null
-	 * @see Order#getEffectiveStopDate
+	 * @see Order#getEffectiveStopDate()
 	 */
 	@Test
-	public void getPeriodEndDate_shouldReturnDateStoppedWhenPresent() throws Exception {
+	public void getEffectiveStopDate_shouldReturnDateStoppedIfDateStoppedIsNotNull() throws Exception {
 		Order order = new Order();
-		Date date = DateUtils.addDays(new Date(), 4);
-		OrderUtilTest.setDateStopped(order, date);
+		Date dateStopped = DateUtils.addDays(new Date(), 4);
+		OrderUtilTest.setDateStopped(order, dateStopped);
 		order.setAutoExpireDate(new Date());
 		
-		assertEquals(date, order.getEffectiveStopDate());
+		assertEquals(dateStopped, order.getEffectiveStopDate());
 	}
 	
 	/**
 	 * @verifies return autoExpireDate if dateStopped is null
-	 * @see Order#getEffectiveStopDate
+	 * @see Order#getEffectiveStopDate()
 	 */
 	@Test
-	public void getPeriodEndDate_shouldReturnAutoExpireDateWhenDateStoppedIsNull() throws Exception {
+	public void getEffectiveStopDate_shouldReturnAutoExpireDateIfDateStoppedIsNull() throws Exception {
 		Order order = new Order();
 		Date date = DateUtils.addDays(new Date(), 4);
 		order.setAutoExpireDate(date);
 		
 		assertEquals(date, order.getEffectiveStopDate());
 	}
-	
 }

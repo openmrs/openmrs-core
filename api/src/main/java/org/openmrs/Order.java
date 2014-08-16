@@ -23,12 +23,12 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Dates should be interpreted as follows: If dateActivated is null then the order has been going on
- * "since the beginning of time" Otherwise the order starts on dateActivated If discontinued is non-null
- * and true, then the following fields should be ignored: autoExpireDate if dateStopped is null then
- * the order was discontinued "the instant after it began" otherwise it was given from its starting
- * date until dateStopped Otherwise (discontinued is null or false) if autoExpireDate is null, the
- * order is set to go forever otherwise the order goes until autoExpireDate the following fields
- * should be ignored: discontinuedBy dateStopped discontinuedReason It is an error to have
+ * "since the beginning of time" Otherwise the order starts on dateActivated If discontinued is
+ * non-null and true, then the following fields should be ignored: autoExpireDate if dateStopped is
+ * null then the order was discontinued "the instant after it began" otherwise it was given from its
+ * starting date until dateStopped Otherwise (discontinued is null or false) if autoExpireDate is
+ * null, the order is set to go forever otherwise the order goes until autoExpireDate the following
+ * fields should be ignored: discontinuedBy dateStopped discontinuedReason It is an error to have
  * discontinued be true and have dateStopped be after autoExpireDate. However this is not checked
  * for in the database or the application.
  * 
@@ -659,9 +659,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * A convenience method to return period start date for order.
+	 * A convenience method to return start of the schedule for order.
+	 * 
 	 * @since 1.10
-	 *
 	 * @should return scheduledDate if Urgency is Scheduled
 	 * @should return dateActivated if Urgency is not Scheduled
 	 */
@@ -670,9 +670,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * A convenience method to return period end date for order.
+	 * A convenience method to return end of the schedule for order.
+	 * 
 	 * @since 1.10
-	 *
 	 * @should return dateStopped if dateStopped is not null
 	 * @should return autoExpireDate if dateStopped is null
 	 */

@@ -14,6 +14,6 @@
     <drug drug_id="3001" concept_id="1100" name="Cetirizine 200mg" dosage_form="1002" combination="false" strength="2ml"
           creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="865fceb1-ad0c-4102-aead-26ca25c77b09"/>
     <drug_order order_id="2000" drug_inventory_id="3001" dose="3" dose_units="50" as_needed="false" frequency="1"
-                dosing_type="SIMPLE" route="22" quantity="1.0" quantity_units="51" num_refills="10"
+                dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10"
                 dispense_as_written="0"/>
 </dataset>

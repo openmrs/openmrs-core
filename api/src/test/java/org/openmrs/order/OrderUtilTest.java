@@ -17,6 +17,8 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -96,32 +98,11 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return false if any of the orders is voided
-	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
-	 */
-	@Test
-	public void hasOverlappingScheduleWith_shouldReturnFalseIfAnyOfTheOrdersIsVoided() throws Exception {
-		Date date = new Date();
-		Order order1 = new Order();
-		order1.setScheduledDate(DateUtils.addDays(date, 4)); //Order1 scheduled after 4 days without stop date
-		order1.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
-		
-		Order order2 = new Order();
-		order2.setVoided(true);
-		order2.setDateActivated(date);
-		order2.setScheduledDate(DateUtils.addDays(date, 6)); //Order2 voided which was scheduled after 6 days
-		order2.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
-		
-		assertFalse(OrderUtil.checkScheduleOverlap(order1, order2));
-		assertFalse(OrderUtil.checkScheduleOverlap(order2, order1));
-	}
-	
-	/**
 	 * @verifies return true if order1 and order2 do not have end date
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
-	public void hasOverlappingScheduleWith_shouldReturnTrueIfOrder1AndOrder2DoNotHaveEndDate() throws Exception {
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder1AndOrder2DoNotHaveEndDate() throws Exception {
 		Date date = new Date();
 		Order order1 = new Order();
 		order1.setScheduledDate(DateUtils.addDays(date, 4)); //Order1 scheduled after 4 days without stop date
@@ -137,11 +118,11 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return true if order1 and order2 have same dates
+	 * @verifies return true if order1 and order2 have same start dates
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
-	public void hasOverlappingScheduleWith_shouldReturnTrueIfOrder1AndOrder2HaveSameDates() throws Exception {
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder1AndOrder2HaveSameStartDates() throws Exception {
 		Date date = new Date();
 		Order order1 = new Order();
 		order1.setDateActivated(date);
@@ -159,12 +140,11 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return false if order1 ends before order2 starts
-	 * Checks vice versa
+	 * @verifies return false if order1 ends before order2 starts Checks vice versa
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
-	public void hasOverlappingScheduleWith_shouldReturnFalseIfOrder1EndsBeforeOrder2Starts() throws Exception {
+	public void checkScheduleOverlap_shouldReturnFalseIfOrder1EndsBeforeOrder2Starts() throws Exception {
 		Date date = new Date();
 		Order order1 = new Order();
 		order1.setDateActivated(date);
@@ -179,33 +159,11 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return false if order1 ends when order2 starts
-	 * Checks vice versa
+	 * @verifies return false if order1 starts after order2 Checks vice versa
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
-	public void hasOverlappingScheduleWith_shouldReturnFalseIfOrder1EndsWhenOrder2Starts() throws Exception {
-		Date date = new Date();
-		Order order1 = new Order();
-		order1.setDateActivated(date);
-		order1.setAutoExpireDate(DateUtils.addDays(date, 4)); //Order1 getting expired on same day as existing order starts
-		
-		Order order2 = new Order();
-		order2.setDateActivated(date);
-		order2.setScheduledDate(DateUtils.addDays(date, 4)); //Order2 scheduled after 4 days
-		order2.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
-		
-		assertFalse(OrderUtil.checkScheduleOverlap(order1, order2));
-		assertFalse(OrderUtil.checkScheduleOverlap(order2, order1));
-	}
-	
-	/**
-	 * @verifies return false if order1 starts after order2
-	 * Checks vice versa
-	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
-	 */
-	@Test
-	public void hasOverlappingScheduleWith_shouldReturnFalseIfOrder1StartsAfterOrder2() throws Exception {
+	public void checkScheduleOverlap_shouldReturnFalseIfOrder1StartsAfterOrder2() throws Exception {
 		Date date = new Date();
 		Order order1 = new Order();
 		order1.setScheduledDate(DateUtils.addDays(date, 11)); //Order1 getting started after existing order's stop
@@ -220,33 +178,12 @@ public class OrderUtilTest {
 	}
 	
 	/**
-	 * @verifies return false if order1 starts when order2 ends
-	 * Checks vice versa
+	 * @verifies return true if order1 stops after the order2 has already been activated Checks vice
+	 *           versa
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
-	public void hasOverlappingScheduleWith_shouldReturnFalseIfOrder1StartsWhenOrder2Ends() throws Exception {
-		Date date = new Date();
-		Order order1 = new Order();
-		order1.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
-		order1.setScheduledDate(DateUtils.addDays(date, 2)); //Order1 getting started on same day as existing order ends
-		
-		Order order2 = new Order();
-		order2.setDateActivated(date);
-		order2.setAutoExpireDate(DateUtils.addDays(date, 2)); //Order2 expiring after 2 days
-		
-		assertFalse(OrderUtil.checkScheduleOverlap(order1, order2));
-		assertFalse(OrderUtil.checkScheduleOverlap(order2, order1));
-	}
-	
-	/**
-	 * @verifies return true if order1 stops after the order2 has already been activated
-	 * Checks vice versa
-	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
-	 */
-	@Test
-	public void hasOverlappingScheduleWith_shouldReturnTrueIfOrder1StopsAfterTheOrder2HasAlreadyBeenActivated()
-	        throws Exception {
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder1StopsAfterTheOrder2HasAlreadyBeenActivated() throws Exception {
 		Date date = new Date();
 		Order order1 = new Order();
 		order1.setDateActivated(date); //Order1 scheduled today getting expired after 5 days
@@ -266,7 +203,7 @@ public class OrderUtilTest {
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
-	public void hasOverlappingScheduleWith_shouldReturnTrueIfOrder1StartsWhenTheOrder2IsActive() throws Exception {
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder1StartsWhenTheOrder2IsActive() throws Exception {
 		Date date = new Date();
 		Order order1 = new Order();
 		order1.setScheduledDate(DateUtils.addDays(date, 3)); //Order1 scheduled after 3 days
@@ -282,11 +219,10 @@ public class OrderUtilTest {
 	
 	/**
 	 * @verifies return true if order1 starts before order2 and ends after order2
-	 * Checks vice versa
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
-	public void hasOverlappingScheduleWith_shouldReturnTrueIfOrder1StartsBeforeOrder2AndEndsAfterOrder2() throws Exception {
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder1StartsBeforeOrder2AndEndsAfterOrder2() throws Exception {
 		Date date = new Date();
 		Order order1 = new Order();
 		order1.setScheduledDate(DateUtils.addDays(date, 4)); //Order1 scheduled after 4 days getting expired after 14 days
@@ -303,4 +239,79 @@ public class OrderUtilTest {
 		assertTrue(OrderUtil.checkScheduleOverlap(order2, order1));
 	}
 	
+	/**
+	 * @verifies return true if order2 starts before order1 and ends after order1
+	 * @see OrderUtil#checkScheduleOverlap(org.openmrs.Order, org.openmrs.Order)
+	 */
+	@Test
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder2StartsBeforeOrder1AndEndsAfterOrder1() throws Exception {
+		DateFormat df = new SimpleDateFormat("dd/MM/yyy");
+		Order order1 = new Order();
+		order1.setDateActivated(df.parse("03/08/2014"));
+		order1.setAutoExpireDate(df.parse("05/08/2014"));
+		Order order2 = new Order();
+		order2.setDateActivated(df.parse("01/08/2014"));
+		order2.setAutoExpireDate(df.parse("07/08/2014"));
+		assertTrue(OrderUtil.checkScheduleOverlap(order1, order2));
+		assertTrue(OrderUtil.checkScheduleOverlap(order2, order1));
+	}
+	
+	/**
+	 * @verifies return true if order1 starts on the stop date of order2
+	 * @see OrderUtil#checkScheduleOverlap(org.openmrs.Order, org.openmrs.Order)
+	 */
+	@Test
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder1StartsOnTheStopDateOfOrder2() throws Exception {
+		DateFormat df = new SimpleDateFormat("dd/MM/yyy");
+		Order order1 = new Order();
+		order1.setDateActivated(df.parse("13/08/2014"));
+		Order order2 = new Order();
+		order2.setDateActivated(df.parse("05/08/2014"));
+		order2.setAutoExpireDate(order1.getDateActivated());
+		assertTrue(OrderUtil.checkScheduleOverlap(order1, order2));
+		assertTrue(OrderUtil.checkScheduleOverlap(order2, order1));
+		
+		//Assuming order1 has an end date
+		order1.setAutoExpireDate(df.parse("15/08/2014"));
+		assertTrue(OrderUtil.checkScheduleOverlap(order1, order2));
+		assertTrue(OrderUtil.checkScheduleOverlap(order2, order1));
+	}
+	
+	/**
+	 * @verifies return true if order1 ends on the start date of order2
+	 * @see OrderUtil#checkScheduleOverlap(org.openmrs.Order, org.openmrs.Order)
+	 */
+	@Test
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder1EndsOnTheStartDateOfOrder2() throws Exception {
+		DateFormat df = new SimpleDateFormat("dd/MM/yyy");
+		Order order1 = new Order();
+		order1.setDateActivated(df.parse("05/08/2014"));
+		order1.setAutoExpireDate(df.parse("13/08/2014"));
+		Order order2 = new Order();
+		order2.setDateActivated(order1.getAutoExpireDate());
+		assertTrue(OrderUtil.checkScheduleOverlap(order1, order2));
+		assertTrue(OrderUtil.checkScheduleOverlap(order2, order1));
+		
+		//Assuming order2 has an end date
+		order2.setAutoExpireDate(df.parse("15/08/2014"));
+		assertTrue(OrderUtil.checkScheduleOverlap(order1, order2));
+		assertTrue(OrderUtil.checkScheduleOverlap(order2, order1));
+	}
+	
+	/**
+	 * @verifies return true if both orders start and end on same dates
+	 * @see OrderUtil#checkScheduleOverlap(org.openmrs.Order, org.openmrs.Order)
+	 */
+	@Test
+	public void checkScheduleOverlap_shouldReturnTrueIfBothOrdersStartAndEndOnSameDates() throws Exception {
+		DateFormat df = new SimpleDateFormat("dd/MM/yyy");
+		Order order1 = new Order();
+		order1.setDateActivated(df.parse("05/08/2014"));
+		order1.setAutoExpireDate(df.parse("13/08/2014"));
+		Order order2 = new Order();
+		order2.setDateActivated(order1.getDateActivated());
+		order2.setDateActivated(order1.getAutoExpireDate());
+		assertTrue(OrderUtil.checkScheduleOverlap(order1, order2));
+		assertTrue(OrderUtil.checkScheduleOverlap(order2, order1));
+	}
 }
