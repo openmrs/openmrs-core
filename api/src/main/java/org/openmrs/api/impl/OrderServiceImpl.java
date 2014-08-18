@@ -39,6 +39,7 @@ import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
+import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -97,11 +98,15 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
 		Concept concept = order.getConcept();
 		if (concept == null && isDrugOrder) {
-			DrugOrder dOrder = (DrugOrder) order;
-			if (dOrder.getDrug() != null) {
-				concept = dOrder.getDrug().getConcept();
-				dOrder.setConcept(concept);
+			DrugOrder drugOrder = (DrugOrder) order;
+			if (drugOrder.getDrug() != null) {
+				concept = drugOrder.getDrug().getConcept();
+				drugOrder.setConcept(concept);
 			}
+		}
+		if (isDrugOrder && !isDiscontinueOrReviseOrder(order) && order.getAutoExpireDate() == null) {
+			DrugOrder drugOrder = (DrugOrder) order;
+			drugOrder.setAutoExpireDate(drugOrder.getDosingInstructionsInstance().getAutoExpireDate(drugOrder));
 		}
 		if (concept == null) {
 			throw new APIException("concept is required for an order");

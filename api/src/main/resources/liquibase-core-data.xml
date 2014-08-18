@@ -1370,5 +1370,89 @@
     <changeSet author="ben" id="enable-foreign-key-checks" runAlways="true" dbms="mysql">
 	<sql>SET FOREIGN_KEY_CHECKS=1</sql>
     </changeSet>
-    
+
+    <changeSet author="Deepak,Rohan" id="20140804-1611">
+        <insert tableName="concept_reference_source">
+            <column name="name" value="ISO 8601 Duration"/>
+            <column name="description" value="ISO 8601 Duration Source"/>
+            <column name="hl7_code"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+    </changeSet>
+    <changeSet author="Deepak,Rohan" id="20140804-1612">
+        <insert tableName="concept_reference_term">
+            <column name="name" value="Second(s)"/>
+            <column name="code" value="S"/>
+            <column name="description" value="Duration in Second(s)"/>
+            <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE name = 'ISO 8601 Duration')"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+        <insert tableName="concept_reference_term">
+            <column name="name" value="Minute(s)"/>
+            <column name="code" value="m"/>
+            <column name="description" value="Duration in Minute(s)"/>
+            <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE name = 'ISO 8601 Duration')"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+        <insert tableName="concept_reference_term">
+            <column name="name" value="Hour(s)"/>
+            <column name="code" value="H"/>
+            <column name="description" value="Duration in Hour(s)"/>
+            <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE name = 'ISO 8601 Duration')"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+        <insert tableName="concept_reference_term">
+            <column name="name" value="Day(s)"/>
+            <column name="code" value="D"/>
+            <column name="description" value="Duration in Day(s)"/>
+            <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE name = 'ISO 8601 Duration')"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+        <insert tableName="concept_reference_term">
+            <column name="name" value="Week(s)"/>
+            <column name="code" value="W"/>
+            <column name="description" value="Duration in Week(s)"/>
+            <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE name = 'ISO 8601 Duration')"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+        <insert tableName="concept_reference_term">
+            <column name="name" value="Month(s)"/>
+            <column name="code" value="M"/>
+            <column name="description" value="Duration in Month(s)"/>
+            <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE name = 'ISO 8601 Duration')"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+        <insert tableName="concept_reference_term">
+            <column name="name" value="Year(s)"/>
+            <column name="code" value="Y"/>
+            <column name="description" value="Duration in Year(s)"/>
+            <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE name = 'ISO 8601 Duration')"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+        <insert tableName="concept_reference_term">
+            <column name="name" value="Time(s)"/>
+            <column name="code" value="R"/>
+            <column name="description" value="Duration for Recurring interval"/>
+            <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE name = 'ISO 8601 Duration')"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueComputed="now()"/>
+            <column name="uuid" valueComputed="uuid()"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

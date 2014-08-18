@@ -14,9 +14,12 @@
 package org.openmrs;
 
 import org.openmrs.api.APIException;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -122,6 +125,32 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
 		
+	}
+	
+	/**
+	 * @see DosingInstructions#getAutoExpireDate(DrugOrder)
+	 */
+	@Override
+	public Date getAutoExpireDate(DrugOrder drugOrder) {
+		if (drugOrder.getDurationUnits() == null)
+			return null;
+		if (drugOrder.getNumRefills() != null && drugOrder.getNumRefills() > 0)
+			return null;
+		String durationCode = getISO8601DurationCode(drugOrder.getDurationUnits().getConceptMappings());
+		ISO8601Duration iso8601Duration = new ISO8601Duration(drugOrder.getDuration(), durationCode);
+		return iso8601Duration.addToDate(drugOrder.getDateActivated(), drugOrder.getFrequency());
+	}
+	
+	private static String getISO8601DurationCode(Collection<ConceptMap> conceptMappings) {
+		for (ConceptMap conceptMapping : conceptMappings) {
+			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
+			String conceptSourceName = conceptReferenceTerm.getConceptSource().getName();
+			String mapType = conceptMapping.getConceptMapType().getName();
+			if (OpenmrsUtil.nullSafeEqualsIgnoreCase(mapType, ConceptMapType.SAME_AS)
+			        && OpenmrsUtil.nullSafeEqualsIgnoreCase(conceptSourceName, ISO8601Duration.CONCEPT_SOURCE_NAME))
+				return conceptReferenceTerm.getCode();
+		}
+		return null;
 	}
 	
 	public Double getDose() {
