@@ -48,7 +48,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String dosingInstructions;
 	
-	private Double duration;
+	private Integer duration;
 	
 	private Concept durationUnits;
 	
@@ -359,7 +359,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 *
 	 * @since 1.10
 	 */
-	public Double getDuration() {
+	public Integer getDuration() {
 		return duration;
 	}
 	
@@ -369,7 +369,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * @param duration to set
 	 * @since 1.10
 	 */
-	public void setDuration(Double duration) {
+	public void setDuration(Integer duration) {
 		this.duration = duration;
 	}
 	

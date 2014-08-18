@@ -32,7 +32,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	
 	private OrderFrequency frequency;
 	
-	private Double duration;
+	private Integer duration;
 	
 	private Concept durationUnits;
 	
@@ -156,11 +156,11 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		this.frequency = frequency;
 	}
 	
-	public Double getDuration() {
+	public Integer getDuration() {
 		return duration;
 	}
 	
-	public void setDuration(Double duration) {
+	public void setDuration(Integer duration) {
 		this.duration = duration;
 	}
 	

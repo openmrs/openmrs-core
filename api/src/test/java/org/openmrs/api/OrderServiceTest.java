@@ -2566,7 +2566,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setDoseUnits(conceptService.getConcept(50));
 		drugOrder.setQuantity(20.0);
 		drugOrder.setQuantityUnits(conceptService.getConcept(51));
-		drugOrder.setDuration(20.0);
+		drugOrder.setDuration(20);
 		drugOrder.setDurationUnits(conceptService.getConcept(28));
 		drugOrder.setFrequency(orderService.getOrderFrequency(3));
 		drugOrder.setRoute(conceptService.getConcept(22));

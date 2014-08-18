@@ -7758,7 +7758,7 @@
         </preConditions>
         <comment>Adding duration column to drug_order table</comment>
         <addColumn tableName="drug_order">
-            <column name="duration" type="double" />
+            <column name="duration" type="int" />
         </addColumn>
     </changeSet>
 
