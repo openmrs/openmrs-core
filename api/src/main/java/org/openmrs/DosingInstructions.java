@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.validation.Errors;
@@ -61,4 +62,13 @@ public interface DosingInstructions {
 	public DosingInstructions getDosingInstructions(DrugOrder order);
 	
 	public void validate(DrugOrder order, Errors errors);
+	
+	/**
+	 * Implementations of this interface may be able to infer the auto-expiration date from other
+	 * fields on the DrugOrder.  If the expiration date cannot be determined, then this method
+	 * may return null (i.e., null means duration of order is unknown).  In general, if a drug order
+	 * has non-zero refills, the auto-expiration date should <em>not</em> be set (even if it has
+	 * a known duration).
+	 */
+	public Date getAutoExpireDate(DrugOrder order);
 }

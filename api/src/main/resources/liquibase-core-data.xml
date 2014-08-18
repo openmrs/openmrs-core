@@ -1370,5 +1370,4 @@
     <changeSet author="ben" id="enable-foreign-key-checks" runAlways="true" dbms="mysql">
 	<sql>SET FOREIGN_KEY_CHECKS=1</sql>
     </changeSet>
-    
 </databaseChangeLog>

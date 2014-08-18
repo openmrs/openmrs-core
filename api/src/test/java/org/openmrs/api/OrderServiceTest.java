@@ -28,9 +28,11 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
+import static org.openmrs.test.TestUtil.createDate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -2601,8 +2603,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setDoseUnits(conceptService.getConcept(50));
 		drugOrder.setQuantity(20.0);
 		drugOrder.setQuantityUnits(conceptService.getConcept(51));
-		drugOrder.setDuration(20.0);
-		drugOrder.setDurationUnits(conceptService.getConcept(28));
 		drugOrder.setFrequency(orderService.getOrderFrequency(3));
 		drugOrder.setRoute(conceptService.getConcept(22));
 		drugOrder.setNumRefills(10);
@@ -2638,6 +2638,68 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(testOrder, null);
 		Assert.assertNotNull(testOrder.getOrderType());
 		Assert.assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), testOrder.getOrderType());
+	}
+	
+	@Test
+	public void saveOrder_shouldNotSetAutoExpireDateOfDrugOrderIfAutoExpireDateIsAlreadySet() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
+		Drug drug = conceptService.getDrug(3000);
+		DrugOrder drugOrder = new DrugOrder();
+		Encounter encounter = encounterService.getEncounter(3);
+		drugOrder.setEncounter(encounter);
+		drugOrder.setPatient(patientService.getPatient(7));
+		drugOrder.setCareSetting(orderService.getCareSetting(1));
+		drugOrder.setOrderer(Context.getProviderService().getProvider(1));
+		drugOrder.setDrug(drug);
+		drugOrder.setDosingType(SimpleDosingInstructions.class);
+		drugOrder.setDose(300.0);
+		drugOrder.setDoseUnits(conceptService.getConcept(50));
+		drugOrder.setQuantity(20.0);
+		drugOrder.setQuantityUnits(conceptService.getConcept(51));
+		drugOrder.setDuration(20);
+		drugOrder.setDurationUnits(conceptService.getConcept(1001));
+		drugOrder.setFrequency(orderService.getOrderFrequency(3));
+		drugOrder.setRoute(conceptService.getConcept(22));
+		drugOrder.setNumRefills(0);
+		drugOrder.setOrderType(null);
+		drugOrder.setDateActivated(createDate("2014-08-03"));
+		Date autoExpireDate = createDate("2014-08-04");
+		drugOrder.setAutoExpireDate(autoExpireDate);
+		
+		Order savedOrder = orderService.saveOrder(drugOrder, null);
+		
+		Order loadedOrder = orderService.getOrder(savedOrder.getId());
+		Assert.assertEquals(autoExpireDate, loadedOrder.getAutoExpireDate());
+	}
+	
+	@Test
+	public void saveOrder_shouldSetAutoExpireDateOfDrugOrderIfAutoExpireDateIsNotSet() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
+		Drug drug = conceptService.getDrug(3000);
+		DrugOrder drugOrder = new DrugOrder();
+		Encounter encounter = encounterService.getEncounter(3);
+		drugOrder.setEncounter(encounter);
+		drugOrder.setPatient(patientService.getPatient(7));
+		drugOrder.setCareSetting(orderService.getCareSetting(1));
+		drugOrder.setOrderer(Context.getProviderService().getProvider(1));
+		drugOrder.setDrug(drug);
+		drugOrder.setDosingType(SimpleDosingInstructions.class);
+		drugOrder.setDose(300.0);
+		drugOrder.setDoseUnits(conceptService.getConcept(50));
+		drugOrder.setQuantity(20.0);
+		drugOrder.setQuantityUnits(conceptService.getConcept(51));
+		drugOrder.setFrequency(orderService.getOrderFrequency(3));
+		drugOrder.setRoute(conceptService.getConcept(22));
+		drugOrder.setNumRefills(0);
+		drugOrder.setOrderType(null);
+		drugOrder.setDateActivated(createDate("2014-08-03"));
+		drugOrder.setDuration(20);// 20 days
+		drugOrder.setDurationUnits(conceptService.getConcept(1001));
+		
+		Order savedOrder = orderService.saveOrder(drugOrder, null);
+		
+		Order loadedOrder = orderService.getOrder(savedOrder.getId());
+		Assert.assertEquals(createDate("2014-08-23"), loadedOrder.getAutoExpireDate());
 	}
 	
 }

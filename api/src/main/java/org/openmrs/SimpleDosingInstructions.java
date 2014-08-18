@@ -13,11 +13,12 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+import java.util.Locale;
+
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-
-import java.util.Locale;
 
 /**
  * @since 1.10
@@ -32,7 +33,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	
 	private OrderFrequency frequency;
 	
-	private Double duration;
+	private Integer duration;
 	
 	private Concept durationUnits;
 	
@@ -121,7 +122,30 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-		
+		if (order.getAutoExpireDate() == null && order.getDurationUnits() != null) {
+			if (ISO8601Duration.getCode(order.getDurationUnits()) == null) {
+				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode");
+			}
+		}
+	}
+	
+	/**
+	 * @see DosingInstructions#getAutoExpireDate(DrugOrder)
+	 */
+	@Override
+	public Date getAutoExpireDate(DrugOrder drugOrder) {
+		if (drugOrder.getDuration() == null || drugOrder.getDurationUnits() == null) {
+			return null;
+		}
+		if (drugOrder.getNumRefills() != null && drugOrder.getNumRefills() > 0) {
+			return null;
+		}
+		String durationCode = ISO8601Duration.getCode(drugOrder.getDurationUnits());
+		if (durationCode == null) {
+			return null;
+		}
+		ISO8601Duration iso8601Duration = new ISO8601Duration(drugOrder.getDuration(), durationCode);
+		return iso8601Duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency());
 	}
 	
 	public Double getDose() {
@@ -156,11 +180,11 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		this.frequency = frequency;
 	}
 	
-	public Double getDuration() {
+	public Integer getDuration() {
 		return duration;
 	}
 	
-	public void setDuration(Double duration) {
+	public void setDuration(Integer duration) {
 		this.duration = duration;
 	}
 	

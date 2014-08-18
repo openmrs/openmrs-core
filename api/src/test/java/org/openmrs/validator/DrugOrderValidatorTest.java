@@ -15,6 +15,7 @@ package org.openmrs.validator;
 
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -24,18 +25,19 @@ import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.CustomDosingInstructions;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
-import org.openmrs.Order;
 import org.openmrs.GlobalProperty;
-import org.openmrs.CareSetting;
+import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -281,7 +283,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfDurationUnitsIsNullWhenDurationIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(20.0);
+		order.setDuration(20);
 		order.setDurationUnits(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -344,7 +346,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(5.0);
+		order.setDuration(5);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
 		order.setDoseUnits(concept);
@@ -367,7 +369,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(5.0);
+		order.setDuration(5);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
 		order.setDoseUnits(concept);
@@ -390,7 +392,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(5.0);
+		order.setDuration(5);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
 		order.setDoseUnits(concept);
@@ -413,7 +415,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(5.0);
+		order.setDuration(5);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
 		order.setDoseUnits(concept);
@@ -560,8 +562,8 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies pass validation of Drug Order if formulation(Drug) not specified
-	 * i.e GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is false
+	 * @verifies pass validation of Drug Order if formulation(Drug) not specified i.e
+	 *           GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is false
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
 	@Test
@@ -591,8 +593,8 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies default case pass saving Drug Order without a Drug if formulation(drug) not specified
-	 * i.e GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is not set
+	 * @verifies default case pass saving Drug Order without a Drug if formulation(drug) not
+	 *           specified i.e GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is not set
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
 	 */
 	@Test
@@ -620,4 +622,35 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors());
 	}
 	
+	/**
+	 * @verifies fail if durationUnits has no mapping to ISO8601 source
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfDurationUnitsHasNoMappingToISO8601Source() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		ConceptService cs = Context.getConceptService();
+		order.setConcept(cs.getConcept(5497));
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		order.setDuration(20);
+		order.setDurationUnits(cs.getConcept(28));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertEquals("DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode", errors.getFieldError("durationUnits")
+		        .getCode());
+	}
 }
