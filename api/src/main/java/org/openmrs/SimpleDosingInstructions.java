@@ -144,10 +144,9 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	private static String getISO8601DurationCode(Collection<ConceptMap> conceptMappings) {
 		for (ConceptMap conceptMapping : conceptMappings) {
 			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
-			String conceptSourceName = conceptReferenceTerm.getConceptSource().getName();
-			String mapType = conceptMapping.getConceptMapType().getName();
-			if (OpenmrsUtil.nullSafeEqualsIgnoreCase(mapType, ConceptMapType.SAME_AS)
-			        && OpenmrsUtil.nullSafeEqualsIgnoreCase(conceptSourceName, ISO8601Duration.CONCEPT_SOURCE_NAME))
+			if (OpenmrsUtil.nullSafeEquals(conceptMapping.getConceptMapType().getUuid(), ConceptMapType.SAME_AS_UUID)
+			        && OpenmrsUtil.nullSafeEquals(conceptReferenceTerm.getConceptSource().getName(),
+			            ISO8601Duration.CONCEPT_SOURCE_NAME))
 				return conceptReferenceTerm.getCode();
 		}
 		return null;

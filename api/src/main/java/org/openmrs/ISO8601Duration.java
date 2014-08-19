@@ -19,6 +19,7 @@ import java.util.Date;
 
 /**
  * Duration represented using ISO 8601 duration codes
+ * @since 1.10
  */
 public class ISO8601Duration {
 	

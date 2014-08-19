@@ -53,7 +53,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
 		drugOrder.setDuration(30);
-		Concept units = createUnits(ConceptMapType.NARROWER_THAN, ISO8601Duration.CONCEPT_SOURCE_NAME,
+		Concept units = createUnits(ConceptMapType.NARROWER_THAN_UUID, ISO8601Duration.CONCEPT_SOURCE_NAME,
 		    ISO8601Duration.HOURS_CODE);
 		drugOrder.setDurationUnits(units);
 		
@@ -68,7 +68,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
 		drugOrder.setDuration(30);
-		drugOrder.setDurationUnits(createUnits(ConceptMapType.SAME_AS, "Other.Source", ISO8601Duration.HOURS_CODE));
+		drugOrder.setDurationUnits(createUnits(ConceptMapType.SAME_AS_UUID, "Other.Source", ISO8601Duration.HOURS_CODE));
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		
@@ -76,16 +76,16 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	private Concept createUnitsSameAs(String code) {
-		return createUnits(ConceptMapType.SAME_AS, ISO8601Duration.CONCEPT_SOURCE_NAME, code);
+		return createUnits(ConceptMapType.SAME_AS_UUID, ISO8601Duration.CONCEPT_SOURCE_NAME, code);
 	}
 	
-	private Concept createUnits(String mapType, String source, String code) {
+	private Concept createUnits(String mapTypeUuid, String source, String code) {
 		Concept doseUnits = new Concept();
-		doseUnits.addConceptMapping(getConceptMap(mapType, source, code));
+		doseUnits.addConceptMapping(getConceptMap(mapTypeUuid, source, code));
 		return doseUnits;
 	}
 	
-	private ConceptMap getConceptMap(String mapType, String source, String code) {
+	private ConceptMap getConceptMap(String mapTypeUuid, String source, String code) {
 		ConceptMap conceptMap = new ConceptMap();
 		ConceptReferenceTerm conceptReferenceTerm = new ConceptReferenceTerm();
 		ConceptSource conceptSource = new ConceptSource();
@@ -94,7 +94,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		conceptReferenceTerm.setCode(code);
 		conceptMap.setConceptReferenceTerm(conceptReferenceTerm);
 		ConceptMapType conceptMapType = new ConceptMapType();
-		conceptMapType.setName(mapType);
+		conceptMapType.setUuid(mapTypeUuid);
 		conceptMap.setConceptMapType(conceptMapType);
 		return conceptMap;
 	}
