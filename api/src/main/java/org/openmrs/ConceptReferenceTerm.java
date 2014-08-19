@@ -16,6 +16,11 @@ package org.openmrs;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+
 /**
  * A concept reference term is typically name for a concept by which it is referred in another
  * institution like ICD9, ICD10, SNOMED that keeps a concept dictionary or any other OpenMRS
@@ -23,15 +28,18 @@ import java.util.Set;
  *
  * @since 1.9
  */
+@Indexed
 public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@DocumentId
 	private Integer conceptReferenceTermId;
 	
 	private ConceptSource conceptSource;
 	
 	//The unique code used to identify the reference term in it's reference terminology
+	@Field(index = Index.UN_TOKENIZED)
 	private String code;
 	
 	private String version;

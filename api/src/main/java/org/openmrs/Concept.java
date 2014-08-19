@@ -125,6 +125,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	private Collection<ConceptDescription> descriptions;
 	
+	@IndexedEmbedded
 	private Collection<ConceptMap> conceptMappings;
 	
 	/**

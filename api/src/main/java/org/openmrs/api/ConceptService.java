@@ -1338,6 +1338,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return a search result for phrase with stop words
 	 * @should not return concepts with matching names that are voided
 	 * @should return preferred names higher
+	 * @should find concept by full code
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
