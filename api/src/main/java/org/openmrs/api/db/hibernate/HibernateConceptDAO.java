@@ -609,7 +609,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		query.append("(concept.conceptMappings.conceptReferenceTerm.code:(").append(escapedName).append(")^0.4 OR (");
 		final StringBuilder nameQuery = newNameQuery(tokenizedName, escapedName, searchKeywords);
 		query.append(nameQuery);
-		query.append(" (localePreferred:true OR conceptNameType:FULLY_SPECIFIED))^0.4 OR (");
+		query.append(" localePreferred:true)^0.4 OR (");
 		query.append(nameQuery);
 		query.append(")^0.2)");
 		
