@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.util.Reflect;
@@ -293,5 +294,61 @@ public class OrderTest {
 		Order otherOrder = new Order();
 		otherOrder.setConcept(concept);
 		assertTrue(order.hasSameOrderableAs(otherOrder));
+	}
+	
+	/**
+	 * @verifies return scheduledDate if Urgency is Scheduled
+	 * @see Order#getEffectiveStartDate()
+	 */
+	@Test
+	public void getEffectiveStartDate_shouldReturnScheduledDateIfUrgencyIsScheduled() throws Exception {
+		Order order = new Order();
+		Date date = DateUtils.addDays(new Date(), 2);
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		order.setScheduledDate(date);
+		order.setDateActivated(new Date());
+		
+		assertEquals(date, order.getEffectiveStartDate());
+	}
+	
+	/**
+	 * @verifies return dateActivated if Urgency is not Scheduled
+	 * @see Order#getEffectiveStartDate()
+	 */
+	@Test
+	public void getEffectiveStartDate_shouldReturnDateActivatedIfUrgencyIsNotScheduled() throws Exception {
+		Order order = new Order();
+		Date date = new Date();
+		order.setScheduledDate(DateUtils.addDays(date, 2));
+		order.setDateActivated(date);
+		
+		assertEquals(date, order.getEffectiveStartDate());
+	}
+	
+	/**
+	 * @verifies return dateStopped if dateStopped is not null
+	 * @see Order#getEffectiveStopDate()
+	 */
+	@Test
+	public void getEffectiveStopDate_shouldReturnDateStoppedIfDateStoppedIsNotNull() throws Exception {
+		Order order = new Order();
+		Date dateStopped = DateUtils.addDays(new Date(), 4);
+		OrderUtilTest.setDateStopped(order, dateStopped);
+		order.setAutoExpireDate(new Date());
+		
+		assertEquals(dateStopped, order.getEffectiveStopDate());
+	}
+	
+	/**
+	 * @verifies return autoExpireDate if dateStopped is null
+	 * @see Order#getEffectiveStopDate()
+	 */
+	@Test
+	public void getEffectiveStopDate_shouldReturnAutoExpireDateIfDateStoppedIsNull() throws Exception {
+		Order order = new Order();
+		Date date = DateUtils.addDays(new Date(), 4);
+		order.setAutoExpireDate(date);
+		
+		assertEquals(date, order.getEffectiveStopDate());
 	}
 }

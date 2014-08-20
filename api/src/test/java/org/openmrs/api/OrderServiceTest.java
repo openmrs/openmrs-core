@@ -1551,6 +1551,40 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies pass if an active drug order for the same drug formulation exists beyond new
+	 *           order's schedule
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassIfAnActiveDrugOrderForTheSameDrugFormulationExistsBeyondSchedule() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-DrugOrders.xml");
+		final Patient patient = patientService.getPatient(2);
+		
+		DrugOrder existingOrder = (DrugOrder) orderService.getOrder(2000);
+		int initialActiveOrderCount = orderService.getActiveOrders(patient, null, null, null).size();
+		
+		//New Drug order
+		DrugOrder order = new DrugOrder();
+		order.setPatient(patient);
+		order.setDrug(existingOrder.getDrug());
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(existingOrder.getCareSetting());
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDosingInstructions("2 for 10 days");
+		order.setQuantity(10.0);
+		order.setQuantityUnits(conceptService.getConcept(51));
+		order.setNumRefills(2);
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		
+		order.setScheduledDate(DateUtils.addDays(existingOrder.getDateStopped(), 1));
+		
+		orderService.saveOrder(order, null);
+		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
+		assertEquals(++initialActiveOrderCount, activeOrders.size());
+	}
+	
+	/**
 	 * @verifies find order type object given valid id
 	 * @see OrderService#getOrderType(Integer)
 	 */

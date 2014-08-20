@@ -3244,4 +3244,26 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		assertThat(concepts, contains(hasConcept(is(mdrTbProgram)), hasConcept(is(hivProgram))));
 	}
+	
+	/**
+	 * @see ConceptService#getConcepts(String,List,boolean,List,List,List,List,Concept,Integer,Integer)
+	 * @verifies find concept by full code
+	 */
+	@Test
+	public void getConcepts_shouldFindConceptByFullCode() throws Exception {
+		//given
+		String code1 = "CD41003";
+		String code2 = "7345693";
+		Concept concept = conceptService.getConceptByMapping(code2, "SNOMED CT");
+		
+		//when
+		List<ConceptSearchResult> concepts1 = conceptService.getConcepts(code1, Arrays.asList(Context.getLocale()), false,
+		    null, null, null, null, null, null, null);
+		List<ConceptSearchResult> concepts2 = conceptService.getConcepts(code2, Arrays.asList(Context.getLocale()), false,
+		    null, null, null, null, null, null, null);
+		
+		//then
+		assertThat(concepts1, contains(hasConcept(is(concept))));
+		assertThat(concepts2, contains(hasConcept(is(concept))));
+	}
 }

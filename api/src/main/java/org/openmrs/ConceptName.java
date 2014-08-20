@@ -85,6 +85,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	
 	private Collection<ConceptNameTag> tags;
 	
+	@Field
 	private ConceptNameType conceptNameType;
 	
 	@Field
