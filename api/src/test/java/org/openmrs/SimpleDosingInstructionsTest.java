@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 import java.util.Date;
+import java.util.UUID;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.openmrs.test.TestUtil.createDateTime;
@@ -36,6 +37,20 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	public void getAutoExpireDate_shouldInferAutoExpireDateForScheduledDrugOrder() throws Exception {
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDateActivated(createDateTime("2014-07-01 00-00-00"));
+		drugOrder.setScheduledDate(createDateTime("2014-07-05 00-00-00"));
+		drugOrder.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		drugOrder.setDuration(10);
+		drugOrder.setDurationUnits(createUnitsSameAs(ISO8601Duration.DAYS_CODE));
+		
+		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
+		
+		assertEquals(createDateTime("2014-07-15 00-00-00"), autoExpireDate);
+	}
+	
+	@Test
 	public void getAutoExpireDate_shouldNotInferAutoExpireDateWhenDrugOrderHasOneOrMoreRefill() throws Exception {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
@@ -49,12 +64,36 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	public void getAutoExpireDate_shouldNotInferAutoExpireDateWhenDurationDoesNotExist() throws Exception {
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
+		drugOrder.setDurationUnits(createUnitsSameAs(ISO8601Duration.SECONDS_CODE));
+		drugOrder.setDuration(null);
+		
+		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
+		
+		assertEquals(null, autoExpireDate);
+	}
+	
+	@Test
+	public void getAutoExpireDate_shouldNotInferAutoExpireDateWhenDurationUnitsDoesNotExist() throws Exception {
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
+		drugOrder.setDuration(1);
+		drugOrder.setDurationUnits(null);
+		
+		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
+		
+		assertEquals(null, autoExpireDate);
+	}
+	
+	@Test
 	public void getAutoExpireDate_shouldNotInferAutoExpireDateWhenConceptMappingOfTypeSameAsDoesNotExist() throws Exception {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
 		drugOrder.setDuration(30);
-		Concept units = createUnits(ConceptMapType.NARROWER_THAN_UUID, ISO8601Duration.CONCEPT_SOURCE_NAME,
-		    ISO8601Duration.HOURS_CODE);
+		String mapTypeUuid = UUID.randomUUID().toString();
+		Concept units = createUnits(mapTypeUuid, ISO8601Duration.CONCEPT_SOURCE_UUID, ISO8601Duration.HOURS_CODE);
 		drugOrder.setDurationUnits(units);
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
@@ -76,7 +115,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	private Concept createUnitsSameAs(String code) {
-		return createUnits(ConceptMapType.SAME_AS_UUID, ISO8601Duration.CONCEPT_SOURCE_NAME, code);
+		return createUnits(ConceptMapType.SAME_AS_UUID, ISO8601Duration.CONCEPT_SOURCE_UUID, code);
 	}
 	
 	private Concept createUnits(String mapTypeUuid, String source, String code) {
@@ -85,11 +124,11 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		return doseUnits;
 	}
 	
-	private ConceptMap getConceptMap(String mapTypeUuid, String source, String code) {
+	private ConceptMap getConceptMap(String mapTypeUuid, String sourceUuuid, String code) {
 		ConceptMap conceptMap = new ConceptMap();
 		ConceptReferenceTerm conceptReferenceTerm = new ConceptReferenceTerm();
 		ConceptSource conceptSource = new ConceptSource();
-		conceptSource.setName(source);
+		conceptSource.setUuid(sourceUuuid);
 		conceptReferenceTerm.setConceptSource(conceptSource);
 		conceptReferenceTerm.setCode(code);
 		conceptMap.setConceptReferenceTerm(conceptReferenceTerm);

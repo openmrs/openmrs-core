@@ -13,7 +13,11 @@
  */
 package org.openmrs;
 
+import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.openmrs.api.APIException;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 import java.util.Date;
@@ -22,6 +26,9 @@ import static junit.framework.TestCase.assertEquals;
 import static org.openmrs.test.TestUtil.createDateTime;
 
 public class ISO8601DurationTest extends BaseContextSensitiveTest {
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
 	public void addToDate_shouldAddSecondsWhenUnitIsSeconds() throws Exception {
@@ -87,10 +94,23 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void addToDate_shouldReturnNullWhenUnitIsUnknown() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(3, "UNKNOWN");
+	public void addToDate_shouldFailWhenUnitIsRecurringAndFrequencyIsUnknown() throws Exception {
+		ISO8601Duration duration = new ISO8601Duration(3, ISO8601Duration.RECURRING_INTERVAL_CODE); // 3 Times
+		Date startDate = createDateTime("2014-07-01 10-00-00");
+		OrderFrequency frequency = null;
 		
-		assertEquals(null, duration.addToDate(createDateTime("2014-07-01 10-00-00"), null));
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Matchers.is("Frequency can not be null when duration in Recurring Interval"));
+		duration.addToDate(startDate, frequency);
+	}
+	
+	@Test
+	public void addToDate_shouldFailWhenUnitIsUnknown() throws Exception {
+		ISO8601Duration duration = new ISO8601Duration(3, "J");
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Matchers.is("Unknown code 'J' for ISO8601 duration units"));
+		duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 	}
 	
 	private OrderFrequency createFrequency(double frequencyPerDay) {

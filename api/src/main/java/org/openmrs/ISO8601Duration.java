@@ -14,6 +14,7 @@
 package org.openmrs;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.openmrs.api.APIException;
 
 import java.util.Date;
 
@@ -39,7 +40,7 @@ public class ISO8601Duration {
 	
 	public static final String RECURRING_INTERVAL_CODE = "R";
 	
-	public static final String CONCEPT_SOURCE_NAME = "ISO 8601 Duration";
+	public static final String CONCEPT_SOURCE_UUID = "cb523690-9012-4e72-b8bf-4253e1b1a687";
 	
 	private static final int SECONDS_PER_MINUTE = 60;
 	
@@ -82,8 +83,10 @@ public class ISO8601Duration {
 		if (YEARS_CODE.equals(code))
 			return DateUtils.addYears(startDate, duration);
 		if (RECURRING_INTERVAL_CODE.equals(code)) {
+			if (frequency == null)
+				throw new APIException("Frequency can not be null when duration in Recurring Interval");
 			return DateUtils.addSeconds(startDate, (int) (duration * SECONDS_PER_DAY / frequency.getFrequencyPerDay()));
 		}
-		return null;
+		throw new APIException(String.format("Unknown code '%s' for ISO8601 duration units", code));
 	}
 }

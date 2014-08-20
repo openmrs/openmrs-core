@@ -7758,7 +7758,7 @@
         </preConditions>
         <comment>Adding duration column to drug_order table</comment>
         <addColumn tableName="drug_order">
-            <column name="duration" type="int" />
+            <column name="duration" type="double" />
         </addColumn>
     </changeSet>
 
@@ -8439,5 +8439,12 @@
         <modifyDataType tableName="drug_order" columnName="dosing_type" newDataType="varchar(255)" />
     </changeSet>
 
+    <changeSet id="201408200733-TRUNK-4446" author="Deepak">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="duration" tableName="drug_order" />
+        </preConditions>
+        <comment>Changing duration column of drug_order to int</comment>
+        <modifyDataType tableName="drug_order" columnName="duration" newDataType="int"/>
+    </changeSet>
 
 </databaseChangeLog>

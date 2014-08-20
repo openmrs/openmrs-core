@@ -132,21 +132,22 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	 */
 	@Override
 	public Date getAutoExpireDate(DrugOrder drugOrder) {
-		if (drugOrder.getDurationUnits() == null)
+		if (drugOrder.getDuration() == null || drugOrder.getDurationUnits() == null)
 			return null;
 		if (drugOrder.getNumRefills() != null && drugOrder.getNumRefills() > 0)
 			return null;
 		String durationCode = getISO8601DurationCode(drugOrder.getDurationUnits().getConceptMappings());
+		if (durationCode == null)
+			return null;
 		ISO8601Duration iso8601Duration = new ISO8601Duration(drugOrder.getDuration(), durationCode);
-		return iso8601Duration.addToDate(drugOrder.getDateActivated(), drugOrder.getFrequency());
+		return iso8601Duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency());
 	}
 	
 	private static String getISO8601DurationCode(Collection<ConceptMap> conceptMappings) {
 		for (ConceptMap conceptMapping : conceptMappings) {
 			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
-			if (OpenmrsUtil.nullSafeEquals(conceptMapping.getConceptMapType().getUuid(), ConceptMapType.SAME_AS_UUID)
-			        && OpenmrsUtil.nullSafeEquals(conceptReferenceTerm.getConceptSource().getName(),
-			            ISO8601Duration.CONCEPT_SOURCE_NAME))
+			if (ConceptMapType.SAME_AS_UUID.equals(conceptMapping.getConceptMapType().getUuid())
+			        && ISO8601Duration.CONCEPT_SOURCE_UUID.equals(conceptReferenceTerm.getConceptSource().getUuid()))
 				return conceptReferenceTerm.getCode();
 		}
 		return null;
