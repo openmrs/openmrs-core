@@ -475,12 +475,12 @@
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
 				<artifactId>jackson-core-asl</artifactId>
-				<version>1.5.0</version>
+				<version>1.9.13</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
 				<artifactId>jackson-mapper-asl</artifactId>
-				<version>1.5.0</version>
+				<version>1.9.13</version>
 			</dependency>
 			<dependency>
 				<groupId>org.azeckoski</groupId>
