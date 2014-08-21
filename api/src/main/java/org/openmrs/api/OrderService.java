@@ -289,7 +289,7 @@ public interface OrderService extends OpenmrsService {
 	 * <p>
 	 * - Not voided
 	 * - Not a discontinuation Order i.e one where action != Action#DISCONTINUE
-	 * - startDate is before or equal to asOfDate
+	 * - dateActivated is before or equal to asOfDate
 	 * - dateStopped and autoExpireDate are both null OR if it has dateStopped, then it should be
 	 * after asOfDate OR if it has autoExpireDate, then it should be after asOfDate. NOTE: If both
 	 * dateStopped and autoExpireDate are set then dateStopped wins because an order can never

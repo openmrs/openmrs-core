@@ -1423,7 +1423,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldPassIfAnActiveDrugOrderForTheSameConceptAndCareSettingButDifferentFormulationExists()
 	        throws Exception {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrdersWitSameConceptAndDifferentFormAndStrength.xml");
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrdersWithSameConceptAndDifferentFormAndStrength.xml");
 		final Patient patient = patientService.getPatient(2);
 		//sanity check that we have an active order
 		DrugOrder existingOrder = (DrugOrder) orderService.getOrder(1000);
@@ -1453,7 +1453,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldFailIfAnActiveDrugOrderForTheSameDrugFormulationExists() throws Exception {
-		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrdersWitSameConceptAndDifferentFormAndStrength.xml");
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrdersWithSameConceptAndDifferentFormAndStrength.xml");
 		final Patient patient = patientService.getPatient(2);
 		//sanity check that we have an active order for the same concept
 		DrugOrder existingOrder = (DrugOrder) orderService.getOrder(1000);
