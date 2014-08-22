@@ -21,9 +21,11 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.Vector;
 
 import org.databene.benerator.Generator;
 import org.databene.benerator.factory.GeneratorFactory;
@@ -541,6 +543,47 @@ public class ConceptTest {
 		Assert.assertEquals(set2.getConcept(), setMembers.get(1));
 		Assert.assertEquals(set1.getConcept(), setMembers.get(2));
 		Assert.assertEquals(set0.getConcept(), setMembers.get(3));
+	}
+	
+	/**
+	 * @see {@link Concept#getSetMembers()}
+	 */
+	@Test
+	@Verifies(value = "should return concept set members sorted with retired last", method = "getSetMembers()")
+	public void getSetMembers_shouldReturnConceptSetMembersSortedWithRetiredLast() throws Exception {
+		Concept c = new Concept();
+		Concept retiredConcept = new Concept(3);
+		retiredConcept.setRetired(true);
+		Concept retiredConcept2 = new Concept(0);
+		retiredConcept2.setRetired(true);
+		Concept retiredConcept3 = new Concept(0);
+		retiredConcept3.setRetired(true);
+		ConceptSet set0 = new ConceptSet(retiredConcept, 3.0);
+		ConceptSet set1 = new ConceptSet(new Concept(1), 2.0);
+		ConceptSet set2 = new ConceptSet(new Concept(2), 1.0);
+		ConceptSet set3 = new ConceptSet(retiredConcept2, 0.0);
+		ConceptSet set4 = new ConceptSet();
+		set4.setConcept(new Concept(3));
+		ConceptSet set5 = new ConceptSet();
+		set5.setConcept(retiredConcept3);
+		
+		List<ConceptSet> sets = new ArrayList<ConceptSet>();
+		sets.add(set0);
+		sets.add(set1);
+		sets.add(set2);
+		sets.add(set3);
+		sets.add(set4);
+		sets.add(set5);
+		
+		c.setConceptSets(sets);
+		
+		List<Concept> setMembers = c.getSetMembers();
+		Assert.assertEquals(set4.getConcept().getConceptId(), setMembers.get(0).getConceptId());
+		Assert.assertEquals(set2.getConcept().getConceptId(), setMembers.get(1).getConceptId());
+		Assert.assertEquals(set1.getConcept().getConceptId(), setMembers.get(2).getConceptId());
+		Assert.assertEquals(set5.getConcept().getConceptId(), setMembers.get(3).getConceptId());
+		Assert.assertEquals(set3.getConcept().getConceptId(), setMembers.get(4).getConceptId());
+		Assert.assertEquals(set0.getConcept().getConceptId(), setMembers.get(5).getConceptId());
 	}
 	
 	/**

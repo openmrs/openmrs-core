@@ -15,6 +15,7 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -199,15 +200,10 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(ConceptSet cs) {
-		if ((getSortWeight() == null) && (cs.getSortWeight() != null)) {
-			return -1;
+		int value = OpenmrsUtil.compareWithNullAsLowest(concept.isRetired(), cs.concept.isRetired());
+		if (value == 0) {
+			value = OpenmrsUtil.compareWithNullAsLowest(this.getSortWeight(), cs.getSortWeight());
 		}
-		if ((getSortWeight() != null) && (cs.getSortWeight() == null)) {
-			return 1;
-		}
-		if ((getSortWeight() == null) && (cs.getSortWeight() == null)) {
-			return 0;
-		}
-		return (getSortWeight() < cs.getSortWeight()) ? -1 : (getSortWeight() > cs.getSortWeight()) ? 1 : 0;
+		return value;
 	}
 }
