@@ -14,11 +14,9 @@
 package org.openmrs;
 
 import org.openmrs.api.APIException;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
@@ -124,7 +122,11 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-		
+		if (order.getAutoExpireDate() == null && order.getDurationUnits() != null) {
+			if (getISO8601DurationCode(order.getDurationUnits()) == null) {
+				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode");
+			}
+		}
 	}
 	
 	/**
@@ -136,15 +138,15 @@ public class SimpleDosingInstructions implements DosingInstructions {
 			return null;
 		if (drugOrder.getNumRefills() != null && drugOrder.getNumRefills() > 0)
 			return null;
-		String durationCode = getISO8601DurationCode(drugOrder.getDurationUnits().getConceptMappings());
+		String durationCode = getISO8601DurationCode(drugOrder.getDurationUnits());
 		if (durationCode == null)
 			return null;
 		ISO8601Duration iso8601Duration = new ISO8601Duration(drugOrder.getDuration(), durationCode);
 		return iso8601Duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency());
 	}
 	
-	private static String getISO8601DurationCode(Collection<ConceptMap> conceptMappings) {
-		for (ConceptMap conceptMapping : conceptMappings) {
+	private static String getISO8601DurationCode(Concept durationUnits) {
+		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
 			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
 			if (ConceptMapType.SAME_AS_UUID.equals(conceptMapping.getConceptMapType().getUuid())
 			        && ISO8601Duration.CONCEPT_SOURCE_UUID.equals(conceptReferenceTerm.getConceptSource().getUuid()))

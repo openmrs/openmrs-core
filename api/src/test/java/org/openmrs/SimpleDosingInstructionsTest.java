@@ -13,16 +13,65 @@
  */
 package org.openmrs;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 import java.util.Date;
+import java.util.Random;
 import java.util.UUID;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.openmrs.test.TestUtil.createDateTime;
 
 public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
+	
+	@Test
+	public void validate_shouldFailValidationIfAutoExpireDateIsNotSetAndDurationUnitsIsNotMappedToISO8601Duration()
+	        throws Exception {
+		DrugOrder drugOrder = createValidDrugOrder();
+		drugOrder.setDuration(30);
+		Concept unMappedDurationUnits = new Concept();
+		drugOrder.setDurationUnits(unMappedDurationUnits);
+		drugOrder.setAutoExpireDate(null);
+		Errors errors = new BindException(drugOrder, "drugOrder");
+		
+		new SimpleDosingInstructions().validate(drugOrder, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
+		Assert.assertEquals("DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode", errors.getFieldError(
+		    "durationUnits").getCode());
+	}
+	
+	@Test
+	public void validate_shouldPassValidationIfAutoExpireDateIsSetAndDurationUnitsIsNotMappedToISO8601Duration()
+	        throws Exception {
+		DrugOrder drugOrder = createValidDrugOrder();
+		drugOrder.setDuration(30);
+		Concept unMappedDurationUnits = new Concept();
+		drugOrder.setDurationUnits(unMappedDurationUnits);
+		drugOrder.setAutoExpireDate(createDateTime("2014-07-01 10-00-00"));
+		Errors errors = new BindException(drugOrder, "drugOrder");
+		
+		new SimpleDosingInstructions().validate(drugOrder, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	@Test
+	public void validate_shouldPassValidationIfAutoExpireDateAndDurationUnitsAreNotSet() throws Exception {
+		DrugOrder drugOrder = createValidDrugOrder();
+		drugOrder.setDurationUnits(null);
+		drugOrder.setAutoExpireDate(null);
+		Errors errors = new BindException(drugOrder, "drugOrder");
+		
+		new SimpleDosingInstructions().validate(drugOrder, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
 	
 	@Test
 	public void getAutoExpireDate_shouldInferAutoExpireDateForAKnownISO8601DurationUnit() throws Exception {
@@ -112,6 +161,27 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		
 		assertEquals(null, autoExpireDate);
+	}
+	
+	private DrugOrder createValidDrugOrder() {
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setDose(10.0);
+		drugOrder.setDoseUnits(createConceptWithName("ml"));
+		drugOrder.setRoute(createConceptWithName("IV"));
+		OrderFrequency frequency = new OrderFrequency();
+		frequency.setConcept(createConceptWithName("Twice a day"));
+		drugOrder.setFrequency(frequency);
+		return drugOrder;
+	}
+	
+	private Concept createConceptWithName(String name) {
+		Concept concept = new Concept(new Random().nextInt());
+		ConceptName conceptName = new ConceptName();
+		conceptName.setName(name);
+		conceptName.setLocale(Context.getLocale());
+		conceptName.setLocalePreferred(true);
+		concept.addName(conceptName);
+		return concept;
 	}
 	
 	private Concept createUnitsSameAs(String code) {

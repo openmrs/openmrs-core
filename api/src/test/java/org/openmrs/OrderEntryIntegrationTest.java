@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -110,8 +111,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		order.setDoseUnits(conceptService.getConcept(50));
 		order.setQuantity(20.0);
 		order.setQuantityUnits(conceptService.getConcept(51));
-		order.setDuration(20);
-		order.setDurationUnits(conceptService.getConcept(28));
 		order.setFrequency(orderService.getOrderFrequency(3000));
 		order.setRoute(conceptService.getConcept(22));
 		order.setNumRefills(10);
