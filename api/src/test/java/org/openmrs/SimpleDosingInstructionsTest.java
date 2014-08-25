@@ -30,13 +30,11 @@ import static org.openmrs.test.TestUtil.createDateTime;
 public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	
 	@Test
-	public void validate_shouldFailValidationIfAutoExpireDateIsNotSetAndDurationUnitsIsNotMappedToISO8601Duration()
-	        throws Exception {
+	public void validate_shouldFailIfDurationUnitsIsNotMappedToISO8601Duration() throws Exception {
 		DrugOrder drugOrder = createValidDrugOrder();
 		drugOrder.setDuration(30);
 		Concept unMappedDurationUnits = new Concept();
 		drugOrder.setDurationUnits(unMappedDurationUnits);
-		drugOrder.setAutoExpireDate(null);
 		Errors errors = new BindException(drugOrder, "drugOrder");
 		
 		new SimpleDosingInstructions().validate(drugOrder, errors);
@@ -47,25 +45,9 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void validate_shouldPassValidationIfAutoExpireDateIsSetAndDurationUnitsIsNotMappedToISO8601Duration()
-	        throws Exception {
-		DrugOrder drugOrder = createValidDrugOrder();
-		drugOrder.setDuration(30);
-		Concept unMappedDurationUnits = new Concept();
-		drugOrder.setDurationUnits(unMappedDurationUnits);
-		drugOrder.setAutoExpireDate(createDateTime("2014-07-01 10-00-00"));
-		Errors errors = new BindException(drugOrder, "drugOrder");
-		
-		new SimpleDosingInstructions().validate(drugOrder, errors);
-		
-		Assert.assertFalse(errors.hasErrors());
-	}
-	
-	@Test
-	public void validate_shouldPassValidationIfAutoExpireDateAndDurationUnitsAreNotSet() throws Exception {
+	public void validate_shouldPassIfDurationUnitsIsNotSet() throws Exception {
 		DrugOrder drugOrder = createValidDrugOrder();
 		drugOrder.setDurationUnits(null);
-		drugOrder.setAutoExpireDate(null);
 		Errors errors = new BindException(drugOrder, "drugOrder");
 		
 		new SimpleDosingInstructions().validate(drugOrder, errors);

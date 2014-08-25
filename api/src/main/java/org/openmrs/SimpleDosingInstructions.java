@@ -122,10 +122,8 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-		if (order.getAutoExpireDate() == null && order.getDurationUnits() != null) {
-			if (getISO8601DurationCode(order.getDurationUnits()) == null) {
-				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode");
-			}
+		if (order.getDurationUnits() != null && getISO8601DurationCode(order.getDurationUnits()) == null) {
+			errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode");
 		}
 	}
 	
