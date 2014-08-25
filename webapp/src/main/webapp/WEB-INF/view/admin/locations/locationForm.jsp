@@ -75,7 +75,9 @@
 			</c:if>
 		</spring:bind>
 		<c:forEach var="attrType" items="${ attributeTypes }">
-			<openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ location }" formFieldNamePrefix="attribute.${ attrType.id }"/>
+		    <c:if test="${ !attrType.retired }">
+			    <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ location }" formFieldNamePrefix="attribute.${ attrType.id }"/>
+            </c:if>
 		</c:forEach>
 		<tr>
 			<th valign="top"><openmrs:message code="Location.tags"/></th>
