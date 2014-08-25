@@ -1153,30 +1153,87 @@ public class OpenmrsUtil {
 	 *         the application (runtime properties, modules, etc)
 	 */
 	public static String getApplicationDataDirectory() {
-		
-		String filepath = null;
-		if (System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY") != null) {
-			filepath = System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
+		String filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
+		String systemProperty = System.getProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
+		//System and runtime property take precedence
+		if (systemProperty != null) {
+			filepath = systemProperty;
 		} else {
-			
-			if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
-				filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
-			} else {
-				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
-					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-				else
-					filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
-					        + "OpenMRS";
-				
-				filepath = filepath + File.separator;
+			String runtimeProperty = Context.getRuntimeProperties().getProperty(
+			    OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+			if (runtimeProperty != null) {
+				filepath = runtimeProperty;
 			}
 		}
-		
+		if (filepath == null) {
+			if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
+				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
+				if (!(new File(filepath)).canWrite()) {
+					log.warn("Unable to write to users home dir, fallback to: "
+					        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
+					filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
+				}
+			} else {
+				if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
+					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
+					if (!canWrite(new File(filepath))) {
+						log.warn("Unable to write to users home dir, fallback to: "
+						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX);
+						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX + File.separator + "OpenMRS";
+					}
+				} else {
+					filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
+					        + "OpenMRS";
+					if (!canWrite(new File(filepath))) {
+						log.warn("Unable to write to users home dir, fallback to: "
+						        + OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN);
+						filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY_FALLBACK_WIN + File.separator + "OpenMRS";
+					}
+				}
+			}
+			filepath = filepath + File.separator;
+		}
 		File folder = new File(filepath);
-		if (!folder.exists())
+		if (!folder.exists()) {
 			folder.mkdirs();
-		
+		}
+		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = filepath;
 		return filepath;
+	}
+	
+	/**
+	 * Can be used to override default application data directory.
+	 * <p>
+	 * Note that it will not override application data directory
+	 * provided as a system property.
+	 *
+	 * @param path
+	 * @since 1.11
+	 */
+	public static void setApplicationDataDirectory(String path) {
+		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = path;
+	}
+	
+	/**
+	 * Checks if we can write to a given folder.
+	 *
+	 * @param folder the directory to check.
+	 * @return true if we can write to it, else false.
+	 */
+	private static boolean canWrite(File folder) {
+		try {
+			//We need to first create the folder if it does not exist,
+			//else File.canWrite() will return false even when we
+			//have the necessary permissions.
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			return folder.canWrite();
+		}
+		catch (SecurityException ex) {
+			//all we wanted to know is whether we have permissions
+		}
+		return false;
 	}
 	
 	/**
