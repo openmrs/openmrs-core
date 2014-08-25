@@ -22,15 +22,16 @@ import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Dates should be interpreted as follows: If dateActivated is null then the order has been going on
- * "since the beginning of time" Otherwise the order starts on dateActivated If discontinued is
- * non-null and true, then the following fields should be ignored: autoExpireDate if dateStopped is
- * null then the order was discontinued "the instant after it began" otherwise it was given from its
- * starting date until dateStopped Otherwise (discontinued is null or false) if autoExpireDate is
- * null, the order is set to go forever otherwise the order goes until autoExpireDate the following
- * fields should be ignored: discontinuedBy dateStopped discontinuedReason It is an error to have
- * discontinued be true and have dateStopped be after autoExpireDate. However this is not checked
- * for in the database or the application.
+ * Encapsulates information about the clinical action of a provider requesting something for a
+ * patient e.g requesting a test to be performed, prescribing a medication, requesting the patient
+ * to enroll on a specific diet etc. There is the notion of effective dates, these are used to
+ * determine the span of an order's schedule i.e its effective start and stop dates therefore dates
+ * should be interpreted as follows: The effective start of the schedule is the scheduledDate if
+ * urgency is set to ON_SCHEDULED_DATE otherwise it is the dateActivated; the effective end date is
+ * dateStopped, if it is null then it is the autoExpireDate. For DrugOrders, if the autoExpireDate
+ * is not specified then it will be calculated and set by the API based on the duration and
+ * frequency, note that frequency is only used in case duration is specified as a recurring interval
+ * e.g. 3 times.
  * 
  * @version 1.0
  */

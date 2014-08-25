@@ -15,6 +15,7 @@ package org.openmrs.validator;
 
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -30,12 +31,16 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.FreeTextDosingInstructions;
 import org.openmrs.Order;
+import org.openmrs.GlobalProperty;
+import org.openmrs.CareSetting;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -522,4 +527,97 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		Assert.assertFalse(errors.hasFieldErrors("dosingInstructions"));
 	}
+	
+	/**
+	 * @verifies fail validation if GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is true
+	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailDrugOrderWithoutADrugWhenDrugOrderRequireDrugGBIsTrue() throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "true");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("drug"));
+	}
+	
+	/**
+	 * @verifies pass validation of Drug Order if formulation(Drug) not specified
+	 * i.e GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is false
+	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassDrugOrderWithoutADrugWhenDrugOrderRequireDrugGBIsFalse() throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "false");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
+	}
+	
+	/**
+	 * @verifies default case pass saving Drug Order without a Drug if formulation(drug) not specified
+	 * i.e GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG is not set
+	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order, org.openmrs.api.OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassDrugOrderWithoutADrugWhenDrugOrderRequireDrugGBIsNotSet() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(7);
+		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
+		assertNull(Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG));
+		//place drug order
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		order.setEncounter(encounter);
+		order.setConcept(Context.getConceptService().getConcept(5497));
+		order.setPatient(patient);
+		order.setCareSetting(careSetting);
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDateActivated(encounter.getEncounterDatetime());
+		order.setOrderType(orderType);
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("None");
+		order.setDosingInstructions("Test Instruction");
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
+	}
+	
 }
