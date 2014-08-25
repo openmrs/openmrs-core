@@ -17,6 +17,7 @@ import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -32,7 +33,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	
 	private OrderFrequency frequency;
 	
-	private Double duration;
+	private Integer duration;
 	
 	private Concept durationUnits;
 	
@@ -121,7 +122,35 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-		
+		if (order.getDurationUnits() != null && getISO8601DurationCode(order.getDurationUnits()) == null) {
+			errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode");
+		}
+	}
+	
+	/**
+	 * @see DosingInstructions#getAutoExpireDate(DrugOrder)
+	 */
+	@Override
+	public Date getAutoExpireDate(DrugOrder drugOrder) {
+		if (drugOrder.getDuration() == null || drugOrder.getDurationUnits() == null)
+			return null;
+		if (drugOrder.getNumRefills() != null && drugOrder.getNumRefills() > 0)
+			return null;
+		String durationCode = getISO8601DurationCode(drugOrder.getDurationUnits());
+		if (durationCode == null)
+			return null;
+		ISO8601Duration iso8601Duration = new ISO8601Duration(drugOrder.getDuration(), durationCode);
+		return iso8601Duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency());
+	}
+	
+	private static String getISO8601DurationCode(Concept durationUnits) {
+		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
+			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
+			if (ConceptMapType.SAME_AS_UUID.equals(conceptMapping.getConceptMapType().getUuid())
+			        && ISO8601Duration.CONCEPT_SOURCE_UUID.equals(conceptReferenceTerm.getConceptSource().getUuid()))
+				return conceptReferenceTerm.getCode();
+		}
+		return null;
 	}
 	
 	public Double getDose() {
@@ -156,11 +185,11 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		this.frequency = frequency;
 	}
 	
-	public Double getDuration() {
+	public Integer getDuration() {
 		return duration;
 	}
 	
-	public void setDuration(Double duration) {
+	public void setDuration(Integer duration) {
 		this.duration = duration;
 	}
 	

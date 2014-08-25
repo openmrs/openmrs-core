@@ -281,7 +281,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfDurationUnitsIsNullWhenDurationIsPresent() throws Exception {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(20.0);
+		order.setDuration(20);
 		order.setDurationUnits(null);
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
@@ -344,7 +344,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(5.0);
+		order.setDuration(5);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
 		order.setDoseUnits(concept);
@@ -367,7 +367,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(5.0);
+		order.setDuration(5);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
 		order.setDoseUnits(concept);
@@ -390,7 +390,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(5.0);
+		order.setDuration(5);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
 		order.setDoseUnits(concept);
@@ -413,7 +413,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);
-		order.setDuration(5.0);
+		order.setDuration(5);
 		order.setDurationUnits(concept);
 		order.setDose(1.0);
 		order.setDoseUnits(concept);

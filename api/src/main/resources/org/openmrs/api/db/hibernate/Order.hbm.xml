@@ -85,7 +85,7 @@
             <property name="dosingType" type="java.lang.Class" column="dosing_type"  length="255"/>
             <property name="numRefills" type="int" column="num_refills" />
             <property name="dosingInstructions" type="java.lang.String" column="dosing_instructions" length="65535"/>
-            <property name="duration" type="double" column="duration" length="22"/>
+            <property name="duration" type="int" column="duration"/>
             <many-to-one name="durationUnits" class="org.openmrs.Concept" column="duration_units" />
             <many-to-one name="route" class="org.openmrs.Concept" />
             <property name="brandName" type="string" column="brand_name" length="255" />

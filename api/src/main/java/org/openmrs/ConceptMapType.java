@@ -23,6 +23,8 @@ public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Seria
 	
 	private static final long serialVersionUID = 1L;
 	
+	public static final String SAME_AS_UUID = "35543629-7d8c-11e1-909d-c80aa9edcf4e";
+	
 	private Integer conceptMapTypeId;
 	
 	private Boolean isHidden = Boolean.FALSE;
