@@ -8459,6 +8459,7 @@
             <column name="hl7_code"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="cb523690-9012-4e72-b8bf-4253e1b1a687"/>
         </insert>
     </changeSet>
@@ -8475,6 +8476,7 @@
             <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE uuid = 'cb523690-9012-4e72-b8bf-4253e1b1a687')"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="d0d36e69-402e-453e-8a7a-aec44c2915af"/>
         </insert>
     </changeSet>
@@ -8491,6 +8493,7 @@
             <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE uuid = 'cb523690-9012-4e72-b8bf-4253e1b1a687')"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="613801b8-1b8b-41c9-99e9-f449b9d30734"/>
         </insert>
     </changeSet>
@@ -8507,6 +8510,7 @@
             <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE uuid = 'cb523690-9012-4e72-b8bf-4253e1b1a687')"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="c6173382-6afa-466d-a863-3fbce5c93004"/>
         </insert>
     </changeSet>
@@ -8523,6 +8527,7 @@
             <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE uuid = 'cb523690-9012-4e72-b8bf-4253e1b1a687')"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="77a8ed6a-a2b9-43d6-be4c-f28f9ec1bbe7"/>
         </insert>
     </changeSet>
@@ -8539,6 +8544,7 @@
             <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE uuid = 'cb523690-9012-4e72-b8bf-4253e1b1a687')"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="8f780398-c767-4f2d-b574-9ac6f894d9d7"/>
         </insert>
     </changeSet>
@@ -8555,6 +8561,7 @@
             <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE uuid = 'cb523690-9012-4e72-b8bf-4253e1b1a687')"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="28264836-222f-4c1e-8411-7de2a13e2367"/>
         </insert>
     </changeSet>
@@ -8571,6 +8578,7 @@
             <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE uuid = 'cb523690-9012-4e72-b8bf-4253e1b1a687')"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="1fdba00b-8376-4f47-8f32-d86c10b15545"/>
         </insert>
     </changeSet>
@@ -8587,6 +8595,7 @@
             <column name="concept_source_id" valueComputed="(SELECT concept_source_id FROM concept_reference_source WHERE uuid = 'cb523690-9012-4e72-b8bf-4253e1b1a687')"/>
             <column name="creator" valueNumeric="1"/>
             <column name="date_created" valueDate="2014-08-20T00:00:00"/>
+            <column name="retired" valueBoolean="false"/>
             <column name="uuid" value="b886eed5-635e-4259-bc8f-0fe43076d53a"/>
         </insert>
     </changeSet>
