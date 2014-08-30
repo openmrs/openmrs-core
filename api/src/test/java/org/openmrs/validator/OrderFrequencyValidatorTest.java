@@ -136,7 +136,8 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		OrderFrequency orderFrequency = Context.getOrderService().getOrderFrequency(2);
 		orderFrequency.setConcept(null);
 		expectedException.expect(APIException.class);
-		String expectedMsg = "'" + orderFrequency + "' failed to validate with reason: concept: Concept.noConceptSelected";
+		String expectedMsg = "'" + orderFrequency.getClass()
+		        + "' failed to validate with reason: concept: Concept.noConceptSelected";
 		expectedException.expectMessage(expectedMsg);
 		Context.getOrderService().saveOrderFrequency(orderFrequency);
 	}
