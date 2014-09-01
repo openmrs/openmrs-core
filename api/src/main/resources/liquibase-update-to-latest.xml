@@ -8599,4 +8599,59 @@
             <column name="uuid" value="b886eed5-635e-4259-bc8f-0fe43076d53a"/>
         </insert>
     </changeSet>
+    
+    <changeSet id="20140822-TRUNK-4111" author="k-joseph">
+    	<preConditions onFail="MARK_RAN">
+    		<columnExists columnName="property_value" tableName="global_property" />
+    	</preConditions>
+    	<comment>Updating Address Template to remove longitude, latitude fields completely</comment>
+        <update tableName="global_property">
+            <column name="property_value" value='&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+				      &lt;nameMappings class=&quot;properties&quot;&gt;&#10;
+				       &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;&#10;
+				       &lt;property name=&quot;address3&quot; value=&quot;Location.estateNearestCentre&quot;/&gt;&#10;
+				       &lt;property name=&quot;address2&quot; value=&quot;Location.sectionHomestead&quot;/&gt;&#10;
+				       &lt;property name=&quot;address1&quot; value=&quot;Location.address1&quot;/&gt;&#10;
+				       &lt;property name=&quot;country&quot; value=&quot;Location.country&quot;/&gt;&#10;
+				       &lt;property name=&quot;stateProvince&quot; value=&quot;Location.province&quot;/&gt;&#10;
+				       &lt;property name=&quot;address6&quot; value=&quot;Location.location&quot;/&gt;&#10;
+				       &lt;property name=&quot;address5&quot; value=&quot;Location.sublocation&quot;/&gt;&#10;
+				       &lt;property name=&quot;cityVillage&quot; value=&quot;Location.townVillage&quot;/&gt;&#10;
+				       &lt;property name=&quot;countyDistrict&quot; value=&quot;Location.district&quot;/&gt;&#10;
+				       &lt;property name=&quot;address4&quot; value=&quot;Location.division&quot;/&gt;&#10;
+				      &lt;/nameMappings&gt;&#10;
+				      &lt;sizeMappings class=&quot;properties&quot;&gt;&#10;
+				       &lt;property name=&quot;postalCode&quot; value=&quot;6&quot;/&gt;&#10;
+				       &lt;property name=&quot;address3&quot; value=&quot;24&quot;/&gt;&#10;
+				       &lt;property name=&quot;address2&quot; value=&quot;55&quot;/&gt;&#10;
+				       &lt;property name=&quot;address1&quot; value=&quot;55&quot;/&gt;&#10;
+				       &lt;property name=&quot;country&quot; value=&quot;10&quot;/&gt;&#10;
+				       &lt;property name=&quot;townshipDivision&quot; value=&quot;24&quot;/&gt;&#10;
+				       &lt;property name=&quot;stateProvince&quot; value=&quot;24&quot;/&gt;&#10;
+				       &lt;property name=&quot;subregion&quot; value=&quot;24&quot;/&gt;&#10;
+				       &lt;property name=&quot;region&quot; value=&quot;24&quot;/&gt;&#10;
+				       &lt;property name=&quot;cityVillage&quot; value=&quot;24&quot;/&gt;&#10;
+				       &lt;property name=&quot;countyDistrict&quot; value=&quot;24&quot;/&gt;&#10;
+				      &lt;/sizeMappings&gt;&#10;
+				      &lt;elementDefaults class=&quot;properties&quot;&gt;&#10;
+				       &lt;property name=&quot;country&quot; value=&quot;Kenya&quot;/&gt;&#10;
+				      &lt;/elementDefaults&gt;&#10;
+				      &lt;elementRegex class=&quot;properties&quot;&gt;&#10;
+				      &lt;/elementRegex&gt;&#10;
+				      &lt;elementRegexFormats class=&quot;properties&quot;&gt;&#10;
+				      &lt;/elementRegexFormats&gt;&#10;
+				      &lt;lineByLineFormat&gt;&#10;
+				       &lt;string&gt;&#10;address1&lt;/string&gt;&#10;
+				       &lt;string&gt;&#10;address2&lt;/string&gt;&#10;
+				       &lt;string&gt;&#10;address3 cityVillage&lt;/string&gt;&#10;
+				       &lt;string&gt;&#10;address5 address6&lt;/string&gt;&#10;
+				       &lt;string&gt;&#10;address4 countyDistrict&lt;/string&gt;&#10;
+				       &lt;string&gt;&#10;stateProvince postalCode&lt;/string&gt;&#10;
+				       &lt;string&gt;&#10;country&lt;/string&gt;&#10;
+				      &lt;/lineByLineFormat&gt;&#10;
+		      		&lt;/org.openmrs.layout.web.address.AddressTemplate&gt;&#10;' />
+            <where>property = 'layout.address.format'</where>
+        </update>
+	</changeSet>
+	
 </databaseChangeLog>
