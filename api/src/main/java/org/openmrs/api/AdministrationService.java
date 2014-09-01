@@ -710,4 +710,17 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param implementationHttpClient The implementation http client
 	 */
 	public void setImplementationIdHttpClient(HttpClient implementationHttpClient);
+	
+	/**
+	 * Reads a GP which specifies if database string comparison is case sensitive.
+	 * <p>
+	 * It is an optimisation parameter for MySQL, which can speed up searching if set to <b>false</b>.
+	 * See http://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
+	 * <p>
+	 * It is set to <b>true</b> by default.
+	 * 
+	 * @return true if database string comparison is case sensitive
+	 * @since 1.11
+	 */
+	public boolean isDatabaseStringComparisonCaseSensitive();
 }

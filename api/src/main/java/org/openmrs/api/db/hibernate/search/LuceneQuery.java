@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate.search;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,15 +49,15 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	/**
 	 * The preferred way to create a Lucene query using the query parser.
-	 * 
-	 * @param query
+	 * @param type filters on type
 	 * @param session
-	 * @param type
+	 * @param query
+	 * 
 	 * @return the Lucene query
 	 */
-	public static <T> LuceneQuery<T> newQuery(final String query, final Session session, final Class<T> type) {
+	public static <T> LuceneQuery<T> newQuery(final Class<T> type, final Session session, final String query) {
 		return new LuceneQuery<T>(
-		                          session, type) {
+		                          type, session) {
 			
 			@Override
 			protected Query prepareQuery() throws ParseException {
@@ -79,7 +80,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return QueryParser.escape(query);
 	}
 	
-	public LuceneQuery(Session session, Class<T> type) {
+	public LuceneQuery(Class<T> type, Session session) {
 		super(session, type);
 		
 		buildQuery();
@@ -87,6 +88,8 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	/**
 	 * Include items with the given value in the specified field.
+	 * <p>
+	 * It is a filter applied before the query.
 	 * 
 	 * @param field
 	 * @param value
@@ -100,8 +103,18 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		return this;
 	}
 	
+	public LuceneQuery<T> include(String field, Collection<?> values) {
+		if (values != null) {
+			include(field, values.toArray());
+		}
+		
+		return this;
+	}
+	
 	/**
 	 * Include items with any of the given values in the specified field.
+	 * <p>
+	 * It is a filter applied before the query.
 	 * 
 	 * @param field
 	 * @param values
@@ -124,6 +137,8 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	/**
 	 * Exclude any items with the given value in the specified field.
+	 * <p>
+	 * It is a filter applied before the query.
 	 * 
 	 * @param field
 	 * @param value
@@ -139,6 +154,8 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	
 	/**
 	 * Exclude any items with the given values in the specified field.
+	 * <p>
+	 * It is a filter applied before the query.
 	 * 
 	 * @param field
 	 * @param values
