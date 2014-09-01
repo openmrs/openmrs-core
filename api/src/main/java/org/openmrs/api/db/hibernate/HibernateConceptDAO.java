@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,13 +39,12 @@ import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -67,7 +68,6 @@ import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
@@ -76,6 +76,7 @@ import org.openmrs.api.db.hibernate.search.LuceneQuery;
 import org.openmrs.collection.ListPart;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
+
 
 /**
  * The Hibernate class for Concepts, Drugs, and related classes. <br/>
@@ -380,7 +381,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		}
 		if (drugName != null) {
-			searchCriteria.add(Restrictions.eq("drug.name", drugName).ignoreCase());
+			SimpleExpression eq = Restrictions.eq("drug.name", drugName);
+			if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+				eq = eq.ignoreCase();
+			}
+			searchCriteria.add(eq);
 		}
 		return (List<Drug>) searchCriteria.list();
 	}
@@ -404,27 +409,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Drug> getDrugs(final String phrase) throws DAOException {
-		if (StringUtils.isBlank(phrase)) {
+		LuceneQuery<Drug> drugQuery = newDrugQuery(phrase, true, false, Context.getLocale(), false, null, false);
+		
+		if (drugQuery == null) {
 			return Collections.emptyList();
 		}
 		
-		final String escapedPhrase = LuceneQuery.escapeQuery(phrase.trim());
-		
-		List<String> tokenizedPhrase = new ArrayList<String>();
-		String[] words = escapedPhrase.split(" ");
-		for (String word : words) {
-			word = word.trim();
-			if (!word.isEmpty()) {
-				tokenizedPhrase.add(word);
-			}
-		}
-		
-		StringBuilder query = newNameQuery(tokenizedPhrase, escapedPhrase, true);
-		
-		List<Drug> list = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(), Drug.class).exclude(
-		    "retired", true).list();
-		
-		return list;
+		return drugQuery.list();
 	}
 	
 	/**
@@ -1259,34 +1250,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean)
 	 */
-	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchKeywords, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws DAOException {
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
-		if (StringUtils.isBlank(drugName) && concept == null) {
+		LuceneQuery<Drug> drugsQuery = newDrugQuery(drugName, searchKeywords, searchDrugConceptNames, Context.getLocale(),
+		    false, concept, includeRetired);
+		
+		if (drugsQuery == null) {
 			return 0L;
 		}
 		
-		if (!includeRetired) {
-			searchCriteria.add(Restrictions.eq("drug.retired", false));
-		}
-		if (concept != null) {
-			searchCriteria.add(Restrictions.eq("drug.concept", concept));
-		}
-		MatchMode matchMode = MatchMode.START;
-		if (searchOnPhrase) {
-			matchMode = MatchMode.ANYWHERE;
-		}
-		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
-			if (searchDrugConceptNames) {
-				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
-			}
-		}
-		
-		searchCriteria.setProjection(Projections.countDistinct("drug.drugId"));
-		
-		return (Long) searchCriteria.uniqueResult();
+		return drugsQuery.resultSize();
 	}
 	
 	/**
@@ -1300,40 +1273,63 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchKeywords, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException {
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
-		if (StringUtils.isBlank(drugName) && concept == null) {
+		LuceneQuery<Drug> drugsQuery = newDrugQuery(drugName, searchKeywords, searchDrugConceptNames, Context.getLocale(),
+		    false, concept, includeRetired);
+		
+		if (drugsQuery == null) {
 			return Collections.emptyList();
 		}
 		
-		if (!includeRetired) {
-			searchCriteria.add(Restrictions.eq("drug.retired", false));
+		return drugsQuery.listPart(start, length).getList();
+	}
+	
+	private LuceneQuery<Drug> newDrugQuery(String drugName, boolean searchKeywords, boolean searchDrugConceptNames,
+	        Locale locale, boolean exactLocale, Concept concept, boolean includeRetired) {
+		if (StringUtils.isBlank(drugName) && concept == null) {
+			return null;
 		}
-		MatchMode matchMode = MatchMode.START;
-		if (searchOnPhrase) {
-			matchMode = MatchMode.ANYWHERE;
+		if (locale == null) {
+			locale = Context.getLocale();
 		}
+		
+		StringBuilder query = new StringBuilder();
 		if (!StringUtils.isBlank(drugName)) {
-			if (searchDrugConceptNames && concept != null) {
-				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.or(Restrictions.ilike("drug.name", drugName, matchMode), Restrictions.ilike(
-				    "names.name", drugName, matchMode)));
-				searchCriteria.setProjection(Projections.distinct(Projections.property("drugId")));
-			} else {
-				searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
-				
+			List<String> tokenizedName = Arrays.asList(drugName.trim().split("\\+"));
+			String escapedName = LuceneQuery.escapeQuery(drugName);
+			query.append("(");
+			query.append(newNameQuery(tokenizedName, escapedName, searchKeywords));
+			query.append(")^0.3 OR drugReferenceMaps.conceptReferenceTerm.code:(\"").append(escapedName).append("\")^0.6");
+		}
+		
+		if (concept != null) {
+			query.append(" OR concept.conceptId:(").append(concept.getConceptId()).append(")^0.1");
+		} else if (searchDrugConceptNames) {
+			LuceneQuery<ConceptName> conceptNameQuery = newConceptNameLuceneQuery(drugName, searchKeywords, Arrays
+			        .asList(locale), exactLocale, includeRetired, null, null, null, null, null);
+			List<Object> conceptIds = conceptNameQuery.listProjection("concept.conceptId");
+			if (!conceptIds.isEmpty()) {
+				CollectionUtils.transform(conceptIds, new Transformer() {
+					
+					@Override
+					public Object transform(Object input) {
+						return ((Object[]) input)[0].toString();
+					}
+				});
+				//The default Lucene clauses limit is 1024. We arbitrarily chose to use 512 here as it does not make sense to return more hits by concept name anyway.
+				int maxSize = (conceptIds.size() < 512) ? conceptIds.size() : 512;
+				query.append(" OR concept.conceptId:(").append(StringUtils.join(conceptIds.subList(0, maxSize), " OR "))
+				        .append(")^0.1");
 			}
 		}
 		
-		if (start != null) {
-			searchCriteria.setFirstResult(start);
+		LuceneQuery<Drug> drugsQuery = LuceneQuery
+		        .newQuery(Drug.class, sessionFactory.getCurrentSession(), query.toString());
+		if (!includeRetired) {
+			drugsQuery.include("retired", false);
 		}
-		if (length != null && length > 0) {
-			searchCriteria.setMaxResults(length);
-		}
-		
-		return searchCriteria.list();
+		return drugsQuery;
 	}
 	
 	/**
@@ -1390,8 +1386,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 			query.append(newConceptNameQuery(phrase, searchKeywords, searchLocales, searchExactLocale));
 		}
 		
-		LuceneQuery<ConceptName> luceneQuery = LuceneQuery.newQuery(query.toString(), sessionFactory.getCurrentSession(),
-		    ConceptName.class).include("concept.conceptClass.conceptClassId", transformToIds(requireClasses)).exclude(
+		LuceneQuery<ConceptName> luceneQuery = LuceneQuery.newQuery(ConceptName.class, sessionFactory.getCurrentSession(),
+		    query.toString()).include("concept.conceptClass.conceptClassId", transformToIds(requireClasses)).exclude(
 		    "concept.conceptClass.conceptClassId", transformToIds(excludeClasses)).include(
 		    "concept.datatype.conceptDatatypeId", transformToIds(requireDatatypes)).exclude(
 		    "concept.datatype.conceptDatatypeId", transformToIds(excludeDatatypes));
@@ -1730,7 +1726,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Locale language = new Locale(locale.getLanguage() + "%");
 		criteria.add(Restrictions.or(Restrictions.eq("locale", locale), Restrictions.like("locale", language)));
 		
-		if (Context.getConceptService().isConceptNameTableCaseSensitive()) {
+		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
 			criteria.add(Restrictions.ilike("name", name));
 		} else {
 			criteria.add(Restrictions.eq("name", name));
@@ -1820,8 +1816,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.or(Restrictions.eq("locale", name.getLocale()), Restrictions.eq("locale", new Locale(name
 		        .getLocale().getLanguage()))));
-		if (Context.getConceptService().isConceptNameTableCaseSensitive()) {
-			criteria.add(Restrictions.ilike("name", name.getName()));
+		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+			criteria.add(Restrictions.eq("name", name.getName()).ignoreCase());
 		} else {
 			criteria.add(Restrictions.eq("name", name.getName()));
 		}
@@ -1850,39 +1846,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
-		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
-		Disjunction searchPhraseDisjunction = Restrictions.disjunction();
-		searchPhraseDisjunction.add(Restrictions.ilike("drug.name", searchPhrase, MatchMode.ANYWHERE));
+		LuceneQuery<Drug> drugQuery = newDrugQuery(searchPhrase, true, true, locale, exactLocale, null, includeRetired);
 		
-		//match on the concept names of the drug concepts
-		criteria.createAlias("drug.concept", "drugConcept", Criteria.LEFT_JOIN);
-		criteria.createAlias("drugConcept.names", "conceptName", Criteria.LEFT_JOIN);
-		Conjunction conceptNameConjunction = Restrictions.conjunction();
-		conceptNameConjunction.add(Restrictions.ilike("conceptName.name", searchPhrase, MatchMode.ANYWHERE));
-		if (locale != null) {
-			List<Locale> locales = new ArrayList<Locale>(2);
-			locales.add(locale);
-			//look in the broader locale too if exactLocale is false e.g en for en_GB
-			if (!exactLocale && StringUtils.isNotBlank(locale.getCountry())) {
-				locales.add(new Locale(locale.getLanguage()));
-			}
-			conceptNameConjunction.add(Restrictions.in("conceptName.locale", locales));
-		}
-		searchPhraseDisjunction.add(conceptNameConjunction);
-		
-		//match on the codes of the reference terms associated to the drug mappings
-		criteria.createAlias("drug.drugReferenceMaps", "map", Criteria.LEFT_JOIN);
-		criteria.createAlias("map.conceptReferenceTerm", "term", Criteria.LEFT_JOIN);
-		searchPhraseDisjunction.add(Restrictions.ilike("term.code", searchPhrase, MatchMode.ANYWHERE));
-		
-		criteria.add(searchPhraseDisjunction);
-		
-		if (!includeRetired) {
-			criteria.add(Restrictions.eq("drug.retired", false));
-		}
-		
-		return criteria.list();
+		return drugQuery.list();
 	}
 	
 	/**

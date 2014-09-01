@@ -15,8 +15,8 @@ package org.openmrs.api;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
@@ -25,8 +25,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.OpenmrsMatchers.hasConcept;
+import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 
 import java.util.ArrayList;
@@ -2840,13 +2840,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getDrugs_shouldGetDrugsWithNamesMatchingTheSearchPhrase() throws Exception {
 		//Should be case insensitive
 		List<Drug> drugs = conceptService.getDrugs("tri", null, false, false);
-		assertEquals(1, drugs.size());
-		assertEquals(2, drugs.get(0).getDrugId().intValue());
-		
-		//Should match any where in the drug name
-		drugs = conceptService.getDrugs("ri", null, false, false);
-		assertEquals(2, drugs.size());
-		assertThat(drugs, hasItems(conceptService.getDrug(2), conceptService.getDrug(3)));
+		assertThat(drugs, contains(conceptService.getDrug(2)));
 	}
 	
 	/**
@@ -2877,7 +2871,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(expectedDrugId, drugs.get(0).getDrugId());
 		
 		//should match anywhere in the concept name
-		drugs = conceptService.getDrugs("amiv", null, false, false);
+		drugs = conceptService.getDrugs("lamiv", null, false, false);
 		assertEquals(1, drugs.size());
 		assertEquals(expectedDrugId, drugs.get(0).getDrugId());
 	}
@@ -2905,15 +2899,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhraseAndRelatedLocales() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		
 		final String searchPhrase = "another";
 		//Should look only in the exact locale if exactLocale is set to true
 		List<Drug> drugs = conceptService.getDrugs(searchPhrase, Locale.CANADA_FRENCH, true, false);
-		assertEquals(0, drugs.size());
+		assertThat(drugs, is(empty()));
 		
 		//Should look in broader locale if exactLocale is set to false
 		drugs = conceptService.getDrugs(searchPhrase, Locale.CANADA_FRENCH, false, false);
-		assertEquals(1, drugs.size());
-		assertEquals(3, drugs.get(0).getDrugId().intValue());
+		assertThat(drugs, contains(hasId(3)));
 	}
 	
 	/**
@@ -2923,14 +2917,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldGetDrugsThatHaveMappingsWithReferenceTermCodesThatMatchThePhrase() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
-		List<Drug> drugs = conceptService.getDrugs("XXXZZ", null, true, true);
-		assertEquals(1, drugs.size());
-		assertEquals(11, drugs.get(0).getDrugId().intValue());
-		
-		//should match the code anywhere
-		drugs = conceptService.getDrugs("XZZZ", null, true, true);
-		assertEquals(1, drugs.size());
-		assertEquals(11, drugs.get(0).getDrugId().intValue());
+		List<Drug> drugs = conceptService.getDrugs("XXX", null, true, true);
+		assertThat(drugs, contains(hasId(11), hasId(444)));
 	}
 	
 	/**
@@ -2958,10 +2946,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldReturnAllDrugsWithAMatchingTermCodeOrDrugNameOrConceptName() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
-		List<Drug> drugs = conceptService.getDrugs("ZZZ", null, false, true);
-		assertEquals(3, drugs.size());
-		Drug[] expectedDrugs = { conceptService.getDrug(3), conceptService.getDrug(11), conceptService.getDrug(444) };
-		assertThat(drugs, hasItems(expectedDrugs));
+		List<Drug> drugs = conceptService.getDrugs("XXX", null, false, true);
+		assertThat(drugs, containsInAnyOrder(conceptService.getDrug(3), conceptService.getDrug(11), conceptService
+		        .getDrug(444)));
 	}
 	
 	/**

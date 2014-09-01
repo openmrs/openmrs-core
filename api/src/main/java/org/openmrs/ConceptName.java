@@ -63,7 +63,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@IndexedEmbedded
 	private Concept concept;
 	
-	@Field(index = Index.TOKENIZED)
+	@Field
 	private String name;
 	
 	@Field(index = Index.UN_TOKENIZED)
