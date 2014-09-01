@@ -21,6 +21,7 @@ import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.DosingInstructions;
 import org.openmrs.DrugOrder;
+import org.openmrs.ISO8601Duration;
 import org.openmrs.Order;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.OrderService;
@@ -81,6 +82,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should pass if concept is null and drug is set
 	 * @should not validate a custom dosing type against any other dosing type validation
 	 * @should apply validation for a custom dosing type
+	 * @should fail if durationUnits has no mapping to ISO8601 source
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
@@ -162,6 +164,9 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			List<Concept> drugDurationUnits = orderService.getDurationUnits();
 			if (!drugDurationUnits.contains(order.getDurationUnits())) {
 				errors.rejectValue("durationUnits", "DrugOrder.error.notAmongAllowedConcepts");
+			}
+			if (ISO8601Duration.getCode(order.getDurationUnits()) == null) {
+				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode");
 			}
 		}
 		if (order.getRoute() != null) {
