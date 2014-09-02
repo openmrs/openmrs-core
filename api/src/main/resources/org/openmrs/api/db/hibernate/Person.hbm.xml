@@ -79,8 +79,7 @@
 		</set>
 		
 		<set name="attributes" lazy="false" inverse="true" batch-size="1000"
-			cascade="all-delete-orphan" sort="natural"
-			order-by="voided asc, date_created desc">
+			cascade="all-delete-orphan" sort="natural">
 			<key column="person_id" />
 			<one-to-many class="PersonAttribute" />
 		</set>

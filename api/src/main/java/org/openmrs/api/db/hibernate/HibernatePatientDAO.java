@@ -20,6 +20,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -31,6 +33,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -216,6 +219,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, boolean, Integer, Integer)
+	 * @should return exact match first
 	 */
 	@Override
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws DAOException {
@@ -223,11 +227,76 @@ public class HibernatePatientDAO implements PatientDAO {
 			return Collections.emptyList();
 		}
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query, includeVoided);
-		setFirstAndMaxResult(criteria, start, length);
+		if (start == null || start < 0) {
+			start = 0;
+		}
+		if (length == null) {
+			length = HibernatePersonDAO.getMaximumSearchResults();
+		}
 		
-		return criteria.list();
+		Criteria criteriaExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
+		    false, includeVoided);
+		
+		criteriaExactMatch.setProjection(Projections.rowCount());
+		Integer listSize = ((Number) criteriaExactMatch.uniqueResult()).intValue();
+		
+		criteriaExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
+		    true, includeVoided);
+		
+		LinkedHashSet<Patient> patients = new LinkedHashSet<Patient>();
+		
+		if (start < listSize) {
+			setFirstAndMaxResult(criteriaExactMatch, start, length);
+			patients.addAll(criteriaExactMatch.list());
+			
+			length -= patients.size();
+		}
+		
+		if (length > 0) {
+			Criteria criteriaAllMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteriaAllMatch = new PatientSearchCriteria(sessionFactory, criteriaAllMatch).prepareCriteria(query, null,
+			    false, includeVoided);
+			criteriaAllMatch.setProjection(Projections.rowCount());
+			
+			start -= listSize;
+			listSize = ((Number) criteriaAllMatch.uniqueResult()).intValue();
+			
+			criteriaAllMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteriaAllMatch = new PatientSearchCriteria(sessionFactory, criteriaAllMatch).prepareCriteria(query, null,
+			    true, includeVoided);
+			
+			if (start < listSize) {
+				setFirstAndMaxResult(criteriaAllMatch, start, length);
+				
+				List<Patient> patientsList = criteriaAllMatch.list();
+				
+				patients.addAll(patientsList);
+				
+				length -= patientsList.size();
+			}
+		}
+		
+		if (length > 0) {
+			Criteria criteriaNoExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteriaNoExactMatch = new PatientSearchCriteria(sessionFactory, criteriaNoExactMatch).prepareCriteria(query,
+			    false, false, includeVoided);
+			criteriaNoExactMatch.setProjection(Projections.rowCount());
+			
+			start -= listSize;
+			listSize = ((Number) criteriaNoExactMatch.uniqueResult()).intValue();
+			
+			criteriaNoExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteriaNoExactMatch = new PatientSearchCriteria(sessionFactory, criteriaNoExactMatch).prepareCriteria(query,
+			    false, true, includeVoided);
+			
+			if (start < listSize) {
+				setFirstAndMaxResult(criteriaNoExactMatch, start, length);
+				patients.addAll(criteriaNoExactMatch.list());
+			}
+		}
+		return new ArrayList<Patient>(patients);
 	}
 	
 	/**

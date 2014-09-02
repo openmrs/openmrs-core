@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
+
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -2021,6 +2022,29 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		long patientCount = dao.getCountOfPatients("Story teller");
 		Assert.assertEquals(1, patientCount);
+	}
+	
+	/**
+	 * @verifies return exact match first
+	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldReturnExactMatchFirst() throws Exception {
+		List<Patient> patients = dao.getPatients("Ben", 0, 11);
+		
+		Assert.assertEquals(4, patients.size());
+		Assert.assertEquals("Alan", patients.get(0).getGivenName());
+		Assert.assertEquals("Ben", patients.get(1).getGivenName());
+		Assert.assertEquals("Adam", patients.get(2).getGivenName());
+		Assert.assertEquals("Benedict", patients.get(3).getGivenName());
+		
+		patients = dao.getPatients("Ben Frank", 0, 11);
+		
+		Assert.assertEquals(4, patients.size());
+		Assert.assertEquals("Ben", patients.get(0).getGivenName());
+		Assert.assertEquals("Alan", patients.get(1).getGivenName());
+		Assert.assertEquals("Benedict", patients.get(2).getGivenName());
+		Assert.assertEquals("Adam", patients.get(3).getGivenName());
 	}
 	
 	/**

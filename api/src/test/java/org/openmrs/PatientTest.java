@@ -22,6 +22,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
 
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
+
 /**
  * This class should test all methods on the patient object. It should not worry about the extended
  * Person object -- that testing is done by {@link org.openmrs.PersonTest} This class does not touch
@@ -271,9 +274,11 @@ public class PatientTest {
 		assertTrue(p.getIdentifiers().contains(pa3)); //this works
 		
 		//now change voided on 3rd-date; that should move it to last position: voided IDs are the last in order
+		p.removeIdentifier((pa3));
 		pa3.setVoided(true);
-		pis = p.getIdentifiers().toArray(pis); //THIS IS WRONG
-		assertTrue(p.getIdentifiers().contains(pa3)); //this fails
+		p.addIdentifier((pa3));
+		pis = p.getIdentifiers().toArray(pis);
+		assertThat(p.getIdentifiers(), contains(pa1, pa2, pa4, pa3));
 		
 		//THIS IS RIGHT
 		pa3.setVoided(false); //set it back to false so we can remove it

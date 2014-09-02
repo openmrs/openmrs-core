@@ -143,18 +143,14 @@ public class PatientSearchCriteria {
 		addAliasForName(criteria, true);
 		personSearchCriteria.addAliasForAttribute(criteria);
 		addAliasForIdentifiers(criteria);
-		
 		criteria.add(Restrictions.disjunction().add(prepareCriterionForName(query, includeVoided)).add(
 		    prepareCriterionForAttribute(query, includeVoided)).add(
 		    prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false, includeVoided)));
-		
 		if (!includeVoided) {
 			criteria.add(Restrictions.eq("voided", false));
 		}
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		
 		log.debug(criteria.toString());
-		
 		return criteria;
 	}
 	
@@ -172,6 +168,41 @@ public class PatientSearchCriteria {
 	 */
 	Criteria prepareCriteria(String query) {
 		return prepareCriteria(query, false);
+	}
+	
+	/**
+	 * @param query defines search parameters
+	 * @param matchExactly
+	 * @param orderByNames
+	 * @param includeVoided true/false whether or not to included voided patients
+	 * @return criteria for searching by name OR identifier OR searchable attributes
+	 */
+	Criteria prepareCriteria(String query, Boolean matchExactly, boolean orderByNames, boolean includeVoided) {
+		addAliasForName(criteria, orderByNames);
+		
+		if (matchExactly == null) {
+			criteria.add(Restrictions.conjunction().add(prepareCriterionForName(query, null, includeVoided)).add(
+			    Restrictions.not(prepareCriterionForName(query, true, includeVoided))).add(
+			    Restrictions.not(prepareCriterionForName(query, false, includeVoided))));
+		} else if (!matchExactly) {
+			criteria.add(prepareCriterionForName(query, false, includeVoided));
+		} else {
+			personSearchCriteria.addAliasForAttribute(criteria);
+			addAliasForIdentifiers(criteria);
+			
+			criteria.add(Restrictions.disjunction().add(prepareCriterionForName(query, true, includeVoided)).add(
+			    prepareCriterionForAttribute(query, includeVoided)).add(
+			    prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false, includeVoided)));
+		}
+		
+		if (!includeVoided) {
+			criteria.add(Restrictions.eq("voided", false));
+		}
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		
+		log.debug(criteria.toString());
+		
+		return criteria;
 	}
 	
 	/**
@@ -348,10 +379,10 @@ public class PatientSearchCriteria {
 	 * Utility method to add name expressions to criteria.
 	 *
 	 * @param name
+	 * @param matchExactly
 	 * @param includeVoided true/false whether or not to included voided patients
 	 */
-	private Criterion prepareCriterionForName(String name, boolean includeVoided) {
-		
+	private Criterion prepareCriterionForName(String name, Boolean matchExactly, boolean includeVoided) {
 		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
 		
 		Conjunction conjunction = Restrictions.conjunction();
@@ -363,13 +394,13 @@ public class PatientSearchCriteria {
 				String singleName = nameParts[i];
 				
 				if (singleName != null && singleName.length() > 0) {
-					Criterion singleNameCriterion = getCriterionForName(singleName, includeVoided);
+					Criterion singleNameCriterion = getCriterionForName(singleName, matchExactly, includeVoided);
 					Criterion criterion = singleNameCriterion;
 					
 					if (i > 0) {
 						multiName.append(" ");
 						multiName.append(singleName);
-						Criterion multiNameCriterion = getCriterionForName(multiName.toString(), includeVoided);
+						Criterion multiNameCriterion = getCriterionForName(multiName.toString(), matchExactly, includeVoided);
 						criterion = Restrictions.or(singleNameCriterion, multiNameCriterion);
 					}
 					
@@ -385,9 +416,19 @@ public class PatientSearchCriteria {
 	 * Utility method to add name expressions to criteria.
 	 *
 	 * @param name
+	 * @param includeVoided true/false whether or not to included voided patients
+	 */
+	private Criterion prepareCriterionForName(String name, boolean includeVoided) {
+		return prepareCriterionForName(name, null, includeVoided);
+	}
+	
+	/**
+	 * Utility method to add name expressions to criteria.
+	 *
+	 * @param name
 	 */
 	private Criterion prepareCriterionForName(String name) {
-		return prepareCriterionForName(name, false);
+		return prepareCriterionForName(name, null, false);
 	}
 	
 	/**
@@ -429,14 +470,22 @@ public class PatientSearchCriteria {
 	 * an EXACT match by default
 	 *
 	 * @param name
+	 * @param matchExactly
 	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return {@link LogicalExpression}
 	 */
-	private Criterion getCriterionForName(String name, boolean includeVoided) {
+	private Criterion getCriterionForName(String name, Boolean matchExactly, boolean includeVoided) {
 		if (isShortName(name)) {
 			return getCriterionForShortName(name, includeVoided);
+		} else {
+			if (matchExactly != null) {
+				if (matchExactly) {
+					return getCriterionForShortName(name, includeVoided);
+				}
+				return getCriterionForNoExactName(name, includeVoided);
+			}
+			return getCriterionForLongName(name, includeVoided);
 		}
-		return getCriterionForLongName(name, includeVoided);
 	}
 	
 	/**
@@ -457,10 +506,16 @@ public class PatientSearchCriteria {
 	}
 	
 	private Criterion getCriterionForShortName(String name, boolean includeVoided) {
-		Criterion criterion = Restrictions.disjunction().add(Restrictions.eq("name.givenName", name).ignoreCase()).add(
-		    Restrictions.eq("name.middleName", name).ignoreCase())
-		        .add(Restrictions.eq("name.familyName", name).ignoreCase()).add(
-		            Restrictions.eq("name.familyName2", name).ignoreCase());
+		Criterion criterion = Restrictions.disjunction().add(
+		    Restrictions.conjunction().add(Restrictions.isNotNull("name.givenName")).add(
+		        Restrictions.eq("name.givenName", name).ignoreCase())).add(
+		    Restrictions.conjunction().add(Restrictions.isNotNull("name.middleName")).add(
+		        Restrictions.eq("name.middleName", name).ignoreCase())).add(
+		    Restrictions.conjunction().add(Restrictions.isNotNull("name.familyName")).add(
+		        Restrictions.eq("name.familyName", name).ignoreCase())).add(
+		    Restrictions.conjunction().add(Restrictions.isNotNull("name.familyName2")).add(
+		        Restrictions.eq("name.familyName2", name).ignoreCase()));
+		
 		if (!includeVoided) {
 			return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(criterion);
 		}
@@ -473,6 +528,34 @@ public class PatientSearchCriteria {
 		    Restrictions.like("name.middleName", name, matchMode))
 		        .add(Restrictions.like("name.familyName", name, matchMode)).add(
 		            Restrictions.like("name.familyName2", name, matchMode));
+		
+		if (!includeVoided) {
+			return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(criterion);
+		}
+		return criterion;
+	}
+	
+	private Criterion getCriterionForNoExactName(String name, boolean includeVoided) {
+		MatchMode matchMode = getMatchMode();
+		
+		Criterion criterion = Restrictions.conjunction().add(
+		    Restrictions.disjunction().add(
+		        Restrictions.conjunction().add(Restrictions.isNotNull("name.givenName")).add(
+		            Restrictions.like("name.givenName", name, matchMode))).add(
+		        Restrictions.conjunction().add(Restrictions.isNotNull("name.middleName")).add(
+		            Restrictions.like("name.middleName", name, matchMode))).add(
+		        Restrictions.conjunction().add(Restrictions.isNotNull("name.familyName")).add(
+		            Restrictions.like("name.familyName", name, matchMode))).add(
+		        Restrictions.conjunction().add(Restrictions.isNotNull("name.familyName2")).add(
+		            Restrictions.like("name.familyName2", name, matchMode)))).add(
+		    Restrictions.disjunction().add(Restrictions.isNull("name.givenName")).add(
+		        Restrictions.ne("name.givenName", name))).add(
+		    Restrictions.disjunction().add(Restrictions.isNull("name.middleName")).add(
+		        Restrictions.ne("name.middleName", name))).add(
+		    Restrictions.disjunction().add(Restrictions.isNull("name.familyName")).add(
+		        Restrictions.ne("name.familyName", name))).add(
+		    Restrictions.disjunction().add(Restrictions.isNull("name.familyName2")).add(
+		        Restrictions.ne("name.familyName2", name)));
 		
 		if (!includeVoided) {
 			return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(criterion);
