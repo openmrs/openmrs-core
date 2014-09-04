@@ -45,6 +45,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.validator.PersonAddressValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -188,7 +189,7 @@ public class PersonFormController extends SimpleFormController {
 		String action = request.getParameter("action");
 		
 		if (action.equals(msa.getMessage("Person.save"))) {
-			updatePersonAddresses(request, person);
+			updatePersonAddresses(request, person, errors);
 			
 			updatePersonNames(request, person);
 			
@@ -498,9 +499,11 @@ public class PersonFormController extends SimpleFormController {
 	 *
 	 * @param request
 	 * @param person
+	 * @param errors
 	 * @throws ParseException
 	 */
-	protected void updatePersonAddresses(HttpServletRequest request, Person person) throws ParseException {
+	protected void updatePersonAddresses(HttpServletRequest request, Person person, BindException errors)
+	        throws ParseException {
 		String[] add1s = ServletRequestUtils.getStringParameters(request, "address1");
 		String[] add2s = ServletRequestUtils.getStringParameters(request, "address2");
 		String[] cities = ServletRequestUtils.getStringParameters(request, "cityVillage");
@@ -652,6 +655,12 @@ public class PersonFormController extends SimpleFormController {
 					pa.setEndDate(Context.getDateFormat().parse(endDates[i]));
 				}
 				
+				//check if all required addres fields are filled
+				new PersonAddressValidator().validate(pa, errors);
+				if (errors.hasErrors()) {
+					return;
+				}
+				
 				person.addAddress(pa);
 			}
 			Iterator<PersonAddress> addresses = person.getAddresses().iterator();
@@ -659,6 +668,13 @@ public class PersonFormController extends SimpleFormController {
 			PersonAddress preferredAddress = null;
 			while (addresses.hasNext()) {
 				currentAddress = addresses.next();
+				
+				//check if all required addres fields are filled
+				new PersonAddressValidator().validate(currentAddress, errors);
+				if (errors.hasErrors()) {
+					return;
+				}
+				
 				if (currentAddress.isPreferred()) {
 					if (preferredAddress != null) { // if there's a preferred address already exists, make it preferred=false
 						preferredAddress.setPreferred(false);

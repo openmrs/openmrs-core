@@ -149,6 +149,12 @@ public class ShortPatientFormValidator implements Validator {
 			}
 		}
 		
+		//check if all required addres fields are filled
+		new PersonAddressValidator().validate(personAddress, errors);
+		if (errors.hasErrors()) {
+			return;
+		}
+		
 		if (CollectionUtils.isEmpty(shortPatientModel.getIdentifiers())) {
 			errors.reject("PatientIdentifier.error.insufficientIdentifiers");
 		} else {

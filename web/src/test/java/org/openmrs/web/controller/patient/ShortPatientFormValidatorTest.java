@@ -269,6 +269,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 		p.addName(new PersonName("hor", null, "ty"));
 		p.addIdentifier(new PatientIdentifier("hiuh", new PatientIdentifierType(2), new Location(1)));
 		ShortPatientModel model = new ShortPatientModel(p);
+		model.setPersonAddress(new PersonAddress());
 		Errors errors = new BindException(model, "patientModel");
 		validator.validate(model, errors);
 		Assert.assertEquals(false, errors.hasErrors());

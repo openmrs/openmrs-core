@@ -31,6 +31,8 @@ import org.springframework.validation.Errors;
  */
 public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	
+	protected static final String PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH = "org/openmrs/include/personAddressValidatorTestDataset.xml";
+	
 	PersonAddressValidator validator = null;
 	
 	PersonService ps = null;
@@ -137,4 +139,32 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(false, errors.hasFieldErrors());
 	}
 	
+	/**
+	 * @see PersonAddressValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	@Verifies(value = "should fail if required fields are empty", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfRequiredFieldsAreEmpty() throws Exception {
+		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
+		PersonAddress personAddress = new PersonAddress();
+		
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
+	/**
+	 * @see PersonAddressValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	@Verifies(value = "should pass if required fields are not empty", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfRequiredFieldsAreNotEmpty() throws Exception {
+		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
+		PersonAddress personAddress = new PersonAddress();
+		personAddress.setAddress1("Address1");
+		
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
 }

@@ -13,7 +13,9 @@
  */
 package org.openmrs.web.controller.encounter;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.LocationTag;
+import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressTemplate;
 import org.openmrs.web.WebConstants;
@@ -24,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller for managing {@link LocationTag}s
@@ -54,6 +59,23 @@ public class AddressTemplateController {
 				//To test whether this is a valid conversion
 				AddressTemplate test = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
 				    AddressTemplate.class);
+				
+				List<String> requiredElements = test.getRequiredElements();
+				if (requiredElements != null) {
+					for (String fieldName : requiredElements) {
+						try {
+							Object value = PropertyUtils.getProperty(new PersonAddress(), fieldName);
+						}
+						catch (Exception e) {
+							//wrong field declared in template
+							request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService()
+							        .getMessage("AddressTemplate.error.fieldNotDeclaredInTemplate",
+							            new Object[] { fieldName }, Context.getLocale()), WebRequest.SCOPE_SESSION);
+							return "redirect:addressTemplate.form";
+						}
+					}
+				}
+				
 				Context.getLocationService().saveAddressTemplate(xml);
 				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 				    "AddressTemplate.saved"), WebRequest.SCOPE_SESSION);
