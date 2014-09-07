@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.ImplementationIdValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,12 +50,19 @@ public class ImplementationIdFormController extends SimpleFormController {
 		
 		ImplementationId implId = (ImplementationId) object;
 		
+		new ImplementationIdValidator().validate(implId, exceptions);
+		
+		if (exceptions.hasErrors()) {
+			return showForm(req, response, exceptions);
+		}
+		
 		try {
 			Context.getAdministrationService().setImplementationId(implId);
 			req.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ImplementationId.validatedId");
 		}
 		catch (APIException e) {
 			log.warn("Unable to set implementation id", e);
+			exceptions.reject(e.getMessage());
 			req.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 			return showForm(req, response, exceptions);
 		}
