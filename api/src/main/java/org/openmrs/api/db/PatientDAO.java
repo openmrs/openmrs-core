@@ -188,6 +188,13 @@ public interface PatientDAO {
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws DAOException;
 	
 	/**
+	 * @see org.openmrs.api.PatientService#getPatients(String, boolean, Integer, Integer)
+	 * @should get voided person when voided true is passed
+	 * @should get no voided person when voided false is passed
+	 */
+	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws DAOException;
+	
+	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
 	 *      java.util.List, java.util.List, java.lang.Boolean)
 	 *      
@@ -316,5 +323,10 @@ public interface PatientDAO {
 	 * @should count patients by searchable attribute _ signature no 2
 	 */
 	public Long getCountOfPatients(String query);
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getCountOfPatients(String, boolean)
+	 */
+	public Long getCountOfPatients(String query, boolean includeVoided);
 	
 }

@@ -135,22 +135,42 @@ public class PatientSearchCriteria {
 	 * {@link org.openmrs.api.db.PatientDAO}.
 	 *
 	 * @param query defines search parameters
+	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return criteria for searching by name OR identifier OR searchable attributes
 	 */
-	Criteria prepareCriteria(String query) {
+	Criteria prepareCriteria(String query, boolean includeVoided) {
 		addAliasForName(criteria, true);
 		personSearchCriteria.addAliasForAttribute(criteria);
 		addAliasForIdentifiers(criteria);
 		
-		criteria.add(Restrictions.disjunction().add(prepareCriterionForName(query)).add(prepareCriterionForAttribute(query))
-		        .add(prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false)));
+		criteria.add(Restrictions.disjunction().add(prepareCriterionForName(query, includeVoided)).add(
+		    prepareCriterionForAttribute(query, includeVoided)).add(
+		    prepareCriterionForIdentifier(query, new ArrayList<PatientIdentifierType>(), false, includeVoided)));
 		
-		criteria.add(Restrictions.eq("voided", false));
+		if (!includeVoided) {
+			criteria.add(Restrictions.eq("voided", false));
+		}
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		
 		log.debug(criteria.toString());
 		
 		return criteria;
+	}
+	
+	/**
+	 * Provides a Hibernate criteria object for searching patients by name, identifier or searchable attribute.
+	 *
+	 * The visibility of this method is "default" as this method should NOT be called directly by classes other
+	 * than org.openmrs.api.db.hibernate.HibernatePatientDAO.
+	 *
+	 * Instead of calling this method consider using {@link org.openmrs.api.PatientService} or
+	 * {@link org.openmrs.api.db.PatientDAO}.
+	 *
+	 * @param query defines search parameters
+	 * @return criteria for searching by name OR identifier OR searchable attributes
+	 */
+	Criteria prepareCriteria(String query) {
+		return prepareCriteria(query, false);
 	}
 	
 	/**
@@ -210,14 +230,17 @@ public class PatientSearchCriteria {
 	 * @param identifier
 	 * @param identifierTypes
 	 * @param matchIdentifierExactly
+	 * @param includeVoided true/false whether or not to included voided patients
 	 */
 	private Criterion prepareCriterionForIdentifier(String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly) {
+	        boolean matchIdentifierExactly, boolean includeVoided) {
 		
 		identifier = HibernateUtil.escapeSqlWildcards(identifier, sessionFactory);
 		Conjunction conjunction = Restrictions.conjunction();
 		
-		conjunction.add(Restrictions.eq("ids.voided", false));
+		if (!includeVoided) {
+			conjunction.add(Restrictions.eq("ids.voided", false));
+		}
 		// do the identifier restriction
 		if (identifier != null) {
 			// if the user wants an exact search, match on that.
@@ -259,6 +282,18 @@ public class PatientSearchCriteria {
 		}
 		
 		return conjunction;
+	}
+	
+	/**
+	 * Utility method to add identifier expression to an existing criteria
+	 *
+	 * @param identifier
+	 * @param identifierTypes
+	 * @param matchIdentifierExactly
+	 */
+	private Criterion prepareCriterionForIdentifier(String identifier, List<PatientIdentifierType> identifierTypes,
+	        boolean matchIdentifierExactly) {
+		return prepareCriterionForIdentifier(identifier, identifierTypes, matchIdentifierExactly, false);
 	}
 	
 	/**
@@ -308,8 +343,9 @@ public class PatientSearchCriteria {
 	 * Utility method to add name expressions to criteria.
 	 *
 	 * @param name
+	 * @param includeVoided true/false whether or not to included voided patients
 	 */
-	private Criterion prepareCriterionForName(String name) {
+	private Criterion prepareCriterionForName(String name, boolean includeVoided) {
 		
 		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
 		
@@ -322,13 +358,13 @@ public class PatientSearchCriteria {
 				String singleName = nameParts[i];
 				
 				if (singleName != null && singleName.length() > 0) {
-					Criterion singleNameCriterion = getCriterionForName(singleName);
+					Criterion singleNameCriterion = getCriterionForName(singleName, includeVoided);
 					Criterion criterion = singleNameCriterion;
 					
 					if (i > 0) {
 						multiName.append(" ");
 						multiName.append(singleName);
-						Criterion multiNameCriterion = getCriterionForName(multiName.toString());
+						Criterion multiNameCriterion = getCriterionForName(multiName.toString(), includeVoided);
 						criterion = Restrictions.or(singleNameCriterion, multiNameCriterion);
 					}
 					
@@ -338,6 +374,15 @@ public class PatientSearchCriteria {
 		}
 		
 		return conjunction;
+	}
+	
+	/**
+	 * Utility method to add name expressions to criteria.
+	 *
+	 * @param name
+	 */
+	private Criterion prepareCriterionForName(String name) {
+		return prepareCriterionForName(name, false);
 	}
 	
 	/**
@@ -379,13 +424,14 @@ public class PatientSearchCriteria {
 	 * an EXACT match by default
 	 *
 	 * @param name
+	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return {@link LogicalExpression}
 	 */
-	private Criterion getCriterionForName(String name) {
+	private Criterion getCriterionForName(String name, boolean includeVoided) {
 		if (isShortName(name)) {
-			return getCriterionForShortName(name);
+			return getCriterionForShortName(name, includeVoided);
 		}
-		return getCriterionForLongName(name);
+		return getCriterionForLongName(name, includeVoided);
 	}
 	
 	/**
@@ -405,22 +451,28 @@ public class PatientSearchCriteria {
 		}
 	}
 	
-	private Criterion getCriterionForShortName(String name) {
-		return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
-		    Restrictions.disjunction().add(Restrictions.eq("name.givenName", name).ignoreCase()).add(
-		        Restrictions.eq("name.middleName", name).ignoreCase()).add(
-		        Restrictions.eq("name.familyName", name).ignoreCase()).add(
-		        Restrictions.eq("name.familyName2", name).ignoreCase()));
+	private Criterion getCriterionForShortName(String name, boolean includeVoided) {
+		Criterion criterion = Restrictions.disjunction().add(Restrictions.eq("name.givenName", name).ignoreCase()).add(
+		    Restrictions.eq("name.middleName", name).ignoreCase())
+		        .add(Restrictions.eq("name.familyName", name).ignoreCase()).add(
+		            Restrictions.eq("name.familyName2", name).ignoreCase());
+		if (!includeVoided) {
+			return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(criterion);
+		}
+		return criterion;
 	}
 	
-	private Criterion getCriterionForLongName(String name) {
+	private Criterion getCriterionForLongName(String name, boolean includeVoided) {
 		MatchMode matchMode = getMatchMode();
+		Criterion criterion = Restrictions.disjunction().add(Restrictions.like("name.givenName", name, matchMode)).add(
+		    Restrictions.like("name.middleName", name, matchMode))
+		        .add(Restrictions.like("name.familyName", name, matchMode)).add(
+		            Restrictions.like("name.familyName2", name, matchMode));
 		
-		return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
-		    Restrictions.disjunction().add(Restrictions.like("name.givenName", name, matchMode)).add(
-		        Restrictions.like("name.middleName", name, matchMode)).add(
-		        Restrictions.like("name.familyName", name, matchMode)).add(
-		        Restrictions.like("name.familyName2", name, matchMode)));
+		if (!includeVoided) {
+			return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(criterion);
+		}
+		return criterion;
 	}
 	
 	/**
@@ -461,13 +513,13 @@ public class PatientSearchCriteria {
 		return returnString;
 	}
 	
-	private Criterion prepareCriterionForAttribute(String query) {
+	private Criterion prepareCriterionForAttribute(String query, boolean includeVoided) {
 		query = HibernateUtil.escapeSqlWildcards(query, sessionFactory);
 		Conjunction conjunction = Restrictions.conjunction();
 		
 		String[] queryParts = getQueryParts(query);
 		for (String queryPart : queryParts) {
-			conjunction.add(personSearchCriteria.prepareCriterionForAttribute(queryPart));
+			conjunction.add(personSearchCriteria.prepareCriterionForAttribute(queryPart, includeVoided));
 		}
 		
 		return conjunction;
