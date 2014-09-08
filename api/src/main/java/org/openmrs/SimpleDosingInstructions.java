@@ -112,7 +112,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		simpleDosingInstructions.setDurationUnits(order.getDurationUnits());
 		simpleDosingInstructions.setAsNeeded(order.getAsNeeded());
 		simpleDosingInstructions.setAsNeededCondition(order.getAsNeededCondition());
-		simpleDosingInstructions.setAdministrationInstructions(order.getInstructions());
+		simpleDosingInstructions.setAdministrationInstructions(order.getDosingInstructions());
 		return simpleDosingInstructions;
 	}
 	
