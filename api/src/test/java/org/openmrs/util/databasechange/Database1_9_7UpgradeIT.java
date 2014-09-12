@@ -30,10 +30,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -56,6 +59,8 @@ public class Database1_9_7UpgradeIT {
 	public final static String DATABASE_PATH = TEST_DATA_DIR + "openmrs-1.9.7.h2.db";
 	
 	private DatabaseUpgradeTestUtil upgradeTestUtil;
+	
+	private static File testAppDataDir;
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -108,6 +113,23 @@ public class Database1_9_7UpgradeIT {
 		File propFile = new File(appDataDir, DatabaseUtil.ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME);
 		props.store(new FileWriter(propFile), null);
 		propFile.deleteOnExit();
+	}
+	
+	@BeforeClass
+	public static void beforeClass() throws IOException {
+		testAppDataDir = File.createTempFile("appdir-for-unit-tests", "");
+		testAppDataDir.delete();// so we can make turn it into a directory
+		testAppDataDir.mkdir();
+		
+		System.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, testAppDataDir.getAbsolutePath());
+		OpenmrsConstants.APPLICATION_DATA_DIRECTORY = testAppDataDir.getAbsolutePath();
+	}
+	
+	@AfterClass
+	public static void afterClass() throws Exception {
+		FileUtils.deleteDirectory(testAppDataDir);
+		//Just to be safe, not to affect other units in the test suite
+		System.clearProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY);
 	}
 	
 	@Before
