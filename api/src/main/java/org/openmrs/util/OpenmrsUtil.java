@@ -18,7 +18,6 @@ import java.beans.PropertyDescriptor;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -33,13 +32,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -2218,18 +2217,8 @@ public class OpenmrsUtil {
 	 */
 	public static void storeProperties(Properties properties, OutputStream outStream, String comment) {
 		try {
-			OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(outStream), "UTF-8");
-			Writer out = new BufferedWriter(osw);
-			if (comment != null) {
-				out.write("\n#" + comment + "\n");
-			}
-			out.write("#" + new Date() + "\n");
-			for (Map.Entry<Object, Object> e : properties.entrySet()) {
-				out.write(e.getKey() + "=" + e.getValue() + "\n");
-			}
-			out.write("\n");
-			out.flush();
-			out.close();
+			Charset utf8 = Charset.forName("UTF-8");
+			properties.store(new OutputStreamWriter(outStream, utf8), comment);
 		}
 		catch (FileNotFoundException fnfe) {
 			log.error("target file not found" + fnfe);
