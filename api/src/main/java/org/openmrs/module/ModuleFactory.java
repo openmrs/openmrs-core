@@ -1498,6 +1498,22 @@ public class ModuleFactory {
 				}
 				//else required module is before current module as it should be
 			}
+			
+			moduleIds = module.getStartBeforeModules();
+			for (String pkg : moduleIds) {
+				int index = moduleOrder.indexOf(pkg);
+				if (index == -1) {
+					//module is not yet in the list
+					//add it after the current module
+					moduleOrder.add(moduleIndex + 1, pkg);
+				} else if (index < moduleIndex) {
+					//module is before the current module
+					//so move it after
+					moduleOrder.remove(pkg);
+					moduleOrder.add(moduleIndex + 1, pkg);
+				}
+				//else module is after current module as it should be
+			}
 		}
 		
 		Collection<Module> modulesInOrder = new ArrayList<Module>();
