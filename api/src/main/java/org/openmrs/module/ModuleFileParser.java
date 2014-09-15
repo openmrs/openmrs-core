@@ -272,7 +272,6 @@ public class ModuleFileParser {
 			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL").trim());
 			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
 			module.setAwareOfModulesMap(getAwareOfModules(rootNode, configVersion));
-			module.setStartBeforeModulesMap(getStartBeforeModules(rootNode, configVersion));
 			
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
 			module.setExtensionNames(getExtensions(rootNode, configVersion));
@@ -416,43 +415,58 @@ public class ModuleFileParser {
 	 * @since 1.5
 	 */
 	private Map<String, String> getRequiredModules(Element root, String version) {
-		return getModuleToVersionMap("require_modules", "require_module", root);
+		NodeList requiredModulesParents = root.getElementsByTagName("require_modules");
+		
+		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
+		
+		// TODO test require_modules section
+		if (requiredModulesParents.getLength() > 0) {
+			Node requiredModulesParent = requiredModulesParents.item(0);
+			
+			NodeList requiredModules = requiredModulesParent.getChildNodes();
+			
+			int i = 0;
+			while (i < requiredModules.getLength()) {
+				Node n = requiredModules.item(i);
+				if (n != null && "require_module".equals(n.getNodeName())) {
+					NamedNodeMap attributes = n.getAttributes();
+					Node versionNode = attributes.getNamedItem("version");
+					String reqVersion = versionNode == null ? null : versionNode.getNodeValue();
+					packageNamesToVersion.put(n.getTextContent().trim(), reqVersion);
+				}
+				i++;
+			}
+		}
+		return packageNamesToVersion;
 	}
 	
 	/**
 	 * load in list of modules we are aware of.
 	 * 
 	 * @param root element in the xml doc object
+	 * @param version of the config file
 	 * @return map from module package name to aware of version
 	 * @since 1.9
 	 */
 	private Map<String, String> getAwareOfModules(Element root, String version) {
-		return getModuleToVersionMap("aware_of_modules", "aware_of_module", root);
-	}
-	
-	private Map<String, String> getStartBeforeModules(Element root, String version) {
-		return getModuleToVersionMap("start_before_modules", "module", root);
-	}
-	
-	private Map<String, String> getModuleToVersionMap(String elementParentName, String elementName, Element root) {
-		
-		NodeList modulesParents = root.getElementsByTagName(elementParentName);
+		NodeList awareOfModulesParents = root.getElementsByTagName("aware_of_modules");
 		
 		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
 		
-		if (modulesParents.getLength() > 0) {
-			Node modulesParent = modulesParents.item(0);
+		// TODO test aware_of_modules section
+		if (awareOfModulesParents.getLength() > 0) {
+			Node awareOfModulesParent = awareOfModulesParents.item(0);
 			
-			NodeList childModules = modulesParent.getChildNodes();
+			NodeList awareOfModules = awareOfModulesParent.getChildNodes();
 			
 			int i = 0;
-			while (i < childModules.getLength()) {
-				Node n = childModules.item(i);
-				if (n != null && elementName.equals(n.getNodeName())) {
+			while (i < awareOfModules.getLength()) {
+				Node n = awareOfModules.item(i);
+				if (n != null && "aware_of_module".equals(n.getNodeName())) {
 					NamedNodeMap attributes = n.getAttributes();
 					Node versionNode = attributes.getNamedItem("version");
-					String moduleVersion = versionNode == null ? null : versionNode.getNodeValue();
-					packageNamesToVersion.put(n.getTextContent().trim(), moduleVersion);
+					String awareOfVersion = versionNode == null ? null : versionNode.getNodeValue();
+					packageNamesToVersion.put(n.getTextContent().trim(), awareOfVersion);
 				}
 				i++;
 			}

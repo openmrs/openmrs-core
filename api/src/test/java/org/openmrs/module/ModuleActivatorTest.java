@@ -170,10 +170,4 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
 	}
-	
-	@Test
-	public void shouldStartBeforeAnotherModule() {
-		assertTrue(moduleTestData.getWillStartCallTime(MODULE5_ID) <= moduleTestData.getWillStartCallTime(MODULE4_ID));
-		assertTrue(moduleTestData.getWillStartCallTime(MODULE1_ID) <= moduleTestData.getWillStartCallTime(MODULE5_ID));
-	}
 }
