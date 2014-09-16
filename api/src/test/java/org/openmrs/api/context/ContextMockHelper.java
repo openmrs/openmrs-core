@@ -41,6 +41,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.util.RoleConstants;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Helps to mock or spy on services. It can be used with {@link InjectMocks}. See
@@ -101,6 +102,12 @@ public class ContextMockHelper {
 	
 	boolean userContextMocked = false;
 	
+	ApplicationContext applicationContext;
+	
+	ApplicationContext realApplicationContext;
+	
+	boolean applicationContextMocked = false;
+	
 	public ContextMockHelper() {
 	}
 	
@@ -139,6 +146,16 @@ public class ContextMockHelper {
 				Context.clearUserContext();
 			}
 			userContextMocked = false;
+			userContext = null;
+		}
+		
+		if (applicationContextMocked) {
+			if (realApplicationContext != null) {
+				Context.getServiceContext().setApplicationContext(realApplicationContext);
+				realApplicationContext = null;
+			}
+			applicationContextMocked = false;
+			applicationContext = null;
 		}
 	}
 	
@@ -156,6 +173,16 @@ public class ContextMockHelper {
 		}
 		
 		Context.getServiceContext().setService(type, service);
+	}
+	
+	public void setApplicationContext(ApplicationContext context) {
+		if (!applicationContextMocked) {
+			realApplicationContext = Context.getServiceContext().getApplicationContext();
+			applicationContextMocked = true;
+		}
+		
+		Context.getServiceContext().setApplicationContext(context);
+		this.applicationContext = context;
 	}
 	
 	public void setAdministrationService(AdministrationService administrationService) {
