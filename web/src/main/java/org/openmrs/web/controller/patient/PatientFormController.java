@@ -241,6 +241,8 @@ public class PatientFormController extends PersonFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should void patient when void reason is not empty
+	 * @should not void patient when void reason is empty
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
@@ -271,11 +273,11 @@ public class PatientFormController extends PersonFormController {
 			} else if (action.equals(msa.getMessage("Patient.void"))) {
 				String voidReason = request.getParameter("voidReason");
 				if (StringUtils.isBlank(voidReason)) {
-					voidReason = msa.getMessage("PatientForm.default.voidReason", null, "Voided from patient form", Context
-					        .getLocale());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.error.void.reasonEmpty");
+				} else {
+					ps.voidPatient(patient, voidReason);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
 				}
-				ps.voidPatient(patient, voidReason);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
 				return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId()));
 			} else if (action.equals(msa.getMessage("Patient.unvoid"))) {
 				ps.unvoidPatient(patient);
