@@ -967,6 +967,10 @@ public class ServiceContext implements ApplicationContextAware {
 		this.applicationContext = applicationContext;
 	}
 	
+	public ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
+	
 	/**
 	 * Calls the {@link OpenmrsService#onStartup()} method for an instance implementing the
 	 * {@link OpenmrsService} interface.
