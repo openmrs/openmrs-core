@@ -13,11 +13,33 @@
  */
 package org.openmrs.aop;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.BaseOpenmrsObject;
@@ -29,7 +51,6 @@ import org.openmrs.User;
 import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.BaseVoidHandler;
 import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
 import org.openmrs.api.handler.RequiredDataHandler;
@@ -39,60 +60,43 @@ import org.openmrs.api.handler.UnretireHandler;
 import org.openmrs.api.handler.UnvoidHandler;
 import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.api.impl.ConceptServiceImpl;
+import org.openmrs.test.BaseContextMockTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Tests the {@link RequiredDataAdvice} class.
  */
-@SuppressWarnings( { "unchecked" })
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
-public class RequiredDataAdviceTest {
+public class RequiredDataAdviceTest extends BaseContextMockTest {
 	
-	private SaveHandler saveHandler;
+	@Mock
+	AdministrationService administrationService;
 	
-	private VoidHandler voidHandler;
+	@Mock
+	ApplicationContext context;
 	
-	private RequiredDataAdvice requiredDataAdvice;
+	@Spy
+	OpenmrsObjectSaveHandler saveHandler;
+	
+	@Spy
+	BaseVoidHandler voidHandler;
+	
+	RequiredDataAdvice requiredDataAdvice = new RequiredDataAdvice();
 	
 	@Before
 	public void setUp() {
-		this.requiredDataAdvice = new RequiredDataAdvice();
+		Map<String, SaveHandler> saveHandlers = new HashMap<String, SaveHandler>();
+		saveHandlers.put("saveHandler", saveHandler);
+		when(context.getBeansOfType(SaveHandler.class)).thenReturn(saveHandlers);
 		
-		PowerMockito.mockStatic(Context.class);
+		Map<String, VoidHandler> voidHandlers = new HashMap<String, VoidHandler>();
+		voidHandlers.put("voidHandler", voidHandler);
+		when(context.getBeansOfType(VoidHandler.class)).thenReturn(voidHandlers);
 		
-		saveHandler = mock(OpenmrsObjectSaveHandler.class);
-		voidHandler = mock(BaseVoidHandler.class);
-		
-		when(Context.getRegisteredComponents(SaveHandler.class)).thenReturn(Arrays.asList(saveHandler));
-		when(Context.getRegisteredComponents(VoidHandler.class)).thenReturn(Arrays.asList(voidHandler));
-		AdministrationService administrationService = mock(AdministrationService.class);
-		when(Context.getAdministrationService()).thenReturn(administrationService);
+		//Clear cache since handlers are updated
+		HandlerUtil.clearCachedHandlers();
 	}
 	
 	/**

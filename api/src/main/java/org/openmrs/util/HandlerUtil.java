@@ -17,12 +17,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
 /**
  * Utility class that provides useful methods for working with classes that are annotated with the
@@ -30,9 +35,60 @@ import org.openmrs.api.context.Context;
  * 
  * @since 1.5
  */
-public class HandlerUtil {
+@Component
+public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	
-	private static Log log = LogFactory.getLog(HandlerUtil.class);
+	private static final Log log = LogFactory.getLog(HandlerUtil.class);
+	
+	private static volatile Map<Key, List<?>> cachedHandlers = new WeakHashMap<HandlerUtil.Key, List<?>>();
+	
+	private static class Key {
+		
+		public final Class<?> handlerType;
+		
+		public final Class<?> type;
+		
+		public Key(Class<?> handlerType, Class<?> type) {
+			this.handlerType = handlerType;
+			this.type = type;
+		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((handlerType == null) ? 0 : handlerType.hashCode());
+			result = prime * result + ((type == null) ? 0 : type.hashCode());
+			return result;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Key other = (Key) obj;
+			if (handlerType == null) {
+				if (other.handlerType != null)
+					return false;
+			} else if (!handlerType.equals(other.handlerType))
+				return false;
+			if (type == null) {
+				if (other.type != null)
+					return false;
+			} else if (!type.equals(other.type))
+				return false;
+			return true;
+		}
+		
+	}
+	
+	public static void clearCachedHandlers() {
+		cachedHandlers = new WeakHashMap<HandlerUtil.Key, List<?>>();
+	}
 	
 	/**
 	 * Retrieves a List of all registered components from the Context that are of the passed
@@ -52,6 +108,10 @@ public class HandlerUtil {
 	 * @should return an empty list if no classes can handle the passed type
 	 */
 	public static <H, T> List<H> getHandlersForType(Class<H> handlerType, Class<T> type) {
+		List<?> list = cachedHandlers.get(new Key(handlerType, type));
+		if (list != null) {
+			return (List<H>) list;
+		}
 		
 		List<H> handlers = new ArrayList<H>();
 		
@@ -86,6 +146,10 @@ public class HandlerUtil {
 				return getOrderOfHandler(o1.getClass()).compareTo(getOrderOfHandler(o2.getClass()));
 			}
 		});
+		
+		Map<Key, List<?>> newCachedHandlers = new WeakHashMap<Key, List<?>>(cachedHandlers);
+		newCachedHandlers.put(new Key(handlerType, type), handlers);
+		cachedHandlers = newCachedHandlers;
 		
 		return handlers;
 	}
@@ -139,5 +203,10 @@ public class HandlerUtil {
 			throw new APIException("Class " + handlerClass + " is not annotated as a Handler.");
 		}
 		return annotation.order();
+	}
+	
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		clearCachedHandlers();
 	}
 }
