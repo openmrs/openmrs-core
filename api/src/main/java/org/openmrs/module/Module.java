@@ -820,4 +820,9 @@ public final class Module {
 	public void setConditionalResources(List<ModuleConditionalResource> conditionalResources) {
 		this.conditionalResources = conditionalResources;
 	}
+	
+	public boolean isCore() {
+		return ModuleConstants.CORE_MODULES.containsKey(this.getModuleId());
+	}
+
 }
