@@ -63,9 +63,12 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	
 	private VisitService visitService;
 	
+	private EncounterService encounterService;
+	
 	@Before
 	public void before() {
 		visitService = Context.getVisitService();
+		encounterService = Context.getEncounterService();
 		
 		// Allow overlapping visits. Ticket 3963 has introduced optional validation of start and stop dates
 		// based on concurrent visits of the same patient. Turning this validation on (i.e. not allowing
@@ -945,6 +948,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		encounter.setEncounterDatetime(new Date());
 		encounter.setPatient(visit.getPatient());
 		encounter.setLocation(visit.getLocation());
+		encounter.setEncounterType(encounterService.getEncounterType(1));
 		visit.addEncounter(encounter);
 		
 		Context.getEncounterService().saveEncounter(encounter);
