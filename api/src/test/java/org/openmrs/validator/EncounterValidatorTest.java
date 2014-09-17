@@ -80,6 +80,18 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link EncounterValidator#validate(Object,Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail if encounter type is not set", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfEncounterTypeIsNotSet() throws Exception {
+		Encounter encounter = new Encounter();
+		Errors errors = new BindException(encounter, "encounter");
+		new EncounterValidator().validate(encounter, errors);
+		Assert.assertTrue(errors.hasFieldErrors("encounterType"));
+	}
+	
+	/**
+	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail if encounter dateTime is before visit startDateTime", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfEncounterDateTimeIsBeforeVisitStartDateTime() throws Exception {
 		Visit visit = Context.getVisitService().getVisit(1);
