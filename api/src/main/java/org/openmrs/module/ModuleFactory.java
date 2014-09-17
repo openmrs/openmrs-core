@@ -220,7 +220,7 @@ public class ModuleFactory {
 		if (getLoadedModules().size() > 0) {
 			
 			try {
-				
+
 				List<Node<Module>> nodes = getModulesInStartupOrder();
 				
 				Context.addProxyPrivilege("");
