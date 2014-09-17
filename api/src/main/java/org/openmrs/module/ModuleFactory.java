@@ -46,8 +46,11 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.Extension.MEDIA_TYPE;
+import org.openmrs.util.CycleException;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.Graph;
+import org.openmrs.util.Graph.Node;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -215,111 +218,101 @@ public class ModuleFactory {
 		
 		// loop over and try starting each of the loaded modules
 		if (getLoadedModules().size() > 0) {
-			List<Module> leftoverModules = new Vector<Module>();
 			
 			try {
+				
+				List<Node<Module>> nodes = getModulesInStartupOrder();
+				
 				Context.addProxyPrivilege("");
 				AdministrationService as = Context.getAdministrationService();
 				// try and start the modules that should be started
-				for (Module mod : getLoadedModulesCoreFirst()) {
+				for (Node<Module> node : nodes) {
+					
+					Module mod = node.getObj();
+					
 					if (mod.isStarted()) {
 						continue; // skip over modules that are already started
+					}
+					
+					// Skip module if required ones are not started
+					if (!requiredModulesStarted(mod)) {
+						String message = getFailedToStartModuleMessage(mod);
+						log.error(message);
+						mod.setStartupErrorMessage(message);
+						notifySuperUsersAboutModuleFailure(mod);
+						continue;
 					}
 					
 					String key = mod.getModuleId() + ".started";
 					String startedProp = as.getGlobalProperty(key, null);
 					String mandatoryProp = as.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
 					// if this is a core module and we're not ignoring core modules, this module should always start
-					boolean isCoreToOpenmrs = ModuleConstants.CORE_MODULES.containsKey(mod.getModuleId())
-					        && !ModuleUtil.ignoreCoreModules();
+					boolean isCoreToOpenmrs = mod.isCore() && !ModuleUtil.ignoreCoreModules();
 					
 					// if a 'moduleid.started' property doesn't exist, start the module anyway
 					// as this is probably the first time they are loading it
 					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
 					        || mod.isMandatory() || isCoreToOpenmrs) {
-						if (requiredModulesStarted(mod)) {
-							try {
-								if (log.isDebugEnabled()) {
-									log.debug("starting module: " + mod.getModuleId());
-								}
-								
-								startModule(mod);
-							}
-							catch (Exception e) {
-								log.error("Error while starting module: " + mod.getName(), e);
-								mod.setStartupErrorMessage("Error while starting module", e);
-								notifySuperUsersAboutModuleFailure(mod);
-							}
-						} else {
-							// if not all the modules required by this mod are loaded, save it for later
-							leftoverModules.add(mod);
+
+						try {
 							if (log.isDebugEnabled()) {
-								log.debug("cannot start because required modules are not started: " + mod.getModuleId());
+								log.debug("starting module: " + mod.getModuleId());
 							}
+							startModule(mod);
+						} catch (Exception e) {
+							log.error("Error while starting module: " + mod.getName(), e);
+							mod.setStartupErrorMessage("Error while starting module", e);
+							notifySuperUsersAboutModuleFailure(mod);
 						}
+
 					}
 				}
-			}
-			finally {
+			} catch(CycleException e) {
+				log.error("Cycle found when sorting modules", e);
+			} finally {
 				Context.removeProxyPrivilege("");
 			}
 			
-			// loop over the leftover modules until we can't load
-			// anymore or we've loaded them all
-			boolean atLeastOneModuleLoaded = true;
-			while (leftoverModules.size() > 0 && atLeastOneModuleLoaded) {
-				if (log.isDebugEnabled()) {
-					log.debug("Trying to start leftover modules: " + leftoverModules);
-				}
-				
-				atLeastOneModuleLoaded = false;
-				List<Module> modulesStartedInThisLoop = new Vector<Module>();
-				
-				for (Module leftoverModule : leftoverModules) {
-					if (requiredModulesStarted(leftoverModule)) {
-						if (log.isDebugEnabled()) {
-							log.debug("starting leftover module: " + leftoverModule.getModuleId());
-						}
-						
-						try {
-							// don't need to check globalproperty here because
-							// it would only be on the leftover modules list if
-							// it were set to true already
-							startModule(leftoverModule);
-							
-							// set this boolean flag to true so we keep looping over the modules
-							atLeastOneModuleLoaded = true;
-							
-							// save the module we just started
-							modulesStartedInThisLoop.add(leftoverModule);
-						}
-						catch (Exception e) {
-							log.error("Error while starting leftover module: " + leftoverModule.getName(), e);
-						}
-					} else {
-						if (log.isDebugEnabled()) {
-							log.debug("cannot start leftover module because required modules are not started: "
-							        + leftoverModule.getModuleId());
-						}
-					}
-				}
-				
-				// remove the modules we started in this loop from the overall
-				// leftover modules list
-				leftoverModules.removeAll(modulesStartedInThisLoop);
-			}
-			
-			// if we failed to start all the modules, error out
-			if (leftoverModules.size() > 0) {
-				for (Module leftoverModule : leftoverModules) {
-					String message = getFailedToStartModuleMessage(leftoverModule);
-					log.error(message);
-					leftoverModule.setStartupErrorMessage(message);
-					notifySuperUsersAboutModuleFailure(leftoverModule);
-				}
-			}
+
 		}
 		
+	}
+	
+	/**
+	 * Sort modules in startup order based on required and aware-of dependencies
+	 * @return
+	 * @throws CycleException 
+	 */
+	private static List<Node<Module>> getModulesInStartupOrder() throws CycleException {
+		Graph<Module> graph = new Graph<Module>();
+		
+		for (Module mod : getLoadedModulesCoreFirst()) {
+		
+			Node<Module> toNode = new Node<Module>(mod);
+			graph.addNode(toNode);
+			
+			// Required dependencies
+			for (String key : mod.getRequiredModules()) {
+				Module module = getModuleByPackage(key);
+				Node<Module> fromNode = graph.getNode(module);
+				if (fromNode == null) {
+					fromNode = new Node<Module>(module);
+				}
+				graph.addEdge(graph.new Edge(fromNode, toNode));
+			}
+			
+			// Aware-of dependencies
+			for (String key : mod.getAwareOfModules()) {
+				Module module = getModuleByPackage(key);
+				Node<Module> fromNode = graph.getNode(module);
+				if (fromNode == null) {
+					fromNode = new Node<Module>(module);
+				}
+				graph.addEdge(graph.new Edge(fromNode, toNode));
+			}				
+		}
+		
+		return graph.topologicalSort();
 	}
 	
 	/**
