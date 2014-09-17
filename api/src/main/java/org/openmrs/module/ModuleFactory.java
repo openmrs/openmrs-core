@@ -198,7 +198,7 @@ public class ModuleFactory {
 				Context.addProxyPrivilege("");
 				AdministrationService as = Context.getAdministrationService();
 				// try and start the modules that should be started
-				for (Module mod : getModulesInStartOrder()) {
+				for (Module mod : getLoadedModulesCoreFirst()) {
 					if (mod.isStarted())
 						continue; // skip over modules that are already started
 						
@@ -1447,25 +1447,7 @@ public class ModuleFactory {
 				moduleIndex = moduleOrder.indexOf(module.getPackageName());
 			}
 			
-			List<String> moduleIds = module.getAwareOfModules();
-			for (String pkg : moduleIds) {
-				int index = moduleOrder.indexOf(pkg);
-				if (index == -1) {
-					//aware of module is not yet in the list
-					//add it before the current module
-					moduleOrder.add(moduleIndex, pkg);
-					moduleIndex = moduleOrder.indexOf(module.getPackageName());
-				} else if (index > moduleIndex) {
-					//aware of module is after the current module
-					//so move it before
-					moduleOrder.remove(pkg);
-					moduleOrder.add(moduleIndex, pkg);
-					moduleIndex = moduleOrder.indexOf(module.getPackageName());
-				}
-				//else aware of module is before current module as it should be
-			}
-			
-			moduleIds = module.getRequiredModules();
+			List<String> moduleIds = module.getRequiredModules();
 			for (String pkg : moduleIds) {
 				int index = moduleOrder.indexOf(pkg);
 				if (index == -1) {
