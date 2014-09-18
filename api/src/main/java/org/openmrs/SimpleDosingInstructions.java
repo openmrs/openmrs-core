@@ -116,6 +116,12 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return simpleDosingInstructions;
 	}
 	
+	/**
+	 * @see DosingInstructions#validate(DrugOrder, org.springframework.validation.Errors)
+	 * @param order
+	 * @param errors
+	 * @should reject a duration unit with a mapping of an invalid type
+	 */
 	@Override
 	public void validate(DrugOrder order, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
@@ -123,8 +129,8 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
 		if (order.getAutoExpireDate() == null && order.getDurationUnits() != null) {
-			if (ISO8601Duration.getCode(order.getDurationUnits()) == null) {
-				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode");
+			if (Duration.getCode(order.getDurationUnits()) == null) {
+				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode");
 			}
 		}
 	}
@@ -140,12 +146,12 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		if (drugOrder.getNumRefills() != null && drugOrder.getNumRefills() > 0) {
 			return null;
 		}
-		String durationCode = ISO8601Duration.getCode(drugOrder.getDurationUnits());
+		String durationCode = Duration.getCode(drugOrder.getDurationUnits());
 		if (durationCode == null) {
 			return null;
 		}
-		ISO8601Duration iso8601Duration = new ISO8601Duration(drugOrder.getDuration(), durationCode);
-		return iso8601Duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency());
+		Duration duration = new Duration(drugOrder.getDuration(), durationCode);
+		return duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency());
 	}
 	
 	public Double getDose() {

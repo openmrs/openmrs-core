@@ -21,7 +21,7 @@ import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.DosingInstructions;
 import org.openmrs.DrugOrder;
-import org.openmrs.ISO8601Duration;
+import org.openmrs.Duration;
 import org.openmrs.Order;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.OrderService;
@@ -165,8 +165,8 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			if (!drugDurationUnits.contains(order.getDurationUnits())) {
 				errors.rejectValue("durationUnits", "DrugOrder.error.notAmongAllowedConcepts");
 			}
-			if (ISO8601Duration.getCode(order.getDurationUnits()) == null) {
-				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode");
+			if (Duration.getCode(order.getDurationUnits()) == null) {
+				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode");
 			}
 		}
 		if (order.getRoute() != null) {
