@@ -37,7 +37,7 @@ import org.w3c.dom.Document;
  * @version 1.0
  */
 public final class Module {
-	
+
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private String name;

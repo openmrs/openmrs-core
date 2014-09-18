@@ -61,7 +61,7 @@ import org.springframework.util.StringUtils;
  * Methods for loading, starting, stopping, and storing OpenMRS modules
  */
 public class ModuleFactory {
-	
+
 	private static Log log = LogFactory.getLog(ModuleFactory.class);
 	
 	protected static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
