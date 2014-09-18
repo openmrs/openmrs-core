@@ -33,7 +33,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddSecondsWhenUnitIsSeconds() throws Exception {
-		Duration duration = new Duration(30, Duration.SECONDS_CODE);
+		Duration duration = new Duration(30, Duration.SNOMED_CT_SECONDS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -42,7 +42,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddMinutesWhenUnitIsMinutes() throws Exception {
-		Duration duration = new Duration(30, Duration.MINUTES_CODE);
+		Duration duration = new Duration(30, Duration.SNOMED_CT_MINUTES_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -51,7 +51,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddHoursWhenUnitIsHours() throws Exception {
-		Duration duration = new Duration(10, Duration.HOURS_CODE);
+		Duration duration = new Duration(10, Duration.SNOMED_CT_HOURS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -60,7 +60,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddDaysWhenUnitIsDays() throws Exception {
-		Duration duration = new Duration(30, Duration.DAYS_CODE);
+		Duration duration = new Duration(30, Duration.SNOMED_CT_DAYS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -69,7 +69,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddMonthsWhenUnitIsMonths() throws Exception {
-		Duration duration = new Duration(3, Duration.MONTHS_CODE);
+		Duration duration = new Duration(3, Duration.SNOMED_CT_MONTHS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -78,7 +78,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddYearsWhenUnitIsYears() throws Exception {
-		Duration duration = new Duration(3, Duration.YEARS_CODE);
+		Duration duration = new Duration(3, Duration.SNOMED_CT_YEARS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -87,7 +87,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddTimeBasedOnFrequencyWhenUnitIsRecurringInterval() throws Exception {
-		Duration duration = new Duration(3, Duration.RECURRING_INTERVAL_CODE); // 3 Times
+		Duration duration = new Duration(3, Duration.SNOMED_CT_RECURRING_INTERVAL_CODE); // 3 Times
 		Date startDate = createDateTime("2014-07-01 10-00-00");
 		OrderFrequency onceAWeek = createFrequency(1 / 7.0);
 		
@@ -96,7 +96,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldFailWhenUnitIsRecurringAndFrequencyIsUnknown() throws Exception {
-		Duration duration = new Duration(3, Duration.RECURRING_INTERVAL_CODE); // 3 Times
+		Duration duration = new Duration(3, Duration.SNOMED_CT_RECURRING_INTERVAL_CODE); // 3 Times
 		Date startDate = createDateTime("2014-07-01 10-00-00");
 		OrderFrequency frequency = null;
 		
@@ -126,7 +126,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCode_shouldReturnNullIfTheConceptHasNoMappingToTheSNOMEDCTSource() throws Exception {
-		final String daysCode = Duration.DAYS_CODE;
+		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
 		assertNull(Duration.getCode(SimpleDosingInstructionsTest.createUnits("some-uuid", daysCode)));
 	}
 	
@@ -136,7 +136,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCode_shouldReturnTheCodeForTheTermOfTheMappingToTheSNOMEDCTSource() throws Exception {
-		final String daysCode = Duration.DAYS_CODE;
+		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
 		Concept concept = SimpleDosingInstructionsTest.createUnits(daysCode);
 		assertEquals(daysCode, Duration.getCode(concept));
 	}

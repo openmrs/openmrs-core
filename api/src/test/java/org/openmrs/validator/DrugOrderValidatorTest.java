@@ -650,7 +650,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDurationUnits(cs.getConcept(28));
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		assertEquals("DrugOrder.error.durationUnitsNotMappedToSNOMED_CTDurationCode", errors.getFieldError("durationUnits")
+		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError("durationUnits")
 		        .getCode());
 	}
 }

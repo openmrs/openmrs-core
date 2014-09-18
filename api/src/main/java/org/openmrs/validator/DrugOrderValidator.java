@@ -166,7 +166,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				errors.rejectValue("durationUnits", "DrugOrder.error.notAmongAllowedConcepts");
 			}
 			if (Duration.getCode(order.getDurationUnits()) == null) {
-				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSNOMED_CTDurationCode");
+				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode");
 			}
 		}
 		if (order.getRoute() != null) {

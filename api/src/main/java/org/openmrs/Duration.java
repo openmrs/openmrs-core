@@ -25,23 +25,23 @@ import org.openmrs.api.APIException;
  */
 public class Duration {
 	
-	public static final String SECONDS_CODE = "257997001";
+	public static final String SNOMED_CT_SECONDS_CODE = "257997001";
 	
-	public static final String MINUTES_CODE = "258701004";
+	public static final String SNOMED_CT_MINUTES_CODE = "258701004";
 	
-	public static final String HOURS_CODE = "258702006";
+	public static final String SNOMED_CT_HOURS_CODE = "258702006";
 	
-	public static final String DAYS_CODE = "258703001";
+	public static final String SNOMED_CT_DAYS_CODE = "258703001";
 	
-	public static final String WEEKS_CODE = "258705008";
+	public static final String SNOMED_CT_WEEKS_CODE = "258705008";
 	
-	public static final String MONTHS_CODE = "258706009";
+	public static final String SNOMED_CT_MONTHS_CODE = "258706009";
 	
-	public static final String YEARS_CODE = "258707000";
+	public static final String SNOMED_CT_YEARS_CODE = "258707000";
 	
-	public static final String RECURRING_INTERVAL_CODE = "252109000";
+	public static final String SNOMED_CT_RECURRING_INTERVAL_CODE = "252109000";
 	
-	public static final String CONCEPT_SOURCE_HL7_CODE = "SCT";
+	public static final String SNOMED_CT_CONCEPT_SOURCE_HL7_CODE = "SCT";
 	
 	private static final int SECONDS_PER_MINUTE = 60;
 	
@@ -71,21 +71,21 @@ public class Duration {
 	 * @return date which is startDate plus duration
 	 */
 	public Date addToDate(Date startDate, OrderFrequency frequency) {
-		if (SECONDS_CODE.equals(code))
+		if (SNOMED_CT_SECONDS_CODE.equals(code))
 			return DateUtils.addSeconds(startDate, duration);
-		if (MINUTES_CODE.equals(code))
+		if (SNOMED_CT_MINUTES_CODE.equals(code))
 			return DateUtils.addMinutes(startDate, duration);
-		if (HOURS_CODE.equals(code))
+		if (SNOMED_CT_HOURS_CODE.equals(code))
 			return DateUtils.addHours(startDate, duration);
-		if (DAYS_CODE.equals(code))
+		if (SNOMED_CT_DAYS_CODE.equals(code))
 			return DateUtils.addDays(startDate, duration);
-		if (WEEKS_CODE.equals(code))
+		if (SNOMED_CT_WEEKS_CODE.equals(code))
 			return DateUtils.addWeeks(startDate, duration);
-		if (MONTHS_CODE.equals(code))
+		if (SNOMED_CT_MONTHS_CODE.equals(code))
 			return DateUtils.addMonths(startDate, duration);
-		if (YEARS_CODE.equals(code))
+		if (SNOMED_CT_YEARS_CODE.equals(code))
 			return DateUtils.addYears(startDate, duration);
-		if (RECURRING_INTERVAL_CODE.equals(code)) {
+		if (SNOMED_CT_RECURRING_INTERVAL_CODE.equals(code)) {
 			if (frequency == null)
 				throw new APIException("Frequency can not be null when duration in Recurring Interval");
 			return DateUtils.addSeconds(startDate, (int) (duration * SECONDS_PER_DAY / frequency.getFrequencyPerDay()));
@@ -104,7 +104,7 @@ public class Duration {
 	public static String getCode(Concept durationUnits) {
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
 			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
-			if (Duration.CONCEPT_SOURCE_HL7_CODE.equals(conceptReferenceTerm.getConceptSource().getHl7Code())) {
+			if (Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE.equals(conceptReferenceTerm.getConceptSource().getHl7Code())) {
 				return conceptReferenceTerm.getCode();
 			}
 		}

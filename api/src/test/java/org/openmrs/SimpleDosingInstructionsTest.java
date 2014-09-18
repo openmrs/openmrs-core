@@ -41,7 +41,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		new SimpleDosingInstructions().validate(drugOrder, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("durationUnits"));
-		Assert.assertEquals("DrugOrder.error.durationUnitsNotMappedToSNOMED_CTDurationCode", errors.getFieldError(
+		Assert.assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError(
 		    "durationUnits").getCode());
 	}
 	
@@ -77,7 +77,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
 		drugOrder.setDuration(30);
-		drugOrder.setDurationUnits(createUnits(Duration.SECONDS_CODE));
+		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_SECONDS_CODE));
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		
@@ -91,7 +91,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		drugOrder.setScheduledDate(createDateTime("2014-07-05 00-00-00"));
 		drugOrder.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
 		drugOrder.setDuration(10);
-		drugOrder.setDurationUnits(createUnits(Duration.DAYS_CODE));
+		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_DAYS_CODE));
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		
@@ -103,7 +103,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
 		drugOrder.setDuration(30);
-		drugOrder.setDurationUnits(createUnits(Duration.SECONDS_CODE));
+		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_SECONDS_CODE));
 		drugOrder.setNumRefills(1);
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
@@ -115,7 +115,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	public void getAutoExpireDate_shouldNotInferAutoExpireDateWhenDurationDoesNotExist() throws Exception {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
-		drugOrder.setDurationUnits(createUnits(Duration.SECONDS_CODE));
+		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_SECONDS_CODE));
 		drugOrder.setDuration(null);
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
@@ -141,7 +141,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
 		drugOrder.setDuration(30);
-		drugOrder.setDurationUnits(createUnits("Other.Source", Duration.HOURS_CODE));
+		drugOrder.setDurationUnits(createUnits("Other.Source", Duration.SNOMED_CT_HOURS_CODE));
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		
@@ -170,7 +170,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	public static Concept createUnits(String code) {
-		return createUnits(Duration.CONCEPT_SOURCE_HL7_CODE, code);
+		return createUnits(Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE, code);
 	}
 	
 	public static Concept createUnits(String source, String code) {
