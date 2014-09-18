@@ -26,14 +26,14 @@ import org.junit.rules.ExpectedException;
 import org.openmrs.api.APIException;
 import org.openmrs.test.BaseContextSensitiveTest;
 
-public class ISO8601DurationTest extends BaseContextSensitiveTest {
+public class DurationTest extends BaseContextSensitiveTest {
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
 	public void addToDate_shouldAddSecondsWhenUnitIsSeconds() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(30, ISO8601Duration.SECONDS_CODE);
+		Duration duration = new Duration(30, Duration.SECONDS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -42,7 +42,7 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddMinutesWhenUnitIsMinutes() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(30, ISO8601Duration.MINUTES_CODE);
+		Duration duration = new Duration(30, Duration.MINUTES_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -51,7 +51,7 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddHoursWhenUnitIsHours() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(10, ISO8601Duration.HOURS_CODE);
+		Duration duration = new Duration(10, Duration.HOURS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -60,7 +60,7 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddDaysWhenUnitIsDays() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(30, ISO8601Duration.DAYS_CODE);
+		Duration duration = new Duration(30, Duration.DAYS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -69,7 +69,7 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddMonthsWhenUnitIsMonths() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(3, ISO8601Duration.MONTHS_CODE);
+		Duration duration = new Duration(3, Duration.MONTHS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -78,7 +78,7 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddYearsWhenUnitIsYears() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(3, ISO8601Duration.YEARS_CODE);
+		Duration duration = new Duration(3, Duration.YEARS_CODE);
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 		
@@ -87,7 +87,7 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldAddTimeBasedOnFrequencyWhenUnitIsRecurringInterval() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(3, ISO8601Duration.RECURRING_INTERVAL_CODE); // 3 Times
+		Duration duration = new Duration(3, Duration.RECURRING_INTERVAL_CODE); // 3 Times
 		Date startDate = createDateTime("2014-07-01 10-00-00");
 		OrderFrequency onceAWeek = createFrequency(1 / 7.0);
 		
@@ -96,7 +96,7 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldFailWhenUnitIsRecurringAndFrequencyIsUnknown() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(3, ISO8601Duration.RECURRING_INTERVAL_CODE); // 3 Times
+		Duration duration = new Duration(3, Duration.RECURRING_INTERVAL_CODE); // 3 Times
 		Date startDate = createDateTime("2014-07-01 10-00-00");
 		OrderFrequency frequency = null;
 		
@@ -107,10 +107,10 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void addToDate_shouldFailWhenUnitIsUnknown() throws Exception {
-		ISO8601Duration duration = new ISO8601Duration(3, "J");
+		Duration duration = new Duration(3, "J");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Unknown code 'J' for ISO8601 duration units"));
+		expectedException.expectMessage(Matchers.is("Unknown code 'J' for SNOMED CT duration units"));
 		duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
 	}
 	
@@ -121,23 +121,23 @@ public class ISO8601DurationTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies return null if the concept has no mapping to the ISO8601 source
-	 * @see ISO8601Duration#getCode(Concept)
+	 * @verifies return null if the concept has no mapping to the SNOMED CT source
+	 * @see Duration#getCode(Concept)
 	 */
 	@Test
-	public void getCode_shouldReturnNullIfTheConceptHasNoMappingToTheISO8601Source() throws Exception {
-		final String daysCode = ISO8601Duration.DAYS_CODE;
-		assertNull(ISO8601Duration.getCode(SimpleDosingInstructionsTest.createUnits("some-uuid", daysCode)));
+	public void getCode_shouldReturnNullIfTheConceptHasNoMappingToTheSNOMEDCTSource() throws Exception {
+		final String daysCode = Duration.DAYS_CODE;
+		assertNull(Duration.getCode(SimpleDosingInstructionsTest.createUnits("some-uuid", daysCode)));
 	}
 	
 	/**
-	 * @verifies return the code for the term of the mapping to the ISO8601 source
-	 * @see ISO8601Duration#getCode(Concept)
+	 * @verifies return the code for the term of the mapping to the SNOMED CT source
+	 * @see Duration#getCode(Concept)
 	 */
 	@Test
-	public void getCode_shouldReturnTheCodeForTheTermOfTheMappingToTheISO8601Source() throws Exception {
-		final String daysCode = ISO8601Duration.DAYS_CODE;
+	public void getCode_shouldReturnTheCodeForTheTermOfTheMappingToTheSNOMEDCTSource() throws Exception {
+		final String daysCode = Duration.DAYS_CODE;
 		Concept concept = SimpleDosingInstructionsTest.createUnits(daysCode);
-		assertEquals(daysCode, ISO8601Duration.getCode(concept));
+		assertEquals(daysCode, Duration.getCode(concept));
 	}
 }

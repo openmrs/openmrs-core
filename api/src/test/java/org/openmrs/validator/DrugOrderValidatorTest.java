@@ -623,11 +623,11 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies fail if durationUnits has no mapping to ISO8601 source
+	 * @verifies fail if durationUnits has no mapping to SNOMEDCT source
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validate_shouldFailIfDurationUnitsHasNoMappingToISO8601Source() throws Exception {
+	public void validate_shouldFailIfDurationUnitsHasNoMappingToSNOMEDCTSource() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
@@ -650,7 +650,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDurationUnits(cs.getConcept(28));
 		Errors errors = new BindException(order, "order");
 		new DrugOrderValidator().validate(order, errors);
-		assertEquals("DrugOrder.error.durationUnitsNotMappedToISO8601DurationCode", errors.getFieldError("durationUnits")
+		assertEquals("DrugOrder.error.durationUnitsNotMappedToSNOMED_CTDurationCode", errors.getFieldError("durationUnits")
 		        .getCode());
 	}
 }
