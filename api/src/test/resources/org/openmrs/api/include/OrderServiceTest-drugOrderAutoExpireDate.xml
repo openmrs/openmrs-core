@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-    <concept_reference_source concept_source_id="1000" name="ISO 8601 Duration" description="ISO 8601 Duration concept source" creator="1" date_created="2012-04-03 13:41:25.9" retired="true" uuid="cb523690-9012-4e72-b8bf-4253e1b1a687"/>
-    <concept_reference_term concept_reference_term_id="12" concept_source_id="1000" code="D" name="Day(s)" description="Duration unit in day(s)" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="a9e71e68-23c7-4603-be43-aa74e1de2c71"/>
+    <concept_reference_term concept_reference_term_id="12" concept_source_id="2" code="258703001" name="Day(s)" description="Duration unit in day(s)" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="a9e71e68-23c7-4603-be43-aa74e1de2c71"/>
     <concept concept_id="1000" retired="0" datatype_id="4" class_id="3" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800200c9a76"/>
     <concept_name concept_name_id="2000" concept_id="1000" name="Paracetamol" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="93f24a00-7869-11e3-981f-0800200c9a67"/>
     <concept concept_id="1001" retired="0" datatype_id="4" class_id="3" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="865fceb1-ad0c-4102-aead-26ca25c77b09"/>
