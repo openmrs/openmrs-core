@@ -104,7 +104,9 @@ public class Duration {
 	public static String getCode(Concept durationUnits) {
 		for (ConceptMap conceptMapping : durationUnits.getConceptMappings()) {
 			ConceptReferenceTerm conceptReferenceTerm = conceptMapping.getConceptReferenceTerm();
-			if (Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE.equals(conceptReferenceTerm.getConceptSource().getHl7Code())) {
+			if (ConceptMapType.SAME_AS_MAP_TYPE_UUID.equals(conceptMapping.getConceptMapType().getUuid())
+			        && Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE.equals(conceptReferenceTerm.getConceptSource()
+			                .getHl7Code())) {
 				return conceptReferenceTerm.getCode();
 			}
 		}

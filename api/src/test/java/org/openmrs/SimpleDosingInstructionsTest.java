@@ -141,7 +141,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10-00-00"));
 		drugOrder.setDuration(30);
-		drugOrder.setDurationUnits(createUnits("Other.Source", Duration.SNOMED_CT_HOURS_CODE));
+		drugOrder.setDurationUnits(createUnits("Other.Source", Duration.SNOMED_CT_HOURS_CODE, null));
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		
@@ -170,16 +170,16 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 	}
 	
 	public static Concept createUnits(String code) {
-		return createUnits(Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE, code);
+		return createUnits(Duration.SNOMED_CT_CONCEPT_SOURCE_HL7_CODE, code, null);
 	}
 	
-	public static Concept createUnits(String source, String code) {
+	public static Concept createUnits(String source, String code, String mapTypeUuid) {
 		Concept doseUnits = new Concept();
-		doseUnits.addConceptMapping(getConceptMap(source, code));
+		doseUnits.addConceptMapping(getConceptMap(source, code, mapTypeUuid));
 		return doseUnits;
 	}
 	
-	private static ConceptMap getConceptMap(String sourceHl7Code, String code) {
+	private static ConceptMap getConceptMap(String sourceHl7Code, String code, String mapTypeUuid) {
 		ConceptMap conceptMap = new ConceptMap();
 		ConceptReferenceTerm conceptReferenceTerm = new ConceptReferenceTerm();
 		ConceptSource conceptSource = new ConceptSource();
@@ -188,8 +188,29 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		conceptReferenceTerm.setCode(code);
 		conceptMap.setConceptReferenceTerm(conceptReferenceTerm);
 		ConceptMapType conceptMapType = new ConceptMapType();
+		if (mapTypeUuid != null) {
+			conceptMapType.setUuid(mapTypeUuid);
+		} else {
+			conceptMapType.setUuid(ConceptMapType.SAME_AS_MAP_TYPE_UUID);
+		}
 		conceptMap.setConceptMapType(conceptMapType);
 		return conceptMap;
 	}
 	
+	/**
+	 * @verifies reject a duration unit with a mapping of an invalid type
+	 * @see SimpleDosingInstructions#validate(DrugOrder, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldRejectADurationUnitWithAMappingOfAnInvalidType() throws Exception {
+		DrugOrder drugOrder = createValidDrugOrder();
+		drugOrder.setDuration(30);
+		Concept durationUnitWithInvalidMapType = createUnits("SCT", Duration.SNOMED_CT_DAYS_CODE, "Some-uuid");
+		drugOrder.setDurationUnits(durationUnitWithInvalidMapType);
+		Errors errors = new BindException(drugOrder, "drugOrder");
+		
+		new SimpleDosingInstructions().validate(drugOrder, errors);
+		
+		assertEquals(true, errors.hasErrors());
+	}
 }

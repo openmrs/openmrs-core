@@ -127,7 +127,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCode_shouldReturnNullIfTheConceptHasNoMappingToTheSNOMEDCTSource() throws Exception {
 		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
-		assertNull(Duration.getCode(SimpleDosingInstructionsTest.createUnits("some-uuid", daysCode)));
+		assertNull(Duration.getCode(SimpleDosingInstructionsTest.createUnits("some-uuid", daysCode, null)));
 	}
 	
 	/**

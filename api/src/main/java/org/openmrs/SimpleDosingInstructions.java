@@ -116,6 +116,12 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		return simpleDosingInstructions;
 	}
 	
+	/**
+	 * @see DosingInstructions#validate(DrugOrder, org.springframework.validation.Errors)
+	 * @param order
+	 * @param errors
+	 * @should reject a duration unit with a mapping of an invalid type
+	 */
 	@Override
 	public void validate(DrugOrder order, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "dose", "DrugOrder.error.doseIsNullForDosingTypeSimple");
