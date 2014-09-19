@@ -29,12 +29,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -121,17 +123,71 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
-		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
+		
+		ArrayList<ModuleClassLoader> moduleClassLoaders = new ArrayList<ModuleClassLoader>(ModuleFactory
+		        .getModuleClassLoaders());
+		
+		Class<?> c = loadModuleClass(name, moduleClassLoaders);
+		if (c != null)
+			return c;
+		
+		/* See org.mortbay.jetty.webapp.WebAppClassLoader.loadClass, from
+		 * http://dist.codehaus.org/jetty/jetty-6.1.10/jetty-6.1.10-src.zip */
+		ClassNotFoundException ex = null;
+		
+		try {
+			c = getParent().loadClass(name);
+			loadedClasses.add(c);
+			return c;
+		}
+		catch (ClassNotFoundException e) {
+			ex = e;
+		}
+		
+		try {
+			c = this.findClass(name);
+			return c;
+		}
+		catch (ClassNotFoundException e) {
+			ex = e;
+		}
+		
+		throw ex;
+	}
+	
+	/**
+	 * @should load class from longest match first
+	 * @should if longest match fails should try other matches
+	 */
+	Class<?> loadModuleClass(String name, Collection<ModuleClassLoader> moduleClassLoaders) {
+		int pos = name.lastIndexOf(".");
+		String classPackageName;
+		if (pos > 0) {
+			classPackageName = name.substring(0, pos);
+		} else {
+			classPackageName = name;
+		}
+		//We need to put class loaders for modules with longer package name first to make sure that if a module contains '.'
+		// in a name it is considered first for the startsWith comparison, e.g. reporting.ui module will be considered before reporting
+		ArrayList<ModuleClassLoader> moduleClassLoaderArrayList = new ArrayList<ModuleClassLoader>(moduleClassLoaders);
+		Collections.sort(moduleClassLoaderArrayList, new Comparator<ModuleClassLoader>() {
+			
+			@Override
+			public int compare(ModuleClassLoader o1, ModuleClassLoader o2) {
+				return o2.getModule().getPackageName().length() - o1.getModule().getPackageName().length();
+			}
+		});
+		
+		for (ModuleClassLoader classLoader : moduleClassLoaderArrayList) {
 			// this is to prevent unnecessary looping over providedPackages
-			boolean tryToLoad = name.startsWith(classLoader.getModule().getPackageName() + ".");
+			boolean tryToLoad = classPackageName.startsWith(classLoader.getModule().getPackageName());
 			
 			// the given class name doesn't match the config.xml package in this module,
 			// check the "providedPackage" list to see if its in a lib
 			if (!tryToLoad) {
-				
 				for (String providedPackage : classLoader.getAdditionalPackages()) {
 					// break out early if we match a package
-					if (name.startsWith(providedPackage + ".")) {
+					if (classPackageName.startsWith(providedPackage)) {
 						tryToLoad = true;
 						break;
 					}
@@ -150,29 +206,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				}
 			}
 		}
-		
-		/* See org.mortbay.jetty.webapp.WebAppClassLoader.loadClass, from
-		 * http://dist.codehaus.org/jetty/jetty-6.1.10/jetty-6.1.10-src.zip */
-		ClassNotFoundException ex = null;
-		
-		try {
-			Class<?> c = getParent().loadClass(name);
-			loadedClasses.add(c);
-			return c;
-		}
-		catch (ClassNotFoundException e) {
-			ex = e;
-		}
-		
-		try {
-			Class<?> c = this.findClass(name);
-			return c;
-		}
-		catch (ClassNotFoundException e) {
-			ex = e;
-		}
-		
-		throw ex;
+		return null;
 	}
 	
 	/**
