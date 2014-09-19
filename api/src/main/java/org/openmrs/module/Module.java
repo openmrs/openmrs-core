@@ -37,7 +37,7 @@ import org.w3c.dom.Document;
  * @version 1.0
  */
 public final class Module {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private String name;
@@ -819,5 +819,9 @@ public final class Module {
 	
 	public void setConditionalResources(List<ModuleConditionalResource> conditionalResources) {
 		this.conditionalResources = conditionalResources;
+	}
+	
+	public boolean isCore() {
+		return ModuleConstants.CORE_MODULES.containsKey(getModuleId());
 	}
 }
