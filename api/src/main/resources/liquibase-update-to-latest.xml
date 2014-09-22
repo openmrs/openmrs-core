@@ -8446,4 +8446,17 @@
         <comment>Changing duration column of drug_order to int</comment>
         <modifyDataType tableName="drug_order" columnName="duration" newDataType="int"/>
     </changeSet>
+
+    <changeSet id="201422091133-TRUNK-4485" author="willa">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT count(*) from global_property where property='providerSearch.matchMode'</sqlCheck>
+        </preConditions>
+        <comment>Adding providerSearch.matchMode global property</comment>
+        <insert tableName="global_property">
+            <column name="property">providerSearch.matchMode</column>
+            <column name="property_value">START</column>
+            <column name="Description">Specifies how provider identifiers are matched while searching for providers. Valid values are START or EXACT</column>
+            <column name="uuid">ec575208-4270-11e4-8ea4-d3a3b5a10740</column>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
