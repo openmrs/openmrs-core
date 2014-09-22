@@ -845,6 +845,12 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START = "START";
 	
+	public static final String GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE = "providerSearch.matchMode";
+	
+	public static final String GLOBAL_PROPERTY_PROVIDER_SEARCH_START = "START";
+	
+	public static final String GLOBAL_PROPERTY_PROVIDER_SEARCH_EXACT = "EXACT";
+	
 	public static final String GLOBAL_PROPERTY_DEFAULT_SERIALIZER = "serialization.defaultSerializer";
 	
 	public static final String GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS = "hl7_processor.ignore_missing_patient_non_local";
