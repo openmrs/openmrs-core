@@ -8448,6 +8448,9 @@
     </changeSet>
     
     <changeSet id="201409230113-TRUNK-3484" author="k-joseph" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+            <columnExists tableName="global_property" columnName="description" />
+        </preConditions>
 		<comment>
 			Updating description to the value set in OpenmrsContants
 		</comment>
