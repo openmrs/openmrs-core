@@ -8447,7 +8447,7 @@
         <modifyDataType tableName="drug_order" columnName="duration" newDataType="int"/>
     </changeSet>
     
-    <changeSet id="201409230113-TRUNK-3484" author="k-joseph" dbms="mysql">
+    <changeSet id="201409230113-TRUNK-3484" author="k-joseph">
 		<preConditions onFail="MARK_RAN">
                 <sqlCheck expectedResult="1">
                     SELECT count(*) FROM global_property WHERE property ='visits.encounterTypeToVisitTypeMapping'
