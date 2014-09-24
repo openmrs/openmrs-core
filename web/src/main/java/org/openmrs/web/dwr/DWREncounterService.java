@@ -29,7 +29,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 
 public class DWREncounterService {
-	
+
 	private static final Log log = LogFactory.getLog(DWREncounterService.class);
 	
 	/**

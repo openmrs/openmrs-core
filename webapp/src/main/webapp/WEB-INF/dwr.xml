@@ -9,7 +9,7 @@
 		<create creator="new" javascript="JDate">
 	      <param name="class" value="java.util.Date"/>
 		</create>
-		
+	
 		<convert match="java.lang.Exception" converter="exception">
 			<param name="exclude" value="stackTrace"/>
 		</convert>
@@ -103,6 +103,7 @@
 			<include method="getLocation"/>
 			<include method="findCountAndEncounters"/>
 			<include method="findBatchOfEncounters"/>
+			<include method="findBatchOfEncountersByPatient"/>
 			<include method="findCountAndLocations"/>
 			<include method="findBatchOfLocations"/>
 		</create>
