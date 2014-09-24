@@ -8449,10 +8449,12 @@
     
     <changeSet id="201409230113-TRUNK-3484" author="k-joseph" dbms="mysql">
 		<preConditions onFail="MARK_RAN">
-            <columnExists tableName="global_property" columnName="description" />
+                <sqlCheck expectedResult="1">
+                    SELECT count(*) FROM global_property WHERE property ='visits.encounterTypeToVisitTypeMapping'
+                </sqlCheck>
         </preConditions>
 		<comment>
-			Updating description to the value set in OpenmrsContants
+			Updating description for visits.encounterTypeToVisitTypeMapping GP to the value set in OpenmrsContants
 		</comment>
 		<update tableName="global_property">
 			<column name="description" value="Specifies how encounter types are mapped to visit types when automatically assigning encounters to visits. e.g 1:1, 2:1, 3:2 in the format encounterTypeId:visitTypeId or encounterTypeUuid:visitTypeUuid or a combination of encounter/visit type uuids and ids e.g 1:759799ab-c9a5-435e-b671-77773ada74e4"/>
