@@ -29,8 +29,10 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProviderDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 import java.util.Collection;
 import java.util.List;
@@ -158,6 +160,22 @@ public class HibernateProviderDAO implements ProviderDAO {
 		return providers;
 	}
 	
+	private MatchMode getMatchMode() {
+		String matchMode = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE);
+		
+		if (MatchMode.START.toString().equalsIgnoreCase(matchMode)) {
+			return MatchMode.START;
+		}
+		if (MatchMode.ANYWHERE.toString().equalsIgnoreCase(matchMode)) {
+			return MatchMode.ANYWHERE;
+		}
+		if (MatchMode.END.toString().equalsIgnoreCase(matchMode)) {
+			return MatchMode.END;
+		}
+		return MatchMode.EXACT;
+	}
+	
 	/**
 	 * Creates a Provider Criteria based on name
 	 *
@@ -181,7 +199,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 		criteria.createAlias("p.names", "personName", Criteria.LEFT_JOIN);
 		
 		Disjunction or = Restrictions.disjunction();
-		or.add(Restrictions.ilike("identifier", name, MatchMode.ANYWHERE));
+		or.add(Restrictions.ilike("identifier", name, getMatchMode()));
 		or.add(Restrictions.ilike("name", name, MatchMode.ANYWHERE));
 		
 		Conjunction and = Restrictions.conjunction();
