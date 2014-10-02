@@ -132,7 +132,7 @@ public class PatientFormController extends PersonFormController {
 				
 				updatePersonNames(request, patient);
 				
-				updatePersonAddresses(request, patient);
+				updatePersonAddresses(request, patient, errors);
 				
 				updatePersonAttributes(request, errors, patient);
 				

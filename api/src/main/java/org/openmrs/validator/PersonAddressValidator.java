@@ -14,12 +14,17 @@
 package org.openmrs.validator;
 
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonAddress;
+import org.openmrs.api.context.Context;
 import org.openmrs.annotation.Handler;
+import org.openmrs.layout.web.address.*;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -50,6 +55,8 @@ public class PersonAddressValidator implements Validator {
 	 * @should pass if startDate and endDate are both null
 	 * @should pass if startDate is null
 	 * @should pass if endDate is null
+	 * @should fail if required fields are empty
+	 * @should pass if required fields are not empty
 	 */
 	public void validate(Object object, Errors errors) {
 		//TODO Validate other aspects of the personAddress object
@@ -86,5 +93,38 @@ public class PersonAddressValidator implements Validator {
 			        + "'" }, "The End Date for address '" + addressString + "' shouldn't be earlier than the Start Date");
 		}
 		
+		String xml = Context.getLocationService().getAddressTemplate();
+		List<String> requiredElements;
+		
+		try {
+			AddressTemplate addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
+			    AddressTemplate.class);
+			requiredElements = addressTemplate.getRequiredElements();
+		}
+		catch (Exception e) {
+			errors.reject(Context.getMessageSourceService().getMessage("AddressTemplate.error"));
+			return;
+		}
+		
+		if (requiredElements != null) {
+			for (String fieldName : requiredElements) {
+				try {
+					Object value = PropertyUtils.getProperty(personAddress, fieldName);
+					if (StringUtils.isBlank((String) value)) {
+						//required field not found
+						errors.reject(Context.getMessageSourceService().getMessage(
+						    "AddressTemplate.error.requiredAddressFieldIsBlank", new Object[] { fieldName },
+						    Context.getLocale()));
+					}
+				}
+				catch (Exception e) {
+					//wrong field declared in template
+					errors
+					        .reject(Context.getMessageSourceService().getMessage(
+					            "AddressTemplate.error.fieldNotDeclaredInTemplate", new Object[] { fieldName },
+					            Context.getLocale()));
+				}
+			}
+		}
 	}
 }

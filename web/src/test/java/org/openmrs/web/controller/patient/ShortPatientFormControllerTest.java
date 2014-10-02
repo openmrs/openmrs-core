@@ -105,6 +105,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		patientModel.setIdentifiers(identifiers);
 		patientModel.getPatient().setBirthdate(new Date());
 		patientModel.getPatient().setGender("M");
+		patientModel.setPersonAddress(new PersonAddress());
 		
 		WebRequest mockWebRequest = new ServletWebRequest(new MockHttpServletRequest());
 		BindException errors = new BindException(patientModel, "patientModel");
@@ -136,6 +137,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		patientModel.setPersonName(new PersonName("new", "", "patient"));
 		List<PatientIdentifier> identifiers = new ArrayList<PatientIdentifier>();
 		patientModel.setIdentifiers(identifiers);
+		patientModel.setPersonAddress(new PersonAddress());
 		
 		WebRequest mockWebRequest = new ServletWebRequest(new MockHttpServletRequest());
 		BindException errors = new BindException(patientModel, "patientModel");
