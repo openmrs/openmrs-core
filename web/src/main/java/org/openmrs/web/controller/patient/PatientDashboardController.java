@@ -78,7 +78,7 @@ public class PatientDashboardController {
 		// determine cause of death
 		
 		String causeOfDeathOther = "";
-		
+
 		if (Context.isAuthenticated()) {
 			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 			Concept conceptCause = Context.getConceptService().getConcept(propCause);

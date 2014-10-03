@@ -1116,7 +1116,7 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_DASHBOARD_CONCEPTS, "5497",
 		        "Comma delimited list of concepts ids to show on the patient header overview"));
-		
+
 		props
 		        .add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
 		                "true/false whether or not to show empty fields on the 'View Encounter' window",
