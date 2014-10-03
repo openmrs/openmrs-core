@@ -21,6 +21,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.api.context.Context;
 
 /**
@@ -51,8 +52,10 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private String strength;
 	
+	@IndexedEmbedded(depth = 1)
 	private Concept concept;
 	
+	@IndexedEmbedded
 	private Set<DrugReferenceMap> drugReferenceMaps;
 	
 	private Collection<DrugIngredient> ingredients;

@@ -1455,8 +1455,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param drugName the name of the drug
 	 * @param concept the drug concept
-	 * @param searchOnPhrase Specifies if the search should match names starting with or contain the
-	 *            text
+	 * @param searchKeywords (since 1.11) Specifies whether the search should match keywords or just phrase
 	 * @param searchDrugConceptNames Specifies whether a search on concept names for the drug's
 	 *            concept should be done or not
 	 * @param includeRetired specifies whether to include retired drugs
@@ -1467,7 +1466,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchKeywords, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws APIException;
 	
 	/**
@@ -1883,18 +1882,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.11
 	 */
 	public boolean isConceptNameDuplicate(ConceptName name);
-	
-	/**
-	 * Reads a GP which specifies if concept names are stored in a case sensitive way in the database.
-	 * <p>
-	 * It is an optimization parameter for MySQL, which can speed up searching if set to <b>false</b>.
-	 * <p>
-	 * It is set to <b>true</b> by default.
-	 * 
-	 * @return true if names in concept name table are case sensitive
-	 * @since 1.11
-	 */
-	public boolean isConceptNameTableCaseSensitive();
 	
 	/**
 	 * Fetches un retired drugs that match the specified search phrase. The logic matches on drug

@@ -16,6 +16,10 @@ package org.openmrs;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.IndexedEmbedded;
+
 /**
  * The DrugReferenceMap map object represents a mapping between a drug and alternative drug
  * terminologies.
@@ -26,10 +30,13 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	
 	public static final long serialVersionUID = 1L;
 	
+	@DocumentId
 	private Integer drugReferenceMapId;
 	
+	@ContainedIn
 	private Drug drug;
 	
+	@IndexedEmbedded
 	private ConceptReferenceTerm conceptReferenceTerm;
 	
 	private ConceptMapType conceptMapType;
