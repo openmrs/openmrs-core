@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.patient;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -32,6 +34,8 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.web.extension.ExtensionUtil;
 import org.openmrs.module.web.extension.provider.Link;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.ApplicationPrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Controller;
@@ -141,8 +145,75 @@ public class PatientDashboardController {
 		
 		Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
 		map.put("allAddEncounterToVisitLinks", links);
+
+		// Tabs
+		List<TabInfo> tabs = new ArrayList<TabInfo>();
+
+		boolean visitsEnabled =  Context.getAdministrationService().getGlobalPropertyValue(OpenmrsConstants.GLOBAL_PROPERTY_ENABLE_VISITS, true);
+		boolean formEntryEnabled =  Context.getAdministrationService().getGlobalPropertyValue(OpenmrsConstants.GP_DASHBOARD_FORMENTRY_TAB, true);
+		String tabOrder = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DASHBOARD_TABS);
+		String[] tabNames = StringUtils.split(tabOrder, ",");
+		
+		for (String tabName : tabNames) {
+			if (tabName.equals("overview")) {
+				tabs.add(new TabInfo("patientOverviewTab", "patientDashboard.overview", ApplicationPrivilegeConstants.DASHBOARD_OVERVIEW));
+			} else if (tabName.equals("visits")) {
+				if (visitsEnabled) {
+					tabs.add(new TabInfo("patientVisitsTab", "patientDashboard.visits", ApplicationPrivilegeConstants.DASHBOARD_VISITS));
+				} else {
+					tabs.add(new TabInfo("patientEncountersTab", "patientDashboard.encounters", ApplicationPrivilegeConstants.DASHBOARD_ENCOUNTERS));
+				}
+			} else if (tabName.equals("demographics")) {
+				tabs.add(new TabInfo("patientDemographicsTab", "patientDashboard.demographics", ApplicationPrivilegeConstants.DASHBOARD_DEMOGRAPHICS));
+			} else if (tabName.equals("graphs")) {
+				tabs.add(new TabInfo("patientGraphsTab", "patientDashboard.graphs", ApplicationPrivilegeConstants.DASHBOARD_GRAPHS));
+			} else if (tabName.equals("formEntry") && formEntryEnabled) {
+				tabs.add(new TabInfo("formEntryTab", "patientDashboard.formEntry", ApplicationPrivilegeConstants.DASHBOARD_FORMS));
+			}
+		}
+		map.put("tabs", tabs);
 		
 		return "patientDashboardForm";
 	}
+	
+	public class TabInfo {
+
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
+
+		public String getPrivilege() {
+			return privilege;
+		}
+
+		public void setPrivilege(String privilege) {
+			this.privilege = privilege;
+		}
+
+		private String id;
+		private String code;
+		private String privilege;
+
+		public TabInfo(String id, String code, String privilege) {
+			super();
+			this.id = id;
+			this.code = code;
+			this.privilege = privilege;
+		}
+		
+	}
+
 	
 }

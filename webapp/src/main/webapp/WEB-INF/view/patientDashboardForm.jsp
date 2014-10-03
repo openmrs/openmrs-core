@@ -111,40 +111,13 @@
 
 <openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
 
-<openmrs:globalProperty var="enableFormEntryTab" key="FormEntry.enableDashboardTab" defaultValue="true"/>
-
 <div id="patientTabs" class="${patientVariation}">
 	<ul>
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
-			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.overview"/></a></li>
-		</openmrs:hasPrivilege>
-		
-		<openmrs:globalProperty key="visits.enabled" defaultValue="true" var="visitsEnabled"/>
-		<c:choose>		
-			<c:when test='${visitsEnabled}'>
-				<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
-					<li><a id="patientVisitsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.visits"/></a></li>
-				</openmrs:hasPrivilege>
-			</c:when>
-			<c:otherwise>
-				<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
-					<li><a id="patientEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.encounters"/></a></li>
-				</openmrs:hasPrivilege>
-			</c:otherwise>
-			
-		</c:choose>
-		
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Demographics Section">
-			<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.demographics"/></a></li>
-		</openmrs:hasPrivilege>
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Graphs Section">
-			<li><a id="patientGraphsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.graphs"/></a></li>
-		</openmrs:hasPrivilege>
-		<c:if test="${enableFormEntryTab}">
-			<openmrs:hasPrivilege privilege="Form Entry">
-				<li><a id="formEntryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.formEntry"/></a></li>
+		<c:forEach items="${tabs}" var="tab">
+			<openmrs:hasPrivilege privilege="${tab.privilege}">
+				<li><a id="${tab.id}" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="${tab.code}"/></a></li>
 			</openmrs:hasPrivilege>
-		</c:if>
+		</c:forEach>
 		<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
 			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 				<li>

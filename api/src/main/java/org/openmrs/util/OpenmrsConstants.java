@@ -1057,6 +1057,10 @@ public final class OpenmrsConstants {
 	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
 	
 	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
+
+	public static final String GP_DASHBOARD_TABS = "dashboard.tabs";
+	
+	public static final String GP_DASHBOARD_FORMENTRY_TAB = "FormEntry.enableDashboardTab";
 	
 	public static final String GP_MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
 	
@@ -1116,6 +1120,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_DASHBOARD_CONCEPTS, "5497",
 		        "Comma delimited list of concepts ids to show on the patient header overview"));
+
+		props.add(new GlobalProperty(GP_DASHBOARD_TABS, "overview,visits,demographics,graphs,formEntry",
+		        "Comma delimited list of dashboard tabs"));
 
 		props
 		        .add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
