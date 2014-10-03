@@ -1096,7 +1096,7 @@ public final class OpenmrsConstants {
 	 * 
 	 * @since 1.11
 	 */
-	public static final Integer SEARCH_INDEX_VERSION = 2;
+	public static final Integer SEARCH_INDEX_VERSION = 3;
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
