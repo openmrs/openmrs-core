@@ -29,7 +29,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 
 public class DWREncounterService {
-	
+
 	private static final Log log = LogFactory.getLog(DWREncounterService.class);
 	
 	/**
@@ -61,7 +61,7 @@ public class DWREncounterService {
 	 */
 	public Vector findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length)
 	        throws APIException {
-		return findBatchOfEncounters(phrase, null, includeVoided, null, null);
+		return findBatchOfEncountersByPatient(phrase, null, includeVoided, null, null);
 	}
 	
 	/**
@@ -80,7 +80,7 @@ public class DWREncounterService {
 	 * @since 1.10
 	 */
 	@SuppressWarnings("rawtypes")
-	public Vector findBatchOfEncounters(String phrase, Integer patientId, boolean includeVoided, Integer start,
+	public Vector findBatchOfEncountersByPatient(String phrase, Integer patientId, boolean includeVoided, Integer start,
 	        Integer length) throws APIException {
 		
 		// List to return
