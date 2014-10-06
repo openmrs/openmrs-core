@@ -67,7 +67,6 @@ import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.validator.ConceptValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.concept.ConceptReferenceTermWebValidator;
@@ -568,8 +567,13 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
-				if (StringUtils.hasLength(descInLocale.getDescription())
-				        && !concept.getDescriptions().contains(descInLocale)) {
+				
+				if (isNullOrBlank(descInLocale.getDescription())) {
+					if (concept.getDescription() != null) {
+						concept.getDescription().setConcept(null);
+					}
+					concept.removeDescription(concept.getDescription());
+				} else if (!concept.getDescriptions().contains(descInLocale)) {
 					concept.addDescription(descInLocale);
 				}
 			}
@@ -909,6 +913,7 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		
 		/**
+		 *
 		 * Get the list of extensions/metadata and the specific instances of them that use this
 		 * concept.
 		 *
@@ -1080,6 +1085,10 @@ public class ConceptFormController extends SimpleFormController {
 		 */
 		public void setConceptAnswersByLocale(Map<Locale, Map<String, String>> conceptAnswersByLocale) {
 			this.conceptAnswersByLocale = conceptAnswersByLocale;
+		}
+		
+		private boolean isNullOrBlank(String str) {
+			return str == null || str.trim().isEmpty();
 		}
 	}
 	
