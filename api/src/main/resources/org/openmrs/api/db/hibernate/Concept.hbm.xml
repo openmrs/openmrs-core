@@ -56,7 +56,7 @@
 			<one-to-many class="ConceptName" />
 		</set>
 
-		<set name="descriptions" lazy="true" inverse="true" cascade="all" 
+		<set name="descriptions" lazy="true" inverse="true" cascade="all-delete-orphan"
 			order-by="concept_description_id" batch-size="25">
 			<key column="concept_id" />
 			<one-to-many class="ConceptDescription" />
