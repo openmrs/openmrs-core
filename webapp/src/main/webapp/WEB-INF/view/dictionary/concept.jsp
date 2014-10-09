@@ -289,13 +289,16 @@
 							</td>
 						</tr>
 						<tr>
-							<th><openmrs:message code="command.concept.displayPrecision"/></th>
-							<td colspan="2">
-								<spring:bind path="command.concept.displayPrecision">
-									<input type="text" name="${status.expression}" value="<c:out value="${status.value}" />" class="mediumWidth" />
-									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-								</spring:bind>
-							</td>
+							<spring:bind path="command.concept.precise">
+								<c:if test="${status.value}">
+									<th><openmrs:message code="ConceptNumeric.displayPrecision"/></th>
+									<td colspan="2">
+										<spring:bind path="command.concept.displayPrecision">
+											<c:out value="${status.value}" />
+										</spring:bind>
+									</td>
+								</c:if>
+							</spring:bind>
 						</tr>
 					</table>
 				</td>
