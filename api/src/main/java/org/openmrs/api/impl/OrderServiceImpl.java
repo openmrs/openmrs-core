@@ -39,7 +39,6 @@ import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
-import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -176,14 +175,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (previousOrder != null) {
 			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
-			String query = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = ";
 			boolean isPreviousDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
-			if (isPreviousDrugOrder) {
-				query = "SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
-				        + "FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id =";
-			}
-			List<List<Object>> rows = Context.getAdministrationService()
-			        .executeSQL(query + previousOrder.getOrderId(), true);
+			List<List<Object>> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
 			List<Object> rowData = rows.get(0);
 			if (!rowData.get(0).equals(previousOrder.getPatient().getPatientId())) {
 				throw new APIException("Cannot change the patient of an order");
