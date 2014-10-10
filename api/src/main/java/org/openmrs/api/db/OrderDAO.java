@@ -234,4 +234,13 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getRevisionOrder(org.openmrs.Order)
 	 */
 	public Order getRevisionOrder(Order order) throws APIException;
+	
+	/**
+	 * Get the fresh order from the database
+	 *
+	 * @param order the order to get from the database
+	 * @param isOrderADrugOrder is the order a previous order
+	 * @return a list of orders from the database
+	 */
+	public List<List<Object>> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException;
 }
