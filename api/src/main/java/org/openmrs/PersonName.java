@@ -476,16 +476,17 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	public String getFullName() {
 		List<String> temp = new ArrayList<String>();
-		if ((PersonName.format).equals(OpenmrsConstants.PERSON_NAME_FORMAT_LONG)) {
-			if (StringUtils.hasText(getPrefix())) {
-				temp.add(getPrefix());
-			}
-			if (StringUtils.hasText(getGivenName())) {
-				temp.add(getGivenName());
-			}
-			if (StringUtils.hasText(getMiddleName())) {
-				temp.add(getMiddleName());
-			}
+		if (StringUtils.hasText(getPrefix())) {
+			temp.add(getPrefix());
+		}
+		if (StringUtils.hasText(getGivenName())) {
+			temp.add(getGivenName());
+		}
+		if (StringUtils.hasText(getMiddleName())) {
+			temp.add(getMiddleName());
+		}
+		if (OpenmrsConstants.PERSON_NAME_FORMAT_LONG.equals(PersonName.getFormat())) {
+			
 			if (StringUtils.hasText(getFamilyNamePrefix())) {
 				temp.add(getFamilyNamePrefix());
 			}
@@ -502,15 +503,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 				temp.add(getDegree());
 			}
 		} else {
-			if (StringUtils.hasText(getPrefix())) {
-				temp.add(getPrefix());
-			}
-			if (StringUtils.hasText(getGivenName())) {
-				temp.add(getGivenName());
-			}
-			if (StringUtils.hasText(getMiddleName())) {
-				temp.add(getMiddleName());
-			}
+			
 			if (StringUtils.hasText(getFamilyName())) {
 				temp.add(getFamilyName());
 			}

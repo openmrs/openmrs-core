@@ -213,7 +213,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		try {
 			Context.openSession();
 			PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
+			    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, OpenmrsConstants.PERSON_NAME_FORMAT_SHORT));
 			// load bundled modules that are packaged into the webapp
 			Listener.loadBundledModules(servletContext);
 			
