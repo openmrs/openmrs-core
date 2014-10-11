@@ -1115,7 +1115,6 @@
             <column name="patient_id" type="int">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="tribe" type="int"/>
             <column defaultValueNumeric="0" name="creator" type="int">
                 <constraints nullable="false"/>
             </column>

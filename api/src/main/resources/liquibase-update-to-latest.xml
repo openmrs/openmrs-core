@@ -8461,4 +8461,11 @@
 			<where>property='visits.encounterTypeToVisitTypeMapping'</where>
 		</update>
 	</changeSet>
+
+    <changeSet id="20141010-trunk-4492" author="alec" >
+      <preConditions onFail="MARK_RAN">
+        <columnExists tableName="patient" columnName="tribe"/>
+      </preConditions>
+      <dropColumn tableName="patient" columnName="tribe"/>
+    </changeSet>
 </databaseChangeLog>
