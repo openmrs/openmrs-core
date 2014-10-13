@@ -295,6 +295,7 @@
 									<td colspan="2">
 										<spring:bind path="command.concept.displayPrecision">
 											<c:out value="${status.value}" />
+											<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 										</spring:bind>
 									</td>
 								</c:if>
