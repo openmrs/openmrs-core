@@ -587,7 +587,7 @@
 					<td colspan="2">
 						<spring:bind path="command.precise">
 							<input type="hidden" name="_${status.expression}" value=""/>
-							<input type="checkbox" name="${status.expression}" <c:if test="${status.value}">checked="checked"</c:if>/>
+							<input type="checkbox" id="allow_decimal_checkbox" name="${status.expression}" <c:if test="${status.value}">checked="checked"</c:if>/>
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
 					</td>
@@ -596,7 +596,7 @@
 					<th><openmrs:message code="ConceptNumeric.displayPrecision"/></th>
 					<td colspan="2">
 						<spring:bind path="command.displayPrecision">
-							<input type="text" name="${status.expression}" value="<c:out value="${status.value}" />" class="mediumWidth" />
+							<input type="text" id="display_precision_textbox" name="${status.expression}" value="<c:out value="${status.value}" />" class="mediumWidth" />
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
 					</td>
@@ -947,6 +947,10 @@ $j(document).ready( function() {
 			$j("#cancelOrDone").val('<openmrs:message code="general.cancel"/>');
 		}
 	});
+	
+	if(!$j("#allow_decimal_checkbox").is(':checked')) {
+		$j("#display_precision_textbox").prop( "disabled", true );
+	}
 });
 
 function createNewTerm(){
