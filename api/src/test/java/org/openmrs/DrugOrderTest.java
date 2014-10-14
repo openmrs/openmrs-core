@@ -13,14 +13,15 @@
  */
 package org.openmrs;
 
+import java.util.Date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Date;
-
 import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import org.openmrs.order.OrderUtilTest;
 
 /**
@@ -267,5 +268,54 @@ public class DrugOrderTest {
 		DosingInstructions dosingInstructionsObject = drugOrder.getDosingInstructionsInstance();
 		assertEquals(customDosingInstructions.getClass(), dosingInstructionsObject.getClass());
 		assertEquals(customDosingInstructions.getClass(), drugOrder.getDosingType());
+	}
+	
+	/**
+	 * @verifies delegate calculation to dosingInstructions
+	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
+	 */
+	@Test
+	public void setAutoExpireDateBasedOnDuration_shouldDelegateCalculationToDosingInstructions() {
+		DrugOrder drugOrder = spy(new DrugOrder());
+		drugOrder.setAutoExpireDate(null);
+		DosingInstructions dosingInstructions = mock(DosingInstructions.class);
+		when(drugOrder.getDosingInstructionsInstance()).thenReturn(dosingInstructions);
+		Date expectedAutoExpireDate = new Date();
+		when(dosingInstructions.getAutoExpireDate(drugOrder)).thenReturn(expectedAutoExpireDate);
+		
+		drugOrder.setAutoExpireDateBasedOnDuration();
+		
+		assertEquals(expectedAutoExpireDate, drugOrder.getAutoExpireDate());
+	}
+	
+	/**
+	 * @verifies not calculate for discontinue action
+	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
+	 */
+	@Test
+	public void setAutoExpireDateBasedOnDuration_shouldNotCalculateForDiscontinueAction() {
+		DrugOrder drugOrder = new DrugOrder();
+		drugOrder.setAction(Order.Action.DISCONTINUE);
+		Date expectedAutoExpireDate = new Date();
+		drugOrder.setAutoExpireDate(expectedAutoExpireDate);
+		
+		drugOrder.setAutoExpireDateBasedOnDuration();
+		
+		assertEquals(expectedAutoExpireDate, drugOrder.getAutoExpireDate());
+	}
+	
+	/**
+	 * @verifies not calculate if autoExpireDate already set
+	 * @see DrugOrder#setAutoExpireDateBasedOnDuration()
+	 */
+	@Test
+	public void setAutoExpireDateBasedOnDuration_shouldNotCalculateIfAutoExpireDateAlreadySet() {
+		DrugOrder drugOrder = new DrugOrder();
+		Date expectedAutoExpireDate = new Date();
+		drugOrder.setAutoExpireDate(expectedAutoExpireDate);
+		
+		drugOrder.setAutoExpireDateBasedOnDuration();
+		
+		assertEquals(expectedAutoExpireDate, drugOrder.getAutoExpireDate());
 	}
 }
