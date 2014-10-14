@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import static org.openmrs.Order.Action.DISCONTINUE;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -420,7 +421,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		DrugOrder newOrder = new DrugOrder();
 		newOrder.setCareSetting(getCareSetting());
 		newOrder.setConcept(getConcept());
-		newOrder.setAction(Action.DISCONTINUE);
+		newOrder.setAction(DISCONTINUE);
 		newOrder.setPreviousOrder(this);
 		newOrder.setPatient(getPatient());
 		newOrder.setDrug(getDrug());
@@ -467,8 +468,22 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		return target;
 	}
 	
+	/**
+	 * Sets autoExpireDate based on duration.
+	 *
+	 * @should delegate calculation to dosingInstructions
+	 * @should not calculate for discontinue action
+	 * @should not calculate if autoExpireDate already set
+	 * @return void
+	 */
+	public void setAutoExpireDateBasedOnDuration() {
+		if (DISCONTINUE != getAction() && getAutoExpireDate() == null) {
+			setAutoExpireDate(getDosingInstructionsInstance().getAutoExpireDate(this));
+		}
+	}
+	
 	public String toString() {
-		String prefix = Action.DISCONTINUE == getAction() ? "DC " : "";
+		String prefix = DISCONTINUE == getAction() ? "DC " : "";
 		return prefix + "DrugOrder(" + getDose() + getDoseUnits() + " of "
 		        + (getDrug() != null ? getDrug().getName() : "[no drug]") + " from " + getDateActivated() + " to "
 		        + (isDiscontinuedRightNow() ? getDateStopped() : getAutoExpireDate()) + ")";

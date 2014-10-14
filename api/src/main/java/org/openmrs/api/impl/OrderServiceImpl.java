@@ -104,10 +104,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				drugOrder.setConcept(concept);
 			}
 		}
-		if (isDrugOrder && !isDiscontinueOrReviseOrder(order) && order.getAutoExpireDate() == null) {
-			DrugOrder drugOrder = (DrugOrder) order;
-			drugOrder.setAutoExpireDate(drugOrder.getDosingInstructionsInstance().getAutoExpireDate(drugOrder));
+		if (isDrugOrder) {
+			((DrugOrder) order).setAutoExpireDateBasedOnDuration();
 		}
+		
 		if (concept == null) {
 			throw new APIException("concept is required for an order");
 		}
