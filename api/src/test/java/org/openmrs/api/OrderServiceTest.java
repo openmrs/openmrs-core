@@ -26,14 +26,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import org.openmrs.Duration;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
 import static org.openmrs.test.TestUtil.createDate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -2702,23 +2700,23 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order loadedOrder = orderService.getOrder(savedOrder.getId());
 		Assert.assertEquals(createDate("2014-08-23"), loadedOrder.getAutoExpireDate());
 	}
-
+	
 	@Test
 	public void saveOrder_shouldSetAutoExpireDateForReviseOrderWithSimpleDosingInstructions() throws Exception {
-        executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
-        DrugOrder originalOrder = (DrugOrder) orderService.getOrder(111);
-        assertTrue(originalOrder.isCurrent());
-        DrugOrder revisedOrder = originalOrder.cloneForRevision();
-        revisedOrder.setOrderer(originalOrder.getOrderer());
-        revisedOrder.setEncounter(originalOrder.getEncounter());
-
-        revisedOrder.setNumRefills(0);
-        revisedOrder.setAutoExpireDate(null);
-        revisedOrder.setDuration(10);
-        revisedOrder.setDurationUnits(conceptService.getConcept(1001));
-
-        orderService.saveOrder(revisedOrder, null);
-
-        assertNotNull(revisedOrder.getAutoExpireDate());
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
+		DrugOrder originalOrder = (DrugOrder) orderService.getOrder(111);
+		assertTrue(originalOrder.isCurrent());
+		DrugOrder revisedOrder = originalOrder.cloneForRevision();
+		revisedOrder.setOrderer(originalOrder.getOrderer());
+		revisedOrder.setEncounter(originalOrder.getEncounter());
+		
+		revisedOrder.setNumRefills(0);
+		revisedOrder.setAutoExpireDate(null);
+		revisedOrder.setDuration(10);
+		revisedOrder.setDurationUnits(conceptService.getConcept(1001));
+		
+		orderService.saveOrder(revisedOrder, null);
+		
+		assertNotNull(revisedOrder.getAutoExpireDate());
 	}
 }
