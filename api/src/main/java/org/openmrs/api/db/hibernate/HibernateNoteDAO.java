@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -69,7 +68,7 @@ public class HibernateNoteDAO implements NoteDAO {
 	
 	public void updateNote(Note note) {
 		log.debug("Updating existing note");
-		sessionFactory.getCurrentSession().save(note);
+		sessionFactory.getCurrentSession().saveOrUpdate(note);
 	}
 	
 	public void deleteNote(Note note) throws DAOException {
@@ -82,6 +81,8 @@ public class HibernateNoteDAO implements NoteDAO {
 	 */
 	public Note voidNote(Note note, String reason) throws APIException {
 		log.debug("voiding note because " + reason);
+		note.setVoided(true);
+		note.setVoidReason(reason);
 		sessionFactory.getCurrentSession().save(note);
 		return note;
 	}
