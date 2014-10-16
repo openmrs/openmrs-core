@@ -78,7 +78,7 @@ public class ValidateUtil {
 				uniqueErrorMessages.add(message);
 			}
 			
-			String exceptionMessage = "'" + obj + "' failed to validate with reason: ";
+			String exceptionMessage = "'" + obj.getClass() + "' failed to validate with reason: ";
 			exceptionMessage += StringUtils.join(uniqueErrorMessages, ", ");
 			throw new ValidationException(exceptionMessage, errors);
 		}
