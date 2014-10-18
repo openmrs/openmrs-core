@@ -57,7 +57,7 @@
 									<c:when test="${task.started}">
 										<font color="green"><strong><openmrs:message code="Scheduler.list.started"/></strong></font><br>										
 										<c:if test="${task.startTime!=null}">
-											<i><openmrs:message code="Scheduler.list.runsAgainIn" arguments="${task.secondsUntilNextExecutionTime}"/></i>
+											<i><openmrs:message htmlEscape="false" code="Scheduler.list.runsAgainIn" arguments="${task.secondsUntilNextExecutionTime}"/></i>
 										</c:if>
 									</c:when>
 									<c:otherwise>
