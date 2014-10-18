@@ -72,7 +72,6 @@ public class ShortPatientFormValidator implements Validator {
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should fail if all name fields are empty or white space characters
 	 * @should fail if no identifiers are added
-	 * @should fail if patient identifiers contains more than one identifier for the same identifier type
 	 * @should fail if all identifiers have been voided
 	 * @should fail if any name has more than 50 characters
 	 * @should fail validation if deathdate is a future date
@@ -170,10 +169,6 @@ public class ShortPatientFormValidator implements Validator {
 				errors.reject("PatientIdentifier.error.insufficientIdentifiers");
 			}
 			
-		}
-		
-		if (PatientIdentifierValidator.hasMoreThanOneIdentifierForSameIdentifierType(shortPatientModel.getIdentifiers())) {
-			errors.reject("error.duplicateIdentifierTypes");
 		}
 		
 		// Make sure they chose a gender
