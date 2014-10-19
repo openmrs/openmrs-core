@@ -1767,6 +1767,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(voidedPI);
 		Assert.assertFalse(contains(new ArrayList<PatientIdentifier>(preferred.getIdentifiers()), voidedPI.getIdentifier()));
 	}
+	/**
+	 * @return boolean if patient identified in list
+	 */
 	
 	public static boolean contains(List<PatientIdentifier> list, String identifier) {
 		for (PatientIdentifier patientIdentifier : list) {
@@ -2178,6 +2181,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(oldActiveIdentifierSize - 1, patient.getActiveIdentifiers().size());
 	}
 	
+	/**
+	 * This creates a a new patient identifier.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should create new patientIndentifier", method = "savePatientIdentifier(PatientIdentifier)")
 	public void savePatientIdentifier_shouldCreateNewPatientIndentifier() throws Exception {
@@ -2190,6 +2198,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(createdPatientIdentifier.getPatientIdentifierId());
 	}
 	
+	/**
+	 * This updates an existing patient identifier.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should update an existing patient identifier", method = "savePatientIdentifier(PatientIdentifier)")
 	public void savePatientIdentifier_shouldUpdateAnExistingPatientIdentifier() throws Exception {
@@ -2200,6 +2213,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("NEW-ID", updatedPatientIdentifier.getIdentifier());
 	}
 	
+	/**
+	 * This deletes a patient identifier from database.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should delete patient identifier from database", method = "purgePatientIdentifier(PatientIdentifier)")
 	public void purgePatientIdentifier_shouldDeletePatientIdentifierFromDatabase() throws Exception {
@@ -3063,6 +3081,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, Context.getPatientService().getCountOfPatients("Hor").intValue());
 	}
 	
+	/**
+	 * This creates a patient from a person.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should create Patient from Person", method = "getPatient")
 	public void getPatient_shouldCreatePatientFromPerson() throws Exception {
@@ -3072,6 +3095,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(202, patient.getId().intValue());
 	}
 	
+	/**
+	 * This checks if a person does not exist.
+	 * Should return null if doesn't.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should return null when Person does not exist", method = "getPatient")
 	public void getPatient_shouldReturnNullWhenPersonDoesNotExist() throws Exception {
@@ -3262,6 +3291,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(sortedList, list);
 	}
 	
+	/**
+	 * This should merge patients and maintain two similar but different names.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should merge patients and maintain two similar but different names", method = "mergePatients")
 	public void mergePatients_shouldMaintainSimilarButDifferentNames() throws Exception {
@@ -3279,6 +3313,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * This should merge patients and maintain two similar but different addresses.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should merge patients and maintain two similar but different addresses", method = "mergePatients")
 	public void mergePatients_shouldMaintainSimilarButDifferentAddresses() throws Exception {
@@ -3298,6 +3337,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * This should merge 3 patients' names and addresses into 2.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should merge 3 patients names and addresses into 2", method = "mergePatients")
 	public void mergePatients_shouldMergePatientNames() throws Exception {
