@@ -39,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -69,6 +70,7 @@ import org.openmrs.Visit;
 import org.openmrs.activelist.Allergy;
 import org.openmrs.activelist.Problem;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
@@ -3272,5 +3274,77 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setLocation(null);
 		patientIdentifier.getIdentifierType().setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
 		patientService.savePatientIdentifier(patientIdentifier);
+	}
+	
+	/**
+	 * @see {@link PatientService#savePatientIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should fail if savePatient is not threadsafe", method = "savePatient(Patient)")
+	public void savePatient_shouldFailIfSavePatientIsNotThreadsafe() {
+		
+		final UserContext ctx = Context.getUserContext();
+		final PatientIdentifier patientIdentifier = new PatientIdentifier();
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		patientIdentifier.setIdentifier("142456789");
+		patientIdentifier.setDateCreated(new Date());
+		patientIdentifier.setIdentifierType(patientIdentifierType);
+		patientIdentifier.setLocation(Context.getLocationService().getDefaultLocation());
+		
+		final AtomicBoolean isSavePatientThreadsafe = new AtomicBoolean(true);
+		
+		Runnable r1 = new Runnable() {
+			
+			public void run() {
+				Context.setUserContext(ctx);
+				Context.openSessionWithCurrentUser();
+				Patient p = Context.getPatientService().getPatient(2);
+				p.addIdentifier(patientIdentifier);
+				try {
+					patientService.savePatient(p);
+				}
+				catch (org.hibernate.exception.ConstraintViolationException e) {
+					// patientService tried to save duplicate identifier to the database
+					isSavePatientThreadsafe.set(false);
+				}
+				Context.closeSession();
+			}
+		};
+		
+		Runnable r2 = new Runnable() {
+			
+			public void run() {
+				Context.setUserContext(ctx);
+				Context.openSessionWithCurrentUser();
+				Patient p = Context.getPatientService().getPatientOrPromotePerson(1);
+				p.addIdentifier(patientIdentifier);
+				try {
+					patientService.savePatient(p);
+				}
+				catch (org.hibernate.exception.ConstraintViolationException e) {
+					// patientService tried to save duplicate identifier to the database
+					isSavePatientThreadsafe.set(false);
+				}
+				Context.closeSession();
+			}
+		};
+		
+		Thread t1 = new Thread(r1), t2 = new Thread(r2);
+		t1.start();
+		t2.start();
+		// Prevent automatic database closing
+		try {
+			t1.join();
+			t2.join();
+		}
+		catch (Exception e) {}
+		
+		Assert.assertTrue(isSavePatientThreadsafe.get());
+		
+		// Make sure that the identifier was saved properly for one and only one patient
+		Assert.assertTrue(patientIdentifier.equals(Context.getPatientService().getPatient(2).getPatientIdentifier(
+		    patientIdentifierType))
+		        ^ patientIdentifier.equals(Context.getPatientService().getPatientOrPromotePerson(1).getPatientIdentifier(
+		            patientIdentifierType)));
 	}
 }
