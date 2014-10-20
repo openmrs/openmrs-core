@@ -96,6 +96,20 @@ public class OptionsFormController extends SimpleFormController {
 				errors.rejectValue("secretQuestionNew", "error.options.secretQuestion.empty");
 			}
 		}
+		if (opts.getPersonName().getFamilyName().equals("") && opts.getPersonName().getGivenName().equals("")
+		        && opts.getPersonName().getMiddleName().equals("")) {
+			if (opts.getPersonName().getFamilyName().equals("")) {
+				errors.rejectValue("PersonName.givenName", "Person.names.required.given");
+			}
+
+			else if (opts.getPersonName().getGivenName().equals("")) {
+				errors.rejectValue("PersonName.middleName", "Person.names.required.middle");
+			}
+
+			else
+				errors.rejectValue("PersonName.familyName", "Person.names.required.family");
+			
+		}
 		
 		return super.processFormSubmission(request, response, object, errors);
 	}
