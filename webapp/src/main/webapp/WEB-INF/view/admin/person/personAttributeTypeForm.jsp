@@ -37,7 +37,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="PersonAttributeType.format"/></td>
+		<td><openmrs:message code="PersonAttributeType.format"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="personAttributeType.format">
 				<%-- This logic is here because java.util.Date should not be allowed, but existing entries may have that value, and it's impossible to fix that automatically. --%>
