@@ -28,8 +28,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.LockMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
@@ -530,7 +532,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		        && patientIdentifier.getIdentifierType().getUniquenessBehavior() == UniquenessBehavior.LOCATION;
 		
 		// switched this to an hql query so the hibernate cache can be considered as well as the database
-		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
+		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patientId "
 		        + "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
 		
 		if (checkPatient) {
@@ -541,6 +543,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		query.setLockOptions(new LockOptions(LockMode.PESSIMISTIC_WRITE));
 		query.setString("identifier", patientIdentifier.getIdentifier());
 		query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
 		if (checkPatient) {
