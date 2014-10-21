@@ -15,7 +15,14 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.time.DateUtils;
+import static org.apache.commons.lang.time.DateUtils.addHours;
+import static org.apache.commons.lang.time.DateUtils.addMinutes;
+import static org.apache.commons.lang.time.DateUtils.addMonths;
+import static org.apache.commons.lang.time.DateUtils.addWeeks;
+import static org.apache.commons.lang.time.DateUtils.addYears;
+import static org.apache.commons.lang3.time.DateUtils.addDays;
+import static org.apache.commons.lang3.time.DateUtils.addMilliseconds;
+import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 import org.openmrs.api.APIException;
 
 /**
@@ -71,26 +78,35 @@ public class Duration {
 	 * @return date which is startDate plus duration
 	 */
 	public Date addToDate(Date startDate, OrderFrequency frequency) {
+		return aMomentBefore(addDurationToDate(startDate, frequency));
+	}
+	
+	private Date addDurationToDate(Date startDate, OrderFrequency frequency) {
 		if (SNOMED_CT_SECONDS_CODE.equals(code))
-			return DateUtils.addSeconds(startDate, duration);
+			return addSeconds(startDate, duration);
 		if (SNOMED_CT_MINUTES_CODE.equals(code))
-			return DateUtils.addMinutes(startDate, duration);
+			return addMinutes(startDate, duration);
 		if (SNOMED_CT_HOURS_CODE.equals(code))
-			return DateUtils.addHours(startDate, duration);
+			return addHours(startDate, duration);
 		if (SNOMED_CT_DAYS_CODE.equals(code))
-			return DateUtils.addDays(startDate, duration);
+			return addDays(startDate, duration);
 		if (SNOMED_CT_WEEKS_CODE.equals(code))
-			return DateUtils.addWeeks(startDate, duration);
+			return addWeeks(startDate, duration);
 		if (SNOMED_CT_MONTHS_CODE.equals(code))
-			return DateUtils.addMonths(startDate, duration);
+			return addMonths(startDate, duration);
 		if (SNOMED_CT_YEARS_CODE.equals(code))
-			return DateUtils.addYears(startDate, duration);
+			return addYears(startDate, duration);
 		if (SNOMED_CT_RECURRING_INTERVAL_CODE.equals(code)) {
 			if (frequency == null)
 				throw new APIException("Frequency can not be null when duration in Recurring Interval");
-			return DateUtils.addSeconds(startDate, (int) (duration * SECONDS_PER_DAY / frequency.getFrequencyPerDay()));
+			return addSeconds(startDate, (int) (duration * SECONDS_PER_DAY / frequency.getFrequencyPerDay()));
+		} else {
+			throw new APIException(String.format("Unknown code '%s' for SNOMED CT duration units", code));
 		}
-		throw new APIException(String.format("Unknown code '%s' for SNOMED CT duration units", code));
+	}
+	
+	private Date aMomentBefore(Date date) {
+		return addMilliseconds(date, -1);
 	}
 	
 	/**

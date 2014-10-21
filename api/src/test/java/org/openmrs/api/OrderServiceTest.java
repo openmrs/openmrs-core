@@ -28,7 +28,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.openmrs.test.OpenmrsMatchers.hasId;
 import static org.openmrs.test.TestUtil.containsId;
-import static org.openmrs.test.TestUtil.createDate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -70,6 +69,7 @@ import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
+import static org.openmrs.test.TestUtil.createDateTime;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
@@ -2661,14 +2661,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setRoute(conceptService.getConcept(22));
 		drugOrder.setNumRefills(0);
 		drugOrder.setOrderType(null);
-		drugOrder.setDateActivated(createDate("2014-08-03"));
-		Date autoExpireDate = createDate("2014-08-04");
+		drugOrder.setDateActivated(TestUtil.createDateTime("2014-08-03"));
+		Date autoExpireDate = TestUtil.createDateTime("2014-08-04");
 		drugOrder.setAutoExpireDate(autoExpireDate);
 		
 		Order savedOrder = orderService.saveOrder(drugOrder, null);
 		
 		Order loadedOrder = orderService.getOrder(savedOrder.getId());
-		Assert.assertEquals(autoExpireDate, loadedOrder.getAutoExpireDate());
+		Assert.assertEquals(createDateTime("2014-08-04 23-59-59.999"), loadedOrder.getAutoExpireDate());
 	}
 	
 	@Test
@@ -2691,14 +2691,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		drugOrder.setRoute(conceptService.getConcept(22));
 		drugOrder.setNumRefills(0);
 		drugOrder.setOrderType(null);
-		drugOrder.setDateActivated(createDate("2014-08-03"));
+		drugOrder.setDateActivated(TestUtil.createDateTime("2014-08-03"));
 		drugOrder.setDuration(20);// 20 days
 		drugOrder.setDurationUnits(conceptService.getConcept(1001));
 		
 		Order savedOrder = orderService.saveOrder(drugOrder, null);
 		
 		Order loadedOrder = orderService.getOrder(savedOrder.getId());
-		Assert.assertEquals(createDate("2014-08-23"), loadedOrder.getAutoExpireDate());
+		Assert.assertEquals(TestUtil.createDateTime("2014-08-22 23-59-59.999"), loadedOrder.getAutoExpireDate());
 	}
 	
 	@Test
