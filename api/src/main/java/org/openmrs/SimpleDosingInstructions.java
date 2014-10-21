@@ -16,6 +16,7 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Locale;
 
+import static org.apache.commons.lang3.time.DateUtils.addMilliseconds;
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -151,7 +152,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 			return null;
 		}
 		Duration duration = new Duration(drugOrder.getDuration(), durationCode);
-		return duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency());
+		return aMomentBefore(duration.addToDate(drugOrder.getEffectiveStartDate(), drugOrder.getFrequency()));
 	}
 	
 	public Double getDose() {
@@ -225,4 +226,9 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	public void setAdministrationInstructions(String administrationInstructions) {
 		this.administrationInstructions = administrationInstructions;
 	}
+	
+	private Date aMomentBefore(Date date) {
+		return addMilliseconds(date, -1);
+	}
+	
 }
