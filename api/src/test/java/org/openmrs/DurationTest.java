@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import java.text.ParseException;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertEquals;
 import static org.openmrs.test.TestUtil.createDateTime;
@@ -32,72 +33,72 @@ public class DurationTest extends BaseContextSensitiveTest {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
-	public void addToDate_shouldAddSecondsWhenUnitIsSeconds() throws Exception {
+	public void addToDate_shouldAddSecondsWhenUnitIsSeconds() throws ParseException {
 		Duration duration = new Duration(30, Duration.SNOMED_CT_SECONDS_CODE);
 		
-		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-07-01 10-00-30"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-01 10:00:30"), autoExpireDate);
 	}
 	
 	@Test
-	public void addToDate_shouldAddMinutesWhenUnitIsMinutes() throws Exception {
+	public void addToDate_shouldAddMinutesWhenUnitIsMinutes() throws ParseException {
 		Duration duration = new Duration(30, Duration.SNOMED_CT_MINUTES_CODE);
 		
-		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-07-01 10-30-00"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-01 10:30:00"), autoExpireDate);
 	}
 	
 	@Test
-	public void addToDate_shouldAddHoursWhenUnitIsHours() throws Exception {
+	public void addToDate_shouldAddHoursWhenUnitIsHours() throws ParseException {
 		Duration duration = new Duration(10, Duration.SNOMED_CT_HOURS_CODE);
 		
-		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-07-01 20-00-00"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-01 20:00:00"), autoExpireDate);
 	}
 	
 	@Test
-	public void addToDate_shouldAddDaysWhenUnitIsDays() throws Exception {
+	public void addToDate_shouldAddDaysWhenUnitIsDays() throws ParseException {
 		Duration duration = new Duration(30, Duration.SNOMED_CT_DAYS_CODE);
 		
-		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-07-31 10-00-00"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-31 10:00:00"), autoExpireDate);
 	}
 	
 	@Test
-	public void addToDate_shouldAddMonthsWhenUnitIsMonths() throws Exception {
+	public void addToDate_shouldAddMonthsWhenUnitIsMonths() throws ParseException {
 		Duration duration = new Duration(3, Duration.SNOMED_CT_MONTHS_CODE);
 		
-		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-10-01 10-00-00"), autoExpireDate);
+		assertEquals(createDateTime("2014-10-01 10:00:00"), autoExpireDate);
 	}
 	
 	@Test
-	public void addToDate_shouldAddYearsWhenUnitIsYears() throws Exception {
+	public void addToDate_shouldAddYearsWhenUnitIsYears() throws ParseException {
 		Duration duration = new Duration(3, Duration.SNOMED_CT_YEARS_CODE);
 		
-		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
+		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2017-07-01 10-00-00"), autoExpireDate);
+		assertEquals(createDateTime("2017-07-01 10:00:00"), autoExpireDate);
 	}
 	
 	@Test
-	public void addToDate_shouldAddTimeBasedOnFrequencyWhenUnitIsRecurringInterval() throws Exception {
+	public void addToDate_shouldAddTimeBasedOnFrequencyWhenUnitIsRecurringInterval() throws ParseException {
 		Duration duration = new Duration(3, Duration.SNOMED_CT_RECURRING_INTERVAL_CODE); // 3 Times
-		Date startDate = createDateTime("2014-07-01 10-00-00");
+		Date startDate = createDateTime("2014-07-01 10:00:00");
 		OrderFrequency onceAWeek = createFrequency(1 / 7.0);
 		
-		assertEquals(createDateTime("2014-07-22 10-00-00"), duration.addToDate(startDate, onceAWeek));
+		assertEquals(createDateTime("2014-07-22 10:00:00"), duration.addToDate(startDate, onceAWeek));
 	}
 	
 	@Test
-	public void addToDate_shouldFailWhenUnitIsRecurringAndFrequencyIsUnknown() throws Exception {
+	public void addToDate_shouldFailWhenUnitIsRecurringAndFrequencyIsUnknown() throws ParseException {
 		Duration duration = new Duration(3, Duration.SNOMED_CT_RECURRING_INTERVAL_CODE); // 3 Times
-		Date startDate = createDateTime("2014-07-01 10-00-00");
+		Date startDate = createDateTime("2014-07-01 10:00:00");
 		OrderFrequency frequency = null;
 		
 		expectedException.expect(APIException.class);
@@ -106,12 +107,12 @@ public class DurationTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void addToDate_shouldFailWhenUnitIsUnknown() throws Exception {
+	public void addToDate_shouldFailWhenUnitIsUnknown() throws ParseException {
 		Duration duration = new Duration(3, "J");
 		
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage(Matchers.is("Unknown code 'J' for SNOMED CT duration units"));
-		duration.addToDate(createDateTime("2014-07-01 10-00-00"), null);
+		duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 	}
 	
 	private OrderFrequency createFrequency(double frequencyPerDay) {
@@ -125,7 +126,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	 * @see Duration#getCode(Concept)
 	 */
 	@Test
-	public void getCode_shouldReturnNullIfTheConceptHasNoMappingToTheSNOMEDCTSource() throws Exception {
+	public void getCode_shouldReturnNullIfTheConceptHasNoMappingToTheSNOMEDCTSource() {
 		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
 		assertNull(Duration.getCode(SimpleDosingInstructionsTest.createUnits("some-uuid", daysCode, null)));
 	}
@@ -135,7 +136,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 	 * @see Duration#getCode(Concept)
 	 */
 	@Test
-	public void getCode_shouldReturnTheCodeForTheTermOfTheMappingToTheSNOMEDCTSource() throws Exception {
+	public void getCode_shouldReturnTheCodeForTheTermOfTheMappingToTheSNOMEDCTSource() {
 		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
 		Concept concept = SimpleDosingInstructionsTest.createUnits(daysCode);
 		assertEquals(daysCode, Duration.getCode(concept));
