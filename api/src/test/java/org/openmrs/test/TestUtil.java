@@ -226,10 +226,10 @@ public class TestUtil {
 	}
 	
 	/**
-	 * Test utility method to create date time using standard 'yyyy-MM-dd hh-mm-ss' format
-	 * @param dateTimeString in 'yyyy-MM-dd hh-mm-ss' format
+	 * Test utility method to create date time using standard 'yyyy-MM-dd hh:mm:ss' format
+	 * @param dateTimeString in 'yyyy-MM-dd hh:mm:ss' format
 	 */
 	public static Date createDateTime(String dateTimeString) throws ParseException {
-		return DateUtils.parseDate(dateTimeString, "yyyy-MM-dd hh-mm-ss.SSS", "yyyy-MM-dd hh-mm-ss", "yyyy-MM-dd");
+		return DateUtils.parseDate(dateTimeString, "yyyy-MM-dd hh:mm:ss.SSS", "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd");
 	}
 }

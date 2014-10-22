@@ -2666,7 +2666,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order savedOrder = orderService.saveOrder(drugOrder, null);
 		
 		Order loadedOrder = orderService.getOrder(savedOrder.getId());
-		Assert.assertEquals(TestUtil.createDateTime("2014-08-22 23-59-59.999"), loadedOrder.getAutoExpireDate());
+		Assert.assertEquals(TestUtil.createDateTime("2014-08-22 23:59:59.999"), loadedOrder.getAutoExpireDate());
 	}
 	
 	@Test
