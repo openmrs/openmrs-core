@@ -109,6 +109,17 @@
            memoryStoreEvictionPolicy="LRU"
             />
 
+    <cache name="java.util.Locale"
+           maxElementsInMemory="5000"
+           eternal="true"
+           overflowToDisk="false"
+           timeToIdleSeconds="12000"
+           timeToLiveSeconds="12000"
+           diskPersistent="false"
+           diskExpiryThreadIntervalSeconds="120"
+           memoryStoreEvictionPolicy="LRU"
+            />
+
     <cache name="org.openmrs.Location"
            maxElementsInMemory="100"
            eternal="true"

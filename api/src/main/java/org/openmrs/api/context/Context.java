@@ -85,6 +85,9 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.Advisor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -152,6 +155,8 @@ public class Context {
 	private static Properties runtimeProperties = new Properties();
 	
 	private static Properties configProperties = new Properties();
+	
+	private static CacheManager cacheManager;
 	
 	// A place to store data that will persist longer than a session, but won't
 	// persist beyond application restart
@@ -797,7 +802,6 @@ public class Context {
 	 */
 	public static void closeSessionWithCurrentUser() {
 		getContextDAO().closeSession();
-		;
 	}
 	
 	/**
@@ -1403,5 +1407,21 @@ public class Context {
 	 */
 	public static boolean isUseSystemClassLoader() {
 		return getServiceContext().isUseSystemClassLoader();
+	}
+	
+	@Autowired
+	public void setCacheManager(CacheManager cacheManager) {
+		Context.cacheManager = cacheManager;
+	}
+	
+	/**
+	 * Clears Locale cache for current user
+	 * @since 1.12
+	 */
+	public static void clearCacheForCurrentUser() {
+		if (cacheManager != null) {
+			Cache cache = cacheManager.getCache("java.util.Locale");
+			cache.evict(Context.getUserContext().hashCode());
+		}
 	}
 }

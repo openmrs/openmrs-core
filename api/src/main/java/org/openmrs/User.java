@@ -470,6 +470,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 */
 	public void setUserProperty(String prop, String value) {
 		getUserProperties().put(prop, value);
+		Context.clearCacheForCurrentUser();
 	}
 	
 	/**
