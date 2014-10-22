@@ -38,7 +38,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-07-01 10:00:29.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-01 10:00:30"), autoExpireDate);
 	}
 	
 	@Test
@@ -47,7 +47,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-07-01 10:29:59.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-01 10:30:00"), autoExpireDate);
 	}
 	
 	@Test
@@ -56,7 +56,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-07-01 19:59:59.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-01 20:00:00"), autoExpireDate);
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-07-31 09:59:59.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-31 10:00:00"), autoExpireDate);
 	}
 	
 	@Test
@@ -74,7 +74,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2014-10-01 09:59:59.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-10-01 10:00:00"), autoExpireDate);
 	}
 	
 	@Test
@@ -83,7 +83,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		
 		Date autoExpireDate = duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 		
-		assertEquals(createDateTime("2017-07-01 09:59:59.999"), autoExpireDate);
+		assertEquals(createDateTime("2017-07-01 10:00:00"), autoExpireDate);
 	}
 	
 	@Test
@@ -92,7 +92,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		Date startDate = createDateTime("2014-07-01 10:00:00");
 		OrderFrequency onceAWeek = createFrequency(1 / 7.0);
 		
-		assertEquals(createDateTime("2014-07-22 09:59:59.999"), duration.addToDate(startDate, onceAWeek));
+		assertEquals(createDateTime("2014-07-22 10:00:00"), duration.addToDate(startDate, onceAWeek));
 	}
 	
 	@Test
@@ -140,25 +140,5 @@ public class DurationTest extends BaseContextSensitiveTest {
 		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
 		Concept concept = SimpleDosingInstructionsTest.createUnits(daysCode);
 		assertEquals(daysCode, Duration.getCode(concept));
-	}
-	
-	@Test
-	public void addToDate_shouldCalculateCorrectlyWhenThereIsNoTimeComponent() throws ParseException {
-		Date activationDate = createDateTime("2014-07-01");
-		
-		assertEquals(createDateTime("2014-07-01 00:00:00.999"), new Duration(1, Duration.SNOMED_CT_SECONDS_CODE).addToDate(
-		    activationDate, null));
-		assertEquals(createDateTime("2014-07-01 00:00:59.999"), new Duration(1, Duration.SNOMED_CT_MINUTES_CODE).addToDate(
-		    activationDate, null));
-		assertEquals(createDateTime("2014-07-01 00:59:59.999"), new Duration(1, Duration.SNOMED_CT_HOURS_CODE).addToDate(
-		    activationDate, null));
-		assertEquals(createDateTime("2014-07-01 23:59:59.999"), new Duration(1, Duration.SNOMED_CT_DAYS_CODE).addToDate(
-		    activationDate, null));
-		assertEquals(createDateTime("2014-07-07 23:59:59.999"), new Duration(1, Duration.SNOMED_CT_WEEKS_CODE).addToDate(
-		    activationDate, null));
-		assertEquals(createDateTime("2014-07-31 23:59:59.999"), new Duration(1, Duration.SNOMED_CT_MONTHS_CODE).addToDate(
-		    activationDate, null));
-		assertEquals(createDateTime("2015-06-30 23:59:59.999"), new Duration(1, Duration.SNOMED_CT_YEARS_CODE).addToDate(
-		    activationDate, null));
 	}
 }
