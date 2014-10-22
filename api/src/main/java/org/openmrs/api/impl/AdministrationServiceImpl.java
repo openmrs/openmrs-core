@@ -70,6 +70,9 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
@@ -1257,6 +1260,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(value = "java.util.Locale")
 	public List<Locale> getSearchLocales() throws APIException {
 		Set<Locale> locales = new LinkedHashSet<Locale>();
 		
