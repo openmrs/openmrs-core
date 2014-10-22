@@ -568,7 +568,7 @@ public class ConceptFormController extends SimpleFormController {
 				
 				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
 				
-				if (isNullOrBlank(descInLocale.getDescription())) {
+				if (org.apache.commons.lang3.StringUtils.isBlank(descInLocale.getDescription())) {
 					if (concept.getDescription() != null) {
 						concept.getDescription().setConcept(null);
 					}
@@ -1087,9 +1087,5 @@ public class ConceptFormController extends SimpleFormController {
 			this.conceptAnswersByLocale = conceptAnswersByLocale;
 		}
 		
-		private boolean isNullOrBlank(String str) {
-			return str == null || str.trim().isEmpty();
-		}
 	}
-	
 }
