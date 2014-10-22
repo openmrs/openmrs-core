@@ -2638,7 +2638,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(testOrder.getOrderType());
 		Assert.assertEquals(orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), testOrder.getOrderType());
 	}
-
+	
 	@Test
 	public void saveOrder_shouldSetAutoExpireDateOfDrugOrderIfAutoExpireDateIsNotSet() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
