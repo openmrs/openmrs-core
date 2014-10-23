@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletConfig;
@@ -51,6 +52,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -384,46 +386,34 @@ public class WebModuleUtil {
 		
 		SchedulerService schedulerService = Context.getSchedulerService();
 		
-		// Get module package name
 		String modulePackageName = mod.getPackageName();
 		for (TaskDefinition task : schedulerService.getRegisteredTasks()) {
 			
-			// get task package name
-			String taskPackageName = task.getTaskClass();
-			boolean PackageNamesMatch = isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
-			if (PackageNamesMatch)
+			String taskClass = task.getTaskClass();
+			if (isModulePackageNameInTaskClass(modulePackageName, taskClass)) {
 				try {
 					schedulerService.shutdownTask(task);
 				}
 				catch (SchedulerException e) {
-					e.printStackTrace();
+					log.error("Couldn't stop task:" + task + " for module: " + mod);
 				}
+			}
 		}
 	}
 	
 	/**
-	 * Checks if module package name is in task module name
-	 * @param modulePackageName name of given package
-	 * @param taskPackageName name of given task
-	 * @return true if it's in
+	 * Checks if module package name is in task class name
+	 * @param modulePackageName the package name of module
+	 * @param taskClass the class of given task
+	 * @return true if task and module are in the same package
+	 * @should return false for different package names
+	 * @should return false if module has longer package name
+	 * @should properly match subpackages
+	 * @should return false for empty package names
 	 */
-	public static boolean isModulePackageNameInTaskPackageName(String modulePackageName, String taskPackageName) {
-		
-		if (modulePackageName.equals("") || taskPackageName.equals(""))
-			return false;
-		String[] splitModulePackageName = modulePackageName.split("\\.");
-		String[] splitTaskPackageName = taskPackageName.split("\\.");
-		
-		boolean packageNamesMatch = true;
-		for (int i = 0; i < splitModulePackageName.length; i++) {
-			if (splitTaskPackageName.length > i && splitModulePackageName[i].equals(splitTaskPackageName[i]))
-				continue;
-			else {
-				packageNamesMatch = false;
-				break;
-			}
-		}
-		return packageNamesMatch;
+	public static boolean isModulePackageNameInTaskClass(String modulePackageName, String taskClass) {
+		return modulePackageName.length() <= taskClass.length()
+		        && taskClass.matches(Pattern.quote(modulePackageName) + "(\\..*)+");
 	}
 	
 	/**
@@ -871,6 +861,9 @@ public class WebModuleUtil {
 		
 		// remove the module's filters and filter mappings
 		unloadFilters(mod);
+		
+		// stop all tasks associated with mod
+		stopTasks(mod);
 		
 		// remove this module's entries in the dwr xml file
 		InputStream inputStream = null;
