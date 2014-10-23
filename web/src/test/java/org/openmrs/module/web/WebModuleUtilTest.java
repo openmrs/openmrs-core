@@ -31,57 +31,57 @@ public class WebModuleUtilTest {
 	private Properties propertiesWritten;
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskPackageName(String, String) 
-	 * @verifies Module package name different from task package name
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @verifies return false for different package names
 	 * @throws Exception
 	 */
 	@Test
-	public void isModulePackageNameInTaskPackageName_shouldReturnFalseForDifferentPackageNames() throws Exception {
+	public void isModulePackageNameInTaskClass_shouldReturnFalseForDifferentPackageName() throws Exception {
 		String modulePackageName = "org.openmrs.logic.task";
-		String taskPackageName = "org.openmrs.logic.taskInitializeLogicRuleProvidersTask";
-		boolean result = WebModuleUtil.isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+		String taskClass = "org.openmrs.logic.taskInitializeLogicRuleProvidersTask";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskPackageName(String, String) 
-	 * @verifies Module package name longer than task package name
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @verifies return false if module has longer package name
 	 * @throws Exception
 	 */
 	@Test
-	public void isModulePackageNameInTaskPackageName_shouldReturnFalseForLongerModulePackageName() throws Exception {
+	public void isModulePackageNameInTaskClass_shouldReturnFalseIfModuleHasLongerPackageName() throws Exception {
 		String modulePackageName = "org.openmrs.logic.task";
-		String taskPackageName = "org.openmrs.logic";
-		boolean result = WebModuleUtil.isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+		String taskClass = "org.openmrs.logic";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskPackageName(String, String) 
-	 * @verifies Module package name shorter task package name
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @verifies properly match subpackages
 	 * @throws Exception
 	 */
 	@Test
-	public void isModulePackageNameInTaskPackageName_shouldReturnTrueForLongerTaskPackageName() throws Exception {
+	public void isModulePackageNameInTaskClass_shouldProperlyMatchSubpackages() throws Exception {
 		String modulePackageName = "org.openmrs.module.xforms";
-		String taskPackageName = "org.openmrs.module.xforms.ProcessXformsQueueTask";
-		boolean result = WebModuleUtil.isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+		String taskClass = "org.openmrs.module.xforms.ProcessXformsQueueTask";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertTrue(result);
 	}
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskPackageName(String, String)
-	 * @verifies Module package name shorter task package name
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
+	 * @verifies return false for empty package names
 	 * @throws Exception
 	 */
 	@Test
-	public void isModulePackageNameInTaskPackageName_shouldReturnFalseForEmptyPackageNames() throws Exception {
+	public void isModulePackageNameInTaskClass_shouldReturnFalseForEmptyPackageNames() throws Exception {
 		String modulePackageName = "";
-		String taskPackageName = "";
-		boolean result = WebModuleUtil.isModulePackageNameInTaskPackageName(modulePackageName, taskPackageName);
+		String taskClass = "";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
-
+	
 	/**
 	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
 	 * @verifies prefix messages with module id
