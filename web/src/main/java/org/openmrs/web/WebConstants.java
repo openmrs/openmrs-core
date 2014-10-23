@@ -33,6 +33,8 @@ public class WebConstants {
 	
 	public static final String OPENMRS_ERROR_ARGS = "openmrs_error_arguments";
 	
+	public static final String OPENMRS_ADDR_TMPL = "openmrs_address_template";
+	
 	public static final String OPENMRS_LANGUAGE_COOKIE_NAME = "__openmrs_language";
 	
 	public static final String OPENMRS_USER_OVERRIDE_PARAM = "__openmrs_user_over_id";

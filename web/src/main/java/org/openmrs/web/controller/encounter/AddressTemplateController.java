@@ -81,8 +81,41 @@ public class AddressTemplateController {
 				    "AddressTemplate.saved"), WebRequest.SCOPE_SESSION);
 			}
 			catch (Exception e) {
-				request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
-				    "AddressTemplate.error"), WebRequest.SCOPE_SESSION);
+				String errmsg1 = e.getCause().toString();
+				
+				if (errmsg1.contains("must be terminated by the matching")) {
+					String errmsg2 = e.getCause().getCause().toString();
+					
+					request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+					    "AddressTemplate.error.elementInvalid",
+					    new Object[] { errmsg1.split("\"")[1], errmsg2.split(";")[1].split(":")[1] }, Context.getLocale()),
+					    WebRequest.SCOPE_SESSION);
+				} else if (errmsg1.split("\n")[0].endsWith("null")) {
+					for (String part : errmsg1.split("\n")) {
+						if (part.startsWith("path")) {
+							request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService()
+							        .getMessage("AddressTemplate.error.nameOrValueInvalid",
+							            new Object[] { part.split(":")[1] }, Context.getLocale()), WebRequest.SCOPE_SESSION);
+							break;
+						}
+					}
+				} else if (errmsg1.contains("UnknownFieldException")
+				        || errmsg1.contains("must be terminated by the matching")) {
+					for (String part : errmsg1.split("\n")) {
+						if (part.startsWith("path")) {
+							request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService()
+							        .getMessage("AddressTemplate.error.wrongFieldName",
+							            new Object[] { part.split("/")[part.split("/").length - 1] }, Context.getLocale()),
+							    WebRequest.SCOPE_SESSION);
+							break;
+						}
+					}
+				} else {
+					request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+					    "AddressTemplate.error"), WebRequest.SCOPE_SESSION);
+				}
+				
+				request.setAttribute(WebConstants.OPENMRS_ADDR_TMPL, xml, WebRequest.SCOPE_SESSION);
 			}
 			
 		}
