@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletConfig;
@@ -44,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -55,6 +57,9 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.filter.ModuleFilterConfig;
 import org.openmrs.module.web.filter.ModuleFilterDefinition;
 import org.openmrs.module.web.filter.ModuleFilterMapping;
+import org.openmrs.scheduler.SchedulerException;
+import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
@@ -325,6 +330,43 @@ public class WebModuleUtil {
 		
 		// we aren't processing this module, so a context refresh is not necessary
 		return false;
+	}
+	
+	/** Stops all tasks started by given module
+	 * @param mod
+	 */
+	private static void stopTasks(Module mod) {
+		
+		SchedulerService schedulerService = Context.getSchedulerService();
+		
+		String modulePackageName = mod.getPackageName();
+		for (TaskDefinition task : schedulerService.getRegisteredTasks()) {
+			
+			String taskClass = task.getTaskClass();
+			if (isModulePackageNameInTaskClass(modulePackageName, taskClass)) {
+				try {
+					schedulerService.shutdownTask(task);
+				}
+				catch (SchedulerException e) {
+					log.error("Couldn't stop task:" + task + " for module: " + mod);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks if module package name is in task class name
+	 * @param modulePackageName the package name of module
+	 * @param taskClass the class of given task
+	 * @return true if task and module are in the same package
+	 * @should return false for different package names
+	 * @should return false if module has longer package name
+	 * @should properly match subpackages
+	 * @should return false for empty package names
+	 */
+	public static boolean isModulePackageNameInTaskClass(String modulePackageName, String taskClass) {
+		return modulePackageName.length() <= taskClass.length()
+		        && taskClass.matches(Pattern.quote(modulePackageName) + "(\\..*)+");
 	}
 	
 	/**
@@ -761,6 +803,9 @@ public class WebModuleUtil {
 		
 		// remove the module's filters and filter mappings
 		unloadFilters(mod);
+		
+		// stop all tasks associated with mod
+		stopTasks(mod);
 		
 		// remove this module's entries in the dwr xml file
 		InputStream inputStream = null;
