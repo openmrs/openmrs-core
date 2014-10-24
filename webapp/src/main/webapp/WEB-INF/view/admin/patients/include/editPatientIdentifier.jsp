@@ -10,12 +10,12 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="PatientIdentifier.identifier"/></td>
+		<td><openmrs:message code="PatientIdentifier.identifier"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="identifier">
-				<input type="text" 
-						name="${status.expression}" 
-						value="${status.value}" 
+				<input type="text"
+						name="${status.expression}"
+						value="${status.value}"
 						onKeyUp="return true; validateIdentifier(this, 'saveButton', '<openmrs:message code="error.identifier"/>');"
 						onChange="return true; validateIdentifier(this, 'saveButton', '<openmrs:message code="error.identifier"/>');"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -23,7 +23,7 @@
 			</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="PatientIdentifier.identifierType"/></td>
+		<td><openmrs:message code="PatientIdentifier.identifierType"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="identifierType">
 				<c:set var="hideLocation" value="${status.actualValue.locationBehavior == 'NOT_USED'}"/>
@@ -42,7 +42,7 @@
 	<tr>
 		<td>
 			<c:if test="${identifierLocationUsed}">
-				<openmrs:message code="PatientIdentifier.location"/>
+				<openmrs:message code="PatientIdentifier.location"/><span class="required">*</span>
 			</c:if>
 		</td>
 		<td>

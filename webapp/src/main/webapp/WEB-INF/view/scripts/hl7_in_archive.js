@@ -50,7 +50,7 @@ function hideDaysKeptError() {
 // ensure daysKept is a positive number
 function validateDaysKept() {
 	var daysToKeep = $j("#daysKept").val(); 
-	if (isNaN(daysToKeep) || parseInt(daysToKeep) < 0) {
+	if (!daysToKeep || isNaN(daysToKeep) || parseInt(daysToKeep) < 0) {
 		if (!$j("#daysKeptError").is(":visible"))
 			showDaysKeptError();
 		return false;
