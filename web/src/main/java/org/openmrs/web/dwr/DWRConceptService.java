@@ -51,6 +51,7 @@ import org.openmrs.validator.ConceptReferenceTermValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * This class exposes some of the methods in org.openmrs.api.ConceptService via the dwr package
@@ -107,6 +108,8 @@ public class DWRConceptService {
 		// List to return
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();
+		
+		phrase = HtmlUtils.htmlEscape(phrase);
 		
 		// TODO add localization for messages
 		

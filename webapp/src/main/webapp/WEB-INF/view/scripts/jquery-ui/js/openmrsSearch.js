@@ -1064,7 +1064,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			if($j.trim(searchText) == '')
 				textToDisplay = omsgs.viewingAll;
 			
-			$j('#pageInfo').html(textToDisplay);
+			$j('#pageInfo').text(textToDisplay).html();
 
 			if($j('#pageInfo').css("visibility") != 'visible')
 				$j('#pageInfo').css("visibility", "visible");
@@ -1127,7 +1127,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				
 				spinnerObj.css("visibility", "hidden");
 				loadingMsgObj.html("");
-				$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
+				$j('#pageInfo').text(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'")).html();
 				pageStr = omsgs.pagesWithPlaceHolder.replace("_NUMBER_OF_PAGES_", self._table.numberOfPages);
 				$j('#pageInfo').append(" - "+pageStr);
 			};
