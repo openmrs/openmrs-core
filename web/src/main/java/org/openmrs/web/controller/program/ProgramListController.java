@@ -93,7 +93,7 @@ public class ProgramListController extends SimpleFormController {
 					}
 					catch (APIException e) {
 						log.warn("Error deleting program", e);
-						if (!error.equals("")) {
+						if (!error.toString().equals("")) {
 							error.append("<br/>");
 						}
 						error.append(textProgram).append(" ").append(p).append(" ").append(notDeleted);
@@ -106,7 +106,7 @@ public class ProgramListController extends SimpleFormController {
 			if (!success.toString().equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!error.equals("")) {
+			if (!error.toString().equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}
