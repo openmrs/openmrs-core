@@ -130,4 +130,24 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		        .getCode());
 	}
 	
+	/**
+	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if name is null", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfNameIsNull() {
+		ImplementationId implementationId = new ImplementationId();
+		implementationId.setImplementationId("IMPL_ID");
+		implementationId.setPassphrase("PASSPHRASE");
+		implementationId.setDescription("Description");
+		
+		Errors errors = new BindException(implementationId, "implementationId");
+		new ImplementationIdValidator().validate(implementationId, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertFalse(errors.hasFieldErrors("implementationId"));
+		Assert.assertFalse(errors.hasFieldErrors("passphrase"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
+	}
+	
 }

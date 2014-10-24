@@ -24,7 +24,8 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates attributes on the {@link ImplementationId} object.
- * 
+ *
+ * @should should fail validation if name is null
  * @should should fail validation if implementation id is null
  * @should should fail validation if description is null
  * @should should fail validation if pass phrase is null
@@ -49,6 +50,7 @@ public class ImplementationIdValidator implements Validator {
 		if (implId == null) {
 			errors.rejectValue("implementationId", "error.general");
 		} else {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "ImplementationId.name.empty");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "implementationId", "ImplementationId.implementationId.empty");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "passphrase", "ImplementationId.passphrase.empty");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "ImplementationId.description.empty");
