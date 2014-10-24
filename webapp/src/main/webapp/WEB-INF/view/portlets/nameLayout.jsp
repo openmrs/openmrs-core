@@ -10,7 +10,11 @@
 			<c:forEach items="${model.layoutTemplate.lines}" var="line">
 				<c:forEach items="${line}" var="token">
 					<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
-						<th><openmrs:message code="${token.displayText}"/></th>
+						<th><openmrs:message code="${token.displayText}"/>
+						    <c:if test="${token.displayText == 'PersonName.givenName' || token.displayText == 'PersonName.familyName'}">
+						        <span class="required">*</span>
+						    </c:if>
+						</th>
 					</c:if>
 				</c:forEach>
 			</c:forEach>	
@@ -159,7 +163,11 @@
 								<tr>
 									<c:forEach items="${line}" var="token" varStatus="tokenStatus">
 										<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
-											<td><openmrs:message code="${token.displayText}" /></td>
+											<td><openmrs:message code="${token.displayText}" />
+											    <c:if test="${token.displayText == 'PersonName.givenName' || token.displayText == 'PersonName.familyName'}">
+											        <span class="required">*</span>
+											    </c:if>
+											</td>
 											<td <c:if test="${tokenStatus.last && tokenStatus.index < model.layoutTemplate.maxTokens}">colspan="${model.layoutTemplate.maxTokens - tokenStatus.index}"</c:if>>
 												<spring:bind path="${token.codeName}">
 													<c:if test="${status.value == null}">

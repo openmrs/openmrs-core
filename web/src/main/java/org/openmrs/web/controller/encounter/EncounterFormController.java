@@ -120,8 +120,6 @@ public class EncounterFormController extends SimpleFormController {
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 				}
 				
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "patient", "error.null");
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
 				String[] providerIdsArray = ServletRequestUtils.getStringParameters(request, "providerIds");
 				if (ArrayUtils.isEmpty(providerIdsArray)) {
 					errors.reject("Encounter.provider.atleastOneProviderRequired");

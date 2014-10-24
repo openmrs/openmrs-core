@@ -14,8 +14,13 @@
 	<table>
 		<tr>
 			<spring:bind path="implId.name" >
-				<td style="white-space: nowrap"><openmrs:message code="ImplementationId.name"/></td>
-				<td><input type="text" name="${status.expression}" value="${status.value}" size="40" /></td>
+				<td style="white-space: nowrap"><openmrs:message code="ImplementationId.name"/><span class="required">*</span></td>
+				<td style="white-space: nowrap">
+				    <input type="text" name="${status.expression}" value="${status.value}" size="40" />
+				    <c:if test="${status.errorMessage != ''}">
+                        <span class="error">${status.errorMessage}</span>
+                    </c:if>
+				</td>
 				<td class="description"><openmrs:message code="ImplementationId.name.help"/></td>
 			</spring:bind>
 		</tr>

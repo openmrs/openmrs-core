@@ -249,14 +249,14 @@
 				<openmrs:portlet url="nameLayout" id="namePortlet" size="inOneRow" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
 				</spring:nestedPath>
 			</table>
-		</td>		
+		</td>
 	</tr>
 	<tr class="parentTableRow">
 		<th class="headerCell" valign="top"><openmrs:message code="PatientIdentifier.title.endUser"/></th>
 		<td class="inputCell">
 			<table id="identifiers" class="childTable" cellspacing="2">
 				<tr class="childTableRow">
-					<td class="idNumberHeaderColumn"><openmrs:message code="PatientIdentifier.identifier"/></td>
+					<td class="idNumberHeaderColumn"><openmrs:message code="PatientIdentifier.identifier"/><span class="required">*</span></td>
 					<openmrs:extensionPoint pointId="newPatientForm.identifierHeader" />
 					<td class="idNumberHeaderColumn"><openmrs:message code="PatientIdentifier.identifierType"/></td>
 					<td class="idNumberHeaderColumn">

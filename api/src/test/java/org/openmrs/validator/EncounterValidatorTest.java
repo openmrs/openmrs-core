@@ -139,4 +139,17 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(true, errors.hasFieldErrors("encounterDatetime"));
 	}
 	
+	/**
+	 * @verifies fail if encounter dateTime is not set
+	 * @see EncounterValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfEncounterDateTimeIsNotSet() throws Exception {
+		
+		Encounter encounter = new Encounter();
+		
+		Errors errors = new BindException(encounter, "encounter");
+		new EncounterValidator().validate(encounter, errors);
+		Assert.assertTrue(errors.hasFieldErrors("encounterDatetime"));
+	}
 }
