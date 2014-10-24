@@ -76,6 +76,11 @@
          <groupId>org.springframework</groupId>
          <artifactId>spring-oxm</artifactId>
        </dependency>
+       <dependency>
+           <groupId>org.springframework</groupId>
+           <artifactId>spring-context-support</artifactId>
+           <version>${springVersion}</version>
+       </dependency>
       <dependency>
          <groupId>jfree</groupId>
          <artifactId>jfreechart</artifactId>
