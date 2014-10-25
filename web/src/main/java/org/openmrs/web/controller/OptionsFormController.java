@@ -70,33 +70,36 @@ public class OptionsFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		OptionsForm opts = (OptionsForm) object;
 		
-		if (!opts.getOldPassword().equals("")) {
-			if (opts.getNewPassword().equals("")) {
-				errors.rejectValue("newPassword", "error.password.weak");
-			} else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
-				errors.rejectValue("newPassword", "error.password.match");
-				errors.rejectValue("confirmPassword", "error.password.match");
+		if (!opts.getPersonName().getGivenName().equals("") || !opts.getPersonName().getMiddleName().equals("")
+		        || !opts.getPersonName().getFamilyName().equals("")) {
+			if (!opts.getOldPassword().equals("")) {
+				if (opts.getNewPassword().equals("")) {
+					errors.rejectValue("newPassword", "error.password.weak");
+				} else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
+					errors.rejectValue("newPassword", "error.password.match");
+					errors.rejectValue("confirmPassword", "error.password.match");
+				}
 			}
-		}
-		
-		if (opts.getSecretQuestionPassword().equals("") && opts.getSecretAnswerNew().isEmpty()
-		        && !opts.getSecretQuestionNew().equals(opts.getSecretQuestionCopy())) {
-			errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
-		}
-		
-		if (!opts.getSecretQuestionPassword().equals("")) {
-			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
-				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
-				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
+			
+			if (opts.getSecretQuestionPassword().equals("") && opts.getSecretAnswerNew().isEmpty()
+			        && !opts.getSecretQuestionNew().equals(opts.getSecretQuestionCopy())) {
+				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 			}
-			if (opts.getSecretAnswerNew().isEmpty()) {
-				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.empty");
+			
+			if (!opts.getSecretQuestionPassword().equals("")) {
+				if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
+					errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
+					errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
+				}
+				if (opts.getSecretAnswerNew().isEmpty()) {
+					errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.empty");
+				}
+				if (opts.getSecretQuestionNew().isEmpty()) {
+					errors.rejectValue("secretQuestionNew", "error.options.secretQuestion.empty");
+				}
 			}
-			if (opts.getSecretQuestionNew().isEmpty()) {
-				errors.rejectValue("secretQuestionNew", "error.options.secretQuestion.empty");
-			}
-		}
-		
+		} else
+			errors.rejectValue("personName", "Person.names.length");
 		return super.processFormSubmission(request, response, object, errors);
 	}
 	
