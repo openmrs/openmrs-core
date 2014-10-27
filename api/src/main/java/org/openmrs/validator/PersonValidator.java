@@ -77,7 +77,7 @@ public class PersonValidator implements Validator {
 				atLeastOneNonVoidPersonNameLeft = true;
 			}
 		}
-		if (!atLeastOneNonVoidPersonNameLeft) {
+		if (!person.isVoided() && !atLeastOneNonVoidPersonNameLeft) {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
 		
