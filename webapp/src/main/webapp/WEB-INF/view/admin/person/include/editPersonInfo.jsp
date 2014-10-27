@@ -207,14 +207,25 @@
 	</c:if>
 </spring:bind>
 
+<c:choose>
+    <c:when test="${not empty patient}">
+        <c:set var="voided" value="${patient.voided}" />
+        <c:set var="voidReason" value="${patient.voidReason}" />
+    </c:when>
+    <c:otherwise>
+        <c:set var="voided" value="${person.voided}" />
+        <c:set var="voidReason" value="${person.voidReason}" />
+    </c:otherwise>
+</c:choose>
+
 <tr>
 	<td><openmrs:message code="general.voided"/></td>
-	<td>${patient.voided}</td>
+	<td>${voided}</td>
 </tr>
 
 <tr id="personVoidReasonRow" <c:if test="${patient.voided == false}">style="display: none"</c:if> >
 	<td><openmrs:message code="general.voidReason"/></td>
-	<td>${patient.voidReason}</td>
+	<td>${voidReason}</td>
 </tr>
 <tr>
   	  <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
