@@ -39,7 +39,7 @@
 <ul>
 	<li><openmrs:message code="help.irc.text" htmlEscape="false" arguments="<a href='https://wiki.openmrs.org/x/EQAP'>,</a>"/></li>
 	<br>
-	<li><openmrs:message code="help.mailing.text" htmlEscape="false" arguments="<a href='https://wiki.openmrs.org/x/SQAr'>,</a>"/></li>
+	<li><openmrs:message code="help.mailing.text" htmlEscape="false" arguments="<a href='https://wiki.openmrs.org/display/RES/Mailing+Lists'></a>"/></li>
 </ul>
 
 
