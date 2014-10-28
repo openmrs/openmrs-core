@@ -1980,7 +1980,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatients = patientService.getAllPatients(true);
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
-		assertEquals(5, allPatients.size());
+		assertEquals(6, allPatients.size());
 	}
 	
 	/**
