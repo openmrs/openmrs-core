@@ -466,7 +466,7 @@
 											<c:set var="stateId" value="" />
 											<c:set var="stateStart" value="" />
 											<c:forEach var="state" items="${program.states}">
-												<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
+												<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active && !state.state.retired}">
 													<c:set var="stateId" value="${state.state.concept.conceptId}" />
 													<c:set var="stateStart" value="${state.startDate}" />
 												</c:if>
