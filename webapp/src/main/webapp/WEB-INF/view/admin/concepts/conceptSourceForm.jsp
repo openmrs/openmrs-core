@@ -75,7 +75,7 @@
 <br/>
 <fieldset>
 	<form method="post">
-			<h4><openmrs:message code="ConceptSource.retire"/></h4>
+			<h4><openmrs:message code="general.retire"/></h4>
 			
 			<b><openmrs:message code="general.reason"/></b>
 			<input type="text" value="" size="40" name="retireReason" />
@@ -85,7 +85,7 @@
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
-			<input type="submit" value='<openmrs:message code="ConceptSource.retire"/>' name="retire"/>
+			<input type="submit" value='<openmrs:message code="general.retire"/>' name="retire"/>
 	</form>
 </fieldset>
 </c:if>
@@ -94,8 +94,8 @@
 <br/>
 <fieldset>
 	<form method="post">
-			<h4><openmrs:message code="ConceptSource.restore"/></h4>
-			<input type="submit" value='<openmrs:message code="ConceptSource.restore"/>' name="restore"/>
+			<h4><openmrs:message code="general.restore"/></h4>
+			<input type="submit" value='<openmrs:message code="general.restore"/>' name="restore"/>
 	</form>
 </fieldset>
 </c:if>
@@ -104,8 +104,8 @@
 <br/>
 <fieldset>
 	<form method="post">
-			<h4><openmrs:message code="ConceptSource.purge"/></h4>
-			<input type="submit" value='<openmrs:message code="ConceptSource.purge"/>' name="purge"/>
+			<h4><openmrs:message code="general.purge"/></h4>
+			<input type="submit" value='<openmrs:message code="general.purge"/>' name="purge"/>
 	</form>
 </fieldset>
 </c:if>
