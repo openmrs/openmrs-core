@@ -15,12 +15,16 @@ package org.openmrs.obs.handler;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,7 +32,7 @@ import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Handler for storing basic images for complex obs to the file system. The image mime type used is
@@ -40,6 +44,9 @@ import org.openmrs.util.OpenmrsConstants;
  * @since 1.5
  */
 public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
+	
+	/** Views supported by this handler */
+	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
 	public static final Log log = LogFactory.getLog(ImageHandler.class);
 	
@@ -66,19 +73,54 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	 */
 	public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
-		BufferedImage img = null;
-		try {
-			img = ImageIO.read(file);
-		}
-		catch (IOException e) {
-			log.error("Trying to read file: " + file.getAbsolutePath(), e);
-		}
 		
-		ComplexData complexData = new ComplexData(file.getName(), img);
-		
-		obs.setComplexData(complexData);
+		// Raw image
+		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
+			BufferedImage img = null;
+			try {
+				img = ImageIO.read(file);
+			}
+			catch (IOException e) {
+				log.error("Trying to read file: " + file.getAbsolutePath(), e);
+			}
+			
+			ComplexData complexData = new ComplexData(file.getName(), img);
+			
+			// Image MIME type
+			try {
+				FileImageInputStream imgStream = new FileImageInputStream(file);
+				Iterator<ImageReader> imgReader = ImageIO.getImageReaders(imgStream);
+				imgStream.close();
+				if (imgReader.hasNext()) {
+					complexData.setMIMEType("image/" + imgReader.next().getFormatName().toLowerCase());
+				} else {
+					log.warn("MIME type of " + file.getAbsolutePath() + " is not known");
+				}
+			}
+			catch (FileNotFoundException e) {
+				log.error("Trying to create image file stream from " + file.getAbsolutePath(), e);
+			}
+			catch (IOException e) {
+				log.error("Trying to determine MIME type of " + file.getAbsolutePath(), e);
+			}
+			
+			obs.setComplexData(complexData);
+		}
+		// No other view supported
+		// NOTE: if adding support for another view, don't forget to update supportedViews list above
+		else {
+			return null;
+		}
 		
 		return obs;
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+	 */
+	@Override
+	public String[] getSupportedViews() {
+		return supportedViews;
 	}
 	
 	/**

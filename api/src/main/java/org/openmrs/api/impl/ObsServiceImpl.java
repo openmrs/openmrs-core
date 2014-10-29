@@ -823,12 +823,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * Convenience method to get the ComplexObsHandler associated with a complex Obs. Returns the
-	 * ComplexObsHandler. Returns null if the Obs.isComplexObs() is false or there is an error
-	 * instantiating the handler class.
-	 *
-	 * @param obs A complex Obs.
-	 * @return ComplexObsHandler for the complex Obs. or null on error.
+	 * @see org.openmrs.api.ObsService#getHandler(org.openmrs.Obs)
 	 */
 	@Transactional(readOnly = true)
 	public ComplexObsHandler getHandler(Obs obs) throws APIException {

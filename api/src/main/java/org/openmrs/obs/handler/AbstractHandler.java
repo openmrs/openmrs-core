@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -169,6 +170,20 @@ public class AbstractHandler {
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		return new File(dir, filename);
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+	 */
+	public String[] getSupportedViews() {
+		return new String[0];
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#supportsView(java.lang.String)
+	 */
+	public boolean supportsView(String view) {
+		return Arrays.asList(getSupportedViews()).contains(view);
 	}
 	
 }

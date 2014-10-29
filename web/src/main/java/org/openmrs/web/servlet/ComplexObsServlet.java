@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
@@ -48,7 +49,7 @@ public class ComplexObsServlet extends HttpServlet {
 		
 		String obsId = request.getParameter("obsId");
 		String view = request.getParameter("view");
-		String viewType = request.getParameter("viewType");
+		String download = request.getParameter("download");
 		
 		HttpSession session = request.getSession();
 		
@@ -68,9 +69,15 @@ public class ComplexObsServlet extends HttpServlet {
 		ComplexData cd = complexObs.getComplexData();
 		Object data = cd.getData();
 		
-		if ("download".equals(viewType)) {
+		if (null != download) {
 			response.setHeader("Content-Disposition", "attachment; filename=" + cd.getTitle());
 			response.setHeader("Pragma", "no-cache");
+		}
+		
+		String mimeType = cd.getMIMEType();
+		
+		if (null != mimeType) {
+			response.setHeader("Content-Type", mimeType);
 		}
 		
 		if (data instanceof byte[]) {
@@ -94,5 +101,4 @@ public class ComplexObsServlet extends HttpServlet {
 			        + data.getClass());
 		}
 	}
-	
 }

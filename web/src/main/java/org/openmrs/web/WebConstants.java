@@ -60,9 +60,21 @@ public class WebConstants {
 	
 	public static String WEBAPP_NAME = "openmrs";
 	
-	// ComplexObsHandler views specific to the web layer:
+	// ComplexObsHandler views specific to the web layer
+	/**  
+	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
+	 * 
+	 * @deprecated complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
+	 */
+	@Deprecated
 	public static final String HTML_VIEW = "html_view";
 	
+	/**  
+	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
+	 * 
+	 * @deprecated complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
+	 */
+	@Deprecated
 	public static final String HYPERLINK_VIEW = "hyperlink_view";
 	
 	/**

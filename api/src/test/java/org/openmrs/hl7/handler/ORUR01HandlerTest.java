@@ -1257,5 +1257,20 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			return false;
 		}
 		
+		/**
+		 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+		 */
+		@Override
+		public String[] getSupportedViews() {
+			return new String[0];
+		}
+		
+		/**
+		 * @see org.openmrs.obs.ComplexObsHandler#supportsView(java.lang.String)
+		 */
+		@Override
+		public boolean supportsView(String view) {
+			return false;
+		}
 	}
 }
