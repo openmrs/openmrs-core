@@ -14,10 +14,10 @@
 package org.openmrs.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +33,7 @@ import org.springframework.core.type.filter.TypeFilter;
 /**
  * Reflection utilities to search the classpath for classes that have a given annotation, implement
  * a given interface, etc
- *
+ * 
  * @since 1.10
  */
 public class OpenmrsClassScanner {
@@ -44,9 +44,9 @@ public class OpenmrsClassScanner {
 	
 	private final ResourcePatternResolver resourceResolver;
 	
-	private Map<Class<?>, List<Class<?>>> annotationToClassMap;
+	private Map<Class<?>, Set<Class<?>>> annotationToClassMap;
 	
-	OpenmrsClassScanner() {
+	private OpenmrsClassScanner() {
 		this.metadataReaderFactory = new SimpleMetadataReaderFactory(OpenmrsClassLoader.getInstance());
 		this.resourceResolver = new PathMatchingResourcePatternResolver(OpenmrsClassLoader.getInstance());
 	}
@@ -68,21 +68,21 @@ public class OpenmrsClassScanner {
 	
 	/**
 	 * Searches for classes with a given annotation.
-	 *
-	 * @param annotation the annotation
+	 * 
+	 * @param annotationClass the annotation class
 	 * @return the list of found classes
 	 */
-	public List<Class<?>> getClassesWithAnnotation(Class annotationClass) {
+	public Set<Class<?>> getClassesWithAnnotation(Class annotationClass) {
 		
 		if (annotationToClassMap != null) {
 			if (annotationToClassMap.containsKey(annotationClass)) {
 				return annotationToClassMap.get(annotationClass);
 			}
 		} else {
-			annotationToClassMap = new HashMap<Class<?>, List<Class<?>>>();
+			annotationToClassMap = new HashMap<Class<?>, Set<Class<?>>>();
 		}
 		
-		List<Class<?>> types = new ArrayList<Class<?>>();
+		Set<Class<?>> types = new HashSet<Class<?>>();
 		String pattern = "classpath*:org/openmrs/**/*.class";
 		
 		try {
@@ -118,9 +118,9 @@ public class OpenmrsClassScanner {
 	}
 	
 	/**
-	 * Private class to hold the one class scanner used throughout openmrs. This is an alternative to
-	 * storing the instance object on {@link OpenmrsClassScanner} itself so that garbage collection
-	 * can happen correctly.
+	 * Private class to hold the one class scanner used throughout openmrs. This is an alternative
+	 * to storing the instance object on {@link OpenmrsClassScanner} itself so that garbage
+	 * collection can happen correctly.
 	 */
 	private static class OpenmrsClassScannerHolder {
 		
