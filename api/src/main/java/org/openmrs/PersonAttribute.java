@@ -34,7 +34,7 @@ import org.simpleframework.xml.Root;
  * PersonAttribute is a foreign key to another database table (like to the location table, or
  * concept table). This gives a PersonAttribute the ability to link to any other part of the
  * database A Person can have zero to n PersonAttribute(s).
- *
+ * 
  * @see org.openmrs.PersonAttributeType
  * @see org.openmrs.Attributable
  */
@@ -65,7 +65,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	
 	/**
 	 * Constructor for creating a basic attribute
-	 *
+	 * 
 	 * @param type PersonAttributeType
 	 * @param value String
 	 */
@@ -76,7 +76,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	
 	/**
 	 * Shallow copy of this PersonAttribute. Does NOT copy personAttributeId
-	 *
+	 * 
 	 * @return a shallows copy of <code>this</code>
 	 */
 	public PersonAttribute copy() {
@@ -86,7 +86,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * The purpose of this method is to allow subclasses of PersonAttribute to delegate a portion of
 	 * their copy() method back to the superclass, in case the base class implementation changes.
-	 *
+	 * 
 	 * @param target a PersonAttribute that will have the state of <code>this</code> copied into it
 	 * @return Returns the PersonAttribute that was passed in, with state copied into it
 	 */
@@ -110,7 +110,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * {@link #equals(Object)} in that this method compares the inner fields of each attribute for
 	 * equality. Note: Null/empty fields on <code>otherAttribute</code> /will not/ cause a false
 	 * value to be returned
-	 *
+	 * 
 	 * @param otherAttribute PersonAttribute with which to compare
 	 * @return boolean true/false whether or not they are the same attributes
 	 * @should return true if attributeType value and void status are the same
@@ -237,7 +237,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	/**
 	 * Will try to create an object of class 'PersonAttributeType.format'. If that implements
 	 * <code>Attributable</code>, hydrate(value) is called. Defaults to just returning getValue()
-	 *
+	 * 
 	 * @return hydrated object or getValue()
 	 * @should load class in format property
 	 * @should still load class in format property if not Attributable
@@ -281,7 +281,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	
 	/**
 	 * Convenience method for voiding this attribute
-	 *
+	 * 
 	 * @param reason
 	 * @should set voided bit to true
 	 */
@@ -302,32 +302,24 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @should not throw exception if attribute type is null
 	 */
 	public int compareTo(PersonAttribute other) {
-		int retValue = 0;
-		retValue = isVoided().compareTo(other.isVoided());
-		if (retValue == 0) {
-			retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-		}
-		if (getAttributeType() == null && other.getAttributeType() == null) {
-			return 0;
-		}
-		if (getAttributeType() == null && other.getAttributeType() != null) {
-			retValue = 1;
-		}
-		if (other.getAttributeType() == null && getAttributeType() != null) {
-			retValue = -1;
-		}
-		if (retValue == 0) {
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType().getPersonAttributeTypeId(), other
-			        .getAttributeType().getPersonAttributeTypeId());
-		}
-		if (retValue == 0) {
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue());
-		}
-		if (retValue == 0) {
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeId(), other.getPersonAttributeId());
+		int retValue;
+		if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType(), other.getAttributeType())) != 0) {
+			return retValue;
 		}
 		
-		return retValue;
+		if ((retValue = isVoided().compareTo(other.isVoided())) != 0) {
+			return retValue;
+		}
+		
+		if ((retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated())) != 0) {
+			return retValue;
+		}
+		
+		if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue())) != 0) {
+			return retValue;
+		}
+		
+		return OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeId(), other.getPersonAttributeId());
 	}
 	
 	/**
