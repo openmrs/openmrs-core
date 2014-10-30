@@ -182,8 +182,9 @@ table#labTestTable th {
 			<c:if test="${conceptIds != ''}">
 				<openmrs:globalProperty var="colorAbsolute" key="graph.color.absolute"/>
 				<openmrs:globalProperty var="colorNormal" key="graph.color.normal"/>
-				<openmrs:globalProperty var="colorCritical" key="graph.color.critical"/>			
+				<openmrs:globalProperty var="colorCritical" key="graph.color.critical"/>
 		$j.getJSON("patientGraphJson.form?patientId=<c:out value="${patient.patientId}" />&conceptId=${conceptIds}", function(json){
+			json = json.graph.graph;
 			  $j("#conceptBox-${conceptIds} .conceptGraphTitle").html(json.name);
 			
 			  var plot = $j.plot($j('#conceptGraphBox-${conceptIds}'),
@@ -215,7 +216,7 @@ table#labTestTable th {
                      xaxis: {mode: "time", timeformat: "%b %y", minTickSize: [1, "month"]},
 				  yaxis: {min: findMaxAndMin(json.data).min-10, max: findMaxAndMin(json.data).max+10, tickFormatter: function (v, axis) { return v.toFixed(axis.tickDecimals) + " " + json.units }},
 			  	  grid: { hoverable: true, clickable: true }
-				});							  
+				});
 			
 			  $j("#conceptBox-${conceptIds}").bind("plothover", function (event, pos, item) {
 				 $j("#tooltip").remove();
@@ -232,9 +233,7 @@ table#labTestTable th {
 		}
 
 		$j(document).ready(function () {
-
 			
-
 			// ensure Hide Graph links are hooked
 			$j(".box${model.patientVariation}").bind("click", toggleGraphVisibility);
 
@@ -242,4 +241,3 @@ table#labTestTable th {
 		});
 		
 	</script>
-	

@@ -58,7 +58,7 @@ public class PatientDashboardGraphController {
 		graph.setAbsoluteLow(concept.getLowAbsolute());
 		graph.setNormalHigh(concept.getHiNormal());
 		graph.setNormalLow(concept.getLowNormal());
-		graph.setUnits(concept.getUnits());
+		graph.setUnits(concept.getUnits() != null ? concept.getUnits() : "");
 		graph.setConceptName(concept.getName().getName());
 		
 		for (Obs obs : observations) {

@@ -49,7 +49,7 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 		PatientGraphData graph = (PatientGraphData) map.get("graph");
 		String expectedData = String
 		        .format(
-		            "{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"name\":\"Some concept name\",\"normal\":{\"high\":null,\"low\":null},\"data\":[[%d,2.0],[%d,1.0]],\"units\":null}",
+		            "{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"name\":\"Some concept name\",\"normal\":{\"high\":null,\"low\":null},\"data\":[[%d,2.0],[%d,1.0]],\"units\":\"\"}",
 		            secondObsDate, firstObsDate);
 		Assert.assertEquals(expectedData, graph.toString());
 	}
