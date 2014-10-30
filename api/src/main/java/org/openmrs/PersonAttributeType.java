@@ -178,4 +178,11 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 		
 	}
 	
+	public int compareTo(PersonAttributeType other) {
+		if (other == null) {
+			return -1;
+		}
+		return (getPersonAttributeTypeId() < other.getPersonAttributeTypeId()) ? -1 :
+				((getPersonAttributeTypeId() == other.getPersonAttributeTypeId()) ? 0 : 1);
+	}
 }
