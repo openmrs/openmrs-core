@@ -13,7 +13,6 @@
  */
 package org.openmrs.util;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,6 +41,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.InvalidCharactersPasswordException;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
@@ -802,5 +802,15 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		properties.store(new OutputStreamWriter(expected, utf8), null);
 		
 		assertThat(actual.toByteArray(), is(expected.toByteArray()));
+	}
+	
+	/**
+	 * @see {@link org.openmrs.util.OpenmrsUtil#validateJavaVersion()}
+	 */
+	@Test(expected = APIException.class)
+	public void validateJavaVersion_shouldFailIfTheCurrentJVMVersionIsEarlierThanJava6() {
+		Properties props = System.getProperties();
+		props.setProperty("java.version", "1.5.0_25");
+		OpenmrsUtil.validateJavaVersion();
 	}
 }
