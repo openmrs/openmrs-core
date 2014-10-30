@@ -463,11 +463,13 @@ public class PatientSearchCriteria {
 	
 	private Criterion prepareCriterionForAttribute(String query) {
 		query = HibernateUtil.escapeSqlWildcards(query, sessionFactory);
+		
 		Conjunction conjunction = Restrictions.conjunction();
+		MatchMode matchMode = personSearchCriteria.getAttributeMatchMode();
 		
 		String[] queryParts = getQueryParts(query);
 		for (String queryPart : queryParts) {
-			conjunction.add(personSearchCriteria.prepareCriterionForAttribute(queryPart));
+			conjunction.add(personSearchCriteria.prepareCriterionForAttribute(queryPart, matchMode));
 		}
 		
 		return conjunction;

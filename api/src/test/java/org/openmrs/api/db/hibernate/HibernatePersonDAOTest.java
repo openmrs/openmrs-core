@@ -20,7 +20,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Person;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.util.GlobalPropertiesTestHelper;
+import org.openmrs.util.OpenmrsConstants;
 
 import java.util.List;
 
@@ -36,6 +39,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	
 	private PersonAttributeHelper personAttributeHelper;
 	
+	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
+	
 	@Before
 	public void getPersonDAO() throws Exception {
 		executeDataSet(PEOPLE_FROM_THE_SHIRE_XML);
@@ -44,6 +49,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		
 		personAttributeHelper = new PersonAttributeHelper(sessionFactory);
+		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
 	}
 	
 	private void logPeople(List<Person> people) {
@@ -183,6 +189,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetOnePersonByAttribute() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("Story Teller", false);
@@ -198,6 +206,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetOnePersonByRandomCaseAttribute() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		
 		List<Person> people = hibernatePersonDAO.getPeople("sToRy TeLlEr", false);
@@ -213,6 +223,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetOnePersonBySearchingForAMixOfAttributeAndVoidedAttribute() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		Assert.assertFalse(personAttributeHelper.voidedPersonAttributeExists("Story teller"));
 		Assert.assertTrue(personAttributeHelper.voidedPersonAttributeExists("Master thief"));
@@ -230,6 +242,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetMultiplePeopleBySingleAttribute() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Senior ring bearer"));
 		List<Person> people = hibernatePersonDAO.getPeople("Senior ring bearer", false);
 		logPeople(people);
@@ -247,6 +261,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPeople_shouldGetMultiplePeopleByMultipleAttributes() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Senior ring bearer"));
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		List<Person> people = hibernatePersonDAO.getPeople("Story Bearer", false);
@@ -627,5 +643,25 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("dead-papa", people.get(1).getPersonName().getFamilyName2());
 		Assert.assertTrue(people.get(0).getFamilyName() != people.get(1).getFamilyName());
 	}
+
+    /**
+     * @verifies obey attribute match mode
+     * @see HibernatePersonDAO#getPeople(String, Boolean)
+     */
+    @Test
+    public void getPeople_shouldObeyAttributeMatchMode() throws Exception {
+        // exact match mode
+        long patientCount = hibernatePersonDAO.getPeople("337-4820", false).size();
+        Assert.assertEquals(1, patientCount);
+
+        patientCount = hibernatePersonDAO.getPeople("337", false).size();
+        Assert.assertEquals(0, patientCount);
+
+        globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+                OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
+
+        patientCount = hibernatePersonDAO.getPeople("337", false).size();
+        Assert.assertEquals(1, patientCount);
+    }
 	
 }

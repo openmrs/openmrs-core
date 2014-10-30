@@ -792,6 +792,12 @@ public final class OpenmrsConstants {
 	
 	public static final int GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE = 1000;
 	
+	public static final String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE = "person.attributeSearchMatchMode";
+	
+	public static final String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT = "EXACT";
+	
+	public static final String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE = "ANYWHERE";
+	
 	public static final String GLOBAL_PROPERTY_GZIP_ENABLED = "gzip.enabled";
 	
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
@@ -1593,8 +1599,16 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_UNKNOWN_PROVIDER_UUID, "", "Specifies the uuid of the Unknown Provider account"));
 		
 		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE, "EXACT",
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE,
+		                "EXACT",
 		                "Specifies how provider identifiers are matched while searching for providers. Valid values are START,EXACT, END or ANYWHERE"));
+		
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT,
+		                "Specifies how person attributes are matched while searching person. Valid values are 'ANYWHERE' or 'EXACT'. Defaults to exact if missing or invalid value is present."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
