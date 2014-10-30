@@ -314,6 +314,7 @@ public interface PatientDAO {
 	 * @should count patients by name _ signature no 2
 	 * @should count patients by identifier _ signature no 2
 	 * @should count patients by searchable attribute _ signature no 2
+	 * @should obey attribute match mode
 	 */
 	public Long getCountOfPatients(String query);
 	
