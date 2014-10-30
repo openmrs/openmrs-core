@@ -1,0 +1,20 @@
+<ehcache>
+
+    <diskStore path="user.home"/>
+
+    <defaultCache maxElementsInMemory="1000" eternal="false"
+                  timeToIdleSeconds="30" timeToLiveSeconds="30" overflowToDisk="false"
+                  diskPersistent="false" diskExpiryThreadIntervalSeconds="45"/>
+
+    <cache name="userSearchLocales"
+           maxElementsInMemory="5000"
+           eternal="true"
+           overflowToDisk="false"
+           timeToIdleSeconds="12000"
+           timeToLiveSeconds="12000"
+           diskPersistent="false"
+           diskExpiryThreadIntervalSeconds="120"
+           memoryStoreEvictionPolicy="LRU"
+            />
+
+</ehcache>
