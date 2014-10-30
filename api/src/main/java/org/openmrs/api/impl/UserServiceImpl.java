@@ -42,6 +42,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -79,6 +80,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
 	 */
+	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public User saveUser(User user, String password) throws APIException {
 		if (user.getUserId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_USERS);

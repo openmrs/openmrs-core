@@ -1593,7 +1593,9 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_UNKNOWN_PROVIDER_UUID, "", "Specifies the uuid of the Unknown Provider account"));
 		
 		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE, "EXACT",
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE,
+		                "EXACT",
 		                "Specifies how provider identifiers are matched while searching for providers. Valid values are START,EXACT, END or ANYWHERE"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
