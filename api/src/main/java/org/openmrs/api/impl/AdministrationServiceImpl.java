@@ -70,6 +70,8 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
@@ -762,6 +764,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperties(java.util.List)
 	 */
+	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException {
 		log.debug("saving a list of global properties");
 		
@@ -778,6 +781,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
+	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
 		// only try to save it if the global property has a key
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
@@ -1253,14 +1257,17 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#getSearchLocales(org.openmrs.User)
+	 * @see org.openmrs.api.AdministrationService#getSearchLocales()
 	 */
 	@Override
+	public List<Locale> getSearchLocales() {
+		return Context.getAdministrationService().getSearchLocales(Context.getLocale(), Context.getAuthenticatedUser());
+	}
+	
 	@Transactional(readOnly = true)
-	public List<Locale> getSearchLocales() throws APIException {
+	@Cacheable(value = "userSearchLocales")
+	public List<Locale> getSearchLocales(Locale currentLocale, User user) {
 		Set<Locale> locales = new LinkedHashSet<Locale>();
-		
-		Locale currentLocale = Context.getLocale();
 		
 		locales.add(currentLocale); //the currently used full locale
 		
@@ -1268,7 +1275,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		locales.add(new Locale(currentLocale.getLanguage()));
 		
 		//add user's proficient locales
-		User user = Context.getAuthenticatedUser();
 		if (user != null) {
 			List<Locale> proficientLocales = user.getProficientLocales();
 			if (proficientLocales != null) {
