@@ -215,19 +215,27 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, Integer, Integer)
+	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, boolean, Integer, Integer)
 	 */
 	@Override
-	public List<Patient> getPatients(String query, Integer start, Integer length) throws DAOException {
+	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws DAOException {
 		if (StringUtils.isBlank(query) || (length != null && length < 1)) {
 			return Collections.emptyList();
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query);
+		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query, includeVoided);
 		setFirstAndMaxResult(criteria, start, length);
 		
 		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, Integer, Integer)
+	 */
+	@Override
+	public List<Patient> getPatients(String query, Integer start, Integer length) throws DAOException {
+		return getPatients(query, false, start, length);
 	}
 	
 	private void setFirstAndMaxResult(Criteria criteria, Integer start, Integer length) {
@@ -614,6 +622,23 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query);
+		
+		// Using Hibernate projections did NOT work here, the resulting queries could not be executed due to
+		// missing group-by clauses. Hence the poor man's implementation of counting search results.
+		//
+		return (long) criteria.list().size();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getCountOfPatients(String, boolean)
+	 */
+	public Long getCountOfPatients(String query, boolean includeVoided) {
+		if (StringUtils.isBlank(query)) {
+			return 0L;
+		}
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query, includeVoided);
 		
 		// Using Hibernate projections did NOT work here, the resulting queries could not be executed due to
 		// missing group-by clauses. Hence the poor man's implementation of counting search results.

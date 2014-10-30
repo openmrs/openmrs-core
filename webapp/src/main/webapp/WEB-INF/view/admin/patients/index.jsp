@@ -14,7 +14,7 @@
 
 <script type="text/javascript">
 	$j(document).ready(function() {
-		new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler, 
+		new OpenmrsSearch("findPatients", true, doPatientSearch, doSelectionHandler,
 				[	{fieldName:"identifier", header:omsgs.identifier},
 					{fieldName:"givenName", header:omsgs.givenName},
 					{fieldName:"middleName", header:omsgs.middleName},
@@ -50,7 +50,11 @@
 	
 	//searchHandler for the Search widget
 	function doPatientSearch(text, resultHandler, getMatchCount, opts) {
-		DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
+		DWRPatientService.findCountAndPatientsWithVoided(text, opts.start, opts.length, getMatchCount, includeVoidedPatients(), resultHandler);
+	}
+
+	function includeVoidedPatients() {
+	    return document.getElementById("includeVoided").checked;
 	}
 </script>
 

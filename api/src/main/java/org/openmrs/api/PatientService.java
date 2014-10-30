@@ -580,6 +580,18 @@ public interface PatientService extends OpenmrsService {
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;
 	
 	/**
+	 * @param query the string to search on
+	 * @param includeVoided true/false whether or not to included voided patients
+	 * @param start the starting index
+	 * @param length the number of patients to return
+	 * @return a list of matching Patients
+	 * @throws APIException
+	 * @since 1.11
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
+	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException;
+	
+	/**
 	 * @see #getPatientByExample(Patient)
 	 * @deprecated use #getPatientByExample(Patient)
 	 */
@@ -982,6 +994,14 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public Integer getCountOfPatients(String query);
+	
+	/**
+	 * @param query the string to search on
+	 * @param includeVoided true/false whether or not to included voided patients
+	 * @return the number of patients matching the given search phrase
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
+	public Integer getCountOfPatients(String query, boolean includeVoided);
 	
 	/**
 	 * Get a limited size of patients from a given start index based on given criteria The
