@@ -298,19 +298,24 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @should return negative if this attribute has lower attribute id than argument
 	 */
 	public int compareTo(PersonAttribute other) {
-		int retValue = 0;
-		retValue = isVoided().compareTo(other.isVoided());
-		if (retValue == 0)
-			retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-		if (retValue == 0)
-			retValue = getAttributeType().getPersonAttributeTypeId().compareTo(
-			    other.getAttributeType().getPersonAttributeTypeId());
-		if (retValue == 0)
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue());
-		if (retValue == 0)
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeId(), other.getPersonAttributeId());
+		int retValue;
+		if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType(), other.getAttributeType())) != 0) {
+			return retValue;
+		}
 		
-		return retValue;
+		if ((retValue = isVoided().compareTo(other.isVoided())) != 0) {
+			return retValue;
+		}
+		
+		if ((retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated())) != 0) {
+			return retValue;
+		}
+		
+		if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue())) != 0) {
+			return retValue;
+		}
+
+		return OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeId(), other.getPersonAttributeId());
 	}
 	
 	/**
