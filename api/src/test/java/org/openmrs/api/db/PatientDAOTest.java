@@ -1540,6 +1540,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldGetOnePatientByAttribute_SignatureNo2() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		List<Patient> patients = dao.getPatients("Story teller", 0, 11);
 		Assert.assertEquals(1, patients.size());
@@ -1551,6 +1553,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldGetOnePatientByRandomCaseAttribute_SignatureNo2() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Story teller"));
 		List<Patient> patients = dao.getPatients("STORY teller", 0, 11);
 		Assert.assertEquals(1, patients.size());
@@ -1575,6 +1579,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldGetMultiplePatientsBySingleAttribute_SignatureNo2() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		Assert.assertTrue(personAttributeHelper.personAttributeExists("Senior ring bearer"));
 		List<Patient> patients = dao.getPatients("Senior ring bearer", 0, 11);
 		
@@ -2011,7 +2017,30 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCountOfPatients_shouldCountPatientsBySearchableAttribute_SignatureNo2() throws Exception {
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
 		long patientCount = dao.getCountOfPatients("Story teller");
 		Assert.assertEquals(1, patientCount);
 	}
+	
+	/**
+	 * @verifies obey attribute match mode
+	 * @see HibernatePatientDAO#getCountOfPatients(String)
+	 */
+	@Test
+	public void getCountOfPatients_shouldObeyAttributeMatchMode() throws Exception {
+		// exact match mode
+		long patientCount = dao.getCountOfPatients("Cook");
+		Assert.assertEquals(1, patientCount);
+		
+		patientCount = dao.getCountOfPatients("ook");
+		Assert.assertEquals(0, patientCount);
+		
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
+		
+		patientCount = dao.getCountOfPatients("ook");
+		Assert.assertEquals(1, patientCount);
+	}
+	
 }

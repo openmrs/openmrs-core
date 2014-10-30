@@ -26,6 +26,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
@@ -265,10 +266,12 @@ public class HibernatePersonDAO implements PersonDAO {
 		}
 		
 		Disjunction disjunction = Restrictions.disjunction();
+		MatchMode matchMode = personSearchCriteria.getAttributeMatchMode();
+		
 		for (String value : values) {
 			if (value != null && value.length() > 0) {
 				disjunction.add(personSearchCriteria.prepareCriterionForName(value, voided)).add(
-				    personSearchCriteria.prepareCriterionForAttribute(value, voided));
+				    personSearchCriteria.prepareCriterionForAttribute(value, voided, matchMode));
 			}
 		}
 		criteria.add(disjunction);

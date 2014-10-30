@@ -15,25 +15,27 @@ package org.openmrs.api.db.hibernate;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.*;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 
 public class PersonSearchCriteria {
 	
-	Criterion prepareCriterionForAttribute(String value) {
-		return (prepareCriterionForAttribute(value, null));
+	Criterion prepareCriterionForAttribute(String value, MatchMode matchMode) {
+		return (prepareCriterionForAttribute(value, null, matchMode));
 	}
 	
 	Criterion prepareCriterionForName(String value) {
 		return prepareCriterionForName(value, null);
 	}
 	
-	Criterion prepareCriterionForAttribute(String value, Boolean voided) {
+	Criterion prepareCriterionForAttribute(String value, Boolean voided, MatchMode matchMode) {
 		if (voided == null || voided == false)
 			return Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
-			    Restrictions.eq("attribute.voided", false)).add(
-			    Restrictions.ilike("attribute.value", value, MatchMode.ANYWHERE));
+			    Restrictions.eq("attribute.voided", false)).add(Restrictions.ilike("attribute.value", value, matchMode));
 		else
 			return Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
-			    Restrictions.ilike("attribute.value", value, MatchMode.ANYWHERE));
+			    Restrictions.ilike("attribute.value", value, matchMode));
 	}
 	
 	Criterion prepareCriterionForName(String value, Boolean voided) {
@@ -59,4 +61,13 @@ public class PersonSearchCriteria {
 		criteria.createAlias("attributes", "attribute", CriteriaSpecification.LEFT_JOIN);
 		criteria.createAlias("attribute.attributeType", "attributeType", CriteriaSpecification.LEFT_JOIN);
 	}
+	
+	MatchMode getAttributeMatchMode() {
+		AdministrationService adminService = Context.getAdministrationService();
+		String matchModeProperty = adminService.getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE, "");
+		return (matchModeProperty.equals(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE)) ? MatchMode.ANYWHERE
+		        : MatchMode.EXACT;
+	}
+	
 }

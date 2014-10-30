@@ -11,6 +11,7 @@
 
     <person_attribute_type person_attribute_type_id="44" name="Profession" description="Profession of this person" format="java.lang.String" searchable="true" creator="1" date_created="2013-03-01 12:34:56.7" retired="false" uuid="AB9F5949-6B3C-4F49-A64D-3960BA19E1B1" sort_weight="2"/>
     <person_attribute_type person_attribute_type_id="45" name="Favourite meal" description="Favourite meal of this person" format="java.lang.String" searchable="false" creator="1" date_created="2013-03-01 12:34:56.7" retired="false" uuid="A756EDE5-C9DD-423D-8C91-C9B5C6A8527A" sort_weight="2"/>
+    <person_attribute_type person_attribute_type_id="46" name="Phone number" description="Phone number of this person" format="java.lang.String" searchable="true" creator="1" date_created="2013-03-01 12:34:56.7" retired="false" uuid="A756EDE5-C9DD-423D-8C91-C9B5C6A8527B" sort_weight="2"/>
 
     <person_attribute person_attribute_id="46" person_id="42" value="Master thief" person_attribute_type_id="44" creator="1" date_created="2013-03-01 12:34:56.7" voided="true" uuid="7FA3D76E-D360-4630-B74F-7C47CB67713F"/>
     <person_attribute person_attribute_id="47" person_id="42" value="Senior ring bearer" person_attribute_type_id="44" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="1220023D-B89D-42AE-99C3-41471E3FC6ED"/>
@@ -18,6 +19,7 @@
     <person_attribute person_attribute_id="49" person_id="42" value="Porridge with honey" person_attribute_type_id="45" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="2224C129-DEC0-41CA-B519-E8B308D53696"/>
     <person_attribute person_attribute_id="50" person_id="43" value="Senior ring bearer" person_attribute_type_id="44" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="32F006BF-C682-41C3-8BE5-D82367252D38"/>
     <person_attribute person_attribute_id="51" person_id="43" value="Mushroom pie" person_attribute_type_id="45" creator="1" date_created="2013-03-01 12:34:56.7" voided="true" uuid="D5ACDAF6-A48B-407B-9A9C-79C7270DABAB"/>
+    <person_attribute person_attribute_id="52" person_id="43" value="337-4820" person_attribute_type_id="46" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="D5ACDAF6-A48B-407B-9A9C-79C7270DABAC"/>
 
     <!--
         People without attributes for testing searches for different parts of names
