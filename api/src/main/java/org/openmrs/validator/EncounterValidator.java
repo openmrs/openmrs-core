@@ -77,7 +77,7 @@ public class EncounterValidator implements Validator {
 		Encounter encounter = (Encounter) obj;
 		
 		ValidationUtils.rejectIfEmpty(errors, "patient", "Encounter.error.patient.required", "Patient is required");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "Encounter.datetime.required");
 		if (encounter.getVisit() != null && !ObjectUtils.equals(encounter.getVisit().getPatient(), encounter.getPatient())) {
 			errors.rejectValue("visit", "Encounter.visit.patients.dontMatch",
 			    "The patient for the encounter and visit should be the same");

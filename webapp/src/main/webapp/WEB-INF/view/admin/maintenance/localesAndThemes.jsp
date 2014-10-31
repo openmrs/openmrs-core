@@ -13,7 +13,7 @@
 <form method="post">
 	<table>
 		<tr>
-			<td><openmrs:message code="LocalesAndThemes.locale"/><span class="required">*</span></td>
+			<td><openmrs:message code="LocalesAndThemes.locale"/></td>
 			<td>
 				<input type="text" name="locale" value="${locale}"/>
 				<%--
