@@ -88,12 +88,13 @@ public class LocalesAndThemesFormController {
 		}
 		
 		//displaying the success or failure message
-		if (localeInList || StringUtils.isBlank(locale)) {
-			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
-			    "LocalesAndThemes.saved"), WebRequest.SCOPE_SESSION);
+		if (localeInList) {
+			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "LocalesAndThemes.saved", WebRequest.SCOPE_SESSION);
+		} else if (StringUtils.isBlank(locale)) {
+			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "LocalesAndThemes.locale.isRequired",
+			    WebRequest.SCOPE_SESSION);
 		} else {
-			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
-			    "LocalesAndThemes.localeError"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "LocalesAndThemes.localeError", WebRequest.SCOPE_SESSION);
 		}
 		
 		return "redirect:/admin/maintenance/localesAndThemes.form";
