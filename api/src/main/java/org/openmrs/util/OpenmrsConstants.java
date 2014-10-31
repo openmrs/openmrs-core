@@ -197,6 +197,18 @@ public final class OpenmrsConstants {
 	public static String APPLICATION_DATA_DIRECTORY = null;
 	
 	/**
+	 * The directory which OpenMRS should attempt to use as its application data directory
+	 * in case the current users home dir is not writeable (e.g. when using application servers
+	 * like tomcat to deploy OpenMRS).
+	 *
+	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
+	 * @see OpenmrsUtil#getApplicationDataDirectory()
+	 */
+	public static String APPLICATION_DATA_DIRECTORY_FALLBACK_UNIX = "/var/lib";
+	
+	public static String APPLICATION_DATA_DIRECTORY_FALLBACK_WIN = System.getenv("%appdata%");
+	
+	/**
 	 * The name of the runtime property that a user can set that will specify where openmrs's
 	 * application directory is
 	 * 
