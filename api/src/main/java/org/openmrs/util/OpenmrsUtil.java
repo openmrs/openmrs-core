@@ -1322,7 +1322,7 @@ public class OpenmrsUtil {
 	 */
 	public static void validateJavaVersion() {
 		// check whether the current JVM version is at least Java 6
-		if (JdkVersion.getMajorJavaVersion() < JdkVersion.JAVA_16) {
+		if (JdkVersion.getJavaVersion().matches("1.(0|1|2|3|4|5).(.*)")) {
 			throw new APIException("OpenMRS requires Java 6, but is running under " + JdkVersion.getJavaVersion());
 		}
 	}
