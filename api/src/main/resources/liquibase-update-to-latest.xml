@@ -8466,6 +8466,9 @@
       <preConditions onFail="MARK_RAN">
         <columnExists tableName="patient" columnName="tribe"/>
       </preConditions>
+      <comment>
+          Dropping the tribe field from patient table because it has been moved to person_attribute.
+      </comment>
       <dropColumn tableName="patient" columnName="tribe"/>
     </changeSet>
 </databaseChangeLog>
