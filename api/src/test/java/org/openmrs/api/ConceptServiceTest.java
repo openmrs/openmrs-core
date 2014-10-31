@@ -1106,7 +1106,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)} test = should save a
 	 *           concept name tag if tag does not exist
 	 */
-	@Test(expected = Exception.class)
+	@Test
 	public void saveConceptNameTag_shouldSaveAConceptNameTagIfATagDoesNotExist() throws Exception {
 		ConceptNameTag nameTag = new ConceptNameTag();
 		nameTag.setTag("a new tag");

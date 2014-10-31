@@ -53,8 +53,6 @@ public class ImplementationIdValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "ImplementationId.name.empty");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "implementationId", "ImplementationId.implementationId.empty");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "passphrase", "ImplementationId.passphrase.empty");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "ImplementationId.description.empty");
-			
 			if (implId.getImplementationId() != null && StringUtils.containsAny(implId.getImplementationId(), illegalChars)) {
 				errors.rejectValue("implementationId", "ImplementationId.implementationId.invalidcharacter");
 			}
