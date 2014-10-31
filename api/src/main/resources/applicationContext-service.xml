@@ -5,6 +5,7 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:p="http://www.springframework.org/schema/p"
 	   xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
 	   xmlns:jee="http://www.springframework.org/schema/jee"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:aop="http://www.springframework.org/schema/aop"
@@ -20,7 +21,9 @@
 			http://www.springframework.org/schema/aop
            	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
             http://www.springframework.org/schema/util
-            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+            http://www.springframework.org/schema/util/spring-util-3.0.xsd
+            http://www.springframework.org/schema/cache
+            http://www.springframework.org/schema/cache/spring-cache.xsd">
 	<!--  **************************  Transactional Intercepter  *************************  -->
 	<!--  	
 		Looks for advisors (TransactionAttributeSourceAdvisor) in the context, and automatically 
@@ -64,8 +67,8 @@
 				<bean class="org.openmrs.util.LocationUtility" />
 				<bean class="org.openmrs.api.impl.PersonNameGlobalPropertyListener" />
 				<ref bean="globalLocaleList" />
-				<ref bean="adminServiceTarget" />
-                <ref bean="orderServiceTarget" />
+				<ref bean="adminService" />
+              <ref bean="orderServiceTarget" />
 			</list>
 		</property>
 	</bean>
@@ -108,7 +111,15 @@
         <property name="serviceContext"><ref bean="serviceContext"/></property>
         <property name="contextDAO"><ref bean="contextDAO"/></property>
 	</bean>
-	
+
+    <bean id="apiEhCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation" value="classpath:api-ehcache.xml"/>
+        <property name="shared" value="true"/>
+    </bean>
+
+    <bean id="apiCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+          p:cacheManager-ref="apiEhCacheManager" />
+
 	<!--  **************************  DATA ACCESS OBJECTS  *************************  -->		
 
 	<bean id="contextDAO" class="org.openmrs.api.db.hibernate.HibernateContextDAO">
@@ -257,11 +268,10 @@
 		<property name="orderDAO"><ref bean="orderDAO"/></property>
 	</bean>
 	<bean id="formServiceTarget" class="org.openmrs.api.impl.FormServiceImpl">
-		<property name="formDAO"><ref bean="formDAO"/></property>	
+		<property name="formDAO"><ref bean="formDAO"/></property>
 	</bean>
 	<bean id="adminServiceTarget" class="org.openmrs.api.impl.AdministrationServiceImpl">
-		<property name="administrationDAO"><ref bean="adminDAO"/></property>	
-		<property name="eventListeners"><ref bean="openmrsEventListeners"/></property>
+		<property name="administrationDAO"><ref bean="adminDAO"/></property>
 		<property name="globalLocaleList"><ref bean="globalLocaleList"/></property>
 		<property name="implementationIdHttpClient"><ref bean="implementationIdHttpClient"/></property>
 	</bean>
@@ -798,5 +808,7 @@
 		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/> <!-- Excludes classes with unit test super classes -->
 		<context:exclude-filter type="custom" expression="org.openmrs.annotation.OpenmrsProfileExcludeFilter" />
 	</context:component-scan>
-    
+
+    <cache:annotation-driven cache-manager="apiCacheManager" />
+
 </beans>
