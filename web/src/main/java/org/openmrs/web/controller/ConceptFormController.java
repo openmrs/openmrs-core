@@ -46,6 +46,7 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSet;
 import org.openmrs.Drug;
 import org.openmrs.Form;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -67,7 +68,6 @@ import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.validator.ConceptValidator;
 import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.concept.ConceptReferenceTermWebValidator;
@@ -932,14 +932,14 @@ public class ConceptFormController extends SimpleFormController {
 			for (Drug drug : Context.getConceptService().getDrugsByConcept(concept)) {
 				drugs.add(new Link(drug.getName(), "/admin/concepts/conceptDrug.form?drugId=" + drug.getId()));
 			}
-			togo.add(new ConceptUsageExtension("dictionary.drugs", drugs, PrivilegeConstants.VIEW_CONCEPTS));
+			togo.add(new ConceptUsageExtension("dictionary.drugs", drugs, PrivilegeConstants.GET_CONCEPTS));
 			
 			// Programs
 			List<Link> programs = new ArrayList<Link>();
 			for (Program program : Context.getProgramWorkflowService().getProgramsByConcept(concept)) {
 				programs.add(new Link(program.getName(), "/admin/programs/program.form?programId=" + program.getId()));
 			}
-			togo.add(new ConceptUsageExtension("dictionary.programs", programs, PrivilegeConstants.VIEW_PROGRAMS));
+			togo.add(new ConceptUsageExtension("dictionary.programs", programs, PrivilegeConstants.GET_PROGRAMS));
 			
 			// ProgramWorkflows
 			List<Link> programWorkflows = new ArrayList<Link>();
@@ -948,7 +948,7 @@ public class ConceptFormController extends SimpleFormController {
 				        "/admin/programs/workflow.form?programWorkflowId=" + programWorkflow.getId()));
 			}
 			togo.add(new ConceptUsageExtension("dictionary.programworkflows", programWorkflows,
-			        PrivilegeConstants.VIEW_PROGRAMS));
+			        PrivilegeConstants.GET_PROGRAMS));
 			
 			// ProgramWorkflowStates
 			List<Link> programWorkflowStates = new ArrayList<Link>();
@@ -957,7 +957,17 @@ public class ConceptFormController extends SimpleFormController {
 				programWorkflowStates.add(new Link(programWorkflowState.getProgramWorkflow().getProgram().getName(), ""));
 			}
 			togo.add(new ConceptUsageExtension("dictionary.programworkflowstates", programWorkflowStates,
-			        PrivilegeConstants.VIEW_PROGRAMS));
+			        PrivilegeConstants.GET_PROGRAMS));
+			
+			// PersonAttributeTypes
+			List<Link> personAttributeTypes = new ArrayList<Link>();
+			for (PersonAttributeType pat : Context.getPersonService().getPersonAttributeTypes(null, Concept.class.getName(),
+			    concept.getId(), null)) {
+				personAttributeTypes.add(new Link(pat.getName(),
+				        "/admin/person/personAttributeType.form?personAttributeTypeId=" + pat.getId()));
+			}
+			togo.add(new ConceptUsageExtension("dictionary.personattributetypes", personAttributeTypes,
+			        PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES));
 			
 			return togo;
 		}
