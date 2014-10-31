@@ -8468,4 +8468,50 @@
       </preConditions>
       <dropColumn tableName="patient" columnName="tribe"/>
     </changeSet>
+
+    <changeSet id="201410291606-TRUNK-3474" author="jbuczynski">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="program"/>
+            <columnExists tableName="program" columnName="description"  />
+        </preConditions>
+        <comment>
+            Dropping not null constraint from program.description column
+        </comment>
+        <dropNotNullConstraint tableName="program" columnName="description" columnDataType="text" />
+    </changeSet>
+
+    <changeSet id="201410291613-TRUNK-3474" author="jbuczynski">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="order_type"/>
+            <columnExists tableName="order_type" columnName="description"  />
+        </preConditions>
+        <comment>
+            Dropping not null constraint from order_type.description column
+        </comment>
+        <dropNotNullConstraint tableName="order_type" columnName="description" columnDataType="text" />
+    </changeSet>
+
+    <changeSet id="201410291614-TRUNK-3474" author="jbuczynski">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="concept_name_tag"/>
+            <columnExists tableName="concept_name_tag" columnName="description"  />
+        </preConditions>
+        <comment>
+            Dropping not null constraint from concept_name_tag.description column
+        </comment>
+        <dropNotNullConstraint tableName="concept_name_tag" columnName="description" columnDataType="text" />
+    </changeSet>
+
+    <changeSet id="201410291616-TRUNK-3474" author="jbuczynski">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="active_list_type"/>
+            <columnExists tableName="active_list_type" columnName="description"  />
+        </preConditions>
+        <comment>
+            Dropping not null constraint from active_list_type.description column
+        </comment>
+        <dropNotNullConstraint tableName="active_list_type" columnName="description" columnDataType="varchar(255)" />
+    </changeSet>
+
+
 </databaseChangeLog>
