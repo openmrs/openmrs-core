@@ -2415,6 +2415,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE);
 	}
 	
+	/**
+	 * @see {@link EncounterService#getEncounterVisitHandler()}
+	 */
 	@Test(expected = APIException.class)
 	public void getActiveEncounterVisitHandler_shouldThrowIfBeanWithGivenTypeAndNameNotFound() {
 		
@@ -2429,6 +2432,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	/**
+	 * @see {@link EncounterService#getEncounterVisitHandler()}
+	 */
 	public void getActiveEncounterVisitHandler_shouldReturnBeanHaveBeenRegisteredWithGivenName() {
 		
 		String correctBeanName = OpenmrsConstants.REGISTERED_COMPONENT_NAME_PREFIX + "existingOrNewVisitAssignmentHandler";
@@ -2645,6 +2651,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounterService.purgeEncounterType(encounterType);
 	}
 	
+	/**
+	 * @see {@link EncounterService#getEncounterRoleByName(String name)
+	 */
 	@Test
 	@Verifies(value = "find encounter roles based on their name", method = "getEncounterRolesByName(String)")
 	public void getEncounterRolesByName_shouldFindEncounterRolesByName() throws Exception {

@@ -54,7 +54,9 @@ import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 
 /**
- *
+ *This class creates a patient set service test.
+ * 
+ * @extends BaseContextSensitiveTest
  */
 public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	
