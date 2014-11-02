@@ -10,6 +10,7 @@
 	//variable to cache the id of the checkbox of the selected preferred patientIdentifier
 	var prefIdentifierElementId = null;
 	var numberOfClonedElements = 0;
+    var currentSelectedIdentifier = "";
 	var idTypeLocationRequired = {};
 	var currentIdentifierCount = ${fn:length(patientModel.identifiers)};
 	<c:forEach items="${identifierTypes}" var="idType">
@@ -31,9 +32,13 @@
 			var select = selects[i];
 			if (select && selects[i].name == "identifierType") {					
 				select.name = 'identifiers[' + index + '].identifierType';
+				select.id = 'identifiers[' + index + '].identifierType';
 				$j(select).change(function(){
-					toggleLocationBox(this.options[this.selectedIndex].value,'identifiers'+ index +'_location');
+					toggleLocationBoxAndIndentifierTypeWarning(this.options[this.selectedIndex].value,'identifiers'+ index +'_location',index);
 				});
+                $j(select).focus(function(){
+                    storeSelectedIdentifierType(this.options[this.selectedIndex].text);
+                });
 			}
 			else if (select && selects[i].name == "location") {					
 				select.name = 'identifiers[' + index + '].location';
@@ -41,6 +46,7 @@
 			}
 		}
 		$j(newrow).find('.locationNotApplicableClass').attr('id', 'identifiers'+ index +'_location_NA')
+		$j(newrow).find('#identifierTypeWarning').attr('id', 'identifierTypeWarning'+ index);
 
 		for (var x = 0; x < inputs.length; x++) {
 			var input = inputs[x];
@@ -59,7 +65,7 @@
 				//set the onclick event for this identifier's remove button,
 				//so that we check the corresponding hidden checkbox to mark a removed identifier
 				$j(input).click(function(){
-					removeRow(this, 'identifiers[' + index + '].isVoided');
+					removeRow(this, 'identifiers[' + index + '].isVoided', index);
 				});
 			}
 		}
@@ -114,7 +120,8 @@
 		return age;
 	}
 	
-	function removeRow(btn, checkBoxId) {
+	function removeRow(btn, checkBoxId, index) {
+		refreshDuplicateIdentifierTypeWarningsAtRemove(index);
 		var parent = btn.parentNode;
 		while (parent.tagName.toLowerCase() != "tr")
 			parent = parent.parentNode;
@@ -126,9 +133,8 @@
 		}
 		
 		currentIdentifierCount --;
-		if(currentIdentifierCount < 2){
-			$j("#identifiersTbody > tr:visible > td:last-child > input.closeButton").hide();
-		}
+		var identifiersId = 'identifiers['+index+']';
+		$j(document.getElementById(identifiersId)).remove();
 	}
 	
 	function removeHiddenRows() {
@@ -184,8 +190,100 @@
 	function preferredBoxClick(obj) {
 		//do nothing
 	}
-	
-	function toggleLocationBox(identifierType,location) {
+
+    function showOrHideDuplicateIdentifierTypeWarnings(index) {
+        var equalCount=0;
+        var identifierTypeWarningDivId="identifierTypeWarning"+index;
+        var identifierTypeId;
+        if(index==0) {
+            identifierTypeId = 'identifiers' + index + '.identifierType';
+        } else {
+            identifierTypeId = 'identifiers[' + index + '].identifierType';
+        }
+        var jQueryObj = $j(document.getElementById(identifierTypeId));
+        var identifierTypeName = jQueryObj.children("option").filter(":selected").text().trim();
+        $j('.patientIdentifierTypeColumn select > option:selected').each(function () {
+            if($j(this).text().trim()==identifierTypeName && identifierTypeName!='') {
+                equalCount++;
+            }
+        });
+        if(equalCount>1) {
+            $j('#'+identifierTypeWarningDivId).show();
+        } else {
+            $j('#'+identifierTypeWarningDivId).hide();
+        }
+    }
+
+    function refreshDuplicateIdentifierTypeWarningsAtChange(index) {
+        var rootNode;
+        var identifierTypeId;
+        if(index==0) {
+            identifierTypeId = 'identifiers' + index + '.identifierType';
+        } else {
+            identifierTypeId = 'identifiers[' + index + '].identifierType';
+        }
+        var jQueryObj = $j(document.getElementById(identifierTypeId));
+        var identifierTypeName = jQueryObj.children("option").filter(":selected").text().trim();
+        var duplicateCountForCurrentType = 0;
+        var duplicateCountForPreviousType = 0;
+        $j('.patientIdentifierTypeColumn select > option:selected').each(function () {
+            if ($j(this).text().trim() == identifierTypeName && identifierTypeName!='') {
+                if (this.parentNode.id.trim() != identifierTypeId) {
+                    rootNode = $j(this.parentNode.parentNode.parentNode);
+                    $j(rootNode).find('.duplicateIdentifierTypeWarning').find("div").show();
+                    duplicateCountForCurrentType++;
+                    if (duplicateCountForCurrentType < 2) {
+                        $j(rootNode).find('.duplicateIdentifierTypeWarning').find("div").hide();
+                    }
+                }
+            } else if ($j(this).text().trim() == currentSelectedIdentifier.trim()) {
+                rootNode = $j(this.parentNode.parentNode.parentNode);
+                $j(rootNode).find('.duplicateIdentifierTypeWarning').find("div").show();
+                duplicateCountForPreviousType++;
+                if (duplicateCountForPreviousType < 2 || currentSelectedIdentifier=='') {
+                    $j(rootNode).find('.duplicateIdentifierTypeWarning').find("div").hide();
+                }
+            }
+        });
+        currentSelectedIdentifier = "";
+    }
+
+    function refreshDuplicateIdentifierTypeWarningsAtRemove(index) {
+        var rootNode;
+        var identifierTypeId;
+        if(index==0) {
+            identifierTypeId = 'identifiers' + index + '.identifierType';
+        } else {
+            identifierTypeId = 'identifiers[' + index + '].identifierType';
+        }
+        var jQueryObj = $j(document.getElementById(identifierTypeId));
+        var identifierTypeName = jQueryObj.children("option").filter(":selected").text().trim();
+        var duplicateCountForCurrentType = 0;
+        $j('.patientIdentifierTypeColumn select > option:selected').each(function () {
+            if ($j(this).text().trim() == identifierTypeName && identifierTypeName!='') {
+                if (this.parentNode.id.trim() != identifierTypeId) {
+                rootNode = $j(this.parentNode.parentNode.parentNode);
+                $j(rootNode).find('.duplicateIdentifierTypeWarning').find("div").show();
+                    duplicateCountForCurrentType++;
+                    if (duplicateCountForCurrentType < 2) {
+                        $j(rootNode).find('.duplicateIdentifierTypeWarning').find("div").hide();
+                    }
+                }
+            }
+        });
+    }
+
+    function storeSelectedIdentifierType(selectedIdentifierType) {
+        currentSelectedIdentifier = selectedIdentifierType;
+    }
+
+    function toggleLocationBoxAndIndentifierTypeWarning(identifierType, location, index) {
+        showOrHideDuplicateIdentifierTypeWarnings(index);
+        refreshDuplicateIdentifierTypeWarningsAtChange(index, identifierType);
+        toggleLocationBox(identifierType,location);
+    }
+
+    function toggleLocationBox(identifierType,location) {
 		if (identifierType == '') {
 			$j('#'+location + '_NA').hide();
 			$j('#'+location).hide();
@@ -278,11 +376,11 @@
 						</spring:bind>
 					</td>
 					<openmrs:extensionPoint pointId="newPatientForm.identifierBody" />
-					<td class="idNumberDataColumn" valign="top">						
-						<form:select path="identifierType" onchange="toggleLocationBox(this.options[this.selectedIndex].value,'initialLocationBox${varStatus.index}');" >
+					<td class="idNumberDataColumn patientIdentifierTypeColumn" valign="top">
+						<form:select path="identifierType" onfocus="storeSelectedIdentifierType(this.options[this.selectedIndex].text)" onchange="toggleLocationBoxAndIndentifierTypeWarning(this.options[this.selectedIndex].value,'initialLocationBox${varStatus.index}', '${varStatus.index}');" >
 							<form:option value=""></form:option>
 							<form:options items="${identifierTypes}" itemValue="patientIdentifierTypeId" itemLabel="name" />
-						</form:select>						
+					        </form:select>
 					</td>
 					<td class="idNumberDataColumn" valign="top">
 						<c:set var="behavior" value="${id.identifierType.locationBehavior}"/>
@@ -313,8 +411,13 @@
 						<spring:bind path="voided">
 						<input type="hidden" name="_${status.expression}" value=""/>		
 						<input id="identifiers[${varStatus.index}].isVoided" type="checkbox" name="${status.expression}" value="${status.value}" <c:if test="${id.voided}">checked='checked'</c:if> style="display:none"/>						
-						<input type="button" name="closeButton" onClick="removeRow(this, 'identifiers[${varStatus.index}].isVoided');" class="closeButton" value='<openmrs:message code="general.remove"/>' <c:if test="${(varStatus.first && varStatus.last)}">style="display: none;"</c:if> />
+						<input type="button" name="closeButton" onClick="removeRow(this, 'identifiers[${varStatus.index}].isVoided','${varStatus.index}');" class="closeButton" value='<openmrs:message code="general.remove"/>' <c:if test="${(varStatus.first && varStatus.last)}">style="display: none;"</c:if> />
 						</spring:bind>
+					</td>
+					<td class="duplicateIdentifierTypeWarning">
+						<div style="display: none; background-color: #ffff88" id="identifierTypeWarning0">
+								<openmrs:message code="Patient.warning.duplicateIdentifierTypes"/>
+						</div>
 					</td>
 					</tr>
 					</spring:nestedPath>
@@ -326,7 +429,7 @@
 						<input type="text" size="30" name="identifier" value="" />
 					</td>
 					<openmrs:extensionPoint pointId="newPatientForm.identifierBody" />
-					<td class="idNumberDataColumn" valign="top">						
+					<td class="idNumberDataColumn patientIdentifierTypeColumn" valign="top">
 						<select name="identifierType">
 							<option value=""></option>
 							<openmrs:forEachRecord name="patientIdentifierType">
@@ -358,6 +461,11 @@
 						<input type="checkbox" name="newIdentifier.voided" value="false" style="display: none"/>
 						<input type="button" name="closeButton" class="closeButton" value='<openmrs:message code="general.remove"/>'/>
 					</td>
+                        <td class="duplicateIdentifierTypeWarning">
+                            <div style="display: none; background-color: #ffff88" id="identifierTypeWarning">
+                                <openmrs:message code="Patient.warning.duplicateIdentifierTypes"/>
+                            </div>
+                        </td>
 					</tr>
 				</tbody>
 			</table>			
@@ -580,7 +688,7 @@
 	updateAge();
 	var idT = document.getElementById('identifiers0.identifierType');
 	var idTi = idT.options[idT.selectedIndex].value;
-	toggleLocationBox(idTi,'initialLocationBox0');
+	toggleLocationBoxAndIndentifierTypeWarning(idTi,'initialLocationBox0',0);
 
 </script>
 
