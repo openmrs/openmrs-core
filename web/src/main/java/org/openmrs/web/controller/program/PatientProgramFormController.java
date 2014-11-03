@@ -113,7 +113,7 @@ public class PatientProgramFormController implements Controller {
 				}
 			}
 			try {
-				ValidateUtil.validate(pp);
+				ValidateUtil.validateWithErrorsCodes(pp);
 				Context.getProgramWorkflowService().savePatientProgram(pp);
 			}
 			catch (APIException e) {
@@ -142,7 +142,7 @@ public class PatientProgramFormController implements Controller {
 		PatientProgram p = Context.getProgramWorkflowService().getPatientProgram(Integer.valueOf(patientProgramIdStr));
 		p.setDateCompleted(dateCompleted);
 		try {
-			ValidateUtil.validate(p);
+			ValidateUtil.validateWithErrorsCodes(p);
 			Context.getProgramWorkflowService().savePatientProgram(p);
 		}
 		catch (APIException e) {
