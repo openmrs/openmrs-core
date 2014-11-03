@@ -245,7 +245,7 @@
 										</spring:bind>
 									  </c:catch>
 									  <c:if test="${not empty exp}">
-									  	<%--hide the label for the token's field since we are not displaying the input for this missng property --%>
+									  	<%--hide the label for the token's field since we are not displaying the input for this missing property --%>
 									  	<script>$j("#${token.codeName}_label").hide()</script>
 									  	<c:if test="${model.layoutShowErrors == true}">
 											<span class="error">${exp.message}</span>
