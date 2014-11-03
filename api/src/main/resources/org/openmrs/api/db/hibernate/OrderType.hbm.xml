@@ -16,7 +16,7 @@
 
         <property name="name" type="java.lang.String" not-null="true" length="255" unique="true" />
 
-        <property name="description" type="java.lang.String" not-null="true" length="1024"/>
+        <property name="description" type="java.lang.String" length="1024"/>
 
         <property name="javaClassName" type="java.lang.String" column="java_class_name" not-null="true" length="255" />
 

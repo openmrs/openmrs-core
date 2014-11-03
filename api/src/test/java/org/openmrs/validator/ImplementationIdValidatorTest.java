@@ -46,8 +46,8 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if description is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNull() {
+	@Verifies(value = "should pass validation if description is null", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfDescriptionIsNull() {
 		ImplementationId implementationId = new ImplementationId();
 		implementationId.setImplementationId("IMPL_ID");
 		implementationId.setPassphrase("PASSPHRASE");
@@ -55,7 +55,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(implementationId, "implementationId");
 		new ImplementationIdValidator().validate(implementationId, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 		Assert.assertFalse(errors.hasFieldErrors("implementationId"));
 		Assert.assertFalse(errors.hasFieldErrors("passphrase"));
 	}
@@ -88,7 +88,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("passphrase"));
 		Assert.assertTrue(errors.hasFieldErrors("implementationId"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("description"));
 	}
 	
 	/**

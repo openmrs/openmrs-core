@@ -49,7 +49,7 @@ public class ProgramValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
+	 * @should pass validation if description is null or empty or whitespace
 	 * @should fail validation if program name already in use
 	 * @should fail validation if concept is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
@@ -60,7 +60,6 @@ public class ProgramValidator implements Validator {
 			errors.rejectValue("program", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description.required");
 			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms(false);
 			for (Program program : programs) {
 				if (program.getName().equals(p.getName()) && !program.getUuid().equals(p.getUuid())) {

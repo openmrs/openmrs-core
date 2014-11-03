@@ -18,7 +18,7 @@
 
 		<property name="name" type="java.lang.String" not-null="true" length="255" />
 
-		<property name="description" type="java.lang.String" not-null="true" length="255" />
+		<property name="description" type="java.lang.String" length="255" />
 
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 

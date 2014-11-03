@@ -48,7 +48,7 @@ public class HL7SourceValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null
-	 * @should fail validation if description is null or empty or whitespace
+	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -57,7 +57,6 @@ public class HL7SourceValidator implements Validator {
 			errors.rejectValue("hl7Source", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
 	}
 	

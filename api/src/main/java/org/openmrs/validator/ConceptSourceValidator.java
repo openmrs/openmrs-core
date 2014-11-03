@@ -48,7 +48,7 @@ public class ConceptSourceValidator implements Validator {
 	 * 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
+	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if HL7 Code is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
@@ -58,7 +58,6 @@ public class ConceptSourceValidator implements Validator {
 			        + ConceptSource.class);
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description.required");
 		}
 		
 	}
