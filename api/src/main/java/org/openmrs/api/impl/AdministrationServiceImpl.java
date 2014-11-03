@@ -678,7 +678,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			gp.setProperty(propertyName);
 		}
 		gp.setPropertyValue(propertyValue);
-		dao.saveGlobalProperty(gp);
+		Context.getAdministrationService().saveGlobalProperty(gp);
 	}
 	
 	/**
