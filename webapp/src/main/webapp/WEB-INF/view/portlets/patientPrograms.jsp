@@ -609,7 +609,7 @@
 										<select name="initialState.${wf.programWorkflowId}">
 											<option value=""></option>
 											<c:forEach items="${wf.sortedStates}" var="wfState">
-												<c:if test="${wfState.initial}">
+												<c:if test="${wfState.initial && !wfState.retired}">
 													<option value="${wfState.programWorkflowStateId}"><openmrs:format concept="${wfState.concept}"/></option>
 												</c:if>
 											</c:forEach>
