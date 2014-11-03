@@ -173,7 +173,6 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public void purgeProgram(Program program) throws APIException {
 		Context.getProgramWorkflowService().purgeProgram(program, false);
-		
 	}
 	
 	/**
@@ -182,6 +181,10 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public void purgeProgram(Program program, boolean cascade) throws APIException {
 		if (cascade && !program.getAllWorkflows().isEmpty()) {
 			throw new APIException("Cascade purging of Programs is not implemented yet");
+		}
+		for (PatientProgram patientProgram : Context.getProgramWorkflowService().getPatientPrograms(null, program, null,
+		    null, null, null, true)) {
+			purgePatientProgram(patientProgram);
 		}
 		dao.deleteProgram(program);
 	}
