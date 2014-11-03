@@ -57,7 +57,7 @@ public class WebModuleUtilTest {
 	@Test
 	public void isModulePackageNameInTaskClass_shouldReturnFalseForDifferentPackageName() throws Exception {
 		String modulePackageName = "org.openmrs.logic.task";
-		String taskClass = "org.openmrs.logic.taskInitializeLogicRuleProvidersTask";
+		String taskClass = "org.openmrs.logic.TaskInitializeLogicRuleProvidersTask";
 		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
@@ -70,7 +70,7 @@ public class WebModuleUtilTest {
 	@Test
 	public void isModulePackageNameInTaskClass_shouldReturnFalseIfModuleHasLongerPackageName() throws Exception {
 		String modulePackageName = "org.openmrs.logic.task";
-		String taskClass = "org.openmrs.logic";
+		String taskClass = "org.openmrs.logic.TaskInitializeLogicRuleProvidersTask";
 		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
