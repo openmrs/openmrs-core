@@ -1194,7 +1194,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Gets the namespace for the form field that was used to capture the obs details in the form
 	 * 
 	 * @return the namespace
-	 * @since 1.10
+	 * @since 1.11
 	 * @should return the namespace for a form field that has no path
 	 * @should return the correct namespace for a form field with a path
 	 * @should return null if the namespace is not specified
@@ -1215,7 +1215,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Gets the path for the form field that was used to capture the obs details in the form
 	 * 
 	 * @return the the form field path
-	 * @since 1.10
+	 * @since 1.11
 	 * @should return the path for a form field that has no namespace
 	 * @should return the correct path for a form field with a namespace
 	 * @should return null if the path is not specified
@@ -1241,7 +1241,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @param namespace the namespace of the form field
 	 * @param formFieldPath the path of the form field
-	 * @since 1.10
+	 * @since 1.11
 	 * @should set the underlying formNamespaceAndPath in the correct pattern
 	 * @should reject a namepace containing the separator
 	 * @should reject a path containing the separator
