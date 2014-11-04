@@ -83,6 +83,8 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 		
 		EncounterRole encounterRole = Context.getEncounterService().getEncounterRoleByName("Unknown");
 		Assert.assertNotNull(encounterRole);
+		encounterRole.setName("Lab");
+		encounterRole.setDescription("desc");
 		Errors errors = new BindException(encounterRole, "encounterRole");
 		new EncounterRoleValidator().validate(encounterRole, errors);
 		Assert.assertFalse(errors.hasErrors());
