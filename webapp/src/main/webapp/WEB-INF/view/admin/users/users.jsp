@@ -8,8 +8,8 @@
 <%@ include file="localHeader.jsp"%>
 
 <style type="text/css">
-.italics_text{
-	font-style: italic;
+.bold_text{
+	font-weight: bold;
 }
 </style>
 
@@ -71,8 +71,7 @@
 			<th><openmrs:message code="PersonName.givenName" javaScriptEscape="true"/></th>
 			<th><openmrs:message code="PersonName.familyName" javaScriptEscape="true"/></th>
 			<th>
-				<openmrs:message code="User.otherRoles" javaScriptEscape="true"/> 
-				(<i><openmrs:message code="User.inheritedRolesInItalics" javaScriptEscape="true"/></i>)
+				<openmrs:message code="User.roles" javaScriptEscape="true"/>
 			</th>
 			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
 				<th><openmrs:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/></th>
@@ -94,12 +93,24 @@
 				<span title="${userRolesMap[user]}">
 				</c:if>
 				<c:forEach var="r" items="${userRolesMap[user]}" varStatus="varStatus" end="2">
-				<c:choose>
-					<c:when test="${varStatus.index == 0}">
-						<span <c:if test="${r == role}">class='italics_text'</c:if>>${r}</span>
-					</c:when>
-					<c:otherwise>, ${r}</c:otherwise>
-				</c:choose>
+					<c:choose>
+						<c:when test="${varStatus.index == 0}">
+							<c:choose>
+								<c:when test="${r == role}">
+									<span class='bold_text'>${r} </span>
+								</c:when>
+								<c:when test="${r != role && role != null}">
+									<span class='bold_text'>
+										<c:forEach var="inheritedRole" items="${userInheritanceLineMap[user]}" varStatus="inheritanceStatus">
+										${inheritedRole} <c:if test="${inheritanceStatus.index ne fn:length(userInheritanceLineMap[user]) - 1}"> -> </c:if>
+										</c:forEach>
+									</span>
+								</c:when>
+								<c:otherwise>${r}</c:otherwise>
+							</c:choose>
+						</c:when>
+						<c:otherwise>, ${r}</c:otherwise>
+					</c:choose>
 				</c:forEach>
 				<c:if test="${fn:length(userRolesMap[user]) > 3}">
 				, ....</span>
