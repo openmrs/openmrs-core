@@ -168,6 +168,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should delete program successfully
 	 * @should not delete child associations when cascade equals false
 	 * @should throw APIException when given cascade equals true
+	 * @should purge program with patients enrolled
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeProgram(Program program, boolean cascade) throws APIException;
