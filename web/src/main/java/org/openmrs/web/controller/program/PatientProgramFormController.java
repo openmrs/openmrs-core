@@ -35,6 +35,9 @@ import org.openmrs.validator.ValidateUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -113,8 +116,12 @@ public class PatientProgramFormController implements Controller {
 				}
 			}
 			try {
-				ValidateUtil.validate(pp);
-				Context.getProgramWorkflowService().savePatientProgram(pp);
+				String message = validateWithErrorCodes(pp);
+				if (message != null) {
+					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, message);
+				} else {
+					Context.getProgramWorkflowService().savePatientProgram(pp);
+				}
 			}
 			catch (APIException e) {
 				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
@@ -142,14 +149,31 @@ public class PatientProgramFormController implements Controller {
 		PatientProgram p = Context.getProgramWorkflowService().getPatientProgram(Integer.valueOf(patientProgramIdStr));
 		p.setDateCompleted(dateCompleted);
 		try {
-			ValidateUtil.validate(p);
-			Context.getProgramWorkflowService().savePatientProgram(p);
+			String message = validateWithErrorCodes(p);
+			if (message != null) {
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, message);
+			} else {
+				Context.getProgramWorkflowService().savePatientProgram(p);
+			}
 		}
 		catch (APIException e) {
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 		}
 		
 		return new ModelAndView(new RedirectView(returnPage));
+	}
+
+	private String validateWithErrorCodes(Object obj) {
+		Errors errors = new BindException(obj, "");
+		Context.getAdministrationService().validate(obj, errors);
+		if (errors.hasErrors()) {
+			StringBuilder message = new StringBuilder();
+			for (FieldError error : errors.getFieldErrors()) {
+				message.append(Context.getMessageSourceService().getMessage(error.getCode())).append("<br />");
+			}
+			return message.toString();
+		}
+		return null;
 	}
 	
 }
