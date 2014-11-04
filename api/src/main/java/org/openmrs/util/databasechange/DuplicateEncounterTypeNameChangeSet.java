@@ -83,8 +83,11 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
+		Boolean initialAutoCommit = null;
 		
 		try {
+			initialAutoCommit = connection.getAutoCommit();
+			
 			// set auto commit mode to false for UPDATE action
 			connection.setAutoCommit(false);
 			
@@ -114,10 +117,10 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 				Map.Entry pairs = (Map.Entry) it2.next();
 				
 				HashSet values = (HashSet) pairs.getValue();
-				List<Integer> editableNames = new ArrayList<Integer>(values);
+				List<Integer> ids = new ArrayList<Integer>(values);
 				
 				int duplicateNameId = 1;
-				for (int i = 1; i < editableNames.size(); i++) {
+				for (int i = 1; i < ids.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
 					
 					List<List<Object>> duplicateResult = null;
@@ -139,7 +142,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					
 					pStmt = connection.prepareStatement("update encounter_type set name = ? where encounter_type_id = ?");
 					pStmt.setString(1, newName);
-					pStmt.setInt(2, editableNames.get(i));
+					pStmt.setInt(2, ids.get(i));
 					
 					duplicateNameId += 1;
 					
@@ -159,27 +162,20 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 			}
 			
 			// marks the changeset as a failed one
-			throw new CustomChangeException("Failed to update one or more suplicate EncounterType names", e);
-		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Error while updating duplicate EncounterType object names", e);
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException("Error while updating duplicate EncounterType object names", e);
-		}
-		catch (DAOException e) {
-			throw new CustomChangeException("Error accessing database connection", e);
+			throw new CustomChangeException("Failed to update one or more duplicate EncounterType names", e);
 		}
 		catch (Exception e) {
-			throw new CustomChangeException("Error accessing database connection", e);
+			throw new CustomChangeException(e);
 		}
 		finally {
-			// reset to auto commit mode
+			// set auto commit to its initial state
 			try {
-				connection.setAutoCommit(true);
+				if (initialAutoCommit != null) {
+					connection.setAutoCommit(initialAutoCommit);
+				}
 			}
 			catch (DatabaseException e) {
-				log.warn("Failed to reset auto commit back to true", e);
+				log.warn("Failed to set auto commit to ids initial state", e);
 			}
 			if (rs != null) {
 				try {

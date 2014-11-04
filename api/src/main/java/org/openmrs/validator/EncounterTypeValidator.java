@@ -52,6 +52,7 @@ public class EncounterTypeValidator implements Validator {
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should fail validation if name is duplicate
 	 * @should pass validation if description is null or empty or whitespace
+	 * @should pass validation for an existing EncounterType
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {

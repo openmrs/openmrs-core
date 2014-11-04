@@ -2,12 +2,10 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.openmrs.validator.EncounterRoleValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -83,6 +81,21 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation for an existing EncounterType", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationWhenEditingAnExistingEncounterType() throws Exception {
+		EncounterType type = Context.getEncounterService().getEncounterType("Scheduled");
+		Assert.assertNotNull(type);
+		
+		Errors errors = new BindException(type, "encounterType");
+		new EncounterTypeValidator().validate(type, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
 	 * @see {@link EncounterTypeValidator#validate(Object, Errors)}
 	 */
 	@Test
@@ -99,18 +112,4 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	/**
-	 * @see {@link EncounterTypeValidator#validate(Object, Errors)}
-	 */
-	@Test
-	@Verifies(value = "should pass editing encounter type name", method = "validate(Object,Errors)")
-	public void validate_shouldPassEditingEncounterTypeName() throws Exception {
-		
-		EncounterType et = Context.getEncounterService().getEncounterType("Scheduled");
-		Assert.assertNotNull(et);
-		Errors errors = new BindException(et, "encounterType");
-		new EncounterTypeValidator().validate(et, errors);
-		Assert.assertFalse(errors.hasErrors());
-		
-	}
 }
