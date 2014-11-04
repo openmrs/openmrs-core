@@ -42,7 +42,7 @@
 	<tr>
 		<td>
 			<c:if test="${identifierLocationUsed}">
-				<openmrs:message code="PatientIdentifier.location"/><span class="required">*</span>
+				<openmrs:message code="PatientIdentifier.location"/><span id="locationRequired" class="required" style="${hideLocation || varStatus.count == null ? 'display: none;' : ''}">*</span>
 			</c:if>
 		</td>
 		<td>

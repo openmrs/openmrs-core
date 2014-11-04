@@ -26,7 +26,7 @@
 	numObjs["identifier"]	= -1;
 	numObjs["name"]			= -1;
 	numObjs["address"]		= -1;
-	
+
 	function initializeChildren(obj, type) {
 		if (obj.hasChildNodes()) {
 			var child = obj.firstChild;
@@ -197,14 +197,17 @@
 		if (identifierType == '') {
 			$j('#'+naBoxId).hide();
 			$j('#'+boxId).hide();
+			$j('#locationRequired').attr('style', 'display:none');
 		}
 		else if (idTypeLocationRequired[identifierType]) {
 			$j('#'+naBoxId).hide();
 			$j('#'+boxId).show();
+			$j('#locationRequired').attr('style', 'display:initial');
 		} 
 		else {
 			$j('#'+boxId).hide();
 			$j('#'+naBoxId).show();
+			$j('#locationRequired').attr('style', 'display:none');
 		}
 	}
 </script>
