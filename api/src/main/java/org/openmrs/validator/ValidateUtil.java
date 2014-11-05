@@ -87,6 +87,28 @@ public class ValidateUtil {
 	/**
 	 * Test the given object against all validators that are registered as compatible with the
 	 * object class
+	 * 
+	 * @param obj the object to validate
+	 * @throws ValidationException thrown if a binding exception occurs
+	 * @should throw ValidationException if errors occur during validation
+	 * @should return separated errors codes in ValidationException message
+	 */
+	public static void validateWithErrorsCodes(Object obj) throws ValidationException {
+		Errors errors = new BindException(obj, "");
+		Context.getAdministrationService().validate(obj, errors);
+		
+		if (errors.hasErrors()) {
+			StringBuilder message = new StringBuilder();
+			for (FieldError error : errors.getFieldErrors()) {
+				message.append(Context.getMessageSourceService().getMessage(error.getCode())).append("<br />");
+			}
+			throw new ValidationException(message.toString(), errors);
+		}
+	}
+	
+	/**
+	 * Test the given object against all validators that are registered as compatible with the
+	 * object class
 	 *
 	 * @param obj the object to validate
 	 * @param errors the validation errors found

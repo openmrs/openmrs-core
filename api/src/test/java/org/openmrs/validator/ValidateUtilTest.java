@@ -3,12 +3,14 @@ package org.openmrs.validator;
 import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
 import org.openmrs.api.ValidationException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +43,33 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 			assertTrue(validationException.getErrors().hasErrors());
 		}
 		
+	}
+	
+	/**
+	 * @see {@link ValidateUtil#validateWithErrorsCodes(Object)}
+	 */
+	@Test(expected = ValidationException.class)
+	@Verifies(value = "should throw ValidationException if errors occur during validation", method = "validateWithErrorsCodes(Object)")
+	public void validateForUser_shouldThrowValidationExceptionIfErrorsOccurDuringValidation() throws Exception {
+		PatientProgram pp = new PatientProgram();
+		ValidateUtil.validateWithErrorsCodes(pp);
+	}
+	
+	/**
+	 * @see {@link ValidateUtil#validateWithErrorsCodes(Object)}
+	 */
+	@Test
+	@Verifies(value = "should return separated errors codes in ValidationException message", method = "validateWithErrorsCodes(Object)")
+	public void validate_shouldReturnSeparatedErrorsCodesInValidationExceptionMessage() throws Exception {
+		PatientProgram pp = new PatientProgram();
+		try {
+			ValidateUtil.validateWithErrorsCodes(pp);
+		}
+		catch (ValidationException validationException) {
+			assertNotNull(validationException.getErrors());
+			assertTrue(validationException.getErrors().hasErrors());
+			assertEquals(validationException.getMessage(), "error.required<br />error.required<br />");
+		}
 	}
 	
 	/**
