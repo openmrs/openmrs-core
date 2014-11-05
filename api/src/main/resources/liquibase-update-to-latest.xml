@@ -8462,6 +8462,14 @@
 		</update>
 	</changeSet>
 
+	<changeSet id="drop-tribe-foreign-key-TRUNK-4492" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="belongs_to_tribe" />
+		</preConditions>
+		<comment>Dropping foreign key on patient.tribe</comment>
+		<dropForeignKeyConstraint baseTableName="patient" constraintName="belongs_to_tribe" />
+	</changeSet>
+	
     <changeSet id="20141010-trunk-4492" author="alec" >
       <preConditions onFail="MARK_RAN">
         <columnExists tableName="patient" columnName="tribe"/>
