@@ -162,6 +162,19 @@ public class PatientProgramFormController implements Controller {
 		
 		return new ModelAndView(new RedirectView(returnPage));
 	}
+
+	private String validateWithErrorCodes(Object obj) {
+		Errors errors = new BindException(obj, "");
+		Context.getAdministrationService().validate(obj, errors);
+		if (errors.hasErrors()) {
+			StringBuilder message = new StringBuilder();
+			for (FieldError error : errors.getFieldErrors()) {
+				message.append(Context.getMessageSourceService().getMessage(error.getCode())).append("<br />");
+			}
+			return message.toString();
+		}
+		return null;
+	}
 	
 	private String validateWithErrorCodes(Object obj) {
 		Errors errors = new BindException(obj, "");
