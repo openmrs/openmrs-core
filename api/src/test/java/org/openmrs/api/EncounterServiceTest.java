@@ -1004,6 +1004,27 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link EncounterService#getEncounterType(String)}
+	 */
+	@Test
+	@Verifies(value = "should not get retired types", method = "getEncounterType(String)")
+	public void getEncounterType_shouldNotGetRetiredTypes() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// loop over all types to make sure
+		// that the retired "Test Enc Type C" exists
+		boolean foundRetired = false;
+		for (EncounterType encType : encounterService.getAllEncounterTypes(true)) {
+			if (encType.getName().equals("Test Enc Type C") && encType.isRetired()) {
+				foundRetired = true;
+			}
+		}
+		assertTrue(foundRetired);
+		
+		assertNull(encounterService.getEncounterType("Test Enc Type C"));
+	}
+	
+	/**
 	 * Make sure that the "Some Retired Type" type is not returned because it is retired in
 	 * {@link EncounterService#getEncounterType(String)}
 	 * 
