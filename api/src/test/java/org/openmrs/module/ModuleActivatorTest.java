@@ -79,7 +79,6 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	@Ignore("TRUNK-4418 - Fix random failure of ModuleActivatorTest")
 	public void shouldStopDependantModulesOnStopModule() throws Exception {
 		//since module2 depends on module1, and module3 depends on module2
 		//stopping module1 should also stop both module2 and module3
@@ -125,7 +124,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldExcludePrevouslyStoppedModulesOnShutdown() {
+	public void shouldExcludePreviouslyStoppedModulesOnShutdown() {
 		//At OpenMRS shutdown, willStop() and stopped() methods get called for all 
 		//started module's activator EXCLUDING any module(s) that were previously stopped.
 		

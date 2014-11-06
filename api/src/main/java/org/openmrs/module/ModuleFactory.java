@@ -1050,16 +1050,6 @@ public class ModuleFactory {
 				return dependentModulesStopped;
 			}
 			
-			try {
-				if (mod.getModuleActivator() != null) {
-					// if extends BaseModuleActivator
-					mod.getModuleActivator().willStop();
-				}
-			}
-			catch (Exception e) {
-				log.warn("Unable to call module's Activator.willStop() method", e);
-			}
-			
 			String moduleId = mod.getModuleId();
 			
 			// don't allow mandatory modules to be stopped
@@ -1083,6 +1073,16 @@ public class ModuleFactory {
 					dependentModulesStopped.add(dependentModule);
 					dependentModulesStopped.addAll(stopModule(dependentModule, skipOverStartedProperty, isFailedStartup));
 				}
+			}
+
+			try {
+				if (mod.getModuleActivator() != null) {
+					// if extends BaseModuleActivator
+					mod.getModuleActivator().willStop();
+				}
+			}
+			catch (Exception e) {
+				log.warn("Unable to call module's Activator.willStop() method", e);
 			}
 			
 			getStartedModulesMap().remove(moduleId);
