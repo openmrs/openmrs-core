@@ -2695,6 +2695,30 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getDrugs_shouldReturnAllDrugsMatchingConceptName() throws Exception {
+        String aspirinDrugConceptShortName = "ASA";
+
+        List<Drug> drugs = conceptService.getDrugs(aspirinDrugConceptShortName, null, false, true, false, 0, 50);
+		
+		assertEquals(1, drugs.size());
+		assertThat(drugs, hasItems(conceptService.getDrug(3)));
+	}
+
+	/**
+	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getDrugs_shouldReturnUniqueDrugsWhenSearchPhraseMatchesBothDrugNameAndConceptName() throws Exception {
+		List<Drug> drugs = conceptService.getDrugs("AS", null, false, true, false, 0, 50);
+
+		assertEquals(1, drugs.size());
+		assertThat(drugs, hasItems(conceptService.getDrug(3)));
+	}
+
+	/**
 	 * @verifies reject a null search phrase
 	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
 	 */

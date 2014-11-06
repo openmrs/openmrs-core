@@ -38,6 +38,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -1536,6 +1537,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
+        searchCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return Collections.emptyList();
 		
@@ -1547,18 +1550,20 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (searchOnPhrase)
 			matchMode = MatchMode.ANYWHERE;
 		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
+			Disjunction searchPhraseDisjunction = Restrictions.disjunction();
+			searchPhraseDisjunction.add(Restrictions.ilike("drug.name", drugName, matchMode));
 			if (searchDrugConceptNames) {
 				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
+				searchPhraseDisjunction.add(Restrictions.ilike("names.name", drugName, matchMode));
 			}
+			searchCriteria.add(searchPhraseDisjunction);
 		}
 		
 		if (start != null)
 			searchCriteria.setFirstResult(start);
 		if (length != null && length > 0)
 			searchCriteria.setMaxResults(length);
-		
+
 		return searchCriteria.list();
 	}
 	
