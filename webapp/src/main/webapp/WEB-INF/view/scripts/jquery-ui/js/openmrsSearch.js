@@ -1057,7 +1057,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
             if($j.trim(searchText) == '')
                 textToDisplay = omsgs.viewingAll;
 
-            $j('#pageInfo').text(textToDisplay).html();
+            $j('#pageInfo').html(sanitizeHtml(textToDisplay));
 
             if($j('#pageInfo').css("visibility") != 'visible')
                 $j('#pageInfo').css("visibility", "visible");

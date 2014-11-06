@@ -26,6 +26,7 @@
 		<link href="<openmrs:contextPath/><spring:theme code='stylesheet' />" type="text/css" rel="stylesheet" />
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
+        <openmrs:htmlInclude file="/scripts/html-sanitizer-min.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
 			<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
