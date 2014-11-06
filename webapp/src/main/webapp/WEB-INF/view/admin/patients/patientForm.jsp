@@ -11,6 +11,7 @@
 <script>
 	var si = ${fn:length(identifiers)};
 	var idTypeLocationRequired = {};
+    var currentSelectedIdentifier = "";
 	<c:forEach items="${identifierTypes}" var="idType">
 		idTypeLocationRequired[${idType.patientIdentifierTypeId}] = ${idType.locationBehavior == null || idType.locationBehavior == "REQUIRED"};
 	</c:forEach>
@@ -19,14 +20,14 @@
 	lastTab["identifier"] = null;
 	lastTab["name"]		  = null;
 	lastTab["address"]	  = null;
-	
+
 	// Number of objects stored.  Needed for 'add new' purposes.
 	// starts at -1 due to the extra 'blank' data div in the *Boxes dib
 	var numObjs = new Array();
 	numObjs["identifier"]	= -1;
 	numObjs["name"]			= -1;
 	numObjs["address"]		= -1;
-	
+
 	function initializeChildren(obj, type) {
 		if (obj.hasChildNodes()) {
 			var child = obj.firstChild;
@@ -39,7 +40,7 @@
 			}
 		}
 	}
-	
+
 	function selectTab(tab, type) {
 		if (tab != null && tab.id != null) {
 			var data = document.getElementById(tab.id + "Data");
@@ -49,7 +50,7 @@
 				if (lastTab[type] != null && lastTab[type] != tab) {    //if there was a last tab
 					removeClass(lastTab[type], 'selected');             //set the last tab as unselected
 					var lastData = document.getElementById(lastTab[type].id + "Data");
-					if (lastData != null) 
+					if (lastData != null)
 						lastData.style.display = "none";                //hide last data tab
 				}
 				lastTab[type] = tab;             //new tab is now the last tab
@@ -58,7 +59,7 @@
 		}
 		return false;
 	}
-	
+
 	function addNew(type) {
 		var newData = document.getElementById(type + "Data");
 		if (newData != null) {
@@ -73,14 +74,15 @@
 			dataClone.id = type + numObjs[type] + "Data";
 			parent = newData.parentNode;
 			parent.insertBefore(dataClone, newData);
-			
+
 			if (type == 'identifier') {
 				si++;
 				$j(dataClone).find("#identifierTypeBox0").attr("id", "identifierTypeBox"+si);
 				$j(dataClone).find("#locationBox0").attr("id", "locationBox"+si);
 				$j(dataClone).find("#locationNABox0").attr("id", "locationNABox"+si);
+				$j(dataClone).find("#identifierTypeWarning0").attr("id", "identifierTypeWarning"+si);
 			}
-			
+
 			//find the active checkbox and add an onclick listener to it
 			//and assign names and ids to the start and end input fields
 			var inputs = dataClone.getElementsByTagName("input");
@@ -106,13 +108,13 @@
 
 		return selectTab(tabClone, type);
 	}
-	
+
 	function removeTab(obj, type) {
 		var data = obj.parentNode;
 		var tabId = data.id.substring(0, data.id.lastIndexOf("Data"));
 		var tab = document.getElementById(tabId);
-		var tabToSelect = null;			
-		
+		var tabToSelect = null;
+
 		if (data != null && tab != null) {
 			var tabparent = tab.parentNode;
 
@@ -132,19 +134,19 @@
 						tabToSelect = sibling;
 				}
 			}
-			
+
 			if (tabToSelect != null && tabToSelect.id != null) {
 				//only remove this node if it is not the last
 				tabparent.removeChild(tab);
 				var dataparent = data.parentNode;
 				dataparent.removeChild(data);
 			}
-			
+
 		}
-		
+
 		return selectTab(tabToSelect, type);
 	}
-	
+
 	function modifyTab(obj, value, child) {
 		var parent = obj.parentNode;
 		while (parent.nodeName != "DIV") {
@@ -154,7 +156,7 @@
 		var tab = document.getElementById(tabId);
 		tab.childNodes[child].innerHTML = value;
 	}
-	
+
 	function voidedBoxClicked(chk) {
 		var parent = chk.parentNode;
 		while (parent.id.indexOf("Data") == -1)
@@ -166,7 +168,7 @@
 		else
 			removeClass(tab, 'voided');
 	}
-	
+
 	function removeBlankData() {
 		var obj = document.getElementById("identifierData");
 		if (obj != null)
@@ -178,7 +180,7 @@
 		if (obj != null)
 			obj.parentNode.removeChild(obj);
 	}
-	
+
 	function preferredBoxClick(obj) {
 		var inputs = document.getElementsByTagName("input");
 		if (obj.checked == true) {
@@ -190,10 +192,64 @@
 			}
 		}
 	}
-	
-	function toggleLocationBox(identifierType,location) {
-		var boxId = 'location' + location.substring(14,18);
-		var naBoxId = 'locationNA' + location.substring(14,18);
+
+        function showOrHideDuplicateIdentifierTypeWarnings(identifierType) {
+            var equalCount=0;
+            var identifierTypeWarningDivId="identifierTypeWarning"+identifierType.substring(17);
+            var identifierTypeName=$j('#'+identifierType).children("option").filter(":selected").text().trim();
+            $j('.patientIdentifierTypeColumn select > option:selected').each(function () {
+                if($j(this).text().trim()==identifierTypeName && identifierTypeName!='') {
+                    equalCount++;
+                }
+            });
+            if(equalCount>1) {
+                $j('#'+identifierTypeWarningDivId).show();
+            } else {
+                $j('#'+identifierTypeWarningDivId).hide();
+		}
+	}
+
+	function toggleLocationBoxAndIndentifierTypeWarning(identifierType,identifierSelectMenuId) {
+		showOrHideDuplicateIdentifierTypeWarnings(identifierSelectMenuId);
+        refreshDuplicateIdentifierTypeWarnings(identifierSelectMenuId);
+		toggleLocationBox(identifierType, identifierSelectMenuId);
+	}
+
+    function refreshDuplicateIdentifierTypeWarnings(identifierType) {
+        var rootNode;
+        var identifierTypeName=$j('#'+identifierType).children("option").filter(":selected").text().trim();
+        var duplicateCountForCurrentType = 0;
+        var duplicateCountForPreviousType = 0;
+        $j('.patientIdentifierTypeColumn select > option:selected').each(function () {
+            if($j(this).text().trim()==identifierTypeName && identifierTypeName!='') {
+                if(this.parentNode.id.trim()!=identifierType) {
+                    rootNode = $j(this.parentNode.parentNode);
+                    $j(rootNode).find('.identifierTypeWarningWrapper').find('.identifierTypeWarningDiv').show();
+                    duplicateCountForCurrentType++;
+                    if(duplicateCountForCurrentType<2) {
+                        rootNode = $j(this.parentNode.parentNode);
+                        $j(rootNode).find('.identifierTypeWarningWrapper').find('.identifierTypeWarningDiv').hide();
+                    }
+                }
+            } else if ($j(this).text().trim() == currentSelectedIdentifier.trim()) {
+                rootNode = $j(this.parentNode.parentNode.parentNode);
+                $j(rootNode).find('.identifierTypeWarningWrapper').find('.identifierTypeWarningDiv').show();
+                duplicateCountForPreviousType++;
+                if (duplicateCountForPreviousType < 2 || currentSelectedIdentifier=='') {
+                    $j(rootNode).find('.identifierTypeWarningWrapper').find('.identifierTypeWarningDiv').hide();
+                }
+            }
+        });
+        currentSelectedIdentifier = "";
+    }
+
+    function storeSelectedIdentifierType(selectedIdentifierType) {
+        currentSelectedIdentifier = selectedIdentifierType;
+    }
+
+	function toggleLocationBox(identifierType,identifierSelectMenuId) {
+		var boxId = 'location' + identifierSelectMenuId.substring(14,18);
+		var naBoxId = 'locationNA' + identifierSelectMenuId.substring(14,18);
 		if (identifierType == '') {
 			$j('#'+naBoxId).hide();
 			$j('#'+boxId).hide();
@@ -201,7 +257,7 @@
 		else if (idTypeLocationRequired[identifierType]) {
 			$j('#'+naBoxId).hide();
 			$j('#'+boxId).show();
-		} 
+		}
 		else {
 			$j('#'+boxId).hide();
 			$j('#'+naBoxId).show();
@@ -247,7 +303,7 @@
 		margin: 3px;
 		cursor: pointer;
 	}
-	
+
 </style>
 
 <h2><openmrs:message code="Patient.title"/></h2>
@@ -276,11 +332,11 @@
 	<div><openmrs:message code="Patient.voidedMessage"/></div>
     <div>
     	<c:if test="${patient.voidedBy.personName != null}"><openmrs:message code="general.byPerson"/> <c:out value="${patient.voidedBy.personName}" /></c:if>
-    	<c:if test="${patient.dateVoided != null}"> <openmrs:message code="general.onDate"/> <openmrs:formatDate date="${patient.dateVoided}" type="long" /> </c:if> 
+    	<c:if test="${patient.dateVoided != null}"> <openmrs:message code="general.onDate"/> <openmrs:formatDate date="${patient.dateVoided}" type="long" /> </c:if>
    		<c:if test="${patient.voidReason != ''}"> - ${patient.voidReason} </c:if>
     </div>
 	<div>
-		<form action="" method="post" ><input type="submit" name="action" value="<openmrs:message code="Patient.unvoid"/>" /></form></div> 
+		<form action="" method="post" ><input type="submit" name="action" value="<openmrs:message code="Patient.unvoid"/>" /></form></div>
 	</div>
 </c:if>
 </openmrs:hasPrivilege>
@@ -320,9 +376,9 @@
 				</div>
 			</div>
 		</div>
-	
+
 	<br style="clear: both" />
-	
+
 	<h3><openmrs:message code="Patient.names"/></h3>
 		<spring:hasBindErrors name="patient.names">
 			<span class="error">${error.errorMessage}</span><br/>
@@ -352,9 +408,9 @@
 				</div>
 			</div>
 		</div>
-	
+
 	<br style="clear: both" />
-	
+
 	<h3><openmrs:message code="Patient.addresses"/></h3>
 		<spring:hasBindErrors name="patient.addresses">
 			<span class="error">${error.errorMessage}</span><br/>
@@ -365,7 +421,7 @@
 					<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="address${varStatus.index}" <c:if test="${address.voided}">class='voided'</c:if>><span>${address.cityVillage}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="addressTab" style="display: none"><span></span>&nbsp;</a>
-				<input type="button" onClick="return addNew('address');" class="addNew" id="address" value='<openmrs:message code="Patient.addNewAddress"/>'/>			
+				<input type="button" onClick="return addNew('address');" class="addNew" id="address" value='<openmrs:message code="Patient.addNewAddress"/>'/>
 			</div>
 			<div class="tabBoxes" id="addressDataBoxes">
 				<c:forEach var="address" items="${patient.addresses}" varStatus="varStatus">
@@ -385,9 +441,9 @@
 				</div>
 			</div>
 		</div>
-	
+
 	<br/>
-	
+
 	<h3><openmrs:message code="Patient.information"/></h3>
 		<div class="tabBox" id="pInformationBox">
 			<div class="tabBoxes">
@@ -397,15 +453,15 @@
 					</spring:nestedPath>
 				</table>
 			</div>
-		</div>	
+		</div>
 
 	<br />
 	<spring:bind path="patient.patientId">
 		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
-	
+
 	<input type="submit" name="action" id="saveButton" value='<openmrs:message code="Patient.save"/>' />
-	
+
 	<c:if test="${patient.patientId != null}">
 	<openmrs:hasPrivilege privilege="Purge Patients">
 		&nbsp; &nbsp; &nbsp;
@@ -423,7 +479,7 @@
 		</span>
 	</openmrs:hasPrivilege>
 </c:if>
-	
+
 </form>
 <br/>
 <openmrs:hasPrivilege privilege="Delete Patients">
@@ -436,12 +492,12 @@
 			<br/><br/>
 			<input type="submit" value='<openmrs:message code="Patient.void"/>' name="action"/>
 		</fieldset>
-	</form>	
+	</form>
 	</c:if>
 </openmrs:hasPrivilege>
-	
+
 <script>
-	
+
 	var array = new Array(3);
 	array[0] = "identifier";
 	array[1] = "name";
@@ -455,7 +511,7 @@
 		}
 		selectTab(document.getElementById(id + "0"), id);
 	}
-	
+
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

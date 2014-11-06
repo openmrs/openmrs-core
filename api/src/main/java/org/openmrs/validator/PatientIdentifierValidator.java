@@ -32,11 +32,6 @@ import org.openmrs.patient.UnallowedIdentifierException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
  * This class validates a PatientIdentifier object.
  */
@@ -225,28 +220,5 @@ public class PatientIdentifierValidator implements Validator {
 	
 	private static String getMessage(String messageKey, String... arguments) {
 		return Context.getMessageSourceService().getMessage(messageKey, arguments, Context.getLocale());
-	}
-	
-	/**
-	 * Validate patient identifier types whether they contains more than one identifier for the same identifier type
-	 *
-	 * @param patientIdentifiers the list of patient identifiers to validate
-	 * @return true if patient identifier types contains more than one identifier for the same identifier type
-	 */
-	public static boolean hasMoreThanOneIdentifierForSameIdentifierType(List<PatientIdentifier> patientIdentifiers) {
-		if (patientIdentifiers.size() > 1) {
-			List<PatientIdentifierType> patientIdentifierTypeList = new ArrayList();
-			Set<PatientIdentifierType> patientIdentifierTypeSet;
-			for (PatientIdentifier pId : patientIdentifiers) {
-				if (!pId.isVoided()) {
-					patientIdentifierTypeList.add(pId.getIdentifierType());
-				}
-			}
-			patientIdentifierTypeSet = new HashSet<PatientIdentifierType>(patientIdentifierTypeList);
-			if (patientIdentifierTypeList.size() > patientIdentifierTypeSet.size()) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

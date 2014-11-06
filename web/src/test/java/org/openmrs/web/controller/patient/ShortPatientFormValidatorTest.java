@@ -106,61 +106,6 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail if same identifiers types are added", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfSameIdentifierTypesAreAddedInIdentifiers() throws Exception {
-		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierType(5);
-		Patient patient = ps.getPatient(8);
-		PatientIdentifier patientIdentifier1 = new PatientIdentifier();
-		patientIdentifier1.setLocation(new Location(1));
-		patientIdentifier1.setIdentifier("012345678");
-		patientIdentifier1.setDateCreated(new Date());
-		patientIdentifier1.setIdentifierType(patientIdentifierType);
-		patient.addIdentifier(patientIdentifier1);
-		PatientIdentifier patientIdentifier2 = new PatientIdentifier();
-		patientIdentifier2.setLocation(new Location(2));
-		patientIdentifier2.setIdentifier("0123456789");
-		patientIdentifier2.setDateCreated(new Date());
-		patientIdentifier2.setIdentifierType(patientIdentifierType);
-		patient.addIdentifier(patientIdentifier2);
-		ShortPatientModel model = new ShortPatientModel(patient);
-		
-		Errors errors = new BindException(model, "patientModel");
-		validator.validate(model, errors);
-		
-		Assert.assertEquals(true, errors.hasGlobalErrors());
-	}
-	
-	@Test
-	@Verifies(value = "should pass the validation if same identifiers types are added but only one is active", method = "validate(Object,Errors)")
-	public void validate_shouldPassTheValidatePatientIfSameIdentifierTypesAreAddedOnlyOneIsActiveInIdentifiers()
-	        throws Exception {
-		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierType(5);
-		Patient patient = ps.getPatient(7);
-		PatientIdentifier patientIdentifier1 = new PatientIdentifier();
-		patientIdentifier1.setLocation(new Location(1));
-		patientIdentifier1.setIdentifier("012345678");
-		patientIdentifier1.setDateCreated(new Date());
-		patientIdentifier1.setIdentifierType(patientIdentifierType);
-		patient.addIdentifier(patientIdentifier1);
-		PatientIdentifier patientIdentifier2 = new PatientIdentifier();
-		patientIdentifier2.setLocation(new Location(2));
-		patientIdentifier2.setIdentifier("0123456789");
-		patientIdentifier2.setDateCreated(new Date());
-		patientIdentifier2.setIdentifierType(patientIdentifierType);
-		patientIdentifier2.setVoided(true);
-		patient.addIdentifier(patientIdentifier2);
-		ShortPatientModel model = new ShortPatientModel(patient);
-		
-		Errors errors = new BindException(model, "patientModel");
-		validator.validate(model, errors);
-		
-		Assert.assertEquals(false, errors.hasGlobalErrors());
-	}
-	
-	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
-	 */
-	@Test
 	@Verifies(value = "should fail if the deathdate is before the birthdate incase the patient is dead", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfTheDeathdateIsBeforeTheBirthdateIncaseThePatientIsDead() throws Exception {
 		Patient p = ps.getPatient(2);
