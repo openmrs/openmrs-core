@@ -631,3 +631,12 @@ function forceMaxLength(object, maxLength) {
        object.value = object.value.substring(0, maxLength); 
     }
 }
+
+/**
+ * Removes potentially executable javascript from a snippet of text
+ * @param str the text to sanitize
+ * @since 1.11
+ */
+function sanitizeHtml(str) {
+    return html_sanitize(str);
+}
