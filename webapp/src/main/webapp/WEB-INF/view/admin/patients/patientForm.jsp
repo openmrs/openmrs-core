@@ -79,6 +79,7 @@
 				$j(dataClone).find("#identifierTypeBox0").attr("id", "identifierTypeBox"+si);
 				$j(dataClone).find("#locationBox0").attr("id", "locationBox"+si);
 				$j(dataClone).find("#locationNABox0").attr("id", "locationNABox"+si);
+				$j(dataClone).find("#locationRequired0").attr("id", "locationRequired"+si);
 			}
 			
 			//find the active checkbox and add an onclick listener to it
@@ -194,17 +195,21 @@
 	function toggleLocationBox(identifierType,location) {
 		var boxId = 'location' + location.substring(14,18);
 		var naBoxId = 'locationNA' + location.substring(14,18);
+		var asterisk = 'locationRequired' + location.substring(17,18);
 		if (identifierType == '') {
 			$j('#'+naBoxId).hide();
 			$j('#'+boxId).hide();
+			$j('#'+asterisk).hide();
 		}
 		else if (idTypeLocationRequired[identifierType]) {
 			$j('#'+naBoxId).hide();
 			$j('#'+boxId).show();
+			$j('#'+asterisk).show();
 		} 
 		else {
 			$j('#'+boxId).hide();
 			$j('#'+naBoxId).show();
+			$j('#'+asterisk).hide();
 		}
 	}
 </script>
