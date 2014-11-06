@@ -26,6 +26,8 @@ import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
+import java.util.Properties;
+
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
  * {@link HibernateContextDAO}.<br/>
@@ -351,4 +353,16 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		dao.authenticate("  ", "password");
 	}
 	
+	/**
+	 *
+	 * @see {@link org.openmrs.api.db.hibernate.HibernateContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)}
+	 */
+	@Test
+	@Verifies(value = "should merge default runtime properties", method = "mergeDefaultRuntimeProperties(Properties runtimeProperties)")
+	public void should_mergeDefaultRuntimeProperties() {
+		Properties properties = new Properties();
+		properties.setProperty("key", "value");
+		dao.mergeDefaultRuntimeProperties(properties);
+		Assert.assertNotNull(properties.getProperty("hibernate.key"));
+	}
 }
