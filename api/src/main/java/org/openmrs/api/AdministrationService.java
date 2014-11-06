@@ -593,6 +593,10 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	 * @return list of allowed presentation locales TODO change this return type to list?
 	 * @should return at least one locale if no locales defined in database yet
 	 * @should not return more locales than message source service locales
+	 * @should return only country locale if both country locale and language locale are specified in allowed list
+	 * @should return all country locales if language locale and no country locales are specified in allowed list
+	 * @should return language locale if country locale is specified in allowed list but country locale message file is missing
+	 * @should return language locale if it is specified in allowed list and there are no country locale message files available
 	 */
 	public Set<Locale> getPresentationLocales();
 	
