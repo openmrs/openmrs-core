@@ -38,6 +38,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -1503,29 +1504,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean)
+	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
 	 */
 	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws DAOException {
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return 0L;
 		
-		if (includeRetired == false)
-			searchCriteria.add(Restrictions.eq("drug.retired", false));
-		if (concept != null)
-			searchCriteria.add(Restrictions.eq("drug.concept", concept));
-		MatchMode matchMode = MatchMode.START;
-		if (searchOnPhrase)
-			matchMode = MatchMode.ANYWHERE;
-		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
-			if (searchDrugConceptNames) {
-				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
-			}
-		}
-		
+		Criteria searchCriteria = getSearchCriteria(drugName, concept, searchOnPhrase, searchDrugConceptNames,
+		    includeRetired);
 		searchCriteria.setProjection(Projections.countDistinct("drug.drugId"));
 		
 		return (Long) searchCriteria.uniqueResult();
@@ -1535,10 +1522,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException {
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return Collections.emptyList();
 		
+		Criteria searchCriteria = getSearchCriteria(drugName, concept, searchOnPhrase, searchDrugConceptNames,
+		    includeRetired);
+		searchCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		
+		if (start != null)
+			searchCriteria.setFirstResult(start);
+		if (length != null && length > 0)
+			searchCriteria.setMaxResults(length);
+		
+		return searchCriteria.list();
+	}
+	
+	private Criteria getSearchCriteria(String drugName, Concept concept, boolean searchOnPhrase,
+	        boolean searchDrugConceptNames, boolean includeRetired) {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (includeRetired == false)
 			searchCriteria.add(Restrictions.eq("drug.retired", false));
 		if (concept != null)
@@ -1547,19 +1548,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (searchOnPhrase)
 			matchMode = MatchMode.ANYWHERE;
 		if (!StringUtils.isBlank(drugName)) {
-			searchCriteria.add(Restrictions.ilike("drug.name", drugName, matchMode));
+			Disjunction searchPhraseDisjunction = Restrictions.disjunction();
+			searchPhraseDisjunction.add(Restrictions.ilike("drug.name", drugName, matchMode));
 			if (searchDrugConceptNames) {
 				searchCriteria.createCriteria("concept", "concept").createAlias("concept.names", "names");
-				searchCriteria.add(Restrictions.ilike("names.name", drugName, matchMode));
+				searchPhraseDisjunction.add(Restrictions.ilike("names.name", drugName, matchMode));
 			}
+			searchCriteria.add(searchPhraseDisjunction);
 		}
-		
-		if (start != null)
-			searchCriteria.setFirstResult(start);
-		if (length != null && length > 0)
-			searchCriteria.setMaxResults(length);
-		
-		return searchCriteria.list();
+		return searchCriteria;
 	}
 	
 	/**
