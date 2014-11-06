@@ -114,35 +114,35 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *</pre>
  */
 (function($j) {
-    var openmrsSearch_div =
+    var openmrsSearch_div = 
+    '<span>'+
         '<span>'+
-            '<span>'+
             '<table cellspacing="0" width="100%">'+
-            '<tr>'+
-            '<td align="left">'+
-            '<span id="searchLabelNode"></span>'+
-            '<input type="text" value="" id="inputNode" autocomplete="off" placeholder=" " />'+
-            '<img id="spinner" src="" /><input type="checkbox" style="display: none" id="includeVoided" />&nbsp;&nbsp;'+
-            '<input type="checkbox" style="display: none" id="includeVerbose" />'+
-            '<span id="loadingMsg"></span>'+
-            '<span id="minCharError" class="error"></span>'+
-            '</td>'+
-            '<td align="right"><span id="pageInfo"></span></td>'+
-            '</tr>'+
-            '<tr>'+
-            '<td colspan="2" align="left"><span id="searchWidgetNotification"></span></td>'+
-            '</tr>'+
+                '<tr>'+
+                    '<td align="left">'+
+                        '<span id="searchLabelNode"></span>'+
+                        '<input type="text" value="" id="inputNode" autocomplete="off" placeholder=" " />'+
+                        '<img id="spinner" src="" /><input type="checkbox" style="display: none" id="includeVoided" />&nbsp;&nbsp;'+
+                        '<input type="checkbox" style="display: none" id="includeVerbose" />'+
+                        '<span id="loadingMsg"></span>'+
+                        '<span id="minCharError" class="error"></span>'+
+                    '</td>'+
+                    '<td align="right"><span id="pageInfo"></span></td>'+
+                '</tr>'+
+                '<tr>'+
+                    '<td colspan="2" align="left"><span id="searchWidgetNotification"></span></td>'+
+                '</tr>'+
             '</table>'+
-            '</span>'+
-            '<span class="openmrsSearchDiv">'+
+        '</span>'+
+        '<span class="openmrsSearchDiv">'+
             '<table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%">'+
-            '<thead id="searchTableHeader">'+
-            '<tr></tr>'+
-            '</thead>'+
-            '<tbody></tbody>'+
+                '<thead id="searchTableHeader">'+
+                    '<tr></tr>'+
+                '</thead>'+
+                '<tbody></tbody>'+
             '</table>'+
-            '</span>'+
-            '</span>';
+        '</span>'+
+    '</span>';
 
     var BATCH_SIZE = gp.maxSearchResults;
     var SEARCH_DELAY = gp.searchDelay;//time interval in ms between keyup and triggering the search off
