@@ -438,35 +438,49 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	},
 		    	
 		    	/* Called to toggle the verbose output */
-		    	fnDrawCallback : function(oSettings){
-		    		//we have nothing to hide
-		    		if(!self.options.showIncludeVerbose || !self._table || self._table.fnGetNodes().length == 0 || oSettings._iDisplayStart > self._results.length)
-	    				return;
-					check = true;
-		    		pageRowCount = oSettings._iDisplayStart+oSettings._iDisplayLength;
-					if (pageRowCount > self._results.length){
+				fnDrawCallback : function(oSettings) {
+					
+					if(!self._table || self._table.fnGetNodes().length == 0 || oSettings._iDisplayStart > self._results.length)
+						return;
+						
+					var pageRowCount = oSettings._iDisplayStart + oSettings._iDisplayLength;
+					if (pageRowCount > self._results.length) {
 						pageRowCount = self._results.length;
 					}
+					
+					for(var i = oSettings._iDisplayStart; i < pageRowCount; i++) {
+						if (!self._results[i]) {
+							var actualBatchSize = self._table.fnSettings()._iDisplayLength - (i - oSettings._iDisplayStart);
+							if ((i + actualBatchSize) > self._results.length) {
+								actualBatchSize = self._results.length - i;
+							}
+							spinnerObj.css("visibility", "visible");
+							loadingMsgObj.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", actualBatchSize));
+							self.options.searchHandler(self._searchText, self._addMoreRows(i),
+								false, {includeVoided: self.options.showIncludeVoided && checkBox.prop('checked'),
+									start: i, length: actualBatchSize});
+							return;
+						}
+					}
+					
+					if (pageRowCount < self._results.length && !self._results[pageRowCount]) {
+						var actualBatchSize = self._table.fnSettings()._iDisplayLength;
+						if ((pageRowCount + actualBatchSize) > self._results.length) {
+							actualBatchSize = self._results.length - pageRowCount;
+						}
+						self.options.searchHandler(self._searchText, self._addMoreRows(pageRowCount),
+							false, {includeVoided: self.options.showIncludeVoided && checkBox.prop('checked'),
+								start: pageRowCount, length: actualBatchSize});
+						return;
+					}
+					
+					//we have nothing to hide
+					if(!self.options.showIncludeVerbose)
+						return;
+					
 		    		for(var i = oSettings._iDisplayStart; i < pageRowCount; i++){
 		    			if(self.options.showIncludeVerbose && self.options.verboseHandler){
 		    				rowData = self._results[i];
-							if (rowData == null) {
-								var actualBatchSize = self._table.fnSettings()._iDisplayLength - (i - oSettings._iDisplayStart);
-								if ((i + actualBatchSize) > self._results.length) {
-									actualBatchSize = self._results.length - i;
-								}
-								spinnerObj.css("visibility", "visible");
-								loadingMsgObj.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", actualBatchSize));
-								self.options.searchHandler(self._searchText, self._addMoreRows(i),
-									false, {includeVoided: self.options.showIncludeVoided && checkBox.prop('checked'),
-										start: i, length: actualBatchSize});
-
-								if ($j(verboseCheckBox).prop('checked')) {
-									check = false;
-								}
-								break;
-							}
-
 		    				verboseText = self.options.verboseHandler(i, rowData);
 		    				nRow = self._table.fnGetNodes()[i];
 		    				if(!nRow)
@@ -500,8 +514,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		    			}
 		    		    		);
 		    				//draw a strike through for all voided/retired objects that have been loaded
-				    		if(rowData && (rowData.voided || rowData.retired)){		    			
-				    			$j(verboseRow).children().each(function(){		    				
+				    		if(rowData && (rowData.voided || rowData.retired)){
+				    			$j(verboseRow).children().each(function(){
 				    				$j(this).addClass('voided');
 				    			}); 
 				    		}
@@ -512,21 +526,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				    				self._doSelected(rowIndex, self._results[rowIndex]);
 				    			});
 				    		}
-		    		}}
-		    		
-					if (check && pageRowCount < self._results.length) {
-						var nextRow = self._results[pageRowCount];
-						if (nextRow == null) {
-							var actualBatchSize = self._table.fnSettings()._iDisplayLength;
-							if ((pageRowCount + actualBatchSize) > self._results.length) {
-								actualBatchSize = self._results.length - pageRowCount;
-							}
-							self.options.searchHandler(self._searchText, self._addMoreRows(pageRowCount),
-								false, {includeVoided: self.options.showIncludeVoided && checkBox.prop('checked'),
-									start: pageRowCount, length: actualBatchSize});
 						}
 					}
-
+		    		
 		    		if(!$j(verboseCheckBox).prop('checked')){
 		    			$j('.verbose').hide();
 		    		}
@@ -1112,9 +1114,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					self._results.push(currentData);
 				}
 				
-				for (i=startIndex+data.length; i<matchCount; i++){
-					newRows.push([" ", " "]);
-					self._results.push(null);
+				if (startIndex+data.length < matchCount) {
+					var empty = new Array(newRows[0].length + 1).join(" ").split('');
+					
+					for (i = startIndex+data.length; i < matchCount; i++) {
+						newRows.push(empty);
+						self._results.push(null);
+					}
 				}
 				self._table.fnAddData(newRows);
 				
