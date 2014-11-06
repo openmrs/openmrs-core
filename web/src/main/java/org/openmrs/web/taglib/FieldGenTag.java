@@ -263,6 +263,29 @@ public class FieldGenTag extends TagSupport {
 							}
 						}
 					}
+				} else if (type.equals("dropDownList")) {
+					
+					String startVal = "";
+					if (val != null) {
+						startVal = val.toString();
+					}
+					
+					String items = this.parameterMap != null ? (String) this.parameterMap.get("items") : null;
+					
+					output.setLength(0);
+					output.append("<select name=\"").append(formFieldName).append("\" id=\"").append(formFieldName).append(
+					    "\">");
+					
+					if (items != null && !items.isEmpty()) {
+						StringBuilder options = new StringBuilder();
+						for (String item : items.split(",")) {
+							options.append("<option value=\"").append(item).append("\"").append(
+							    startVal.equals(item) ? " selected" : "").append(">").append(item).append("</option>");
+						}
+						output.append(options.toString());
+					}
+					
+					output.append("</select> ");
 				} // end checking different built-in types
 				
 				try {
