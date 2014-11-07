@@ -24,10 +24,10 @@
 	</tr>
 	<tr>
 		<td><openmrs:message code="PatientIdentifier.identifierType"/><span class="required">*</span></td>
-		<td>
+		<td class="patientIdentifierTypeColumn">
 			<spring:bind path="identifierType">
 				<c:set var="hideLocation" value="${status.actualValue.locationBehavior == 'NOT_USED'}"/>
-				<select id="identifierTypeBox${varStatus.count == null ? 0 : varStatus.count}" name="${status.expression}" onclick="modifyTab(this, this.options[this.selectedIndex].text, 0);" onChange="toggleLocationBox(this.options[this.selectedIndex].value,this.id);">
+				<select id="identifierTypeBox${varStatus.count == null ? 0 : varStatus.count}" name="${status.expression}" onfocus="storeSelectedIdentifierType(this.options[this.selectedIndex].text)" onclick="modifyTab(this, this.options[this.selectedIndex].text, 0);" onChange="toggleLocationBoxAndIndentifierTypeWarning(this.options[this.selectedIndex].value,this.id);">
 					<option value=""></option>
 					<openmrs:forEachRecord name="patientIdentifierType">
 						<option value="${record.patientIdentifierTypeId}" <c:if test="${record.patientIdentifierTypeId == status.value}">selected</c:if>>
@@ -35,6 +35,11 @@
 						</option>
 					</openmrs:forEachRecord>
 				</select>
+				<div class="identifierTypeWarningWrapper" style="display:inline-block;">
+				    <div style="display: none; background-color: #ffff88" class="identifierTypeWarningDiv" id="identifierTypeWarning${varStatus.count == null ? 0 : varStatus.count}">
+					    <openmrs:message code="Patient.warning.duplicateIdentifierTypes"/>
+				    </div>
+				</div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -42,8 +47,7 @@
 	<tr>
 		<td>
 			<c:if test="${identifierLocationUsed}">
-				<openmrs:message code="PatientIdentifier.location"/>
-				<span id="locationRequired${varStatus.count == null ? 0 : varStatus.count}"  class="required" style="${hideLocation || varStatus.count == null ? 'display: none;' : ''}">*</span>
+				<openmrs:message code="PatientIdentifier.location"/><span class="required">*</span>
 			</c:if>
 		</td>
 		<td>
