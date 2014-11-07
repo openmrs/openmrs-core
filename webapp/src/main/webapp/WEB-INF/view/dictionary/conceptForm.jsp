@@ -4,18 +4,16 @@
 
 <c:choose>
 	<c:when test="${command.concept.conceptId != null}">
-			<openmrs:message var="pageTitle" code="Concept.edit.title" scope="page" arguments="${command.concept.name}"/>
+		<openmrs:message var="pageTitle" code="Concept.edit.title" scope="page" arguments="${command.concept.name}"/>
   	</c:when>
   	<c:otherwise>
-  	<openmrs:message var="pageTitle" code="Concept.creatingNewConcept.title" scope="page"/>
+  		<openmrs:message var="pageTitle" code="Concept.creatingNewConcept.title" scope="page"/>
   	</c:otherwise>
   </c:choose>
   
  <c:choose>
   	<c:when test="${command.concept.conceptId != null}">
   		<openmrs:message var="pageTitle" code="Concept.edit.titlebar" scope="page" arguments="${command.concept.name}"/>
-  	<h2><openmrs:message code="Concept.edit.header" arguments="${command.concept.name}" /></h2>
-  	
 	</c:when>
 	<c:otherwise>
 		<openmrs:message var="pageTitle" code="Concept.creatingNewConcept.titlebar" scope="page"/>
@@ -99,7 +97,7 @@
 	}
 	
 	function searchForConcepts() {
-		DWRConceptService.findBatchOfConcepts($j('#similarConceptsStart input').val(), false, null, null, null, null, null, 3, displayConcepts);
+		DWRConceptService.findBatchOfConcepts($j('#similarConceptsStart input').val(), false, null, null, null, null, null, 4, displayConcepts);
 	}
 	
 	function displayConcepts(concepts) {
@@ -109,7 +107,7 @@
 			var conceptsSize = concepts.length;
 			var theInput = $j.trim($j('#similarConceptsStart input').val().toLowerCase());
 			aString = "| ";
-			$j.each(concepts, function(index, value) {
+			$j.each(concepts.slice(0,3), function(index, value) {
 				var theName = value.name.toString().toLowerCase();
 				var theId = value.conceptId.toString();
 				if(theName === theInput) {
@@ -122,8 +120,13 @@
 				aString += "</a>";
 				aString += " | ";
 			});
+			if (concepts[3]) {
+				aString += "..."
+			}
+			$j("#suggestions").text("<openmrs:message code="Concept.suggestions" />");
 		} else {
 			$j("#similarConcepts").text("");
+			$j("#suggestions").text("");
 		}
 		if(conceptExists) {
 			$j('#similarConceptsStart #duplicateConceptError').show();
@@ -276,7 +279,7 @@
 		</c:forEach>
 	</tr>
 	<tr>
-		<th valign="top"></th>
+		<th valign="top" id="suggestions"></th>
 		<td>
 			<div id="similarConcepts"></div>
 		</td>
