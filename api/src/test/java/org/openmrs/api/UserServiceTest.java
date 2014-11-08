@@ -50,6 +50,8 @@ import org.openmrs.util.Security;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
+ * 
+ * @extends BaseContextSensitiveTest
  */
 public class UserServiceTest extends BaseContextSensitiveTest {
 	
@@ -65,7 +67,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test that we can create a user
+	 * Test that we can create a user.
 	 * 
 	 * @see {@link UserService#saveUser(User,String)}
 	 */
@@ -165,7 +167,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test that we can update a user
+	 * Test that we can update a user.
 	 * 
 	 * @see {@link UserService#saveUser(User,String)}
 	 */
@@ -186,7 +188,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test changing a user's password multiple times in the same transaction
+	 * Test changing a user's password multiple times in the same transaction.
 	 * 
 	 * @see {@link UserService#changePassword(String,String)}
 	 */
@@ -203,7 +205,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure we can grant roles to users
+	 * Make sure we can grant roles to users.
 	 * 
 	 * @see {@link UserService#saveUser(User,String)}
 	 */
@@ -1093,7 +1095,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test that user is not created with a weak password
+	 * Test that user is not created with a weak password.
 	 * 
 	 * @see {@link UserService#saveUser(User,String)}
 	 */
@@ -1142,6 +1144,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, Context.getUserService().getUsers(null, roles, true, null, null).size());
 	}
 	
+	/**
+	 * Test if we can add a new property to existing user properties.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void saveUserProperty_shouldAddNewPropertyToExistingUserProperties() throws Exception {
 		executeDataSet(XML_FILENAME);
@@ -1168,6 +1175,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * Test if can remove all existing properties and assign new properties.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void saveUserProperties_shouldRemoveAllExistingPropertiesAndAssignNewProperties() throws Exception {
 		executeDataSet(XML_FILENAME);
