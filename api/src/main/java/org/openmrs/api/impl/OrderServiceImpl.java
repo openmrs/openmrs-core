@@ -112,15 +112,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new APIException("concept is required for an order");
 		}
 		
-		if (!isDiscontinueOrReviseOrder(order)) {
-			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
-			for (Order activeOrder : activeOrders) {
-				if (order.hasSameOrderableAs(activeOrder) && OrderUtil.checkScheduleOverlap(order, activeOrder)) {
-					throw new APIException(
-					        "Cannot have more than one active order for the same orderable and care setting at same time");
-				}
-			}
-		}
 		Order previousOrder = order.getPreviousOrder();
 		if (order.getOrderType() == null) {
 			OrderType orderType = null;
@@ -204,6 +195,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("The care setting does not match that of the previous order");
 			} else if (!getActualType(order).equals(getActualType(previousOrder))) {
 				throw new APIException("The class does not match that of the previous order");
+			}
+		}
+		
+		if (DISCONTINUE != order.getAction()) {
+			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
+			for (Order activeOrder : activeOrders) {
+				if (order.hasSameOrderableAs(activeOrder)
+				        && !OpenmrsUtil.nullSafeEquals(order.getPreviousOrder(), activeOrder)
+				        && OrderUtil.checkScheduleOverlap(order, activeOrder)) {
+					throw new APIException(
+					        "Cannot have more than one active order for the same orderable and care setting at same time");
+				}
 			}
 		}
 		
