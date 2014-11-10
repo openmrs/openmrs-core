@@ -476,7 +476,7 @@
 												</c:forEach>
 												<c:choose>
 													<c:when test="${not empty stateId}">
-														<b ${retired ? 'class=voided' : ''}><openmrs:format conceptId="${stateId}" caseConversion="global"/></b>
+														<b <c:if test="${retired}"> class="voided"} </c:if> ><openmrs:format conceptId="${stateId}" caseConversion="global"/></b>
 														<i>(<openmrs:message code="general.since" />
 														<openmrs:formatDate date="${stateStart}" type="medium" />)</i>
 													</c:when>
