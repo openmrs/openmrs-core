@@ -643,25 +643,25 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("dead-papa", people.get(1).getPersonName().getFamilyName2());
 		Assert.assertTrue(people.get(0).getFamilyName() != people.get(1).getFamilyName());
 	}
-
-    /**
-     * @verifies obey attribute match mode
-     * @see HibernatePersonDAO#getPeople(String, Boolean)
-     */
-    @Test
-    public void getPeople_shouldObeyAttributeMatchMode() throws Exception {
-        // exact match mode
-        long patientCount = hibernatePersonDAO.getPeople("337-4820", false).size();
-        Assert.assertEquals(1, patientCount);
-
-        patientCount = hibernatePersonDAO.getPeople("337", false).size();
-        Assert.assertEquals(0, patientCount);
-
-        globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
-                OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
-
-        patientCount = hibernatePersonDAO.getPeople("337", false).size();
-        Assert.assertEquals(1, patientCount);
-    }
+	
+	/**
+	 * @verifies obey attribute match mode
+	 * @see HibernatePersonDAO#getPeople(String, Boolean)
+	 */
+	@Test
+	public void getPeople_shouldObeyAttributeMatchMode() throws Exception {
+		// exact match mode
+		long patientCount = hibernatePersonDAO.getPeople("337-4820", false).size();
+		Assert.assertEquals(1, patientCount);
+		
+		patientCount = hibernatePersonDAO.getPeople("337", false).size();
+		Assert.assertEquals(0, patientCount);
+		
+		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE);
+		
+		patientCount = hibernatePersonDAO.getPeople("337", false).size();
+		Assert.assertEquals(1, patientCount);
+	}
 	
 }

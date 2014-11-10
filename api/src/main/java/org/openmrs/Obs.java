@@ -75,10 +75,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	public static final long serialVersionUID = 112342333L;
 	
 	private static final Log log = LogFactory.getLog(Obs.class);
-
-    private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
-
-    private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
+	
+	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
+	
+	private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
 	
 	protected Integer obsId;
 	
@@ -137,7 +137,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	protected Encounter encounter;
 	
 	private Obs previousVersion;
-
+	
 	private String formNamespaceAndPath;
 	
 	/** default constructor */
@@ -1200,9 +1200,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	public String getFormFieldNamespace() {
 		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
 			//Only the path was specified
-			if (formNamespaceAndPath.startsWith(FORM_NAMESPACE_PATH_SEPARATOR)){
+			if (formNamespaceAndPath.startsWith(FORM_NAMESPACE_PATH_SEPARATOR)) {
 				return null;
-            }
+			}
 			return formNamespaceAndPath.substring(0, formNamespaceAndPath.indexOf(FORM_NAMESPACE_PATH_SEPARATOR));
 		}
 		
@@ -1223,7 +1223,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			//Only the namespace was specified
 			if (formNamespaceAndPath.endsWith(FORM_NAMESPACE_PATH_SEPARATOR)) {
 				return null;
-            }
+			}
 			return formNamespaceAndPath.substring(formNamespaceAndPath.indexOf(FORM_NAMESPACE_PATH_SEPARATOR) + 1);
 		}
 		
@@ -1252,19 +1252,19 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		String nsAndPathTemp = "";
 		if (StringUtils.isNotBlank(namespace) && StringUtils.isNotBlank(formFieldPath)) {
 			nsAndPathTemp = namespace + FORM_NAMESPACE_PATH_SEPARATOR + formFieldPath;
-        } else if (StringUtils.isNotBlank(namespace)) {
+		} else if (StringUtils.isNotBlank(namespace)) {
 			nsAndPathTemp = namespace + FORM_NAMESPACE_PATH_SEPARATOR;
-        } else if (StringUtils.isNotBlank(formFieldPath)) {
+		} else if (StringUtils.isNotBlank(formFieldPath)) {
 			nsAndPathTemp = FORM_NAMESPACE_PATH_SEPARATOR + formFieldPath;
-        }
-
+		}
+		
 		if (nsAndPathTemp.length() > FORM_NAMESPACE_PATH_MAX_LENGTH) {
 			throw new APIException(Context.getMessageSourceService().getMessage("Obs.namespaceAndPathTooLong"));
-        }
-        if (StringUtils.countMatches(nsAndPathTemp, FORM_NAMESPACE_PATH_SEPARATOR) > 1) {
+		}
+		if (StringUtils.countMatches(nsAndPathTemp, FORM_NAMESPACE_PATH_SEPARATOR) > 1) {
 			throw new APIException(Context.getMessageSourceService().getMessage("Obs.namespaceAndPathNotContainSeparator"));
-        }
-
+		}
+		
 		formNamespaceAndPath = nsAndPathTemp;
 	}
 }
