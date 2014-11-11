@@ -679,6 +679,7 @@ public interface OrderService extends OpenmrsService {
 	 * @since 1.10
 	 * @should return an empty list if nothing is configured
 	 * @should return a list if GP is set
+	 * @should return the union of the dosing and dispensing units
 	 */
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getDrugDispensingUnits();

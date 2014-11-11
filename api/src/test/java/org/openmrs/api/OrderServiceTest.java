@@ -13,7 +13,6 @@
  */
 package org.openmrs.api;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItems;
@@ -69,7 +68,6 @@ import org.openmrs.order.OrderUtilTest;
 import org.openmrs.orders.TimestampOrderNumberGenerator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
-import static org.openmrs.test.TestUtil.createDateTime;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
@@ -2445,12 +2443,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies return the union of the dosing and dispensing units
 	 * @see OrderService#getDrugDispensingUnits()
-	 * @verifies return a list if GP is set
 	 */
 	@Test
-	public void getDrugDispensingUnits_shouldReturnAListIfGPIsSet() throws Exception {
-		assertThat(orderService.getDrugDispensingUnits(), contains(hasId(51)));
+	public void getDrugDispensingUnits_shouldReturnTheUnionOfTheDosingAndDispensingUnits() throws Exception {
+		List<Concept> dispensingUnits = orderService.getDrugDispensingUnits();
+		assertEquals(2, dispensingUnits.size());
+		assertThat(dispensingUnits, containsInAnyOrder(hasId(50), hasId(51)));
 	}
 	
 	/**
@@ -2460,6 +2460,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugDispensingUnits_shouldReturnAnEmptyListIfNothingIsConfigured() throws Exception {
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID, ""));
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID, ""));
 		assertThat(orderService.getDrugDispensingUnits(), is(empty()));
 	}
 	
@@ -2469,7 +2470,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugDosingUnits_shouldReturnAListIfGPIsSet() throws Exception {
-		assertThat(orderService.getDrugDosingUnits(), containsInAnyOrder(hasId(50), hasId(51)));
+		List<Concept> dosingUnits = orderService.getDrugDosingUnits();
+		assertEquals(2, dosingUnits.size());
+		assertThat(dosingUnits, containsInAnyOrder(hasId(50), hasId(51)));
 	}
 	
 	/**
