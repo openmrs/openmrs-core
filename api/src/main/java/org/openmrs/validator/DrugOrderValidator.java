@@ -82,7 +82,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should pass if concept is null and drug is set
 	 * @should not validate a custom dosing type against any other dosing type validation
 	 * @should apply validation for a custom dosing type
-	 * @should fail if durationUnits has no mapping to ISO8601 source
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
