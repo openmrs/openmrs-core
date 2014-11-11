@@ -2699,25 +2699,47 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldReturnAllDrugsMatchingConceptName() throws Exception {
-        String aspirinDrugConceptShortName = "ASA";
-
-        List<Drug> drugs = conceptService.getDrugs(aspirinDrugConceptShortName, null, false, true, false, 0, 50);
+		String aspirinDrugConceptShortName = "ASA";
+		
+		List<Drug> drugs = conceptService.getDrugs(aspirinDrugConceptShortName, null, false, true, false, 0, 50);
 		
 		assertEquals(1, drugs.size());
 		assertThat(drugs, hasItems(conceptService.getDrug(3)));
 	}
-
+	
 	/**
 	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
 	 */
 	@Test
 	public void getDrugs_shouldReturnUniqueDrugsWhenSearchPhraseMatchesBothDrugNameAndConceptName() throws Exception {
 		List<Drug> drugs = conceptService.getDrugs("AS", null, false, true, false, 0, 50);
-
+		
 		assertEquals(1, drugs.size());
 		assertThat(drugs, hasItems(conceptService.getDrug(3)));
 	}
-
+	
+	/**
+	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
+	 */
+	@Test
+	public void getCountOfDrugs_shouldIncludeDrugsMatchingConceptName() throws Exception {
+		String aspirinDrugConceptShortName = "ASA";
+		
+		int countOfDrugs = conceptService.getCountOfDrugs(aspirinDrugConceptShortName, null, false, true, false);
+		
+		assertEquals(1, countOfDrugs);
+	}
+	
+	/**
+	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
+	 */
+	@Test
+	public void getCountOfDrugs_shouldCountUniqueDrugsWhenSearchPhraseMatchesBothDrugNameAndConceptName() throws Exception {
+		int countOfDrugs = conceptService.getCountOfDrugs("AS", null, false, true, false);
+		
+		assertEquals(1, countOfDrugs);
+	}
+	
 	/**
 	 * @verifies reject a null search phrase
 	 * @see ConceptService#getDrugs(String, java.util.Locale, boolean, boolean)
