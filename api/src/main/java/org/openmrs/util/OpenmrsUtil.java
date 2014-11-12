@@ -1278,6 +1278,17 @@ public class OpenmrsUtil {
 	}
 	
 	/**
+	 * Check whether the provided application data directory is valid
+	 *
+	 * @param path
+	 * @since 1.11
+	 * @return true if the provided path is writable
+	 */
+	public static boolean isValidApplicationDataDirectory(String path) {
+		return canWrite(new File(path));
+	}
+	
+	/**
 	 * Checks if we can write to a given folder.
 	 * 
 	 * @param folder the directory to check.

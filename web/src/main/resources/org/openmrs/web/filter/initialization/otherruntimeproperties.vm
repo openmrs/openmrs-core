@@ -21,6 +21,9 @@
                     <td>$l10n.get("general.yes"): <input type="radio" name="auto_update_database" value="yes" #if( $autoUpdateDatabase == true )checked="checked"#end/></td>
                     <td>$l10n.get("general.no"): <input type="radio" name="auto_update_database" value="no" #if( $autoUpdateDatabase == false )checked="checked"#end/></td>
 		  </tr>
+			<tr>
+				<td colspan="2" >$l10n.get("install.advanced.other.dataDirectory") &nbsp;<input type="text" name="dataDirectory" size="45" value="${dataDirectory}" onKeyPress="return submitenter(this,event);"  /> </td>
+			</tr>
                 <tr>
 			<td colspan="2" align="center">
 				<input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>

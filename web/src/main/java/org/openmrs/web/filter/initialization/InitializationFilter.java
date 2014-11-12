@@ -585,6 +585,15 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 			
+			wizardModel.dataDirectory = httpRequest.getParameter("dataDirectory");
+			
+			// throw back if the application data directory is not valid
+			if (!OpenmrsUtil.isValidApplicationDataDirectory(wizardModel.dataDirectory)) {
+				errors.put(ErrorMessageConstants.ERROR_INVALID_DATA_DIRECTORY, null);
+				renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, httpResponse);
+				return;
+			}
+			
 			wizardModel.moduleWebAdmin = "yes".equals(httpRequest.getParameter("module_web_admin"));
 			wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
 			
@@ -1437,6 +1446,7 @@ public class InitializationFilter extends StartupFilter {
 						// save the properties for startup purposes
 						Properties runtimeProperties = new Properties();
 						
+						runtimeProperties.put("application_data_directory", wizardModel.dataDirectory);
 						runtimeProperties.put("connection.url", finalDatabaseConnectionString);
 						runtimeProperties.put("connection.username", connectionUsername);
 						runtimeProperties.put("connection.password", connectionPassword.toString());
