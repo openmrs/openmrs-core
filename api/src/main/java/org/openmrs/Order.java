@@ -436,6 +436,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * Convenience method to determine if order is discontinued at the current time
 	 * 
 	 * @return boolean indicating whether the order is expired at the current time
+	 * @since 1.10.1
 	 */
 	public boolean isExpired() {
 		return isExpired(new Date());
@@ -455,6 +456,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return false if check date is after date stopped but before auto expire date
 	 * @should fail if date stopped is after auto expire date
 	 * @should return true if date stopped is null and auto expire date is before check date
+	 * @since 1.10.1
 	 */
 	public boolean isExpired(Date checkDate) {
 		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
