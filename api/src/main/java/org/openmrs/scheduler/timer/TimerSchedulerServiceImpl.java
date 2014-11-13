@@ -121,7 +121,11 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	}
 	
 	public static void setScheduledTasks(Map<Integer, TimerSchedulerTask> scheduledTasks) {
-		TimerSchedulerServiceImpl.scheduledTasks = scheduledTasks;
+		if (scheduledTasks != null) {
+			TimerSchedulerServiceImpl.scheduledTasks = scheduledTasks;
+		} else {
+			TimerSchedulerServiceImpl.scheduledTasks = new WeakHashMap<Integer, TimerSchedulerTask>();
+		}
 	}
 	
 	/**
