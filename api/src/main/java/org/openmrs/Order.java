@@ -17,6 +17,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.util.OpenmrsUtil;
@@ -353,6 +354,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was current on the input date
+	 * @should return true if an order expired on the check date
+	 * @should return true if an order was discontinued on the check date
+	 * @should return true if an order was activated on the check date
+	 * @should return false for a voided order
+	 * @should return false for a discontinued order
+	 * @should return false for an expired order
+	 * @should return false for an order activated after the check date
 	 */
 	public boolean isCurrent(Date checkDate) {
 		if (isVoided())
@@ -362,33 +370,29 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 			checkDate = new Date();
 		}
 		
-		if (dateActivated != null && checkDate.before(dateActivated)) {
-			return false;
-		}
-		
-		if (isDiscontinuedRightNow()) {
-			if (dateStopped == null)
-				return checkDate.equals(dateActivated);
-			else
-				return checkDate.before(dateStopped);
-			
-		} else {
-			if (autoExpireDate == null)
-				return true;
-			else
-				return checkDate.before(autoExpireDate);
-		}
+		return !isFuture(checkDate) && !isDiscontinued(checkDate) && !isExpired(checkDate);
 	}
 	
 	public boolean isCurrent() {
 		return isCurrent(new Date());
 	}
 	
+	/**
+	 * Convenience method to determine if order is not yet activated at the given tome
+	 * 
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order was activated after the check date
+	 * @should return false for a voided order
+	 * @should return false if dateActivated is null
+	 * @should return false if order was activated on the check date
+	 * @should return true if order was activated after the check date
+	 */
 	public boolean isFuture(Date checkDate) {
 		if (isVoided())
 			return false;
-		if (checkDate == null)
+		if (checkDate == null) {
 			checkDate = new Date();
+		}
 		
 		return dateActivated != null && checkDate.before(dateActivated);
 	}
@@ -402,28 +406,74 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was discontinued on the input date
+	 * @should return false for a voided order
+	 * @should return false if date stopped and auto expire date are both null
+	 * @should return false if auto expire date is null and date stopped is equal to check date
+	 * @should return false if auto expire date is null and date stopped is after check date
+	 * @should return false if dateActivated is after check date
+	 * @should return true if auto expire date is null and date stopped is before check date
+	 * @should fail if date stopped is after auto expire date
+	 * @should return true if check date is after date stopped but before auto expire date
+	 * @should return true if check date is after both date stopped auto expire date
 	 */
 	public boolean isDiscontinued(Date checkDate) {
-		if (isVoided())
+		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
+			throw new APIException("The order has invalid dateStopped and autoExpireDate values");
+		}
+		if (isVoided()) {
 			return false;
-		if (checkDate == null)
+		}
+		if (checkDate == null) {
 			checkDate = new Date();
+		}
+		if (dateActivated == null || isFuture(checkDate) || dateStopped == null) {
+			return false;
+		}
+		return checkDate.after(dateStopped);
+	}
+	
+	/**
+	 * Convenience method to determine if order is discontinued at the current time
+	 * 
+	 * @return boolean indicating whether the order is expired at the current time
+	 */
+	public boolean isExpired() {
+		return isExpired(new Date());
+	}
+	
+	/**
+	 * Convenience method to determine if order was expired at a given time
+	 * 
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order was expired on the input date
+	 * @should return false for a voided order
+	 * @should return false if date stopped and auto expire date are both null
+	 * @should return false if date stopped is null and auto expire date is equal to check date
+	 * @should return false if date stopped is null and auto expire date is after check date
+	 * @should return false if check date is after both date stopped auto expire date
+	 * @should return false if dateActivated is after check date
+	 * @should return false if check date is after date stopped but before auto expire date
+	 * @should fail if date stopped is after auto expire date
+	 * @should return true if date stopped is null and auto expire date is before check date
+	 */
+	public boolean isExpired(Date checkDate) {
+		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
+			throw new APIException("The order has invalid dateStopped and autoExpireDate values");
+		}
+		if (isVoided()) {
+			return false;
+		}
+		if (checkDate == null) {
+			checkDate = new Date();
+		}
+		if (dateActivated == null || isFuture(checkDate)) {
+			return false;
+		}
+		if (isDiscontinued(checkDate) || autoExpireDate == null) {
+			return false;
+		}
 		
-		if (dateActivated == null || checkDate.before(dateActivated)) {
-			return false;
-		}
-		if (dateStopped != null && dateStopped.after(checkDate)) {
-			return false;
-		}
-		if (dateStopped == null) {
-			return false;
-		}
-		
-		// guess we can't assume this has been filled correctly?
-		/*
-		 * if (dateStopped == null) { return false; }
-		 */
-		return true;
+		return checkDate.after(autoExpireDate);
 	}
 	
 	/*
