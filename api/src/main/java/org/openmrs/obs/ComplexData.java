@@ -35,6 +35,8 @@ public class ComplexData implements java.io.Serializable {
 	
 	private String mimeType;
 	
+	private Long length;
+	
 	/**
 	 * Default constructor requires title and data.
 	 * 
@@ -101,6 +103,26 @@ public class ComplexData implements java.io.Serializable {
 	 */
 	public String getMIMEType() {
 		return this.mimeType;
+	}
+	
+	/**
+	 * Set the data length
+	 *
+	 * @param length
+	 * @since 1.12
+	 */
+	public void setLength(Long length) {
+		this.length = length;
+	}
+	
+	/**
+	 * Get the data length
+	 *
+	 * @return data length
+	 * @since 1.12
+	 */
+	public Long getLength() {
+		return this.length;
 	}
 	
 }

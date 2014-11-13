@@ -1190,6 +1190,10 @@
                     <key><value>TextHandler</value></key>
                     <bean class="org.openmrs.web.controller.observation.handler.WebTextHandler"/>
                 </entry>
+				<entry>
+					<key><value>MediaHandler</value></key>
+					<bean class="org.openmrs.web.controller.observation.handler.WebMediaHandler"/>
+				</entry>
             </map>
         </property>
     </bean>
