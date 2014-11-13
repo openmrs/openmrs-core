@@ -209,6 +209,19 @@ public class ConceptTest {
 	}
 	
 	/**
+	 * @see {@link Concept#getName(Locale,false)}
+	 */
+	@Test
+	@Verifies(value = "return any name within the same language when exact equals false", method = "getName(Locale,false)")
+	public void getName_shouldReturnNameWithinSameLanguageIfExactEqualsFalse() throws Exception {
+		Locale localeToSearch = new Locale("en");
+		
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", localeToSearch));
+		Assert.assertEquals("Test Concept", (concept.getName(localeToSearch, false).toString()));
+	}
+	
+	/**
 	 * @see {@link Concept#getNames(Boolean)}
 	 */
 	@Test
