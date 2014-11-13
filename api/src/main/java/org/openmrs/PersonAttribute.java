@@ -314,7 +314,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		if ((retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue())) != 0) {
 			return retValue;
 		}
-
+		
 		return OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeId(), other.getPersonAttributeId());
 	}
 	
