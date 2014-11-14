@@ -40,6 +40,7 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
@@ -2189,5 +2190,74 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		createPersonAttributeTypeLockedGPAndSetValue("true");
 		PersonAttributeType pat = ps.getPersonAttributeType(1);
 		ps.purgePersonAttributeType(pat);
+	}
+	
+	/**
+	 * @see {@link PersonService#canPurgePerson(org.openmrs.Person)}
+	 * @throws APIException
+	 */
+	@Test
+	@Verifies(method = "canPurgePerson(Person)", value = "throw exception when person is linked to user with linked users list")
+	public void canPurgePerson_shouldThrowExceptionWhenPersonIsLinkedToUserWithLinkedUsersList() throws Exception {
+		Person person = Context.getPersonService().getPerson(501);
+		
+		try {
+			Context.getPersonService().canPurgePerson(person);
+		}
+		catch (APIException e) {
+			for (User user : Context.getUserService().getUsersByPerson(person, true)) {
+				if (!e.getMessage().contains(user.getSystemId())) {
+					Assert.fail();
+				}
+			}
+			return;
+		}
+		Assert.fail();
+	}
+	
+	/**
+	 * @see {@link PersonService#canPurgePerson(org.openmrs.Person)}
+	 * @throws APIException
+	 */
+	@Test
+	@Verifies(method = "canPurgePerson(Person)", value = "throw exception when person is linked to provider with linked providers list")
+	public void canPurgePerson_shouldThrowExceptionWhenPersonIsLinkedToProviderWithLinkedProvidersList() throws Exception {
+		Person person = Context.getPersonService().getPerson(1);
+		
+		try {
+			Context.getPersonService().canPurgePerson(person);
+		}
+		catch (APIException e) {
+			for (Provider provider : Context.getProviderService().getProvidersByPerson(person)) {
+				if (!e.getMessage().contains(provider.getName())) {
+					Assert.fail();
+				}
+			}
+			return;
+		}
+		Assert.fail();
+	}
+	
+	/**
+	 * @see {@link PersonService#canVoidPerson(org.openmrs.Person)}
+	 * @throws APIException
+	 */
+	@Test
+	@Verifies(method = "canVoidPerson(Person)", value = "throw exception when person is linked to provider with linked providers list")
+	public void canVoidPerson_shouldThrowExceptionWhenPersonIsLinkedToProviderWithLinkedProvidersList() throws Exception {
+		Person person = Context.getPersonService().getPerson(1);
+		
+		try {
+			Context.getPersonService().canVoidPerson(person);
+		}
+		catch (APIException e) {
+			for (Provider provider : Context.getProviderService().getProvidersByPerson(person)) {
+				if (!e.getMessage().contains(provider.getName())) {
+					Assert.fail();
+				}
+			}
+			return;
+		}
+		Assert.fail();
 	}
 }

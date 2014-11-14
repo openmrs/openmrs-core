@@ -14,6 +14,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
@@ -1245,6 +1247,71 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false");
 		if (locked.toLowerCase().equals("true")) {
 			throw new PersonAttributeTypeLockedException();
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#canPurgePerson(org.openmrs.Person)
+	 */
+	public void canPurgePerson(Person person) throws APIException {
+		
+		if (person == null) {
+			return;
+		}
+		
+		Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
+		Collection<User> userCollection = Context.getUserService().getUsersByPerson(person, true);
+		String providers = "";
+		String users = "";
+		String errorMessage = "";
+		
+		if (providerCollection != null && !providerCollection.isEmpty()) {
+			for (Provider provider : providerCollection) {
+				providers = providers + provider.getName() + ", ";
+			}
+			providers = providers.substring(0, providers.length() - 2);
+			errorMessage = Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.providers") + " "
+			        + providers;
+		}
+		if (userCollection != null && !userCollection.isEmpty()) {
+			for (User user : userCollection) {
+				users = users + user.getSystemId() + ", ";
+			}
+			users = users.substring(0, users.length() - 2);
+			if (!errorMessage.isEmpty()) {
+				errorMessage = errorMessage + "; ";
+			}
+			errorMessage = errorMessage
+			        + Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.users") + " " + users;
+		}
+		if (!errorMessage.isEmpty()) {
+			throw new APIException(errorMessage);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#canVoidPerson(org.openmrs.Person)
+	 */
+	public void canVoidPerson(Person person) throws APIException {
+		
+		if (person == null) {
+			return;
+		}
+		
+		Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
+		String providers = "";
+		String errorMessage = "";
+		
+		if (providerCollection != null && !providerCollection.isEmpty()) {
+			for (Provider provider : providerCollection) {
+				providers = providers + provider.getName() + ", ";
+			}
+			providers = providers.substring(0, providers.length() - 2);
+			errorMessage = Context.getMessageSourceService().getMessage("Person.cannot.void.linkedTo.providers") + " "
+			        + providers;
+		}
+		if (!errorMessage.isEmpty()) {
+			throw new APIException(errorMessage);
 		}
 	}
 }
