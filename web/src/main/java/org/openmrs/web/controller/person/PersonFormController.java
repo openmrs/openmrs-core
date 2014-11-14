@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,8 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
@@ -221,6 +224,32 @@ public class PersonFormController extends SimpleFormController {
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		String action = request.getParameter("action");
 		PersonService ps = Context.getPersonService();
+		
+		if (action.equals(msa.getMessage("Person.delete")) || action.equals(msa.getMessage("Person.void"))) {
+			Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
+			Collection<User> userCollection = Context.getUserService().getUsersByPerson(person, true);
+			String providers = "";
+			String users = "";
+			if (providerCollection != null && !providerCollection.isEmpty()) {
+				for (Provider provider : providerCollection) {
+					providers = providers + provider.getName() + ", ";
+				}
+				providers = providers.substring(0, providers.length() - 2);
+				errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.void.linkedTo.providers") + " "
+				        + providers);
+			}
+			if (userCollection != null && !userCollection.isEmpty()) {
+				for (User user : userCollection) {
+					users = users + user.getSystemId() + ", ";
+				}
+				users = users.substring(0, users.length() - 2);
+				errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.void.linkedTo.users") + " "
+				        + users);
+			}
+			if (errors.hasErrors()) {
+				return showForm(request, response, errors);
+			}
+		}
 		
 		if (action.equals(msa.getMessage("Person.delete"))) {
 			try {
