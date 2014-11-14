@@ -16,6 +16,7 @@ package org.openmrs.web.controller.person;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,6 +41,8 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
@@ -221,12 +224,45 @@ public class PersonFormController extends SimpleFormController {
 		String action = request.getParameter("action");
 		PersonService ps = Context.getPersonService();
 		
+		String linkedProviders = "";
+		if (action.equals(msa.getMessage("Person.delete")) || action.equals(msa.getMessage("Person.void"))) {
+			Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
+			if (providerCollection != null && !providerCollection.isEmpty()) {
+				for (Provider provider : providerCollection) {
+					linkedProviders = linkedProviders + provider.getName() + ", ";
+				}
+				linkedProviders = linkedProviders.substring(0, linkedProviders.length() - 2);
+			}
+		}
+		
 		if (action.equals(msa.getMessage("Person.delete"))) {
 			try {
-				ps.purgePerson(person);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.deleted");
+				if (!linkedProviders.isEmpty()) {
+					errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.providers")
+					        + " " + linkedProviders);
+				}
 				
-				return new ModelAndView(new RedirectView("index.htm"));
+				Collection<User> userCollection = Context.getUserService().getUsersByPerson(person, true);
+				String linkedUsers = "";
+				if (userCollection != null && !userCollection.isEmpty()) {
+					for (User user : userCollection) {
+						linkedUsers = linkedUsers + user.getSystemId() + ", ";
+					}
+					linkedUsers = linkedUsers.substring(0, linkedUsers.length() - 2);
+				}
+				if (!linkedUsers.isEmpty()) {
+					errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.users") + " "
+					        + linkedUsers);
+				}
+				
+				if (errors.hasErrors()) {
+					return showForm(request, response, errors);
+				} else {
+					ps.purgePerson(person);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.deleted");
+					
+					return new ModelAndView(new RedirectView("index.htm"));
+				}
 			}
 			catch (DataIntegrityViolationException e) {
 				log.error("Unable to delete person because of database FK errors: " + person, e);
@@ -240,9 +276,14 @@ public class PersonFormController extends SimpleFormController {
 				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
 				        .getLocale());
 			}
-			ps.voidPerson(person, voidReason);
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
-			
+			if (linkedProviders.isEmpty()) {
+				ps.voidPerson(person, voidReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
+			} else {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+				    "Person.cannot.void.linkedTo.providers")
+				        + " " + linkedProviders);
+			}
 			return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId()));
 		} else if (action.equals(msa.getMessage("Person.unvoid"))) {
 			ps.unvoidPerson(person);
