@@ -32,7 +32,7 @@ import org.openmrs.OrderType;
 public class OrderUtilTest {
 	
 	public static boolean isActiveOrder(Order order, Date asOfDate) {
-		return order.isCurrent(asOfDate) && order.getAction() != Order.Action.DISCONTINUE;
+		return order.isActive(asOfDate) && order.getAction() != Order.Action.DISCONTINUE;
 	}
 	
 	public static void setDateStopped(Order targetOrder, Date dateStopped) throws Exception {

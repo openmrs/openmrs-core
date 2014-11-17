@@ -125,36 +125,35 @@ public class OrderTest {
 	}
 	
 	/**
-	 * Tests the {@link Order#isCurrent()} method TODO this should be split into many different
-	 * tests
+	 * Tests the {@link Order#isActive()} method TODO this should be split into many different tests
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldIsCurrent() throws Exception {
+	public void shouldCheckIfOrderIsActive() throws Exception {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Order o = new Order();
-		assertTrue("dateActivated==null && no end date should always be current", o.isCurrent(ymd.parse("2007-10-26")));
+		assertTrue("dateActivated==null && no end date should always be current", o.isActive(ymd.parse("2007-10-26")));
 		
 		o.setDateActivated(ymd.parse("2007-01-01"));
-		assertFalse("shouldn't be current before dateActivated", o.isCurrent(ymd.parse("2006-10-26")));
-		assertTrue("should be current after dateActivated", o.isCurrent(ymd.parse("2007-10-26")));
+		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
+		assertTrue("should be current after dateActivated", o.isActive(ymd.parse("2007-10-26")));
 		
 		o.setAutoExpireDate(ymd.parse("2007-12-31"));
-		assertFalse("shouldn't be current before dateActivated", o.isCurrent(ymd.parse("2006-10-26")));
-		assertTrue("should be current between dateActivated and autoExpireDate", o.isCurrent(ymd.parse("2007-10-26")));
-		assertFalse("shouldn't be current after autoExpireDate", o.isCurrent(ymd.parse("2008-10-26")));
+		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
+		assertTrue("should be current between dateActivated and autoExpireDate", o.isActive(ymd.parse("2007-10-26")));
+		assertFalse("shouldn't be current after autoExpireDate", o.isActive(ymd.parse("2008-10-26")));
 		
 		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
-		assertFalse("shouldn't be current before dateActivated", o.isCurrent(ymd.parse("2006-10-26")));
-		assertTrue("should be current between dateActivated and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
-		assertFalse("shouldn't be current after dateStopped", o.isCurrent(ymd.parse("2007-11-26")));
+		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
+		assertTrue("should be current between dateActivated and dateStopped", o.isActive(ymd.parse("2007-10-26")));
+		assertFalse("shouldn't be current after dateStopped", o.isActive(ymd.parse("2007-11-26")));
 		
 		OrderUtilTest.setDateStopped(o, ymd.parse("2007-11-01"));
-		assertFalse("shouldn't be current before dateActivated", o.isCurrent(ymd.parse("2006-10-26")));
-		assertTrue("should be current between dateActivated and dateStopped", o.isCurrent(ymd.parse("2007-10-26")));
-		assertFalse("shouldn't be current after dateStopped", o.isCurrent(ymd.parse("2007-11-26")));
+		assertFalse("shouldn't be current before dateActivated", o.isActive(ymd.parse("2006-10-26")));
+		assertTrue("should be current between dateActivated and dateStopped", o.isActive(ymd.parse("2007-10-26")));
+		assertFalse("shouldn't be current after dateStopped", o.isActive(ymd.parse("2007-11-26")));
 	}
 	
 	/**
@@ -649,93 +648,192 @@ public class OrderTest {
 	
 	/**
 	 * @verifies return true if an order expired on the check date
-	 * @see Order#isCurrent(java.util.Date)
+	 * @see Order#isActive(java.util.Date)
 	 */
 	@Test
-	public void isCurrent_shouldReturnTrueIfAnOrderExpiredOnTheCheckDate() throws Exception {
+	public void isActive_shouldReturnTrueIfAnOrderExpiredOnTheCheckDate() throws Exception {
 		Order order = new Order();
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		Date checkDate = DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT);
 		order.setAutoExpireDate(checkDate);
 		assertNull(order.getDateStopped());
-		assertTrue(order.isCurrent(checkDate));
+		assertTrue(order.isActive(checkDate));
 	}
 	
 	/**
 	 * @verifies return true if an order was activated on the check date
-	 * @see Order#isCurrent(java.util.Date)
+	 * @see Order#isActive(java.util.Date)
 	 */
 	@Test
-	public void isCurrent_shouldReturnTrueIfAnOrderWasActivatedOnTheCheckDate() throws Exception {
+	public void isActive_shouldReturnTrueIfAnOrderWasActivatedOnTheCheckDate() throws Exception {
 		Order order = new Order();
 		Date activationDate = DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT);
 		order.setDateActivated(activationDate);
 		assertNull(order.getDateStopped());
 		assertNull(order.getAutoExpireDate());
-		assertTrue(order.isCurrent(activationDate));
+		assertTrue(order.isActive(activationDate));
 	}
 	
 	/**
 	 * @verifies return true if an order was discontinued on the check date
-	 * @see Order#isCurrent(java.util.Date)
+	 * @see Order#isActive(java.util.Date)
 	 */
 	@Test
-	public void isCurrent_shouldReturnTrueIfAnOrderWasDiscontinuedOnTheCheckDate() throws Exception {
+	public void isActive_shouldReturnTrueIfAnOrderWasDiscontinuedOnTheCheckDate() throws Exception {
 		Order order = new Order();
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		Date dateStopped = DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT);
 		OrderUtilTest.setDateStopped(order, dateStopped);
-		assertTrue(order.isCurrent(dateStopped));
+		assertTrue(order.isActive(dateStopped));
 	}
 	
 	/**
 	 * @verifies return false for a discontinued order
-	 * @see Order#isCurrent(java.util.Date)
+	 * @see Order#isActive(java.util.Date)
 	 */
 	@Test
-	public void isCurrent_shouldReturnFalseForADiscontinuedOrder() throws Exception {
+	public void isActive_shouldReturnFalseForADiscontinuedOrder() throws Exception {
 		Order order = new Order();
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		OrderUtilTest.setDateStopped(order, DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
-		assertFalse(order.isCurrent(DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT)));
+		assertFalse(order.isActive(DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT)));
 	}
 	
 	/**
 	 * @verifies return false for an expired order
-	 * @see Order#isCurrent(java.util.Date)
+	 * @see Order#isActive(java.util.Date)
 	 */
 	@Test
-	public void isCurrent_shouldReturnFalseForAnExpiredOrder() throws Exception {
+	public void isActive_shouldReturnFalseForAnExpiredOrder() throws Exception {
 		Order order = new Order();
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		order.setAutoExpireDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
-		assertFalse(order.isCurrent(DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT)));
+		assertFalse(order.isActive(DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT)));
 	}
 	
 	/**
 	 * @verifies return false for an order activated after the check date
-	 * @see Order#isCurrent(java.util.Date)
+	 * @see Order#isActive(java.util.Date)
 	 */
 	@Test
-	public void isCurrent_shouldReturnFalseForAnOrderActivatedAfterTheCheckDate() throws Exception {
+	public void isActive_shouldReturnFalseForAnOrderActivatedAfterTheCheckDate() throws Exception {
 		Order order = new Order();
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		assertNull(order.getDateStopped());
 		assertNull(order.getAutoExpireDate());
-		assertFalse(order.isCurrent(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
+		assertFalse(order.isActive(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
 	}
 	
 	/**
 	 * @verifies return false for a voided order
-	 * @see Order#isCurrent(java.util.Date)
+	 * @see Order#isActive(java.util.Date)
 	 */
 	@Test
-	public void isCurrent_shouldReturnFalseForAVoidedOrder() throws Exception {
+	public void isActive_shouldReturnFalseForAVoidedOrder() throws Exception {
 		Order order = new Order();
 		order.setVoided(true);
 		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
 		assertNull(order.getDateStopped());
 		assertNull(order.getAutoExpireDate());
-		assertFalse(order.isCurrent(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT)));
+		assertFalse(order.isActive(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT)));
+	}
+	
+	/**
+	 * @verifies return false for a discontinuation order
+	 * @see Order#isActive(java.util.Date)
+	 */
+	@Test
+	public void isActive_shouldReturnFalseForADiscontinuationOrder() throws Exception {
+		Order order = new Order();
+		Date activationDate = DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT);
+		order.setDateActivated(activationDate);
+		order.setAction(Order.Action.DISCONTINUE);
+		assertNull(order.getDateStopped());
+		assertNull(order.getAutoExpireDate());
+		assertFalse(order.isActive(activationDate));
+	}
+	
+	/**
+	 * @verifies return false for a voided order
+	 * @see Order#isStarted(java.util.Date)
+	 */
+	@Test
+	public void isStarted_shouldReturnFalseForAVoidedOrder() throws Exception {
+		Order order = new Order();
+		order.setVoided(true);
+		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
+		assertFalse(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT)));
+	}
+	
+	/**
+	 * @verifies return false if dateActivated is null
+	 * @see Order#isStarted(java.util.Date)
+	 */
+	@Test
+	public void isStarted_shouldReturnFalseIfDateActivatedIsNull() throws Exception {
+		Order order = new Order();
+		assertNull(order.getDateActivated());
+		assertFalse(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT)));
+	}
+	
+	/**
+	 * @verifies return false if the order is not yet activated as of the check date
+	 * @see Order#isStarted(java.util.Date)
+	 */
+	@Test
+	public void isStarted_shouldReturnFalseIfTheOrderIsNotYetActivatedAsOfTheCheckDate() throws Exception {
+		Order order = new Order();
+		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
+		assertFalse(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:09", DATE_FORMAT)));
+	}
+	
+	/**
+	 * @verifies return false if the order was scheduled to start after the check date
+	 * @see Order#isStarted(java.util.Date)
+	 */
+	@Test
+	public void isStarted_shouldReturnFalseIfTheOrderWasScheduledToStartAfterTheCheckDate() throws Exception {
+		Order order = new Order();
+		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		order.setScheduledDate(DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT));
+		assertFalse(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT)));
+	}
+	
+	/**
+	 * @verifies return true if the order was scheduled to start on the check date
+	 * @see Order#isStarted(java.util.Date)
+	 */
+	@Test
+	public void isStarted_shouldReturnTrueIfTheOrderWasScheduledToStartOnTheCheckDate() throws Exception {
+		Order order = new Order();
+		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		order.setScheduledDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
+		assertTrue(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT)));
+	}
+	
+	/**
+	 * @verifies return true if the order was scheduled to start before the check date
+	 * @see Order#isStarted(java.util.Date)
+	 */
+	@Test
+	public void isStarted_shouldReturnTrueIfTheOrderWasScheduledToStartBeforeTheCheckDate() throws Exception {
+		Order order = new Order();
+		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
+		order.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		order.setScheduledDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
+		assertTrue(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT)));
+	}
+	
+	/**
+	 * @verifies return true if the order is started and not scheduled
+	 * @see Order#isStarted(java.util.Date)
+	 */
+	@Test
+	public void isStarted_shouldReturnTrueIfTheOrderIsStartedAndNotScheduled() throws Exception {
+		Order order = new Order();
+		order.setDateActivated(DateUtils.parseDate("2014-11-01 11:11:10", DATE_FORMAT));
+		assertTrue(order.isStarted(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT)));
 	}
 }
