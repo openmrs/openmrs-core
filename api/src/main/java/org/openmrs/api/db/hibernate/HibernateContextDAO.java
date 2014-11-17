@@ -139,8 +139,8 @@ public class HibernateContextDAO implements ContextDAO {
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
 					        .currentTimeMillis()));
-					throw new ContextAuthenticationException(
-					        "Invalid number of connection attempts. Please try again later.");
+					throw new ContextAuthenticationException(Context.getMessageSourceService().getMessage(
+					    "auth.login.tooManyAttempts"));
 				}
 			}
 			
@@ -203,7 +203,7 @@ public class HibernateContextDAO implements ContextDAO {
 		// throw this exception only once in the same place with the same
 		// message regardless of username/pw combo entered
 		log.info("Failed login attempt (login=" + login + ") - " + errorMsg);
-		throw new ContextAuthenticationException(errorMsg);
+		throw new ContextAuthenticationException(Context.getMessageSourceService().getMessage("auth.password.invalid"));
 		
 	}
 	
