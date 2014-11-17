@@ -659,7 +659,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void discontinueOrder_shouldFailForADiscontinuedOrder() throws Exception {
 		Order discontinuationOrder = orderService.getOrder(2);
-		assertFalse(discontinuationOrder.isCurrent());
+		assertFalse(discontinuationOrder.isActive());
 		assertNotNull(discontinuationOrder.getDateStopped());
 		Encounter encounter = encounterService.getEncounter(3);
 		expectedException.expect(APIException.class);
@@ -675,7 +675,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void discontinueOrder_shouldNotPassForADiscontinuedOrder() throws Exception {
 		Order discontinuationOrder = orderService.getOrder(2);
-		assertFalse(discontinuationOrder.isCurrent());
+		assertFalse(discontinuationOrder.isActive());
 		assertNotNull(discontinuationOrder.getDateStopped());
 		Encounter encounter = encounterService.getEncounter(3);
 		expectedException.expect(APIException.class);
@@ -1046,7 +1046,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldNotAllowRevisingAnOrderWithNoPreviousOrder() throws Exception {
 		Order originalOrder = orderService.getOrder(111);
-		assertTrue(originalOrder.isCurrent());
+		assertTrue(originalOrder.isActive());
 		Order revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setEncounter(encounterService.getEncounter(5));
 		revisedOrder.setInstructions("Take after a meal");
@@ -1066,7 +1066,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveOrder_shouldSaveARevisedOrder() throws Exception {
 		Order originalOrder = orderService.getOrder(111);
-		assertTrue(originalOrder.isCurrent());
+		assertTrue(originalOrder.isActive());
 		final Patient patient = originalOrder.getPatient();
 		List<Order> originalActiveOrders = orderService.getActiveOrders(patient, null, null, null);
 		final int originalOrderCount = originalActiveOrders.size();
@@ -1084,7 +1084,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Thread.sleep(1);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
-		assertFalse(originalOrder.isCurrent());
+		assertFalse(originalOrder.isActive());
 	}
 	
 	/**
@@ -1398,7 +1398,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		final Concept cd4Count = conceptService.getConcept(5497);
 		//sanity check that we have an active order for the same concept
 		TestOrder duplicateOrder = (TestOrder) orderService.getOrder(7);
-		assertTrue(duplicateOrder.isCurrent());
+		assertTrue(duplicateOrder.isActive());
 		assertEquals(cd4Count, duplicateOrder.getConcept());
 		
 		Order order = new TestOrder();
@@ -1510,7 +1510,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		final Patient patient = patientService.getPatient(2);
 		//sanity check that we have an active order
 		DrugOrder existingOrder = (DrugOrder) orderService.getOrder(1000);
-		assertTrue(existingOrder.isCurrent());
+		assertTrue(existingOrder.isActive());
 		//New Drug order
 		DrugOrder order = new DrugOrder();
 		order.setPatient(patient);
@@ -1540,7 +1540,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		final Patient patient = patientService.getPatient(2);
 		//sanity check that we have an active order for the same concept
 		DrugOrder existingOrder = (DrugOrder) orderService.getOrder(1000);
-		assertTrue(existingOrder.isCurrent());
+		assertTrue(existingOrder.isActive());
 		
 		//New Drug order
 		DrugOrder order = new DrugOrder();
@@ -1571,7 +1571,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		TestOrder duplicateOrder = (TestOrder) orderService.getOrder(7);
 		final CareSetting inpatient = orderService.getCareSetting(2);
 		assertNotEquals(inpatient, duplicateOrder.getCareSetting());
-		assertTrue(duplicateOrder.isCurrent());
+		assertTrue(duplicateOrder.isActive());
 		assertEquals(cd4Count, duplicateOrder.getConcept());
 		int initialActiveOrderCount = orderService.getActiveOrders(patient, null, null, null).size();
 		
@@ -2760,7 +2760,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveOrder_shouldSetAutoExpireDateForReviseOrderWithSimpleDosingInstructions() throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-drugOrderAutoExpireDate.xml");
 		DrugOrder originalOrder = (DrugOrder) orderService.getOrder(111);
-		assertTrue(originalOrder.isCurrent());
+		assertTrue(originalOrder.isActive());
 		DrugOrder revisedOrder = originalOrder.cloneForRevision();
 		revisedOrder.setOrderer(originalOrder.getOrderer());
 		revisedOrder.setEncounter(originalOrder.getEncounter());

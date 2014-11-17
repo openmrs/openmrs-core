@@ -347,10 +347,11 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to determine if order is current
+	 * Convenience method to determine if the order is current as of the specified date
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
-	 * @return boolean indicating whether the order was current on the input date
+	 * @return boolean indicating whether the order was active on the check date
+	 * @since 1.10.1
 	 * @should return true if an order expired on the check date
 	 * @should return true if an order was discontinued on the check date
 	 * @should return true if an order was activated on the check date
@@ -358,11 +359,12 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return false for a discontinued order
 	 * @should return false for an expired order
 	 * @should return false for an order activated after the check date
+	 * @should return false for a discontinuation order
 	 */
-	public boolean isCurrent(Date checkDate) {
-		if (isVoided())
+	public boolean isActive(Date checkDate) {
+		if (isVoided() || action == Action.DISCONTINUE) {
 			return false;
-		
+		}
 		if (checkDate == null) {
 			checkDate = new Date();
 		}
@@ -370,12 +372,39 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		return !isFuture(checkDate) && !isDiscontinued(checkDate) && !isExpired(checkDate);
 	}
 	
-	public boolean isCurrent() {
-		return isCurrent(new Date());
+	/**
+	 * Convenience method to determine if the order was active as of the current date
+	 * 
+	 * @since 1.10.1
+	 * @return boolean indicating whether the order was active on the check date
+	 */
+	public boolean isActive() {
+		return isActive(new Date());
 	}
 	
 	/**
-	 * Convenience method to determine if order is not yet activated at the given tome
+	 * Convenience method to determine if order is current
+	 * 
+	 * @see #isActive(java.util.Date)
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order was current on the input date
+	 */
+	@Deprecated
+	public boolean isCurrent(Date checkDate) {
+		return isActive(checkDate);
+	}
+	
+	/**
+	 * @see #isActive()
+	 * @return
+	 */
+	@Deprecated
+	public boolean isCurrent() {
+		return isActive(new Date());
+	}
+	
+	/**
+	 * Convenience method to determine if the order is not yet activated as of the given date
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was activated after the check date
@@ -396,6 +425,46 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public boolean isFuture() {
 		return isFuture(new Date());
+	}
+	
+	/**
+	 * Convenience method to determine if order is started as of the current date
+	 * 
+	 * @return boolean indicating whether the order is started as of the current date
+	 * @since 1.10.1
+	 * @see #isStarted(java.util.Date)
+	 */
+	public boolean isStarted() {
+		return isStarted(new Date());
+	}
+	
+	/**
+	 * Convenience method to determine if order is started as of the specified date, returns true
+	 * only if the order has been activated. In case of scheduled orders, the scheduledDate becomes
+	 * the effective start date that gets used to determined if it is started.
+	 * 
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order is started as of the check date
+	 * @since 1.10.1
+	 * @should return false for a voided order
+	 * @should return false if dateActivated is null
+	 * @should return false if the order is not yet activated as of the check date
+	 * @should return false if the order was scheduled to start after the check date
+	 * @should return true if the order was scheduled to start on the check date
+	 * @should return true if the order was scheduled to start before the check date
+	 * @should return true if the order is started and not scheduled
+	 */
+	public boolean isStarted(Date checkDate) {
+		if (isVoided()) {
+			return false;
+		}
+		if (checkDate == null) {
+			checkDate = new Date();
+		}
+		if (getEffectiveStartDate() == null) {
+			return false;
+		}
+		return !checkDate.before(getEffectiveStartDate());
 	}
 	
 	/**

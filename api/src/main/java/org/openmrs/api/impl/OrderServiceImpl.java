@@ -386,7 +386,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public Order unvoidOrder(Order order) throws APIException {
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null && isDiscontinueOrReviseOrder(order)) {
-			if (!previousOrder.isCurrent()) {
+			if (!previousOrder.isActive()) {
 				final String action = DISCONTINUE == order.getAction() ? "discontinuation" : "revision";
 				throw new APIException("Cannot unvoid a " + action + " order if the previous order is no longer active");
 			}
@@ -676,11 +676,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (discontinueDate.after(new Date())) {
 			throw new IllegalArgumentException("Discontinue date cannot be in the future");
 		}
-		if (!orderToStop.isCurrent()) {
-			throw new APIException("Cannot discontinue an order that is already stopped, expired or voided");
-		}
 		if (DISCONTINUE == orderToStop.getAction()) {
 			throw new APIException("An order with action " + DISCONTINUE + " cannot be discontinued.");
+		}
+		if (!orderToStop.isActive()) {
+			throw new APIException("Cannot discontinue an order that is already stopped, expired or voided");
 		}
 		setProperty(orderToStop, "dateStopped", discontinueDate);
 		saveOrderInternal(orderToStop, null);
