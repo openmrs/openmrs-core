@@ -66,7 +66,7 @@ public class EncounterTypeValidator implements Validator {
 				EncounterType duplicate = Context.getEncounterService().getEncounterType(encounterType.getName().trim());
 				if (duplicate != null) {
 					if (!OpenmrsUtil.nullSafeEquals(encounterType.getUuid(), duplicate.getUuid()) && !duplicate.isRetired()) {
-						errors.rejectValue("name", "encounterType.duplicate.name",
+						errors.rejectValue("name", "EncounterType.error.duplicateEncounterTypeNameSpecified",
 						    "Specified Encounter Type name already exists, please specify another ");
 					}
 				}
