@@ -80,6 +80,12 @@ public class ComplexObsServlet extends HttpServlet {
 			response.setHeader("Content-Type", mimeType);
 		}
 		
+		Long length = cd.getLength();
+		if (length != null) {
+			response.setHeader("Content-Length", String.valueOf(length));
+			response.setHeader("Accept-Ranges", "bytes");
+		}
+		
 		if (data instanceof byte[]) {
 			ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) data);
 			OpenmrsUtil.copyFile(stream, response.getOutputStream());

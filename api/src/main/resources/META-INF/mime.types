@@ -1,0 +1,9 @@
+# the format is <mime type> <space separated file extensions>
+video/mp4 mp4 m4v MP4 M4V
+video/ogg ogv OGV
+video/webm webm WEBM
+audio/aac aac AAC
+audio/mp4 m4a M4A
+audio/mpeg mp1 mp2 mp3 mpg mpeg MP1 MP2 MP3 MPG MPEG
+audio/ogg oga ogg OGA OGG
+audio/wav wav WAV

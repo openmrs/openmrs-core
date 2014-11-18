@@ -67,6 +67,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.zip.ZipEntry;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -406,6 +407,17 @@ public class OpenmrsUtil {
 			}
 		}
 		
+	}
+	
+	/**
+	 * Get mime type of the given file
+	 *
+	 * @param file
+	 * @return mime type
+	 */
+	public static String getFileMimeType(File file) {
+		MimetypesFileTypeMap mimeMap = new MimetypesFileTypeMap();
+		return mimeMap.getContentType(file);
 	}
 	
 	/**
