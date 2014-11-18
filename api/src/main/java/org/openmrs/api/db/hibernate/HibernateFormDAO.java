@@ -442,11 +442,10 @@ public class HibernateFormDAO implements FormDAO {
 			}
 			
 			DetachedCriteria subquery = DetachedCriteria.forClass(FormField.class, "ff");
-			subquery.setProjection(Projections.count("ff.formFieldId"));
-			subquery.add(Restrictions.eqProperty("ff.form", "form"));
+			subquery.setProjection(Projections.property("ff.form.formId"));
 			subquery.add(Restrictions.in("ff.formFieldId", anyFormFieldIds));
 			
-			crit.add(Subqueries.lt(0L, subquery));
+			crit.add(Subqueries.propertyIn("form.formId", subquery));
 		}
 		
 		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);
@@ -458,11 +457,10 @@ public class HibernateFormDAO implements FormDAO {
 				allFormFieldIds.add(ff.getFormFieldId());
 			}
 			DetachedCriteria subquery = DetachedCriteria.forClass(FormField.class, "ff");
-			subquery.setProjection(Projections.count("ff.formFieldId"));
-			subquery.add(Restrictions.eqProperty("ff.form", "form"));
+			subquery.setProjection(Projections.property("ff.form.formId"));
 			subquery.add(Restrictions.in("ff.formFieldId", allFormFieldIds));
 			
-			crit.add(Subqueries.eq(Long.valueOf(containingAllFormFields.size()), subquery));
+			crit.add(Subqueries.propertyEqAll("form.formId", subquery));
 		}
 		
 		// get all forms (dupes included) that have this field on them
