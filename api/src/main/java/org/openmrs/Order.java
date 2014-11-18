@@ -347,7 +347,17 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to determine if the order is current as of the specified date
+	 * Convenience method to determine if the order was active as of the current date
+	 *
+	 * @since 1.10.1
+	 * @return boolean indicating whether the order was active on the check date
+	 */
+	public boolean isActive() {
+		return isActive(new Date());
+	}
+	
+	/**
+	 * Convenience method to determine if the order is active as of the specified date
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was active on the check date
@@ -370,16 +380,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		
 		return !isFuture(checkDate) && !isDiscontinued(checkDate) && !isExpired(checkDate);
-	}
-	
-	/**
-	 * Convenience method to determine if the order was active as of the current date
-	 * 
-	 * @since 1.10.1
-	 * @return boolean indicating whether the order was active on the check date
-	 */
-	public boolean isActive() {
-		return isActive(new Date());
 	}
 	
 	/**
@@ -439,7 +439,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to determine if order is started as of the specified date, returns true
+	 * Convenience method to determine if the order is started as of the specified date, returns true
 	 * only if the order has been activated. In case of scheduled orders, the scheduledDate becomes
 	 * the effective start date that gets used to determined if it is started.
 	 * 
@@ -468,7 +468,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to determine if order is discontinued at a given time
+	 * Convenience method to determine if the order is discontinued as of the specified date
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was discontinued on the input date
@@ -499,7 +499,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to determine if order is discontinued at the current time
+	 * Convenience method to determine if the order is expired as of the specified date
 	 * 
 	 * @return boolean indicating whether the order is expired at the current time
 	 * @since 1.10.1
