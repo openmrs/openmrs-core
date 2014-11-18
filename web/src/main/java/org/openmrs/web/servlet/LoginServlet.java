@@ -179,7 +179,7 @@ public class LoginServlet extends HttpServlet {
 			catch (ContextAuthenticationException e) {
 				// set the error message for the user telling them
 				// to try again
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.password.invalid");
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 			}
 			
 		}
