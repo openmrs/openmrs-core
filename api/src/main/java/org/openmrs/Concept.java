@@ -710,12 +710,16 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		ConceptName exactName = getNameInLocale(locale);
 		
-		if (exactName != null || exact) {
+		if (exactName != null) {
 			return exactName;
 		}
 		
-		//just get any name
-		return getName();
+		if (exact == false) {
+			Locale broaderLocale = new Locale(locale.getLanguage());
+			ConceptName name = getNameInLocale(broaderLocale);
+			return name;
+		}
+		return null;
 	}
 	
 	/**
