@@ -96,7 +96,7 @@
 			<br/>
 			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
-				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" />
+				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" inheritingItems="${role.allChildRoles}" tooltipText="You cannot add roles that themselves inherit from ${role.role} or its child"  />
 			</c:if>
 		</td>
 	</tr>
