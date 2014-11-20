@@ -238,7 +238,12 @@ function validateForm(){
 							<td><input type="submit" name="unretireProviderButton"
 								value='<openmrs:message code="Provider.unretire"/>'></td>
 						</tr>
-					</c:if>		
+					</c:if>
+
+					<tr>
+						<td><input type="submit" name="purgeProviderButton"
+							value='<openmrs:message code="general.purge"/>'></td>
+					</tr>
 				</table>
 			</form>
 		</div>
