@@ -30,11 +30,15 @@ public class ListPickerTag extends TagSupport {
 	
 	private String name;
 	
+	private String tooltipText;
+	
 	private Collection<Object> allItems;
 	
 	private Collection<Object> currentItems;
 	
 	private Collection<Object> inheritedItems;
+	
+	private Collection<Object> inheritingItems;
 	
 	public int doStartTag() {
 		
@@ -47,8 +51,14 @@ public class ListPickerTag extends TagSupport {
 		if (inheritedItems == null) {
 			inheritedItems = new Vector<Object>();
 		}
+		if (inheritingItems == null) {
+			inheritingItems = new Vector<Object>();
+		}
 		if (allItems == null) {
 			allItems = new Vector<Object>();
+		}
+		if (tooltipText == null) {
+			tooltipText = new String();
 		}
 		
 		String str = "\n<div id='" + name + "' class='listItemBox'>";
@@ -56,17 +66,25 @@ public class ListPickerTag extends TagSupport {
 		for (Object item : allItems) {
 			boolean checked = false;
 			boolean inherited = false;
+			boolean inheriting = false;
 			if (currentItems.contains(item)) {
 				checked = true;
 			}
 			if (inheritedItems.contains(item)) {
 				inherited = true;
 			}
+			if (inheritingItems.contains(item)) {
+				inheriting = true;
+			}
 			String id = name + "." + item.toString().replace(" ", "");
 			if (inherited) {
 				str += "<span class='listItem listItemChecked'>";
 				str += "<input type='checkbox' name=''";
 				str += " checked='checked'";
+				str += " disabled='disabled'";
+			} else if (inheriting) {
+				str += "<span class='listItem' title='" + tooltipText + "'>";
+				str += "<input type='checkbox' name=''";
 				str += " disabled='disabled'";
 			} else {
 				str += "<span class='listItem" + (checked ? " listItemChecked" : "") + "'>";
@@ -76,9 +94,10 @@ public class ListPickerTag extends TagSupport {
 				str += " value='" + item + "'";
 				str += " onclick='this.parentNode.className=\"listItem \" + (this.checked == true ? \"listItemChecked\" : \"\");'";
 				if (checked) {
-					str += "  checked='checked' ";
+					str += "  checked='checked'";
 				}
 			}
+			
 			str += " /><label for='" + id + "'>" + item + "</label>";
 			str += "</span>\n";
 		}
@@ -125,6 +144,22 @@ public class ListPickerTag extends TagSupport {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setTooltipText(String text) {
+		this.tooltipText = text;
+	}
+	
+	public String getTooltipText() {
+		return tooltipText;
+	}
+	
+	public Collection<Object> getInheritingItems() {
+		return inheritingItems;
+	}
+	
+	public void setInheritingItems(Collection<Object> inheritingItems) {
+		this.inheritingItems = inheritingItems;
 	}
 	
 }

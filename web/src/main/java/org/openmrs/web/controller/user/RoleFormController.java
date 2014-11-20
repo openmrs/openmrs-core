@@ -191,14 +191,14 @@ public class RoleFormController extends SimpleFormController {
 	private void addInheritedPrivileges(Role role, Set<Privilege> inheritedPrivileges) {
 		if (role.getInheritedRoles() != null) {
 			for (Role r : role.getInheritedRoles()) {
-				if (r.getPrivileges() != null) {
+				if (!r.getAllParentRoles().contains(role) && r.getPrivileges() != null) {
 					for (Privilege p : r.getPrivileges()) {
 						if (!inheritedPrivileges.contains(p)) {
 							inheritedPrivileges.add(p);
 						}
 					}
+					addInheritedPrivileges(r, inheritedPrivileges);
 				}
-				addInheritedPrivileges(r, inheritedPrivileges);
 			}
 		}
 	}
