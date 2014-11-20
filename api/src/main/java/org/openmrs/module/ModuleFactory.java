@@ -393,6 +393,7 @@ public class ModuleFactory {
 			
 			if (!started) {
 				String moduleVersion = module.getRequiredModuleVersion(moduleName);
+				moduleName = moduleName.replace("org.openmrs.module.", "").replace("org.openmrs.", "");
 				ret.add(moduleName + (moduleVersion != null ? " " + moduleVersion : ""));
 			}
 		}
