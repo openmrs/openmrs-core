@@ -568,8 +568,13 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
-				if (StringUtils.hasLength(descInLocale.getDescription())
-				        && !concept.getDescriptions().contains(descInLocale)) {
+				
+				if (org.apache.commons.lang3.StringUtils.isBlank(descInLocale.getDescription())) {
+					if (concept.getDescription() != null) {
+						concept.getDescription().setConcept(null);
+					}
+					concept.removeDescription(concept.getDescription());
+				} else if (!concept.getDescriptions().contains(descInLocale)) {
 					concept.addDescription(descInLocale);
 				}
 			}
@@ -909,6 +914,7 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		
 		/**
+		 *
 		 * Get the list of extensions/metadata and the specific instances of them that use this
 		 * concept.
 		 *
@@ -1091,6 +1097,6 @@ public class ConceptFormController extends SimpleFormController {
 		public void setConceptAnswersByLocale(Map<Locale, Map<String, String>> conceptAnswersByLocale) {
 			this.conceptAnswersByLocale = conceptAnswersByLocale;
 		}
+		
 	}
-	
 }
