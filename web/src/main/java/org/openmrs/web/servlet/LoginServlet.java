@@ -17,9 +17,11 @@ import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -129,7 +131,8 @@ public class LoginServlet extends HttpServlet {
 				Context.authenticate(username, password);
 				
 				if (Context.isAuthenticated()) {
-					
+					regenerateSession(request);
+					httpSession = request.getSession();//get the newly generated session
 					httpSession.setAttribute("loginAttempts", 0);
 					User user = Context.getAuthenticatedUser();
 					
@@ -250,5 +253,35 @@ public class LoginServlet extends HttpServlet {
 		log.debug("Going to use redirect: '" + redirect + "'");
 		
 		return redirect;
+	}
+	
+	/**
+	 * Regenerates session id after each login attempt.
+	 * @param request
+	 */
+	private void regenerateSession(HttpServletRequest request) {
+		
+		HttpSession oldSession = request.getSession();
+		
+		Enumeration attrNames = oldSession.getAttributeNames();
+		Properties props = new Properties();
+		
+		if (attrNames != null) {
+			while (attrNames.hasMoreElements()) {
+				String key = (String) attrNames.nextElement();
+				props.put(key, oldSession.getAttribute(key));
+			}
+			
+			//Invalidating previous session
+			oldSession.invalidate();
+			//Generate new session
+			HttpSession newSession = request.getSession(true);
+			attrNames = props.keys();
+			
+			while (attrNames.hasMoreElements()) {
+				String key = (String) attrNames.nextElement();
+				newSession.setAttribute(key, props.get(key));
+			}
+		}
 	}
 }
