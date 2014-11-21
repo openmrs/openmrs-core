@@ -26,7 +26,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	
 	private Concept ingredient;
 	
-	private Double quantity;
+	private Double strength;
 	
 	private Concept units;
 	
@@ -40,7 +40,6 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	
 	/**
 	 * @return the drug
-	 * @since 1.10
 	 */
 	public Drug getDrug() {
 		return drug;
@@ -48,7 +47,6 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	
 	/**
 	 * @param drug the drug to set
-	 * @since 1.10
 	 */
 	public void setDrug(Drug drug) {
 		this.drug = drug;
@@ -69,24 +67,24 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	}
 	
 	/**
-	 * @return Returns the quantity.
-	 * @since 1.10
+	 * @return Returns the strength.
+	 * @since 1.11
 	 */
-	public Double getQuantity() {
-		return quantity;
+	public Double getStrength() {
+		return strength;
 	}
 	
 	/**
-	 * @param quantity The quantity to set.
-	 * @since 1.10
+	 * @param strength The strength to set.
+	 * @since 1.11
 	 */
-	public void setQuantity(Double quantity) {
-		this.quantity = quantity;
+	public void setStrength(Double strength) {
+		this.strength = strength;
 	}
 	
 	/**
 	 * @return Returns the units.
-	 * @since 1.10
+	 * @since 1.11
 	 */
 	public Concept getUnits() {
 		return units;
@@ -94,7 +92,7 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	
 	/**
 	 * @param units The units to set.
-	 * @since 1.10
+	 * @since 1.11
 	 */
 	public void setUnits(Concept units) {
 		this.units = units;
