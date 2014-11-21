@@ -8540,6 +8540,7 @@
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="drug_ingredient" columnName="quantity"/>
 		</preConditions>
+		<comment>Renaming drug_ingredient.quantity to strength</comment>
 		<renameColumn tableName="drug_ingredient"
 			oldColumnName="quantity" newColumnName="strength" columnDataType="double"/>
 	</changeSet>
