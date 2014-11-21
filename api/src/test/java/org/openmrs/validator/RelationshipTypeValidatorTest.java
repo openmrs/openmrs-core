@@ -72,7 +72,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasFieldErrors("bIsToA"));
 	}
-
+	
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 * @verifies fail validation if description is null or empty or whitespace
