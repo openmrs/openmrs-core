@@ -8536,5 +8536,11 @@
         </addColumn>
     </changeSet>
 
-
+	<changeSet id="20141121-TRUNK-2193" author="raff" >
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="drug_ingredient" columnName="quantity"/>
+		</preConditions>
+		<renameColumn tableName="drug_ingredient"
+			oldColumnName="quantity" newColumnName="strength" columnDataType="double"/>
+	</changeSet>
 </databaseChangeLog>

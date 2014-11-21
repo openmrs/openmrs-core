@@ -338,8 +338,8 @@
   <drug drug_id="3" concept_id="88" name="ASPIRIN" combination="false" strength="325.0mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="05ec820a-d297-44e3-be6e-698531d9dd3f"/>
   <drug drug_id="11" concept_id="3" name="NYQUIL" combination="true" creator="1" date_created="2008-08-15 15:34:03.0" retired="true" uuid="7e2323fa-0fa0-461f-9b59-6765997d849e"/>
   <drug drug_id="12" concept_id="25" name="TEST_DRUG_NAME_RETIRED" combination="true" creator="1" date_created="2014-06-02 15:51:00.0" retired="true" uuid="7e2323fa-0fa0-461f-9b59-6765997d849f"/>
-  <drug_ingredient drug_id="2" ingredient_id="88" uuid="6519d653-393d-4118-9c83-a3715b82d4dc" quantity="20.0" units="3"/>
-  <drug_ingredient drug_id="3" ingredient_id="88" uuid="6519d653-393e-4118-9c83-a3715b82d4de" quantity="20.0" units="3"/>
+  <drug_ingredient drug_id="2" ingredient_id="88" uuid="6519d653-393d-4118-9c83-a3715b82d4dc" strength="20.0" units="3"/>
+  <drug_ingredient drug_id="3" ingredient_id="88" uuid="6519d653-393e-4118-9c83-a3715b82d4de" strength="20.0" units="3"/>
   <drug_order order_id="1" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <drug_order order_id="111" drug_inventory_id="3" dose="325.0" dose_units="50" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
   <drug_order order_id="2" drug_inventory_id="2" dose="1.0" dose_units="51" as_needed="false" frequency="1" dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10" dispense_as_written="0" />
