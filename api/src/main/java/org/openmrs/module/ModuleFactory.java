@@ -1074,7 +1074,7 @@ public class ModuleFactory {
 					dependentModulesStopped.addAll(stopModule(dependentModule, skipOverStartedProperty, isFailedStartup));
 				}
 			}
-
+			
 			try {
 				if (mod.getModuleActivator() != null) {
 					// if extends BaseModuleActivator
