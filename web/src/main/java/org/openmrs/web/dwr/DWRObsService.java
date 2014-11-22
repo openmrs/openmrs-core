@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -178,6 +179,14 @@ public class DWRObsService {
 				}
 			}
 			obs.setValueDatetime(obsDateValue);
+		} else if ("CWE".equals(hl7DataType)) {
+			Collection<ConceptAnswer> conceptAnswers = concept.getAnswers(false);
+			int conceptIdFromValueTest = Integer.parseInt(valueText);
+			for (ConceptAnswer answer : conceptAnswers) {
+				if (answer.getAnswerConcept().getId() == conceptIdFromValueTest) {
+					obs.setValueCoded(answer.getAnswerConcept());
+				}
+			}
 		} else {
 			obs.setValueText(valueText);
 		}
