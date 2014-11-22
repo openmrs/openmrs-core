@@ -612,6 +612,17 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType unretireOrderType(OrderType orderType);
+
+	/**
+	 * Restores an order type that was previously retired in the database
+	 * 
+	 * @param orderType the order type to unretire
+	 * @return the unretired order type
+	 * @since 1.10
+	 * @should unretire order type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	public OrderType unretireOrderType(OrderType orderType);
 	
 	/**
 	 * Returns all descendants of a given order type for example Given TEST will get back LAB TEST
@@ -711,4 +722,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getTestSpecimenSources();
+	
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Concept ingredient, Patient patient);
 }
