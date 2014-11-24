@@ -348,7 +348,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to determine if the order was active as of the current date
-	 *
+	 * 
 	 * @since 1.10.1
 	 * @return boolean indicating whether the order was active on the check date
 	 */
@@ -406,6 +406,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Convenience method to determine if the order is not yet activated as of the given date
 	 * 
+	 * @deprecated use isStarted(java.util.Date)
+	 * @see #isStarted(java.util.Date)
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was activated after the check date
 	 * @should return false for a voided order
@@ -413,6 +415,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return false if order was activated on the check date
 	 * @should return true if order was activated after the check date
 	 */
+	@Deprecated
 	public boolean isFuture(Date checkDate) {
 		if (isVoided())
 			return false;
@@ -423,6 +426,12 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		return dateActivated != null && checkDate.before(dateActivated);
 	}
 	
+	/**
+	 * @deprecated use isStarted()
+	 * @see #isStarted()
+	 * @return
+	 */
+	@Deprecated
 	public boolean isFuture() {
 		return isFuture(new Date());
 	}
@@ -439,9 +448,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to determine if the order is started as of the specified date, returns true
-	 * only if the order has been activated. In case of scheduled orders, the scheduledDate becomes
-	 * the effective start date that gets used to determined if it is started.
+	 * Convenience method to determine if the order is started as of the specified date, returns
+	 * true only if the order has been activated. In case of scheduled orders, the scheduledDate
+	 * becomes the effective start date that gets used to determined if it is started.
 	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order is started as of the check date
