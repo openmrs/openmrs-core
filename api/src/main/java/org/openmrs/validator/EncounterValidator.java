@@ -61,7 +61,6 @@ public class EncounterValidator implements Validator {
 	 * @should fail if the patients for the visit and the encounter dont match
 	 * @should fail if patient is not set
 	 * @should fail if encounter dateTime is not set
-	 * @should fail if encounter type is not set
 	 * @should fail if encounter dateTime is after current dateTime
 	 * @should fail if encounter dateTime is before visit startDateTime
 	 * @should fail if encounter dateTime is after visit stopDateTime
@@ -79,8 +78,6 @@ public class EncounterValidator implements Validator {
 		
 		ValidationUtils.rejectIfEmpty(errors, "patient", "Encounter.error.patient.required", "Patient is required");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "Encounter.datetime.required");
-		ValidationUtils.rejectIfEmpty(errors, "encounterType", "Encounter.error.encounterType.required",
-		    "Encounter type is Required");
 		if (encounter.getVisit() != null && !ObjectUtils.equals(encounter.getVisit().getPatient(), encounter.getPatient())) {
 			errors.rejectValue("visit", "Encounter.visit.patients.dontMatch",
 			    "The patient for the encounter and visit should be the same");
