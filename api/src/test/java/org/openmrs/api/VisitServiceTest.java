@@ -59,12 +59,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	
 	private VisitService service;
 	
-	private EncounterService encounterService;
-	
 	@Before
 	public void before() {
 		service = Context.getVisitService();
-        encounterService = Context.getEncounterService();
 	}
 	
 	@Test
@@ -936,7 +933,6 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		encounter.setEncounterDatetime(new Date());
 		encounter.setPatient(visit.getPatient());
 		encounter.setLocation(visit.getLocation());
-		encounter.setEncounterType(encounterService.getEncounterType(1));
 		visit.addEncounter(encounter);
 		
 		Context.getEncounterService().saveEncounter(encounter);
