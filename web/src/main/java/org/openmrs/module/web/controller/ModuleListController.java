@@ -197,7 +197,8 @@ public class ModuleListController extends SimpleFormController {
 		} else if (moduleId.equals("")) {
 			if (action.equals(msa.getMessage("Module.startAll"))) {
 				boolean someModuleNeedsARefresh = false;
-				Collection<Module> modulesInOrder = ModuleFactory.getModulesInStartOrder();
+				Collection<Module> modules = ModuleFactory.getLoadedModules();
+				Collection<Module> modulesInOrder = ModuleFactory.getModulesInStartupOrder(modules);
 				for (Module module : modulesInOrder) {
 					if (ModuleFactory.isModuleStarted(module)) {
 						continue;
