@@ -46,8 +46,11 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.Extension.MEDIA_TYPE;
+import org.openmrs.util.CycleException;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.Graph;
+import org.openmrs.util.Graph.Edge;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -215,111 +218,116 @@ public class ModuleFactory {
 		
 		// loop over and try starting each of the loaded modules
 		if (getLoadedModules().size() > 0) {
-			List<Module> leftoverModules = new Vector<Module>();
 			
 			try {
-				Context.addProxyPrivilege("");
-				AdministrationService as = Context.getAdministrationService();
+				List<Module> modules = getModulesThatShouldStart();
+				
+				modules = getModulesInStartupOrder(modules);
+				
 				// try and start the modules that should be started
-				for (Module mod : getLoadedModulesCoreFirst()) {
+				for (Module mod : modules) {
+					
 					if (mod.isStarted()) {
 						continue; // skip over modules that are already started
 					}
 					
-					String key = mod.getModuleId() + ".started";
-					String startedProp = as.getGlobalProperty(key, null);
-					String mandatoryProp = as.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
-					// if this is a core module and we're not ignoring core modules, this module should always start
-					boolean isCoreToOpenmrs = ModuleConstants.CORE_MODULES.containsKey(mod.getModuleId())
-					        && !ModuleUtil.ignoreCoreModules();
+					// Skip module if required ones are not started
+					if (!requiredModulesStarted(mod)) {
+						String message = getFailedToStartModuleMessage(mod);
+						log.error(message);
+						mod.setStartupErrorMessage(message);
+						notifySuperUsersAboutModuleFailure(mod);
+						continue;
+					}
 					
-					// if a 'moduleid.started' property doesn't exist, start the module anyway
-					// as this is probably the first time they are loading it
-					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
-					        || mod.isMandatory() || isCoreToOpenmrs) {
-						if (requiredModulesStarted(mod)) {
-							try {
-								if (log.isDebugEnabled()) {
-									log.debug("starting module: " + mod.getModuleId());
-								}
-								
-								startModule(mod);
-							}
-							catch (Exception e) {
-								log.error("Error while starting module: " + mod.getName(), e);
-								mod.setStartupErrorMessage("Error while starting module", e);
-								notifySuperUsersAboutModuleFailure(mod);
-							}
-						} else {
-							// if not all the modules required by this mod are loaded, save it for later
-							leftoverModules.add(mod);
-							if (log.isDebugEnabled()) {
-								log.debug("cannot start because required modules are not started: " + mod.getModuleId());
-							}
+					try {
+						if (log.isDebugEnabled()) {
+							log.debug("starting module: " + mod.getModuleId());
 						}
+						startModule(mod);
 					}
-				}
-			}
-			finally {
-				Context.removeProxyPrivilege("");
-			}
-			
-			// loop over the leftover modules until we can't load
-			// anymore or we've loaded them all
-			boolean atLeastOneModuleLoaded = true;
-			while (leftoverModules.size() > 0 && atLeastOneModuleLoaded) {
-				if (log.isDebugEnabled()) {
-					log.debug("Trying to start leftover modules: " + leftoverModules);
-				}
-				
-				atLeastOneModuleLoaded = false;
-				List<Module> modulesStartedInThisLoop = new Vector<Module>();
-				
-				for (Module leftoverModule : leftoverModules) {
-					if (requiredModulesStarted(leftoverModule)) {
-						if (log.isDebugEnabled()) {
-							log.debug("starting leftover module: " + leftoverModule.getModuleId());
-						}
-						
-						try {
-							// don't need to check globalproperty here because
-							// it would only be on the leftover modules list if
-							// it were set to true already
-							startModule(leftoverModule);
-							
-							// set this boolean flag to true so we keep looping over the modules
-							atLeastOneModuleLoaded = true;
-							
-							// save the module we just started
-							modulesStartedInThisLoop.add(leftoverModule);
-						}
-						catch (Exception e) {
-							log.error("Error while starting leftover module: " + leftoverModule.getName(), e);
-						}
-					} else {
-						if (log.isDebugEnabled()) {
-							log.debug("cannot start leftover module because required modules are not started: "
-							        + leftoverModule.getModuleId());
-						}
+					catch (Exception e) {
+						log.error("Error while starting module: " + mod.getName(), e);
+						mod.setStartupErrorMessage("Error while starting module", e);
+						notifySuperUsersAboutModuleFailure(mod);
 					}
 				}
 				
-				// remove the modules we started in this loop from the overall
-				// leftover modules list
-				leftoverModules.removeAll(modulesStartedInThisLoop);
+			}
+			catch (CycleException e) {
+				String message = getCyclicDependenciesMessage();
+				log.error(message);
+				notifySuperUsersAboutCyclicDependencies();
 			}
 			
-			// if we failed to start all the modules, error out
-			if (leftoverModules.size() > 0) {
-				for (Module leftoverModule : leftoverModules) {
-					String message = getFailedToStartModuleMessage(leftoverModule);
-					log.error(message);
-					leftoverModule.setStartupErrorMessage(message);
-					notifySuperUsersAboutModuleFailure(leftoverModule);
+		}
+	}
+	
+	/**
+	 * Obtain the list of modules that should be started
+	 * @return	list of modules
+	 */
+	private static List<Module> getModulesThatShouldStart() {
+		List<Module> modules = new ArrayList<Module>();
+		
+		AdministrationService adminService = Context.getAdministrationService();
+		
+		for (Module mod : getLoadedModulesCoreFirst()) {
+			
+			String key = mod.getModuleId() + ".started";
+			String startedProp = adminService.getGlobalProperty(key, null);
+			String mandatoryProp = adminService.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
+			
+			boolean isCoreToOpenmrs = mod.isCore() && !ModuleUtil.ignoreCoreModules();
+			
+			// if a 'moduleid.started' property doesn't exist, start the module anyway
+			// as this is probably the first time they are loading it
+			if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
+			        || mod.isMandatory() || isCoreToOpenmrs) {
+				modules.add(mod);
+			}
+		}
+		return modules;
+	}
+	
+	/**
+	 * Sort modules in startup order based on required and aware-of dependencies
+	 * @param modules	list of modules to sort
+	 * @return			list of modules sorted by dependencies
+	 * @throws CycleException
+	 */
+	public static List<Module> getModulesInStartupOrder(Collection<Module> modules) throws CycleException {
+		Graph<Module> graph = new Graph<Module>();
+		
+		for (Module mod : modules) {
+			
+			Module toNode = mod;
+			graph.addNode(toNode);
+			
+			// Required dependencies
+			for (String key : mod.getRequiredModules()) {
+				Module module = getModuleByPackage(key);
+				Module fromNode = graph.getNode(module);
+				if (fromNode == null) {
+					fromNode = module;
 				}
+				graph.addEdge(graph.new Edge(
+				                             fromNode, toNode));
+			}
+			
+			// Aware-of dependencies
+			for (String key : mod.getAwareOfModules()) {
+				Module module = getModuleByPackage(key);
+				Module fromNode = graph.getNode(module);
+				if (fromNode == null) {
+					fromNode = module;
+				}
+				graph.addEdge(graph.new Edge(
+				                             fromNode, toNode));
 			}
 		}
 		
+		return graph.topologicalSort();
 	}
 	
 	/**
@@ -342,6 +350,23 @@ public class ModuleFactory {
 		finally {
 			// Remove added privileges
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
+		}
+	}
+	
+	/**
+	 * Send an Alert to all super users that modules did not start due to cyclic dependencies
+	 *
+	 */
+	private static void notifySuperUsersAboutCyclicDependencies() {
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
+			Context.getAlertService().notifySuperUsers("Module.error.cyclicDependencies", null);
+		}
+		catch (Exception e) {
+			log.error("Unable to send an alert to the super users", e);
+		}
+		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}
@@ -801,15 +826,23 @@ public class ModuleFactory {
 	}
 	
 	/**
+	 * Gets the error message of cyclic dependencies between modules
+	 *
+	 * @return the message text.
+	 */
+	private static String getCyclicDependenciesMessage() {
+		return Context.getMessageSourceService().getMessage("Module.error.cyclicDependencies", null, Context.getLocale());
+	}
+	
+	/**
 	 * Loop over the given module's advice objects and load them into the Context This needs to be
 	 * called for all started modules after every restart of the Spring Application Context
 	 *
 	 * @param module
 	 */
-	@SuppressWarnings("unchecked")
 	public static void loadAdvice(Module module) {
 		for (AdvicePoint advice : module.getAdvicePoints()) {
-			Class cls = null;
+			Class<?> cls = null;
 			try {
 				cls = Context.loadClass(advice.getPoint());
 				Object aopObject = advice.getClassInstance();
@@ -1002,7 +1035,6 @@ public class ModuleFactory {
 	 * @return list of dependent modules that were stopped because this module was stopped. This
 	 *         will never be null.
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
 	        throws ModuleMustStartException {
 		
@@ -1066,7 +1098,7 @@ public class ModuleFactory {
 				// remove all advice by this module
 				try {
 					for (AdvicePoint advice : mod.getAdvicePoints()) {
-						Class cls = null;
+						Class<?> cls = null;
 						try {
 							cls = Context.loadClass(advice.getPoint());
 							Object aopObject = advice.getClassInstance();
@@ -1606,65 +1638,5 @@ public class ModuleFactory {
 			}
 		}
 		return dependentModules;
-	}
-	
-	/**
-	 * Gets a list of modules in the order they are supposed to be started.
-	 * 
-	 * @return the module list
-	 * @since 1.11.0
-	 */
-	public static Collection<Module> getModulesInStartOrder() {
-		List<String> moduleOrder = new ArrayList<String>();
-		
-		Collection<Module> modules = ModuleFactory.getLoadedModules();
-		for (Module module : modules) {
-			int moduleIndex = moduleOrder.indexOf(module.getPackageName());
-			if (moduleIndex == -1) {
-				moduleOrder.add(module.getPackageName());
-				moduleIndex = moduleOrder.indexOf(module.getPackageName());
-			}
-			
-			List<String> moduleIds = module.getRequiredModules();
-			for (String pkg : moduleIds) {
-				int index = moduleOrder.indexOf(pkg);
-				if (index == -1) {
-					//required module is not yet in the list
-					//add it before the current module
-					moduleOrder.add(moduleIndex, pkg);
-					moduleIndex = moduleOrder.indexOf(module.getPackageName());
-				} else if (index > moduleIndex) {
-					//required module is after the current module
-					//so move it before
-					moduleOrder.remove(pkg);
-					moduleOrder.add(moduleIndex, pkg);
-					moduleIndex = moduleOrder.indexOf(module.getPackageName());
-				}
-				//else required module is before current module as it should be
-			}
-			
-			moduleIds = module.getStartBeforeModules();
-			for (String pkg : moduleIds) {
-				int index = moduleOrder.indexOf(pkg);
-				if (index == -1) {
-					//module is not yet in the list
-					//add it after the current module
-					moduleOrder.add(moduleIndex + 1, pkg);
-				} else if (index < moduleIndex) {
-					//module is before the current module
-					//so move it after
-					moduleOrder.remove(pkg);
-					moduleOrder.add(moduleIndex + 1, pkg);
-				}
-				//else module is after current module as it should be
-			}
-		}
-		
-		Collection<Module> modulesInOrder = new ArrayList<Module>();
-		for (String pkg : moduleOrder) {
-			modulesInOrder.add(ModuleFactory.getModuleByPackage(pkg));
-		}
-		
-		return modulesInOrder;
 	}
 }
