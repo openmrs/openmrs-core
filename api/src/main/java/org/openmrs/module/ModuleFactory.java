@@ -310,8 +310,11 @@ public class ModuleFactory {
 				if (fromNode == null) {
 					fromNode = module;
 				}
-				graph.addEdge(graph.new Edge(
-				                             fromNode, toNode));
+				
+				if (fromNode != null) {
+					graph.addEdge(graph.new Edge(
+					                             fromNode, toNode));
+				}
 			}
 			
 			// Aware-of dependencies
@@ -321,8 +324,11 @@ public class ModuleFactory {
 				if (fromNode == null) {
 					fromNode = module;
 				}
-				graph.addEdge(graph.new Edge(
-				                             fromNode, toNode));
+				
+				if (fromNode != null) {
+					graph.addEdge(graph.new Edge(
+					                             fromNode, toNode));
+				}
 			}
 		}
 		
