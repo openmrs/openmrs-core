@@ -441,6 +441,8 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public Map<Locale, String> preferredNamesByLocale = new HashMap<Locale, String>();
 		
+		public List<Concept> setMembers;
+		
 		/**
 		 * Default constructor must take in a Concept object to create itself
 		 *
@@ -1090,6 +1092,10 @@ public class ConceptFormController extends SimpleFormController {
 		 */
 		public void setConceptAnswersByLocale(Map<Locale, Map<String, String>> conceptAnswersByLocale) {
 			this.conceptAnswersByLocale = conceptAnswersByLocale;
+		}
+		
+		public List<Concept> getSetMembers() {
+			return this.concept.getSetMembers();
 		}
 	}
 	
