@@ -1390,7 +1390,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.8
 	 * @deprecated as of 1.11 call {@link #updateConceptIndexes()} or
-	 *             {@link #updateConceptIndex(Concept)
+	 *             {@link #updateConceptIndex(Concept)
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
@@ -1970,4 +1970,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        Integer start, Integer length);
+
+	public List<Drug> getDrugsByIngredient(Concept ingredients);
 }
