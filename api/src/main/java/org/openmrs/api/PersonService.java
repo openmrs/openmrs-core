@@ -1082,4 +1082,19 @@ public interface PersonService extends OpenmrsService {
 	 * @throws PersonAttributeTypeLockedException
 	 */
 	public void checkIfPersonAttributeTypesAreLocked() throws PersonAttributeTypeLockedException;
+	
+	/**
+	 * @param person person to be purged from the database
+	 * @throws APIException
+	 * @should throw exception when person is linked to user with linked users list
+	 * @should throw exception when person is linked to provider with linked providers list
+	 */
+	public void canPurgePerson(Person person) throws APIException;
+	
+	/**
+	 * @param person person to be voided
+	 * @throws APIException
+	 * @should throw exception when person is linked to provider with linked providers list
+	 */
+	public void canVoidPerson(Person person) throws APIException;
 }

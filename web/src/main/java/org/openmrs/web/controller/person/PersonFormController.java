@@ -224,6 +224,7 @@ public class PersonFormController extends SimpleFormController {
 		
 		if (action.equals(msa.getMessage("Person.delete"))) {
 			try {
+				ps.canPurgePerson(person);
 				ps.purgePerson(person);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.deleted");
 				
@@ -235,15 +236,26 @@ public class PersonFormController extends SimpleFormController {
 				
 				return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId().toString()));
 			}
+			catch (APIException e) {
+				for (String message : e.getMessage().split(";")) {
+					errors.reject(message);
+				}
+				return showForm(request, response, errors);
+			}
 		} else if (action.equals(msa.getMessage("Person.void"))) {
 			String voidReason = request.getParameter("voidReason");
 			if (StringUtils.isBlank(voidReason)) {
 				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
 				        .getLocale());
 			}
-			ps.voidPerson(person, voidReason);
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
-			
+			try {
+				ps.canVoidPerson(person);
+				ps.voidPerson(person, voidReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
+			}
+			catch (APIException e) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+			}
 			return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId()));
 		} else if (action.equals(msa.getMessage("Person.unvoid"))) {
 			ps.unvoidPerson(person);
