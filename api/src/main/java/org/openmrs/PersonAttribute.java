@@ -21,6 +21,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.BaseAttribute;
+import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
@@ -39,7 +41,7 @@ import org.simpleframework.xml.Root;
  * @see org.openmrs.Attributable
  */
 @Root(strict = false)
-public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
+public class PersonAttribute extends BaseAttribute<PersonAttributeType, Person> {
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
@@ -71,7 +73,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	public PersonAttribute(PersonAttributeType type, String value) {
 		this.attributeType = type;
-		this.value = value;
+		setValue(value);
 	}
 	
 	/**
@@ -199,7 +201,15 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@Element(data = true, required = false)
 	public void setValue(String value) {
+		super.setValue(value);
+		setValueReferenceInternal(value);
 		this.value = value;
+	}
+	
+	@Override
+	public <T> void setValue(T typedValue) throws InvalidCustomValueException {
+		super.setValue(typedValue);
+		this.value = String.valueOf(typedValue);
 	}
 	
 	/**
@@ -337,6 +347,5 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	public void setId(Integer id) {
 		setPersonAttributeId(id);
-		
 	}
 }
