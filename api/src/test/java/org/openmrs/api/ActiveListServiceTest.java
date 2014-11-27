@@ -33,7 +33,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- *
+ * Tests methods in the ActiveListService class
  */
 public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	
@@ -43,6 +43,12 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	
 	protected static ActiveListService activeListService = null;
 	
+	/**
+	 * Runs before all tests. Run this before each unit test in this class
+	 *
+	 *@throws Exception
+	 *@see {@link ActiveService}
+	 */
 	@Before
 	public void runBeforeAllTests() throws Exception {
 		if (patientService == null) {
@@ -53,6 +59,10 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	//	public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws Exception;
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
 	@Test
 	public void should_getActiveListItems() throws Exception {
 		Patient p = patientService.getPatient(2);
@@ -62,6 +72,10 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	//	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type) throws Exception;
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
 	@Test
 	public void should_getActiveListItems_withProblem() throws Exception {
 		Patient p = patientService.getPatient(2);
@@ -69,6 +83,10 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, items.size());
 	}
 	
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
 	@Test
 	public void should_getActiveListItems_withAllergy() throws Exception {
 		Patient p = patientService.getPatient(2);
@@ -77,6 +95,10 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	//	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws Exception;
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
 	@Test
 	public void should_getActiveListItem_Allergy() throws Exception {
 		Allergy item = activeListService.getActiveListItem(Allergy.class, 1);
@@ -87,6 +109,10 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	//	public ActiveListItem getActiveListItemByUuid(String uuid) throws Exception;
 	//
 	//	public ActiveListItem saveActiveListItem(ActiveListItem item) throws Exception;
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
 	@Test
 	public void should_saveActiveListItem_Problem() throws Exception {
 		Patient p = patientService.getPatient(2);
@@ -101,6 +127,10 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, items.size());
 	}
 	
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
 	@Test
 	public void should_saveActiveListItem_Allergy() throws Exception {
 		Patient p = patientService.getPatient(2);
@@ -116,6 +146,10 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	//	public ActiveListItem removeActiveListItem(ActiveListItem item, Date endDate) throws Exception;
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
 	@Test
 	public void should_removeActiveListItem_Allergy() throws Exception {
 		Allergy item = activeListService.getActiveListItem(Allergy.class, 1);
@@ -127,6 +161,10 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	//	public ActiveListItem voidActiveListItem(ActiveListItem item, String reason) throws Exception;
+	/**
+	 * @see ActiveListService#purgeActiveListItem(ActiveListItem)
+	 * @verifies purge active list item from database
+	 */
 	@Test
 	public void should_voidActiveListItem_Allergy() throws Exception {
 		Allergy item = activeListService.getActiveListItem(Allergy.class, 1);

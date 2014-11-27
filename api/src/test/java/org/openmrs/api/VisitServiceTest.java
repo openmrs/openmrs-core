@@ -63,6 +63,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	
 	private VisitService visitService;
 	
+	/**
+	 * Runs before all tests
+	 * 
+	 */
 	@Before
 	public void before() {
 		visitService = Context.getVisitService();
@@ -75,6 +79,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true");
 	}
 	
+	/**
+	 * Test to get all visit types.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get all visit types", method = "getAllVisitTypes()")
 	public void getAllVisitTypes_shouldGetAllVisitTypes() throws Exception {
@@ -82,6 +91,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(3, visitTypes.size());
 	}
 	
+	/**
+	 * Test to get correct visit type.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get correct visit type", method = "getVisitType(Integer)")
 	public void getVisitType_shouldGetCorrectVisitType() throws Exception {
@@ -101,6 +115,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(visitType);
 	}
 	
+	/**
+	 * Test to get correct visit type by UUID.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get correct visit type", method = "getVisitTypeByUuid(String)")
 	public void getVisitTypeByUuid_shouldGetCorrentVisitType() throws Exception {
@@ -120,6 +139,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(visitType);
 	}
 	
+	/**
+	 * Test to get correct visit types.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should get correct visit types", method = "getVisitTypes(String)")
 	public void getVisitTypes_shouldGetCorrentVisitTypes() throws Exception {
@@ -139,6 +163,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(0, visitTypes.size());
 	}
 	
+	/**
+	 * Test to save new visit type.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should save new visit type", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldSaveNewVisitType() throws Exception {
@@ -155,6 +184,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(4, Context.getVisitService().getAllVisitTypes().size());
 	}
 	
+	/**
+	 * Test to save edited visit type.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should save edited visit type", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldSaveEditedVisitType() throws Exception {
@@ -175,6 +209,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(3, Context.getVisitService().getAllVisitTypes().size());
 	}
 	
+	/**
+	 * Test to retire a given visit type.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should retire given visit type", method = "retireVisitType(VisitType, String)")
 	public void retireVisitType_shouldRetireGivenVisitType() throws Exception {
@@ -194,6 +233,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(3, Context.getVisitService().getAllVisitTypes().size());
 	}
 	
+	/**
+	 * Test to unretire a given visit type.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should unretire given visit type", method = "unretireVisitType(VisitType)")
 	public void unretireVisitType_shouldUnretireGivenVisitType() throws Exception {
@@ -213,6 +257,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(3, Context.getVisitService().getAllVisitTypes().size());
 	}
 	
+	/**
+	 * Test should delete given visit type.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "should delete given visit type", method = "purgeVisitType(VisitType)")
 	public void purgeVisitType_shouldDeleteGivenVisitType() throws Exception {
@@ -461,6 +510,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(4, Context.getVisitService().getActiveVisitsByPatient(new Patient(2)).size());
 	}
 	
+	/**
+	 * Test to return all active visits for specified patient.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "return all active visits for the specified patient", method = "getVisitsByPatient(Patient, boolean, boolean)")
 	public void getActiveVisitsByPatient_shouldReturnAllActiveVisitsForTheSpecifiedPatient() throws Exception {
@@ -468,6 +522,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(5, Context.getVisitService().getVisitsByPatient(new Patient(2), false, true).size());
 	}
 	
+	/**
+	 * Test to return all unvoided visits for specified patient.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Verifies(value = "return all unvoided visits for the specified patient", method = "getVisitsByPatient(Patient, boolean, boolean)")
 	public void getActiveVisitsByPatient_shouldReturnAllUnvoidedVisitsForTheSpecifiedPatient() throws Exception {
@@ -570,12 +629,22 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		        .getVisits(null, null, null, null, null, null, null, null, null, true, true).size());
 	}
 	
+	/**
+	 * Test when name is null.
+	 * 
+	 * @throws Exception
+	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when name is null", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldThrowErrorWhenNameIsNull() throws Exception {
 		Context.getVisitService().saveVisitType(new VisitType());
 	}
 	
+	/**
+	 * Test when name is empty string.
+	 * 
+	 * @throws Exception
+	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when name is empty string", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldThrowErrorWhenNameIsEmptyString() throws Exception {
@@ -859,6 +928,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertEquals(new SimpleDateFormat("yyyy-MM-dd").format(now), attr.getValueReference());
 	}
 	
+	/**
+	 * Test to void a simple attribute.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void shouldVoidASimpleAttribute() throws Exception {
 		executeDataSet(VISITS_ATTRIBUTES_XML);
