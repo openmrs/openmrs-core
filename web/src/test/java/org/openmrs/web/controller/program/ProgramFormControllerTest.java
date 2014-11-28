@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
@@ -44,11 +45,38 @@ public class ProgramFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.setParameter("programId", "3");
-		request.setParameter("allWorkflows", ":2"); // set one workflow on this program
+		request.setParameter("allWorkflows", ":3"); // set one workflow on this program
 		
 		ProgramFormController controller = (ProgramFormController) applicationContext.getBean("programForm");
 		controller.handleRequest(request, new MockHttpServletResponse());
 		
 		Assert.assertNotSame(0, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
+		Assert.assertEquals(1, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
+	}
+	
+	/**
+	 * @see ProgramFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
+	 * @verifies edit existing workflows within programs
+	 */
+	@Test
+	public void onSubmit_shouldEditExistingWorkflowsWithinPrograms() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		request.setParameter("programId", "3");
+		request.setParameter("allWorkflows", ":3 4"); // set two workflows on this program
+		
+		ProgramFormController controller = (ProgramFormController) applicationContext.getBean("programForm");
+		controller.handleRequest(request, new MockHttpServletResponse());
+		
+		Assert.assertEquals(2, Context.getProgramWorkflowService().getProgram(3).getWorkflows().size());
+		
+		request = new MockHttpServletRequest("POST", "");
+		request.setParameter("programId", "3");
+		request.setParameter("allWorkflows", ":5"); // set one workflow on this program
+		
+		controller.handleRequest(request, new MockHttpServletResponse());
+		
+		Assert.assertEquals(1, Context.getProgramWorkflowService().getProgram(3).getWorkflows().size());
+		Assert.assertEquals(5, Context.getProgramWorkflowService().getProgram(3).getWorkflows().iterator().next()
+		        .getConcept().getConceptId().intValue());
 	}
 }

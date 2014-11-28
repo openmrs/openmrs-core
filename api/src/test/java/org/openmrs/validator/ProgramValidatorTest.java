@@ -116,4 +116,24 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertFalse(errors.hasErrors());
 	}
+	
+	/**
+	 * @see ProgramValidator#validate(Object,Errors)
+	 * @verifies pass validation and save edited program
+	 */
+	@Test
+	public void validate_shouldPassValidationAndSaveEditedProgram() throws Exception {
+		Program program = Context.getProgramWorkflowService().getProgram(3);
+		program.setDescription("Edited description");
+		
+		Errors errors = new BindException(program, "program");
+		programValidator.validate(program, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+		
+		Context.getProgramWorkflowService().saveProgram(program);
+		program = Context.getProgramWorkflowService().getProgram(3);
+		
+		Assert.assertTrue(program.getDescription().equals("Edited description"));
+	}
 }
