@@ -31,7 +31,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	@Test(expected = DuplicateConceptNameException.class)
 	@Verifies(value = "should fail if there is a duplicate unretired concept name in the locale", method = "validate(Concept)")
 	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheLocale() throws Exception {
-		Context.setLocale(new Locale("en"));
+		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
 		
@@ -114,7 +114,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	@Test(expected = DuplicateConceptNameException.class)
 	@Verifies(value = "should fail if there is a duplicate unretired fully specified name in the same locale", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfThereIsADuplicateUnretiredFullySpecifiedNameInTheSameLocale() throws Exception {
-		Context.setLocale(new Locale("en"));
+		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Assert.assertEquals(true, concept.getFullySpecifiedName(Context.getLocale()).isFullySpecifiedName());
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
@@ -133,7 +133,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	@Test(expected = DuplicateConceptNameException.class)
 	@Verifies(value = "should fail if there is a duplicate unretired preferred name in the same locale", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfThereIsADuplicateUnretiredPreferredNameInTheSameLocale() throws Exception {
-		Context.setLocale(new Locale("en"));
+		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		ConceptName preferredName = new ConceptName("preferred name", Context.getLocale());
 		concept.setPreferredName(preferredName);
@@ -181,7 +181,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass if the duplicate ConceptName is neither preferred nor fully Specified", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfTheDuplicateConceptNameIsNeitherPreferredNorFullySpecified() throws Exception {
-		Context.setLocale(new Locale("en"));
+		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		//use a synonym as the duplicate name
 		ConceptName duplicateName = concept.getSynonyms(Context.getLocale()).iterator().next();
@@ -200,7 +200,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass if the concept with a duplicate name is retired", method = "validate(Object,Errors)")
 	public void validate_shouldPassIfTheConceptWithADuplicateNameIsRetired() throws Exception {
-		Context.setLocale(new Locale("en"));
+		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		concept.setRetired(true);
 		Context.getConceptService().saveConcept(concept);
@@ -219,7 +219,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validate_shouldPassIfTheConceptBeingValidatedIsRetiredAndHasADuplicateName() throws Exception {
-		Context.setLocale(new Locale("en"));
+		Context.setLocale(new Locale("en", "GB"));
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Context.getConceptService().saveConcept(concept);
 		String duplicateName = concept.getFullySpecifiedName(Context.getLocale()).getName();
@@ -308,7 +308,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfThereIsADuplicateUnretiredConceptNameInTheSameLocaleDifferentThanTheSystemLocale()
 	        throws Exception {
 		Context.setLocale(new Locale("pl"));
-		Locale en = new Locale("en");
+		Locale en = new Locale("en", "GB");
 		Concept concept = Context.getConceptService().getConcept(5497);
 		Assert.assertEquals(true, concept.getFullySpecifiedName(en).isFullySpecifiedName());
 		String duplicateName = concept.getFullySpecifiedName(en).getName();

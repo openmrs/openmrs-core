@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.directwebremoting.util.Logger;
 import org.openmrs.GlobalProperty;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -98,11 +99,16 @@ public class SettingsController {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "GlobalProperty.not.saved");
 			
 		} else {
-			for (GlobalProperty gp : toSave) {
-				getService().saveGlobalProperty(gp);
+			try {
+				for (GlobalProperty gp : toSave) {
+					getService().saveGlobalProperty(gp);
+				}
+				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.saved");
 			}
-			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.saved");
-			
+			catch (APIException e) {
+				errors.reject("GlobalProperty.not.saved");
+				session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+			}
 			// TODO: move this to a GlobalPropertyListener
 			// refresh log level from global property(ies)
 			OpenmrsUtil.applyLogLevels();

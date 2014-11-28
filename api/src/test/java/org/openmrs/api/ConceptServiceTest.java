@@ -1434,7 +1434,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				cn.setName("new name");
 		}
 		//ensure that the conceptName has actually been found and replaced
-		Assert.assertEquals(true, concept.hasName("new name", new Locale("en")));
+		Assert.assertEquals(true, concept.hasName("new name", new Locale("en", "GB")));
 		conceptService.saveConcept(concept);
 		Assert.assertEquals(true, conceptService.getConceptName(1847).isVoided().booleanValue());
 	}
@@ -1675,7 +1675,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//add some other locales to locale.allowed.list for testing purposes
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 		    OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
-		gp.setPropertyValue(gp.getPropertyValue().concat(",fr,ja"));
+		gp.setPropertyValue(gp.getPropertyValue().concat(",fr,ja,en_GB"));
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		
 		Concept concept = new Concept();
@@ -2151,7 +2151,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//Insert a row to simulate an existing duplicate fully specified/preferred name that needs to be edited
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-conceptWithDuplicateName.xml");
 		Concept conceptToEdit = conceptService.getConcept(10000);
-		Locale locale = Locale.ENGLISH;
+		Locale locale = new Locale("en", "GB");
 		ConceptName duplicateNameToEdit = conceptToEdit.getFullySpecifiedName(locale);
 		//Ensure the name is a duplicate in it's locale
 		Concept otherConcept = conceptService.getConcept(5497);
@@ -2793,7 +2793,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cp.setFinalText(cp.getOriginalText());
 		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
 		Concept mappedConcept = cs.getConcept(5);
-		Locale locale = Locale.ENGLISH;
+		Locale locale = new Locale("en", "GB");
 		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
 		
 		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
