@@ -877,9 +877,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			            OpenmrsConstants.GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false"));
 			if (e.getCause() != null
 			        && e.getCause().getMessage().equals("Could not resolve patient")
-			        && !hl7InQueue.getHL7Source().getName().equals("local")
-			        && Context.getAdministrationService().getGlobalProperty(
-			            OpenmrsConstants.GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false").equals("true")) {
+			        && !"local".equals(hl7InQueue.getHL7Source().getName())
+			        && "true".equals(Context.getAdministrationService().getGlobalProperty(
+			            OpenmrsConstants.GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false"))) {
 				skipError = true;
 			}
 			if (!skipError) {
@@ -1031,7 +1031,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 					PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByName(
 					    assigningAuthority);
 					if (pit == null) {
-						if (!assigningAuthority.equals("UUID")) {
+						if (!"UUID".equals(assigningAuthority)) {
 							log.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
 						}
 						continue; // skip identifiers with unknown type
@@ -1109,7 +1109,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			String precision = precisionTemp.getValue().toUpperCase();
 			log.debug("The birthdate is estimated: " + precision);
 			
-			if (precision.equals("Y") || precision.equals("L")) {
+			if ("Y".equals(precision) || "L".equals(precision)) {
 				person.setBirthdateEstimated(true);
 			}
 		}

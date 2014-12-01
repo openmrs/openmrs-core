@@ -435,7 +435,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Concept> getConcepts(String sortBy, String dir) throws APIException {
-		boolean asc = true ? dir.equals("asc") : !dir.equals("asc");
+		boolean asc = true ? "asc".equals(dir) : !"asc".equals(dir);
 		return Context.getConceptService().getAllConcepts(sortBy, asc, true);
 	}
 	
@@ -1103,7 +1103,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public void checkIfLocked() throws ConceptsLockedException {
 		String locked = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false");
-		if (locked.toLowerCase().equals("true")) {
+		if ("true".equalsIgnoreCase(locked)) {
 			throw new ConceptsLockedException();
 		}
 	}
@@ -1586,7 +1586,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			return dao.saveConceptStopWord(conceptStopWord);
 		}
 		catch (DAOException e) {
-			if (e.getMessage().equalsIgnoreCase("Duplicate ConceptStopWord Entry")) {
+			if ("Duplicate ConceptStopWord Entry".equalsIgnoreCase(e.getMessage())) {
 				throw new ConceptStopWordException("ConceptStopWord.duplicated", e);
 			}
 			throw new ConceptStopWordException("ConceptStopWord.notSaved", e);

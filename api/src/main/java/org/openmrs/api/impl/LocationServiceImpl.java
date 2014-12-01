@@ -121,12 +121,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 		
 		//Try to look up 'Unknown Location' in case the global property is something else
-		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown Location"))) {
+		if (location == null && (!StringUtils.hasText(locationGP) || !"Unknown Location".equalsIgnoreCase(locationGP))) {
 			location = Context.getLocationService().getLocation("Unknown Location");
 		}
 		
 		// If Unknown Location does not exist, try Unknown if the global property was different
-		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown"))) {
+		if (location == null && (!StringUtils.hasText(locationGP) || !"Unknown".equalsIgnoreCase(locationGP))) {
 			location = Context.getLocationService().getLocation("Unknown");
 		}
 		
@@ -302,7 +302,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Transactional(readOnly = true)
 	public List<LocationTag> getLocationTags(String search) throws APIException {
-		if (search == null || search.equals("")) {
+		if (search == null || "".equals(search)) {
 			return Context.getLocationService().getAllLocationTags(true);
 		}
 		
