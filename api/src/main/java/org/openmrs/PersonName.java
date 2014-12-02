@@ -576,6 +576,15 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		return ret;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof PersonName) {
+			return compareTo((PersonName) other) == 0;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()

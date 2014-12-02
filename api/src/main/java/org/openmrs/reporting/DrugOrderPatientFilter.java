@@ -59,8 +59,18 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		return true;
 	}
 	
+	@Override
 	public int compareTo(DrugOrderPatientFilter other) {
 		return compareHelper().compareTo(other.compareHelper());
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof DrugOrderPatientFilter) {
+			return compareTo((DrugOrderPatientFilter) other) == 0;
+		} else {
+			return false;
+		}
 	}
 	
 	private Integer compareHelper() {
