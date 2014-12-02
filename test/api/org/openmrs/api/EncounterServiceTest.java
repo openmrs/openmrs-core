@@ -730,8 +730,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get encounters by provider", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByProvider() throws Exception {
-		List<User> providers = new ArrayList<User>();
-		providers.add(new User(1));
+		List<Person> providers = new ArrayList<Person>();
+		providers.add(new Person(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null,
 		    providers, true);
 		assertEquals(3, encounters.size());

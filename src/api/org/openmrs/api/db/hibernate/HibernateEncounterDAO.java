@@ -33,7 +33,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.User;
+import org.openmrs.Person;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
@@ -105,7 +105,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     Collection<User> providers, boolean includeVoided) {
+	                                     Collection<Person> providers, boolean includeVoided) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		if (patient != null && patient.getPatientId() != null) {
 			crit.add(Expression.eq("patient", patient));
