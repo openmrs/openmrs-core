@@ -390,6 +390,9 @@ public class EncounterDisplayController implements Controller {
 			return temp;
 		}
 		
+		public boolean equals(FieldHolder other){
+			return compareTo(other) == 0;
+		}
 		/**
 		 * Convenience method to get the label that this field should have. This is produced from
 		 * the formfield associated with this row

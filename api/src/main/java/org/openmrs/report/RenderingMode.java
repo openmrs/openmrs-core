@@ -93,4 +93,13 @@ public class RenderingMode implements Comparable<RenderingMode> {
 		return other.sortWeight.compareTo(sortWeight);
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof RenderingMode) {
+			return compareTo((RenderingMode) other) == 0;
+		} else {
+			return false;
+		}
+	}
+	
 }

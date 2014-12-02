@@ -206,4 +206,14 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 		}
 		return result;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof PatientState) {
+			return compareTo((PatientState) other) == 0;
+		} else {
+			return false;
+		}
+	}
+	
 }

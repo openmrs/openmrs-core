@@ -210,4 +210,14 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 		}
 		return (getSortWeight() < cs.getSortWeight()) ? -1 : (getSortWeight() > cs.getSortWeight()) ? 1 : 0;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof ConceptSet) {
+			return compareTo((ConceptSet) other) == 0;
+		} else {
+			return false;
+		}
+	}
+	
 }

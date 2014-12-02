@@ -75,8 +75,18 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		return true;
 	}
 	
+	@Override
 	public int compareTo(PatientCharacteristicFilter o) {
 		return -compareHelper().compareTo(o.compareHelper());
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof PatientCharacteristicFilter) {
+			return compareTo((PatientCharacteristicFilter) other) == 0;
+		} else {
+			return false;
+		}
 	}
 	
 	private Integer compareHelper() {

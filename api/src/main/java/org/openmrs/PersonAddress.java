@@ -468,6 +468,15 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 		return retValue;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof PersonAddress) {
+			return compareTo((PersonAddress) other) == 0;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * @since 1.8
 	 * @return the address3
