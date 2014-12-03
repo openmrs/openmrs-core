@@ -15,6 +15,7 @@ package org.openmrs.web.taglib;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Random;
 import java.util.Vector;
 
 import javax.servlet.jsp.tagext.TagSupport;
@@ -37,9 +38,9 @@ public class ListPickerTag extends TagSupport {
 	private Collection<Object> inheritedItems;
 	
 	public int doStartTag() {
-		
+		Random gen = new Random();
 		if (name == null) {
-			name = "list" + (int) (Math.random() * 100);
+			name = "list" + (gen.nextInt() * 100);
 		}
 		if (currentItems == null) {
 			currentItems = new Vector<Object>();
