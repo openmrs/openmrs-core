@@ -90,7 +90,7 @@ public class AbstractHandler {
 		while (obs.getObsId() == null && outputfile.exists() && i < 100) {
 			tmp = null;
 			// Remove the extension from the filename.
-			tmp = new String(outputfile.getAbsolutePath().replace("." + extension, ""));
+			tmp = String.valueOf(outputfile.getAbsolutePath().replace("." + extension, ""));
 			outputfile = null;
 			// Append two-digit count number to the filename.
 			String filename = (i < 1) ? tmp + "_" + nf.format(Integer.valueOf(++i)) : tmp.replace(nf.format(Integer
