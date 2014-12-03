@@ -16,6 +16,7 @@ package org.openmrs.module.web.taglib;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +57,8 @@ public class ExtensionPopupMenuTag extends TagSupport {
 	}
 	
 	private String randomString() {
-		return "" + ((int) (1000000 * Math.random()));
+		Random gen = new Random();
+		return "" + (1000000 * gen.nextInt());
 	}
 	
 	public int doStartTag() throws JspException {
