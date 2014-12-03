@@ -246,7 +246,7 @@ public class DWRObsService {
 		
 		Integer pId = null;
 		try {
-			pId = new Integer(personId);
+			pId = Integer.valueOf(personId);
 		}
 		catch (NumberFormatException nfe) {
 			pId = null;

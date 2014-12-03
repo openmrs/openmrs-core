@@ -106,7 +106,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		DateFormat dateFormat = Context.getDateFormat();
 		
-		Concept c = cs.getConcept(new Integer("5096")); // RETURN VISIT DATE
+		Concept c = cs.getConcept(Integer.valueOf("5096")); // RETURN VISIT DATE
 		Calendar cal = Calendar.getInstance();
 		
 		Date start;

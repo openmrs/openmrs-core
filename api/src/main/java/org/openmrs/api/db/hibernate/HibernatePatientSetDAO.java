@@ -2331,7 +2331,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@Override
 	public Integer getCountOfPatients() {
 		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = '0'");
-		return new Integer(query.uniqueResult().toString());
+		return Integer.valueOf(query.uniqueResult().toString());
 	}
 	
 	@Override
