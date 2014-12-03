@@ -48,7 +48,7 @@ public class ConceptRedirectServlet extends HttpServlet {
 			}
 			log.debug("new concept id: " + path);
 			try {
-				Integer i = new Integer(path);
+				Integer i = Integer.valueOf(path);
 				// view the concept if the path info was an integer 
 				response.sendRedirect(contextPath + "/dictionary/concept.htm?conceptId=" + i);
 				return;
