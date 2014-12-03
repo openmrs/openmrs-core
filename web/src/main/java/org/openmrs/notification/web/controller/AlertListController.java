@@ -114,7 +114,7 @@ public class AlertListController extends SimpleFormController {
 		//only fill the list if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			AlertService as = Context.getAlertService();
-			boolean b = new Boolean(request.getParameter("includeExpired"));
+			boolean b = Boolean.valueOf(request.getParameter("includeExpired"));
 			alertList = as.getAllAlerts(b);
 		}
 		

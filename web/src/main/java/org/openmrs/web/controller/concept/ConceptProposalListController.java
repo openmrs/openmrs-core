@@ -53,7 +53,7 @@ public class ConceptProposalListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			log.debug("tmp value: " + request.getParameter("includeCompleted"));
-			boolean b = new Boolean(request.getParameter("includeCompleted"));
+			boolean b = Boolean.valueOf(request.getParameter("includeCompleted"));
 			log.debug("b value: " + b);
 			cpList = cs.getAllConceptProposals(b);
 		}

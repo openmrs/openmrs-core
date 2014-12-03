@@ -212,7 +212,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 */
 	public Boolean isPreferred() {
 		if (preferred == null) {
-			return new Boolean(false);
+			return Boolean.valueOf(false);
 		}
 		return preferred;
 	}

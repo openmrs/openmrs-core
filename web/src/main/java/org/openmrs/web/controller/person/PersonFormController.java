@@ -450,7 +450,7 @@ public class PersonFormController extends SimpleFormController {
 				if (!"".equals(gNames[i])) { //skips invalid and blank address data box
 					PersonName pn = new PersonName();
 					if (namePrefStatus != null && namePrefStatus.length > i) {
-						pn.setPreferred(new Boolean(namePrefStatus[i]));
+						pn.setPreferred(Boolean.valueOf(namePrefStatus[i]));
 					}
 					if (gNames.length >= i + 1) {
 						pn.setGivenName(gNames[i]);
@@ -637,7 +637,7 @@ public class PersonFormController extends SimpleFormController {
 					pa.setAddress3(add3s[i]);
 				}
 				if (addPrefStatus != null && addPrefStatus.length > i) {
-					pa.setPreferred(new Boolean(addPrefStatus[i]));
+					pa.setPreferred(Boolean.valueOf(addPrefStatus[i]));
 				}
 				if (add6s.length >= i + 1) {
 					pa.setAddress6(add6s[i]);
