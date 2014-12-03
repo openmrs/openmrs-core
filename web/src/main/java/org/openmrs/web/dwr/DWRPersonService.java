@@ -154,7 +154,7 @@ public class DWRPersonService {
 		p.setPersonDateChanged(new Date());
 		if (StringUtils.isEmpty(gender)) {
 			log.error("Gender cannot be null.");
-			return new String("Gender cannot be null.");
+			return String.valueOf("Gender cannot be null.");
 		} else if (gender.toUpperCase().contains("M")) {
 			p.setGender("M");
 		} else if (gender.toUpperCase().contains("F")) {
