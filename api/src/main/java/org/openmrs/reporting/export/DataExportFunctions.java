@@ -416,7 +416,6 @@ public class DataExportFunctions {
 				type = encounterService.getEncounterType(Integer.valueOf(typeName));
 			}
 			catch (Exception e) { /* pass */}
-			;
 			
 			if (type == null) {
 				type = encounterService.getEncounterType(typeName);
@@ -488,7 +487,6 @@ public class DataExportFunctions {
 				type = encounterService.getEncounterType(Integer.valueOf(typeName));
 			}
 			catch (Exception e) { /* pass */}
-			;
 			
 			if (type == null) {
 				type = encounterService.getEncounterType(typeName);
