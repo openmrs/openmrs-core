@@ -2032,7 +2032,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			throw new APIException("ConceptSource is required");
 		}
 		if (withAnyOfTheseTypes == null) {
-			withAnyOfTheseTypes = Collections.EMPTY_LIST;
+			withAnyOfTheseTypes = Collections.emptyList();
 		}
 		return dao.getDrugsByMapping(code, conceptSource, withAnyOfTheseTypes, includeRetired);
 	}
@@ -2049,7 +2049,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			throw new APIException("ConceptSource is required");
 		}
 		if (withAnyOfTheseTypesOrOrderOfPreference == null) {
-			withAnyOfTheseTypesOrOrderOfPreference = Collections.EMPTY_LIST;
+			withAnyOfTheseTypesOrOrderOfPreference = Collections.emptyList();
 		}
 		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference);
 	}
@@ -2064,14 +2064,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	        Integer start, Integer length) {
 		List<ConceptClass> mappedClasses = getConceptClassesOfOrderTypes();
 		if (mappedClasses.isEmpty()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		if (locales == null) {
 			locales = new ArrayList<Locale>();
 			locales.add(Context.getLocale());
 		}
-		return dao.getConcepts(phrase, locales, false, mappedClasses, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
-		    Collections.EMPTY_LIST, null, start, length);
+		return dao.getConcepts(phrase, locales, false, mappedClasses, (List) Collections.emptyList(), (List) Collections
+		        .emptyList(), (List) Collections.emptyList(), null, start, length);
 	}
 	
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {
