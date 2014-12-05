@@ -266,7 +266,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			ConceptName possiblePreferredName = concept.getPreferredName(locale);
 			
 			if (possiblePreferredName != null) {
-				; //do nothing yet, but stick around to setLocalePreferred(true)
+				//do nothing yet, but stick around to setLocalePreferred(true)
 			} else if (concept.getFullySpecifiedName(locale) != null) {
 				possiblePreferredName = concept.getFullySpecifiedName(locale);
 			} else if (!CollectionUtils.isEmpty(concept.getSynonyms(locale))) {

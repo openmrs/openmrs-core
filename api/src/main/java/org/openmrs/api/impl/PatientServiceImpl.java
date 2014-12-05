@@ -378,7 +378,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// ignore this patient (loop until no changes made)
 		while (patients.remove(ignorePatient)) {}
-		;
 		
 		if (patients.size() > 0) {
 			return patients.get(0);
