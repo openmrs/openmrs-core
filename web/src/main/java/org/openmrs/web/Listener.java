@@ -282,6 +282,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @return current contextPath of this webapp without initial slash
 	 */
 	private String getContextPath(ServletContext servletContext) {
+		Log log = LogFactory.getLog(Listener.class);
 		// Get the context path without the request.
 		String contextPath = "";
 		try {
@@ -297,11 +298,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				log.warn("Cannot find the contextPath of current webapp.", e);
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.warn("ContextPath not defined", e);
 		}
 		
 		// trim off initial slash if it exists
@@ -517,7 +518,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
-		
+		Log log = LogFactory.getLog(Listener.class);
 		try {
 			Context.openSession();
 			
@@ -529,9 +530,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		catch (Exception e) {
 			// don't print the unhelpful "contextDAO is null" message
 			if (!"contextDAO is null".equals(e.getMessage())) {
-				// not using log.error here so it can be garbage collected
-				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
-				e.printStackTrace();
+				log.error("Listener.contextDestroyed: Error while shutting down openmrs: ", e);
 			}
 		}
 		finally {
@@ -563,8 +562,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			}
 		}
 		catch (Exception e) {
-			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
-			e.printStackTrace();
+			log.error("Listener.contextDestroyed: Failed to cleanup drivers in webapp", e);
 		}
 		
 		MemoryLeakUtil.shutdownMysqlCancellationTimer();
@@ -573,7 +571,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		OpenmrsClassLoader.onShutdown();
 		
 		LogManager.shutdown();
-		
+
 		// just to make things nice and clean.
 		System.gc();
 		System.gc();

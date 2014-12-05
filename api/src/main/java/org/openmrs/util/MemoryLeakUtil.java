@@ -69,16 +69,9 @@ public class MemoryLeakUtil {
 	public static void shutdownKeepAliveTimer() {
 		try {
 			final Field kac = HttpClient.class.getDeclaredField("kac");
-			if (kac == null) {
-				return;
-			}
 			
 			kac.setAccessible(true);
 			final Field keepAliveTimer = KeepAliveCache.class.getDeclaredField("keepAliveTimer");
-			if (keepAliveTimer == null) {
-				return;
-			}
-			
 			keepAliveTimer.setAccessible(true);
 			
 			final Thread thread = (Thread) keepAliveTimer.get(kac.get(null));

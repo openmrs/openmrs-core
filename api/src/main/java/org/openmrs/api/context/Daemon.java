@@ -13,6 +13,9 @@
  */
 package org.openmrs.api.context;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -36,6 +39,8 @@ public class Daemon {
 	 * The uuid defined for the daemon user object
 	 */
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";
+	
+	private static Log log = LogFactory.getLog(Daemon.class);
 	
 	protected static final ThreadLocal<Boolean> isDaemonThread = new ThreadLocal<Boolean>();
 	
@@ -242,8 +247,7 @@ public class Daemon {
 			onStartupThread.join();
 		}
 		catch (InterruptedException e) {
-			// ignore
-			e.printStackTrace();
+			log.info("\"onStartup\" thread interrupted!", e);
 		}
 		
 		if (onStartupThread.exceptionThrown != null) {
