@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +56,7 @@ public class ConceptFormValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		ConceptFormBackingObject backingObject = (ConceptFormBackingObject) obj;
 		Set<String> localesWithErrors = new HashSet<String>();
+		Set<String> localesWithoutPreferred = new HashSet<String>();
 		if (backingObject.getConcept() == null) {
 			errors.rejectValue("concept", "error.general");
 		} else {
@@ -102,12 +105,31 @@ public class ConceptFormValidator implements Validator {
 					errors.rejectValue("namesByLocale[" + locale + "].name", "Concept.fullySpecified.textRequired");
 					localesWithErrors.add(locale.getDisplayName());
 				}
+				
+				CollectionUtils.filter(backingObject.getSynonymsByLocale().get(locale), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object o) {
+						return ((ConceptName) o).getName() != null;
+					}
+				});
+				if (backingObject.getSynonymsByLocale().get(locale).size() > 0
+				        && backingObject.getPreferredNamesByLocale().get(locale) == null) {
+					localesWithoutPreferred.add(locale.getDisplayName());
+				}
 			}
 			
 			if (!foundAtLeastOneFullySpecifiedName) {
 				errors.reject("Concept.name.atLeastOneRequired");
 			}
 			
+		}
+		
+		if (localesWithoutPreferred.size() > 0) {
+			StringBuilder sb = new StringBuilder(Context.getMessageSourceService().getMessage(
+			    "Concept.preferredName.Required"));
+			sb.append(StringUtils.join(localesWithoutPreferred, ", "));
+			errors.rejectValue("concept", sb.toString());
 		}
 		
 		if (errors.hasErrors() && localesWithErrors.size() > 0) {

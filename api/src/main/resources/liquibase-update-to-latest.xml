@@ -8544,4 +8544,13 @@
 		<renameColumn tableName="drug_ingredient"
 			oldColumnName="quantity" newColumnName="strength" columnDataType="double"/>
 	</changeSet>
+
+    <changeSet id="20141120-1410" author="rpuzdrowski">
+        <preConditions onFail="MARK_RAN">
+            <not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_name</sqlCheck></not>
+        </preConditions>
+        <comment>Marking in concept at least one name in a locale as locale_preferred</comment>
+        <customChange class="org.openmrs.util.databasechange.ConceptNamesValidatorChangeSet"/>
+    </changeSet>
+
 </databaseChangeLog>
