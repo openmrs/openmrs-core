@@ -84,6 +84,15 @@ public interface LocationDAO {
 	        Integer length) throws DAOException;
 	
 	/**
+	 * Gets the locations which have fuzzy specified attribute
+	 *
+	 * @param searchString attribute criterion
+	 * @param locationAttributeType LocationAttributeType criterion
+	 * @return the list of locations
+	 */
+	public List<Location> getLocationsByAttribute(Object searchString, LocationAttributeType locationAttributeType);
+	
+	/**
 	 * Completely remove the location from the database.
 	 * 
 	 * @param location <code>Location</code> object to delete

@@ -275,10 +275,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getAllLocations(null)}
+	 * @see {@link LocationService#getAllLocations(boolean)}
 	 */
 	@Test
-	@Verifies(value = "should return all locations when includeRetired is true", method = "getAllLocations(null)")
+	@Verifies(value = "should return all locations when includeRetired is true", method = "getAllLocations(boolean)")
 	public void getAllLocations_shouldReturnAllLocationsWhenIncludeRetiredIsTrue() throws Exception {
 		List<Location> locations = Context.getLocationService().getAllLocations(true);
 		
@@ -286,10 +286,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getAllLocations(null)}
+	 * @see {@link LocationService#getAllLocations(boolean)}
 	 */
 	@Test
-	@Verifies(value = "should return only unretired locations when includeRetires is false", method = "getAllLocations(null)")
+	@Verifies(value = "should return only unretired locations when includeRetires is false", method = "getAllLocations(boolean)")
 	public void getAllLocations_shouldReturnOnlyUnretiredLocationsWhenIncludeRetiresIsFalse() throws Exception {
 		List<Location> locations = Context.getLocationService().getAllLocations(false);
 		
@@ -405,10 +405,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Get locations that have a specified set of tags among its child tags.
 	 * 
-	 * @see {@link LocationService#getLocationsHavingAllTags(List<QLocationTag;>)}
+	 * @see {@link LocationService#getLocationsHavingAllTags(List<LocationTag;>)}
 	 */
 	@Test
-	@Verifies(value = "should get locations having all tags", method = "getLocationsHavingAllTags(List<QLocationTag;>)")
+	@Verifies(value = "should get locations having all tags", method = "getLocationsHavingAllTags(List<LocationTag;>)")
 	public void getLocationsHavingAllTags_shouldGetLocationsHavingAllTags() throws Exception {
 		LocationService ls = Context.getLocationService();
 		
@@ -436,10 +436,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getLocationsHavingAllTags(List<QLocationTag;>)}
+	 * @see {@link LocationService#getLocationsHavingAllTags(List<LocationTag;>)}
 	 */
 	@Test
-	@Verifies(value = "should return empty list when no location has the given tags", method = "getLocationsHavingAllTags(List<QLocationTag;>)")
+	@Verifies(value = "should return empty list when no location has the given tags", method = "getLocationsHavingAllTags(List<LocationTag;>)")
 	public void getLocationsHavingAllTags_shouldReturnEmptyListWhenNoLocationHasTheGivenTags() throws Exception {
 		LocationService ls = Context.getLocationService();
 		Assert.assertEquals(0, ls.getLocationsHavingAllTags(Collections.singletonList(ls.getLocationTagByName("Retired")))
@@ -447,10 +447,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getLocationsHavingAllTags(List<QLocationTag;>)}
+	 * @see {@link LocationService#getLocationsHavingAllTags(List<LocationTag;>)}
 	 */
 	@Test
-	@Verifies(value = "return all unretired locations given an empty tag list", method = "getLocationsHavingAllTags(List<QLocationTag;>)")
+	@Verifies(value = "return all unretired locations given an empty tag list", method = "getLocationsHavingAllTags(List<LocationTag;>)")
 	public void getLocationsHavingAllTags_shouldReturnAllUnretiredLocationsGivenAnEmptyTagList() throws Exception {
 		LocationService ls = Context.getLocationService();
 		Assert.assertEquals(5, ls.getLocationsHavingAllTags(new ArrayList<LocationTag>()).size());
@@ -459,10 +459,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Get locations that have any of specified set of tags among its child tags.
 	 * 
-	 * @see {@link LocationService#getLocationsHavingAnyTag(List<QLocationTag;>)}
+	 * @see {@link LocationService#getLocationsHavingAnyTag(List<LocationTag;>)}
 	 */
 	@Test
-	@Verifies(value = "should get locations having any tag", method = "getLocationsHavingAnyTag(List<QLocationTag;>)")
+	@Verifies(value = "should get locations having any tag", method = "getLocationsHavingAnyTag(List<LocationTag;>)")
 	public void getLocationsHavingAnyTag_shouldGetLocationsHavingAnyTag() throws Exception {
 		LocationService ls = Context.getLocationService();
 		
@@ -485,10 +485,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getLocationsHavingAnyTag(List<QLocationTag;>)}
+	 * @see {@link LocationService#getLocationsHavingAnyTag(List<LocationTag;>)}
 	 */
 	@Test
-	@Verifies(value = "should return empty list when no location has the given tags", method = "getLocationsHavingAnyTag(List<QLocationTag;>)")
+	@Verifies(value = "should return empty list when no location has the given tags", method = "getLocationsHavingAnyTag(List<LocationTag;>)")
 	public void getLocationsHavingAnyTag_shouldReturnEmptyListWhenNoLocationHasTheGivenTags() throws Exception {
 		LocationService ls = Context.getLocationService();
 		Assert.assertEquals(0, ls.getLocationsHavingAnyTag(Collections.singletonList(ls.getLocationTagByName("Retired")))
@@ -496,13 +496,24 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getLocationsHavingAnyTag(List<QLocationTag;>)}
+	 * @see {@link LocationService#getLocationsHavingAnyTag(List<LocationTag;>)}
 	 */
 	@Test
-	@Verifies(value = "should return empty list when given an empty tag list", method = "getLocationsHavingAnyTag(List<QLocationTag;>)")
+	@Verifies(value = "should return empty list when given an empty tag list", method = "getLocationsHavingAnyTag(List<LocationTag;>)")
 	public void getLocationsHavingAnyTag_shouldReturnEmptyListWhenGivenAnEmptyTagList() throws Exception {
 		LocationService ls = Context.getLocationService();
 		Assert.assertEquals(0, ls.getLocationsHavingAnyTag(new ArrayList<LocationTag>()).size());
+	}
+	
+	/**
+	 * @see {@link org.openmrs.api.LocationService#getLocationsByAttribute(Object, org.openmrs.LocationAttributeType)}
+	 */
+	@Test
+	@Verifies(value = "should return locations which have fuzzy specified attribute", method = "getLocationsByAttribute(Object,LocationAttributeType)")
+	public void getLocationsByAttribute_shouldReturnLocationsWhichHaveFuzzySpecifiedAttribute() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService ls = Context.getLocationService();
+		assertEquals(2, ls.getLocationsByAttribute("2011-04-26", ls.getLocationAttributeType(1)).size());
 	}
 	
 	/**
@@ -779,10 +790,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getAllLocationTags(null)}
+	 * @see {@link LocationService#getAllLocationTags(boolean)}
 	 */
 	@Test
-	@Verifies(value = "should return all location tags if includeRetired is true", method = "getAllLocationTags(null)")
+	@Verifies(value = "should return all location tags if includeRetired is true", method = "getAllLocationTags(boolean)")
 	public void getAllLocationTags_shouldReturnAllLocationTagsIfIncludeRetiredIsTrue() throws Exception {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(true);
 		
@@ -790,10 +801,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getAllLocationTags(null)}
+	 * @see {@link LocationService#getAllLocationTags(boolean)}
 	 */
 	@Test
-	@Verifies(value = "should return only unretired location tags if includeRetired is false", method = "getAllLocationTags(null)")
+	@Verifies(value = "should return only unretired location tags if includeRetired is false", method = "getAllLocationTags(boolean)")
 	public void getAllLocationTags_shouldReturnOnlyUnretiredLocationTagsIfIncludeRetiredIsFalse() throws Exception {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(false);
 		
@@ -997,6 +1008,29 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link org.openmrs.api.LocationService#getLocationByAttribute(Object, org.openmrs.LocationAttributeType)}
+	 */
+	@Test
+	@Verifies(value = "should return location which has specified attribute", method = "getLocationByAttribute(Object, LocationAttributeType)")
+	public void getLocationByAttribute_shouldReturnLocationWhichHasSpecifiedAttribute() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService ls = Context.getLocationService();
+		Location location = ls.getLocationByAttribute("2011-04-25", ls.getLocationAttributeType(1));
+		assertEquals(location.getUuid(), "f08ba64b-ea57-4a41-b33c-9dfc59b0c60a");
+	}
+	
+	/**
+	 * @see {@link org.openmrs.api.LocationService#getLocationByAttribute(Object, org.openmrs.LocationAttributeType)}
+	 */
+	@Test
+	@Verifies(value = "should return null if not found location with specified attribute", method = "getLocationByAttribute(Object, LocationAttributeType)")
+	public void getLocationByAttribute_shouldReturnNullIfNotFoundLocationWithSpecifiedAttribute() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService ls = Context.getLocationService();
+		assertEquals(null, ls.getLocationByAttribute("2010-02-29", ls.getLocationAttributeType(1)));
+	}
+	
+	/**
 	 * @see {@link LocationService#getLocationTagByUuid(String)}
 	 */
 	@Test
@@ -1030,10 +1064,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationService#getAllLocations(null)}
+	 * @see {@link LocationService#getAllLocations(boolean)}
 	 */
 	@Test
-	@Verifies(value = "should push retired locations to the end of the list when includeRetired is true", method = "getAllLocations(null)")
+	@Verifies(value = "should push retired locations to the end of the list when includeRetired is true", method = "getAllLocations(boolean)")
 	public void getAllLocations_shouldPushRetiredLocationsToTheEndOfTheListWhenIncludeRetiredIsTrue() throws Exception {
 		LocationService ls = Context.getLocationService();
 		//retire the first location

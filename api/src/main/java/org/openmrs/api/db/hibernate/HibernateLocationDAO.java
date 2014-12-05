@@ -152,7 +152,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.LocationDAO#getLocations(java.lang.String)
+	 * @see org.openmrs.api.db.LocationDAO#getLocationTags(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<LocationTag> getLocationTags(String search) {
@@ -238,6 +238,18 @@ public class HibernateLocationDAO implements LocationDAO {
 			criteria.setMaxResults(length);
 		}
 		
+		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationsByAttribute(Object, org.openmrs.LocationAttributeType)
+	 */
+	@Override
+	public List<Location> getLocationsByAttribute(Object searchString, LocationAttributeType locationAttributeType) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
+		criteria.createAlias("attributes", "attribute");
+		criteria.add(Restrictions.eq("attribute.attributeType", locationAttributeType));
+		criteria.add(Restrictions.ilike("attribute.valueReference", searchString));
 		return criteria.list();
 	}
 	

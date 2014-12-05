@@ -15,6 +15,7 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -153,6 +154,20 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
+	 * @see org.openmrs.api.LocationService#getLocationByAttribute(Object, org.openmrs.LocationAttributeType)
+	 */
+	@Override
+	public Location getLocationByAttribute(Object searchString, LocationAttributeType locationAttributeType) {
+		Map<LocationAttributeType, String> serializedAttributeValue = new HashMap<LocationAttributeType, String>();
+		serializedAttributeValue.put(locationAttributeType, searchString.toString());
+		List<Location> locations = dao.getLocations(null, null, serializedAttributeValue, false, null, null);
+		if (locations.size() == 0) {
+			return null;
+		}
+		return locations.get(0);
+	}
+	
+	/**
 	 * @see org.openmrs.api.LocationService#getLocationTagByUuid(java.lang.String)
 	 */
 	@Transactional(readOnly = true)
@@ -232,6 +247,14 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 		
 		return locations;
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationsByAttribute(Object, org.openmrs.LocationAttributeType)
+	 */
+	@Override
+	public List<Location> getLocationsByAttribute(Object searchString, LocationAttributeType locationAttributeType) {
+		return dao.getLocationsByAttribute(searchString, locationAttributeType);
 	}
 	
 	/**
@@ -389,8 +412,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#getPossibleAddressValues(org.openmrs.Address,
-	 *      org.openmrs.AddressField)
+	 * @see org.openmrs.api.LocationService#getPossibleAddressValues(org.openmrs.Address, java.lang.String)
 	 */
 	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException {
 		// not implemented by default

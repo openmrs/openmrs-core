@@ -109,6 +109,19 @@ public interface LocationService extends OpenmrsService {
 	public Location getLocationByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Returns location for a given attribute
+	 *
+	 * @param searchString attribute criterion
+	 * @param locationAttributeType LocationAttributeType criterion
+	 * @return the location
+	 * @should return location which has specified attribute
+	 * @should return null if not found location with specified attribute
+	 * @since 1.12
+	 */
+	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
+	public Location getLocationByAttribute(Object searchString, LocationAttributeType locationAttributeType);
+	
+	/**
 	 * Returns a location tag by uuid
 	 * 
 	 * @param uuid is the uuid of the desired location tag
@@ -225,6 +238,18 @@ public interface LocationService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
 	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException;
+	
+	/**
+	 * Returns locations for a given attribute
+	 *
+	 * @param searchString attribute criterion
+	 * @param locationAttributeType LocationAttributeType criterion
+	 * @return the list of locations
+	 * @should return locations which have fuzzy specified attribute
+	 * @since 1.12
+	 */
+	@Authorized( { PrivilegeConstants.GET_LOCATIONS })
+	public List<Location> getLocationsByAttribute(Object searchString, LocationAttributeType locationAttributeType);
 	
 	/**
 	 * Retires the given location. This effectively removes the location from circulation or use.
@@ -398,7 +423,7 @@ public interface LocationService extends OpenmrsService {
 	 * the Address Hierarchy module.
 	 * 
 	 * @param incomplete the incomplete address
-	 * @param field the address field we are looking for possible values for
+	 * @param fieldName the address field we are looking for possible values for
 	 * @return a list of possible address values for the specified field
 	 * @should return empty list if no possible address matches
 	 * @should return null if method not implemented
