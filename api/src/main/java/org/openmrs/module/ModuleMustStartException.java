@@ -31,5 +31,5 @@ public abstract class ModuleMustStartException extends RuntimeException {
 	
 	public ModuleMustStartException(String msg) {
 		super(msg);
-	};
+	}
 }
