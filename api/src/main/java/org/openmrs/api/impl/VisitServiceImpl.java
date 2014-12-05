@@ -246,7 +246,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	public List<Visit> getVisitsByPatient(Patient patient) throws APIException {
 		//Don't bother to hit the database
 		if (patient == null || patient.getId() == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		
 		return Context.getVisitService().getVisits(null, Collections.singletonList(patient), null, null, null, null, null,
@@ -271,7 +271,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	public List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
 	        throws APIException {
 		if (patient == null || patient.getId() == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		
 		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null,
