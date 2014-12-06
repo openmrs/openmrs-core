@@ -72,6 +72,11 @@ public class MemoryLeakUtil {
 			
 			kac.setAccessible(true);
 			final Field keepAliveTimer = KeepAliveCache.class.getDeclaredField("keepAliveTimer");
+			
+			if (keepAliveTimer == null) {
+				return;
+			}
+			
 			keepAliveTimer.setAccessible(true);
 			
 			final Thread thread = (Thread) keepAliveTimer.get(kac.get(null));

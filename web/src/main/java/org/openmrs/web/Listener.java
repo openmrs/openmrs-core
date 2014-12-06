@@ -77,6 +77,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 	private static boolean runtimePropertiesFound = false;
 	
+	Log log = LogFactory.getLog(Listener.class);
+	
 	private static Throwable errorAtStartup = null;
 	
 	/**
@@ -298,11 +300,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
 			}
 			catch (Exception e) {
-				log.warn("Cannot find the contextPath of current webapp.", e);
+				log.error("Cannot find the contextPath of current webapp.", e);
 			}
 		}
 		catch (Exception e) {
-			log.warn("ContextPath not defined", e);
+			log.error("ContextPath not defined", e);
 		}
 		
 		// trim off initial slash if it exists
@@ -518,7 +520,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
-		Log log = LogFactory.getLog(Listener.class);
+		
 		try {
 			Context.openSession();
 			
@@ -572,6 +574,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		
 		LogManager.shutdown();
 		
+		// just to make things nice and clean.
+		System.gc();
+		System.gc();
 	}
 	
 	/**

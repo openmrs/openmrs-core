@@ -261,9 +261,21 @@ public class DataExportFunctions {
 				map.remove(this.patientId);
 			}
 		}
+		//reclaim some memory
+		garbageCollect();
 		
 		setPatient(null);
 		this.patientId = patientId;
+	}
+	
+	/**
+	 * Call the system garbage collecter. This method only calls every 500 patients
+	 */
+	protected void garbageCollect() {
+		if (patientCounter++ % 500 == 0) {
+			System.gc();
+			System.gc();
+		}
 	}
 	
 	/**

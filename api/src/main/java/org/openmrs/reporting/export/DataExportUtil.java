@@ -229,6 +229,9 @@ public class DataExportUtil {
 			log.debug("Clearing hibernate session");
 			Context.clearSession();
 			
+			//clear out excess objects
+			System.gc();
+			System.gc();
 		}
 		
 	}

@@ -248,7 +248,7 @@ public class Daemon {
 			onStartupThread.join();
 		}
 		catch (InterruptedException e) {
-			log.info("\"onStartup\" thread interrupted!", e);
+			log.error("\"onStartup\" thread interrupted!", e);
 		}
 		
 		if (onStartupThread.exceptionThrown != null) {
