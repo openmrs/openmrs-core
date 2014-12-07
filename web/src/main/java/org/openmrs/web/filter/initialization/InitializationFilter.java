@@ -949,7 +949,9 @@ public class InitializationFilter extends StartupFilter {
 			// verify connection
 			//Set Database Driver using driver String
 			Class.forName(loadedDriverString).newInstance();
-			DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
+			Connection tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername,
+			    connectionPassword);
+			tempConnection.close();
 			return true;
 			
 		}
@@ -1132,7 +1134,10 @@ public class InitializationFilter extends StartupFilter {
 			
 			// run the sql statement
 			Statement statement = connection.createStatement();
-			return statement.executeUpdate(replacedSql);
+			
+			int updateDelta = statement.executeUpdate(replacedSql);
+			statement.close();
+			return updateDelta;
 			
 		}
 		catch (SQLException sqlex) {
