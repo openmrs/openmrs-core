@@ -229,6 +229,15 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 		return retValue;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof PatientIdentifier) {
+			return compareTo((PatientIdentifier) other) == 0;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
