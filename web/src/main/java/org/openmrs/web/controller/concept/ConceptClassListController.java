@@ -100,7 +100,7 @@ public class ConceptClassListController extends SimpleFormController {
 			}
 			
 			view = getSuccessView();
-			if (!success.equals("")) {
+			if (!success.toString().equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
 			if (!error.equals("")) {
