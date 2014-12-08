@@ -149,6 +149,7 @@ public interface ConceptDAO {
 	 * @param includeRetired
 	 * @return List<Drug>
 	 * @throws DAOException
+	 * @should return a drug if drug name is passed with upper or lower case
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException;
 	
@@ -672,7 +673,8 @@ public interface ConceptDAO {
 	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource,
+	 *      java.util.Collection
 	 */
 	Drug getDrugByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws DAOException;

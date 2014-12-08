@@ -38,7 +38,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -386,7 +385,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concept != null)
 			searchCriteria.add(Restrictions.eq("drug.concept", concept));
 		if (drugName != null)
-			searchCriteria.add(Restrictions.eq("drug.name", drugName));
+			searchCriteria.add(Restrictions.eq("drug.name", drugName).ignoreCase());
 		return (List<Drug>) searchCriteria.list();
 	}
 	

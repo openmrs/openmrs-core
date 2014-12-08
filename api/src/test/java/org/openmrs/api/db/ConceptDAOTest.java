@@ -32,6 +32,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
+import org.openmrs.Drug;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -454,4 +455,15 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(21, conceptByAnswer.getConceptId().intValue());
 	}
 	
+	/**
+	 * @verifies return a drug if drug name is passed with upper or lower case
+	 * @see ConceptDAO#getDrugs(String, org.openmrs.Concept, boolean)
+	 */
+	@Test
+	public void getDrugs_shouldReturnADrugIfDrugNameIsPassedWithUpperOrLowerCase() throws Exception {
+		List<Drug> drugList1 = dao.getDrugs("Triomune-30", null, true);
+		Assert.assertEquals(1, drugList1.size());
+		List<Drug> drugList2 = dao.getDrugs("triomune-30", null, true);
+		Assert.assertEquals(1, drugList2.size());
+	}
 }
