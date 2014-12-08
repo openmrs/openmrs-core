@@ -200,8 +200,9 @@ public class ModuleFactory {
 			if (startBeforeModules.size() > 0) {
 				for (String s : startBeforeModules.keySet()) {
 					Module mod = loadedModulesMap.get(s);
-					if (mod != null)
+					if (mod != null) {
 						mod.addRequiredModule(m.getPackageName(), m.getVersion());
+					}
 				}
 			}
 		}
