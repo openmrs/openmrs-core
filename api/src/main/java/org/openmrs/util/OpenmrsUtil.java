@@ -2275,10 +2275,10 @@ public class OpenmrsUtil {
 	 * @param propertyFile the properties file to read
 	 */
 	public static void loadProperties(Properties props, File propertyFile) {
-		InputStream inputStream = null;
+		InputStreamReader reader = null;
 		try {
-			inputStream = new FileInputStream(propertyFile);
-			InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8");
+			InputStream inputStream = new FileInputStream(propertyFile);
+			reader = new InputStreamReader(inputStream, "UTF-8");
 			props.load(reader);
 		}
 		catch (FileNotFoundException fnfe) {
@@ -2292,8 +2292,8 @@ public class OpenmrsUtil {
 		}
 		finally {
 			try {
-				if (inputStream != null) {
-					inputStream.close();
+				if (reader != null) {
+					reader.close();
 				}
 			}
 			catch (IOException ioe) {

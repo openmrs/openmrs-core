@@ -211,7 +211,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 			patientIdSet.addAll(patientIds);
 		}
 		
-		if (location != null && !location.equals("")) {
+		if (location != null && !location.toString().equals("")) {
 			patientIdSet.retainAll(pss.getPatientsHavingLocation(getLocation()).getMemberIds());
 		}
 		

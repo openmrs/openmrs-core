@@ -860,6 +860,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see #registerHandler(String, ComplexObsHandler)
 	 */
 	public void setHandlers(Map<String, ComplexObsHandler> newHandlers) throws APIException {
+		if (newHandlers == null) {
+			handlers = null;
+			return;
+		}
 		for (Map.Entry<String, ComplexObsHandler> entry : newHandlers.entrySet()) {
 			registerHandler(entry.getKey(), entry.getValue());
 		}

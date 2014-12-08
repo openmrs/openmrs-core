@@ -63,6 +63,10 @@ public class DataSetServiceImpl implements DataSetService {
 	 * @see org.openmrs.api.DataSetService#setProviders(List)
 	 */
 	public void setProviders(List<DataSetProvider> newProviders) {
+		if (newProviders == null) {
+			providers = null;
+			return;
+		}
 		for (DataSetProvider provider : newProviders) {
 			registerProvider(provider);
 		}
