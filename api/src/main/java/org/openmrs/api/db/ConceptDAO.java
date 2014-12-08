@@ -148,6 +148,7 @@ public interface ConceptDAO {
 	 * @param includeRetired
 	 * @return List<Drug>
 	 * @throws DAOException
+	 * @should return a drug if drug name is passed with upper or lower case
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException;
 	
