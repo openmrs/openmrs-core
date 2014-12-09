@@ -151,7 +151,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 					}
 					identifierMatchesValidationScheme = true;
 				}
-				catch (UnallowedIdentifierException e) {}
+				catch (UnallowedIdentifierException e) {
+
+				}
 			}
 			
 			if (identifierMatchesValidationScheme) {
@@ -248,7 +250,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 							}
 							identifierMatchesValidationScheme = true;
 						}
-						catch (UnallowedIdentifierException e) {}
+						catch (UnallowedIdentifierException e) {
+
+						}
 					}
 					
 					if (identifierMatchesValidationScheme) {
@@ -745,7 +749,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 			try {
 				return sdf.parse(date);
 			}
-			catch (ParseException e) {}
+			catch (ParseException e) {
+				
+			}
 		}
 		return null;
 	}
