@@ -53,6 +53,7 @@ public class ProgramValidator implements Validator {
 	 * @should fail validation if program name already in use
 	 * @should fail validation if concept is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation and save edited program
 	 */
 	public void validate(Object obj, Errors errors) {
 		Program p = (Program) obj;
@@ -60,17 +61,15 @@ public class ProgramValidator implements Validator {
 			errors.rejectValue("program", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms(false);
-			for (Program program : programs) {
-				if (program.getName().equals(p.getName()) && !program.getUuid().equals(p.getUuid())) {
-					errors.rejectValue("name", "general.error.nameAlreadyInUse");
-					break;
-				} else {
-					Context.evictFromSession(program);
-				}
-			}
-			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
+			
+			Program existingProgram = Context.getProgramWorkflowService().getProgramByName(p.getName());
+			if (existingProgram != null && !existingProgram.getUuid().equals(p.getUuid())) {
+				errors.rejectValue("name", "general.error.nameAlreadyInUse");
+			}
+			if (existingProgram != null && existingProgram.getUuid().equals(p.getUuid())) {
+				Context.evictFromSession(existingProgram);
+			}
 		}
 	}
 }

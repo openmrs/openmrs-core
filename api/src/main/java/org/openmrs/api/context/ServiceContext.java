@@ -684,7 +684,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private Set<Advisor> getAddedAdvisors(Class cls) {
 		Set<Advisor> result = addedAdvisors.get(cls);
-		return result == null ? Collections.EMPTY_SET : result;
+		return result == null ? Collections.emptySet() : result;
 	}
 	
 	/**
@@ -712,7 +712,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private Set<Advice> getAddedAdvice(Class cls) {
 		Set<Advice> result = addedAdvice.get(cls);
-		return result == null ? Collections.EMPTY_SET : result;
+		return result == null ? Collections.emptySet() : result;
 	}
 	
 	/**

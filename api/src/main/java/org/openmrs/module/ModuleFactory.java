@@ -200,8 +200,9 @@ public class ModuleFactory {
 			if (startBeforeModules.size() > 0) {
 				for (String s : startBeforeModules.keySet()) {
 					Module mod = loadedModulesMap.get(s);
-					if (mod != null)
+					if (mod != null) {
 						mod.addRequiredModule(m.getPackageName(), m.getVersion());
+					}
 				}
 			}
 		}
@@ -1075,6 +1076,16 @@ public class ModuleFactory {
 				}
 			}
 
+			try {
+				if (mod.getModuleActivator() != null) {
+					// if extends BaseModuleActivator
+					mod.getModuleActivator().willStop();
+				}
+			}
+			catch (Exception e) {
+				log.warn("Unable to call module's Activator.willStop() method", e);
+			}
+			
 			try {
 				if (mod.getModuleActivator() != null) {
 					// if extends BaseModuleActivator
