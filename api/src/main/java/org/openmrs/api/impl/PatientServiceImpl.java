@@ -1701,7 +1701,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query)) {
 			return count;
 		}
-		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
 		
 		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query));
 	}
