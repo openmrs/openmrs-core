@@ -256,7 +256,9 @@ public class ObsTableWidget extends TagSupport {
 				try {
 					c = cs.getConcept(Integer.valueOf(s.trim()));
 				}
-				catch (Exception ex) {}
+				catch (Exception ex) {
+					//Exception occured during c = cs.getConcept(Integer.valueOf(s.trim()));
+				}
 			}
 			if (c != null) {
 				if (isSet) {
