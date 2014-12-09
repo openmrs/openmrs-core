@@ -21,9 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.impl.SessionFactoryObjectFactory;
 
-import sun.net.www.http.HttpClient;
-import sun.net.www.http.KeepAliveCache;
-
 /**
  * Utility functions to clean up causes of memory leakages.
  */
@@ -69,9 +66,16 @@ public class MemoryLeakUtil {
 	public static void shutdownKeepAliveTimer() {
 		try {
 			final Field kac = HttpClient.class.getDeclaredField("kac");
+			if (kac == null) {
+				return;
+			}
 			
 			kac.setAccessible(true);
-			final Field keepAliveTimer = KeepAliveCache.class.getDeclaredField("keepAliveTimer");
+			final Field keepAliveTimer = sun.net.www.http.KeepAliveCache.class.getDeclaredField("keepAliveTimer");
+			if (keepAliveTimer == null) {
+				return;
+			}
+			
 			keepAliveTimer.setAccessible(true);
 			
 			final Thread thread = (Thread) keepAliveTimer.get(kac.get(null));
