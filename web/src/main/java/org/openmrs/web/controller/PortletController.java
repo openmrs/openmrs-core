@@ -381,7 +381,10 @@ public class PortletController implements Controller {
 							conceptsByStringIds.put(i.toString(), c);
 						}
 						catch (Exception ex) {
-							
+							/*Exception occured during Integer i = Integer.valueOf(cId);
+							Concept c = cs.getConcept(i);
+							concepts.put(i, c);
+							conceptsByStringIds.put(i.toString(), c);*/
 						}
 					}
 					model.put("conceptMap", concepts);

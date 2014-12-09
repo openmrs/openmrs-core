@@ -34,7 +34,7 @@ public class DWRPatientSetService {
 				ptIds.add(Integer.valueOf(s));
 			}
 			catch (Exception ex) {
-
+				//Exception occured during ptIds.add(Integer.valueOf(s));
 			}
 		}
 		List<Patient> patients = Context.getPatientSetService().getPatients(ptIds);

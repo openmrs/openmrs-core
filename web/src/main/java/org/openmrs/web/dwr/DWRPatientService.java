@@ -152,7 +152,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 					identifierMatchesValidationScheme = true;
 				}
 				catch (UnallowedIdentifierException e) {
-
+					//UnallowedIdentifierException occured
 				}
 			}
 			

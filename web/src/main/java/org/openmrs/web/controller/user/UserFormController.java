@@ -71,7 +71,7 @@ public class UserFormController {
 			u = Context.getUserService().getUser(Integer.valueOf(userId));
 		}
 		catch (Exception ex) {
-			
+			//Exception occured during Context.getUserService().getUser(Integer.valueOf(userId));
 		}
 		if (u == null) {
 			u = new User();
