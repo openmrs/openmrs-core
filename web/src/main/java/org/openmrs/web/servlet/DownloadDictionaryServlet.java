@@ -69,7 +69,6 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			        "Concept Id,Name,Description,Synonyms,Answers,Set Members,Class,Datatype,Changed By,Creator\n");
 			response.getWriter().write(line.toString());
 			
-			int listIndex = 0;
 			Iterator<Concept> conceptIterator = cs.conceptIterator();
 			while (conceptIterator.hasNext()) {
 				Concept c = conceptIterator.next();
