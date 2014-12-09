@@ -121,7 +121,6 @@ public class FormFormController extends SimpleFormController {
 						
 						TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
 						for (Map.Entry<Integer, TreeSet<FormField>> entry : treeMap.entrySet()) {
-							Integer parentFormFieldId = entry.getKey();
 							float sortWeight = 0;
 							for (FormField formField : entry.getValue()) {
 								formField.setSortWeight(sortWeight);

@@ -106,7 +106,6 @@ public class WorkflowFormController extends SimpleFormController {
 					String str = std.nextToken();
 					String[] state = str.split(",");
 					Integer conceptIdDelete = Integer.valueOf(state[0]);
-					ProgramWorkflowState pws = null;
 					
 					for (ProgramWorkflowState s : wf.getStates()) {
 						if (s.getConcept().getConceptId().equals(conceptIdDelete)) {
