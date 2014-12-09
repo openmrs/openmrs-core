@@ -131,14 +131,14 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		
 		if (!currentlyCase) {
 			if (within_last_days != null || within_last_months != null) {
-				if (within_last_months != null)
+				if (within_last_months != null) {
 					ret.append(" ").append(
 					    mss.getMessage("reporting.WithinTheLastMonths", new Object[] { within_last_months }, locale));
-				
-				if (within_last_days != null)
+				}
+				if (within_last_days != null) {
 					ret.append(" ").append(
 					    mss.getMessage("reporting.WithinTheLastDays", new Object[] { within_last_days }, locale));
-				
+				}
 			}
 		}
 		if (getSinceDate() != null) {
