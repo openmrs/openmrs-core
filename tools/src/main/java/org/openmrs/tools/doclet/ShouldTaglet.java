@@ -13,7 +13,7 @@
  */
 package org.openmrs.tools.doclet;
 
-import java.util.Map;
+import com.sun.tools.doclets.Taglet;
 
 /**
  * Taglet for @should annotations.
@@ -107,7 +107,7 @@ public class ShouldTaglet implements Taglet {
 	 * 
 	 * @param tagletMap the map to register this tag to.
 	 */
-	public static void register(Map tagletMap) {
+	public static void register(java.util.Map tagletMap) {
 		ShouldTaglet tag = new ShouldTaglet();
 		Taglet t = (Taglet) tagletMap.get(tag.getName());
 		if (t != null) {
@@ -122,7 +122,7 @@ public class ShouldTaglet implements Taglet {
 	 * 
 	 * @param tag the <code>Tag</code> representation of this custom tag.
 	 */
-	public String toString(Tag tag) {
+	public String toString(com.sun.javadoc.Tag tag) {
 		return "\n<DT><B>" + HEADER + "</B></DT>\n  <DD>Should " + tag.text() + "</DD>";
 	}
 	
@@ -132,7 +132,7 @@ public class ShouldTaglet implements Taglet {
 	 * 
 	 * @param tags the array of <code>Tag</code>s representing of this custom tag.
 	 */
-	public String toString(Tag[] tags) {
+	public String toString(com.sun.javadoc.Tag[] tags) {
 		if (tags.length == 0) {
 			return null;
 		}

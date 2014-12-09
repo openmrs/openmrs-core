@@ -71,7 +71,7 @@ public class MemoryLeakUtil {
 			}
 			
 			kac.setAccessible(true);
-			final Field keepAliveTimer = KeepAliveCache.class.getDeclaredField("keepAliveTimer");
+			final Field keepAliveTimer = sun.net.www.http.KeepAliveCache.class.getDeclaredField("keepAliveTimer");
 			if (keepAliveTimer == null) {
 				return;
 			}
