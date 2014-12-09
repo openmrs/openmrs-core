@@ -76,7 +76,9 @@ public class PatientGraphData {
 		try {
 			new ObjectMapper().writeValue(writer, graph);
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+
+		}
 		return writer.toString();
 	}
 	
