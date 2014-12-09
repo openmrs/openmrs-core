@@ -319,6 +319,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 * @deprecated use #getMemberIds()
 	 * @return the memberIds
 	 */
+	@Deprecated
 	public Set<Integer> getPatientIds() {
 		return getMemberIds();
 	}
@@ -330,6 +331,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * @return the cohortDefinition
+	 * @deprecated
 	 */
 	@Element(required = false)
 	@Deprecated
@@ -339,6 +341,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * @param cohortDefinition the cohortDefinition to set
+	 * @deprecated
 	 */
 	@Element(required = false)
 	@Deprecated
@@ -348,6 +351,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * @return the evaluationContext
+	 * @deprecated
 	 */
 	@Element(required = false)
 	@Deprecated
@@ -357,6 +361,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * @param evaluationContext the evaluationContext to set
+	 * @deprecated
 	 */
 	@Element(required = false)
 	@Deprecated

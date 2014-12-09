@@ -131,8 +131,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		        .getModuleClassLoaders());
 		
 		Class<?> c = loadModuleClass(name, moduleClassLoaders);
-		if (c != null)
+		if (c != null) {
 			return c;
+		}
 		
 		/* See org.mortbay.jetty.webapp.WebAppClassLoader.loadClass, from
 		 * http://dist.codehaus.org/jetty/jetty-6.1.10/jetty-6.1.10-src.zip */

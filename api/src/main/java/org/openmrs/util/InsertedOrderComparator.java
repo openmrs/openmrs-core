@@ -24,6 +24,7 @@ import java.util.Map;
  * 
  * @deprecated this is not needed. Use a LinkedHashSet object instead of this class.
  */
+@Deprecated
 public class InsertedOrderComparator implements Comparator<String> {
 	
 	Map<String, Integer> insertedOrder = new HashMap<String, Integer>();
