@@ -2459,7 +2459,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//stop the order with a different DC order
 		orderService.discontinueOrder(previousOrder, "Testing", null, previousOrder.getOrderer(), previousOrder
 		        .getEncounter());
-		Thread.sleep(10);
 		
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot unvoid a discontinuation order if the previous order is no longer active");
@@ -2483,12 +2482,11 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(order.getVoided());
 		assertNull(previousOrder.getDateStopped());
 		
-		//stop the order with a different REVISE order
+		//stop the order with a different DC order
 		Order revise = previousOrder.cloneForRevision();
 		revise.setOrderer(order.getOrderer());
 		revise.setEncounter(order.getEncounter());
 		orderService.saveOrder(revise, null);
-		Thread.sleep(10);
 		
 		expectedException.expect(APIException.class);
 		expectedException.expectMessage("Cannot unvoid a revision order if the previous order is no longer active");
