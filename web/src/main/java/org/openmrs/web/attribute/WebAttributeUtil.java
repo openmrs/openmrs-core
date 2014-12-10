@@ -69,8 +69,7 @@ public class WebAttributeUtil {
 		}
 		
 		String submittedValue = request.getParameter(paramName);
-		if (StringUtils.isNotEmpty(submittedValue)) // check empty instead of blank, because " " is meaningful
-		{
+		if (StringUtils.isNotEmpty(submittedValue)) { // check empty instead of blank, because " " is meaningful
 			return dt.fromReferenceString(submittedValue);
 		} else {
 			return null;
