@@ -1086,6 +1086,16 @@ public class ModuleFactory {
 				log.warn("Unable to call module's Activator.willStop() method", e);
 			}
 			
+			try {
+				if (mod.getModuleActivator() != null) {
+					// if extends BaseModuleActivator
+					mod.getModuleActivator().willStop();
+				}
+			}
+			catch (Exception e) {
+				log.warn("Unable to call module's Activator.willStop() method", e);
+			}
+			
 			getStartedModulesMap().remove(moduleId);
 			if (actualStartupOrder != null) {
 				actualStartupOrder.remove(moduleId);
