@@ -21,11 +21,9 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.Vector;
 
 import org.databene.benerator.Generator;
 import org.databene.benerator.factory.GeneratorFactory;
@@ -54,7 +52,7 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
-	 *
+	 * 
 	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
@@ -78,7 +76,7 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
-	 *
+	 * 
 	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
@@ -93,7 +91,7 @@ public class ConceptTest {
 	/**
 	 * The Concept should unmark the old conceptName as the locale preferred one to enforce the rule
 	 * that a each locale should have only one preferred name per concept
-	 *
+	 * 
 	 * @see {@link Concept#setPreferredName(ConceptName)}
 	 */
 	@Test
@@ -578,12 +576,12 @@ public class ConceptTest {
 		c.setConceptSets(sets);
 		
 		List<Concept> setMembers = c.getSetMembers();
-		Assert.assertEquals(set4.getConcept().getConceptId(), setMembers.get(0).getConceptId());
-		Assert.assertEquals(set2.getConcept().getConceptId(), setMembers.get(1).getConceptId());
-		Assert.assertEquals(set1.getConcept().getConceptId(), setMembers.get(2).getConceptId());
-		Assert.assertEquals(set5.getConcept().getConceptId(), setMembers.get(3).getConceptId());
-		Assert.assertEquals(set3.getConcept().getConceptId(), setMembers.get(4).getConceptId());
-		Assert.assertEquals(set0.getConcept().getConceptId(), setMembers.get(5).getConceptId());
+		Assert.assertEquals(set4.getConcept(), setMembers.get(0));
+		Assert.assertEquals(set2.getConcept(), setMembers.get(1));
+		Assert.assertEquals(set1.getConcept(), setMembers.get(2));
+		Assert.assertEquals(set5.getConcept(), setMembers.get(3));
+		Assert.assertEquals(set3.getConcept(), setMembers.get(4));
+		Assert.assertEquals(set0.getConcept(), setMembers.get(5));
 	}
 	
 	/**
@@ -734,7 +732,6 @@ public class ConceptTest {
 	
 	/**
 	 * @see {@link Concept#getPreferredName(Locale)}
-	 *
 	 */
 	@Test
 	@Verifies(value = "should return the fully specified name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
@@ -1038,7 +1035,7 @@ public class ConceptTest {
 	/**
 	 * Convenient factory method to create a populated Concept with a one fully specified name and
 	 * one short name
-	 *
+	 * 
 	 * @param conceptId the id for the concept to create
 	 * @param locale the locale of the of the conceptNames for the concept to create
 	 * @return the created concept
@@ -1061,7 +1058,7 @@ public class ConceptTest {
 	
 	/**
 	 * Convenient factory method to create a populated Concept name.
-	 *
+	 * 
 	 * @param conceptNameId id for the conceptName
 	 * @param locale for the conceptName
 	 * @param conceptNameType the conceptNameType of the concept

@@ -56,7 +56,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Gets the concept set identifier.
-	 *
+	 * 
 	 * @return the concept set identifier
 	 */
 	public Integer getConceptSetId() {
@@ -65,7 +65,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Sets the concept set identifier.
-	 *
+	 * 
 	 * @param conceptSetId The concept set identifier.
 	 */
 	public void setConceptSetId(Integer conceptSetId) {
@@ -164,7 +164,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used. Always returns null.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#getChangedBy()
 	 */
 	public User getChangedBy() {
@@ -173,7 +173,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used. Always returns null.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#getDateChanged()
 	 */
 	public Date getDateChanged() {
@@ -182,7 +182,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
 	 */
 	public void setChangedBy(User changedBy) {
@@ -190,7 +190,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
 	 */
 	public void setDateChanged(Date dateChanged) {
