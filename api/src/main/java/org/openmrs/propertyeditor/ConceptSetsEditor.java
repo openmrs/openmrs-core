@@ -62,8 +62,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 			// and removal of duplicates
 			for (String id : conceptIds) {
 				id = id.trim();
-				if (!"".equals(id) && !requestConceptIds.contains(Integer.valueOf(id))) //remove whitespace, blank lines, and duplicate entries
-				{
+				if (!"".equals(id) && !requestConceptIds.contains(Integer.valueOf(id))) {//remove whitespace, blank lines, and duplicate entries
 					requestConceptIds.add(Integer.valueOf(id));
 				}
 			}
