@@ -95,7 +95,8 @@ public class PatientIdentifierValidator implements Validator {
 				    "PatientIdentifier.location.null", new Object[] { identifierString }, Context.getLocale()));
 			}
 			
-			if (pi.getIdentifierType().getUniquenessBehavior() != UniquenessBehavior.NON_UNIQUE && Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
+			if (pi.getIdentifierType().getUniquenessBehavior() != UniquenessBehavior.NON_UNIQUE 
+				&& Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
 				// Check is already in use by another patient
 					throw new IdentifierNotUniqueException(Context.getMessageSourceService().getMessage(
 					    "PatientIdentifier.error.notUniqueWithParameter", new Object[] { pi.getIdentifier() },

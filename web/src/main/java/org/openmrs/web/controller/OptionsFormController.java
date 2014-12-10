@@ -208,7 +208,8 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			String notifyType = opts.getNotification();
-			if (notifyType != null && (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email"))) {
+			if (notifyType != null && (notifyType.equals("internal") || notifyType.equals("internalProtected") 
+				|| notifyType.equals("email"))) {
 					if (opts.getNotificationAddress().isEmpty()) {
 						errors.reject("error.options.notificationAddress.empty");
 					} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {

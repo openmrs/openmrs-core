@@ -972,7 +972,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				oldShortName.setConceptNameType(null);
 			}
 			shortName.setConceptNameType(ConceptNameType.SHORT);
-			if (StringUtils.isNotBlank(shortName.getName()) && (shortName.getConceptNameId() == null || !getNames().contains(shortName))) {
+			if (StringUtils.isNotBlank(shortName.getName()) 
+				&& (shortName.getConceptNameId() == null || !getNames().contains(shortName))) {
 				//add this name, if it is new or not among this concept's names
 					addName(shortName);
 			}

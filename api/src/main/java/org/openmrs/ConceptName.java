@@ -526,7 +526,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *         false
 	 */
 	public Boolean isPreferredInLanguage(String language) {
-		if (!StringUtils.isBlank(language) && this.locale != null && isPreferred() && this.locale.getLanguage().equals(language)) {
+		if (!StringUtils.isBlank(language) && this.locale != null && isPreferred() 
+			&& this.locale.getLanguage().equals(language)) {
 				return true;
 		}
 		

@@ -229,7 +229,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						}
 					}
 					
-					if ((nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred()) && !isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
+					if ((nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred()) 
+						&& !isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
 							if (localeDuplicateNamesMap == null) {
 								localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
 							}

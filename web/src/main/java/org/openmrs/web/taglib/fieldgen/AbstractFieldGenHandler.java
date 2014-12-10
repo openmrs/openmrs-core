@@ -58,7 +58,8 @@ public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 	}
 	
 	protected void checkEmptyVal(Object o) {
-		if (this.fieldGenTag.getVal() != null && this.fieldGenTag.getVal() instanceof String && !(o instanceof String) && "".equals(this.fieldGenTag.getVal())) {
+		if (this.fieldGenTag.getVal() != null && this.fieldGenTag.getVal() instanceof String 
+			&& !(o instanceof String) && "".equals(this.fieldGenTag.getVal())) {
 					setVal(o);
 		}
 	}
