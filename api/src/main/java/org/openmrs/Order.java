@@ -417,8 +417,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Deprecated
 	public boolean isFuture(Date checkDate) {
-		if (isVoided())
+		if (isVoided()) {
 			return false;
+		}
 		if (checkDate == null) {
 			checkDate = new Date();
 		}
