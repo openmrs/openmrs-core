@@ -35,7 +35,7 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 	
 	public static final long serialVersionUID = 1L;
 	
-	private final String defaultSortBy = "dateCreated";
+	private static final String defaultSortBy = "dateCreated";
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
