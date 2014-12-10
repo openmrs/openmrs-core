@@ -770,7 +770,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		orderNumberGenerator = null;
+		setOrderNumberGenerator(null);
 	}
 	
 	/**
@@ -778,7 +778,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		orderNumberGenerator = null;
+		setOrderNumberGenerator(null);
+	}
+	
+	/**
+	 * Helper method to deter instance methods from setting static fields
+	 */
+	private static void setOrderNumberGenerator(OrderNumberGenerator orderNumberGenerator) {
+		OrderServiceImpl.orderNumberGenerator = orderNumberGenerator;
 	}
 	
 	/**
