@@ -27,7 +27,7 @@ import org.springframework.web.servlet.theme.CookieThemeResolver;
  */
 public class OpenmrsCookieThemeResolver extends CookieThemeResolver {
 	
-	private final String GP_THEME_NAME = OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_THEME;
+	private static final String GP_THEME_NAME = OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_THEME;
 	
 	/**
 	 * Return the name of the default theme.
