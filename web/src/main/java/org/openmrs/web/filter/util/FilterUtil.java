@@ -129,15 +129,13 @@ public class FilterUtil {
 			log.error("Error while retrieving system default locale", e);
 		}
 		finally {
-			if (needToCloseConection) {
-				if (connection != null) {
+			if (needToCloseConection && connection != null) {
 					try {
 						connection.close();
 					}
 					catch (SQLException e) {
 						log.debug("Error while closing the database", e);
 					}
-				}
 			}
 		}
 		return systemDefaultLocale;

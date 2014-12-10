@@ -526,80 +526,50 @@ public class PersonFormController extends SimpleFormController {
 		        || add4s != null || startDates != null || endDates != null) {
 			int maxAddrs = 0;
 			
-			if (add1s != null) {
-				if (add1s.length > maxAddrs) {
+			if (add1s != null && add1s.length > maxAddrs) {
 					maxAddrs = add1s.length;
-				}
 			}
-			if (add2s != null) {
-				if (add2s.length > maxAddrs) {
+			if (add2s != null && add2s.length > maxAddrs) {
 					maxAddrs = add2s.length;
-				}
 			}
-			if (cities != null) {
-				if (cities.length > maxAddrs) {
+			if (cities != null && cities.length > maxAddrs) {
 					maxAddrs = cities.length;
-				}
 			}
-			if (states != null) {
-				if (states.length > maxAddrs) {
+			if (states != null && states.length > maxAddrs) {
 					maxAddrs = states.length;
-				}
 			}
-			if (countries != null) {
-				if (countries.length > maxAddrs) {
+			if (countries != null && countries.length > maxAddrs) {
 					maxAddrs = countries.length;
-				}
 			}
-			if (lats != null) {
-				if (lats.length > maxAddrs) {
+			if (lats != null && lats.length > maxAddrs) {
 					maxAddrs = lats.length;
-				}
 			}
-			if (longs != null) {
-				if (longs.length > maxAddrs) {
+			if (longs != null && longs.length > maxAddrs) {
 					maxAddrs = longs.length;
-				}
 			}
-			if (pCodes != null) {
-				if (pCodes.length > maxAddrs) {
+			if (pCodes != null && pCodes.length > maxAddrs) {
 					maxAddrs = pCodes.length;
-				}
 			}
-			if (counties != null) {
-				if (counties.length > maxAddrs) {
+			if (counties != null && counties.length > maxAddrs) {
 					maxAddrs = counties.length;
-				}
 			}
-			if (add3s != null) {
-				if (add3s.length > maxAddrs) {
+			if (add3s != null && add3s.length > maxAddrs) {
 					maxAddrs = add3s.length;
-				}
 			}
-			if (add6s != null) {
-				if (add6s.length > maxAddrs) {
+			if (add6s != null && add6s.length > maxAddrs) {
 					maxAddrs = add6s.length;
-				}
 			}
-			if (add5s != null) {
-				if (add5s.length > maxAddrs) {
+			if (add5s != null && add5s.length > maxAddrs) {
 					maxAddrs = add5s.length;
-				}
 			}
-			if (add4s != null) {
-				if (add4s.length > maxAddrs) {
+			if (add4s != null && add4s.length > maxAddrs) {
 					maxAddrs = add4s.length;
-				}
 			}
-			if (startDates != null) {
-				if (startDates.length > maxAddrs) {
+			if (startDates != null && startDates.length > maxAddrs) {
 					maxAddrs = startDates.length;
-				}
 			}
-			if (endDates != null) {
-				if (endDates.length > maxAddrs) {
+			if (endDates != null && endDates.length > maxAddrs) {
 					maxAddrs = endDates.length;
-				}
 			}
 			
 			log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");

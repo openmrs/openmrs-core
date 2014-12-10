@@ -137,8 +137,7 @@ public class LoginServlet extends HttpServlet {
 					User user = Context.getAuthenticatedUser();
 					
 					// load the user's default locale if possible
-					if (user.getUserProperties() != null) {
-						if (user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
+					if (user.getUserProperties() != null && user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
 							String localeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 							Locale locale = WebUtil.normalizeLocale(localeString);
 							// if locale object is valid we should store it
@@ -146,7 +145,6 @@ public class LoginServlet extends HttpServlet {
 								OpenmrsCookieLocaleResolver oclr = new OpenmrsCookieLocaleResolver();
 								oclr.setLocale(request, response, locale);
 							}
-						}
 					}
 					
 					if (new UserProperties(user.getUserProperties()).isSupposedToChangePassword()) {

@@ -183,12 +183,10 @@ public class ConceptValidator implements Validator {
 				
 				//No duplicate names allowed for the same locale and concept, keep the case the same
 				//except for short names
-				if (!nameInLocale.isShort()) {
-					if (!validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase())) {
+				if (!nameInLocale.isShort() && !validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase())) {
 						throw new DuplicateConceptNameException("'" + nameInLocale.getName()
 						        + "' is a duplicate name in locale '" + conceptNameLocale.toString()
 						        + "' for the same concept");
-					}
 				}
 				
 				if (log.isDebugEnabled()) {
@@ -236,11 +234,9 @@ public class ConceptValidator implements Validator {
 				}
 				
 				//if we already have a mapping to this term, reject it this map
-				if (map.getConceptReferenceTerm().getId() != null) {
-					if (!mappedTermIds.add(map.getConceptReferenceTerm().getId())) {
+				if (map.getConceptReferenceTerm().getId() != null && !mappedTermIds.add(map.getConceptReferenceTerm().getId())) {
 						errors.rejectValue("conceptMappings[" + index + "]", "ConceptReferenceTerm.term.alreadyMapped",
 						    "Cannot map a reference term multiple times to the same concept");
-					}
 				}
 				
 				index++;

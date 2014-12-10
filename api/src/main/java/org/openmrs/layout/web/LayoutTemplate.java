@@ -147,8 +147,7 @@ public abstract class LayoutTemplate {
 					}
 				}
 			}
-		} else if (line != null) {
-			if (line.length() > 0) {
+		} else if (line != null && line.length() > 0) {
 				// looks like we have a single token on a line by itself
 				if (ret == null) {
 					ret = new Vector<Map<String, String>>();
@@ -169,7 +168,6 @@ public abstract class LayoutTemplate {
 				//numTokens++;
 				
 				ret.add(currToken);
-			}
 		}
 		
 		if (ret != null && this.maxTokens < ret.size()) {

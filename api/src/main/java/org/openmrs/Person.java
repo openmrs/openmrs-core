@@ -440,10 +440,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should remove attribute when exist
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
-		if (attributes != null) {
-			if (attributes.remove(attribute)) {
+		if (attributes != null && attributes.remove(attribute)) {
 				attributeMap = null;
-			}
 		}
 	}
 	

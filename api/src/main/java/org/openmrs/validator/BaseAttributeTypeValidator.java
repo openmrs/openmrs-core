@@ -60,10 +60,8 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 			Integer minOccurs = attributeType.getMinOccurs();
 			Integer maxOccurs = attributeType.getMaxOccurs();
 			
-			if (minOccurs != null) {
-				if (minOccurs < 0) {
+			if (minOccurs != null && minOccurs < 0) {
 					errors.rejectValue("minOccurs", "AttributeType.minOccursShouldNotBeLessThanZero");
-				}
 			}
 			
 			if (maxOccurs != null) {

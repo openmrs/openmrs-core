@@ -208,14 +208,12 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			String notifyType = opts.getNotification();
-			if (notifyType != null) {
-				if (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email")) {
+			if (notifyType != null && (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email"))) {
 					if (opts.getNotificationAddress().isEmpty()) {
 						errors.reject("error.options.notificationAddress.empty");
 					} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
 						errors.reject("error.options.notificationAddress.invalid");
 					}
-				}
 			}
 			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
@@ -411,10 +409,8 @@ public class OptionsFormController extends SimpleFormController {
 	 * @param message the localized message to add
 	 */
 	private void addHint(ArrayList<String> hints, String gpValue, String message) {
-		if (Boolean.valueOf(gpValue)) {
-			if (!StringUtils.isBlank(message)) {
+		if (Boolean.valueOf(gpValue) && !StringUtils.isBlank(message)) {
 				hints.add(message);
-			}
 		}
 	}
 }

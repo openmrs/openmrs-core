@@ -309,13 +309,11 @@ public class UserContext implements Serializable {
 	public boolean hasPrivilege(String privilege) {
 		
 		// if a user has logged in, check their privileges
-		if (isAuthenticated()) {
+		if (isAuthenticated() && (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege))) {
 			
 			// check user's privileges
-			if (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege)) {
 				Context.getUserService().notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
 				return true;
-			}
 			
 		}
 		

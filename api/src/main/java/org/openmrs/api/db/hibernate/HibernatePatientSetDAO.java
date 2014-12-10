@@ -1991,10 +1991,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			throw new IllegalArgumentException("Must give a relationship type");
 		}
 		Map<Integer, List<Person>> ret = new HashMap<Integer, List<Person>>();
-		if (patients != null) {
-			if (patients.size() == 0) {
+		if (patients != null && patients.size() == 0) {
 				return ret;
-			}
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);

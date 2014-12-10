@@ -814,16 +814,14 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		if (listFiles != null) {
 			for (File cacheDir : listFiles) {
 				//check if it is a directory, but is not the current lib cache
-				if (cacheDir.isDirectory() && !cacheDir.equals(libCacheFolder)) {
+				if (cacheDir.isDirectory() && !cacheDir.equals(libCacheFolder) && cacheDir.list(lockFilter).length == 0) {
 					// check if its not locked by another running openmrs instance
-					if (cacheDir.list(lockFilter).length == 0) {
 						try {
 							OpenmrsUtil.deleteDirectory(cacheDir);
 						}
 						catch (IOException io) {
 							log.warn("Unable to delete: " + cacheDir.getName());
 						}
-					}
 				}
 			}
 		}

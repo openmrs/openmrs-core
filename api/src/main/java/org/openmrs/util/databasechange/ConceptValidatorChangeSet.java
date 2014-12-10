@@ -229,8 +229,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						}
 					}
 					
-					if (nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred()) {
-						if (!isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
+					if ((nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred()) && !isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
 							if (localeDuplicateNamesMap == null) {
 								localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
 							}
@@ -239,7 +238,6 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							}
 							
 							localeDuplicateNamesMap.get(conceptNameLocale).add(nameInLocale.getName());
-						}
 					}
 					
 					String name = nameInLocale.getName().toLowerCase();

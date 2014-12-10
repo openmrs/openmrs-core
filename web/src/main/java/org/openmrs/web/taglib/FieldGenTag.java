@@ -233,12 +233,10 @@ public class FieldGenTag extends TagSupport {
 						        + "] in FieldGenTag");
 					}
 					
-					if (cls != null) {
-						if (cls.isEnum()) {
+					if (cls != null && cls.isEnum()) {
 							Object[] enumConstants = cls.getEnumConstants();
 							
-							if (enumConstants != null) {
-								if (enumConstants.length > 0) {
+							if (enumConstants != null && enumConstants.length > 0) {
 									String startVal = "";
 									if (val != null) {
 										startVal = val.toString();
@@ -259,9 +257,7 @@ public class FieldGenTag extends TagSupport {
 									}
 									output.append(options.toString());
 									output.append("</select> ");
-								}
 							}
-						}
 					}
 				} else if (type.equals("dropDownList")) {
 					
