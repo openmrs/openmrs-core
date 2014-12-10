@@ -1248,9 +1248,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should reject a namepace and path combination longer than the max length
 	 */
 	public void setFormField(String namespace, String formFieldPath) {
-		if (namespace == null && formFieldPath == null)
+		if (namespace == null && formFieldPath == null) {
 			return;
-		
+		}
 		String nsAndPathTemp = "";
 		if (StringUtils.isNotBlank(namespace) && StringUtils.isNotBlank(formFieldPath)) {
 			nsAndPathTemp = namespace + FORM_NAMESPACE_PATH_SEPARATOR + formFieldPath;
