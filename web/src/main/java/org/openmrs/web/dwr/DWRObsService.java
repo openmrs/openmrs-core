@@ -26,10 +26,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -178,6 +180,42 @@ public class DWRObsService {
 				}
 			}
 			obs.setValueDatetime(obsDateValue);
+		} else if ("CWE".equals(hl7DataType)) {
+			if (valueText != null) {
+				Collection<ConceptAnswer> conceptAnswers = concept.getAnswers(false);
+				int conceptIdFromValueTest;
+				try {
+					conceptIdFromValueTest = Integer.parseInt(valueText);
+				}
+				catch (NumberFormatException e) {
+					log.error("Unable to parse given value text to integer while resolving concept id" + valueText, e);
+					throw new Exception("Can't resolve concept id. Please specify valid id" + valueText);
+				}
+				for (ConceptAnswer answer : conceptAnswers) {
+					if (answer.getAnswerConcept().getId() == conceptIdFromValueTest) {
+						obs.setValueCoded(answer.getAnswerConcept());
+					}
+				}
+			}
+		} else if ("BIT".equals(hl7DataType)) {
+			String booleanConceptId = null;
+			AdministrationService administrationService = Context.getAdministrationService();
+			if ("Yes".equalsIgnoreCase(valueText) || "True".equalsIgnoreCase(valueText) || "1".equals(valueText)) {
+				booleanConceptId = administrationService.getGlobalProperty("concept.true");
+			} else if ("No".equalsIgnoreCase(valueText) || "False".equalsIgnoreCase(valueText) || "0".equals(valueText)) {
+				booleanConceptId = administrationService.getGlobalProperty("concept.false");
+			}
+			Concept booleanConcept = null;
+			if (booleanConceptId != null) {
+				try {
+					booleanConcept = Context.getConceptService().getConcept(Integer.parseInt(booleanConceptId));
+				}
+				catch (NumberFormatException e) {
+					log.error("Unable to parse concept id string to integer to resolve concept" + booleanConceptId, e);
+					throw new Exception("No boolean concept found in the system");
+				}
+			}
+			obs.setValueCoded(booleanConcept);
 		} else {
 			obs.setValueText(valueText);
 		}
