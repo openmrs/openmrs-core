@@ -767,8 +767,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * Helper method to deter instance methods from setting static fields
 	 */
-	private static void setOrderNumberGenerator(OrderNumberGenerator orderNumberGenerator) {
-		OrderServiceImpl.orderNumberGenerator = orderNumberGenerator;
+	private static void setOrderNumberGenerator(OrderNumberGenerator oNG) {
+		orderNumberGenerator = oNG;
 	}
 	
 	/**
