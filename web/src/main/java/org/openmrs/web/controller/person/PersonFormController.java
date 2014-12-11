@@ -139,7 +139,7 @@ public class PersonFormController extends SimpleFormController {
 			Patient patient = (Patient) person;
 			// Redirect if we are not already in the patient form
 			if (!getFormView().contains("patient")) {
-				return new ModelAndView(new RedirectView("../patients/patient.form?patientId=" + patient.getId()));
+				return new ModelAndView(new RedirectView("../person/person.form?patientId=" + patient.getId()));
 			}
 		}
 		
@@ -161,7 +161,7 @@ public class PersonFormController extends SimpleFormController {
 			Patient patient = (Patient) person;
 			// Redirect if we are not already in the patient form
 			if (!getFormView().contains("patient")) {
-				return new ModelAndView(new RedirectView("../patients/patient.form?patientId=" + patient.getId()));
+				return new ModelAndView(new RedirectView("../person/person.form?patientId=" + patient.getId()));
 			}
 		}
 		
