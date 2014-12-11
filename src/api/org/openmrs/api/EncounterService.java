@@ -22,7 +22,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.User;
+import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -165,7 +165,7 @@ public interface EncounterService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     Collection<User> providers, boolean includeVoided);
+	                                     Collection<Person> providers, boolean includeVoided);
 	
 	/**
 	 * Voiding a encounter essentially removes it from circulation

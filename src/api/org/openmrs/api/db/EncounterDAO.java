@@ -22,7 +22,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.User;
+import org.openmrs.Person;
 import org.openmrs.api.EncounterService;
 
 /**
@@ -68,7 +68,7 @@ public interface EncounterDAO {
 	 */
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     Collection<User> providers, boolean includeVoided);
+	                                     Collection<Person> providers, boolean includeVoided);
 	
 	/**
 	 * Save an Encounter Type
