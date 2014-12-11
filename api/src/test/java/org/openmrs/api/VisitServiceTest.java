@@ -940,11 +940,14 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		VisitService vs = Context.getVisitService();
 		Visit visit = vs.getVisit(1);
+		EncounterService es = Context.getEncounterService();
 		
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(new Date());
 		encounter.setPatient(visit.getPatient());
 		encounter.setLocation(visit.getLocation());
+		encounter.setEncounterType(es.getEncounterType(1));
+		
 		visit.addEncounter(encounter);
 		
 		Context.getEncounterService().saveEncounter(encounter);
