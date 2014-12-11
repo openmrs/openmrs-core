@@ -1147,7 +1147,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Integer originalEncounters = encounters.size();
 		
 		// process message
-		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID~d9218f76-6c39-45f4-8efa-4c5c6c199f50^AMRS.ELD.FORMUUID\r"
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID~c156e1a8-6731-4ebd-89ff-d0d1c45eb004^AMRS.ELD.FORMUUID\r"
 		        + "PID|||3^^^^||Beren^John^Bondo||\r"
 		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
 		        + "ORC|RE||||||||20090728165937|1^Super User\r"
@@ -1166,7 +1166,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// check the form uuid
 		Form form = enc.getForm();
-		Assert.assertEquals("d9218f76-6c39-45f4-8efa-4c5c6c199f50", form.getUuid());
+		Assert.assertEquals("c156e1a8-6731-4ebd-89ff-d0d1c45eb004", form.getUuid());
 	}
 	
 	/**
