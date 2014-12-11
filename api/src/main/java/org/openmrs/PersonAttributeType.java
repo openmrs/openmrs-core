@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.BaseAttributeType;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -22,7 +24,7 @@ import org.simpleframework.xml.Root;
  * PersonAttributeType
  */
 @Root(strict = false)
-public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<PersonAttributeType> {
+public class PersonAttributeType extends BaseAttributeType<Person> implements AttributeType<Person>, Comparable<PersonAttributeType> {
 	
 	public static final long serialVersionUID = 2112313431211L;
 	
@@ -166,6 +168,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
+	@Override
 	public Integer getId() {
 		return getPersonAttributeTypeId();
 	}
@@ -174,9 +177,9 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
+	@Override
 	public void setId(Integer id) {
 		setPersonAttributeTypeId(id);
-		
 	}
 	
 	@Override

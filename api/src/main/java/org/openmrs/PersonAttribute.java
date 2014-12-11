@@ -13,19 +13,21 @@
  */
 package org.openmrs;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Date;
-
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.BaseAttribute;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
 
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary information about a
@@ -39,7 +41,7 @@ import org.simpleframework.xml.Root;
  * @see org.openmrs.Attributable
  */
 @Root(strict = false)
-public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
+public class PersonAttribute extends BaseAttribute<PersonAttributeType, Person> implements org.openmrs.attribute.Attribute<PersonAttributeType, Person> {
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
@@ -71,7 +73,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	public PersonAttribute(PersonAttributeType type, String value) {
 		this.attributeType = type;
-		this.value = value;
+		setValue(value);
 	}
 	
 	/**
@@ -124,18 +126,40 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		
 		Class attributeClass = this.getClass();
 		
+		Boolean isObjectWithUUID = false;
+		
 		// loop over all of the selected methods and compare this and other
 		for (String methodAttribute : methods) {
 			try {
-				Method method = attributeClass.getMethod(methodAttribute, new Class[] {});
+				Method method = attributeClass.getMethod(methodAttribute);
+				
+				Class c = method.getReturnType();
+				if (BaseOpenmrsObject.class.isAssignableFrom(method.getReturnType())) {
+					isObjectWithUUID = true;
+				}
 				
 				Object thisValue = method.invoke(this);
 				Object otherValue = method.invoke(otherAttribute);
 				
-				if (otherValue != null) {
-					returnValue &= otherValue.equals(thisValue);
-				}
+				Method[] _methods = method.getReturnType().getMethods();
 				
+				if (otherValue != null) {
+					if (isObjectWithUUID) {
+						
+						Boolean fieldsEquality = true;
+						
+						for (Method m : _methods) {
+							if (m.getName().startsWith("get") && !m.getName().equals("getUuid")) {
+								
+								fieldsEquality = ObjectUtils.equals(m.invoke(thisValue), m.invoke(otherValue));
+								returnValue &= fieldsEquality;
+							}
+						}
+						isObjectWithUUID = false;
+					} else {
+						returnValue &= otherValue.equals(thisValue);
+					}
+				}
 			}
 			catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodAttribute, e);
@@ -191,7 +215,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@Element(data = true, required = false)
 	public String getValue() {
-		return value;
+		return this.value;
 	}
 	
 	/**
@@ -199,7 +223,17 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@Element(data = true, required = false)
 	public void setValue(String value) {
+		super.setValue(value);
+		setValueReferenceInternal(value);
 		this.value = value;
+	}
+	
+	//delete this ovverrided function and check ShortPatientModel line 93 while running ShortPatientFormControllerTest
+	@Override
+	public void setValue(Object value) {
+		super.setValue(value);
+		setValueReferenceInternal(String.valueOf(value));
+		this.value = String.valueOf(value);
 	}
 	
 	/**
@@ -214,8 +248,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		} else if (o != null) {
 			return o.toString();
 		}
-		
-		return this.value;
+		return String.format("%s", getValue());
 	}
 	
 	/**
@@ -245,7 +278,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
 		
-		if (getValue() == null) {
+		if (this.value == null) {
 			return null;
 		}
 		
@@ -337,6 +370,5 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	public void setId(Integer id) {
 		setPersonAttributeId(id);
-		
 	}
 }
