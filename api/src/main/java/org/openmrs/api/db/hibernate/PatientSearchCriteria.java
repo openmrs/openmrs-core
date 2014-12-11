@@ -115,6 +115,8 @@ public class PatientSearchCriteria {
 				criteria.add(prepareCriterionForIdentifier(identifier, identifierTypes, matchIdentifierExactly));
 				break;
 			
+			default:
+				break;
 		}
 		
 		criteria.add(Restrictions.eq("voided", false));
