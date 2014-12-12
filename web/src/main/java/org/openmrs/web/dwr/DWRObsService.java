@@ -102,7 +102,7 @@ public class DWRObsService {
 	 * @param obsDateStr
 	 */
 	public void createObs(Integer personId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr)
-	    throws Exception {
+	        throws Exception {
 		createNewObs(personId, encounterId, null, conceptId, valueText, obsDateStr);
 	}
 	
@@ -117,7 +117,7 @@ public class DWRObsService {
 	 * @param obsDateStr
 	 */
 	public void createNewObs(Integer personId, Integer encounterId, Integer locationId, Integer conceptId, String valueText,
-	                         String obsDateStr) throws Exception {
+	        String obsDateStr) throws Exception {
 		
 		log.info("Create new observation ");
 		
@@ -268,7 +268,7 @@ public class DWRObsService {
 		return objectList;
 	}
 	*/
-	
+
 	/**
 	 * Auto generated method comment
 	 * 
