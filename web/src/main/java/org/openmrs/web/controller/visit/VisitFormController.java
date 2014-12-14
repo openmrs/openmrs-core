@@ -17,7 +17,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.lang.String;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

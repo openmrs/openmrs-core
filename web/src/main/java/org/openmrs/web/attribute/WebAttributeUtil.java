@@ -32,7 +32,6 @@ import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
-import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.web.attribute.handler.FieldGenDatatypeHandler;
 import org.openmrs.web.attribute.handler.WebDatatypeHandler;
 import org.springframework.validation.BindingResult;

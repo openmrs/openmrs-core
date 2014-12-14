@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
-import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;

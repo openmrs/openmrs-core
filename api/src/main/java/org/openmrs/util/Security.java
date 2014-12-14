@@ -13,7 +13,6 @@
  */
 package org.openmrs.util;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;

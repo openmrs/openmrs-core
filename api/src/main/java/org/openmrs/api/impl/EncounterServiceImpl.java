@@ -54,7 +54,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the {@link EncounterService}

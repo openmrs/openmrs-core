@@ -13,7 +13,6 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.customdatatype.SerializingCustomDatatype;
 import org.springframework.stereotype.Component;
 
