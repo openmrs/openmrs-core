@@ -106,8 +106,9 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public Order getOrder(Integer orderId) throws DAOException {
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()) {
 			log.debug("getting order #" + orderId);
+		}
 		
 		return (Order) sessionFactory.getCurrentSession().get(Order.class, orderId);
 	}
@@ -122,23 +123,28 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Order.class);
 		
-		if (orderType != null)
+		if (orderType != null) {
 			crit.add(Restrictions.eq("orderType", orderType));
+		}
 		
-		if (patients.size() > 0)
+		if (patients.size() > 0) {
 			crit.add(Restrictions.in("patient", patients));
+		}
 		
-		if (concepts.size() > 0)
+		if (concepts.size() > 0) {
 			crit.add(Restrictions.in("concept", concepts));
+		}
 		
 		// we are not checking the other status's here because they are
 		// algorithm dependent  
 		
-		if (orderers.size() > 0)
+		if (orderers.size() > 0) {
 			crit.add(Restrictions.in("orderer", orderers));
+		}
 		
-		if (encounters.size() > 0)
+		if (encounters.size() > 0) {
 			crit.add(Restrictions.in("encounter", encounters));
+		}
 		
 		crit.addOrder(org.hibernate.criterion.Order.desc("dateActivated"));
 		

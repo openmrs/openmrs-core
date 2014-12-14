@@ -129,8 +129,9 @@ public class OrderValidator implements Validator {
 	
 	private void validateSamePatientInOrderAndEncounter(Order order, Errors errors) {
 		if (order.getEncounter() != null && order.getPatient() != null) {
-			if (!order.getEncounter().getPatient().equals(order.getPatient()))
+			if (!order.getEncounter().getPatient().equals(order.getPatient())) {
 				errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
+			}
 		}
 	}
 	
