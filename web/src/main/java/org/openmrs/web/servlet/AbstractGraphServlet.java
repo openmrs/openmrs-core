@@ -48,12 +48,16 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 			try {
 				width = Integer.parseInt(request.getParameter("width"));
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+				//Exception occured during width = Integer.parseInt(request.getParameter("width"));
+			}
 			
 			try {
 				height = Integer.parseInt(request.getParameter("height"));
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+				//Exception occured during height = Integer.parseInt(request.getParameter("height"));
+			}
 			
 			if (request.getParameter("mimeType") != null) {
 				mimeType = request.getParameter("mimeType");
