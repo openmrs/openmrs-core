@@ -15,15 +15,11 @@ package org.openmrs.validator;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
 import org.springframework.validation.ValidationUtils;
 import org.openmrs.annotation.Handler;
 import org.springframework.beans.factory.annotation.Autowired;

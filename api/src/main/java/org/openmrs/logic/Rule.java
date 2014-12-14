@@ -16,7 +16,6 @@ package org.openmrs.logic;
 import java.util.Map;
 import java.util.Set;
 
-import org.openmrs.Patient;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;

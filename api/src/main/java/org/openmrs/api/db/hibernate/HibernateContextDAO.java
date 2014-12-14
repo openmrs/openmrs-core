@@ -14,7 +14,6 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;

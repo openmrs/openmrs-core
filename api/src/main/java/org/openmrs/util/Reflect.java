@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.azeckoski.reflectutils.ClassData;
-import org.springframework.util.TypeUtils;
 
 /**
  * This class has convenience methods to find the fields on a class and superclass as well as
