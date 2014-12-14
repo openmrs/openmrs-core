@@ -259,8 +259,9 @@ public class HibernatePersonDAO implements PersonDAO {
 		
 		personSearchCriteria.addAliasForName(criteria);
 		personSearchCriteria.addAliasForAttribute(criteria);
-		if (voided == null || voided == false)
+		if (voided == null || voided == false) {
 			criteria.add(Restrictions.eq("personVoided", false));
+		}
 		if (dead != null) {
 			criteria.add(Restrictions.eq("dead", dead));
 		}

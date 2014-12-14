@@ -134,12 +134,14 @@ public class WebModuleUtil {
 			
 			String realPath = getRealPath(servletContext);
 			
-			if (realPath == null)
+			if (realPath == null) {
 				realPath = System.getProperty("user.dir");
+			}
 			
 			File webInf = new File(realPath + "/WEB-INF".replace("/", File.separator));
-			if (!webInf.exists())
+			if (!webInf.exists()) {
 				webInf.mkdir();
+			}
 			
 			copyModuleMessagesIntoWebapp(mod, realPath);
 			log.debug("Done copying messages");
