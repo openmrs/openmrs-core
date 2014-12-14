@@ -74,9 +74,8 @@ public class ChainingInterceptor implements Interceptor {
 	        String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
-		for (Interceptor i : interceptors)
-		// must be in this order so that java doesn't skip the method call for optimizations
-		{
+		for (Interceptor i : interceptors) {
+			// must be in this order so that java doesn't skip the method call for optimizations
 			objectChanged = i.onFlushDirty(entity, id, currentState, previousState, propertyNames, types) || objectChanged;
 		}
 		
