@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import org.hibernate.cfg.Environment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -54,6 +55,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import static org.junit.Assert.assertEquals;
@@ -83,6 +85,16 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ENC_INITIAL_DATA_XML);
+	}
+	
+	@Override
+	public Properties getRuntimeProperties() {
+		Properties props = super.getRuntimeProperties();
+		String url = props.getProperty(Environment.URL);
+		if (url.contains("jdbc:h2:") && !url.contains(";MVCC=TRUE")) {
+			props.setProperty(Environment.URL, url + ";MVCC=TRUE");
+		}
+		return props;
 	}
 	
 	/**
