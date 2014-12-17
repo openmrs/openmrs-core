@@ -16,13 +16,33 @@ package org.openmrs.validator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.ImplementationId;
-import org.openmrs.api.AdministrationService;
+import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+/**
+ * Tests methods on the {@link ImplementationIdValidator} class.
+ */
+
 public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
+	
+	/**
+	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should throw APIException if ImplementationId is null", method = "validate(Object,Errors)")
+	public void validate_shouldThrowAPIExceptionIfImplementationIdIsNUll() {
+		try {
+			new ImplementationIdValidator().validate(null, null);
+			Assert.fail();
+		}
+		catch (APIException e) {
+			Assert.assertEquals(e.getMessage(), Context.getMessageSourceService().getMessage("ImplementationId.null"));
+		}
+	}
 	
 	/**
 	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
@@ -78,7 +98,10 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("description"));
 	}
 	
-	@Test()
+	/**
+	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail if given empty implementationId object", method = "validate(Object,Errors)")
 	public void validate_shouldFailIfGivenEmptyImplementationIdObject() throws Exception {
 		// save a blank impl id. exception thrown
@@ -92,7 +115,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link AdministrationService#setImplementationId(ImplementationId)}
+	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
 	 */
 	@Test
 	@Verifies(value = "should fail if given a caret in the implementationId code", method = "validate(Object,Errors)")
@@ -106,12 +129,12 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		new ImplementationIdValidator().validate(invalidId, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("implementationId"));
-		Assert.assertEquals("ImplementationId.implementationId.invalidcharacter", errors.getFieldError("implementationId")
+		Assert.assertEquals("ImplementationId.implementationId.invalidCharacter", errors.getFieldError("implementationId")
 		        .getCode());
 	}
 	
 	/**
-	 * @see {@link AdministrationService#setImplementationId(ImplementationId)}
+	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
 	 */
 	@Test
 	@Verifies(value = "should fail if given a pipe in the implementationId code", method = "validate(Object,Errors)")
@@ -126,7 +149,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 		new ImplementationIdValidator().validate(invalidId2, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("implementationId"));
-		Assert.assertEquals("ImplementationId.implementationId.invalidcharacter", errors.getFieldError("implementationId")
+		Assert.assertEquals("ImplementationId.implementationId.invalidCharacter", errors.getFieldError("implementationId")
 		        .getCode());
 	}
 	
