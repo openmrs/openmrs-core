@@ -796,6 +796,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ENABLE_VISITS = "visits.enabled";
 	
+	public static final String GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS = "visits.allowOverlappingVisits";
+	
 	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES = "patient_identifier.importantTypes";
