@@ -283,6 +283,7 @@ public class ConceptFormController extends SimpleFormController {
 					errors.reject("concept", "Concept.concepts.locked");
 				}
 				catch (DuplicateConceptNameException e) {
+					errors.popNestedPath();
 					log.error("Tried to save concept with a duplicate name", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.rejectValue("concept", "Concept.name.duplicate");
