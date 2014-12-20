@@ -278,16 +278,19 @@ public class ConceptFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 				}
 				catch (ConceptsLockedException cle) {
+					errors.popNestedPath();
 					log.error("Tried to save concept while concepts were locked", cle);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked");
 					errors.reject("concept", "Concept.concepts.locked");
 				}
 				catch (DuplicateConceptNameException e) {
+					errors.popNestedPath();
 					log.error("Tried to save concept with a duplicate name", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.rejectValue("concept", "Concept.name.duplicate");
 				}
 				catch (APIException e) {
+					errors.popNestedPath();
 					log.error("Error while trying to save concept", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.reject("concept", "Concept.cannot.save");
