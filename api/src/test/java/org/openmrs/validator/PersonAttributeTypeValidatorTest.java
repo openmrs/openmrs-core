@@ -114,4 +114,42 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("description"));
 	}
 	
+	/**
+	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("name");
+		type.setFormat("java.lang.String");
+		type.setRetireReason("retireReason");
+		
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		PersonAttributeType type = new PersonAttributeType();
+		type
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setFormat("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("format"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

@@ -92,4 +92,43 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasErrors());
 	}
+	
+	/**
+	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		ConceptClass cc = new ConceptClass();
+		cc.setName("name");
+		cc.setDescription("some text");
+		cc.setRetireReason("some text");
+		
+		Errors errors = new BindException(cc, "cc");
+		new ConceptClassValidator().validate(cc, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		ConceptClass cc = new ConceptClass();
+		cc
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		cc
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		cc
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(cc, "cc");
+		new ConceptClassValidator().validate(cc, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

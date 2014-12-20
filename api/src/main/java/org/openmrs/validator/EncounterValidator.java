@@ -65,6 +65,8 @@ public class EncounterValidator implements Validator {
 	 * @should fail if encounter dateTime is after current dateTime
 	 * @should fail if encounter dateTime is before visit startDateTime
 	 * @should fail if encounter dateTime is after visit stopDateTime
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
@@ -106,5 +108,6 @@ public class EncounterValidator implements Validator {
 				    "The encounter datetime should be between the visit start and stop dates.");
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 }

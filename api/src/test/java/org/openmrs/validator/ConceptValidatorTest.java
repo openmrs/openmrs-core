@@ -372,4 +372,38 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		//the second mapping should be rejected
 		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
 	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		concept.setVersion("version");
+		concept.setRetireReason("retireReason");
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		concept.setVersion("too long text too long text too long text too long text");
+		concept
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertTrue(errors.hasFieldErrors("version"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

@@ -43,6 +43,8 @@ public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<L
 	 * @should fail validation if name already in use
 	 * @should pass validation if the location attribute type description is null or empty or whitespace
 	 * @should pass validation if all fields are correct
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -57,6 +59,8 @@ public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<L
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "LocationAttributeType.error.nameEmpty");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "datatypeClassname",
+		    "preferredHandlerClassname", "retireReason");
 	}
 	
 }

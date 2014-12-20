@@ -56,6 +56,8 @@ public class PersonAddressValidator implements Validator {
 	 * @should pass if endDate is null
 	 * @should fail if required fields are empty
 	 * @should pass if required fields are not empty
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object object, Errors errors) {
 		//TODO Validate other aspects of the personAddress object
@@ -125,5 +127,9 @@ public class PersonAddressValidator implements Validator {
 				}
 			}
 		}
+		
+		ValidateUtil.validateFieldLengths(errors, object.getClass(), "address1", "address2", "cityVillage", "stateProvince",
+		    "postalCode", "country", "latitude", "longitude", "voidReason", "countyDistrict", "address3", "address4",
+		    "address5", "address6");
 	}
 }

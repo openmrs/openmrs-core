@@ -53,6 +53,8 @@ public class ConceptNameTagValidator implements Validator {
 	 * @should fail validation if tag is null or empty or whitespace
 	 * @should pass validation if tag does not exist and is not null, empty or whitespace
 	 * @should fail if the concept name tag is a duplicate
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	
 	public void validate(Object obj, Errors errors) {
@@ -68,6 +70,7 @@ public class ConceptNameTagValidator implements Validator {
 					errors.rejectValue("tag", "Concept.name.tag.duplicate");
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "tag", "voidReason");
 		}
 	}
 }

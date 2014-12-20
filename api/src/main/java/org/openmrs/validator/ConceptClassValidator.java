@@ -53,6 +53,8 @@ public class ConceptClassValidator implements Validator {
 	 * @should fail validation if name is already exist in non retired concept class
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	
 	public void validate(Object obj, Errors errors) {
@@ -67,6 +69,7 @@ public class ConceptClassValidator implements Validator {
 					errors.rejectValue("name", "conceptclass.duplicate.name");
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "retireReason");
 		}
 	}
 	

@@ -69,4 +69,36 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasErrors());
 	}
+	
+	/**
+	 * @see {@link FieldTypeValidator#validate(Object,Errors)}
+	 *
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		FieldType type = new FieldType();
+		type.setName("soccer");
+		
+		Errors errors = new BindException(type, "type");
+		new FieldTypeValidator().validate(type, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link FieldTypeValidator#validate(Object,Errors)}
+	 *
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		FieldType type = new FieldType();
+		type.setName("too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(type, "type");
+		new FieldTypeValidator().validate(type, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+	}
 }

@@ -161,4 +161,60 @@ public class FieldValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
+	/**
+	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Field ff = new Field();
+		FieldType ft = new FieldType();
+		Boolean retired = new Boolean(false);
+		ft.setId(0xdeadcafe);
+		ff.setFieldType(ft);
+		ff.setName("name");
+		ff.setRetired(retired);
+		Boolean multiple = new Boolean(false);
+		ff.setSelectMultiple(multiple);
+		ff.setTableName("tableName");
+		ff.setAttributeName("attributeName");
+		ff.setRetireReason("retireReason");
+		
+		Errors errors = new BindException(ff, "field");
+		new FieldValidator().validate(ff, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link FieldValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Field ff = new Field();
+		FieldType ft = new FieldType();
+		Boolean retired = new Boolean(false);
+		ft.setId(0xdeadcafe);
+		ff.setFieldType(ft);
+		ff
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		ff.setRetired(retired);
+		Boolean multiple = new Boolean(false);
+		ff.setSelectMultiple(multiple);
+		ff
+		        .setTableName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		ff
+		        .setAttributeName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		ff
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(ff, "field");
+		new FieldValidator().validate(ff, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("tableName"));
+		Assert.assertTrue(errors.hasFieldErrors("attributeName"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

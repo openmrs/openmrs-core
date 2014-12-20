@@ -189,6 +189,8 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if PersonName.prefix is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldFailValidationIfPersonNamePrefixIsTooLong() throws Exception {
 		PersonName personName = new PersonName();
+		personName.setGivenName("givenName");
+		personName.setFamilyName("familyName");
 		personName
 		        .setPrefix("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
 		Errors errors = new BindException(personName, "prefix");
@@ -309,6 +311,8 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if PersonName.familyNamePrefix is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldFailValidationIfPersonNameFamilyNamePrefixIsTooLong() throws Exception {
 		PersonName personName = new PersonName();
+		personName.setGivenName("givenName");
+		personName.setFamilyName("familyName");
 		personName
 		        .setFamilyNamePrefix("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
 		Errors errors = new BindException(personName, "familyNamePrefix");
@@ -429,6 +433,8 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if PersonName.familyNameSuffix is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldFailValidationIfPersonNameFamilyNameSuffixIsTooLong() throws Exception {
 		PersonName personName = new PersonName();
+		personName.setGivenName("givenName");
+		personName.setFamilyName("familyName");
 		personName
 		        .setFamilyNameSuffix("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
 		Errors errors = new BindException(personName, "familyNameSuffix");
@@ -469,6 +475,8 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if PersonName.degree is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
 	public void validate_shouldFailValidationIfPersonNameDegreeIsTooLong() throws Exception {
 		PersonName personName = new PersonName();
+		personName.setGivenName("givenName");
+		personName.setFamilyName("familyName");
 		personName
 		        .setDegree("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"); // 100 characters long
 		Errors errors = new BindException(personName, "degree");
@@ -671,5 +679,60 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		new PersonNameValidator().validate(personName, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PersonNameValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		PersonName personName = new PersonName();
+		personName.setPrefix("prefix");
+		personName.setGivenName("givenName");
+		personName.setMiddleName("middleName");
+		personName.setFamilyNamePrefix("familyNamePrefix");
+		personName.setFamilyName("familyName");
+		personName.setFamilyName2("familyName");
+		personName.setFamilyNameSuffix("familyNameSuffix");
+		personName.setDegree("degree");
+		personName.setVoidReason("voidReason");
+		
+		Errors errors = new BindException(personName, "personName");
+		new PersonNameValidator().validate(personName, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PersonNameValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		PersonName personName = new PersonName();
+		personName.setPrefix("too long text too long text too long text too long text");
+		personName.setGivenName("too long text too long text too long text too long text");
+		personName.setMiddleName("too long text too long text too long text too long text");
+		personName.setFamilyName("too long text too long text too long text too long text");
+		personName.setFamilyNamePrefix("too long text too long text too long text too long text");
+		personName.setFamilyName("too long text too long text too long text too long text");
+		personName.setFamilyName2("too long text too long text too long text too long text");
+		personName.setFamilyNameSuffix("too long text too long text too long text too long text");
+		personName.setDegree("too long text too long text too long text too long text");
+		personName
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(personName, "personName");
+		new PersonNameValidator().validate(personName, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("prefix"));
+		Assert.assertTrue(errors.hasFieldErrors("givenName"));
+		Assert.assertTrue(errors.hasFieldErrors("familyNamePrefix"));
+		Assert.assertTrue(errors.hasFieldErrors("familyName"));
+		Assert.assertTrue(errors.hasFieldErrors("familyName2"));
+		Assert.assertTrue(errors.hasFieldErrors("familyNameSuffix"));
+		Assert.assertTrue(errors.hasFieldErrors("degree"));
+		Assert.assertTrue(errors.hasFieldErrors("middleName"));
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

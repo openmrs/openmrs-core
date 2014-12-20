@@ -72,6 +72,8 @@ public class PatientProgramValidator implements Validator {
 	 * @should pass if a patient is in multiple states in different work flows
 	 * @should pass for a valid program
 	 * @should pass for patient states that have the same start dates in the same work flow
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled()) {
@@ -216,6 +218,7 @@ public class PatientProgramValidator implements Validator {
 				}
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 		//
 	}
 }

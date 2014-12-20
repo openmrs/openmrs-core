@@ -15,6 +15,7 @@ package org.openmrs.validator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.notification.Alert;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -22,7 +23,7 @@ import org.springframework.validation.Errors;
  * Tests methods on the {@link AlertValidator} class.
  *
  */
-public class AlertValidatorTest {
+public class AlertValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see AlertValidator#validate(Object,Errors)
@@ -61,5 +62,36 @@ public class AlertValidatorTest {
 		Errors errors = new BindException(alert, "alert");
 		new AlertValidator().validate(alert, errors);
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * Test for all the values being set
+	 * @see AlertValidator#validate(Object,Errors)
+	 * @verifies pass validation if field lengths are correct
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Alert alert = new Alert();
+		alert.setText("text");
+		
+		Errors errors = new BindException(alert, "alert");
+		new AlertValidator().validate(alert, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * Test for all the values being set
+	 * @see AlertValidator#validate(Object,Errors)
+	 * @verifies fail validation if field lengths are not correct
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Alert alert = new Alert();
+		alert
+		        .setText("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(alert, "alert");
+		new AlertValidator().validate(alert, errors);
+		Assert.assertTrue(errors.hasFieldErrors("text"));
 	}
 }

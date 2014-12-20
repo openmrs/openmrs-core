@@ -52,11 +52,14 @@ public class PatientIdentifierValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		PatientIdentifier pi = (PatientIdentifier) obj;
 		try {
 			validateIdentifier(pi);
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "identifier", "voidReason");
 		}
 		catch (Exception e) {
 			errors.reject(e.getMessage());

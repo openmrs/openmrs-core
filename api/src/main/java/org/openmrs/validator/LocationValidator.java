@@ -57,6 +57,8 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 	 * @should pass validation if retired location is given retired reason
 	 * @should fail validation if parent location creates a loop
 	 * @should fail validation if name is exist in non retired locations
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Location location = (Location) obj;
@@ -88,6 +90,9 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 					break;
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "address1", "address2",
+			    "cityVillage", "stateProvince", "country", "postalCode", "latitude", "longitude", "countyDistrict",
+			    "address3", "address4", "address5", "address6", "retireReason");
 		}
 		
 		super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());

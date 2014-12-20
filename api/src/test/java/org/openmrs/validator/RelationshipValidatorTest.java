@@ -20,6 +20,7 @@ import org.openmrs.Relationship;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MapBindingResult;
 
@@ -56,5 +57,35 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		new RelationshipValidator().validate(relationship, errors);
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Relationship)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Relationship relationship = new Relationship(1);
+		relationship.setVoidReason("voidReason");
+		
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
+		new RelationshipValidator().validate(relationship, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Relationship)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Relationship relationship = new Relationship(1);
+		relationship
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(relationship, "relationship");
+		new RelationshipValidator().validate(relationship, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("voidReason"));
 	}
 }

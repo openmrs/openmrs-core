@@ -55,6 +55,8 @@ public class PersonValidator implements Validator {
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should pass validation if gender is blank for Persons
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -68,19 +70,23 @@ public class PersonValidator implements Validator {
 		
 		Person person = (Person) target;
 		
+		int index = 0;
 		boolean atLeastOneNonVoidPersonNameLeft = false;
 		for (PersonName personName : person.getNames()) {
+			errors.pushNestedPath("names[" + index + "]");
 			personNameValidator.validate(personName, errors);
 			if (!personName.isVoided()) {
 				atLeastOneNonVoidPersonNameLeft = true;
 			}
+			errors.popNestedPath();
+			index++;
 		}
 		if (!person.isVoided() && !atLeastOneNonVoidPersonNameLeft) {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
 		
 		//validate the personAddress
-		int index = 0;
+		index = 0;
 		for (PersonAddress address : person.getAddresses()) {
 			try {
 				errors.pushNestedPath("addresses[" + index + "]");
@@ -101,7 +107,7 @@ public class PersonValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "causeOfDeath", "Person.dead.causeOfDeathNull");
 		}
 		
-		ValidateUtil.validateFieldLengths(errors, Person.class, "gender");
+		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
 	}
 	
 	/**

@@ -36,6 +36,8 @@ public class EncounterRoleValidator extends RequireNameValidator {
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should fail validation if name is duplicate
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);
@@ -48,6 +50,7 @@ public class EncounterRoleValidator extends RequireNameValidator {
 					    "Specified Encounter Role name already exists, please specify another ");
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "retireReason");
 		}
 	}
 }

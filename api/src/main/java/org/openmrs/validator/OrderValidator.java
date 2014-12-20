@@ -70,6 +70,8 @@ public class OrderValidator implements Validator {
 	 * @should pass validation if the class of the order is a subclass of orderType.javaClass
 	 * @should pass validation if all fields are correct
 	 * @should not allow a future dateActivated
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Order order = (Order) obj;
@@ -92,6 +94,9 @@ public class OrderValidator implements Validator {
 			validateOrderTypeClass(order, errors);
 			validateDateActivated(order, errors);
 			validateScheduledDate(order, errors);
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "orderReasonNonCoded", "accessionNumber",
+			    "commentToFulfiller", "voidReason");
+			
 		}
 	}
 	

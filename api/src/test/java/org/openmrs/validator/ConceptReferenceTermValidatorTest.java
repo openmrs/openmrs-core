@@ -285,4 +285,49 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 		//the term for second mapping should be rejected
 		Assert.assertEquals(true, errors.hasFieldErrors("conceptReferenceTermMaps[1].termB"));
 	}
+	
+	/**
+	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term.setName("name");
+		term.setCode("code");
+		term.setConceptSource(Context.getConceptService().getConceptSource(1));
+		term.setVersion("version");
+		term.setDescription("Description");
+		term.setRetireReason("RetireReason");
+		Errors errors = new BindException(term, "term");
+		new ConceptReferenceTermValidator().validate(term, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		ConceptReferenceTerm term = new ConceptReferenceTerm();
+		term
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		term
+		        .setCode("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		term.setConceptSource(Context.getConceptService().getConceptSource(1));
+		term
+		        .setVersion("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		term
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		term
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(term, "term");
+		new ConceptReferenceTermValidator().validate(term, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		Assert.assertEquals(true, errors.hasFieldErrors("code"));
+		Assert.assertEquals(true, errors.hasFieldErrors("version"));
+		Assert.assertEquals(true, errors.hasFieldErrors("description"));
+		Assert.assertEquals(true, errors.hasFieldErrors("retireReason"));
+	}
 }

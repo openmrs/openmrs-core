@@ -3,6 +3,7 @@ package org.openmrs.validator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Role;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -10,7 +11,7 @@ import org.springframework.validation.Errors;
 /**
  * Tests methods on the {@link RoleValidator} class.
  */
-public class RoleValidatorTest {
+public class RoleValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link RoleValidator#validate(Object,Errors)}
@@ -98,5 +99,39 @@ public class RoleValidatorTest {
 		new RoleValidator().validate(role, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RoleValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Role role = new Role();
+		role.setRole("Bowling race car driver");
+		role.setDescription("description");
+		
+		Errors errors = new BindException(role, "type");
+		new RoleValidator().validate(role, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RoleValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Role role = new Role();
+		role
+		        .setRole("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		role
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(role, "type");
+		new RoleValidator().validate(role, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("role"));
 	}
 }

@@ -260,4 +260,53 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		userValidator.validate(null, errors);
 		Assert.assertTrue(true);
 	}
+	
+	/**
+	 * @see {@link UserValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		User user = new User();
+		user.setUsername("test");
+		user.setSystemId("systemId");
+		user.setSecretQuestion("secretQuestion");
+		user.setRetireReason("retireReason");
+		user.setPerson(new Person(999));
+		user.getPerson().addName(new PersonName("Users", "Need", "People"));
+		user.getPerson().setGender("F");
+		
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link UserValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		User user = new User();
+		user
+		        .setUsername("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		user
+		        .setSystemId("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		user
+		        .setSecretQuestion("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		user
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		user.setPerson(new Person(999));
+		user.getPerson().addName(new PersonName("Users", "Need", "People"));
+		user.getPerson().setGender("F");
+		
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("username"));
+		Assert.assertTrue(errors.hasFieldErrors("systemId"));
+		Assert.assertTrue(errors.hasFieldErrors("secretQuestion"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

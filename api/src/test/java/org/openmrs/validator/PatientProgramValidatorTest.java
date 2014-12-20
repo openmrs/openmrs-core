@@ -380,4 +380,47 @@ public class PatientProgramValidatorTest extends BaseContextSensitiveTest {
 		new PatientProgramValidator().validate(program, errors);
 		Assert.assertTrue(errors.hasFieldErrors("dateEnrolled"));
 	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Patient patient = Context.getPatientService().getPatient(6);
+		
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		pp.setDateEnrolled(new Date());
+		
+		pp.setVoidReason("voidReason");
+		
+		BindException errors = new BindException(pp, "program");
+		new PatientProgramValidator().validate(pp, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		Patient patient = Context.getPatientService().getPatient(6);
+		
+		PatientProgram pp = new PatientProgram();
+		pp.setPatient(patient);
+		pp.setProgram(pws.getProgram(1));
+		pp.setDateEnrolled(new Date());
+		
+		pp
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		BindException errors = new BindException(pp, "program");
+		new PatientProgramValidator().validate(pp, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("voidReason"));
+	}
 }

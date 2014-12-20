@@ -85,6 +85,8 @@ public class ConceptValidator implements Validator {
 	 *         the system locale
 	 * @should pass for a new concept with a map created with deprecated concept map methods
 	 * @should pass for an edited concept with a map created with deprecated concept map methods
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -246,5 +248,6 @@ public class ConceptValidator implements Validator {
 				index++;
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "version", "retireReason");
 	}
 }

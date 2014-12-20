@@ -60,6 +60,8 @@ public class FieldValidator implements Validator {
 	 * @should fail if selectMultiple is null
 	 * @should fail if retired is null
 	 * @should pass if name is ok and fieldType, selectMultiple, and retired are non-null
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 * should not fail if fieldType is null
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
@@ -80,5 +82,6 @@ public class FieldValidator implements Validator {
 		if (field.getRetired() == null) {
 			errors.rejectValue("retired", "error.general");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "tableName", "attributeName", "retireReason");
 	}
 }

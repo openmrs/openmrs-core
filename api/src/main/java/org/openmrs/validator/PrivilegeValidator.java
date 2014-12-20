@@ -50,6 +50,8 @@ public class PrivilegeValidator implements Validator {
 	 * @should fail validation if privilege is null or empty or whitespace
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Privilege privilege = (Privilege) obj;
@@ -57,6 +59,7 @@ public class PrivilegeValidator implements Validator {
 			errors.rejectValue("privilege", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "privilege", "error.privilege");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "privilege", "description");
 		}
 	}
 	
