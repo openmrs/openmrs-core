@@ -160,6 +160,8 @@ public class ArdenServiceImpl implements ArdenService {
 			w.write("import java.util.List;\n");
 			w.write("import java.util.Map;\n");
 			w.write("import java.util.Set;\n");
+			w.write("import java.util.Collection;\n");
+			w.write("import java.util.Collections;\n");
 			
 			w.write("import org.apache.commons.logging.Log;\n");
 			w.write("import org.apache.commons.logging.LogFactory;\n");
@@ -408,9 +410,12 @@ public class ArdenServiceImpl implements ArdenService {
 			w.write("\t\t\tif(concept == null){\n");
 			w.write("\t\t\t\tcontinue;\n");
 			w.write("\t\t\t}\n");
-			w.write("\t\tString elementString = ((ConceptName) concept.getNames().toArray()[0]).getName();\n");
-			w.write("\t\tif(keyString.equalsIgnoreCase(elementString)){\n");
-			w.write("\t\t\treturn true;\n");
+			w.write("\t\t\tCollection<ConceptName> cns = concept.getNames();\n");
+			w.write("\t\t\tfor(ConceptName cn:cns) {\n");
+			w.write("\t\t\t\tString elementString = cn.getName();\n");
+			w.write("\t\t\t\tif(keyString.equalsIgnoreCase(elementString)){\n");
+			w.write("\t\t\t\t\treturn true;\n");
+			w.write("\t\t\t\t}\n");
 			w.write("\t\t}\n");
 			w.write("\t\t}\n");
 			w.write("\t\treturn false;\n");
