@@ -37,7 +37,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	public static final long serialVersionUID = 1231231343212L;
 	
-	private static final Log log = LogFactory.getLog(DataExportReportObject.class);
+	private static final Log LOGGER = LogFactory.getLog(DataExportReportObject.class);
 	
 	private List<Integer> patientIds = new Vector<Integer>();
 	
@@ -166,7 +166,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 				sb.append(columns.get(i).toTemplateString());
 			}
 		} else {
-			log.warn("Report has column size less than 1");
+			LOGGER.warn("Report has column size less than 1");
 		}
 		
 		// closing inner loop

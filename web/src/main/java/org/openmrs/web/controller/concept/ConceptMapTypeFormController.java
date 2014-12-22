@@ -42,7 +42,7 @@ public class ConceptMapTypeFormController {
 	/**
 	 * Logger for this class
 	 */
-	private static final Log log = LogFactory.getLog(ConceptMapTypeFormController.class);
+	private static final Log LOGGER = LogFactory.getLog(ConceptMapTypeFormController.class);
 	
 	private static final String CONCEPT_MAP_TYPE_LIST_URL = "/admin/concepts/conceptMapTypeList";
 	
@@ -104,15 +104,15 @@ public class ConceptMapTypeFormController {
 		if (!result.hasErrors()) {
 			try {
 				Context.getConceptService().saveConceptMapType(conceptMapType);
-				if (log.isDebugEnabled()) {
-					log.debug("Saved concept map type: " + conceptMapType.toString());
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Saved concept map type: " + conceptMapType.toString());
 				}
 				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptMapType.saved", WebRequest.SCOPE_SESSION);
 				
 				return "redirect:" + CONCEPT_MAP_TYPE_LIST_URL + ".list";
 			}
 			catch (APIException e) {
-				log.error("Error while saving concept map type(s)", e);
+				LOGGER.error("Error while saving concept map type(s)", e);
 				request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "ConceptMapType.save.error", WebRequest.SCOPE_SESSION);
 			}
 		}
@@ -140,8 +140,8 @@ public class ConceptMapTypeFormController {
 		
 		try {
 			Context.getConceptService().retireConceptMapType(conceptMapType, retireReason);
-			if (log.isDebugEnabled()) {
-				log.debug("Retired concept map type with id: " + conceptMapType.getId());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Retired concept map type with id: " + conceptMapType.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.retired"), WebRequest.SCOPE_SESSION);
@@ -149,7 +149,7 @@ public class ConceptMapTypeFormController {
 			return "redirect:" + CONCEPT_MAP_TYPE_LIST_URL + ".list";
 		}
 		catch (APIException e) {
-			log.error("Error occurred while attempting to retire concept map type", e);
+			LOGGER.error("Error occurred while attempting to retire concept map type", e);
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.retire.error"), WebRequest.SCOPE_SESSION);
 		}
@@ -171,8 +171,8 @@ public class ConceptMapTypeFormController {
 		
 		try {
 			Context.getConceptService().unretireConceptMapType(conceptMapType);
-			if (log.isDebugEnabled()) {
-				log.debug("Unretired concept map type with id: " + conceptMapType.getId());
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Unretired concept map type with id: " + conceptMapType.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.unretired"), WebRequest.SCOPE_SESSION);
@@ -180,7 +180,7 @@ public class ConceptMapTypeFormController {
 			return "redirect:" + CONCEPT_MAP_TYPE_LIST_URL + ".list";
 		}
 		catch (APIException e) {
-			log.error("Error occurred while attempting to unretire concept map type", e);
+			LOGGER.error("Error occurred while attempting to unretire concept map type", e);
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.unretire.error"), WebRequest.SCOPE_SESSION);
 		}
@@ -201,15 +201,15 @@ public class ConceptMapTypeFormController {
 		Integer id = conceptMapType.getId();
 		try {
 			Context.getConceptService().purgeConceptMapType(conceptMapType);
-			if (log.isDebugEnabled()) {
-				log.debug("Purged concept map type with id: " + id);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Purged concept map type with id: " + id);
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.purged"), WebRequest.SCOPE_SESSION);
 			return "redirect:" + CONCEPT_MAP_TYPE_LIST_URL + ".list";
 		}
 		catch (APIException e) {
-			log.warn("Error occurred while attempting to purge concept map type", e);
+			LOGGER.warn("Error occurred while attempting to purge concept map type", e);
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.purge.error"), WebRequest.SCOPE_SESSION);
 		}
