@@ -144,7 +144,6 @@ public class FieldFormController extends SimpleFormController {
 		String defaultVerbose = "false";
 		
 		if (Context.isAuthenticated()) {
-			//map.put("fieldTypes", es.getFieldTypes());
 			map.put("fieldTypes", fs.getAllFieldTypes());
 			if (field.getConcept() != null) {
 				map.put("conceptName", field.getConcept().getName(locale));

@@ -46,8 +46,6 @@ public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHand
 				optionHeader = "";
 			}
 			
-			//HttpServletRequest request = (HttpServletRequest)this.fieldGenTag.getPageContext().getRequest();
-			
 			ConceptService cs = Context.getConceptService();
 			List<Drug> drugs = cs.getAllDrugs();
 			Collections.sort(drugs, new DrugsByNameComparator());

@@ -74,7 +74,6 @@ public class Format {
 		} else if (type == FORMAT_TYPE.TIME) {
 			dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
 		} else {
-			//if (type == FORMAT_TYPE.DATE) (default)
 			dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		}
 		return date == null ? "" : dateFormat.format(date);
