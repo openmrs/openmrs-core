@@ -877,6 +877,49 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies pass if the existing drug order matches the concept and there is no drug on the previous order
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldPassIfTheExistingDrugOrderMatchesTheConceptAndThereIsNoDrugOnThePreviousOrder()
+	        throws Exception {
+		DrugOrder orderToDiscontinue = new DrugOrder();
+		orderToDiscontinue.setAction(Action.NEW);
+		orderToDiscontinue.setPatient(Context.getPatientService().getPatient(7));
+		orderToDiscontinue.setConcept(Context.getConceptService().getConcept(5497));
+		orderToDiscontinue.setCareSetting(orderService.getCareSetting(1));
+		orderToDiscontinue.setOrderer(orderService.getOrder(1).getOrderer());
+		orderToDiscontinue.setEncounter(encounterService.getEncounter(3));
+		orderToDiscontinue.setDateActivated(new Date());
+		orderToDiscontinue.setScheduledDate(new Date());
+		orderToDiscontinue.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		orderToDiscontinue.setEncounter(encounterService.getEncounter(3));
+		orderToDiscontinue.setOrderType(orderService.getOrderType(17));
+		
+		orderToDiscontinue.setDrug(null);
+		orderToDiscontinue.setDosingType(FreeTextDosingInstructions.class);
+		orderToDiscontinue.setDosingInstructions("instructions");
+		orderToDiscontinue.setOrderer(providerService.getProvider(1));
+		orderToDiscontinue.setDosingInstructions("2 for 5 days");
+		orderToDiscontinue.setQuantity(10.0);
+		orderToDiscontinue.setQuantityUnits(conceptService.getConcept(51));
+		orderToDiscontinue.setNumRefills(2);
+		
+		orderService.saveOrder(orderToDiscontinue, null);
+		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
+		
+		DrugOrder order = orderToDiscontinue.cloneForRevision();
+		order.setDateActivated(new Date());
+		order.setOrderer(providerService.getProvider(1));
+		order.setEncounter(encounterService.getEncounter(3));
+		order.setOrderReasonNonCoded("Discontinue this");
+		
+		orderService.saveOrder(order, null);
+		
+		Assert.assertNotNull("previous order should be discontinued", orderToDiscontinue.getDateStopped());
+	}
+	
+	/**
 	 * @verifies fail for a stopped order
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date,
 	 *      org.openmrs.Provider, org.openmrs.Encounter)
