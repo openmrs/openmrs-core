@@ -441,11 +441,11 @@ function toggleUnvoidedOrderErrorMessage(prefPatientId){
     <openmrs_tag:errorNotify errors="${errors}" />
 </spring:hasBindErrors>
 
-<h2><openmrs:message code="Patient.merge.title"/></h2>
+<h2><openmrs:message htmlEscape="false" code="Patient.merge.title"/></h2>
 
 <openmrs:message htmlEscape="false" code="Patient.merge.warning" />
 
-<openmrs:message code="Patient.merge.warning" />
+<openmrs:message htmlEscape="false" code="Patient.merge.warning" />
 <br/><br/>
 <span id="patientWithUnvoidedOrdersError" class="error" style="display: none">
     <openmrs:message code="Patient.merge.patient.NoUnvoidedOrders" />
