@@ -626,9 +626,15 @@ function hideError(errorName) {
  * @param object(Required) to be limited.
  * @param maxLength(Required) the length of the limit.
  */
-function forceMaxLength(object, maxLength) {
+function forceMaxLength(object, error_field_id, maxLength) {
+    var error_field_id = document.getElementbyId("description_maxlength_error");
     if( object.value.length >= maxLength) {
-       object.value = object.value.substring(0, maxLength); 
+       object.value = object.value.substring(0, maxLength);
+       $j(error_field_id).show();
+    }
+    if( object.value.length < maxLength) {
+       object.value = object.value.substring(0, maxLength);
+       $j(error_field_id).hide();
     }
 }
 
