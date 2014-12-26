@@ -908,7 +908,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		orderService.saveOrder(orderToDiscontinue, null);
 		assertTrue(OrderUtilTest.isActiveOrder(orderToDiscontinue, null));
 		
-		DrugOrder order = orderToDiscontinue.cloneForRevision();
+		DrugOrder order = orderToDiscontinue.cloneForDiscontinuing();
 		order.setDateActivated(new Date());
 		order.setOrderer(providerService.getProvider(1));
 		order.setEncounter(encounterService.getEncounter(3));
