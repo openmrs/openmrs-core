@@ -167,7 +167,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
 			boolean isPreviousDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
-			boolean previousOrderHasADrug = isPreviousDrugOrder && ((DrugOrder) order).getDrug() != null;
+			boolean previousOrderHasADrug = isPreviousDrugOrder && ((DrugOrder) previousOrder).getDrug() != null;
 			List<List<Object>> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
 			List<Object> rowData = rows.get(0);
 			if (!rowData.get(0).equals(previousOrder.getPatient().getPatientId())) {
@@ -176,13 +176,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				throw new APIException("Cannot change the careSetting of an order");
 			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
 				throw new APIException("Cannot change the concept of an order");
-			} else if (isPreviousDrugOrder && previousOrderHasADrug
+			} else if (previousOrderHasADrug && rowData.get(3) != null
 			        && !rowData.get(3).equals(((DrugOrder) previousOrder).getDrug().getDrugId())) {
 				throw new APIException("Cannot change the drug of a drug order");
 			}
 			
 			//concept should be the same as on previous order, same applies to drug for drug orders
-			boolean isDrugOrderAndHasADrug = isDrugOrder && previousOrderHasADrug;
+			boolean isDrugOrderAndHasADrug = isDrugOrder && ((DrugOrder) order).getDrug() != null;
 			if (!OpenmrsUtil.nullSafeEquals(order.getConcept(), previousOrder.getConcept())) {
 				throw new APIException("The concept of the previous order and the new one order don't match");
 			} else if (isDrugOrderAndHasADrug) {
