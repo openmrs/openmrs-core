@@ -49,6 +49,11 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 	
 	static boolean dictionaryLoaded = false;
 	
+	/**
+	 * Runs before all tests, Loads dictionary.
+	 * 
+	 * @throws Exeception
+	 */
 	@Before
 	public void loadDictionary() throws Exception {
 		if (!dictionaryLoaded) {
@@ -66,6 +71,9 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 		authenticate();
 	}
 	
+	/**
+	 * Tests GetConConceptsByName 
+	 */
 	@Test
 	public void shouldTestGetConceptsByName() {
 		List<Concept> concepts = conceptService.getConceptsByName("hiv positive");
@@ -73,6 +81,9 @@ public class ConceptServicePT extends BaseContextSensitiveTest {
 		assertThat(concepts, containsInAnyOrder(hasId(138571), hasId(159804)));
 	}
 	
+	/**
+	 * Test a GetConceptByName
+	 */
 	@Test
 	public void shouldTestGetConceptByName() {
 		Concept concept = conceptService.getConceptByName("hiv positive");
