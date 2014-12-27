@@ -17,13 +17,13 @@
 
 <c:if test="${form.formId != null && empty param.duplicate}">
 <br/>
-<a href="#designSchema"><openmrs:message code="Form.designSchema" /></a>
+<a href="#designSchema"><c:out value="<openmrs:message code="Form.designSchema" />"/></a>
 |
-<a href="formResources.form?formId=${ form.formId }"><openmrs:message code="Form.manageResources"/></a>
+<a href="formResources.form?formId=${ form.formId }"><c:out value="<openmrs:message code="Form.manageResources"/>"/></a>
 <c:if test="${not isBasicForm}">
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formHeader" type="html" parameters="formId=${form.formId}">
 		<c:forEach items="${extension.links}" var="link">
-			| <a href="<openmrs_tag:url value="${link.key}"/>"><openmrs:message code="${link.value}"/></a>
+			| <a href="<openmrs_tag:url value="${link.key}"/>"><c:out value="<openmrs:message code="${link.value}"/>"/></a>
 		</c:forEach>
 	</openmrs:extensionPoint>
 </c:if>
@@ -35,34 +35,34 @@
 <form method="post" enctype="multipart/form-data">
 <table>
 	<tr>
-		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
+		<td><c:out value="<openmrs:message code="general.name"/><span class="required">*</span>"/></td>
 		<td>
 			<spring:bind path="form.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
+				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td valign="top"><openmrs:message code="general.description"/></td>
+		<td valign="top"><c:out value="<openmrs:message code="general.description"/>"/></td>
 		<td valign="top">
 			<spring:bind path="form.description">
-				<textarea name="description" rows="3" cols="40" type="_moz">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
+				<textarea name="description" rows="3" cols="40" type="_moz"><c:out value="${status.value}"/></textarea>
+				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Form.version"/><span class="required">*</span></td>
+		<td><c:out value="<openmrs:message code="Form.version"/><span class="required">*</span>"/></td>
 		<td>
 			<spring:bind path="form.version">
 				<input type="text" name="${status.expression}" value="${status.value}" size="5" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
+				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Form.published"/></td>
+		<td><c:out value="<openmrs:message code="Form.published"/>"/></td>
 		<td>
 			<spring:bind path="form.published">
 				<input type="hidden" name="_${status.expression}">
@@ -74,7 +74,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="Encounter.type"/></td>
+		<td><c:out value="<openmrs:message code="Encounter.type"/>"/></td>
 		<td>
 			<spring:bind path="form.encounterType">
 				<c:set var="groupOpen" value="false" />
@@ -84,18 +84,18 @@
 							<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
 							<c:set var="groupOpen" value="true" />
 						</c:if>
-						<option value="${type.encounterTypeId}" <c:if test="${type.encounterTypeId == status.value}">selected</c:if>>${type.name}</option>
+						<option value="${type.encounterTypeId}" <c:if test="${type.encounterTypeId == status.value}">selected</c:if>><c:out value="${type.name}"/></option>
 					</c:forEach>
 					<c:if test="${groupOpen}">
 						</optgroup>
 					</c:if>
 				</select>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td><openmrs:message code="general.retired"/></td>
+		<td><c:out value="<openmrs:message code="general.retired"/>"/></td>
 		<td>
 			<spring:bind path="form.retired">
 				<input type="hidden" name="_${status.expression}">
@@ -108,17 +108,17 @@
 		</td>
 	</tr>
 	<tr id="retiredReasonRow">
-		<td><openmrs:message code="general.retiredReason"/></td>
+		<td><c:out value="<openmrs:message code="general.retiredReason"/>"/></td>
 		<spring:bind path="form.retireReason">
 			<td>
 				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if>
 			</td>
 		</spring:bind>
 	</tr>
 	<c:if test="${form.retired}" >
 		<tr>
-			<td><openmrs:message code="general.retiredBy"/></td>
+			<td><c:out value="<openmrs:message code="general.retiredBy"/>"/></td>
 			<td>
 				<c:out value="${form.retiredBy.personName}" /> -
 				<openmrs:formatDate date="${form.dateRetired}" type="long" />
@@ -127,7 +127,7 @@
 	</c:if>
 	<c:if test="${!(form.creator == null)}">
 		<tr>
-			<td><openmrs:message code="general.createdBy" /></td>
+			<td><c:out value="<openmrs:message code="general.createdBy" />"/></td>
 			<td>
 				<c:out value="${form.creator.personName}" /> -
 				<openmrs:formatDate date="${form.dateCreated}" type="long" />
@@ -136,7 +136,7 @@
 	</c:if>
 	<c:if test="${!(form.changedBy == null)}">
 		<tr>
-			<td><openmrs:message code="general.changedBy" /></td>
+			<td><c:out value="<openmrs:message code="general.changedBy" />"/></td>
 			<td>
 				<c:out value="${form.changedBy.personName}" /> -
 				<openmrs:formatDate date="${form.dateChanged}" type="long" />
@@ -148,14 +148,14 @@
 		<c:forEach items="${extension.rows}" var="row">
 			<tr>
 				<td><openmrs:message code="${row.key}"/></td>
-				<td>${row.value}</td>
+				<td><c:out value="${row.value}"/></td>
 			</tr>
 		</c:forEach>
 	</openmrs:extensionPoint>
 	 <tr>
      <c:if test="${form.formId != null}">
-       <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
-       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${form.uuid}</sub></font></td>
+       <td><font color="#D0D0D0"><sub><c:out value="<openmrs:message code="general.uuid"/>"/></sub></font></td>
+       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub><c:out value="${form.uuid}"/></sub></font></td>
      </c:if>
    </tr>
 </table>
