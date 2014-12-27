@@ -14,12 +14,6 @@
 			return false;
 		}
 	}
-
-	function forceMaxLength(object, maxLength) {
-		if (object.value.length >= maxLength) {
-			object.value = object.value.substring(0, maxLength); 
-		}
-	}
 	
 	$j(function() {
 		$j('select[name="datatypeClassname"]').change(function() {
@@ -61,9 +55,13 @@
 		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="providerAttributeType.description">
-				<textarea name="description" rows="3" cols="40" onkeypress="return forceMaxLength(this, 1024);" >${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" 
+				onfocusout="return forceMaxLength(this, 'description_maxlength_error', 1024);" 
+				onkeypress="return forceMaxLength(this, 'description_maxlength_error', 1024);" 
+				onkeyup="return forceMaxLength(this, 'description_maxlength_error', 1024);" >${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
+			<span id="description_maxlength_error" class="error" style='display:none'><openmrs:message code="error.exceededMaxLengthOfField" arguments="1024"/></span>
 		</td>
 	</tr>
 	<tr>

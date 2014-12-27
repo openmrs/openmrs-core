@@ -41,9 +41,13 @@
 		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="visitType.description">
-				<textarea name="description" rows="3" cols="40" onkeypress="return forceMaxLength(this, 1024);" >${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" 
+				onfocusout="return forceMaxLength(this, 'description_maxlength_error', 1024);" 
+				onkeypress="return forceMaxLength(this, 'description_maxlength_error', 1024);" 
+				onkeyup="return forceMaxLength(this, 'description_maxlength_error', 1024);" >${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
+			<span id="description_maxlength_error" class="error" style='display:none'><openmrs:message code="error.exceededMaxLengthOfField" arguments="1024"/></span>
 		</td>
 	</tr>
 	<c:if test="${!(visitType.creator == null)}">
