@@ -720,7 +720,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * It is set to <b>true</b> by default.
 	 * 
 	 * @return true if database string comparison is case sensitive
-	 * @since 1.11
+	 * @since 1.9.9, 1.10.2, 1.11
 	 */
 	public boolean isDatabaseStringComparisonCaseSensitive();
 }

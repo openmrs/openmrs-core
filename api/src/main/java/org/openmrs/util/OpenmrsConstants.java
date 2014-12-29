@@ -1063,6 +1063,9 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 	
+	/**
+	 * @since 1.9.9, 1.10.2, 1.11
+	 */
 	public static final String GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON = "search.caseSensitiveDatabaseStringComparison";
 	
 	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
