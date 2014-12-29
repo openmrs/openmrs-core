@@ -62,8 +62,9 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 	
 	public String getDescription() {
 		MessageSourceService mss = Context.getMessageSourceService();
-		if (!isReadyToRun())
+		if (!isReadyToRun()) {
 			return "";
+		}
 		Locale locale = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		StringBuilder ret = new StringBuilder();

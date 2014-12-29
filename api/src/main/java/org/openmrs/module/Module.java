@@ -797,9 +797,9 @@ public final class Module {
 	
 	@Override
 	public String toString() {
-		if (moduleId == null)
+		if (moduleId == null) {
 			return super.toString();
-		
+		}
 		return moduleId;
 	}
 	
