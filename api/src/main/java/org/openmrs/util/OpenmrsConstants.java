@@ -1027,7 +1027,10 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "concept.IndexUpdateTask.lastConceptUpdated";
 	
-	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
+	/**
+	 * @since 1.9.9, 1.10.2, 1.11
+	 */
+	public static final String GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON = "search.caseSensitiveDatabaseStringComparison";
 	
 	public static final String GP_NEXT_ORDER_NUMBER_SEED = "order.nextOrderNumberSeed";
 	
@@ -1466,9 +1469,9 @@ public final class OpenmrsConstants {
 		
 		props
 		        .add(new GlobalProperty(
-		                GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE,
+		                GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON,
 		                "true",
-		                "Indicates whether names in the concept_name table are case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
+		                "Indicates whether database string comparison is case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
