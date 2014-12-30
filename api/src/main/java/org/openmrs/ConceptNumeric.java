@@ -100,7 +100,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		
 		this.setConceptSets(new TreeSet<ConceptSet>(c.getConceptSets()));
 		for (ConceptSet cSet : this.getConceptSets()) {
-			cSet.setConcept(this);
+			cSet.setConceptSet(this);
 		}
 		
 		this.setDescriptions(new HashSet<ConceptDescription>(c.getDescriptions()));
