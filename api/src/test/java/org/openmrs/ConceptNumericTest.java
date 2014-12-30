@@ -75,7 +75,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 		ConceptNumeric cn = new ConceptNumeric(c);
 		
 		for (ConceptSet cSet : cn.getConceptSets()) {
-			Assert.assertSame(cn, cSet.getConcept());
+			Assert.assertSame(cn, cSet.getConceptSet());
 		}
 	}
 	
