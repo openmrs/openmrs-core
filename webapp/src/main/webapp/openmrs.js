@@ -626,11 +626,17 @@ function hideError(errorName) {
  * @param object(Required) to be limited.
  * @param maxLength(Required) the length of the limit.
  */
-function forceMaxLength(object, maxLength) {
-    if( object.value.length >= maxLength) {
-       object.value = object.value.substring(0, maxLength); 
-    }
-}
+ 
+function forceMaxLength(object, errorFieldId, maxLength) {
+    if( object.value.length > maxLength) {
+		document.getElementById("saveButton").disabled=true;
+		document.getElementById(errorFieldId).style.display="inline";
+		}
+	if( object.value.length <= maxLength) {
+		document.getElementById("saveButton").disabled=false;
+		document.getElementById(errorFieldId).style.display="none";
+		}
+	}
 
 /**
  * Removes potentially executable javascript from a snippet of text

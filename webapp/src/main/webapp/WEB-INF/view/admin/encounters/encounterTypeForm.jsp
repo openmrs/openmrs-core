@@ -40,9 +40,13 @@
 		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="encounterType.description">
-				<textarea name="description" rows="3" cols="40" onkeypress="return forceMaxLength(this, 1024);" >${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" 
+				onfocusout="return forceMaxLength(this, 'description_maxlength_error', 1024);" 
+				onkeypress="return forceMaxLength(this, 'description_maxlength_error', 1024);" 
+				onkeyup="return forceMaxLength(this, 'description_maxlength_error', 1024);" >${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
+			<span id="description_maxlength_error" class="error" style='display:none'><openmrs:message code="error.exceededMaxLengthOfField" arguments="1024"/></span>
 		</td>
 	</tr>
 	<tr>
@@ -102,7 +106,7 @@
 <openmrs:globalProperty key="EncounterType.encounterTypes.locked" var="encounterTypesLocked"/>
 
 <c:if test="${encounterTypesLocked != 'true'}">
-<input type="submit" value="<openmrs:message code="EncounterType.save"/>" name="save">
+<input type="submit" id="saveButton" value="<openmrs:message code="EncounterType.save"/>" name="save">
 </c:if>
 <c:if test="${encounterTypesLocked == 'true'}">
 <input type="submit" value="<openmrs:message code="EncounterType.save"/>" name="save" disabled>
