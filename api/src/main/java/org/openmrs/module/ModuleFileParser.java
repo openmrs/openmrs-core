@@ -194,9 +194,9 @@ public class ModuleFileParser {
 					out = new ByteArrayOutputStream();
 					// Now copy bytes from the URL to the output stream
 					byte[] buffer = new byte[4096];
-					int bytes_read;
-					while ((bytes_read = configStream.read(buffer)) != -1) {
-						out.write(buffer, 0, bytes_read);
+					int bytesRead;
+					while ((bytesRead = configStream.read(buffer)) != -1) {
+						out.write(buffer, 0, bytesRead);
 					}
 					output = out.toString();
 				}

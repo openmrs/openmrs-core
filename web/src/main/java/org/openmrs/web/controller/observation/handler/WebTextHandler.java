@@ -87,10 +87,10 @@ public class WebTextHandler extends TextHandler {
 	 */
 	@Override
 	public String[] getSupportedViews() {
-		List view_list = new ArrayList(Arrays.asList(supportedViews));
-		view_list.addAll(Arrays.asList(super.getSupportedViews()));
-		String[] views = new String[view_list.size()];
-		view_list.toArray(views);
+		List ViewList = new ArrayList(Arrays.asList(supportedViews));
+		ViewList.addAll(Arrays.asList(super.getSupportedViews()));
+		String[] views = new String[ViewList.size()];
+		ViewList.toArray(views);
 		return views;
 	}
 	

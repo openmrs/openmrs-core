@@ -89,8 +89,8 @@ public class RequireTag extends TagSupport {
 		HttpServletResponse httpResponse = (HttpServletResponse) pageContext.getResponse();
 		HttpSession httpSession = pageContext.getSession();
 		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-		String request_ip_addr = request.getLocalAddr();
-		String session_ip_addr = (String) httpSession.getAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
+		String requestIpAddr = request.getLocalAddr();
+		String sessionIpAddr = (String) httpSession.getAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
 		
 		UserContext userContext = Context.getUserContext();
 		
@@ -151,16 +151,16 @@ public class RequireTag extends TagSupport {
 			}
 		}
 		
-		if (differentIpAddresses(session_ip_addr, request_ip_addr)) {
+		if (differentIpAddresses(sessionIpAddr, requestIpAddr)) {
 			errorOccurred = true;
 			// stops warning message in IE when refreshing repeatedly
-			if ("0.0.0.0".equals(request_ip_addr) == false) {
-				log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
+			if ("0.0.0.0".equals(requestIpAddr) == false) {
+				log.warn("Invalid ip addr: expected " + sessionIpAddr + ", but found: " + requestIpAddr);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
 			}
 		}
 		
-		log.debug("session ip addr: " + session_ip_addr);
+		log.debug("session ip addr: " + sessionIpAddr);
 		
 		if (errorOccurred) {
 			String url = "";
@@ -190,8 +190,8 @@ public class RequireTag extends TagSupport {
 	/**
 	 * Determines if the given ip addresses are the same.
 	 *
-	 * @param session_ip_addr
-	 * @param request_ip_addr
+	 * @param sessionIpAddr
+	 * @param requestIpAddr
 	 * @return true/false whether these IPs are different
 	 */
 	private boolean differentIpAddresses(String sessionIpAddr, String requestIpAddr) {
