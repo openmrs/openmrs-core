@@ -398,48 +398,48 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	public class ConceptFormBackingObject {
 		
-		public Concept concept = null;
+		private Concept concept = null;
 		
-		public List<Locale> locales = null;
+		private List<Locale> locales = null;
 		
-		public Map<Locale, ConceptName> namesByLocale = new HashMap<Locale, ConceptName>();
+		private Map<Locale, ConceptName> namesByLocale = new HashMap<Locale, ConceptName>();
 		
-		public Map<Locale, ConceptName> shortNamesByLocale = new HashMap<Locale, ConceptName>();
+		private Map<Locale, ConceptName> shortNamesByLocale = new HashMap<Locale, ConceptName>();
 		
-		public Map<Locale, List<ConceptName>> synonymsByLocale = new HashMap<Locale, List<ConceptName>>();
+		private Map<Locale, List<ConceptName>> synonymsByLocale = new HashMap<Locale, List<ConceptName>>();
 		
-		public Map<Locale, ConceptDescription> descriptionsByLocale = new HashMap<Locale, ConceptDescription>();
+		private Map<Locale, ConceptDescription> descriptionsByLocale = new HashMap<Locale, ConceptDescription>();
 		
-		public Map<Locale, List<ConceptName>> indexTermsByLocale = new HashMap<Locale, List<ConceptName>>();
+		private Map<Locale, List<ConceptName>> indexTermsByLocale = new HashMap<Locale, List<ConceptName>>();
 		
-		public Map<Locale, Map<String, String>> conceptAnswersByLocale = new HashMap<Locale, Map<String, String>>();
+		private Map<Locale, Map<String, String>> conceptAnswersByLocale = new HashMap<Locale, Map<String, String>>();
 		
-		public List<ConceptMap> conceptMappings; // a "lazy list" version of the concept.getMappings() list
+		private List<ConceptMap> conceptMappings; // a "lazy list" version of the concept.getMappings() list
 		
 		/** The list of drugs for its concept object */
-		public List<Drug> conceptDrugList = new ArrayList<Drug>();
+		private List<Drug> conceptDrugList = new ArrayList<Drug>();
 		
-		public Double hiAbsolute;
+		private Double hiAbsolute;
 		
-		public Double lowAbsolute;
+		private Double lowAbsolute;
 		
-		public Double lowCritical;
+		private Double lowCritical;
 		
-		public Double hiCritical;
+		private Double hiCritical;
 		
-		public Double lowNormal;
+		private Double lowNormal;
 		
-		public Double hiNormal;
+		private Double hiNormal;
 		
-		public boolean precise = false;
+		private boolean precise = false;
 		
-		public Integer displayPrecision;
+		private Integer displayPrecision;
 		
-		public String units;
+		private String units;
 		
-		public String handlerKey;
+		private String handlerKey;
 		
-		public Map<Locale, String> preferredNamesByLocale = new HashMap<Locale, String>();
+		private Map<Locale, String> preferredNamesByLocale = new HashMap<Locale, String>();
 		
 		/**
 		 * Default constructor must take in a Concept object to create itself

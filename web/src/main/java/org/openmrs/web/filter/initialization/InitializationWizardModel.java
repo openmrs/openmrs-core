@@ -52,188 +52,188 @@ public class InitializationWizardModel {
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
-	public List<String> workLog = new ArrayList<String>();
+	private List<String> workLog = new ArrayList<String>();
 	
 	/**
 	 * Whether the runtime properties file could possible be created. (only read by the velocity
 	 * scripts)
 	 */
 	
-	public boolean canCreate = true;
+	private boolean canCreate = true;
 	
 	/**
 	 * Error message from not being able to create the runtime properties file (only read by the
 	 * velocity scripts)
 	 */
 	
-	public String cannotCreateErrorMessage = "";
+	private String cannotCreateErrorMessage = "";
 	
 	/**
 	 * Whether the runtime file can be edited (only read by the velocity scripts)
 	 */
 	
-	public boolean canWrite = true;
+	private boolean canWrite = true;
 	
 	/**
 	 * The location of the runtime properties file (only read by the velocity scripts)
 	 */
 	
-	public String runtimePropertiesPath = "";
+	private String runtimePropertiesPath = "";
 	
-	public String installMethod = INSTALL_METHOD_SIMPLE;
+	private String installMethod = INSTALL_METHOD_SIMPLE;
 	
 	/**
 	 * True/false marker for the question "Do you currently have an OpenMRS database installed"
 	 */
-	public Boolean hasCurrentOpenmrsDatabase = true;
+	private Boolean hasCurrentOpenmrsDatabase = true;
 	
 	/**
 	 * True/false marker for the
 	 * question"Do you currently have a database user other than root that has read/write access"
 	 */
-	public Boolean hasCurrentDatabaseUser = true;
+	private Boolean hasCurrentDatabaseUser = true;
 	
 	/**
 	 * Filled out by the user on the databasesetup.vm page
 	 */
-	public String databaseName = DEFAULT_DATABASE_NAME;
+	private String databaseName = DEFAULT_DATABASE_NAME;
 	
 	/**
 	 * Filled out by user on the databasesetup.vm page Looks like:
 	 */
-	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+	private String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
 	
 	/**
 	 * Optional Database Driver string filled in on databasesetup.vm
 	 */
-	public String databaseDriver = "";
+	private String databaseDriver = "";
 	
 	/**
 	 * MySQL root account password used for simple installation. Filled in simplesetup.vm.
 	 */
-	public String databaseRootPassword = "";
+	private String databaseRootPassword = "";
 	
 	/**
 	 * Filled in on databasesetup.vm
 	 */
-	public String createDatabaseUsername = "root";
+	private String createDatabaseUsername = "root";
 	
 	/**
 	 * Filled in on databasesetup.vm
 	 */
-	public String createDatabasePassword = "";
+	private String createDatabasePassword = "";
 	
 	/**
 	 * DB user that can create an openmrs db user Filled in on databasetablesanduser.vm
 	 */
-	public String createUserUsername = "root";
+	private String createUserUsername = "root";
 	
 	/**
 	 * DB user that can create an openmrs db user Filled in on databasetablesanduser.vm
 	 */
-	public String createUserPassword = "";
+	private String createUserPassword = "";
 	
 	/**
 	 * The username of a user that exists that can read/write to openmrs. Entered on
 	 * databasetablesanduser page
 	 */
-	public String currentDatabaseUsername = "";
+	private String currentDatabaseUsername = "";
 	
 	/**
 	 * The password of a user that exists that can read/write to openmrs. Entered on
 	 * databasetablesanduser page
 	 */
-	public String currentDatabasePassword = "";
+	private String currentDatabasePassword = "";
 	
 	/**
 	 * Asked for on the databasetablesanduser.vm page to know if their existing database has the
 	 * tables or not
 	 */
-	public Boolean createTables = Boolean.FALSE;
+	private Boolean createTables = Boolean.FALSE;
 	
 	/**
 	 * if the user asked us to create the user for openmrs
 	 */
-	public Boolean createDatabaseUser = Boolean.FALSE;
+	private Boolean createDatabaseUser = Boolean.FALSE;
 	
 	/**
 	 * Enables importing test data from the remote server
 	 */
-	public Boolean importTestData = Boolean.FALSE;
+	private Boolean importTestData = Boolean.FALSE;
 	
 	/**
 	 * Does the user want to add the demo data to the database?
 	 */
-	public Boolean addDemoData = Boolean.FALSE;
+	private Boolean addDemoData = Boolean.FALSE;
 	
 	/**
 	 * Asked for on the otherproperties.vm page to know if the allow_web_admin runtime property is
 	 * true/false
 	 */
-	public Boolean moduleWebAdmin = Boolean.TRUE;
+	private Boolean moduleWebAdmin = Boolean.TRUE;
 	
 	/**
 	 * Asked for on otherproperties.vm page to know if the runtime property for auto updating their
 	 * db is true/false
 	 */
-	public Boolean autoUpdateDatabase = Boolean.FALSE;
+	private Boolean autoUpdateDatabase = Boolean.FALSE;
 	
 	/**
 	 * Password for the admin user if the database was created now
 	 */
-	public String adminUserPassword = ADMIN_DEFAULT_PASSWORD;
+	private String adminUserPassword = ADMIN_DEFAULT_PASSWORD;
 	
 	/**
 	 * Implementation name.
 	 */
-	public String implementationIdName = "";
+	private String implementationIdName = "";
 	
 	/**
 	 * Implementation ID.
 	 */
-	public String implementationId = "";
+	private String implementationId = "";
 	
 	/**
 	 * Pass phrase used to validate who uses your implementation ID.
 	 */
-	public String implementationIdPassPhrase = "";
+	private String implementationIdPassPhrase = "";
 	
 	/**
 	 * Text describing the implementation.
 	 */
-	public String implementationIdDescription = "";
+	private String implementationIdDescription = "";
 	
-	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
+	private String setupPageUrl = WebConstants.SETUP_PAGE_URL;
 	
 	/**
 	 * The tasks to be executed that the user selected from the wizard's prompts
 	 */
-	public List<WizardTask> tasksToExecute;
+	private List<WizardTask> tasksToExecute;
 	
-	public String localeToSave = "";
+	private String localeToSave = "";
 	
 	/**
 	 * The url to the remote system
 	 */
-	public String remoteUrl = "";
+	private String remoteUrl = "";
 	
 	/**
 	 * The username to use to authenticate to the remote system
 	 */
-	public String remoteUsername = "";
+	private String remoteUsername = "";
 	
 	/**
 	 * The password to use to authenticate to the remote system
 	 */
-	public String remotePassword = "";
+	private String remotePassword = "";
 	
 	/**
 	 * The current step. e.g Step 1 of ...
 	 */
-	public Integer currentStepNumber = 1;
+	private Integer currentStepNumber = 1;
 	
 	/**
 	 * The total number of steps. e.g Step ... of 5
 	 */
-	public Integer numberOfSteps = 1;
+	private Integer numberOfSteps = 1;
 }

@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DataSetServiceImpl implements DataSetService {
 	
-	public Log log = LogFactory.getLog(this.getClass());
+	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
 	 * Saved list of DataSetProviders allowed to be used by the dataset service

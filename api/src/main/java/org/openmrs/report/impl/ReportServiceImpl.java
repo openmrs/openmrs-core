@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ReportServiceImpl implements ReportService {
 	
-	public Log log = LogFactory.getLog(this.getClass());
+	private Log log = LogFactory.getLog(this.getClass());
 	
 	private ReportDAO dao = null;
 	

@@ -48,7 +48,7 @@ public class DownloadDictionaryServlet extends HttpServlet {
 	 * Maximum size of query results, when retrieved in batches. ABKTODO: should probably be
 	 * configurable somewhere
 	 */
-	public int batchSize = 1000;
+	private int batchSize = 1000;
 	
 	/**
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,

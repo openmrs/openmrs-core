@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PatientSetServiceImpl extends BaseOpenmrsService implements PatientSetService {
 	
-	public final Log log = LogFactory.getLog(this.getClass());
+	private Log log = LogFactory.getLog(this.getClass());
 	
 	private PatientSetDAO dao;
 	

@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class SimpleXStreamSerializer implements OpenmrsSerializer {
 	
 	// cached xstream object
-	public XStream xstream = null;
+	private XStream xstream = null;
 	
 	/**
 	 * Default Constructor

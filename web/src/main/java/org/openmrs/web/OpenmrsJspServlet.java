@@ -35,7 +35,7 @@ public class OpenmrsJspServlet extends JspServlet {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public static OpenmrsJspServlet jspServlet;
+	private static OpenmrsJspServlet jspServlet;
 	
 	public static void setJspServlet(OpenmrsJspServlet jspServlet) {
 		OpenmrsJspServlet.jspServlet = jspServlet;
