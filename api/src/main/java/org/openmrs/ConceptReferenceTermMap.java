@@ -119,7 +119,7 @@ public class ConceptReferenceTermMap extends BaseConceptMap implements Serializa
 		}
 		ConceptReferenceTermMap rhs = (ConceptReferenceTermMap) obj;
 		if (this.conceptReferenceTermMapId != null && rhs.conceptReferenceTermMapId != null) {
-			return (this.conceptReferenceTermMapId.equals(rhs.conceptReferenceTermMapId));
+			return this.conceptReferenceTermMapId.equals(rhs.conceptReferenceTermMapId);
 		}
 		
 		return this == obj;
