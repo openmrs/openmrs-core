@@ -285,7 +285,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		List<Obs> obs = new Vector<Obs>();
 		for (Obs o : allObs) {
-			if (o.getVoided() == true) {
+			if (o.getVoided()) {
 				obs.add(o);
 			}
 		}

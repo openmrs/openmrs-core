@@ -2109,7 +2109,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" and orderReason.id in (:orderReasonIdList) ");
 		}
 		if (discontinued != null) {
-			if (discontinued == true) {
+			if (discontinued) {
 				if (stopDateFrom != null && stopDateTo != null) {
 					sb.append(" and dateStopped between :stopDateFrom and :stopDateTo ");
 				} else {

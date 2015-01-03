@@ -181,8 +181,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		
 		if (obsParent.hasGroupMembers()) {
 			for (Obs child : obsParent.getGroupMembers()) {
-				if (child.isVoided() == false) {
-					if (child.isObsGrouping() == false) {
+				if (!child.isVoided()) {
+					if (!child.isObsGrouping()) {
 						leaves.add(child);
 					} else {
 						// recurse if this is a grouping obs
@@ -190,7 +190,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 					}
 				}
 			}
-		} else if (obsParent.isVoided() == false) {
+		} else if (!obsParent.isVoided()) {
 			leaves.add(obsParent);
 		}
 		

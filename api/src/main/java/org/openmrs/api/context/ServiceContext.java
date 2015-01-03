@@ -829,7 +829,7 @@ public class ServiceContext implements ApplicationContextAware {
 		// loader or the system class loader depending on if we're in a testing
 		// environment or not (system == testing, openmrs == normal)
 		try {
-			if (useSystemClassLoader == false) {
+			if (!useSystemClassLoader) {
 				cls = OpenmrsClassLoader.getInstance().loadClass(classString);
 				
 				if (cls != null && log.isDebugEnabled()) {
@@ -839,7 +839,7 @@ public class ServiceContext implements ApplicationContextAware {
 					}
 					catch (Exception e) { /*pass*/}
 				}
-			} else if (useSystemClassLoader == true) {
+			} else if (useSystemClassLoader) {
 				try {
 					cls = Class.forName(classString);
 					if (log.isDebugEnabled()) {

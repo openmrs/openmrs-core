@@ -413,7 +413,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 				
 				// if the to-be-added attribute isn't already voided itself
 				// and if we have the same type, different value
-				if (newAttribute.isVoided() == false || newIsNull) {
+				if (!newAttribute.isVoided() || newIsNull) {
 					if (currentAttribute.getCreator() != null) {
 						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
 					} else {

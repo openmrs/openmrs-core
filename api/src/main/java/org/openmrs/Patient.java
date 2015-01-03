@@ -319,7 +319,7 @@ public class Patient extends Person implements java.io.Serializable {
 		if (getIdentifiers() != null) {
 			List<PatientIdentifier> nonPreferred = new LinkedList<PatientIdentifier>();
 			for (PatientIdentifier pi : getIdentifiers()) {
-				if (pi.isVoided() == false) {
+				if (!pi.isVoided()) {
 					if (pi.isPreferred()) {
 						ids.add(pi);
 					} else {
@@ -346,7 +346,7 @@ public class Patient extends Person implements java.io.Serializable {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
 		if (getIdentifiers() != null) {
 			for (PatientIdentifier pi : getIdentifiers()) {
-				if (pi.isVoided() == false && pit.equals(pi.getIdentifierType())) {
+				if (!pi.isVoided() && pit.equals(pi.getIdentifierType())) {
 					ids.add(pi);
 				}
 			}

@@ -120,7 +120,7 @@ public class DatabaseUtil {
 		try {
 			ps = conn.prepareStatement(sql);
 			
-			if (dataManipulation == true) {
+			if (dataManipulation) {
 				Integer i = ps.executeUpdate();
 				List<Object> row = new Vector<Object>();
 				row.add(i);

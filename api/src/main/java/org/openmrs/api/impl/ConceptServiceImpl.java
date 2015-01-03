@@ -326,7 +326,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		// only do this if the concept isn't retired already
-		if (concept.isRetired() == false) {
+		if (!concept.isRetired()) {
 			checkIfLocked();
 			
 			concept.setRetired(true);
@@ -598,7 +598,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> getDrugs(Concept concept, boolean includeRetired) {
-		if (includeRetired == true) {
+		if (includeRetired) {
 			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
 		}
 		
@@ -622,7 +622,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> findDrugs(String phrase, boolean includeRetired) {
-		if (includeRetired == true) {
+		if (includeRetired) {
 			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
 		}
 		
