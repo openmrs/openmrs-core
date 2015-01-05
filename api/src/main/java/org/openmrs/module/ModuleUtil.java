@@ -13,6 +13,18 @@
  */
 package org.openmrs.module;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,18 +50,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.GlobalProperty;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ServiceContext;
-import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.OpenmrsUtil;
-import org.springframework.context.support.AbstractRefreshableApplicationContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility methods for working and manipulating modules
@@ -237,6 +239,13 @@ public class ModuleUtil {
 	 * @should return false when required version with wild card on one end beyond openmrs version
 	 * @should return false when single entry required version beyond openmrs version
 	 * @should allow release type in the version
+	 * @should match when revision number is below maximum revision number
+	 * @should not match when revision number is above maximum revision number
+	 * @should correctly set upper and lower limit for versionRange with qualifiers and wild card
+	 * @should match when version has wild card plus qualifier and is within boundary
+	 * @should not match when version has wild card plus qualifier and is outside boundary
+	 * @should match when version has wild card and is within boundary
+	 * @should not match when version has wild card and is outside boundary
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
 		if (versionRange != null && !versionRange.equals("")) {
@@ -244,7 +253,7 @@ public class ModuleUtil {
 			for (String range : ranges) {
 				// need to externalize this string
 				String separator = "-";
-				if (range.indexOf("*") > 0 || range.indexOf(separator) > 0) {
+				if (range.indexOf("*") > 0 || range.indexOf(separator) > 0 && (!isVersionWithQualifier(range))) {
 					// if it contains "*" or "-" then we must separate those two
 					// assume it's always going to be two part
 					// assign the upper and lower bound
@@ -272,10 +281,9 @@ public class ModuleUtil {
 					if (lowerBound.indexOf("*") > 0)
 						lowerBound = lowerBound.replaceAll("\\*", "0");
 					
-					// if the upper contains "*" then change it to 999
-					// assuming 999 will be the max revision number for openmrs
+					// if the upper contains "*" then change it to maxRevisionNumber
 					if (upperBound.indexOf("*") > 0)
-						upperBound = upperBound.replaceAll("\\*", "999");
+						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
 					
 					int lowerReturn = compareVersion(version, lowerBound);
 					
@@ -321,21 +329,24 @@ public class ModuleUtil {
 	 * @should throw ModuleException if required version with wild card on one end beyond openmrs
 	 *         version
 	 * @should throw ModuleException if single entry required version beyond openmrs version
+	 * @should throw ModuleException if SNAPSHOT not handled correctly
+	 * @should handle SNAPSHOT versions
+	 * @should handle ALPHA versions
 	 */
 	public static void checkRequiredVersion(String version, String versionRange) throws ModuleException {
 		if (!matchRequiredVersions(version, versionRange)) {
 			String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.outOfBounds",
-			    new String[] { versionRange, version }, Context.getLocale());
+                    new String[]{versionRange, version}, Context.getLocale());
 			throw new ModuleException(ms);
 		}
 	}
 	
 	/**
 	 * Compares <code>version</code> to <code>value</code> version and value are strings like
-	 * w.x.y.z Returns <code>0</code> if either <code>version</code> or <code>value</code> is null.
+	 * 1.9.2.0 Returns <code>0</code> if either <code>version</code> or <code>value</code> is null.
 	 * 
-	 * @param version String like w.x.y.z
-	 * @param value String like w.x.y.z
+	 * @param version String like 1.9.2.0
+	 * @param value String like 1.9.2.0
 	 * @return the value <code>0</code> if <code>version</code> is equal to the argument
 	 *         <code>value</code>; a value less than <code>0</code> if <code>version</code> is
 	 *         numerically less than the argument <code>value</code>; and a value greater than
@@ -346,19 +357,21 @@ public class ModuleUtil {
 	 */
 	public static int compareVersion(String version, String value) {
 		try {
-			if (version == null || value == null)
+			if (version == null || value == null) {
 				return 0;
-			
+			}
+
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
-			
+			String separator = "-";
+
 			// strip off any qualifier e.g. "-SNAPSHOT"
-			int qualifierIndex = version.indexOf("-");
+			int qualifierIndex = version.indexOf(separator);
 			if (qualifierIndex != -1) {
 				version = version.substring(0, qualifierIndex);
 			}
 			
-			qualifierIndex = value.indexOf("-");
+			qualifierIndex = value.indexOf(separator);
 			if (qualifierIndex != -1) {
 				value = value.substring(0, qualifierIndex);
 			}
@@ -377,13 +390,14 @@ public class ModuleUtil {
 			for (int x = 0; x < versions.size(); x++) {
 				String verNum = versions.get(x).trim();
 				String valNum = values.get(x).trim();
-				Integer ver = NumberUtils.toInt(verNum, 0);
-				Integer val = NumberUtils.toInt(valNum, 0);
+				Long ver = NumberUtils.toLong(verNum, 0);
+				Long val = NumberUtils.toLong(valNum, 0);
 				
 				int ret = ver.compareTo(val);
-				if (ret != 0)
+				if (ret != 0) {
 					return ret;
 			}
+		}
 		}
 		catch (NumberFormatException e) {
 			log.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
@@ -391,6 +405,17 @@ public class ModuleUtil {
 		
 		// default return value if an error occurs or elements are equal
 		return 0;
+	}
+
+	/**
+	 * Checks for qualifier version (i.e "-SNAPSHOT", "-ALPHA" etc. after maven version conventions)
+	 *
+	 * @param version String like 1.9.2-SNAPSHOT
+	 * @return true if version contains qualifier
+	 */
+	public static boolean isVersionWithQualifier(String version) {
+		Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.(\\d+))?(\\-([A-Za-z]+))").matcher(version);
+		return matcher.matches();
 	}
 	
 	/**

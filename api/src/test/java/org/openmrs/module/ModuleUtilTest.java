@@ -13,16 +13,7 @@
  */
 package org.openmrs.module;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Properties;
-
 import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -32,6 +23,14 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.BaseContextMockTest;
 import org.openmrs.test.Verifies;
+
+import java.util.Arrays;
+import java.util.Properties;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
@@ -399,4 +398,46 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		//should still return the correct value if the arguments are switched
 		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
 	}
+
+	/**
+	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test(expected = ModuleException.class)
+	@Verifies(value = "should throw ModuleException if SNAPSHOT not handled correctly", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfSNAPSHOTNotHandledCorrectly() throws Exception {
+		String openmrsVersion = "1.4.3";
+		String requiredOpenmrsVersion = "1.4.5-SNAPSHOT";
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+	}
+
+	/**
+	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test
+	@Verifies(value = "Should handle SNAPSHOT versions ", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleSnapshotVersion() throws Exception {
+		String openMRSVersion = "1.9.2-SNAPSHOT";
+		String requiredOpenmrsVersion = "1.9.2-SNAPSHOT";
+		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+	}
+
+	/**
+	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test
+	@Verifies(value = "Should handle UUID suffix versions ", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleUuidSuffixVersion() throws Exception {
+		String openMRSVersion = "1.9.9-f4927f";
+		String requiredOpenmrsVersion = "1.9.9-SNAPSHOT";
+		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+	}
+
+	@Test
+	@Verifies(value = "Should handle ALPHA versions ", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleAlphaVersion() throws Exception {
+		String openMRSVersion = "1.9.2-ALPHA";
+		String requiredOpenmrsVersion = "1.9.2-ALPHA";
+		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+	}
+
 }
