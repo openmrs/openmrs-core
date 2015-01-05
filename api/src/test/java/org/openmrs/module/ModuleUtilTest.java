@@ -13,20 +13,6 @@
  */
 package org.openmrs.module;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.jar.JarFile;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -38,6 +24,20 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.BaseContextMockTest;
 import org.openmrs.test.Verifies;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.jar.JarFile;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
@@ -514,6 +514,14 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
 	 */
+	@Test
+	@Verifies(value = "Should handle UUID suffix versions ", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleUuidSuffixVersion() throws Exception {
+		String openMRSVersion = "1.9.9-f4927f";
+		String requiredOpenmrsVersion = "1.9.9-SNAPSHOT";
+		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+	}
+
 	@Test
 	@Verifies(value = "Should handle ALPHA versions ", method = "checkRequiredVersion(String, String)")
 	public void checkRequiredVersion_shouldHandleAlphaVersion() throws Exception {
