@@ -47,7 +47,7 @@ public class HttpClient {
 		OutputStreamWriter wr = null;
 		BufferedReader rd = null;
 		String response = "";
-		StringBuffer data = new StringBuffer();
+		StringBuilder data = new StringBuilder();
 		
 		try {
 			// Construct data
