@@ -130,18 +130,22 @@ public class PatientSearchCriteria {
 	private Criterion prepareIdentifierCriterion(String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, boolean searchOnNamesOrIdentifiers) {
 		
-		Conjunction conjuction = Restrictions.conjunction();
+		Conjunction conjunction = Restrictions.conjunction();
 		// TODO add junit test for searching on voided identifiers
 		
 		// add the join on the identifiers table
 		criteria.createAlias("identifiers", "ids");
 		
-		conjuction.add(Restrictions.eq("ids.voided", false));
+		conjunction.add(Restrictions.eq("ids.voided", false));
 		// do the identifier restriction
 		if (identifier != null) {
 			// if the user wants an exact search, match on that.
 			if (matchIdentifierExactly) {
-				conjuction.add(Restrictions.eq("ids.identifier", identifier).ignoreCase());
+				SimpleExpression matchIdentifier = Restrictions.eq("ids.identifier", identifier);
+				if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+					matchIdentifier.ignoreCase();
+				}
+				conjunction.add(matchIdentifier);
 			} else {
 				AdministrationService adminService = Context.getAdministrationService();
 				String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
@@ -154,18 +158,18 @@ public class PatientSearchCriteria {
 				}
 				
 				if (StringUtils.hasLength(patternSearch)) {
-					conjuction.add(splitAndGetSearchPattern(identifier, patternSearch));
+					conjunction.add(splitAndGetSearchPattern(identifier, patternSearch));
 				}
 				// if the regex is empty, default to a simple "like" search or if
 				// we're in hsql world, also only do the simple like search (because
 				// hsql doesn't know how to deal with 'regexp'
 				else if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
-					conjuction.add(getCriterionForSimpleSearch(identifier, adminService));
+					conjunction.add(getCriterionForSimpleSearch(identifier, adminService));
 				}
 				// if the regex is present, search on that
 				else {
 					regex = replaceSearchString(regex, identifier);
-					conjuction.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
+					conjunction.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
 				}
 			}
 		}
@@ -177,7 +181,7 @@ public class PatientSearchCriteria {
 			criteria.add(Restrictions.in("ids.identifierType", identifierTypes));
 		}
 		
-		return conjuction;
+		return conjunction;
 	}
 	
 	/**
