@@ -68,7 +68,8 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 					program = pws.getProgram(Integer.valueOf(progIdStr));
 				}
 			}
-			catch (Exception ex) {}
+			catch (Exception ex) {
+			}
 			
 			String[] conceptIds = text.split(" ");
 			Set<ProgramWorkflow> oldSet = program == null ? new HashSet<ProgramWorkflow>() : program.getAllWorkflows();

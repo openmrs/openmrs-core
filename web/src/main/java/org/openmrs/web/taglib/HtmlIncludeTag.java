@@ -110,7 +110,7 @@ public class HtmlIncludeTag extends TagSupport {
 			}
 			
 			if (!isAlreadyUsed(file, initialRequestId)) {
-				StringBuffer output = new StringBuffer();
+				StringBuilder output = new StringBuilder();
 				String prefix = "";
 				try {
 					prefix = request.getContextPath();

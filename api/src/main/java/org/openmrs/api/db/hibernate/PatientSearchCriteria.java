@@ -270,7 +270,7 @@ public class PatientSearchCriteria {
 	private Criterion getCriterionForSimpleSearch(String identifier, AdministrationService adminService) {
 		String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
 		String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "");
-		StringBuffer likeString = new StringBuffer(prefix).append(identifier).append(suffix);
+		StringBuilder likeString = new StringBuilder(prefix).append(identifier).append(suffix);
 		return Restrictions.ilike("ids.identifier", likeString.toString());
 	}
 	

@@ -93,7 +93,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 				out.println("<tr><td class=header colspan=2>" + Context.getDateFormat().format(date.getTime())
 				        + "</td></tr>");
 			}
-			StringBuffer s = new StringBuffer("<tr><td class=label>");
+			StringBuilder s = new StringBuilder("<tr><td class=label>");
 			s.append(getName(obs, locale));
 			s.append("</td><td class=value>");
 			s.append(getValue(obs, locale));

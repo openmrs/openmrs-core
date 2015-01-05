@@ -70,7 +70,8 @@ public class UserFormController {
 		try {
 			u = Context.getUserService().getUser(Integer.valueOf(userId));
 		}
-		catch (Exception ex) {}
+		catch (Exception ex) {
+		}
 		if (u == null) {
 			u = new User();
 		}
