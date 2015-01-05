@@ -555,7 +555,8 @@ public class Result extends ArrayList<Result> {
 				try {
 					return Context.getDateFormat().parse(valueText);
 				}
-				catch (Exception e) {}
+				catch (Exception e) {
+				}
 			}
 			return valueDatetime;
 		}

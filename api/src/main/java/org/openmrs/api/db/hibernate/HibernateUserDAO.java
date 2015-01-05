@@ -129,7 +129,8 @@ public class HibernateUserDAO implements UserDAO {
 			//Hardcoding in Luhn since past user IDs used this validator.
 			usernameWithCheckDigit = new LuhnIdentifierValidator().getValidIdentifier(username);
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+		}
 		
 		Query query = sessionFactory
 		        .getCurrentSession()

@@ -60,7 +60,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 				}
 			}
 		}
-		catch (IOException e) {}
+		catch (IOException e) {
+		}
 	}
 	
 	public void flushBuffer() throws IOException {
