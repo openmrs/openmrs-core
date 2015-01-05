@@ -27,6 +27,7 @@ import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.SimpleExpression;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -222,7 +223,11 @@ public class PatientSearchCriteria {
 		if (identifier != null) {
 			// if the user wants an exact search, match on that.
 			if (matchIdentifierExactly) {
-				conjunction.add(Restrictions.eq("ids.identifier", identifier).ignoreCase());
+				SimpleExpression matchIdentifier = Restrictions.eq("ids.identifier", identifier);
+				if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+					matchIdentifier.ignoreCase();
+				}
+				conjunction.add(matchIdentifier);
 			} else {
 				AdministrationService adminService = Context.getAdministrationService();
 				String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
