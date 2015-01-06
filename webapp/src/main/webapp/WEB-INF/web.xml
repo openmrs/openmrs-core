@@ -175,7 +175,7 @@
 	
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
-		<!--  extends ContextLoaderListener -->
+		<!--  extends ContextLoader -->
 	</listener>
 
 	<listener>
