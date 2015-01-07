@@ -224,7 +224,15 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// orders?
 		}
 		
-		dao.deleteObs(obs);
+		if (obs.isObsGrouping()) {
+			Set<Obs> CheckObsGroupMembers = obs.getGroupMembers(true);
+			if (!CheckObsGroupMembers.isEmpty()) {
+				for (Obs gMember : CheckObsGroupMembers) {
+					dao.deleteObs(gMember);
+				}
+			}
+		}
+		dao.deleteObs(obs);	
 	}
 	
 	/**

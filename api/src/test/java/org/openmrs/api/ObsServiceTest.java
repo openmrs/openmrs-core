@@ -1726,4 +1726,28 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertEquals(obs.getPerson(), obsSaved.getEncounter().getPatient());
 	}
 	
+	/**
+	 * @see ObsService#purgeObs(Obs,boolean)
+	 */
+	@Test
+	@Verifies(value = "Should delete any related objects here before deleting the obs", method = "purgeObs(Obs,boolean)")
+	public void purgeObs_shouldDeleteRelatedObsBeforeDeletingTheObs() throws Exception {
+		
+		executeDataSet(INITIAL_OBS_XML);
+		ObsService obsService = Context.getObsService();
+		
+		Obs obs = obsService.getObs(1);
+		
+		obs.addGroupMember(obsService.getObs(2));
+		obs.addGroupMember(obsService.getObs(3));
+		obs.addGroupMember(obsService.getObs(4));
+		
+		Context.getObsService().purgeObs(obs, false);
+		
+		Assert.assertNull(obsService.getObs(1));
+		Assert.assertNull(obsService.getObs(2));
+		Assert.assertNull(obsService.getObs(3));
+		Assert.assertNull(obsService.getObs(4));
+	}
+	
 }
