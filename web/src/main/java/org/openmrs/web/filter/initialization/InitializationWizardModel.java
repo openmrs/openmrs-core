@@ -16,6 +16,7 @@ package org.openmrs.web.filter.initialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
 /**
@@ -42,6 +43,8 @@ public class InitializationWizardModel {
 	
 	// Default OpenMRS admin password set by the simple installation.
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
+	
+	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
 	
 	/**
 	 * Default database name to use unless user specifies another in the wizard or they are creating
