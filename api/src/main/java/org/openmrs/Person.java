@@ -585,7 +585,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		
 		attributeMap = new HashMap<String, PersonAttribute>();
-		for (PersonAttribute attribute : getActiveAttributes()) {
+		for (PersonAttribute attribute : getAttributes()) {
 			attributeMap.put(attribute.getAttributeType().getName(), attribute);
 		}
 		
