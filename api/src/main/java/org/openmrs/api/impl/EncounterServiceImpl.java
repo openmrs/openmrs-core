@@ -287,7 +287,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection,
+	 *             Collection, boolean, Date, Date, Date, Date)}
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
@@ -296,7 +297,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	        boolean includeVoided) {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, usersToProviders(providers),
-		        null, null, includeVoided), null);
+		        null, null, includeVoided, null, null, null, null), null);
 	}
 	
 	/**
@@ -320,16 +321,18 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, boolean)
+	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection,
+	 *      boolean, java.util.Date, java.util.Date, java.util.Date, java.util.Date))
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided, Date fromDateCreated,
+	        Date toDateCreated, Date fromDateChanged, Date toDateChanged) {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, visitTypes, visits,
-		        includeVoided), null);
+		        includeVoided, fromDateCreated, toDateCreated, fromDateChanged, toDateChanged), null);
 	}
 	
 	/**

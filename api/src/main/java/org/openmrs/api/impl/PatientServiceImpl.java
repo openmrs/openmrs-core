@@ -881,7 +881,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
 		EncounterService es = Context.getEncounterService();
-		for (Encounter e : es.getEncounters(notPreferred, null, null, null, null, null, null, null, null, true)) {
+		for (Encounter e : es.getEncounters(notPreferred, null, null, null, null, null, null, null, null, true, null, null,
+		    null, null)) {
 			e.setPatient(preferred);
 			log.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
 			Encounter persisted = es.saveEncounter(e);

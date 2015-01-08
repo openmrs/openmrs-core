@@ -118,7 +118,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@Override
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided, Date fromDateCreated,
+	        Date toDateCreated, Date fromDateChanged, Date toDateChanged) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		
@@ -153,6 +154,18 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
 		if (!includeVoided) {
 			crit.add(Restrictions.eq("voided", false));
+		}
+		if (fromDateCreated != null) {
+			crit.add(Restrictions.ge("dateCreated", fromDateCreated));
+		}
+		if (toDateCreated != null) {
+			crit.add(Restrictions.le("dateCreated", toDateCreated));
+		}
+		if (fromDateChanged != null) {
+			crit.add(Restrictions.ge("dateChanged", fromDateChanged));
+		}
+		if (toDateChanged != null) {
+			crit.add(Restrictions.le("dateChanged", toDateChanged));
 		}
 		crit.addOrder(Order.asc("encounterDatetime"));
 		return crit.list();
