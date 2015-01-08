@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
@@ -41,6 +42,8 @@ public class UpdateFilterModel {
 	public String superuserrole = RoleConstants.SUPERUSER;
 	
 	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
+	
+	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
 	
 	public Boolean updateRequired = false;
 	
