@@ -19,7 +19,7 @@
 <br/>
 <a href="#designSchema"><openmrs:message code="Form.designSchema" /></a>
 |
-<a href="formResources.form?formId=${ form.formId }"><openmrs:message code="Form.manageResources"/></a>
+<a href="formResources.form?formId=<c:out value="${ form.formId }"/>"><openmrs:message code="Form.manageResources"/></a>
 <c:if test="${not isBasicForm}">
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formHeader" type="html" parameters="formId=${form.formId}">
 		<c:forEach items="${extension.links}" var="link">
@@ -39,7 +39,7 @@
 		<td>
 			<spring:bind path="form.name">
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
+				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -47,8 +47,8 @@
 		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="form.description">
-				<textarea name="description" rows="3" cols="40" type="_moz">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
+				<textarea name="description" rows="3" cols="40" type="_moz"><c:out value="${status.value}"/></textarea>
+				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -57,7 +57,7 @@
 		<td>
 			<spring:bind path="form.version">
 				<input type="text" name="${status.expression}" value="${status.value}" size="5" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
+				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -84,13 +84,13 @@
 							<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
 							<c:set var="groupOpen" value="true" />
 						</c:if>
-						<option value="${type.encounterTypeId}" <c:if test="${type.encounterTypeId == status.value}">selected</c:if>>${type.name}</option>
+						<option value="${type.encounterTypeId}" <c:if test="${type.encounterTypeId == status.value}">selected</c:if>><c:out value="${type.name}"/></option>
 					</c:forEach>
 					<c:if test="${groupOpen}">
 						</optgroup>
 					</c:if>
 				</select>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -112,7 +112,7 @@
 		<spring:bind path="form.retireReason">
 			<td>
 				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<c:if test="${status.errorMessage != ''}"><span class="error"><c:out value="${status.errorMessage}"/></span></c:if>
 			</td>
 		</spring:bind>
 	</tr>
@@ -148,14 +148,14 @@
 		<c:forEach items="${extension.rows}" var="row">
 			<tr>
 				<td><openmrs:message code="${row.key}"/></td>
-				<td>${row.value}</td>
+				<td><c:out value="${row.value}"/></td>
 			</tr>
 		</c:forEach>
 	</openmrs:extensionPoint>
 	 <tr>
      <c:if test="${form.formId != null}">
        <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
-       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${form.uuid}</sub></font></td>
+       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub><c:out value="${form.uuid}"/></sub></font></td>
      </c:if>
    </tr>
 </table>
