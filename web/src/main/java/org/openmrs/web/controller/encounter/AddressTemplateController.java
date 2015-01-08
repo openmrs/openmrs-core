@@ -17,7 +17,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.LocationTag;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
-import org.openmrs.layout.web.address.AddressTemplate;
+import org.openmrs.layout.address.AddressTemplate;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

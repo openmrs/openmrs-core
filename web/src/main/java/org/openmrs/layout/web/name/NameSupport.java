@@ -18,6 +18,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.LayoutSupport;
 
+/**
+ * @deprecated
+ * @see org.openmrs.layout.name.NameSupport
+ */
+@Deprecated
 public class NameSupport extends LayoutSupport<NameTemplate> {
 	
 	private static NameSupport singleton;

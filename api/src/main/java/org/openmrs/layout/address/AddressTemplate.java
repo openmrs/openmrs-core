@@ -11,24 +11,43 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.layout.web.name;
+package org.openmrs.layout.address;
 
-import org.openmrs.layout.web.LayoutSupport;
-import org.openmrs.layout.web.LayoutTemplate;
+import java.io.Serializable;
 
-public class NameTemplate extends LayoutTemplate {
+import org.openmrs.layout.LayoutSupport;
+import org.openmrs.layout.LayoutTemplate;
+
+/**
+ * @since 1.12
+ */
+public class AddressTemplate extends LayoutTemplate implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
+	public AddressTemplate(String string) {
+		super(string);
+	}
 	
 	public String getLayoutToken() {
-		return "IS_NAME_TOKEN";
+		return "IS_ADDR_TOKEN";
 	}
 	
 	public String getNonLayoutToken() {
-		return "IS_NOT_NAME_TOKEN";
+		return "IS_NOT_ADDR_TOKEN";
 	}
 	
 	@Override
 	public LayoutSupport<?> getLayoutSupportInstance() {
-		return NameSupport.getInstance();
+		return AddressSupport.getInstance();
 	}
 	
+	public String getCodeName() {
+		if (this.codeName == null) {
+			this.codeName = "default";
+			return this.codeName;
+		} else {
+			return this.codeName;
+		}
+	}
 }

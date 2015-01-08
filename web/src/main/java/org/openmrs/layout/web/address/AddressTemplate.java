@@ -18,6 +18,11 @@ import java.io.Serializable;
 import org.openmrs.layout.web.LayoutSupport;
 import org.openmrs.layout.web.LayoutTemplate;
 
+/**
+ * @deprecated
+ * @see org.openmrs.layout.address.AddressTemplate
+ */
+@Deprecated
 public class AddressTemplate extends LayoutTemplate implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

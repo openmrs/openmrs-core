@@ -18,6 +18,11 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * @deprecated
+ * @see org.openmrs.layout.LayoutSupport
+ */
+@Deprecated
 public abstract class LayoutSupport<T extends LayoutTemplate> {
 	
 	private Log log = LogFactory.getLog(getClass());
