@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.logic.token">
+
+    <class name="TokenRegistration" table="logic_token_registration">   
+        <id name="tokenRegistrationId" type="int" column="token_registration_id">
+            <generator class="native">
+                <param name="sequence">logic_token_registration_token_registration_id_seq</param>
+            </generator>
+        </id>
+        <property name="uuid" type="string" length="38" not-null="true" />
+        <property name="token" type="java.lang.String" not-null="true" length="256" />
+        <property name="providerClassName" type="java.lang.String" column="provider_class_name" not-null="true" length="512" />
+        <property name="configuration" type="java.lang.String" length="2000" />
+        <property name="providerToken" type="java.lang.String" column="provider_token" not-null="true" length="256" />
+        <many-to-one name="creator" class="org.openmrs.User" not-null="true" />
+        <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+        <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
+        <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+
+        <set name="tags" table="logic_token_registration_tag">
+            <key column="token_registration_id" />
+            <element column="tag" type="string" not-null="true" length="512" />
+        </set>
+    </class>
+
+</hibernate-mapping>
