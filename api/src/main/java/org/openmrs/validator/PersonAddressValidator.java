@@ -15,7 +15,6 @@ package org.openmrs.validator;
 
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
 import org.openmrs.annotation.Handler;
-import org.openmrs.layout.web.address.*;
+import org.openmrs.layout.address.*;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

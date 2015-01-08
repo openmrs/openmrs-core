@@ -22,7 +22,10 @@ import java.util.Vector;
 
 /**
  * Generic class used by AddressTemplate and NameTemplate layouts
+ * @deprecated
+ * @see org.openmrs.layout.LayoutTemplate
  */
+@Deprecated
 public abstract class LayoutTemplate {
 	
 	protected final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
@@ -58,7 +61,7 @@ public abstract class LayoutTemplate {
 	
 	/**
 	 * Very crude way of setting just one line of template. This just puts
-	 * something on {@link #setLineByLineFormat(List)} with this string
+	 * something on {@link #setLineByLineFormat(java.util.List)} with this string
 	 *
 	 * @param simpleTemplate
 	 *            first template line
@@ -289,7 +292,7 @@ public abstract class LayoutTemplate {
 	 * Set the element formats. These can be used to display an example format that an element
 	 * should look like.
 	 *
-	 * @param elementFormats the elementFormats to set
+	 * @param elementRegexFormats the elementFormats to set
 	 */
 	public void setElementRegexFormats(Map<String, String> elementRegexFormats) {
 		this.elementRegexFormats = elementRegexFormats;

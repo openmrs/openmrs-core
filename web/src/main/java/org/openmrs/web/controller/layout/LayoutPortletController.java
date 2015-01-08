@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.layout.web.LayoutSupport;
-import org.openmrs.layout.web.LayoutTemplate;
+import org.openmrs.layout.LayoutSupport;
+import org.openmrs.layout.LayoutTemplate;
 import org.openmrs.web.controller.PortletController;
 
 public abstract class LayoutPortletController extends PortletController {

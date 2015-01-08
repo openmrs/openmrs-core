@@ -11,27 +11,27 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.controller.layout;
+package org.openmrs.layout.name;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.layout.LayoutSupport;
-import org.openmrs.layout.name.NameSupport;
+import org.openmrs.layout.LayoutTemplate;
 
-public class NameLayoutPortletController extends LayoutPortletController {
+/**
+ * @since 1.12
+ */
+public class NameTemplate extends LayoutTemplate {
 	
-	private static Log log = LogFactory.getLog(NameLayoutPortletController.class);
-	
-	protected String getDefaultsPropertyName() {
-		return "layout.name.defaults";
+	public String getLayoutToken() {
+		return "IS_NAME_TOKEN";
 	}
 	
-	protected String getDefaultDivId() {
-		return "nameLayoutPortlet";
+	public String getNonLayoutToken() {
+		return "IS_NOT_NAME_TOKEN";
 	}
 	
-	protected LayoutSupport getLayoutSupportInstance() {
-		log.debug("Getting name layout instance");
+	@Override
+	public LayoutSupport<?> getLayoutSupportInstance() {
 		return NameSupport.getInstance();
 	}
+	
 }

@@ -13,6 +13,10 @@
  */
 package org.openmrs.layout.web.address;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -22,10 +26,11 @@ import org.openmrs.layout.web.LayoutSupport;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
+/**
+ * @deprecated
+ * @see org.openmrs.layout.address.AddressSupport
+ */
+@Deprecated
 public class AddressSupport extends LayoutSupport<AddressTemplate> implements GlobalPropertyListener {
 	
 	private static AddressSupport singleton;

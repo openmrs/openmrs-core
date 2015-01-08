@@ -879,29 +879,22 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG = "drugOrder.requireDrug";
 	
-	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
+	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
 	        + "      <property name=\"address2\" value=\"Location.address2\"/>\n"
 	        + "      <property name=\"address1\" value=\"Location.address1\"/>\n"
 	        + "      <property name=\"country\" value=\"Location.country\"/>\n"
 	        + "      <property name=\"stateProvince\" value=\"Location.stateProvince\"/>\n"
-	        + "      <property name=\"cityVillage\" value=\"Location.cityVillage\"/>\n"
-	        + "    </nameMappings>\n"
-	        + "    <sizeMappings class=\"properties\">\n"
-	        + "      <property name=\"postalCode\" value=\"10\"/>\n"
-	        + "      <property name=\"address2\" value=\"40\"/>\n"
-	        + "      <property name=\"address1\" value=\"40\"/>\n"
+	        + "      <property name=\"cityVillage\" value=\"Location.cityVillage\"/>\n" + "    </nameMappings>\n"
+	        + "    <sizeMappings class=\"properties\">\n" + "      <property name=\"postalCode\" value=\"10\"/>\n"
+	        + "      <property name=\"address2\" value=\"40\"/>\n" + "      <property name=\"address1\" value=\"40\"/>\n"
 	        + "      <property name=\"country\" value=\"10\"/>\n"
 	        + "      <property name=\"stateProvince\" value=\"10\"/>\n"
-	        + "      <property name=\"cityVillage\" value=\"10\"/>\n"
-	        + "    </sizeMappings>\n"
-	        + "    <lineByLineFormat>\n"
-	        + "      <string>address1</string>\n"
-	        + "      <string>address2</string>\n"
-	        + "      <string>cityVillage stateProvince country postalCode</string>\n"
-	        + "    </lineByLineFormat>\n"
-	        + "   <requiredElements>\\n\" + \" </requiredElements>\\n\" + \" </org.openmrs.layout.web.address.AddressTemplate>";
+	        + "      <property name=\"cityVillage\" value=\"10\"/>\n" + "    </sizeMappings>\n" + "    <lineByLineFormat>\n"
+	        + "      <string>address1</string>\n" + "      <string>address2</string>\n"
+	        + "      <string>cityVillage stateProvince country postalCode</string>\n" + "    </lineByLineFormat>\n"
+	        + "   <requiredElements>\\n\" + \" </requiredElements>\\n\" + \" </org.openmrs.layout.address.AddressTemplate>";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
