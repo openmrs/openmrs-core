@@ -95,7 +95,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				}
 			}
 			
-			if (requireAll == false) {
+			if (!requireAll) {
 				// If there's no match, then we know there are privileges and
 				// that the user didn't have any of them. The user is not
 				// authorized to access the method
@@ -105,7 +105,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 		} else if (attributes.hasAuthorizedAnnotation(method)) {
 			// if there are no privileges defined, just require that 
 			// the user be authenticated
-			if (Context.isAuthenticated() == false) {
+			if (!Context.isAuthenticated()) {
 				throwUnauthorized(user, method);
 			}
 		}

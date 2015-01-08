@@ -101,7 +101,7 @@ public class DWREncounterService {
 				// user searched on a number.  Insert concept with corresponding encounterId
 				Encounter e = es.getEncounter(Integer.valueOf(phrase));
 				if (e != null && (patientId == null || patientId.equals(e.getPatient().getPatientId()))) {
-					if (!e.isVoided() || includeVoided == true) {
+					if (!e.isVoided() || includeVoided) {
 						encs.add(e);
 					}
 				}
@@ -158,7 +158,7 @@ public class DWREncounterService {
 					// user searched on a number
 					Encounter e = es.getEncounter(Integer.valueOf(phrase));
 					if (e != null) {
-						if (!e.isVoided() || includeVoided == true) {
+						if (!e.isVoided() || includeVoided) {
 							encounterCount++;
 						}
 					}

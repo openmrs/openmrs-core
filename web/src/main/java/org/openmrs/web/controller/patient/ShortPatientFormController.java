@@ -427,7 +427,7 @@ public class ShortPatientFormController {
 				}
 				
 				// if no relationship was found, create a stub one now
-				if (relationshipFound == false) {
+				if (!relationshipFound) {
 					Relationship relationshipStub = new Relationship();
 					relationshipStub.setRelationshipType(relationshipType);
 					if (aIsToB) {

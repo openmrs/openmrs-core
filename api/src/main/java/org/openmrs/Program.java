@@ -163,7 +163,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	public Set<ProgramWorkflow> getWorkflows() {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
 		for (ProgramWorkflow workflow : getAllWorkflows()) {
-			if (workflow.isRetired() == false) {
+			if (!workflow.isRetired()) {
 				ret.add(workflow);
 			}
 		}
