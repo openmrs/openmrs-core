@@ -333,6 +333,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
 		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
 		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("preferredNamesByLocale[en]", EXPECTED_PREFERRED_NAME);
 		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
@@ -385,6 +386,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
 		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
 		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("preferredNamesByLocale[en]", EXPECTED_SYNONYM_A);
 		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
@@ -434,6 +436,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
 		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
 		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("preferredNamesByLocale[en]", EXPECTED_PREFERRED_NAME);
 		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
@@ -565,6 +568,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
 		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
 		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("preferredNamesByLocale[en]", EXPECTED_PREFERRED_NAME);
 		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
