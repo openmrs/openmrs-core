@@ -97,6 +97,7 @@ public class SchedulerFormController extends SimpleFormController {
 		// if the user selected a different repeat interval unit, fix repeatInterval
 		String units = request.getParameter("repeatIntervalUnits");
 		Long interval = task.getRepeatInterval();
+		if(interval!=null){
 		
 		if ("minutes".equals(units)) {
 			interval = interval * 60;
@@ -107,6 +108,7 @@ public class SchedulerFormController extends SimpleFormController {
 		}
 		
 		task.setRepeatInterval(interval);
+	}
 		
 		return super.processFormSubmission(request, response, task, errors);
 	}
