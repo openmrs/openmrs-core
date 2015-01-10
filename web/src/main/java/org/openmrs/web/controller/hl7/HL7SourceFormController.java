@@ -54,7 +54,7 @@ public class HL7SourceFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+		
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
 	

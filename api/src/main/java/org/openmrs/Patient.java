@@ -35,8 +35,6 @@ public class Patient extends Person implements java.io.Serializable {
 	
 	// Fields
 	
-	// private Person person;
-	
 	private Integer patientId;
 	
 	private Set<PatientIdentifier> identifiers;
