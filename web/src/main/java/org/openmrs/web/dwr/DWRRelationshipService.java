@@ -34,7 +34,7 @@ public class DWRRelationshipService {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public void createRelationship(Integer personAId, Integer personBId, Integer relationshipTypeId, String startDateStr)
+	public boolean createRelationship(Integer personAId, Integer personBId, Integer relationshipTypeId, String startDateStr)
 	        throws Exception {
 		PersonService ps = Context.getPersonService();
 		Person personA = ps.getPerson(personAId);
@@ -44,10 +44,20 @@ public class DWRRelationshipService {
 		rel.setPersonA(personA);
 		rel.setPersonB(personB);
 		rel.setRelationshipType(relType);
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		if (StringUtils.isNotBlank(startDateStr)) {
-			rel.setStartDate(Context.getDateFormat().parse(startDateStr));
+			new RelationshipValidator().validateStartDate(startDateStr, errors);
+			if (!errors.hasErrors())
+				rel.setStartDate(Context.getDateFormat().parse(startDateStr));
 		}
-		ps.saveRelationship(rel);
+		if (errors.hasErrors()) {
+			return false;
+		} else {
+			ps.saveRelationship(rel);
+			return true;
+		}
+		
 	}
 	
 	public void voidRelationship(Integer relationshipId, String voidReason) {

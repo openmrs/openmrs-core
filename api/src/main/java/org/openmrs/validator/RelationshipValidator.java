@@ -12,10 +12,13 @@
  */
 package org.openmrs.validator;
 
+import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Relationship;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -65,4 +68,26 @@ public class RelationshipValidator implements Validator {
 		
 	}
 	
+	/**
+	 * @see org.springframework.validation.Validator#validateStartDate(java.lang.String,
+	 *      org.springframework.validation.Errors)
+	 *
+	 * @should fail if start date is in future
+	 * @param String String containing start date
+	 * @param errors Error object to hold any errors encounter in the test
+	 * @throws ParseException 
+	 *
+	 *
+	 **/
+	
+	public void validateStartDate(String startDateStr, Errors errors) throws ParseException {
+		if (StringUtils.isNotBlank(startDateStr)) {
+			Date startDate = Context.getDateFormat().parse(startDateStr);
+			Date currentDate = new Date();
+			if (startDate.after(currentDate)) {
+				errors.reject("error.date.future");
+			}
+			
+		}
+	}
 }

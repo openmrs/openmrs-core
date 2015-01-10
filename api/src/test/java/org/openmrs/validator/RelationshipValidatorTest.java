@@ -12,6 +12,7 @@
  */
 package org.openmrs.validator;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
@@ -55,6 +56,48 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		Map<String, String> map = new HashMap<String, String>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		new RelationshipValidator().validate(relationship, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RelationshipValidator#validateStartDate(String,Errors)}
+	 */
+	@Test
+	@Verifies(value = "Should fail if start date is in future", method = "validateStartDate(String,Errors)")
+	public void validate_shouldFailIfStartDateIsInFuture() throws Exception {
+		
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
+		String futuredate = "18/03/2118";
+		new RelationshipValidator().validateStartDate(futuredate, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RelationshipValidator#validateStartDate(String,Errors)}
+	 */
+	@Test
+	@Verifies(value = "Should pass if start date is not in future", method = "validateStartDate(String,Errors)")
+	public void validate_shouldPassIfStartDateIsNotInFuture() throws Exception {
+		
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
+		String futuredate = "18/03/2013";
+		new RelationshipValidator().validateStartDate(futuredate, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RelationshipValidator#validateStartDate(String,Errors)}
+	 */
+	@Test
+	@Verifies(value = "Should pass if start date is empty since start date is optional while creating a relationship", method = "validateStartDate(String,Errors)")
+	public void validate_shouldPassIfStartDateIsEmpty() throws Exception {
+		
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
+		String date = "";
+		new RelationshipValidator().validateStartDate(date, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
 }
