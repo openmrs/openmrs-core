@@ -47,6 +47,7 @@ public class RelationshipValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 *
 	 * @should fail if end date is prior to the start date
+	 * @should fail if start date is in future
 	 * @param target Relationship object to be validate
 	 * @param errors Error object to hold any errors encounter in the test
 	 *
@@ -57,6 +58,7 @@ public class RelationshipValidator implements Validator {
 		Relationship relationship = (Relationship) target;
 		
 		if (relationship != null) {
+			
 			Date startDate = relationship.getStartDate();
 			Date endDate = relationship.getEndDate();
 			if (startDate != null && endDate != null) {
@@ -64,30 +66,15 @@ public class RelationshipValidator implements Validator {
 					errors.reject("Relationship.InvalidEndDate.error");
 				}
 			}
+			
+			if (startDate != null) {
+				Date currentDate = new Date();
+				if (startDate.after(currentDate)) {
+					errors.reject("error.date.future");
+				}
+			}
 		}
 		
 	}
 	
-	/**
-	 * @see org.springframework.validation.Validator#validateStartDate(java.lang.String,
-	 *      org.springframework.validation.Errors)
-	 *
-	 * @should fail if start date is in future
-	 * @param String String containing start date
-	 * @param errors Error object to hold any errors encounter in the test
-	 * @throws ParseException 
-	 *
-	 *
-	 **/
-	
-	public void validateStartDate(String startDateStr, Errors errors) throws ParseException {
-		if (StringUtils.isNotBlank(startDateStr)) {
-			Date startDate = Context.getDateFormat().parse(startDateStr);
-			Date currentDate = new Date();
-			if (startDate.after(currentDate)) {
-				errors.reject("error.date.future");
-			}
-			
-		}
-	}
 }

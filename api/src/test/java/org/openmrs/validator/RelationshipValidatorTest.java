@@ -12,6 +12,7 @@
  */
 package org.openmrs.validator;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,30 +61,36 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validateStartDate(String,Errors)}
+	 * @see {@link RelationshipValidator#validateStartDate(Date,Errors)}
 	 */
 	@Test
-	@Verifies(value = "Should fail if start date is in future", method = "validateStartDate(String,Errors)")
+	@Verifies(value = "Should fail if start date is in future", method = "validateStartDate(Date,Errors)")
 	public void validate_shouldFailIfStartDateIsInFuture() throws Exception {
-		
+		Relationship relationship = new Relationship(1);
 		Map<String, String> map = new HashMap<String, String>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
-		String futuredate = "18/03/2118";
-		new RelationshipValidator().validateStartDate(futuredate, errors);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, 1);
+		Date nextYear = cal.getTime();
+		relationship.setStartDate(nextYear);
+		new RelationshipValidator().validate(relationship, errors);
 		Assert.assertTrue(errors.hasErrors());
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validateStartDate(String,Errors)}
+	 * @see {@link RelationshipValidator#validate(Date,Errors)}
 	 */
 	@Test
-	@Verifies(value = "Should pass if start date is not in future", method = "validateStartDate(String,Errors)")
+	@Verifies(value = "Should pass if start date is not in future", method = "validateStartDate(Date,Errors)")
 	public void validate_shouldPassIfStartDateIsNotInFuture() throws Exception {
-		
+		Relationship relationship = new Relationship(1);
 		Map<String, String> map = new HashMap<String, String>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
-		String futuredate = "18/03/2013";
-		new RelationshipValidator().validateStartDate(futuredate, errors);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -1);
+		Date lastYear = cal.getTime();
+		relationship.setStartDate(lastYear);
+		new RelationshipValidator().validate(relationship, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
@@ -96,8 +103,9 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		
 		Map<String, String> map = new HashMap<String, String>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
-		String date = "";
-		new RelationshipValidator().validateStartDate(date, errors);
+		Relationship relationship = new Relationship(1);
+		relationship.setStartDate(null);
+		new RelationshipValidator().validate(relationship, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
 }
