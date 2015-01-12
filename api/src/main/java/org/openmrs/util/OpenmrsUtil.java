@@ -1364,7 +1364,7 @@ public class OpenmrsUtil {
 		}
 		
 		if (!folder.isDirectory()) {
-			throw new APIException("'" + folder.getAbsolutePath() + "' should be a directory but it is not");
+			throw new APIException("should.be.directory", new Object[] { folder.getAbsolutePath() });
 		}
 		
 		return folder;

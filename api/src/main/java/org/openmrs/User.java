@@ -379,7 +379,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 */
 	@Deprecated
 	public void setPersonId(Integer personId) {
-		throw new APIException("You need to call setPerson(Person)");
+		throw new APIException("User.setPersonId", (Object[]) null);
 	}
 	
 	/**

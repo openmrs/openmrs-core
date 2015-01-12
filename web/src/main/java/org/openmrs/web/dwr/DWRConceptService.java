@@ -286,7 +286,7 @@ public class DWRConceptService {
 	        throws Exception {
 		
 		if (includeVoided == true) {
-			throw new APIException("You should not include voideds in the search.");
+			throw new APIException("you.should.not.included.voideds", (Object[]) null);
 		}
 		
 		ConceptService cs = Context.getConceptService();
@@ -433,7 +433,7 @@ public class DWRConceptService {
 	
 	public List<Object> findDrugs(String phrase, boolean includeRetired) throws APIException {
 		if (includeRetired == true) {
-			throw new APIException("You should not include voideds in the search.");
+			throw new APIException("you.should.not.included.voideds", (Object[]) null);
 		}
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();

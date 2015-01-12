@@ -504,7 +504,7 @@ public class ArdenServiceImpl implements ArdenService {
 			parseFile(inputStream, "ConceptDerived", outputDir);
 		}
 		catch (Exception e) {
-			throw new APIException("Unable to compile the arden arden rule definition");
+			throw new APIException("arden.unable.compile", (Object[]) null);
 		}
 	}
 }

@@ -396,7 +396,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
 		
 		if (includeVoided == true) {
-			throw new APIException("Searching on voided patients is no longer allowed");
+			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
 		return Context.getPatientService().getPatients(null, identifier, null);
@@ -411,7 +411,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
 		
 		if (includeVoided == true) {
-			throw new APIException("Searching on voided patients is no longer allowed");
+			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
 		return Context.getPatientService().getPatients(null, identifier, null);
@@ -435,7 +435,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
 		
 		if (includeVoided == true) {
-			throw new APIException("Searching on voided patients is no longer allowed");
+			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
 		return Context.getPatientService().getPatients(name, (String) null, null);
@@ -544,7 +544,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	        boolean includeVoided) throws APIException {
 		
 		if (includeVoided == true) {
-			throw new APIException("Searching on voided identifiers is no longer allowed");
+			throw new APIException("Patient.identifiers.search.voided", (Object[]) null);
 		}
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
@@ -664,7 +664,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	        throws APIException {
 		checkIfPatientIdentifierTypesAreLocked();
 		if (reason == null || reason.length() < 1) {
-			throw new APIException("A reason is required when retiring an identifier type");
+			throw new APIException("Patient.identifier.retire.reason", (Object[]) null);
 		}
 		
 		patientIdentifierType.setRetired(true);
@@ -705,7 +705,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> findPatients(String query, boolean includeVoided) throws APIException {
 		if (includeVoided == true) {
-			throw new APIException("Searching on voided patients is no longer allowed");
+			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
 		return Context.getPatientService().getPatients(query);
@@ -765,7 +765,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) throws APIException {
 		
 		if (attributes == null || attributes.size() < 1) {
-			throw new APIException("There must be at least one attribute supplied to search on");
+			throw new APIException("Patient.no.attribute", (Object[]) null);
 		}
 		
 		return dao.getDuplicatePatientsByAttributes(attributes);
@@ -801,12 +801,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		        + notPreferred.getPatientId());
 		if (preferred.getPatientId().equals(notPreferred.getPatientId())) {
 			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
-			throw new APIException("Merge operation cancelled: Cannot merge user " + preferred.getPatientId() + " to self");
+			throw new APIException("Patient.merge.cancelled", new Object[] { preferred.getPatientId() });
 		}
 		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(notPreferred);
 		for (Order order : orders) {
 			if (!order.isVoided()) {
-				throw new APIException("Cannot merge patients where the not preferred patient has unvoided orders");
+				throw new APIException("Patient.cannot.merge", (Object[]) null);
 			}
 		}
 		PersonMergeLogData mergedData = new PersonMergeLogData();
@@ -1195,14 +1195,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) throws APIException {
 		
 		if (patient == null) {
-			throw new APIException("Attempting to exit from care an invalid patient. Cannot proceed");
+			throw new APIException("Patient.invalid.care", (Object[]) null);
 		}
 		if (dateExited == null) {
-			throw new APIException("Must supply a valid dateExited when indicating that a patient has left care");
+			throw new APIException("Patient.no.valid.dateExited", (Object[]) null);
 		}
 		if (reasonForExit == null) {
-			throw new APIException(
-			        "Must supply a valid reasonForExit (even if 'Unknown') when indicating that a patient has left care");
+			throw new APIException("Patient.no.valid.reasonForExit", (Object[]) null);
 		}
 		
 		// need to create an observation to represent this (otherwise how
@@ -1223,13 +1222,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private void saveReasonForExitObs(Patient patient, Date exitDate, Concept cause) throws APIException {
 		
 		if (patient == null) {
-			throw new APIException("Patient supplied to method is null");
+			throw new APIException("Patient.null", (Object[]) null);
 		}
 		if (exitDate == null) {
-			throw new APIException("Exit date supplied to method is null");
+			throw new APIException("Patient.exit.date.null", (Object[]) null);
 		}
 		if (cause == null) {
-			throw new APIException("Cause supplied to method is null");
+			throw new APIException("Patient.cause.null", (Object[]) null);
 		}
 		
 		// need to make sure there is an Obs that represents the patient's
@@ -1319,14 +1318,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			
 		} else {
 			if (patient == null) {
-				throw new APIException("Attempting to set an invalid patient's status to 'dead'");
+				throw new APIException("Patient.invalid.dead", (Object[]) null);
 			}
 			if (dateDied == null) {
-				throw new APIException("Must supply a valid dateDied when indicating that a patient has died");
+				throw new APIException("Patient.no.valid.dateDied", (Object[]) null);
 			}
 			if (causeOfDeath == null) {
-				throw new APIException(
-				        "Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
+				throw new APIException("Patient.no.valid.causeOfDeath", (Object[]) null);
 			}
 		}
 	}
@@ -1338,13 +1336,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void saveCauseOfDeathObs(Patient patient, Date deathDate, Concept cause, String otherReason) throws APIException {
 		
 		if (patient == null) {
-			throw new APIException("Patient supplied to method is null");
+			throw new APIException("Patient.null", (Object[]) null);
 		}
 		if (deathDate == null) {
-			throw new APIException("Death date supplied to method is null");
+			throw new APIException("Patient.death.date.null", (Object[]) null);
 		}
 		if (cause == null) {
-			throw new APIException("Cause supplied to method is null");
+			throw new APIException("Patient.cause.null", (Object[]) null);
 		}
 		
 		if (!patient.getDead()) {
@@ -1553,7 +1551,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public PatientIdentifier voidPatientIdentifier(PatientIdentifier patientIdentifier, String reason) throws APIException {
 		
 		if (patientIdentifier == null || StringUtils.isBlank(reason)) {
-			throw new APIException("patientIdentifier can't be null and the reason should not be an empty string");
+			throw new APIException("Patient.identifier.cannot.be.null", (Object[]) null);
 		}
 		return Context.getPatientService().savePatientIdentifier(patientIdentifier);
 		
@@ -1585,7 +1583,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		        || patientIdentifier.getIdentifierType() == null
 		        || StringUtils.isBlank(patientIdentifier.getIdentifier())
 		        || (locationBehavior == PatientIdentifierType.LocationBehavior.REQUIRED && patientIdentifier.getLocation() == null)) {
-			throw new APIException("PatientIdentifier argument or one of its required fields is null or invalid");
+			throw new APIException("Patient.identifier.null", (Object[]) null);
 		}
 		if (patientIdentifier.getPatientIdentifierId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS);

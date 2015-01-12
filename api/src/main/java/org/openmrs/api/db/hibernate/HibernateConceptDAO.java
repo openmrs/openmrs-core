@@ -1544,9 +1544,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (terms.size() == 0) {
 			return null;
 		} else if (terms.size() > 1) {
-			throw new APIException(Context.getMessageSourceService().getMessage(
-			    "ConceptReferenceTerm.foundMultipleTermsWithNameInSource", new Object[] { name, conceptSource.getName() },
-			    null));
+			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithNameInSource", new Object[] { name,
+			        conceptSource.getName() });
 		}
 		return (ConceptReferenceTerm) terms.get(0);
 	}
@@ -1565,9 +1564,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (terms.size() == 0) {
 			return null;
 		} else if (terms.size() > 1) {
-			throw new APIException(Context.getMessageSourceService().getMessage(
-			    "ConceptReferenceTerm.foundMultipleTermsWithCodeInSource", new Object[] { code, conceptSource.getName() },
-			    null));
+			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithCodeInSource", new Object[] { code,
+			        conceptSource.getName() });
 		}
 		return (ConceptReferenceTerm) terms.get(0);
 	}

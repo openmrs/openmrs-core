@@ -94,7 +94,7 @@ public class GenerateDataExportTask extends AbstractTask {
 		}
 		catch (Exception e) {
 			log.error("Error running generate data export queue task", e);
-			throw new APIException("Error running generate data export queue task", e);
+			throw new APIException("GenerateDataExportTask.error.running", null, e);
 		}
 		finally {
 			Context.closeSession();

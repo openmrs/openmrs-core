@@ -375,8 +375,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			if (coreModule == null && !ModuleUtil.ignoreCoreModules()) {
 				log.error("Unable to find an openmrs core loaded module with id: " + moduleId);
-				throw new APIException(
-				        "Should not be here.  All 'core' required modules by the api should be started and their classloaders should be available");
+				throw new APIException("Module.error.shouldNotBeHere", (Object[]) null);
 			}
 			
 			// if this is already the classloader for one of the core modules, don't put it on the import list

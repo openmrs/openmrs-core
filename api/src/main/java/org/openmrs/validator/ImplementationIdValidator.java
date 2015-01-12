@@ -19,7 +19,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.ImplementationId;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -52,7 +51,7 @@ public class ImplementationIdValidator implements Validator {
 		ImplementationId implId = (ImplementationId) obj;
 		char[] illegalChars = { '^', '|' };
 		if (implId == null) {
-			throw new APIException(Context.getMessageSourceService().getMessage("ImplementationId.null"));
+			throw new APIException("ImplementationId.null", (Object[]) null);
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "ImplementationId.name.empty");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "implementationId", "ImplementationId.implementationId.empty");

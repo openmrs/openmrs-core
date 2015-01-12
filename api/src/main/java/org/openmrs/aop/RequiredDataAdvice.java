@@ -334,19 +334,19 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		}
 		catch (IllegalAccessException e) {
 			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
-				throw new APIException("Unable to get field: " + fieldName + " on " + openmrsObject.getClass());
+				throw new APIException("unable.get.field", new Object[] { fieldName, openmrsObject.getClass() });
 			} else {
-				throw new APIException("Unable to use getter method: " + getterName + " for field: " + fieldName + " on "
-				        + openmrsObject.getClass());
+				throw new APIException("unable.getter.method", new Object[] { "use", getterName, fieldName,
+				        openmrsObject.getClass() });
 			}
 		}
 		catch (InvocationTargetException e) {
-			throw new APIException("Unable to run getter method: " + getterName + " for field: " + fieldName + " on "
-			        + openmrsObject.getClass());
+			throw new APIException("unable.getter.method", new Object[] { "run", getterName, fieldName,
+			        openmrsObject.getClass() });
 		}
 		catch (NoSuchMethodException e) {
-			throw new APIException("Unable to find getter method: " + getterName + " for field: " + fieldName + " on "
-			        + openmrsObject.getClass());
+			throw new APIException("unable.getter.method", new Object[] { "find", getterName, fieldName,
+			        openmrsObject.getClass() });
 		}
 	}
 	

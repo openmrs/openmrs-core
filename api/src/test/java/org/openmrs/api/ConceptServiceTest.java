@@ -3087,7 +3087,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugsByMapping_shouldFailIfSourceIsNull() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("ConceptSource is required");
+		expectedException.expectMessage("ConceptSource.is.required");
 		conceptService.getDrugsByMapping("random", null, null, false);
 	}
 	
@@ -3171,7 +3171,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugByMapping_shouldFailIfSourceIsNull() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("ConceptSource is required");
+		expectedException.expectMessage("ConceptSource.is.required");
 		conceptService.getDrugByMapping("random", null, null);
 	}
 	

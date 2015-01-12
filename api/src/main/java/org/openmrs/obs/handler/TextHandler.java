@@ -134,8 +134,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 					}
 				}
 				catch (IOException e) {
-					throw new APIException(
-					        "Unable to convert complex data to a valid Reader and then read it into a buffered image");
+					throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "Reader" }, e);
 				}
 			}
 			
@@ -147,7 +146,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 			
 		}
 		catch (IOException ioe) {
-			throw new APIException("Trying to write complex obs to the file system. ", ioe);
+			throw new APIException("Obs.error.trying.write.complex", null, ioe);
 		}
 		finally {
 			try {

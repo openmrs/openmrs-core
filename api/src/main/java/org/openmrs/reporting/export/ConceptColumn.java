@@ -104,7 +104,7 @@ public class ConceptColumn implements ExportColumn, Serializable {
 			} else if (DataExportReportObject.MODIFIER_LAST.equals(modifier)) {
 				function += "$fn.getLastObs";
 			} else {
-				throw new APIException("Unknown modifier: " + modifier);
+				throw new APIException("unknown.modifier", new Object[] { modifier });
 			}
 			
 			if (extras.length < 1) {

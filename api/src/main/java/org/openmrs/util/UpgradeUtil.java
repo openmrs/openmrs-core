@@ -58,22 +58,17 @@ public class UpgradeUtil {
 			}
 		}
 		catch (NumberFormatException e) {
-			throw new APIException("Your order entry upgrade settings file" + "contains invalid mapping from " + units
-			        + " to concept ID " + conceptId
-			        + ". ID must be an integer or null. Please refer to upgrade instructions for more details.", e);
+			throw new APIException("upgrade.settings.file.invalid.mapping", new Object[] { units, conceptId }, e);
 		}
 		catch (IOException e) {
 			if (e instanceof FileNotFoundException) {
-				throw new APIException("Unable to find file containing order entry upgrade settings in your "
-				        + "application data directory: " + appDataDir
-				        + "\nPlease refer to upgrade instructions for more details.", e);
+				throw new APIException("upgrade.settings.unable.find.file", new Object[] { appDataDir }, e);
 			} else {
 				throw new APIException(e);
 			}
 		}
 		
-		throw new APIException("Your order entry upgrade settings file" + " does not have mapping for " + units
-		        + ". Please refer to upgrade instructions for more details.");
+		throw new APIException("upgrade.settings.file.not.have.mapping", new Object[] { units });
 	}
 	
 	public static String getConceptUuid(Connection connection, int conceptId) throws SQLException {

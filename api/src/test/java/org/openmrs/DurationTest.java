@@ -13,11 +13,11 @@
  */
 package org.openmrs;
 
-import java.text.ParseException;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertEquals;
 import static org.openmrs.test.TestUtil.createDateTime;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import org.hamcrest.Matchers;
@@ -102,7 +102,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		OrderFrequency frequency = null;
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Frequency can not be null when duration in Recurring Interval"));
+		expectedException.expectMessage(Matchers.is("Duration.error.frequency.null"));
 		duration.addToDate(startDate, frequency);
 	}
 	
@@ -111,7 +111,7 @@ public class DurationTest extends BaseContextSensitiveTest {
 		Duration duration = new Duration(3, "J");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Unknown code 'J' for SNOMED CT duration units"));
+		expectedException.expectMessage(Matchers.is("Duration.unknown.code"));
 		duration.addToDate(createDateTime("2014-07-01 10:00:00"), null);
 	}
 	

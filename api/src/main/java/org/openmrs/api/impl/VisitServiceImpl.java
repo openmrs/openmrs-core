@@ -214,8 +214,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 			return;
 		}
 		if (Context.getEncounterService().getEncountersByVisit(visit, true).size() > 0) {
-			throw new APIException(Context.getMessageSourceService().getMessage("Visit.purge.inUse", null,
-			    "Cannot purge a visit that has encounters associated to it", Context.getLocale()));
+			throw new APIException("Visit.purge.inUse", (Object[]) null);
 		}
 		dao.deleteVisit(visit);
 	}

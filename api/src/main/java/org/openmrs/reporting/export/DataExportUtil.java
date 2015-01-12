@@ -190,10 +190,7 @@ public class DataExportUtil {
 		// check if some deprecated columns are being used in this export
 		// warning: hacky.
 		if (template.contains("fn.getPatientAttr('Patient', 'tribe')")) {
-			throw new APIException(
-			        "Unable to generate export: "
-			                + dataExport.getName()
-			                + " because it contains a reference to an outdated 'tribe' column.  You must install the 'Tribe Module' into OpenMRS to continue to reference tribes in OpenMRS.");
+			throw new APIException("unable.generate.export", new Object[] { dataExport.getName() });
 		}
 		
 		if (log.isDebugEnabled()) {

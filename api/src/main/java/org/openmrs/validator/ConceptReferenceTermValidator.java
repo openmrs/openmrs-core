@@ -107,7 +107,7 @@ public class ConceptReferenceTermValidator implements Validator {
 			Set<String> mappedTermUuids = null;
 			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps()) {
 				if (map == null) {
-					throw new APIException("Cannot add a null concept reference term map");
+					throw new APIException("ConceptReferenceTerm.add.null", (Object[]) null);
 				}
 				
 				if (map.getConceptMapType() == null) {

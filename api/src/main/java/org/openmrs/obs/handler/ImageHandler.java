@@ -141,14 +141,12 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				}
 			}
 			catch (IOException e) {
-				throw new APIException(
-				        "Unable to convert complex data to a valid input stream and then read it into a buffered image", e);
+				throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "input stream" }, e);
 			}
 		}
 		
 		if (img == null) {
-			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId()
-			        + " because its ComplexData.getData() is null.");
+			throw new APIException("Obs.error.cannot.save.complex", new Object[] { obs.getObsId() });
 		}
 		
 		try {
@@ -169,7 +167,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			
 		}
 		catch (IOException ioe) {
-			throw new APIException("Trying to write complex obs to the file system. ", ioe);
+			throw new APIException("Obs.error.trying.write.complex", null, ioe);
 		}
 		
 		return obs;

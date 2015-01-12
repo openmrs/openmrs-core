@@ -120,7 +120,7 @@ public class DataSetServiceImpl implements DataSetService {
 	public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext) {
 		DataSetProvider provider = getProvider(definition);
 		if (provider == null) {
-			throw new APIException("No DataSetProvider found for (" + definition.getClass() + ") " + definition.getName());
+			throw new APIException("DataSetProvider.not.found", new Object[] { definition.getClass(), definition.getName() });
 		}
 		return provider.evaluate(definition, inputCohort, evalContext);
 	}

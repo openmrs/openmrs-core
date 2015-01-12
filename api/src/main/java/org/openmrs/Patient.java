@@ -115,7 +115,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	@Deprecated
 	public Tribe getTribe() {
-		throw new APIException("The Patient.getTribe method is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.install.module", new Object[] { "Patient.getTribe" });
 	}
 	
 	/**
@@ -124,7 +124,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	@Deprecated
 	public void setTribe(Tribe tribe) {
-		throw new APIException("The Patient.setTribe(Tribe) method is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.install.module", new Object[] { "Patient.setTribe(Tribe)" });
 	}
 	
 	/**

@@ -99,7 +99,7 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.ReportService#deleteReportSchema(org.openmrs.report.ReportSchema)
 	 */
 	public void deleteReportSchema(ReportSchema reportSchema) {
-		throw new APIException("Not Yet Implemented");
+		throw new APIException("general.not.yet.implemented", (Object[]) null);
 	}
 	
 	/**
@@ -193,7 +193,7 @@ public class ReportServiceImpl implements ReportService {
 	public ReportSchema getReportSchema(ReportSchemaXml reportSchemaXml) throws APIException {
 		ReportSchema reportSchema = null;
 		if (reportSchemaXml == null || reportSchemaXml.getXml() == null || reportSchemaXml.getXml().length() == 0) {
-			throw new APIException("The current serialized ReportSchema string named 'xml' is null or empty");
+			throw new APIException("ReportSchema.null.or.empty", (Object[]) null);
 		}
 		Serializer deserializer = OpenmrsUtil.getSerializer();
 		String expandedXml = applyReportXmlMacros(reportSchemaXml.getXml());
@@ -260,7 +260,7 @@ public class ReportServiceImpl implements ReportService {
 			
 		}
 		catch (Exception e) {
-			throw new APIException("Unable to load and instantiate renderer", e);
+			throw new APIException("unable.load.and.instantiate.renderer", null, e);
 		}
 	}
 	
@@ -275,7 +275,7 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.ReportService#saveReportSchema(org.openmrs.report.ReportSchema)
 	 */
 	public void saveReportSchema(ReportSchema reportSchema) {
-		throw new APIException("Not Yet Implemented");
+		throw new APIException("general.not.yet.implemented", (Object[]) null);
 	}
 	
 	/**
