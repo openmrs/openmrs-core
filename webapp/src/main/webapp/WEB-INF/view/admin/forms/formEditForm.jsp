@@ -38,7 +38,7 @@
 		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="form.name">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
+				<input type="text" name="${status.expression}" <c:out value="${status.value}"/> size="35" />
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
@@ -47,7 +47,7 @@
 		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="form.description">
-				<textarea name="description" rows="3" cols="40" type="_moz">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" type="_moz"><c:out value="${status.value}"/></textarea>
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
@@ -56,7 +56,7 @@
 		<td><openmrs:message code="Form.version"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="form.version">
-				<input type="text" name="${status.expression}" value="${status.value}" size="5" />
+				<input type="text" name="${status.expression}"<c:out  value="${status.value}"/> size="5" />
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
@@ -84,7 +84,7 @@
 							<optgroup label="<openmrs:message code="Encounter.type.retired"/>">
 							<c:set var="groupOpen" value="true" />
 						</c:if>
-						<option value="${type.encounterTypeId}" <c:if test="${type.encounterTypeId == status.value}">selected</c:if>>${type.name}</option>
+						<option value="${type.encounterTypeId}" <c:if test="${type.encounterTypeId == status.value}">selected</c:if>><c:out value="${type.name}"/></option>
 					</c:forEach>
 					<c:if test="${groupOpen}">
 						</optgroup>
@@ -111,7 +111,7 @@
 		<td><openmrs:message code="general.retiredReason"/></td>
 		<spring:bind path="form.retireReason">
 			<td>
-				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
+				<input type="text" name="${status.expression}" id="retiredReason" <c:out value="${status.value}"/> />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
@@ -148,14 +148,14 @@
 		<c:forEach items="${extension.rows}" var="row">
 			<tr>
 				<td><openmrs:message code="${row.key}"/></td>
-				<td>${row.value}</td>
+				<td><c:out value="${row.value}"/></td>
 			</tr>
 		</c:forEach>
 	</openmrs:extensionPoint>
 	 <tr>
      <c:if test="${form.formId != null}">
        <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
-       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${form.uuid}</sub></font></td>
+       <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub><c:out value="${form.uuid}"/></sub></font></td>
      </c:if>
    </tr>
 </table>
