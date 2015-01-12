@@ -115,6 +115,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 * @should create a single unique synonym and obs for all similar proposals
+	 * @should work properly for country locales
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
@@ -147,7 +148,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 			}
 			// The users to be alerted of this change
 			Set<User> uniqueProposers = new HashSet<User>();
-			Locale conceptNameLocale = new Locale(request.getParameter("conceptNamelocale"));
+			Locale conceptNameLocale = LocaleUtility.fromSpecification(request.getParameter("conceptNamelocale"));
 			// map the proposal to the concept (creating obs along the way)
 			uniqueProposers.add(cp.getCreator());
 			cp.setFinalText(finalText);
