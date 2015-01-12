@@ -53,8 +53,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the {@link EncounterService}
@@ -100,8 +98,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		// if authenticated user is not supposed to edit encounter of certain type
 		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to edit encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
+			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { encounter.getEncounterType()
+			        .getEditPrivilege() });
 		}
 		
 		//If new encounter, try to assign a visit using the registered visit assignment handler.
@@ -214,8 +212,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		} else if (canViewEncounter(encounter, null)) {
 			return encounter;
 		} else {
-			throw new APIException(String.format("Privilege %s required to view encounters of this type", encounter
-			        .getEncounterType().getViewPrivilege()));
+			throw new APIException("Encounter.error.privilege.required.view", new Object[] { encounter.getEncounterType()
+			        .getViewPrivilege() });
 		}
 	}
 	
@@ -339,8 +337,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		// if authenticated user is not supposed to edit encounter of certain type
 		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to void encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
+			throw new APIException("Encounter.error.privilege.required.void", new Object[] { encounter.getEncounterType()
+			        .getEditPrivilege() });
 		}
 		
 		if (reason == null) {
@@ -381,8 +379,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		// if authenticated user is not supposed to edit encounter of certain type
 		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to unvoid encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
+			throw new APIException("Encounter.error.privilege.required.unvoid", new Object[] { encounter.getEncounterType()
+			        .getEditPrivilege() });
 		}
 		
 		String voidReason = encounter.getVoidReason();
@@ -418,8 +416,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public void purgeEncounter(Encounter encounter) throws APIException {
 		// if authenticated user is not supposed to edit encounter of certain type
 		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to purge encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
+			throw new APIException("Encounter.error.privilege.required.purge", new Object[] { encounter.getEncounterType()
+			        .getEditPrivilege() });
 		}
 		dao.deleteEncounter(encounter);
 	}
@@ -431,8 +429,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		// if authenticated user is not supposed to edit encounter of certain type
 		if (!canEditEncounter(encounter, null)) {
-			throw new APIException(String.format("Privilege %s required to purge encounters of this type", encounter
-			        .getEncounterType().getEditPrivilege()));
+			throw new APIException("Encounter.error.privilege.required.purge", new Object[] { encounter.getEncounterType()
+			        .getEditPrivilege() });
 		}
 		
 		if (cascade) {
@@ -812,15 +810,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				instance = OpenmrsClassLoader.getInstance().loadClass(handlerGlobalValue).newInstance();
 			}
 			catch (Exception ex) {
-				throw new APIException("Failed to instantiate assignment handler object for class class: "
-				        + handlerGlobalValue, ex);
+				throw new APIException("failed.instantiate.assignment.handler", new Object[] { handlerGlobalValue }, ex);
 			}
 			
 			if (instance instanceof EncounterVisitHandler) {
 				handler = (EncounterVisitHandler) instance;
 			} else {
-				throw new APIException(
-				        "The registered visit assignment handler should implement the EncounterVisitHandler interface");
+				throw new APIException("assignment.handler.should.implement.EncounterVisitHandler", (Object[]) null);
 			}
 		}
 		

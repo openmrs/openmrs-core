@@ -159,7 +159,7 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 		}
 		catch (ClassNotFoundException e) {
 			//re throw as a runtime exception
-			throw new APIException("Failed to load class:" + javaClassName, e);
+			throw new APIException("OrderType.failed.load.class", new Object[] { javaClassName }, e);
 		}
 	}
 	

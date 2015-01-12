@@ -99,7 +99,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 			catch (ParseException e2) {
 				// if we can't parse it as the normalized string or as the current
 				// user's date format, bail out
-				throw new APIException("Unable to parse the given string: '" + s + "' as a date object");
+				throw new APIException("unable.parse.string.as.date", new Object[] { s });
 				
 				// returning null causes the field to be blanked out
 				//return null;

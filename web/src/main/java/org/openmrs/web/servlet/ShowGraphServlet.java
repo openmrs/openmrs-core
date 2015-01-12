@@ -127,7 +127,7 @@ public class ShowGraphServlet extends HttpServlet {
 					response.setContentType(PNG_MIME_TYPE);
 					ChartUtilities.writeChartAsPNG(response.getOutputStream(), chart, width, height);
 				} else {
-					throw new APIException("Unsupported MIME type");
+					throw new APIException("unsupported.mime.type", (Object[]) null);
 				}
 			}
 			catch (IOException e) {

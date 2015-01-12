@@ -176,7 +176,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void createTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
@@ -188,7 +188,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void updateTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
@@ -200,7 +200,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void deleteTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
@@ -212,7 +212,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void retireTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
@@ -224,7 +224,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void unretireTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
@@ -943,13 +943,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	        throws APIException {
 		
 		if (!StringUtils.hasLength(implementationId)) {
-			throw new APIException("The implementationid cannot be empty");
+			throw new APIException("cannot.be.empty", new Object[] { "implementationid" });
 		}
 		if (!StringUtils.hasLength(description)) {
-			throw new APIException("The description cannot be empty");
+			throw new APIException("cannot.be.empty", new Object[] { "description" });
 		}
 		if (!StringUtils.hasLength(passphrase)) {
-			throw new APIException("The passphrase cannot be empty");
+			throw new APIException("cannot.be.empty", new Object[] { "passphrase" });
 		}
 		
 		// set up the data map to post to the openmrs server
@@ -1098,11 +1098,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return (T) defaultValue.getClass().getDeclaredConstructor(String.class).newInstance(propVal);
 		}
 		catch (InstantiationException e) {
-			throw new APIException(defaultValue.getClass().getName() + " is not able to be instantiated with value: "
-			        + propVal, e);
+			throw new APIException("is.not.able.instantiated", new Object[] { defaultValue.getClass().getName(), propVal },
+			        e);
 		}
 		catch (NoSuchMethodException e) {
-			throw new APIException(defaultValue.getClass().getName() + " does not have a string constructor", e);
+			throw new APIException("does.not.have.string.constructor", new Object[] { defaultValue.getClass().getName() }, e);
 		}
 		catch (Exception e) {
 			log.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
@@ -1244,7 +1244,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public void validate(Object object, Errors errors) throws APIException {
 		if (object == null) {
-			throw new APIException(Context.getMessageSourceService().getMessage("error.null"));
+			throw new APIException("error.null", (Object[]) null);
 		}
 		
 		dao.validate(object, errors);

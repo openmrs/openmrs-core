@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
 import static org.apache.commons.lang.time.DateUtils.addHours;
 import static org.apache.commons.lang.time.DateUtils.addMinutes;
 import static org.apache.commons.lang.time.DateUtils.addMonths;
@@ -21,6 +20,9 @@ import static org.apache.commons.lang.time.DateUtils.addWeeks;
 import static org.apache.commons.lang.time.DateUtils.addYears;
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.addSeconds;
+
+import java.util.Date;
+
 import org.openmrs.api.APIException;
 
 /**
@@ -92,10 +94,10 @@ public class Duration {
 			return addYears(startDate, this.duration);
 		if (SNOMED_CT_RECURRING_INTERVAL_CODE.equals(code)) {
 			if (frequency == null)
-				throw new APIException("Frequency can not be null when duration in Recurring Interval");
+				throw new APIException("Duration.error.frequency.null", (Object[]) null);
 			return addSeconds(startDate, (int) (this.duration * SECONDS_PER_DAY / frequency.getFrequencyPerDay()));
 		} else {
-			throw new APIException(String.format("Unknown code '%s' for SNOMED CT duration units", code));
+			throw new APIException("Duration.unknown.code", new Object[] { code });
 		}
 	}
 	

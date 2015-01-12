@@ -102,7 +102,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			if (null != handler) {
 				handler.saveObs(obs);
 			} else {
-				throw new APIException("Unknown handler for " + obs.getConcept());
+				throw new APIException("unknown.handler", new Object[] { obs.getConcept() });
 			}
 		}
 		
@@ -113,7 +113,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			Context.requirePrivilege(PrivilegeConstants.EDIT_OBS);
 			
 			if (changeMessage == null) {
-				throw new APIException("ChangeMessage is required when updating an obs in the database");
+				throw new APIException("Obs.error.ChangeMessage.required", (Object[]) null);
 			}
 			
 			Encounter encounter = obs.getEncounter();
@@ -214,11 +214,11 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	public void purgeObs(Obs obs, boolean cascade) throws APIException {
 		if (purgeComplexData(obs) == false) {
-			throw new APIException("Unable to purge complex data for obs: " + obs);
+			throw new APIException("Obs.error.unable.purge.complex.data", new Object[] { obs });
 		}
 		
 		if (cascade) {
-			throw new APIException("Cascading purge of obs not yet implemented");
+			throw new APIException("Obs.error.cascading.purge.not.implemented", (Object[]) null);
 			// TODO delete any related objects here before deleting the obs
 			// obsGroups objects?
 			// orders?
@@ -279,7 +279,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Deprecated
 	public MimeType voidMimeType(MimeType mimeType, String reason) throws APIException {
-		throw new APIException("Not yet implemented");
+		throw new APIException("general.not.yet.implemented", (Object[]) null);
 	}
 	
 	/**
@@ -463,9 +463,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		
 		// if they defined a bad concept, bail
 		if (defaultObsGroupConcept == null) {
-			throw new APIException("There is no concept defined with concept id: " + conceptIdStr
-			        + "You should correctly define the default obs group concept id with the global propery"
-			        + OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS);
+			throw new APIException("no.concept.defined.with.id", new Object[] { conceptIdStr,
+			        OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS });
 		}
 		
 		Obs obsGroup = new Obs();
@@ -506,7 +505,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Transactional(readOnly = true)
 	public Set<Obs> getObservations(Person who, boolean includeVoided) {
 		if (includeVoided == true) {
-			throw new APIException("Voided observations are no longer allowed to be queried");
+			throw new APIException("Obs.error.voided.no.longer.allowed", (Object[]) null);
 		}
 		
 		Set<Obs> obsSet = new HashSet<Obs>();
@@ -831,15 +830,14 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// Get the ConceptComplex from the ConceptService then return its
 			// handler.
 			if (obs.getConcept() == null) {
-				throw new APIException("Unable to get the handler for obs: " + obs + " because the concept is null");
+				throw new APIException("Obs.error.unable.get.handler", new Object[] { obs });
 			}
 			
 			String handlerString = Context.getConceptService().getConceptComplex(obs.getConcept().getConceptId())
 			        .getHandler();
 			
 			if (handlerString == null) {
-				throw new APIException("Unable to get the handler for obs: " + obs + " and concept: " + obs.getConcept()
-				        + " because the handler is null");
+				throw new APIException("Obs.error.unable.get.handler.and.concept", new Object[] { obs, obs.getConcept() });
 			}
 			
 			return this.getHandler(handlerString);
@@ -894,7 +892,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			
 		}
 		catch (Exception e) {
-			throw new APIException("Unable to load and instantiate handler", e);
+			throw new APIException("unable.load.and.instantiate.handler", null, e);
 		}
 	}
 	

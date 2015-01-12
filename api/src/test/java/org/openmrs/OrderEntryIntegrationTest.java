@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -304,7 +303,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertFalse(encounter.getOrders().isEmpty());
 		encounter.getOrders().iterator().next().setInstructions("new");
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Editing some fields on Order is not allowed"));
+		expectedException.expectMessage(Matchers.is("editing.fields.not.allowed"));
 		encounterService.saveEncounter(encounter);
 		Context.flushSession();
 	}

@@ -531,7 +531,7 @@ public class DataExportFunctions {
 		}
 		
 		if (c == null) {
-			throw new APIException("A Concept with name or id '" + conceptName + "' was not found");
+			throw new APIException("Concept.not.found", new Object[] { conceptName });
 		}
 		
 		conceptNameMap.put(conceptName, c);

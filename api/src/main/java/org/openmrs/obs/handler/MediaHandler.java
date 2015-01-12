@@ -112,7 +112,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 			out.close();
 		}
 		catch (IOException ioe) {
-			throw new APIException("Trying to write complex obs to the file system. ", ioe);
+			throw new APIException("Obs.error.trying.write.complex", null, ioe);
 		}
 		
 		return obs;

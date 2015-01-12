@@ -93,7 +93,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		// if we're creating a user and a password wasn't supplied, throw an
 		// error
 		if (user.getUserId() == null && (password == null || password.length() < 1)) {
-			throw new APIException("A password is required when creating a user");
+			throw new APIException("User.creating.password.required", (Object[]) null);
 		}
 		
 		if (hasDuplicateUsername(user)) {
@@ -262,7 +262,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public void purgePrivilege(Privilege privilege) throws APIException {
 		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege())) {
-			throw new APIException("Cannot delete a core privilege");
+			throw new APIException("Privilege.cannot.delete.core", (Object[]) null);
 		}
 		
 		dao.deletePrivilege(privilege);
@@ -322,7 +322,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 		
 		if (OpenmrsUtil.getCoreRoles().keySet().contains(role.getRole())) {
-			throw new APIException("Cannot delete a core role");
+			throw new APIException("Role.cannot.delete.core", (Object[]) null);
 		}
 		
 		if (role.hasChildRoles()) {
@@ -462,7 +462,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		for (Role r : roles) {
 			if (r.getRole().equals(RoleConstants.SUPERUSER)
 			        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE)) {
-				throw new APIException("You must have the role '" + RoleConstants.SUPERUSER + "' in order to assign it.");
+				throw new APIException("User.you.must.have.role", new Object[] { RoleConstants.SUPERUSER });
 			}
 			if (r.getPrivileges() != null) {
 				for (Privilege p : r.getPrivileges()) {
@@ -474,7 +474,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 		
 		if (requiredPrivs.size() == 1) {
-			throw new APIException("You must have privilege '" + requiredPrivs.get(0) + "' in order to assign it.");
+			throw new APIException("User.you.must.have.privilege", new Object[] { requiredPrivs.get(0) });
 		} else if (requiredPrivs.size() > 1) {
 			StringBuilder txt = new StringBuilder("You must have the following privileges in order to assign them: ");
 			for (String s : requiredPrivs) {
@@ -490,7 +490,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public User setUserProperty(User user, String key, String value) {
 		if (user != null) {
 			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser())) {
-				throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
+				throw new APIException("you.are.not.authorized.change.properties", new Object[] { user.getUserId() });
 			}
 			
 			user.setUserProperty(key, value);
@@ -516,7 +516,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			// the user being edited is not the current user, throw an
 			// exception
 			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser())) {
-				throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
+				throw new APIException("you.are.not.authorized.change.properties", new Object[] { user.getUserId() });
 			}
 			
 			user.removeUserProperty(key);
@@ -578,7 +578,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public void purgeUser(User user, boolean cascade) throws APIException {
 		if (cascade == true) {
-			throw new APIException("I don't think we want to cascade here");
+			throw new APIException("cascade.do.not.think", (Object[]) null);
 		}
 		
 		dao.deleteUser(user);
@@ -700,7 +700,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public User saveUserProperty(String key, String value) {
 		User user = Context.getAuthenticatedUser();
 		if (user == null) {
-			throw new APIException("No Authenticated user found");
+			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
 		user.setUserProperty(key, value);
 		return dao.saveUser(user, null);
@@ -710,7 +710,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public User saveUserProperties(Map<String, String> properties) {
 		User user = Context.getAuthenticatedUser();
 		if (user == null) {
-			throw new APIException("No Authenticated user found");
+			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
 		user.getUserProperties().clear();
 		for (Map.Entry<String, String> entry : properties.entrySet()) {

@@ -337,8 +337,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see #setObsGroup(Obs)
 	 */
 	public void setObsGroupId(Integer obsGroupId) {
-		throw new APIException("I don't know what to do here because I don't" + "know what the parent is of the group I'm "
-		        + "being put into. This method is deprecated " + "and should not be used.");
+		throw new APIException("Obs.error.setObsGroupId", (Object[]) null);
 	}
 	
 	/**
@@ -488,8 +487,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		// a quick sanity check to make sure someone isn't adding
 		// itself to the group
 		if (member.equals(this)) {
-			throw new APIException("An obsGroup cannot have itself as a mentor. obsGroup: " + this
-			        + " obsMember attempting to add: " + member);
+			throw new APIException("Obs.error.groupCannotHaveItselfAsAMentor", new Object[] { this, member });
 		}
 		
 		member.setObsGroup(this);
@@ -1261,10 +1259,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		
 		if (nsAndPathTemp.length() > FORM_NAMESPACE_PATH_MAX_LENGTH) {
-			throw new APIException(Context.getMessageSourceService().getMessage("Obs.namespaceAndPathTooLong"));
+			throw new APIException("Obs.namespaceAndPathTooLong", (Object[]) null);
 		}
 		if (StringUtils.countMatches(nsAndPathTemp, FORM_NAMESPACE_PATH_SEPARATOR) > 1) {
-			throw new APIException(Context.getMessageSourceService().getMessage("Obs.namespaceAndPathNotContainSeparator"));
+			throw new APIException("Obs.namespaceAndPathNotContainSeparator", (Object[]) null);
 		}
 		
 		formNamespaceAndPath = nsAndPathTemp;

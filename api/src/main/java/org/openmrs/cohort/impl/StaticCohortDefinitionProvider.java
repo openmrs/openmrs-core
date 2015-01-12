@@ -85,7 +85,7 @@ public class StaticCohortDefinitionProvider implements CohortDefinitionProvider 
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#purgeCohortDefinition(org.openmrs.cohort.CohortDefinition)
 	 */
 	public void purgeCohortDefinition(CohortDefinition cohortDefinition) {
-		throw new APIException("Not Yet Implemented");
+		throw new APIException("general.not.yet.implemented", (Object[]) null);
 	}
 	
 	/**

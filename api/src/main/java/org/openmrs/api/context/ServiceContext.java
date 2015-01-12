@@ -751,7 +751,7 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		Object service = services.get(cls);
 		if (service == null) {
-			throw new APIException("Service not found: " + cls);
+			throw new APIException("service.not.found", new Object[] { cls });
 		}
 		
 		return (T) service;
@@ -798,7 +798,8 @@ public class ServiceContext implements ApplicationContextAware {
 				log.debug("Service: " + cls + " set successfully");
 			}
 			catch (Exception e) {
-				throw new APIException("Unable to create proxy factory for: " + classInstance.getClass().getName(), e);
+				throw new APIException("service.unable.create.proxy.factory", new Object[] { classInstance.getClass()
+				        .getName() }, e);
 			}
 			
 		}
@@ -820,7 +821,7 @@ public class ServiceContext implements ApplicationContextAware {
 		Object classInstance = params.get(1);
 		
 		if (classString == null || classInstance == null) {
-			throw new APIException("Unable to find classString or classInstance in params");
+			throw new APIException("service.unable.find", (Object[]) null);
 		}
 		
 		Class cls = null;
@@ -855,7 +856,7 @@ public class ServiceContext implements ApplicationContextAware {
 			}
 		}
 		catch (ClassNotFoundException e) {
-			throw new APIException("Unable to set module service: " + classString, e);
+			throw new APIException("service.unable.set", new Object[] { classString }, e);
 		}
 		
 		// add this module service to the normal list of services
@@ -967,7 +968,7 @@ public class ServiceContext implements ApplicationContextAware {
 			return applicationContext.getBean(beanName, type);
 		}
 		catch (BeansException beanException) {
-			throw new APIException("Error during getting registered component.", beanException);
+			throw new APIException("service.error.during.getting.component", null, beanException);
 		}
 	}
 	

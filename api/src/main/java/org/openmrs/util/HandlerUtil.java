@@ -174,15 +174,14 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		}
 		List<H> handlers = getHandlersForType(handlerType, type);
 		if (handlers == null || handlers.isEmpty()) {
-			throw new APIException("No " + handlerType + " is found that is able to handle a " + type);
+			throw new APIException("handler.type.not.found", new Object[] { handlerType, type });
 		}
 		
 		if (handlers.size() > 1) {
 			int order1 = getOrderOfHandler(handlers.get(0).getClass());
 			int order2 = getOrderOfHandler(handlers.get(1).getClass());
 			if (order1 == order2) {
-				throw new APIException("There are at least 2 handlers of type " + handlerType + " for " + type
-				        + " and neither is more preferred than the other");
+				throw new APIException("handler.type.multiple", new Object[] { handlerType, type });
 			}
 		}
 		
@@ -200,7 +199,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	public static Integer getOrderOfHandler(Class<?> handlerClass) {
 		Handler annotation = handlerClass.getAnnotation(Handler.class);
 		if (annotation == null) {
-			throw new APIException("Class " + handlerClass + " is not annotated as a Handler.");
+			throw new APIException("class.not.annotated.as.handler", new Object[] { handlerClass });
 		}
 		return annotation.order();
 	}

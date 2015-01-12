@@ -599,7 +599,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<Drug> getDrugs(Concept concept, boolean includeRetired) {
 		if (includeRetired == true) {
-			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
+			throw new APIException("ConceptDrug.retired.getting", (Object[]) null);
 		}
 		
 		return Context.getConceptService().getDrugsByConcept(concept);
@@ -623,7 +623,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public List<Drug> findDrugs(String phrase, boolean includeRetired) {
 		if (includeRetired == true) {
-			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
+			throw new APIException("ConceptDrug.retired.getting", (Object[]) null);
 		}
 		
 		return Context.getConceptService().getDrugs(phrase);
@@ -954,7 +954,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		if (mappedConcept == null) {
-			throw new APIException("Illegal Mapped Concept");
+			throw new APIException("Concept.mapped.illegal", (Object[]) null);
 		}
 		
 		ConceptName conceptName = null;
@@ -1353,7 +1353,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		// sorted to the front of the list, we can test if there is more than one retired concept
 		// by testing if the second concept in the list is retired or not
 		else if (concepts.size() > 1 && !concepts.get(1).isRetired()) {
-			throw new APIException("Multiple non-retired concepts found for mapping " + code + " from source " + sourceName);
+			throw new APIException("Concept.error.multiple.non.retired", new Object[] { code, sourceName });
 		} else {
 			return concepts.get(0);
 		}
@@ -1492,7 +1492,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public void convertBooleanConceptToCoded(Concept conceptToChange) throws APIException {
 		if (conceptToChange != null) {
 			if (!conceptToChange.getDatatype().isBoolean()) {
-				throw new APIException("Invalid datatype of the concept to convert, should be Boolean");
+				throw new APIException("Concept.datatype.invalid", (Object[]) null);
 			}
 			
 			conceptToChange.setDatatype(getConceptDatatypeByName("Coded"));
@@ -1838,7 +1838,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public void purgeConceptMapType(ConceptMapType conceptMapType) throws APIException {
 		if (dao.isConceptMapTypeInUse(conceptMapType)) {
-			throw new APIException(Context.getMessageSourceService().getMessage("ConceptMapType.inUse"));
+			throw new APIException("ConceptMapType.inUse", (Object[]) null);
 		}
 		dao.deleteConceptMapType(conceptMapType);
 	}
@@ -1940,7 +1940,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Override
 	public void purgeConceptReferenceTerm(ConceptReferenceTerm conceptReferenceTerm) throws APIException {
 		if (dao.isConceptReferenceTermInUse(conceptReferenceTerm)) {
-			throw new APIException(Context.getMessageSourceService().getMessage("ConceptRefereceTerm.inUse"));
+			throw new APIException("ConceptRefereceTerm.inUse", (Object[]) null);
 		}
 		dao.deleteConceptReferenceTerm(conceptReferenceTerm);
 	}
@@ -2029,7 +2029,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException {
 		
 		if (conceptSource == null) {
-			throw new APIException("ConceptSource is required");
+			throw new APIException("ConceptSource.is.required", (Object[]) null);
 		}
 		if (withAnyOfTheseTypes == null) {
 			withAnyOfTheseTypes = Collections.EMPTY_LIST;
@@ -2046,7 +2046,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws APIException {
 		if (conceptSource == null) {
-			throw new APIException("ConceptSource is required");
+			throw new APIException("ConceptSource.is.required", (Object[]) null);
 		}
 		if (withAnyOfTheseTypesOrOrderOfPreference == null) {
 			withAnyOfTheseTypesOrOrderOfPreference = Collections.EMPTY_LIST;

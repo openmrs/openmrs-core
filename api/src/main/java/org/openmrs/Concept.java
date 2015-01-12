@@ -435,9 +435,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setPreferredName(ConceptName preferredName) {
 		
 		if (preferredName == null || preferredName.isVoided() || preferredName.isIndexTerm()) {
-			throw new APIException("Preferred name cannot be null, voided or an index term");
+			throw new APIException("Concept.error.preferredName.null", (Object[]) null);
 		} else if (preferredName.getLocale() == null) {
-			throw new APIException("The locale for a concept name cannot be null");
+			throw new APIException("Concept.name.locale.null", (Object[]) null);
 		}
 		
 		//first revert the current preferred name(if any) from being preferred
@@ -937,9 +937,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public void setFullySpecifiedName(ConceptName fullySpecifiedName) {
 		if (fullySpecifiedName == null || fullySpecifiedName.getLocale() == null) {
-			throw new APIException("The locale for a concept name cannot be null");
+			throw new APIException("Concept.name.locale.null", (Object[]) null);
 		} else if (fullySpecifiedName.isVoided()) {
-			throw new APIException("Fully Specified name cannot be null or voided");
+			throw new APIException("Concept.error.fullySpecifiedName.null", (Object[]) null);
 		}
 		
 		ConceptName oldFullySpecifiedName = getFullySpecifiedName(fullySpecifiedName.getLocale());
@@ -966,7 +966,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setShortName(ConceptName shortName) {
 		if (shortName != null) {
 			if (shortName.getLocale() == null) {
-				throw new APIException("The locale for a concept name cannot be null");
+				throw new APIException("Concept.name.locale.null", (Object[]) null);
 			}
 			ConceptName oldShortName = getShortNameInLocale(shortName.getLocale());
 			if (oldShortName != null) {
@@ -980,7 +980,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				}
 			}
 		} else {
-			throw new APIException("Short name cannot be null");
+			throw new APIException("Concept.error.shortName.null", (Object[]) null);
 		}
 	}
 	

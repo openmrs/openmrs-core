@@ -93,14 +93,14 @@ public class PatientSearchCohortDefinitionProvider implements CohortDefinitionPr
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#purgeCohortDefinition(org.openmrs.cohort.CohortDefinition)
 	 */
 	public void purgeCohortDefinition(CohortDefinition cohortDefinition) {
-		throw new APIException("Not Yet Implemented");
+		throw new APIException("general.not.yet.implemented", (Object[]) null);
 	}
 	
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#saveCohortDefinition(org.openmrs.cohort.CohortDefinition)
 	 */
 	public CohortDefinition saveCohortDefinition(CohortDefinition cohortDefinition) {
-		throw new APIException("Not Yet Implemented");
+		throw new APIException("general.not.yet.implemented", (Object[]) null);
 	}
 	
 }

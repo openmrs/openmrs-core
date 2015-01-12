@@ -130,8 +130,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 				}
 			}
 			catch (Exception ex) {
-				throw new APIException(
-				        "Failed to change property value from empty string to null for " + property.getName(), ex);
+				throw new APIException("failed.change.property.value", new Object[] { property.getName() }, ex);
 			}
 		}
 	}

@@ -35,7 +35,6 @@ import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 /**
  * API functions related to Cohorts
@@ -80,12 +79,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			Context.requirePrivilege(PrivilegeConstants.EDIT_COHORTS);
 		}
 		if (cohort.getName() == null) {
-			throw new APIException(Context.getMessageSourceService().getMessage("Cohort.save.nameRequired", null,
-			    "Cohort name is required", Context.getLocale()));
+			throw new APIException("Cohort.save.nameRequired", (Object[]) null);
 		}
 		if (cohort.getDescription() == null) {
-			throw new APIException(Context.getMessageSourceService().getMessage("Cohort.save.descriptionRequired", null,
-			    "Cohort description is required", Context.getLocale()));
+			throw new APIException("Cohort.save.descriptionRequired", (Object[]) null);
 		}
 		if (log.isInfoEnabled()) {
 			log.info("Saving cohort " + cohort);
@@ -233,7 +230,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	        throws APIException {
 		CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
 		if (ret == null) {
-			throw new APIException("No CohortDefinitionProvider registered for " + definitionClass);
+			throw new APIException("Cohort.no.CohortDefinitionProvider", new Object[] { definitionClass });
 		} else {
 			return ret;
 		}

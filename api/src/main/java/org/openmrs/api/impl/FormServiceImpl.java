@@ -692,7 +692,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	public void purgeField(Field field, boolean cascade) throws APIException {
 		if (cascade == true) {
-			throw new APIException("Not Yet Implemented");
+			throw new APIException("general.not.yet.implemented", (Object[]) null);
 		} else {
 			dao.deleteField(field);
 		}
@@ -711,7 +711,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	public void purgeForm(Form form, boolean cascade) throws APIException {
 		if (cascade == true) {
-			throw new APIException("Not Yet Implemented");
+			throw new APIException("general.not.yet.implemented", (Object[]) null);
 		}
 		
 		// remove resources
@@ -764,7 +764,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 				if (ff.getForm() == null) {
 					ff.setForm(form);
 				} else if (!ff.getForm().equals(form)) {
-					throw new APIException("Form contains FormField " + ff + " that already belongs to a different form");
+					throw new APIException("Form.contains.FormField.error", new Object[] { ff });
 				}
 			}
 		}

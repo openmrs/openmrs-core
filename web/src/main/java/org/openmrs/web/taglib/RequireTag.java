@@ -98,7 +98,7 @@ public class RequireTag extends TagSupport {
 			log.error("userContext is null. Did this pass through a filter?");
 			//httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 			//TODO find correct error to throw 
-			throw new APIException("The context is currently null.  Please try reloading the site.");
+			throw new APIException("context.is.null", (Object[]) null);
 		}
 		
 		// Parse comma-separated list of privileges in allPrivileges and anyPrivileges attributes
