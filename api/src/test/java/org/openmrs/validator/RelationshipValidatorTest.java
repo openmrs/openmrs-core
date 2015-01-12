@@ -61,10 +61,10 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validateStartDate(Date,Errors)}
+	 * @see {@link RelationshipValidator#validate(Date,Errors)}
 	 */
 	@Test
-	@Verifies(value = "Should fail if start date is in future", method = "validateStartDate(Date,Errors)")
+	@Verifies(value = "Should fail if start date is in future", method = "validate(Date,Errors)")
 	public void validate_shouldFailIfStartDateIsInFuture() throws Exception {
 		Relationship relationship = new Relationship(1);
 		Map<String, String> map = new HashMap<String, String>();
@@ -81,7 +81,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link RelationshipValidator#validate(Date,Errors)}
 	 */
 	@Test
-	@Verifies(value = "Should pass if start date is not in future", method = "validateStartDate(Date,Errors)")
+	@Verifies(value = "Should pass if start date is not in future", method = "validate(Date,Errors)")
 	public void validate_shouldPassIfStartDateIsNotInFuture() throws Exception {
 		Relationship relationship = new Relationship(1);
 		Map<String, String> map = new HashMap<String, String>();
@@ -95,10 +95,10 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validateStartDate(String,Errors)}
+	 * @see {@link RelationshipValidator#validate(String,Errors)}
 	 */
 	@Test
-	@Verifies(value = "Should pass if start date is empty since start date is optional while creating a relationship", method = "validateStartDate(String,Errors)")
+	@Verifies(value = "Should pass if start date is empty since start date is optional while creating a relationship", method = "validate(String,Errors)")
 	public void validate_shouldPassIfStartDateIsEmpty() throws Exception {
 		
 		Map<String, String> map = new HashMap<String, String>();
