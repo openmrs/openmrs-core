@@ -2254,6 +2254,7 @@ public class OpenmrsUtil {
 	 * @param props the properties object to write into
 	 * @param input the input stream to read from
 	 */
+	@Deprecated
 	public static void loadProperties(Properties props, InputStream input) {
 		try {
 			InputStreamReader reader = new InputStreamReader(input, "UTF-8");

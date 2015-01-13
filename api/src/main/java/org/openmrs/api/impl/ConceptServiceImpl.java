@@ -1174,6 +1174,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getAllConceptSources()
+	 * @deprecated
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)

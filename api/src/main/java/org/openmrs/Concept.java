@@ -200,6 +200,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @param locale
 	 * @return the answers for this concept sorted according to ConceptAnswerComparator
+	 * @deprecated
 	 */
 	@Deprecated
 	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
