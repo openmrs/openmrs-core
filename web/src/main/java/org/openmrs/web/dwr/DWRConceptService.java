@@ -45,6 +45,7 @@ import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ConceptReferenceTermValidator;
@@ -113,8 +114,7 @@ public class DWRConceptService {
 		Locale defaultLocale = Context.getLocale();
 		
 		// get the list of locales to search on
-		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
-		
+		List<Locale> searchLocales = new ArrayList<Locale>(LocaleUtility.getLocalesInOrder());
 		// debugging output
 		if (log.isDebugEnabled()) {
 			StringBuffer searchLocalesString = new StringBuffer();
