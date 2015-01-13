@@ -1360,7 +1360,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Encounter encounter = new Encounter(3);
 		Date datetime = new Date();
 		Location location = new Location(1);
-		Integer valueGroupId = new Integer(7);
+		Integer valueGroupId = Integer.valueOf(7);
 		Date valueDatetime = new Date();
 		Concept valueCoded = new Concept(3);
 		Double valueNumeric = 2.0;

@@ -928,7 +928,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(visit.getDateCreated());
 		assertEquals(originalSize + 1, vs.getAllVisits().size());
 		assertEquals(1, visit.getEncounters().size());
-		assertEquals(new Integer(4), ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
+		assertEquals(Integer.valueOf(4), ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
 	}
 	
 	/**

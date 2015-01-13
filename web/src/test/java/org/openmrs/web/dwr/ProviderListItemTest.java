@@ -103,7 +103,7 @@ public class ProviderListItemTest {
 		provider.setProviderId(2);
 		
 		ProviderListItem providerListItem = new ProviderListItem(provider);
-		Assert.assertEquals(new Integer(2), providerListItem.getProviderId());
+		Assert.assertEquals(Integer.valueOf(2), providerListItem.getProviderId());
 	}
 	
 }

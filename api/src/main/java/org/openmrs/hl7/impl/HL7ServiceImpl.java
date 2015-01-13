@@ -574,7 +574,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		if (idNumber != null && idNumber.length() > 0) {
 			// log.debug("searching for user by id " + idNumber);
 			try {
-				Integer userId = new Integer(idNumber);
+				Integer userId = Integer.valueOf(idNumber);
 				User user = Context.getUserService().getUser(userId);
 				return user.getUserId();
 			}
@@ -618,7 +618,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		
 		if (idNumber != null && idNumber.length() > 0) {
 			try {
-				Person person = Context.getPersonService().getPerson(new Integer(idNumber));
+				Person person = Context.getPersonService().getPerson(Integer.valueOf(idNumber));
 				return person.getPersonId();
 			}
 			catch (Exception e) {
@@ -653,7 +653,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		// HACK: try to treat the first component (which should be "Point of
 		// Care" as an internal openmrs location_id
 		try {
-			Integer locationId = new Integer(pointOfCare);
+			Integer locationId = Integer.valueOf(pointOfCare);
 			Location l = Context.getLocationService().getLocation(locationId);
 			if (l != null) {
 				return l.getLocationId();

@@ -916,7 +916,7 @@ public class OpenmrsUtil {
 				Integer conceptId = null;
 				
 				try {
-					conceptId = new Integer(token);
+					conceptId = Integer.valueOf(token);
 				}
 				catch (NumberFormatException nfe) {
 					conceptId = null;
@@ -969,7 +969,7 @@ public class OpenmrsUtil {
 		Integer conceptId = null;
 		
 		try {
-			conceptId = new Integer(idOrName);
+			conceptId = Integer.valueOf(idOrName);
 		}
 		catch (NumberFormatException nfe) {
 			conceptId = null;

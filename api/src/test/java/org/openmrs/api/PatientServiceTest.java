@@ -1195,7 +1195,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatientByExample(examplePatient);
 		Assert.assertNotNull(patient);
 		Assert.assertTrue(patient.getClass().isAssignableFrom(Patient.class));
-		Assert.assertEquals(new Integer(2), patient.getPatientId());
+		Assert.assertEquals(Integer.valueOf(2), patient.getPatientId());
 	}
 	
 	/**

@@ -92,7 +92,7 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		ReportSchemaXml reportSchemaXml = new ReportSchemaXml();
 		reportSchemaXml.setXml(xml.toString());
 		
-		//assertEquals(new Integer(1), reportSchemaXml.getReportSchemaId());
+		//assertEquals(Integer.valueOf(1), reportSchemaXml.getReportSchemaId());
 		assertEquals(xml.toString(), reportSchemaXml.getXml());
 		
 		ReportService rs = (ReportService) Context.getService(ReportService.class);
@@ -106,7 +106,7 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		
 		assertEquals(xml.toString().trim(), reportSchemaXmlFromDB.getXml().trim());
 		
-		assertEquals(new Integer(1), reportSchemaXmlFromDB.getReportSchemaId());
+		assertEquals(Integer.valueOf(1), reportSchemaXmlFromDB.getReportSchemaId());
 		
 		// assertTrue("The saved object and the actual object are not calling themselves equal", reportSchemaXml.equals(reportSchemaXmlFromDB));
 		

@@ -159,7 +159,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 		this();
 		for (StringTokenizer st = new StringTokenizer(commaSeparatedIds, ","); st.hasMoreTokens();) {
 			String id = st.nextToken();
-			memberIds.add(new Integer(id.trim()));
+			memberIds.add(Integer.valueOf(id.trim()));
 		}
 	}
 	

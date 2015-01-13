@@ -753,7 +753,7 @@ public class ORUR01Handler implements Application {
 					obs.setValueCoded(valueConcept);
 					if (HL7Constants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
 						Drug valueDrug = new Drug();
-						valueDrug.setDrugId(new Integer(value.getAlternateIdentifier().getValue()));
+						valueDrug.setDrugId(Integer.valueOf(value.getAlternateIdentifier().getValue()));
 						obs.setValueDrug(valueDrug);
 					} else {
 						ConceptName valueConceptName = getConceptName(value);
@@ -917,7 +917,7 @@ public class ORUR01Handler implements Application {
 		if (hl7ConceptNameId != null) {
 			// get the exact concept name specified by the id
 			try {
-				Integer conceptNameId = new Integer(hl7ConceptNameId);
+				Integer conceptNameId = Integer.valueOf(hl7ConceptNameId);
 				specifiedConceptName = new ConceptName();
 				specifiedConceptName.setConceptNameId(conceptNameId);
 			}
@@ -989,7 +989,7 @@ public class ORUR01Handler implements Application {
 		if (codingSystem == null || HL7Constants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
 			// the concept is local
 			try {
-				Integer conceptId = new Integer(hl7ConceptId);
+				Integer conceptId = Integer.valueOf(hl7ConceptId);
 				return Context.getConceptService().getConcept(conceptId);
 			}
 			catch (NumberFormatException e) {
