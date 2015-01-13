@@ -873,6 +873,9 @@ public interface EncounterService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> filterEncountersByViewPermissions(List<Encounter> encounters, User user);
 	
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	public List<Encounter> filterEncountersBySpecifiedInGlobalProperty(List<Encounter> encounters, User user);
+	
 	/**
 	 * Determines whether given user is granted to view all encounter types or not
 	 * 

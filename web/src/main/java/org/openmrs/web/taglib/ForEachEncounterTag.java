@@ -30,6 +30,7 @@ import org.apache.commons.collections.comparators.ReverseComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.api.context.Context;
 
 public class ForEachEncounterTag extends BodyTagSupport {
 	
@@ -54,6 +55,8 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	
 	private String var;
 	
+	private Boolean filterSpecific = Boolean.FALSE;
+	
 	/**
 	 * @see javax.servlet.jsp.tagext.BodyTagSupport#doStartTag()
 	 * @should sort encounters by encounterDatetime in descending order
@@ -62,6 +65,7 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	@SuppressWarnings( { "rawtypes", "unchecked" })
 	@Override
 	public int doStartTag() {
+		
 		if (encounters == null || encounters.isEmpty()) {
 			log.debug("ForEachEncounterTag skipping body due to 'encounters' param = " + encounters);
 			return SKIP_BODY;
@@ -70,6 +74,11 @@ public class ForEachEncounterTag extends BodyTagSupport {
 		//First, sort the encounters
 		if (sortBy == null || sortBy.equals("")) {
 			sortBy = "encounterDatetime";
+		}
+		
+		if (filterSpecific) {
+			encounters = Context.getEncounterService().filterEncountersBySpecifiedInGlobalProperty(
+			    (List<Encounter>) encounters, Context.getAuthenticatedUser());
 		}
 		
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())
@@ -98,6 +107,7 @@ public class ForEachEncounterTag extends BodyTagSupport {
 			pageContext.setAttribute(var, matchingEncs.get(count++));
 			return EVAL_BODY_BUFFERED;
 		}
+		
 	}
 	
 	/**
@@ -220,4 +230,11 @@ public class ForEachEncounterTag extends BodyTagSupport {
 		this.var = var;
 	}
 	
+	public Boolean getFilterSpecific() {
+		return filterSpecific;
+	}
+	
+	public void setFilterSpecific(Boolean filterSpecific) {
+		this.filterSpecific = filterSpecific;
+	}
 }

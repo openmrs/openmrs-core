@@ -879,6 +879,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG = "drugOrder.requireDrug";
 	
+	public static final String GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS = "dashboard.specifyEncounterType";
+	
 	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
@@ -1605,6 +1607,13 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT,
 		                "Specifies how person attributes are matched while searching person. Valid values are 'ANYWHERE' or 'EXACT'. Defaults to exact if missing or invalid value is present."));
+		
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS,
+		                "",
+		                "Specifies only encounters with entered type/form to display in encounters tab. \n "
+		                        + "Put desirable encounters types or forms separated by comma. Allowed specificators: id, display name or class name"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

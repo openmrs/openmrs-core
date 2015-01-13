@@ -14,6 +14,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
@@ -951,6 +953,87 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			}
 		}
 		return encounters;
+	}
+
+	/**
+	 * Filters out encounters with type or form matching with GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS
+	 *
+	 * @param encounters  List of all permitted encounters to filter
+	 *
+	 * @return encounters with matchning type or form field
+	 */
+	@Transactional(readOnly = true)
+	public List<Encounter> filterEncountersBySpecifiedInGlobalProperty(List<Encounter> encounters, User user) {
+
+		if (Context.getAdministrationService().getGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS) == null
+				|| Context.getAdministrationService().getGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS).trim().equals("")) {
+			return encounters;
+		}
+		//get gp
+		String gpString = Context.getAdministrationService().getGlobalProperty(
+				OpenmrsConstants.GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS);
+
+		//gp format ([a-zA-Z_0-9_]+,?)*;?([a-zA-Z_0-9_]+,?)*
+		String[] splited = splitWithRegex(gpString, "[,;]");
+
+		//String[] splited = gpString.split("[,;]?");
+		Set<String> allSecficators = new HashSet<String>(Arrays.asList(splited));
+
+		if (encounters != null) {
+			// if user is not specified then use authenticated user from context by default
+			if (user == null) {
+				user = Context.getAuthenticatedUser();
+			}
+			int index = 0;
+			for (Iterator<Encounter> iterator = encounters.iterator(); iterator.hasNext();) {
+				Encounter encounter = iterator.next();
+
+				// determine whether it's need to include this encounter into result or not
+				// as it can be not accessed by current user due to permissions lack
+				EncounterType et = encounter.getEncounterType();
+				if (et != null && !userHasEncounterPrivilege(et.getViewPrivilege(), user)) {
+					// exclude this encounter from result
+					iterator.remove();
+				}
+				//remove if not matching
+				if (!checkEncounterMatchingOut(encounter, allSecficators)) {
+					iterator.remove();
+				}
+			}
+		}
+		return encounters;
+	}
+
+	private String[] splitWithRegex(String tab, String regex) {
+		Pattern pattern = Pattern.compile(regex);
+		String[] splited = pattern.split(tab);
+		return splited;
+	}
+
+	private static Boolean checkEncounterMatchingOut(Encounter encounter, Set<String> allSpecificators) {
+
+		Boolean formCheck = false;
+		if (encounter.getForm() != null) {
+			formCheck = true;
+		}
+		//by Id
+		if (allSpecificators.contains(encounter.getEncounterType().getId().toString())
+				|| (formCheck && allSpecificators.contains(encounter.getForm().getId().toString()))) {
+			return true;
+		}
+		//by class name
+		if (allSpecificators.contains(encounter.getEncounterType().getClass().getSimpleName())
+				|| (formCheck && allSpecificators.contains(encounter.getForm().getClass().getSimpleName()))) {
+			return true;
+		}
+		//by display name
+		if (allSpecificators.contains(encounter.getEncounterType().getName())
+				|| (formCheck && allSpecificators.contains(encounter.getForm().getName()))) {
+			return true;
+		}
+		return false;
 	}
 	
 	/**

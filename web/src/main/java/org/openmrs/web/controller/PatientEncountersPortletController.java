@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Controller for the patientEncounters portlet. Provides a map telling which forms have their view
@@ -37,6 +38,18 @@ public class PatientEncountersPortletController extends PortletController {
 		// as current user does not have enough permissions to view at least one
 		// type of encounters
 		model.put("showDisclaimer", !Context.getEncounterService().canViewAllEncounterTypes(Context.getAuthenticatedUser()));
+		
+		//check for any user data in property value
+		if (Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS) != null
+		        && !Context.getAdministrationService().getGlobalProperty(
+		            OpenmrsConstants.GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS).trim().equals("")) {
+			model.put("filterSpecific", true);
+			
+		} else {
+			model.put("filterSpecific", false);
+		}
+		
 	}
 	
 }
