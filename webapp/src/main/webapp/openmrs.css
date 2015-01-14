@@ -710,7 +710,7 @@ a span.additionalHit {
 }
 #searchInfoBar {
 	font-size: 1em;
-	text-align: right;
+	text-align: left;
 	line-height: .9em;
 	color: black;
 	padding: 2px 0 2px 0;
