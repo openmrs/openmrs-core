@@ -464,7 +464,10 @@ public class PatientFormController extends PersonFormController {
 					id = Integer.valueOf(patientId);
 					patient = ps.getPatientOrPromotePerson(id);
 					if (patient == null) {
-						throw new ServletException("There is no patient or person with id: '" + patientId + "'");
+						HttpSession session = request.getSession();
+									session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "patientDashboard.noPatientWithId");
+									session.setAttribute(WebConstants.OPENMRS_ERROR_ARGS, patientId);
+									return new Patient();
 					}
 				}
 				catch (NumberFormatException numberError) {
