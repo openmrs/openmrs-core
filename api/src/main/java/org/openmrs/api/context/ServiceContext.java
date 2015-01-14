@@ -751,7 +751,7 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		Object service = services.get(cls);
 		if (service == null) {
-			throw new APIException("service.not.found", new Object[] { cls });
+			throw new APIException("Service not found: " + cls);
 		}
 		
 		return (T) service;
