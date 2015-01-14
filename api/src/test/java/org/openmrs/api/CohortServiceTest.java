@@ -26,12 +26,7 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.cohort.CohortDefinition;
-import org.openmrs.report.EvaluationContext;
-import org.openmrs.reporting.PatientCharacteristicFilter;
-import org.openmrs.reporting.PatientSearch;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.Verifies;
 
 /**
@@ -54,23 +49,6 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeAllTests() throws Exception {
 		service = Context.getCohortService();
-	}
-	
-	/**
-	 * @see {@link CohortService#evaluate(CohortDefinition,EvaluationContext)}
-	 */
-	@Test
-	@SkipBaseSetup
-	@Verifies(value = "should return all patients with blank patient search cohort definition provider", method = "evaluate(CohortDefinition,EvaluationContext)")
-	public void evaluate_shouldReturnAllPatientsWithBlankPatientSearchCohortDefinitionProvider() throws Exception {
-		initializeInMemoryDatabase();
-		executeDataSet(CREATE_PATIENT_XML);
-		authenticate();
-		
-		CohortDefinition def = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
-		Cohort result = service.evaluate(def, null);
-		assertNotNull("Should not return null", result);
-		assertEquals("Should return one member", 1, result.size());
 	}
 	
 	/**
