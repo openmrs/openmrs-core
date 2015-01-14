@@ -37,6 +37,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -171,6 +172,7 @@ public class Database1_9_7UpgradeIT {
 	}
 	
 	@Test
+	@Ignore("un ignore after addressing TRUNK-4574")
 	public void shouldFailMigratingDrugOrdersIfUnitsToConceptsMappingsDoesNotPointToValidCodedDoseUnits()
 	        throws IOException, SQLException {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
