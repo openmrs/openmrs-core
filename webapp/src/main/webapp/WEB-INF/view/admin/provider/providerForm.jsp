@@ -57,6 +57,14 @@ function validateForm(){
 	}
 	return result;
 }
+
+function confirmPurge() {
+	if (confirm('<openmrs:message code="Provider.confirmDelete"/>')) {
+		return true;
+	} else {
+		return false;
+	}
+}
 </script>
 
 <style>
@@ -245,7 +253,7 @@ function validateForm(){
 		<br/>
 
 		<div class="box">
-			<form method="post">
+			<form method="post" onsubmit="return confirmPurge()">
 				<table cellpadding="3" cellspacing="0">
 					<tr>
 						<th><openmrs:message code="Provider.purge" /></th>
