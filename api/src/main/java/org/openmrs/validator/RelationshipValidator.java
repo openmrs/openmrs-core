@@ -12,10 +12,13 @@
  */
 package org.openmrs.validator;
 
+import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Relationship;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -44,6 +47,7 @@ public class RelationshipValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 *
 	 * @should fail if end date is prior to the start date
+	 * @should fail if start date is in future
 	 * @param target Relationship object to be validate
 	 * @param errors Error object to hold any errors encounter in the test
 	 *
@@ -54,11 +58,19 @@ public class RelationshipValidator implements Validator {
 		Relationship relationship = (Relationship) target;
 		
 		if (relationship != null) {
+			
 			Date startDate = relationship.getStartDate();
 			Date endDate = relationship.getEndDate();
 			if (startDate != null && endDate != null) {
 				if (startDate.after(endDate)) {
 					errors.reject("Relationship.InvalidEndDate.error");
+				}
+			}
+			
+			if (startDate != null) {
+				Date currentDate = new Date();
+				if (startDate.after(currentDate)) {
+					errors.reject("error.date.future");
 				}
 			}
 		}
