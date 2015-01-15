@@ -30,7 +30,6 @@ import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.DataSetService;
 import org.openmrs.api.DatatypeService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
@@ -43,7 +42,6 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
@@ -54,7 +52,6 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
-import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.aop.Advisor;
@@ -250,28 +247,10 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @return report object service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public ReportObjectService getReportObjectService() {
-		return getService(ReportObjectService.class);
-	}
-	
-	/**
 	 * @return serialization service
 	 */
 	public SerializationService getSerializationService() {
 		return getService(SerializationService.class);
-	}
-	
-	/**
-	 * @return report service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public ReportService getReportService() {
-		return getService(ReportService.class);
 	}
 	
 	/**
@@ -440,46 +419,10 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @param reportObjectService the reportObjectService to set
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void setReportObjectService(ReportObjectService reportObjectService) {
-		setService(ReportObjectService.class, reportObjectService);
-	}
-	
-	/**
-	 * @param reportService
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void setReportService(ReportService reportService) {
-		setService(ReportService.class, reportService);
-	}
-	
-	/**
 	 * @param serializationService
 	 */
 	public void setSerializationService(SerializationService serializationService) {
 		setService(SerializationService.class, serializationService);
-	}
-	
-	/**
-	 * @param dataSetService
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void setDataSetService(DataSetService dataSetService) {
-		setService(DataSetService.class, dataSetService);
-	}
-	
-	/**
-	 * @return the DataSetService
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public DataSetService getDataSetService() {
-		return getService(DataSetService.class);
 	}
 	
 	/**

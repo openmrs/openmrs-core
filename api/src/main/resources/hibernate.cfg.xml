@@ -83,10 +83,6 @@
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InArchive.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InError.hbm.xml" />
 		
-		<!-- Reporting -->
-		<mapping resource="org/openmrs/reporting/db/hibernate/ReportObject.hbm.xml" />
-		<mapping resource="org/openmrs/reporting/db/hibernate/ReportSchemaXml.hbm.xml" />
-		
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Template.hbm.xml" />
 		<mapping resource="org/openmrs/notification/db/hibernate/Alert.hbm.xml" />

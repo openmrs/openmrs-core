@@ -95,9 +95,6 @@
         <property name="serializationService"><ref bean="serializationService"/></property>        
         <property name="schedulerService"><ref bean="schedulerService"/></property>
         <property name="alertService"><ref bean="alertService"/></property>
-        <property name="reportService"><ref bean="reportService"/></property>
-        <property name="reportObjectService"><ref bean="reportObjectService"/></property>
-        <property name="dataSetService"><ref bean="dataSetService"/></property>
         <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
@@ -184,12 +181,6 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="alertDAO" class="org.openmrs.notification.db.hibernate.HibernateAlertDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
-	<bean id="reportDAO" class="org.openmrs.report.db.hibernate.HibernateReportDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
-	<bean id="reportObjectDAO" class="org.openmrs.reporting.db.hibernate.HibernateReportObjectDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="hL7DAO" class="org.openmrs.hl7.db.hibernate.HibernateHL7DAO">
@@ -302,18 +293,6 @@
 	<!-- Cohort Service setup -->
 	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
 		<property name="cohortDAO"><ref bean="cohortDAO"/></property>
-		<property name="cohortDefinitionProviders">
-			<map>
-				<entry>
-					<key><value>org.openmrs.reporting.PatientSearch</value></key>
-					<bean class="org.openmrs.cohort.impl.PatientSearchCohortDefinitionProvider"/>
-				</entry>
-				<entry>
-					<key><value>org.openmrs.cohort.StaticCohortDefinition</value></key>
-					<bean class="org.openmrs.cohort.impl.StaticCohortDefinitionProvider"/>
-				</entry>
-			</map>
-		</property>
 	</bean>
 	<!-- /Cohort Service setup -->
 	
@@ -326,28 +305,6 @@
 	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl">
 		<property name="templateDAO"><ref bean="templateDAO"/></property>	
 	</bean>
-	<bean id="reportObjectServiceTarget" class="org.openmrs.reporting.impl.ReportObjectServiceImpl">
-		<property name="reportObjectDAO"><ref bean="reportObjectDAO"/></property>	
-	</bean>
-	
-	
-	<!-- ReportService setup -->
-	<bean id="reportServiceTarget" class="org.openmrs.report.impl.ReportServiceImpl">
-		<property name="reportDAO"><ref bean="reportDAO"/></property>	
-		<property name="renderers">
-			<map>
-				<entry>
-					<key><value>org.openmrs.report.impl.TsvReportRenderer</value></key>
-					<bean class="org.openmrs.report.impl.TsvReportRenderer"/>
-				</entry>
-				<entry>
-					<key><value>org.openmrs.report.impl.CsvReportRenderer</value></key>
-					<bean class="org.openmrs.report.impl.CsvReportRenderer"/>
-				</entry>
-			</map>
-		</property>
-	</bean>
-	<!-- /ReportService setup -->
 
 	<!-- SerializationService setup -->
 	<bean id="serializationServiceTarget" class="org.openmrs.api.impl.SerializationServiceImpl">
@@ -358,20 +315,6 @@
 		</property>
 	</bean>
 	<!-- /SerializationService setup -->
-	
-	
-	<!-- Data Set Service Setup -->
-	<bean id="dataSetServiceTarget" class="org.openmrs.report.impl.DataSetServiceImpl">
-		<property name="providers">
-			<list>
-				<bean class="org.openmrs.report.CohortDataSetProvider"/>
-				<bean class="org.openmrs.report.RowPerObsDataSetProvider"/>
-				<bean class="org.openmrs.report.RowPerProgramEnrollmentDataSetProvider"/>
-			</list>
-		</property>
-	</bean>
-	<!-- /Data Set Service setup -->
-	
 	
 	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl" factory-method="getInstance">
 		<property name="HL7DAO"><ref bean="hL7DAO"/></property>
@@ -546,22 +489,6 @@
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
-	<bean id="reportService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="reportServiceTarget"/></property>
-		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
-		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
-	</bean>
-	<bean id="reportObjectService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="reportObjectServiceTarget"/></property>
-		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
-		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
-	</bean>
 	<bean id="serializationService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="serializationServiceTarget"/></property>
@@ -571,14 +498,6 @@
 		<property name="transactionAttributeSource">
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
 		</property>
-	</bean>
-	<bean id="dataSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="dataSetServiceTarget"/></property>
-		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
-		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="hL7Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -727,34 +646,6 @@
 		</property>
     </bean>   
 	-->		
-
-
-	<!--  **************************  REPORT OBJECT FACTORY CONFIGURATION  *************************  -->
-	<!-- Configuration for reporting module - sets up the report object factory and admin interface -->
-
-	<bean id="patientCharacteristicFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
-		<property name="name"><value>PatientCharacteristicFilter</value></property>
-		<property name="displayName"><value>Patient Characteristic Filter</value></property>
-		<property name="className"><value>org.openmrs.reporting.PatientCharacteristicFilter</value></property>
-		<property name="type"><value>Patient Filter</value></property>
-		<property name="validatorClass"><value>org.openmrs.reporting.PatientCharacteristicFilterValidator</value></property>
-	</bean>
-	
-	<bean id="numericObsPatientFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
-		<property name="name"><value>NumericObsPatientFilter</value></property>
-		<property name="displayName"><value>Numeric Observation Patient Filter</value></property>
-		<property name="className"><value>org.openmrs.reporting.NumericObsPatientFilter</value></property>
-		<property name="type"><value>Patient Filter</value></property>
-		<property name="validatorClass"><value>org.openmrs.reporting.NumericObsPatientFilterValidator</value></property>
-	</bean>
-
-	<bean id="shortDescriptionProducerModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
-		<property name="name"><value>ShortDescriptionProducer</value></property>
-		<property name="displayName"><value>Short Description Producer</value></property>
-		<property name="className"><value>org.openmrs.reporting.ShortDescriptionProducer</value></property>
-		<property name="type"><value>Patient Data Producer</value></property>
-		<property name="validatorClass"><value>org.openmrs.reporting.ShortDescriptionProducerValidator</value></property>
-	</bean>
 
 	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
 	<!--  Configuration for all openmrs validators                                        -->
