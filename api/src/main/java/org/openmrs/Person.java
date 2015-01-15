@@ -96,6 +96,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	Map<String, PersonAttribute> attributeMap = null;
 	
+	private Map<String, PersonAttribute> allAttributeMap = null;
+	
 	/**
 	 * default empty constructor
 	 */
@@ -377,6 +379,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	public void setAttributes(Set<PersonAttribute> attributes) {
 		this.attributes = attributes;
 		attributeMap = null;
+		allAttributeMap = null;
 	}
 	
 	// Convenience methods
@@ -425,6 +428,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 			}
 		}
 		attributeMap = null;
+		allAttributeMap = null;
 		if (!OpenmrsUtil.collectionContains(attributes, newAttribute) && !newIsNull) {
 			attributes.add(newAttribute);
 		}
@@ -443,6 +447,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		if (attributes != null) {
 			if (attributes.remove(attribute)) {
 				attributeMap = null;
+				allAttributeMap = null;
 			}
 		}
 	}
@@ -572,7 +577,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get all of this person's attributes in map form: <String,
+	 * Convenience method to get this person's active attributes in map form: <String,
 	 * PersonAttribute>.
 	 */
 	public Map<String, PersonAttribute> getAttributeMap() {
@@ -590,6 +595,30 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		
 		return attributeMap;
+	}
+	
+	/**
+	 * Convenience method to get all of this person's attributes (including voided ones) in map form: <String,
+	 * PersonAttribute>.
+	 *
+	 * @return All person's attributes in map form
+	 * @since 1.12
+	 */
+	public Map<String, PersonAttribute> getAllAttributeMap() {
+		if (allAttributeMap != null) {
+			return allAttributeMap;
+		}
+		
+		if (log.isDebugEnabled()) {
+			log.debug("Current Person Attributes: \n" + printAttributes());
+		}
+		
+		allAttributeMap = new HashMap<String, PersonAttribute>();
+		for (PersonAttribute attribute : getAttributes()) {
+			allAttributeMap.put(attribute.getAttributeType().getName(), attribute);
+		}
+		
+		return allAttributeMap;
 	}
 	
 	/**

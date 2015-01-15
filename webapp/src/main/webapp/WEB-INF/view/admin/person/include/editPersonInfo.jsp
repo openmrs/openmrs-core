@@ -100,7 +100,7 @@
 		<td>
 			<c:choose>
 				<c:when test="${authorized == true}">
-					<spring:bind path="attributeMap">
+					<spring:bind path="allAttributeMap">
 						<openmrs:fieldGen 
 							type="${attrType.format}" 
 							formFieldName="${attrType.personAttributeTypeId}" 
