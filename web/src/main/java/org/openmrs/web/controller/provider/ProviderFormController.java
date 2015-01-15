@@ -29,6 +29,7 @@ import org.openmrs.propertyeditor.PersonEditor;
 import org.openmrs.validator.ProviderValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -54,6 +55,7 @@ public class ProviderFormController {
 	public String onSubmit(HttpServletRequest request, @RequestParam(required = false) String saveProviderButton,
 	        @RequestParam(required = false) String retireProviderButton,
 	        @RequestParam(required = false) String unretireProviderButton,
+	        @RequestParam(required = false) String purgeProviderButton,
 	        @RequestParam(required = false) boolean linkToPerson, @ModelAttribute("provider") Provider provider,
 	        BindingResult errors, ModelMap model) throws Exception {
 		
@@ -73,13 +75,24 @@ public class ProviderFormController {
 		WebAttributeUtil
 		        .handleSubmittedAttributesForType(provider, errors, ProviderAttribute.class, request, attributeTypes);
 		
-		new ProviderValidator().validate(provider, errors);
-		
-		if (!errors.hasErrors()) {
-			if (Context.isAuthenticated()) {
-				ProviderService service = Context.getProviderService();
-				
-				String message = "Provider.saved";
+		if (Context.isAuthenticated()) {
+			ProviderService service = Context.getProviderService();
+			String message = "Provider.saved";
+			
+			if (purgeProviderButton != null) {
+				try {
+					service.purgeProvider(provider);
+					message = "Provider.purged";
+				}
+				catch (DataIntegrityViolationException e) {
+					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+					return showForm(provider.getId());
+				}
+			} else {
+				new ProviderValidator().validate(provider, errors);
+			}
+			
+			if (!errors.hasErrors()) {
 				if (saveProviderButton != null) {
 					service.saveProvider(provider);
 				} else if (retireProviderButton != null) {
