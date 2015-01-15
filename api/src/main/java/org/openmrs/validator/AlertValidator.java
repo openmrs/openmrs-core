@@ -44,6 +44,8 @@ public class AlertValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 * @should fail validation if Alert Text is null or empty or whitespace
 	 * @should pass validation if all required values are set
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Alert alert = (Alert) obj;
@@ -51,6 +53,7 @@ public class AlertValidator implements Validator {
 			errors.rejectValue("alert", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "text", "Alert.text.required");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "text");
 		}
 	}
 }

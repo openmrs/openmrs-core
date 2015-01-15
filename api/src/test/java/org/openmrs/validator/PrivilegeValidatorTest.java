@@ -3,6 +3,7 @@ package org.openmrs.validator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Privilege;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -10,7 +11,7 @@ import org.springframework.validation.Errors;
 /**
  * Tests methods on the {@link PrivilegeValidator} class.
  */
-public class PrivilegeValidatorTest {
+public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
@@ -78,5 +79,40 @@ public class PrivilegeValidatorTest {
 		Assert.assertFalse(errors.hasErrors());
 		Assert.assertNotNull(priv.getName());
 		Assert.assertEquals(priv.getPrivilege(), "Wallhacking");
+	}
+	
+	/**
+	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Privilege priv = new Privilege();
+		priv.setPrivilege("Wallhacking");
+		priv.setDescription("description");
+		
+		Errors errors = new BindException(priv, "priv");
+		new PrivilegeValidator().validate(priv, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Privilege priv = new Privilege();
+		priv
+		        .setPrivilege("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		priv
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(priv, "priv");
+		new PrivilegeValidator().validate(priv, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("privilege"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
 	}
 }

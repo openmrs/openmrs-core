@@ -64,6 +64,8 @@ public class ConceptReferenceTermValidator implements Validator {
 	 * @should fail if termB of a concept reference term map is not set
 	 * @should fail if a term is mapped to itself
 	 * @should fail if a term is mapped multiple times to the same term
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		
@@ -140,5 +142,6 @@ public class ConceptReferenceTermValidator implements Validator {
 				index++;
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "code", "version", "description", "retireReason");
 	}
 }

@@ -45,6 +45,8 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 	 * @should require datatypeClassname
 	 * @should require DatatypeConfiguration if Datatype equals Regex-Validated Text
 	 * @should pass validation if all required values are set
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -105,6 +107,7 @@ public abstract class BaseAttributeTypeValidator<T extends AttributeType<?>> imp
 					        .getMessage() }, "Invalid");
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, target.getClass(), "datatypeConfig", "handlerConfig");
 		}
 	}
 	

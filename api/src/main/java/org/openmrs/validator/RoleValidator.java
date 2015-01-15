@@ -52,6 +52,8 @@ public class RoleValidator implements Validator {
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should fail validation if role has leading or trailing space
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Role role = (Role) obj;
@@ -65,6 +67,7 @@ public class RoleValidator implements Validator {
 				errors.rejectValue("role", "error.trailingSpaces");
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "role", "description");
 	}
 	
 }

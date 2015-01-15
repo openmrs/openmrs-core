@@ -62,6 +62,8 @@ public class OrderTypeValidator implements Validator {
 	 * @should pass if all fields are correct for a new order type
 	 * @should pass if all fields are correct for an existing order type
 	 * @should be invoked when an order type is saved
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -102,6 +104,8 @@ public class OrderTypeValidator implements Validator {
 					}
 				}
 			}
+			ValidateUtil
+			        .validateFieldLengths(errors, obj.getClass(), "name", "description", "retireReason", "javaClassName");
 		}
 	}
 }

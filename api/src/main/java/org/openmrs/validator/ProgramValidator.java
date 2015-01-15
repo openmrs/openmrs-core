@@ -54,6 +54,8 @@ public class ProgramValidator implements Validator {
 	 * @should fail validation if concept is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 * @should pass validation and save edited program
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Program p = (Program) obj;
@@ -70,6 +72,7 @@ public class ProgramValidator implements Validator {
 			if (existingProgram != null && existingProgram.getUuid().equals(p.getUuid())) {
 				Context.evictFromSession(existingProgram);
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name");
 		}
 	}
 }

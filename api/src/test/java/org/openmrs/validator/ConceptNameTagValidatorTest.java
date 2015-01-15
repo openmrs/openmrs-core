@@ -97,4 +97,39 @@ public class ConceptNameTagValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasErrors());
 		Assert.assertEquals(true, errors.hasFieldErrors("tag"));
 	}
+	
+	/**
+	 * @see ConceptNameTagValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		
+		cnt.setTag("tag");
+		cnt.setVoidReason("VoidReason");
+		
+		Errors errors = new BindException(cnt, "cnt");
+		new ConceptNameTagValidator().validate(cnt, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see ConceptNameTagValidator#validate(Object,Errors)
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		ConceptNameTag cnt = new ConceptNameTag();
+		
+		cnt
+		        .setTag("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		cnt
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(cnt, "cnt");
+		new ConceptNameTagValidator().validate(cnt, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("tag"));
+		Assert.assertEquals(true, errors.hasFieldErrors("voidReason"));
+	}
 }

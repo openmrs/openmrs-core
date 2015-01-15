@@ -58,6 +58,8 @@ public class OrderFrequencyValidator implements Validator {
 	 * @should pass for a valid new order frequency
 	 * @should pass for a valid existing order frequency
 	 * @should be invoked when an order frequency is saved
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -78,6 +80,7 @@ public class OrderFrequencyValidator implements Validator {
 					errors.rejectValue("concept", "OrderFrequency.concept.shouldNotBeShared");
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "retireReason");
 		}
 	}
 }

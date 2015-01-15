@@ -265,12 +265,19 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			configuration = sessionFactoryBean.getConfiguration();
 		}
 		
-		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
+		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
 			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
 		}
-		
-		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
+		int fieldLength;
+		try {
+			fieldLength = ((Column) persistentClass.getProperty(fieldName).getColumnIterator().next()).getLength();
+		}
+		catch (Exception e) {
+			log.debug("Could not determine maximum length", e);
+			return -1;
+		}
+		return fieldLength;
 	}
 	
 	@Override

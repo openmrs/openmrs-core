@@ -46,6 +46,8 @@ import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -253,7 +255,14 @@ public class OptionsFormController extends SimpleFormController {
 					user.addName(newPersonName);
 				}
 				
-				ValidateUtil.validate(user, errors);
+				Errors userErrors = new BindException(user, "user");
+				ValidateUtil.validate(user, userErrors);
+				
+				if (userErrors.hasErrors()) {
+					for (ObjectError error : userErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				
 				if (errors.hasErrors()) {
 					return super.processFormSubmission(request, response, opts, errors);

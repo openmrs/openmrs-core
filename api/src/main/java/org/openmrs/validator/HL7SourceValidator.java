@@ -50,6 +50,8 @@ public class HL7SourceValidator implements Validator {
 	 * @should fail validation if name is null
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		HL7Source hl7Source = (HL7Source) obj;
@@ -57,6 +59,7 @@ public class HL7SourceValidator implements Validator {
 			errors.rejectValue("hl7Source", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name");
 		}
 	}
 	

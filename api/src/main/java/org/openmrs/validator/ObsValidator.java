@@ -64,12 +64,16 @@ public class ObsValidator implements Validator {
 	 * @should fail validation if the parent obs has values
 	 * @should reject an invalid concept and drug combination
 	 * @should pass if answer concept and concept of value drug match
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Obs obs = (Obs) obj;
 		List<Obs> ancestors = new ArrayList<Obs>();
 		//ancestors.add(obs);
 		validateHelper(obs, errors, ancestors, true);
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "accessionNumber", "valueModifier", "valueComplex",
+		    "comment", "voidReason");
 	}
 	
 	/**

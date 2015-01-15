@@ -310,4 +310,41 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertFalse(errors.hasErrors());
 	}
+	
+	/**
+	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Provider provider = new Provider();
+		provider.setIdentifier("identifier");
+		provider.setName("name");
+		provider.setRetireReason("retireReason");
+		
+		providerValidator.validate(provider, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Provider provider = new Provider();
+		provider
+		        .setIdentifier("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		provider
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		provider
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(provider, "type");
+		providerValidator.validate(provider, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("identifier"));
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

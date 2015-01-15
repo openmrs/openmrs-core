@@ -31,6 +31,8 @@ import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 /**
  * Tests methods on the {@link PatientIdentifierValidator} class.
@@ -210,5 +212,42 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		PatientIdentifierType idType = pi.getIdentifierType();
 		idType.setLocationBehavior(PatientIdentifierType.LocationBehavior.REQUIRED);
 		PatientIdentifierValidator.validateIdentifier(pi);
+	}
+	
+	/**
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validateIdentifier(PatientIdentifier)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		PatientIdentifier pi = new PatientIdentifier("1TU-8", new PatientIdentifierType(1), null);
+		PatientIdentifierType idType = pi.getIdentifierType();
+		idType.setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+		pi.setVoidReason("voidReason");
+		
+		Errors errors = new BindException(pi, "pi");
+		new PatientIdentifierValidator().validate(pi, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validateIdentifier(PatientIdentifier)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		PatientIdentifier pi = new PatientIdentifier("too long text too long text too long text too long text",
+		        new PatientIdentifierType(1), null);
+		PatientIdentifierType idType = pi.getIdentifierType();
+		idType.setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+		pi
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(pi, "pi");
+		new PatientIdentifierValidator().validate(pi, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("identifier"));
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

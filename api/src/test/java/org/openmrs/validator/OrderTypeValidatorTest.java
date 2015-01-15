@@ -210,4 +210,55 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage(expectedMsg);
 		orderService.saveOrderType(orderType);
 	}
+	
+	/**
+	 * @verifies pass validation if field lengths are correct
+	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		OrderType orderType = new OrderType();
+		orderType.setName("unique name");
+		orderType.setJavaClassName("org.openmrs.TestDrugOrder");
+		Collection<ConceptClass> col = new HashSet<ConceptClass>();
+		col.add(Context.getConceptService().getConceptClass(2));
+		orderType.setConceptClasses(col);
+		
+		orderType.setDescription("description");
+		orderType.setRetireReason("retireReason");
+		
+		Errors errors = new BindException(orderType, "orderType");
+		new OrderTypeValidator().validate(orderType, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @verifies fail validation if field lengths are not correct
+	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		OrderType orderType = new OrderType();
+		orderType
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		orderType
+		        .setJavaClassName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Collection<ConceptClass> col = new HashSet<ConceptClass>();
+		col.add(Context.getConceptService().getConceptClass(2));
+		orderType.setConceptClasses(col);
+		
+		orderType
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		orderType
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(orderType, "orderType");
+		new OrderTypeValidator().validate(orderType, errors);
+		
+		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		Assert.assertEquals(true, errors.hasFieldErrors("javaClassName"));
+		Assert.assertEquals(true, errors.hasFieldErrors("description"));
+		Assert.assertEquals(true, errors.hasFieldErrors("retireReason"));
+	}
 }

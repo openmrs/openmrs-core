@@ -105,4 +105,37 @@ public class ConceptSourceValidatorTest extends BaseContextSensitiveTest {
 		new ConceptSourceValidator().validate(conceptSource, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
+	
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		ConceptSource conceptSource = new ConceptSource();
+		conceptSource.setName("New name");
+		conceptSource.setDescription("Some description");
+		conceptSource.setHl7Code("Hl7Code");
+		conceptSource.setRetireReason("RetireReason");
+		
+		Errors errors = new BindException(conceptSource, "conceptSource");
+		new ConceptSourceValidator().validate(conceptSource, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		ConceptSource conceptSource = new ConceptSource();
+		conceptSource.setName("too long text too long text too long text too long text");
+		conceptSource
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		conceptSource
+		        .setHl7Code("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		conceptSource
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(conceptSource, "conceptSource");
+		new ConceptSourceValidator().validate(conceptSource, errors);
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("hl7Code"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

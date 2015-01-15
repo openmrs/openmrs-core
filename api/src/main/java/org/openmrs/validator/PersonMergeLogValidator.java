@@ -51,6 +51,8 @@ public class PersonMergeLogValidator implements Validator {
 	 * @should fail validation if winner is null 
 	 * @should fail validation if loser is null 
 	 * @should pass validation if all fields are correct
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		
@@ -62,6 +64,7 @@ public class PersonMergeLogValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "personMergeLogData", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "winner", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "loser", "error.null");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 		}
 	}
 	

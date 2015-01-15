@@ -126,4 +126,80 @@ public class PatientValidatorTest extends PersonValidatorTest {
 		Assert.assertTrue(errors.hasFieldErrors("gender"));
 	}
 	
+	/**
+	 * @see {@link PatientValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		Patient patient = new Patient();
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
+		patient.setGender("male");
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		Set<PersonAddress> pAddressList = patient.getAddresses();
+		pAddressList.add(pAddress);
+		patient.setAddresses(pAddressList);
+		patient.addAddress(pAddress);
+		PatientIdentifier patientIdentifier1 = new PatientIdentifier();
+		patientIdentifier1.setLocation(new Location(1));
+		patientIdentifier1.setIdentifier("012345678");
+		patientIdentifier1.setDateCreated(new Date());
+		patientIdentifier1.setIdentifierType(patientIdentifierType);
+		patient.addIdentifier(patientIdentifier1);
+		
+		patient.setVoidReason("voidReason");
+		
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		Patient patient = new Patient();
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
+		patient.setGender("male");
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		Set<PersonAddress> pAddressList = patient.getAddresses();
+		pAddressList.add(pAddress);
+		patient.setAddresses(pAddressList);
+		patient.addAddress(pAddress);
+		PatientIdentifier patientIdentifier1 = new PatientIdentifier();
+		patientIdentifier1.setLocation(new Location(1));
+		patientIdentifier1.setIdentifier("012345678");
+		patientIdentifier1.setDateCreated(new Date());
+		patientIdentifier1.setIdentifierType(patientIdentifierType);
+		patient.addIdentifier(patientIdentifier1);
+		
+		patient
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(patient, "patient");
+		validator.validate(patient, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+	}
 }

@@ -44,6 +44,8 @@ public class RelationshipValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 *
 	 * @should fail if end date is prior to the start date
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 * @param target Relationship object to be validate
 	 * @param errors Error object to hold any errors encounter in the test
 	 *
@@ -61,6 +63,7 @@ public class RelationshipValidator implements Validator {
 					errors.reject("Relationship.InvalidEndDate.error");
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, target.getClass(), "voidReason");
 		}
 		
 	}

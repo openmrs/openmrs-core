@@ -149,11 +149,14 @@ public class ShortPatientFormValidator implements Validator {
 		}
 		
 		//check if all required addres fields are filled
+		errors.pushNestedPath("personAddress");
 		new PersonAddressValidator().validate(personAddress, errors);
+		errors.popNestedPath();
 		if (errors.hasErrors()) {
 			return;
 		}
 		
+		int index = 0;
 		if (CollectionUtils.isEmpty(shortPatientModel.getIdentifiers())) {
 			errors.reject("PatientIdentifier.error.insufficientIdentifiers");
 		} else {
@@ -167,8 +170,10 @@ public class ShortPatientFormValidator implements Validator {
 				if (!pId.isVoided()) {
 					nonVoidedIdentifierFound = true;
 				}
-				
+				errors.pushNestedPath("identifiers[" + index + "]");
 				new PatientIdentifierValidator().validate(pId, errors);
+				errors.popNestedPath();
+				index++;
 			}
 			// if all the names are voided
 			if (!nonVoidedIdentifierFound) {

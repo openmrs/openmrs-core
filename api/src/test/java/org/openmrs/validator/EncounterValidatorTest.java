@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
@@ -164,5 +165,38 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(encounter, "encounter");
 		new EncounterValidator().validate(encounter, errors);
 		Assert.assertTrue(errors.hasFieldErrors("encounterType"));
+	}
+	
+	/**
+	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Encounter encounter = new Encounter();
+		encounter.setEncounterType(new EncounterType());
+		encounter.setPatient(new Patient());
+		encounter.setEncounterDatetime(new Date());
+		encounter.setVoidReason("voidReason");
+		Errors errors = new BindException(encounter, "encounter");
+		new EncounterValidator().validate(encounter, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Encounter encounter = new Encounter();
+		encounter.setEncounterType(new EncounterType());
+		encounter.setPatient(new Patient());
+		encounter.setEncounterDatetime(new Date());
+		encounter
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(encounter, "encounter");
+		new EncounterValidator().validate(encounter, errors);
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

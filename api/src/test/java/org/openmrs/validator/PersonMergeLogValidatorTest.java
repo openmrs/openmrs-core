@@ -5,10 +5,11 @@ import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.person.PersonMergeLogData;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
-public class PersonMergeLogValidatorTest {
+public class PersonMergeLogValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PersonMergeLogValidator#validate(Object,Errors)
@@ -69,5 +70,45 @@ public class PersonMergeLogValidatorTest {
 		Errors errors = new BindException(personMergeLog, "personMergeLog");
 		validator.validate(personMergeLog, errors);
 		Assert.assertFalse(errors.hasFieldErrors());
+	}
+	
+	/**
+	 * @see PersonMergeLogValidator#validate(Object,Errors)
+	 * @verifies pass validation if field lengths are correct
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		PersonMergeLog personMergeLog = new PersonMergeLog();
+		personMergeLog.setWinner(new Person());
+		personMergeLog.setLoser(new Person());
+		personMergeLog.setPersonMergeLogData(new PersonMergeLogData());
+		
+		personMergeLog.setVoidReason("voidReason");
+		
+		PersonMergeLogValidator validator = new PersonMergeLogValidator();
+		Errors errors = new BindException(personMergeLog, "personMergeLog");
+		validator.validate(personMergeLog, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
+	}
+	
+	/**
+	 * @see PersonMergeLogValidator#validate(Object,Errors)
+	 * @verifies fail validation if field lengths are not correct
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		PersonMergeLog personMergeLog = new PersonMergeLog();
+		personMergeLog.setWinner(new Person());
+		personMergeLog.setLoser(new Person());
+		personMergeLog.setPersonMergeLogData(new PersonMergeLogData());
+		
+		personMergeLog
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		PersonMergeLogValidator validator = new PersonMergeLogValidator();
+		Errors errors = new BindException(personMergeLog, "personMergeLog");
+		validator.validate(personMergeLog, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

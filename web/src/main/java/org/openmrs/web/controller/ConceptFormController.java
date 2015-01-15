@@ -258,7 +258,9 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				try {
+					errors.pushNestedPath("concept");
 					ValidateUtil.validate(concept, errors);
+					errors.popNestedPath();
 					
 					validateConceptUsesPersistedObjects(concept, errors);
 					

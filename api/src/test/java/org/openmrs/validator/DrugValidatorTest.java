@@ -145,4 +145,43 @@ public class DrugValidatorTest extends BaseContextSensitiveTest {
 		new DrugValidator().validate(drug, errors);
 		Assert.assertFalse(errors.hasFieldErrors());
 	}
+	
+	/**
+	 * @verifies pass validation if field lengths are correct
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Drug drug = new Drug();
+		drug.addDrugReferenceMap(new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
+		        .getConceptMapType(1)));
+		drug.setName("name");
+		drug.setStrength("strength");
+		drug.setRetireReason("retireReason");
+		Errors errors = new BindException(drug, "drug");
+		new DrugValidator().validate(drug, errors);
+		Assert.assertFalse(errors.hasFieldErrors());
+	}
+	
+	/**
+	 * @verifies fail validation if field lengths are not correct
+	 * @see DrugValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Drug drug = new Drug();
+		drug.addDrugReferenceMap(new DrugReferenceMap(conceptService.getConceptReferenceTerm(1), conceptService
+		        .getConceptMapType(1)));
+		drug
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		drug
+		        .setStrength("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		drug
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(drug, "drug");
+		new DrugValidator().validate(drug, errors);
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("strength"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

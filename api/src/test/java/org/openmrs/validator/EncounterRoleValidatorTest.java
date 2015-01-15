@@ -90,4 +90,42 @@ public class EncounterRoleValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasErrors());
 		
 	}
+	
+	/**
+	 * {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		
+		EncounterRole encounterRole = Context.getEncounterService().getEncounterRoleByName("Unknown");
+		Assert.assertNotNull(encounterRole);
+		encounterRole.setName("name");
+		encounterRole.setDescription("desc");
+		encounterRole.setRetireReason("retireReason");
+		Errors errors = new BindException(encounterRole, "encounterRole");
+		new EncounterRoleValidator().validate(encounterRole, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * {@link org.openmrs.validator.EncounterRoleValidator#validate(Object, org.springframework.validation.Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		
+		EncounterRole encounterRole = new EncounterRole();
+		encounterRole
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		encounterRole
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		encounterRole
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(encounterRole, "encounterRole");
+		new EncounterRoleValidator().validate(encounterRole, errors);
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

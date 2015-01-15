@@ -136,4 +136,37 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(program.getDescription().equals("Edited description"));
 	}
+	
+	/**
+	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Program prog = new Program();
+		prog.setName("Hypochondriasis program");
+		prog.setConcept(Context.getConceptService().getConcept(3));
+		
+		Errors errors = new BindException(prog, "prog");
+		programValidator.validate(prog, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Program prog = new Program();
+		prog
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text");
+		prog.setConcept(Context.getConceptService().getConcept(3));
+		
+		Errors errors = new BindException(prog, "prog");
+		programValidator.validate(prog, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+	}
 }

@@ -64,6 +64,9 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 	 * @should accept a visit if startDateTime falls into another voided visit of the same patient
 	 * @should accept a visit if stopDateTime falls into another voided visit of the same patient
 	 * @should accept a visit if it contains another voided visit of the same patient
+	 *
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -94,6 +97,8 @@ public class VisitValidator extends BaseCustomizableValidator implements Validat
 				}
 			}
 		}
+		
+		ValidateUtil.validateFieldLengths(errors, target.getClass(), "voidReason");
 		
 		// check attributes
 		super.validateAttributes(visit, errors, Context.getVisitService().getAllVisitAttributeTypes());

@@ -52,6 +52,8 @@ public class FormValidator implements Validator {
 	 * @should fail validation if retiredReason is null
 	 * @should fail validation if retiredReason is empty
 	 * @should pass validation if all fields are correct
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Form form = (Form) obj;
@@ -69,6 +71,7 @@ public class FormValidator implements Validator {
 			if (form.isRetired()) {
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "retireReason", "general.retiredReason.empty");
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "version", "description", "retireReason");
 		}
 	}
 	

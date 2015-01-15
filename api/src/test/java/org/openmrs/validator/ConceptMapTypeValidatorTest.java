@@ -100,4 +100,36 @@ public class ConceptMapTypeValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(false, errors.hasErrors());
 	}
 	
+	/**
+	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		ConceptMapType mapType = new ConceptMapType();
+		mapType.setName("unique-name");
+		mapType.setDescription("Description");
+		mapType.setRetireReason("RetireReason");
+		Errors errors = new BindException(mapType, "mapType");
+		new ConceptMapTypeValidator().validate(mapType, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptMapTypeValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		ConceptMapType mapType = new ConceptMapType();
+		mapType.setName("unique-name");
+		mapType
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		mapType
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(mapType, "mapType");
+		new ConceptMapTypeValidator().validate(mapType, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("description"));
+		Assert.assertEquals(true, errors.hasFieldErrors("retireReason"));
+	}
 }

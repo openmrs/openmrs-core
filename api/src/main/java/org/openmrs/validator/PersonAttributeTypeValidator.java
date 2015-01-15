@@ -45,6 +45,8 @@ public class PersonAttributeTypeValidator implements Validator {
 	 * @should fail validation if name already in use
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if all fields are correct
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		PersonAttributeType patObj = (PersonAttributeType) obj;
@@ -55,5 +57,6 @@ public class PersonAttributeTypeValidator implements Validator {
 		if (pat != null && !pat.getUuid().equals(patObj.getUuid())) {
 			errors.rejectValue("name", "PersonAttributeType.error.nameAlreadyInUse");
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "format", "retireReason");
 	}
 }
