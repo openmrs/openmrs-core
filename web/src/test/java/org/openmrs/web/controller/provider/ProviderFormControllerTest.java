@@ -17,6 +17,7 @@ import java.util.Arrays;
 
 import junit.framework.Assert;
 
+import org.hibernate.ObjectNotFoundException;
 import org.junit.Test;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
@@ -34,10 +35,12 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	protected static final String PROVIDERS_ATTRIBUTES_XML = "org/openmrs/api/include/ProviderServiceTest-providerAttributes.xml";
 	
+	protected static final String PROVIDERS_XML = "org/openmrs/api/include/ProviderServiceTest-initial.xml";
+	
 	/**
 	 * @verifies not void or change attributeList if the attribute values are same
-	 * @see org.openmrs.web.controller.provider.ProviderFormController#onSubmit(org.springframework.web.context.request.WebRequest,
-	 *      String, String, String, org.openmrs.Provider,
+	 * @see org.openmrs.web.controller.provider.ProviderFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      String, String, String, String, boolean, org.openmrs.Provider,
 	 *      org.springframework.validation.BindingResult, org.springframework.ui.ModelMap)
 	 */
 	@Test
@@ -51,7 +54,7 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 		BindException errors = new BindException(provider, "provider");
 		ProviderFormController providerFormController = (ProviderFormController) applicationContext
 		        .getBean("providerFormController");
-		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, true, provider, errors,
+		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, null, true, provider, errors,
 		    createModelMap(providerAttributeType));
 		Assert.assertFalse(((ProviderAttribute) (provider.getAttributes().toArray()[0])).getVoided());
 		Assert.assertEquals(1, provider.getAttributes().size());
@@ -60,8 +63,8 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
 	 * @verifies set attributes to void if the values is not set
-	 * @see org.openmrs.web.controller.provider.ProviderFormController#onSubmit(org.springframework.web.context.request.WebRequest,
-	 *      String, String, String, org.openmrs.Provider,
+	 * @see org.openmrs.web.controller.provider.ProviderFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      String, String, String, String, boolean, org.openmrs.Provider,
 	 *      org.springframework.validation.BindingResult, org.springframework.ui.ModelMap)
 	 */
 	@Test
@@ -74,13 +77,35 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 		//If value is not set then void all the attributes.
 		mockHttpServletRequest.setParameter("attribute." + providerAttributeType.getId() + ".existing[1]", "");
 		BindException errors = new BindException(provider, "provider");
-		ProviderFormController visitFormController = (ProviderFormController) applicationContext
+		ProviderFormController providerFormController = (ProviderFormController) applicationContext
 		        .getBean("providerFormController");
-		visitFormController.onSubmit(mockHttpServletRequest, "save", null, null, true, provider, errors,
+		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, null, true, provider, errors,
 		    createModelMap(providerAttributeType));
 		Assert.assertEquals(1, provider.getAttributes().size());
 		Assert.assertTrue(((ProviderAttribute) (provider.getAttributes().toArray()[0])).isVoided());
 		
+	}
+	
+	/**
+	 * @verifies should purge the provider
+	 * @see org.openmrs.web.controller.provider.ProviderFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      String, String, String, String, boolean, org.openmrs.Provider,
+	 *      org.springframework.validation.BindingResult, org.springframework.ui.ModelMap)
+	 */
+	@Test(expected = ObjectNotFoundException.class)
+	public void onSubmit_shouldPurgeTheProvider() throws Exception {
+		executeDataSet(PROVIDERS_ATTRIBUTES_XML);
+		executeDataSet(PROVIDERS_XML);
+		Provider provider = Context.getProviderService().getProvider(2);
+		ProviderAttributeType providerAttributeType = Context.getProviderService().getProviderAttributeType(1);
+		MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
+		BindException errors = new BindException(provider, "provider");
+		ProviderFormController providerFormController = (ProviderFormController) applicationContext
+		        .getBean("providerFormController");
+		providerFormController.onSubmit(mockHttpServletRequest, null, null, null, "purge", true, provider, errors,
+		    createModelMap(providerAttributeType));
+		Context.flushSession();
+		Assert.assertNull(Context.getProviderService().getProvider(2));
 	}
 	
 	private ModelMap createModelMap(ProviderAttributeType providerAttributeType) {
