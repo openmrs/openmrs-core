@@ -465,9 +465,9 @@ public class PatientFormController extends PersonFormController {
 					patient = ps.getPatientOrPromotePerson(id);
 					if (patient == null) {
 						HttpSession session = request.getSession();
-									session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "patientDashboard.noPatientWithId");
-									session.setAttribute(WebConstants.OPENMRS_ERROR_ARGS, patientId);
-									return new Patient();
+						session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "patientDashboard.noPatientWithId");
+						session.setAttribute(WebConstants.OPENMRS_ERROR_ARGS, patientId);
+						return new Patient();
 					}
 				}
 				catch (NumberFormatException numberError) {
