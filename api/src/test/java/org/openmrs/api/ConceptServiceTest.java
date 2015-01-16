@@ -625,6 +625,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should ignore case while returning results", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldIgnoreCase() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("wgt234", "sstrm");
+		Assert.assertEquals(5089, concept.getId().intValue());
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptAnswerByUuid(String)}
 	 */
 	@Test
