@@ -8562,4 +8562,12 @@
 		<comment>Updating layout.address.format global property</comment>
 		<customChange class="org.openmrs.util.databasechange.UpdateLayoutAddressFormatChangeSet"/>
 	</changeSet>
+
+	<changeSet id="20150108-TRUNK-14" author="rpuzdrowski">
+		<comment>Removing dashboard.regimen.standardRegimens global property</comment>
+		<delete tableName="global_property">
+			<where>property = 'dashboard.regimen.standardRegimens'</where>
+		</delete>
+	</changeSet>
+
 </databaseChangeLog>
