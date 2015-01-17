@@ -87,6 +87,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	private static Concept falseConcept;
 	
+	private static Concept unknownConcept;
+	
 	/**
 	 * @see org.openmrs.api.ConceptService#setConceptDAO(org.openmrs.api.db.ConceptDAO)
 	 */
@@ -1401,6 +1403,26 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		return trueConcept;
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getUnknownConcept()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Concept getUnknownConcept() {
+		if (unknownConcept == null) {
+			try {
+				unknownConcept = Context.getConceptService().getConcept(
+				    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT)));
+			}
+			catch (NumberFormatException e) {
+				log.warn("Concept id for unknown concept should be a number");
+			}
+		}
+		
+		return unknownConcept;
 	}
 	
 	/**

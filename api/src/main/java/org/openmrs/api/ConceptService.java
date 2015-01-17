@@ -1292,6 +1292,14 @@ public interface ConceptService extends OpenmrsService {
 	public Concept getFalseConcept();
 	
 	/**
+	 * Returns the UNKNOWN concept
+	 * 
+	 * @return unknown concept
+	 * @should return the unknown concept
+	 */
+	public Concept getUnknownConcept();
+	
+	/**
 	 * Changes the datatype of a concept from boolean to coded when it has observations it is
 	 * associated to.
 	 * 
