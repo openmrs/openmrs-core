@@ -1429,7 +1429,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return default Locale ConceptStopWords if Locale is null", method = "getConceptStopWords(Locale)")
 	public void getConceptStopWords_shouldReturnDefaultLocaleConceptStopWordsIfLocaleIsNull() throws Exception {
 		List<String> conceptStopWords = conceptService.getConceptStopWords(null);
-		assertEquals(1, conceptStopWords.size());
+		assertEquals(2, conceptStopWords.size());
+		assertEquals(true, conceptStopWords.contains("BUT"));
+		assertEquals(true, conceptStopWords.contains("TO"));
 	}
 	
 	/**
@@ -1492,7 +1494,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return all the concept stop words", method = "getAllConceptStopWords()")
 	public void getAllConceptStopWords_shouldReturnAllConceptStopWords() throws Exception {
 		List<ConceptStopWord> conceptStopWords = conceptService.getAllConceptStopWords();
-		assertEquals(4, conceptStopWords.size());
+		assertEquals(5, conceptStopWords.size());
 	}
 	
 	/**
@@ -1505,6 +1507,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptService.deleteConceptStopWord(2);
 		conceptService.deleteConceptStopWord(3);
 		conceptService.deleteConceptStopWord(4);
+		conceptService.deleteConceptStopWord(5);
 		
 		List<ConceptStopWord> conceptStopWords = conceptService.getAllConceptStopWords();
 		assertEquals(0, conceptStopWords.size());

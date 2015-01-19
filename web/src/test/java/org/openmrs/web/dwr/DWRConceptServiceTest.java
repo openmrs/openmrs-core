@@ -25,6 +25,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
+import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -272,5 +273,35 @@ public class DWRConceptServiceTest extends BaseWebContextSensitiveTest {
 			}
 		}
 		
+	}
+	
+	/**
+	 * @see DWRConceptService#findBatchOfConcepts(String, boolean, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, Integer, Integer)
+	 * @verifies match exact names containing stop words
+	 */
+	@Test
+	public void findBatchOfConcepts_shouldMatchExactNamesContainingStopWords() throws Exception {
+		Concept concept = new Concept();
+		
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en, pl"));
+		ConceptName conceptName = new ConceptName("FAILURE TO THRIVE", new Locale("pl"));
+		conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+		conceptName.setConcept(concept);
+		concept.addName(conceptName);
+		concept.setConceptClass(Context.getConceptService().getConceptClass(7));
+		concept.setDatatype(Context.getConceptService().getConceptDatatype(2));
+		Context.getConceptService().saveConcept(concept);
+		
+		Context.setLocale(new Locale("pl"));
+		String phrase = "FAILURE TO THRIVE";
+		List<Object> result = dwrConceptService.findBatchOfConcepts(phrase, Boolean.FALSE, null, null, null, null, null,
+		    null);
+		
+		Assert.assertNotNull(result);
+		Assert.assertTrue(isConceptFound(concept, result));
+		
+		Context.setLocale(new Locale("en", "GB"));
 	}
 }

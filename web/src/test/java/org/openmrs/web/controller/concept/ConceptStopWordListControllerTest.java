@@ -67,7 +67,7 @@ public class ConceptStopWordListControllerTest extends BaseWebContextSensitiveTe
 		List<ConceptStopWord> conceptStopWordList = (List<ConceptStopWord>) mockRequest.getSession().getAttribute(
 		    "conceptStopWordList");
 		Assert.assertNotNull(conceptStopWordList);
-		Assert.assertEquals(4, conceptStopWordList.size());
+		Assert.assertEquals(5, conceptStopWordList.size());
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class ConceptStopWordListControllerTest extends BaseWebContextSensitiveTe
 		
 		List<ConceptStopWord> conceptStopWordList = (List<ConceptStopWord>) mockSession.getAttribute("conceptStopWordList");
 		Assert.assertNotNull(conceptStopWordList);
-		Assert.assertEquals(3, conceptStopWordList.size());
+		Assert.assertEquals(4, conceptStopWordList.size());
 	}
 	
 	/**
