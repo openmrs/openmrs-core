@@ -1217,6 +1217,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#getUnknownConcept()}
+	 */
+	@Test
+	@Verifies(value = "should return the unknown concept", method = "getUnknownConcept()")
+	public void getUnknownConcept_shouldReturnTheUnknownConcept() throws Exception {
+		createUnknownConceptGlobalProperty();
+		Assert.assertNotNull(conceptService.getUnknownConcept());
+		Assert.assertEquals(9, conceptService.getUnknownConcept().getId().intValue());
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
 	 */
 	@Test
@@ -1317,6 +1328,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		        "Concept id of the concept defining the TRUE boolean concept");
 		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
 		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
+	}
+	
+	/**
+	 * Utility method that creates the global property concept.unknown'
+	 */
+	private static void createUnknownConceptGlobalProperty() {
+		GlobalProperty unknownConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT,
+		        "9", "Concept id of the concept defining the UNKNOWN concept");
+		Context.getAdministrationService().saveGlobalProperty(unknownConceptGlobalProperty);
 	}
 	
 	/**
