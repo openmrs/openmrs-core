@@ -65,16 +65,15 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			response.setHeader("Content-Type", "text/csv;charset=UTF-8");
 			response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 			
-			StringBuilder line = new StringBuilder(
-			        "Concept Id,Name,Description,Synonyms,Answers,Set Members,Class,Datatype,Changed By,Creator\n");
-			response.getWriter().write(line.toString());
+			String headerLine = "Concept Id,Name,Description,Synonyms,Answers,Set Members,Class,Datatype,Changed By,Creator\n";
+			response.getWriter().write(headerLine);
 			
-			int listIndex = 0;
 			Iterator<Concept> conceptIterator = cs.conceptIterator();
 			while (conceptIterator.hasNext()) {
 				Concept c = conceptIterator.next();
 				if (!c.isRetired()) {
 					
+					StringBuilder line = new StringBuilder("");
 					line.append(c.getConceptId());
 					line.append(",");
 					String name, description;
@@ -159,9 +158,11 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					line.append("\"\n");
 					
 					response.getWriter().write(line.toString());
-				}
+					
+				} //end if !c.isRetired()
 				
-			}
+			} //end while(conceptIterator.hasNext())
+			
 		}
 		catch (Exception e) {
 			log.error("Error while downloading concepts.", e);
