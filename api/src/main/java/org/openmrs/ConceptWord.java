@@ -219,7 +219,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		
 		for (ConceptName name : concept.getNames()) {
 			if (!name.isVoided()) {
-				List<String> uniqueParts = getUniqueWords(name.getName());
+				List<String> uniqueParts = getUniqueWords(name.getName(), name.getLocale());
 				for (String part : uniqueParts) {
 					words.add(new ConceptWord(part, concept, name, name.getLocale()));
 				}
