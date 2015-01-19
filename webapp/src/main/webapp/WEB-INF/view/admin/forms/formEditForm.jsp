@@ -258,7 +258,8 @@
 		overflow: hidden;
 	}
 	#fieldSearchDiv {
-		xposition: fixed;
+		position: fixed;		
+		bottom: 55px;
 		z-index: 10;
 		background-color: white;
 	}
