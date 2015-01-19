@@ -87,6 +87,8 @@ public class ConceptValidator implements Validator {
 	 * @should pass for an edited concept with a map created with deprecated concept map methods
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
+	 * @should pass if fully specified name is the same as short name
+	 * @should pass if different concepts have the same short name
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
