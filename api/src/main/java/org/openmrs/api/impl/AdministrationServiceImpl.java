@@ -930,16 +930,40 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			presentationLocales = new HashSet<Locale>();
 			Collection<Locale> messageLocales = Context.getMessageSourceService().getLocales();
 			List<Locale> allowedLocales = getAllowedLocales();
-			for (Locale possibleLocale : messageLocales) {
-				if (allowedLocales.contains(possibleLocale)) {
-					presentationLocales.add(possibleLocale);
+			
+			for (Locale locale : allowedLocales) {
+				// if no country is specified all countries with this language will be added
+				if (StringUtils.isEmpty(locale.getCountry())) {
+					List<Locale> localsWithSameLanguage = new ArrayList<Locale>();
+					for (Locale possibleLocale : messageLocales) {
+						if (locale.getLanguage().equals(possibleLocale.getLanguage())
+						        && !StringUtils.isEmpty(possibleLocale.getCountry())) {
+							localsWithSameLanguage.add(possibleLocale);
+						}
+					}
+					
+					// if there are country locales we add those only
+					if (!localsWithSameLanguage.isEmpty()) {
+						presentationLocales.addAll(localsWithSameLanguage);
+					} else {
+						// if there are no country locales we add possibleLocale which has country as ""
+						// e.g: if 'es' locale has no country based entries es_CL etc. we show default 'es'
+						if (messageLocales.contains(locale)) {
+							presentationLocales.add(locale);
+						}
+					}
 				} else {
-					// to be sure, check for language-only matches
-					for (Locale allowedLocale : allowedLocales) {
-						if (("".equals(allowedLocale.getCountry()) || "".equals(possibleLocale.getCountry()))
-						        && (allowedLocale.getLanguage().equals(possibleLocale.getLanguage()))) {
-							presentationLocales.add(possibleLocale);
-							break;
+					// if locales list contains exact <language,country> pair add it
+					if (messageLocales.contains(locale)) {
+						presentationLocales.add(locale);
+					} else {
+						// if no such entry add possibleLocale with country ""
+						// e.g: we specify es_CL but it is not in list so we add es locale here
+						for (Locale possibleLocale : messageLocales) {
+							if (locale.getLanguage().equals(possibleLocale.getLanguage())
+							        && StringUtils.isEmpty(possibleLocale.getCountry())) {
+								presentationLocales.add(possibleLocale);
+							}
 						}
 					}
 				}
