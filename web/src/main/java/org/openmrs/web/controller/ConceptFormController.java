@@ -524,8 +524,10 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
-				if (StringUtils.hasLength(descInLocale.getDescription())
-				        && !concept.getDescriptions().contains(descInLocale)) {
+				
+				if (!StringUtils.hasText(descInLocale.getDescription())) {
+					concept.removeDescription(descInLocale);
+				} else if (!concept.getDescriptions().contains(descInLocale)) {
 					concept.addDescription(descInLocale);
 				}
 			}

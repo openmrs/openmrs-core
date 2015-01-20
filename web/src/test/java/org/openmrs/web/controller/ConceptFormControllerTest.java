@@ -988,4 +988,60 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Concept concept = conceptService.getConcept(conceptId);
 		assertThat(concept.getPreferredName(Locale.ENGLISH).getName(), is("STAVUDINE LAMIVUDINE AND NEVIRAPINE"));
 	}
+	
+	@Test
+	public void shouldRemoveConceptDescriptionIfRemovedFromUI() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		
+		// make sure the concept already exists
+		Concept concept = cs.getConcept(3);
+		assertNotNull(concept);
+		assertNotNull(concept.getDescription());
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", concept.getConceptId().toString());
+		mockRequest.setParameter("descriptionsByLocale[en].description", "");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Concept actualConcept = cs.getConcept(3);
+		assertNotNull(actualConcept);
+		assertNull(concept.getDescription());
+	}
+	
+	@Test
+	public void shouldRemoveConceptDescriptionIfEmptyStringFromUI() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		
+		// make sure the concept already exists
+		Concept concept = cs.getConcept(3);
+		assertNotNull(concept);
+		assertNotNull(concept.getDescription());
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", concept.getConceptId().toString());
+		mockRequest.setParameter("descriptionsByLocale[en].description", "    ");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Concept actualConcept = cs.getConcept(3);
+		assertNotNull(actualConcept);
+		assertNull(concept.getDescription());
+	}
 }
