@@ -85,7 +85,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get all patients when no parameters given", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)")
 	public void getPatientsByCharacteristics_shouldGetAllPatientsWhenNoParametersGiven() throws Exception {
 		Cohort cohort = service.getPatientsByCharacteristics(null, null, null, null, null, null, null);
-		Assert.assertEquals(4, cohort.size());
+		Assert.assertEquals(5, cohort.size());
 	}
 	
 	/**
@@ -97,11 +97,11 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Cohort cohort = null;
 		cohort = service.getPatientsByCharacteristics(null, null, null, null, null, null, null, df.parse("1970-01-01"));
-		Assert.assertEquals(1, cohort.size());
+		Assert.assertEquals(2, cohort.size());
 		cohort = service.getPatientsByCharacteristics(null, null, null, null, null, null, null, df.parse("1980-01-01"));
-		Assert.assertEquals(3, cohort.size());
-		cohort = service.getPatientsByCharacteristics(null, null, null, null, null, null, null, df.parse("2008-01-01"));
 		Assert.assertEquals(4, cohort.size());
+		cohort = service.getPatientsByCharacteristics(null, null, null, null, null, null, null, df.parse("2008-01-01"));
+		Assert.assertEquals(5, cohort.size());
 	}
 	
 	/**
@@ -111,7 +111,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get patients of given gender", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)")
 	public void getPatientsByCharacteristics_shouldGetPatientsOfGivenGender() throws Exception {
 		Cohort cohort = service.getPatientsByCharacteristics("m", null, null, null, null, null, null);
-		Assert.assertEquals(2, cohort.size());
+		Assert.assertEquals(3, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 		Assert.assertTrue(cohort.contains(6));
 		
@@ -128,7 +128,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get patients who are alive", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)")
 	public void getPatientsByCharacteristics_shouldGetPatientsWhoAreAlive() throws Exception {
 		Cohort cohort = service.getPatientsByCharacteristics(null, null, null, null, null, true, null);
-		Assert.assertEquals(4, cohort.size());
+		Assert.assertEquals(5, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 		Assert.assertTrue(cohort.contains(6));
 		Assert.assertTrue(cohort.contains(7));
@@ -223,7 +223,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get patients with no drug orders", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,GroupMethod,Date,Date)")
 	public void getPatientsHavingDrugOrder_shouldGetPatientsWithNoDrugOrders() throws Exception {
 		Cohort cohort = service.getPatientsHavingDrugOrder(null, null, GroupMethod.NONE, null, null);
-		Assert.assertEquals(2, cohort.size());
+		Assert.assertEquals(3, cohort.size());
 		Assert.assertTrue(cohort.contains(6));
 		Assert.assertTrue(cohort.contains(8));
 	}

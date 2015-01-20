@@ -607,7 +607,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		        && patientIdentifier.getIdentifierType().getUniquenessBehavior() == UniquenessBehavior.LOCATION;
 		
 		// switched this to an hql query so the hibernate cache can be considered as well as the database
-		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
+		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patientId "
 		        + "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
 		
 		if (checkPatient) {

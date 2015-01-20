@@ -139,66 +139,68 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			patient.getPatientIdentifier().setPreferred(true);
 		}
 		
-		if (!patient.isVoided()) {
-			checkPatientIdentifiers(patient);
-		}
-		
-		PatientIdentifier preferredIdentifier = null;
-		PatientIdentifier possiblePreferredId = patient.getPatientIdentifier();
-		if (possiblePreferredId != null && possiblePreferredId.isPreferred() && !possiblePreferredId.isVoided()) {
-			preferredIdentifier = possiblePreferredId;
-		}
-		
-		for (PatientIdentifier id : patient.getIdentifiers()) {
-			if (preferredIdentifier == null && !id.isVoided()) {
-				id.setPreferred(true);
-				preferredIdentifier = id;
-				continue;
+		synchronized (this) {
+			if (!patient.isVoided()) {
+				checkPatientIdentifiers(patient);
 			}
 			
-			if (!id.equals(preferredIdentifier)) {
-				id.setPreferred(false);
-			}
-		}
-		
-		PersonName preferredName = null;
-		PersonName possiblePreferredName = patient.getPersonName();
-		if (possiblePreferredName != null && possiblePreferredName.isPreferred() && !possiblePreferredName.isVoided()) {
-			preferredName = possiblePreferredName;
-		}
-		
-		for (PersonName name : patient.getNames()) {
-			if (preferredName == null && !name.isVoided()) {
-				name.setPreferred(true);
-				preferredName = name;
-				continue;
+			PatientIdentifier preferredIdentifier = null;
+			PatientIdentifier possiblePreferredId = patient.getPatientIdentifier();
+			if (possiblePreferredId != null && possiblePreferredId.isPreferred() && !possiblePreferredId.isVoided()) {
+				preferredIdentifier = possiblePreferredId;
 			}
 			
-			if (!name.equals(preferredName)) {
-				name.setPreferred(false);
-			}
-		}
-		
-		PersonAddress preferredAddress = null;
-		PersonAddress possiblePreferredAddress = patient.getPersonAddress();
-		if (possiblePreferredAddress != null && possiblePreferredAddress.isPreferred()
-		        && !possiblePreferredAddress.isVoided()) {
-			preferredAddress = possiblePreferredAddress;
-		}
-		
-		for (PersonAddress address : patient.getAddresses()) {
-			if (preferredAddress == null && !address.isVoided()) {
-				address.setPreferred(true);
-				preferredAddress = address;
-				continue;
+			for (PatientIdentifier id : patient.getIdentifiers()) {
+				if (preferredIdentifier == null && !id.isVoided()) {
+					id.setPreferred(true);
+					preferredIdentifier = id;
+					continue;
+				}
+				
+				if (!id.equals(preferredIdentifier)) {
+					id.setPreferred(false);
+				}
 			}
 			
-			if (!address.equals(preferredAddress)) {
-				address.setPreferred(false);
+			PersonName preferredName = null;
+			PersonName possiblePreferredName = patient.getPersonName();
+			if (possiblePreferredName != null && possiblePreferredName.isPreferred() && !possiblePreferredName.isVoided()) {
+				preferredName = possiblePreferredName;
 			}
+			
+			for (PersonName name : patient.getNames()) {
+				if (preferredName == null && !name.isVoided()) {
+					name.setPreferred(true);
+					preferredName = name;
+					continue;
+				}
+				
+				if (!name.equals(preferredName)) {
+					name.setPreferred(false);
+				}
+			}
+			
+			PersonAddress preferredAddress = null;
+			PersonAddress possiblePreferredAddress = patient.getPersonAddress();
+			if (possiblePreferredAddress != null && possiblePreferredAddress.isPreferred()
+			        && !possiblePreferredAddress.isVoided()) {
+				preferredAddress = possiblePreferredAddress;
+			}
+			
+			for (PersonAddress address : patient.getAddresses()) {
+				if (preferredAddress == null && !address.isVoided()) {
+					address.setPreferred(true);
+					preferredAddress = address;
+					continue;
+				}
+				
+				if (!address.equals(preferredAddress)) {
+					address.setPreferred(false);
+				}
+			}
+			
+			return dao.savePatient(patient);
 		}
-		
-		return dao.savePatient(patient);
 	}
 	
 	/**
