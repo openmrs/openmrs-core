@@ -47,6 +47,7 @@ public class RelationshipValidator implements Validator {
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 * @param target Relationship object to be validate
+	 * @should fail if start date is in future
 	 * @param errors Error object to hold any errors encounter in the test
 	 *
 	 *
@@ -64,6 +65,12 @@ public class RelationshipValidator implements Validator {
 				}
 			}
 			ValidateUtil.validateFieldLengths(errors, target.getClass(), "voidReason");
+			if (startDate != null) {
+				Date currentDate = new Date();
+				if (startDate.after(currentDate)) {
+					errors.reject("error.date.future");
+				}
+			}
 		}
 		
 	}

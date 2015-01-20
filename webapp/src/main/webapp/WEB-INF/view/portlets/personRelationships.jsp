@@ -166,10 +166,23 @@
 		}
 		
 		var startDateString = $j("#add_rel_start_date").val();
-
-		$j("#addRelationship").dialog("close");
 		clearAddRelationship();	
-		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, startDateString, refreshRelationships);
+		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, startDateString, handleStartDate);
+	}
+	
+	function  handleStartDate(validStartDate)
+	{
+		if(validStartDate==true) {
+            refreshRelationships();
+          $j("#invalid_start_date").hide();
+          $j("#addRelationship").dialog("close");
+        } 
+        else 
+        {            
+            showDiv('add_rel_details');    	               	
+            $j("#invalid_start_date").show();            
+            $j('#addRelationship #add_rel_start_date').select();
+        }				
 	}
 	
 	function clearAddRelationship() {
@@ -177,6 +190,7 @@
 		$j("#add_rel_display_id").val("");
 		$j("#add_relationship_type").val("");
 		$j("#add_rel_start_date").val("");
+		$j("#invalid_start_date").hide();
 		hideDiv('add_rel_details');
 	}
 
@@ -291,9 +305,11 @@
 			<br/>
 			<openmrs:message code="Relationship.startDateQuestion"/>
 			<openmrs_tag:dateField formFieldName="add_rel_start_date" startValue="" />
+			<span id="invalid_start_date" class="error">
+			<openmrs:message code="error.date.future"/>
+			</span>										
 		</span>
 	</div>
-	
 	
 	<div id="editRelationship">
 		<input type="hidden" id="edit_relationship_id"/>

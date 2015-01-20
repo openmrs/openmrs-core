@@ -88,4 +88,52 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipValidator().validate(relationship, errors);
 		Assert.assertEquals(true, errors.hasFieldErrors("voidReason"));
 	}
+	
+	/**
+	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "Should fail if start date is in future", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfStartDateIsInFuture() throws Exception {
+		Relationship relationship = new Relationship(1);
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, 1);
+		Date nextYear = cal.getTime();
+		relationship.setStartDate(nextYear);
+		new RelationshipValidator().validate(relationship, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "Should pass if start date is not in future", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfStartDateIsNotInFuture() throws Exception {
+		Relationship relationship = new Relationship(1);
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -1);
+		Date lastYear = cal.getTime();
+		relationship.setStartDate(lastYear);
+		new RelationshipValidator().validate(relationship, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "Should pass if start date is empty since start date is optional while creating a relationship", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfStartDateIsEmpty() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
+		Relationship relationship = new Relationship(1);
+		relationship.setStartDate(null);
+		new RelationshipValidator().validate(relationship, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
 }
