@@ -38,7 +38,7 @@ if (jspContext.getAttribute("initialValue") != null) {
 			<openmrs:forEachRecord name="locationHierarchy">
 				<c:if test="${!record.location.retired }">
 					<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
-						<c:forEach begin="1" end="${record.depth}">&nbsp;&nbsp;</c:forEach>${record.location.name}
+						<c:forEach begin="1" end="${record.depth}">&nbsp;&nbsp;</c:forEach><c:out value="${record.location.name}"/>
 					</option>
 				</c:if>
 			</openmrs:forEachRecord>
@@ -50,7 +50,7 @@ if (jspContext.getAttribute("initialValue") != null) {
 					<optgroup label="<openmrs:message code="Location.retiredList"/>">
 				</c:if>
 				<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
-					<c:forEach begin="1" end="${record.depth}">&nbsp;&nbsp;</c:forEach>${record.location.name}
+					<c:forEach begin="1" end="${record.depth}">&nbsp;&nbsp;</c:forEach><c:out value="${record.location.name}"/>
 				</option>
 			</c:if>
 			</openmrs:forEachRecord>

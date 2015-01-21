@@ -39,11 +39,11 @@ if (attributeType.isRetired()) {
      <c:choose>
         <c:when test="${ attributeType.retired }" >
             <c:if test= "<%= notEmptyRetired %>" >
-                <th><del>${ attributeType.name }</del></th>
+                <th><del><c:out value="${ attributeType.name }"/></del></th>
             </c:if>
         </c:when>
         <c:otherwise>
-            <th>${ attributeType.name }</th>
+            <th><c:out value="${ attributeType.name }"/></th>
         </c:otherwise>
      </c:choose>
     <td>
