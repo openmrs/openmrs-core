@@ -24,6 +24,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -267,7 +268,7 @@ public class FieldGenTag extends TagSupport {
 					
 					String startVal = "";
 					if (val != null) {
-						startVal = val.toString();
+						startVal = StringEscapeUtils.escapeHtml(val.toString());
 					}
 					
 					String items = this.parameterMap != null ? (String) this.parameterMap.get("items") : null;
@@ -279,8 +280,11 @@ public class FieldGenTag extends TagSupport {
 					if (items != null && !items.isEmpty()) {
 						StringBuilder options = new StringBuilder();
 						for (String item : items.split(",")) {
-							options.append("<option value=\"").append(item).append("\"").append(
-							    startVal.equals(item) ? " selected" : "").append(">").append(item).append("</option>");
+							String escapedItem = StringEscapeUtils.escapeHtml(item);
+							escapedItem = StringEscapeUtils.escapeJavaScript(escapedItem);
+							options.append("<option value=\"").append(escapedItem).append("\"").append(
+							    startVal.equals(escapedItem) ? " selected" : "").append(">").append(escapedItem).append(
+							    "</option>");
 						}
 						output.append(options.toString());
 					}
