@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.GlobalProperty;
@@ -108,7 +110,9 @@ public class HierarchyController {
 	}
 	
 	private String getName(BaseOpenmrsMetadata element) {
-		return element.isRetired() ? "<strike>" + element + "</strike>" : element.getName();
+		String name = StringEscapeUtils.escapeHtml(element.getName());
+		name = StringEscapeUtils.escapeJavaScript(name);
+		return element.isRetired() ? "<strike>" + name + "</strike>" : name;
 	}
 	
 }

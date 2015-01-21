@@ -16,7 +16,7 @@
 				<c:out value="${locationTag.retiredBy.personName}" />
 				<openmrs:formatDate date="${locationTag.dateRetired}" type="medium" />
 				-
-				${locationTag.retireReason}
+				<c:out value="${locationTag.retireReason}"/>
 				<input type="submit" value='<openmrs:message code="general.unretire"/>'/>
 			</div>
 		</div>

@@ -18,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.annotation.Independent;
@@ -582,47 +580,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 */
 	public String getAddress3() {
 		return address3;
-	}
-	
-	/**
-	 * Checks and fixes for XSS.
-	 *
-	 * @since 1.9
-	 */
-	public void validateXSS() {
-		setName(escapeXSS(getName()));
-		address1 = escapeXSS(address1);
-		address2 = escapeXSS(address2);
-		address3 = escapeXSS(address3);
-		address4 = escapeXSS(address4);
-		address5 = escapeXSS(address5);
-		address6 = escapeXSS(address6);
-		cityVillage = escapeXSS(cityVillage);
-		stateProvince = escapeXSS(stateProvince);
-		country = escapeXSS(country);
-		latitude = escapeXSS(latitude);
-		longitude = escapeXSS(longitude);
-		countyDistrict = escapeXSS(countyDistrict);
-		postalCode = escapeXSS(postalCode);
-		
-	}
-	
-	/**
-	 * Checks and fixes XSS.
-	 * @param text the string of text to escape
-	 * @return the escaped text
-	 * @since 1.9
-	 * @should not fail given null parameter
-	 */
-	private String escapeXSS(String text) {
-		if (StringUtils.isNotEmpty(text)) {
-			String escapeText;
-			escapeText = StringEscapeUtils.escapeHtml(text);
-			escapeText = StringEscapeUtils.escapeJavaScript(escapeText);
-			return escapeText;
-		}
-		return text;
-		
 	}
 	
 	/**

@@ -84,8 +84,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 				}
 			}
 		}
-		//Check for XSS
-		location.validateXSS();
+		
 		CustomDatatypeUtil.saveAttributesIfNecessary(location);
 		
 		return dao.saveLocation(location);
