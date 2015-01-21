@@ -184,7 +184,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setEncounter(encounterService.getEncounter(6));
 		orderService.saveOrder(discontinuationOrder, null);
 		
-		Thread.sleep(1000);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(ordersCount - 3, activeOrders.size());
 		assertFalse(activeOrders.contains(firstOrderToDiscontinue));
@@ -208,11 +207,9 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
 		
-		//If the time is too close, the original order may be returned because it
-		//dateStopped will be exactly the same as the asOfDate(now) to the millisecond
-		Thread.sleep(1);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
+		assertEquals(revisedOrder.getDateActivated(), DateUtils.addSeconds(originalOrder.getDateStopped(), 1));
 		assertFalse(OrderUtilTest.isActiveOrder(originalOrder, null));
 	}
 	
@@ -290,9 +287,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
 		Context.flushSession();
-		//If the time is too close, the original order may be returned because it
-		//dateStopped will be exactly the same as the asOfDate(now) to the millisecond
-		Thread.sleep(1);
+		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
 		assertFalse(OrderUtilTest.isActiveOrder(originalOrder, null));
