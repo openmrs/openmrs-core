@@ -56,6 +56,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -697,7 +698,13 @@ public class PersonFormController extends SimpleFormController {
 				}
 				
 				//check if all required addres fields are filled
-				new PersonAddressValidator().validate(pa, errors);
+				Errors addressErrors = new BindException(pa, "personAddress");
+				new PersonAddressValidator().validate(pa, addressErrors);
+				if (addressErrors.hasErrors()) {
+					for (ObjectError error : addressErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				if (errors.hasErrors()) {
 					return;
 				}
@@ -711,7 +718,13 @@ public class PersonFormController extends SimpleFormController {
 				currentAddress = addresses.next();
 				
 				//check if all required addres fields are filled
-				new PersonAddressValidator().validate(currentAddress, errors);
+				Errors addressErrors = new BindException(currentAddress, "personAddress");
+				new PersonAddressValidator().validate(currentAddress, addressErrors);
+				if (addressErrors.hasErrors()) {
+					for (ObjectError error : addressErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				if (errors.hasErrors()) {
 					return;
 				}
