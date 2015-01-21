@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.proxy.HibernateProxy;
@@ -158,7 +159,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (previousOrder == null) {
 				throw new APIException("Order.previous.required", (Object[]) null);
 			}
-			stopOrder(previousOrder, order.getDateActivated());
+			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()));
 		} else if (DISCONTINUE == order.getAction()) {
 			discontinueExistingOrdersIfNecessary(order);
 		}
@@ -215,6 +216,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		return saveOrderInternal(order, orderContext);
+	}
+	
+	/**
+	 * To support MySQL datetime values (which are only precise to the second) we subtract one second. Eventually we may
+	 * move this method and enhance it to subtract the smallest moment the underlying database will represent.
+	 * @param date
+	 * @return one moment before date
+	 */
+	private Date aMomentBefore(Date date) {
+		return DateUtils.addSeconds(date, -1);
 	}
 	
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
@@ -302,7 +313,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//Mark previousOrder as discontinued if it is not already
 		Order previousOrder = order.getPreviousOrder();
 		if (previousOrder != null) {
-			stopOrder(previousOrder, order.getDateActivated());
+			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()));
 			return;
 		}
 		
@@ -329,7 +340,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			
 			if (shouldMarkAsDiscontinued) {
 				order.setPreviousOrder(activeOrder);
-				stopOrder(activeOrder, order.getDateActivated());
+				stopOrder(activeOrder, aMomentBefore(order.getDateActivated()));
 				break;
 			}
 		}
@@ -394,7 +405,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				final String action = DISCONTINUE == order.getAction() ? "discontinuation" : "revision";
 				throw new APIException("Order.action.cannot.unvoid", new Object[] { action });
 			}
-			stopOrder(previousOrder, order.getDateActivated());
+			stopOrder(previousOrder, aMomentBefore(order.getDateActivated()));
 		}
 		
 		return saveOrderInternal(order, null);
