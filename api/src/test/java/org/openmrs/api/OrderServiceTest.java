@@ -1122,11 +1122,9 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
 		
-		//If the time is too close, the original order may be returned because it
-		//dateStopped will be exactly the same as the asOfDate(now) to the millisecond
-		Thread.sleep(1);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
+		assertEquals(revisedOrder.getDateActivated(), DateUtils.addSeconds(originalOrder.getDateStopped(), 1));
 		assertFalse(originalOrder.isActive());
 	}
 	
