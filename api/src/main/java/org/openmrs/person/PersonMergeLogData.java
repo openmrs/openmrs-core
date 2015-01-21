@@ -42,6 +42,11 @@ public class PersonMergeLogData {
 	private List<String> movedEncounters;
 	
 	/**
+	 * List of UUIDs of encounters copied from non-preferred to preferred
+	 */
+	private List<String> copiedEncounters;
+	
+	/**
 	 * List of UUIDs of patient programs copied from non-preferred to preferred
 	 */
 	private List<String> createdPrograms;
@@ -133,6 +138,10 @@ public class PersonMergeLogData {
 		return movedEncounters;
 	}
 	
+	public List<String> getCopiedEncounters() {
+		return copiedEncounters;
+	}
+	
 	public void addMovedVisit(String uuid) {
 		if (movedVisits == null) {
 			movedVisits = new ArrayList<String>();
@@ -145,6 +154,13 @@ public class PersonMergeLogData {
 			movedEncounters = new ArrayList<String>();
 		}
 		movedEncounters.add(uuid);
+	}
+	
+	public void addCopiedEncounter(String uuid) {
+		if (copiedEncounters == null) {
+			copiedEncounters = new ArrayList<String>();
+		}
+		copiedEncounters.add(uuid);
 	}
 	
 	public List<String> getCreatedPrograms() {
@@ -339,6 +355,9 @@ public class PersonMergeLogData {
 		}
 		if (getMovedVisits() != null) {
 			str += getMovedVisits().toString();
+		}
+		if (getCopiedEncounters() != null) {
+			str += getCopiedEncounters().toString();
 		}
 		if (getMovedEncounters() != null) {
 			str += getMovedEncounters().toString();

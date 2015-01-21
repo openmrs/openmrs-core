@@ -14,4 +14,9 @@
     <person_name person_name_id="1" preferred="false" person_id="10000" given_name="John" middle_name="Fitzgerald" family_name="Kennedy" creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="7e2acadc-5073-4a39-914a-debcbec8c1c9"/>
     <person_name person_name_id="2" preferred="false" person_id="10000" prefix="President" given_name="John" middle_name="Fitzgerald" family_name="Kennedy" family_name_suffix="Esq." creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="d531d4a2d-a97e-4673-80f8-ac8dd5ced083" />
     <person_name person_name_id="3" preferred="false" person_id="10001" prefix="President" given_name="John" middle_name="Fitzgerald" family_name="Kennedy" family_name_suffix="Esq." creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="c9714a2d-a97e-4673-80f8-ac8dd5ced083"/>
+    <!-- encounters -->
+    <encounter encounter_id="100" encounter_type="2" patient_id="10000" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" uuid="f44bb9ba-39a6-40dd-bcd7-c91a82722c90"/>
+	<encounter encounter_id="101" encounter_type="1" patient_id="10000" location_id="1" form_id="1" encounter_datetime="2008-08-15 00:00:00.0" creator="1" date_created="2008-08-18 14:22:17.0" voided="false" uuid="28dfbf71-43b1-4f07-b4a8-707b8d27b69a"/>
+	<encounter encounter_id="102" encounter_type="1" patient_id="10000" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="48d2bae0-f8c9-4cce-94af-a38dea36e1d3"/>
+	<encounter encounter_id="103" encounter_type="1" patient_id="10000" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" uuid="7a76bd4c-1fd7-429c-b69b-94f757ed8874"/>
 </dataset>
