@@ -81,7 +81,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		
-		assertEquals(createDateTime("2014-07-01 10:00:29.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-01 10:00:29"), autoExpireDate);
 	}
 	
 	@Test
@@ -95,7 +95,7 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
 		
-		assertEquals(createDateTime("2014-07-14 23:59:59.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-14 23:59:59"), autoExpireDate);
 	}
 	
 	@Test
