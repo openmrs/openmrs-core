@@ -168,7 +168,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @should exclude voided encounters
 	 * @should include voided encounters
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection,
+	 *             Collection, boolean, Date, Date, Date, Date)}
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
@@ -190,6 +191,10 @@ public interface EncounterService extends OpenmrsService {
 	 * @param visitTypes the visit types of this encounter must be in this list
 	 * @param visits the visits of this encounter must be in this list
 	 * @param includeVoided true/false to include the voided encounters or not
+	 * @param fromDateCreated the minimum date (inclusive) this encounter was created
+	 * @param toDateCreated the maximum date (inclusive) this encounter was created
+	 * @param fromDateChanged the minimum date (inclusive) this encounter was changed
+	 * @param toDateChanged the maximum date (inclusive) this encounter was changed
 	 * @return a list of encounters ordered by increasing encounterDatetime
 	 * @since 1.9
 	 * @should get encounters by location
@@ -200,13 +205,16 @@ public interface EncounterService extends OpenmrsService {
 	 * @should get encounters by provider
 	 * @should get encounters by visit type
 	 * @should get encounters by visit
+	 * @should get encounters by date created
+	 * @should get encounters by date changed
 	 * @should exclude voided encounters
 	 * @should include voided encounters
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided, Date fromDateCreated,
+	        Date toDateCreated, Date fromDateChanged, Date toDateChanged);
 	
 	/**
 	 * Voiding a encounter essentially removes it from circulation
@@ -810,7 +818,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should unretire type and unmark attributes
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_ROLES })
-	public EncounterRole unretireEncounterRole(EncounterRole encounterType) throws APIException;
+	public EncounterRole unretireEncounterRole(EncounterRole encounterRole) throws APIException;
 	
 	/**
 	 * Gets the unvoided encounters for the specified patient that are not assigned to any visit.

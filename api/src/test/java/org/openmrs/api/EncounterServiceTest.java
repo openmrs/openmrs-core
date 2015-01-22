@@ -1443,29 +1443,56 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, allEncounters.get(7).size());
 	}
 	
+	@Test
+	@Verifies(value = "should get encounters by date created", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null,Date,Date,Date,Date)")
+	public void getEncounter_shouldGetEncountersByDateCreated() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Assert.assertEquals(8, encounterService.getEncounters(null, null, null, null, null, null, null, null, null, true,
+		    sdf.parse("2001-01-01"), sdf.parse("2009-01-01"), null, null).size());
+		Assert.assertEquals(2, encounterService.getEncounters(null, null, null, null, null, null, null, null, null, true,
+		    sdf.parse("2005-01-01"), sdf.parse("2007-01-01"), null, null).size());
+	}
+	
+	@Test
+	@Verifies(value = "should get encounters by date changed", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null,Date,Date,Date,Date)")
+	public void getEncounter_shouldGetEncountersByDateChanged() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		List<Encounter> encounters = encounterService.getEncounters(null, null, null, null, null, null, null, null, null,
+		    true, null, null, sdf.parse("2007-01-01"), sdf.parse("2011-01-01"));
+		Assert.assertEquals(2, encounterService.getEncounters(null, null, null, null, null, null, null, null, null, true,
+		    null, null, sdf.parse("2007-01-01"), sdf.parse("2011-01-01")).size());
+		Assert.assertEquals(1, encounterService.getEncounters(null, null, null, null, null, null, null, null, null, true,
+		    null, null, sdf.parse("2011-01-01"), sdf.parse("2011-01-01")).size());
+	}
+	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection,
+	 * java.util.Collection,  java.util.Collection, java.util.Collection, java.util.Collection, boolean,
+	 * java.util.Date, java.util.Date, java.util.Date, java.util.Date)}
 	 */
 	@Test
-	@Verifies(value = "should get encounters by visit", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
+	@Verifies(value = "should get encounters by visit", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null,Date,Date,Date,Date)")
 	public void getEncounters_shouldGetEncountersByVisit() throws Exception {
 		List<Visit> visits = new ArrayList<Visit>();
 		visits.add(new Visit(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null, null,
-		    null, visits, true);
+		    null, visits, true, null, null, null, null);
 		assertEquals(2, encounters.size());
 	}
 	
 	/**
-	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
-	 */
+	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection,
+	 * java.util.Collection,  java.util.Collection, java.util.Collection, java.util.Collection, boolean,
+	 * java.util.Date, java.util.Date, java.util.Date, java.util.Date)}	 */
 	@Test
-	@Verifies(value = "should get encounters by visit type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
+	@Verifies(value = "should get encounters by visit type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null,Date,Date,Date,Date)")
 	public void getEncounters_shouldGetEncountersByVisitType() throws Exception {
 		List<VisitType> visitTypes = new Vector<VisitType>();
 		visitTypes.add(new VisitType(2));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null, null,
-		    visitTypes, null, true);
+		    visitTypes, null, true, null, null, null, null);
 		assertEquals(2, encounters.size());
 	}
 	
