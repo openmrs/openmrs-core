@@ -1039,6 +1039,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.6.1</version>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
 					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these
