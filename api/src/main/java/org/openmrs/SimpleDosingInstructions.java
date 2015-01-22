@@ -13,8 +13,7 @@
  */
 package org.openmrs;
 
-import static org.apache.commons.lang3.time.DateUtils.addMilliseconds;
-
+import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 import java.util.Date;
 import java.util.Locale;
 
@@ -229,7 +228,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	}
 	
 	private Date aMomentBefore(Date date) {
-		return addMilliseconds(date, -1);
+		return addSeconds(date, -1);
 	}
 	
 }

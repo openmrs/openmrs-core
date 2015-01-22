@@ -19,6 +19,7 @@ import static org.openmrs.test.TestUtil.createDateTime;
 import java.util.Date;
 import java.util.Random;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
@@ -78,10 +79,8 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		drugOrder.setDateActivated(createDateTime("2014-07-01 10:00:00"));
 		drugOrder.setDuration(30);
 		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_SECONDS_CODE));
-		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
-		
-		assertEquals(createDateTime("2014-07-01 10:00:29.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-01 10:00:29"), autoExpireDate);
 	}
 	
 	@Test
@@ -92,10 +91,8 @@ public class SimpleDosingInstructionsTest extends BaseContextSensitiveTest {
 		drugOrder.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
 		drugOrder.setDuration(10);
 		drugOrder.setDurationUnits(createUnits(Duration.SNOMED_CT_DAYS_CODE));
-		
 		Date autoExpireDate = new SimpleDosingInstructions().getAutoExpireDate(drugOrder);
-		
-		assertEquals(createDateTime("2014-07-14 23:59:59.999"), autoExpireDate);
+		assertEquals(createDateTime("2014-07-14 23:59:59"), autoExpireDate);
 	}
 	
 	@Test
