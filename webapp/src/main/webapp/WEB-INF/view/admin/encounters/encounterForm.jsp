@@ -381,7 +381,7 @@
 					<td>${providerRole.key.name}
 						<input type="hidden" name="encounterRoleIds" value="${providerRole.key.encounterRoleId}" />
 					</td>
-					<td>${provider}
+					<td>${provider.name}
 						<input type="hidden" name="providerIds" value="${provider.providerId}" />
 					</td>
 					<td><c:out value="${provider.identifier}" /></td>
