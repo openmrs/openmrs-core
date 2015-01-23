@@ -321,8 +321,10 @@
 							</c:url>
 						</c:when>
 					</c:choose>
-					<a href="${viewEncounterUrl}">
-						<openmrs:format encounterType="${encounter.encounterType}" /></a><c:if test="${not status.last}">,</c:if>
+					<c:if test="${not encounter.voided}">
+						<a href="${viewEncounterUrl}">
+							<openmrs:format encounterType="${encounter.encounterType}" /></a><c:if test="${not status.last}">,</c:if>
+					</c:if>
 				</c:forEach>
 				
 				<openmrs:hasPrivilege privilege="Add Encounters">
