@@ -39,6 +39,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
@@ -112,7 +113,7 @@ public class EncounterFormController extends SimpleFormController {
 				Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				Context.addProxyPrivilege(PrivilegeConstants.VIEW_PATIENTS);
 				
-				if (StringUtils.hasText(request.getParameter("patientId"))) {
+				if (encounter.getEncounterId() == null && StringUtils.hasText(request.getParameter("patientId"))) {
 					encounter.setPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(request.getParameter("patientId"))));
 				}
@@ -176,6 +177,8 @@ public class EncounterFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 *
+	 * @should transfer encounter to another patient when encounter patient was changed
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
@@ -192,10 +195,23 @@ public class EncounterFormController extends SimpleFormController {
 			if (Context.isAuthenticated()) {
 				Encounter encounter = (Encounter) obj;
 				
-				// if this is a new encounter, they can specify a patient.  add it
+				Integer patientId = null;
+				
 				if (request.getParameter("patientId") != null) {
-					encounter.setPatient(Context.getPatientService().getPatient(
-					    Integer.valueOf(request.getParameter("patientId"))));
+					patientId = Integer.valueOf(request.getParameter("patientId"));
+				}
+				
+				if (encounter.getEncounterId() == null) {
+					// if this is a new encounter, they can specify a patient.  add it
+					if (patientId != null) {
+						encounter.setPatient(Context.getPatientService().getPatient(patientId));
+					}
+				} else {
+					Patient oldPatient = encounter.getPatient();
+					Patient newPatient = Context.getPatientService().getPatient(patientId);
+					if (newPatient != null && oldPatient != null && !newPatient.equals(oldPatient)) {
+						encounter = Context.getEncounterService().transferEncounter(encounter, newPatient);
+					}
 				}
 				
 				if (encounter.isVoided() && encounter.getVoidedBy() == null) {

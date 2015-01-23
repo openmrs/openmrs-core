@@ -1065,4 +1065,19 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public List<EncounterRole> getEncounterRolesByName(String name) {
 		return dao.getEncounterRolesByName(name);
 	}
+	
+	@Override
+	public Encounter transferEncounter(Encounter encounter, Patient patient) {
+		Encounter encounterCopy = encounter.copyAndAssignToAnotherPatient(patient);
+		
+		voidEncounter(encounter, "transfer to patient: id = " + patient.getId());
+		
+		//void visit if voided encounter is the only one
+		Visit visit = encounter.getVisit();
+		if (visit != null && visit.getEncounters().size() == 1) {
+			Context.getVisitService().voidVisit(visit, "Visit does not contain non-voided encounters");
+		}
+		
+		return saveEncounter(encounterCopy);
+	}
 }

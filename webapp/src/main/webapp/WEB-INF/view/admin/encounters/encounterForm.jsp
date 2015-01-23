@@ -20,13 +20,22 @@
 <script type="text/javascript">
 	var providersCount = ${fn:length(encounter.providersByRoles)};
 	var numberOfClonedElements = 0;
-	
+
+	var encounterPatientId = null;
+
 	$j(document).ready( function() {
 		toggleVisibility(document, "div", "description");
-		<c:if test="${encounter.encounterId != null}">
-		toggleRowVisibilityForClass("obs", "voided", true);
-		voidedClicked(document.getElementById("voided"));
-		</c:if>
+		<c:choose>
+			<c:when test="${encounter.encounterId != null}">
+				toggleRowVisibilityForClass("obs", "voided", true);
+				voidedClicked(document.getElementById("voided"));
+				setPatientFieldEditable(false);
+				encounterPatientId = ${encounter.patient.patientId};
+			</c:when>
+			<c:otherwise>
+				setPatientFieldEditable(true);
+			</c:otherwise>
+		</c:choose>
 	});
 
 	function mouseover(row, isDescription) {
@@ -87,20 +96,25 @@
 		if (patientBoxFilledIn && providersCount > 0)
 			document.getElementById("saveEncounterButton").disabled = false;
 	}
-	
+
+	var selectedPatient = null;
+
 	function updateSaveButtonAndVisits(formFieldId, patientObj, isPageLoad){
 		enableSaveButton(formFieldId, patientObj);
 		//if this is on page load, we already have the patient's visits 
 		//select populated with spring's referenced data in the http request
 		if(!isPageLoad)
 			updateVisits(patientObj);
+
+		selectedPatient = patientObj;
 	}
 	
 	//Repopulates the select element for visit with a new list of visits for the specified patient
 	function updateVisits(patientObj){
 		DWRVisitService.findVisitsByPatient(patientObj.patientId, false, false, function(visits) {
 			var options = '<option value=""></option>';
-			if(visits){
+			var patientIdChanged = checkIfPatientIdChanged();
+			if(visits && !patientIdChanged){
 		    	for (var i = 0; i < visits.length; i++) {
 		    		options += '<option value="' + visits[i].visitId + '">' + visits[i].startDatetimeString +
 		    		' ' + visits[i].visitType + ' ' +visits[i].personName + 
@@ -196,12 +210,66 @@
 		
 		if(hasErrors)
 			return false;
-		
-		removeNode(document.getElementById("addNewProviderTemplate"));
-		
+
+		var patientIdChanged = checkIfPatientIdChanged();
+		var confirmEncounterChange = true;
+
+		if (patientIdChanged) {
+			confirmEncounterChange = confirm('<openmrs:message code="Encounter.transfer.confirm_patient_change" javaScriptEscape="true" arguments="${encounter.patient.personName}" /> <openmrs:message code="Encounter.transfer.to" javaScriptEscape="true"/> '
+				+ selectedPatient.personName + ' <openmrs:message code="Encounter.transfer.are_you_sure" javaScriptEscape="true"/>', '<openmrs:message code="Encounter.transfer.encounter_patient_changed" javaScriptEscape="true"/>');
+		}
+
+		if (confirmEncounterChange) {
+			removeNode(document.getElementById("addNewProviderTemplate"));
+		}
+
+		return confirmEncounterChange;
+	}
+
+	function checkIfPatientIdChanged() {
+		if (selectedPatient == null )
+			return false;
+
+		if (encounterPatientId == null)
+			return false;
+
+		return encounterPatientId != selectedPatient.patientId;
+	}
+
+	function makePatientFieldEditable() {
+		var patient_editable = document.getElementById("patient_editable");
+		var patient_label = document.getElementById("patient_label");
+		var patient_change_link = document.getElementById("patient_change_link");
+
+		patient_editable.style.display= 'inline';
+
+		patient_label.style.display= 'none';
+		patient_change_link.style.display= 'none';
+
 		return true;
 	}
-	
+
+	function makePatientFieldNonEditable() {
+		var patient_editable = document.getElementById("patient_editable");
+		var patient_label = document.getElementById("patient_label");
+		var patient_change_link = document.getElementById("patient_change_link");
+
+		patient_editable.style.display= 'none';
+
+		patient_label.style.display= 'inline';
+		patient_change_link.style.display= 'inline';
+
+		return true;
+	}
+
+	function setPatientFieldEditable(editable){
+		if(editable){
+			makePatientFieldEditable();
+		} else {
+			makePatientFieldNonEditable();
+		}
+	}
+
 </script>
 
 <style>
@@ -210,6 +278,9 @@
 		width: 5px;
 		white-space: nowrap;
 	}
+
+	#patient_editable { float: left; display: none; margin-right: 10px}
+	#patient_label { float: left; margin-right: 10px}
 </style>
 
 <c:if test="${encounter.patient.patientId != null}">
@@ -229,10 +300,18 @@
 		<tr>
 			<th><openmrs:message code="Encounter.patient"/><span class="required">*</span></th>
 			<td>
-				<spring:bind path="encounter.patient">
-					<openmrs_tag:patientField formFieldName="patientId" searchLabelCode="Patient.find" initialValue="${status.value.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" callback="updateSaveButtonAndVisits" allowSearch="${encounter.encounterId == null}"/>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
+				<div id="patient_editable" >
+					<spring:bind path="encounter.patient">
+						<openmrs_tag:patientField formFieldName="patientId" searchLabelCode="Patient.find" initialValue="${status.value.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" callback="updateSaveButtonAndVisits" allowSearch="${encounter.encounterId == null}"/>
+						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					</spring:bind>
+				</div>
+				<div id="patient_label">
+					<a href="../../patientDashboard.form?patientId=${encounter.patient.patientId}" >${encounter.patient.personName}</a>
+				</div>
+					<a id ="patient_change_link" href="#Change patient" onClick="makePatientFieldEditable()">
+						(<openmrs:message code="Encounter.transfer.change"/>)
+					</a>
 			</td>
 		</tr>
 		<tr>

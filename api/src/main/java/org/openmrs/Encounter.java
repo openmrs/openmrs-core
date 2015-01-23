@@ -733,4 +733,64 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		}
 	}
 	
+	/**
+	 * Copied encounter will not have visit field copied.
+	 *
+	 * @param patient the Patient that will be assign to copied Encounter
+	 * @return copied encounter
+	 *
+	 * @should copy all Encounter data except visit and assign copied Encounter to given Patient
+	 */
+	public Encounter copyAndAssignToAnotherPatient(Patient patient) {
+		Map<Order, Order> oldNewOrderMap = new HashMap<Order, Order>();
+		Encounter target = new Encounter();
+		
+		target.setChangedBy(getChangedBy());
+		target.setCreator(getCreator());
+		target.setDateChanged(getDateChanged());
+		target.setDateCreated(getDateCreated());
+		target.setDateVoided(getDateVoided());
+		target.setVoided(getVoided());
+		target.setVoidedBy(getVoidedBy());
+		target.setVoidReason(getVoidReason());
+		
+		// Encounter specific data
+		target.setEncounterDatetime(getEncounterDatetime());
+		target.setEncounterType(getEncounterType());
+		target.setForm(getForm());
+		target.setLocation(getLocation());
+		target.setPatient(patient);
+		
+		//encounter providers
+		for (EncounterProvider encounterProvider : getEncounterProviders()) {
+			EncounterProvider encounterProviderCopy = encounterProvider.copy();
+			encounterProviderCopy.setEncounter(target);
+			target.getEncounterProviders().add(encounterProviderCopy);
+		}
+		
+		//orders
+		for (Order order : getOrders()) {
+			Order orderCopy = order.copy();
+			orderCopy.setEncounter(target);
+			orderCopy.setPatient(patient);
+			target.addOrder(orderCopy);
+			oldNewOrderMap.put(order, orderCopy);
+		}
+		
+		Context.getEncounterService().saveEncounter(target);
+		
+		//obs
+		for (Obs obs : getAllObs()) {
+			Obs obsCopy = Obs.newInstance(obs);
+			obsCopy.setEncounter(target);
+			obsCopy.setPerson(patient);
+			//refresh order reference
+			Order oldOrder = obsCopy.getOrder();
+			Order newOrder = oldNewOrderMap.get(oldOrder);
+			obsCopy.setOrder(newOrder);
+			target.addObs(obsCopy);
+		}
+		
+		return target;
+	}
 }
