@@ -160,11 +160,7 @@ public class VisitListController {
 		StringBuilder providersBuilder = new StringBuilder();
 		for (Set<Provider> providers : encounter.getProvidersByRoles().values()) {
 			for (Provider provider : providers) {
-				if (provider.getPerson() != null) {
-					providersBuilder.append(provider.getPerson().getPersonName().getFullName());
-				} else {
-					providersBuilder.append(provider.getIdentifier());
-				}
+				providersBuilder.append(provider.getName());
 				providersBuilder.append(", ");
 			}
 		}
