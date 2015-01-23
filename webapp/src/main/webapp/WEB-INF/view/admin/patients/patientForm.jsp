@@ -313,12 +313,6 @@
 
 <h2><openmrs:message code="Patient.title"/></h2>
 
-<c:if test="${patient.voided}">
-	<div id="patientFormVoided" class="retiredMessage">
-		<div><openmrs:message code="Patient.voidedMessage"/></div>
-	</div>
-</c:if>
-
 <c:if test="${patient.dead}">
 	<div id="patientFormDeceased" class="retiredMessage">
 		<div><openmrs:message code="Patient.patientDeceased"/></div>

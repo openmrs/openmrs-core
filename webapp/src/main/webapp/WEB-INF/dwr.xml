@@ -57,6 +57,7 @@
 			<include method="removeProblem"/>
 			<include method="voidProblem"/>
 			<include method="findCountAndPatients"/>
+			<include method="findCountAndPatientsWithVoided"/>
 			<include method="findBatchOfPatients"/>
 		</create>
 		
@@ -285,6 +286,7 @@
 			DWRPatientService.findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length);
 			DWRPatientService.findPatients(String searchValue, boolean includeVoided);
 			DWRPatientService.findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount);
+			DWRPatientService.findCountAndPatientsWithVoided(String searchValue, Integer start, Integer length, boolean getMatchCount, Boolean includeVoided);
 			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId, Integer outcomeId);
 			DWRVisitService.findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided);
 			DWRVisitService.getVisit(Integer visitId);

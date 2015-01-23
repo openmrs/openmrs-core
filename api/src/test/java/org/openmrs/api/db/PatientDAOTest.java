@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
-
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -2043,4 +2042,23 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patientCount);
 	}
 	
+	/**
+	 * @verifies get voided person when voided=true is passed
+	 * @see PatientDAO#getPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldGetVoidedPersonWhenVoidedTrueIsPassed() throws Exception {
+		List<Patient> patients = dao.getPatients("voided-bravo", true, 0, 11);
+		Assert.assertEquals(1, patients.size());
+	}
+	
+	/**
+	 * @verifies get no voided person when voided=false is passed
+	 * @see PatientDAO#getPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldGetNoVoidedPersonWhenVoidedFalseIsPassed() throws Exception {
+		List<Patient> patients = dao.getPatients("voided-bravo", false, 0, 11);
+		Assert.assertEquals(0, patients.size());
+	}
 }
