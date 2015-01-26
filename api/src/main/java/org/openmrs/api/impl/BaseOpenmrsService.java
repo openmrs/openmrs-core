@@ -22,7 +22,7 @@ import org.openmrs.api.OpenmrsService;
  * OpenmrsService class. This will allow for some buffer room so that inheriting classes don't have
  * to immediately implement all methods in OpenmrsService
  * 
- * @see OpenmrsService
+ * @see org.openmrs.api.OpenmrsService
  */
 public abstract class BaseOpenmrsService implements OpenmrsService {
 	
