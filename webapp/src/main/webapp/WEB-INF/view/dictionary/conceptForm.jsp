@@ -97,7 +97,7 @@
 	}
 	
 	function searchForConcepts() {
-		DWRConceptService.findBatchOfConcepts($j('#similarConceptsStart input').val(), false, null, null, null, null, null, 4, displayConcepts);
+		DWRConceptService.findBatchOfConcepts($j('#conceptTable td:visible input').val(), false, null, null, null, null, null, 4, displayConcepts);
 	}
 	
 	function displayConcepts(concepts) {
@@ -105,7 +105,7 @@
 		var conceptExists = false;
 		if(typeof(concepts[0]) !== 'string') { // check returned array not a message - indicates no results
 			var conceptsSize = concepts.length;
-			var theInput = $j.trim($j('#similarConceptsStart input').val().toLowerCase());
+			var theInput = $j.trim($j('#conceptTable td:visible input').val().toLowerCase());
 			aString = "| ";
 			$j.each(concepts.slice(0,3), function(index, value) {
 				var theName = value.name.toString().toLowerCase();
