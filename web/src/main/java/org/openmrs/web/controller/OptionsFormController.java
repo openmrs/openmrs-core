@@ -72,6 +72,10 @@ public class OptionsFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		OptionsForm opts = (OptionsForm) object;
 		
+		if (opts.getPersonName().getGivenName().equals("") && opts.getPersonName().getFamilyName().equals("")) {
+			errors.rejectValue("personName", "Patient.names.required.given.family");
+		}
+		
 		if (!opts.getOldPassword().equals("")) {
 			if (opts.getNewPassword().equals("")) {
 				errors.rejectValue("newPassword", "error.password.weak");

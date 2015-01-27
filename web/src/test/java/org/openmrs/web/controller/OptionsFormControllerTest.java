@@ -283,4 +283,39 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertEquals("easy answer", loginCredential.getSecretAnswer());
 		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
 	}
+	
+	@Test
+	public void shouldAcceptIfGivenandFamilyNameIsEntered() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		request.setParameter("secretQuestionPassword", "test");
+		request.setParameter("secretQuestionNew", "test_question");
+		request.setParameter("secretAnswerNew", "test_answer");
+		request.setParameter("secretAnswerConfirm", "test_answer");
+		String GivenName = "somegivenname";
+		String FamilyName = "somefamilyname";
+		request.setParameter("PersonName.givenName", GivenName);
+		request.setParameter("PersonName.familyName", FamilyName);
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		Assert.assertEquals(GivenName, user.getGivenName());
+		Assert.assertEquals(FamilyName, user.getFamilyName());
+	}
+	
+	@Test
+	public void shouldRejectIfGivenandFamilyNameIsNotEntered() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		request.setParameter("secretQuestionPassword", "test");
+		request.setParameter("secretQuestionNew", "test_question");
+		request.setParameter("secretAnswerNew", "test_answer");
+		request.setParameter("secretAnswerConfirm", "test_answer");
+		String EmptyName = " ";
+		request.setParameter("PersonName.givenName", EmptyName);
+		request.setParameter("PersonName.familyName", EmptyName);
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		Assert.assertEquals(" ", user.getGivenName());
+		Assert.assertEquals(" ", user.getFamilyName());
+	}
 }
