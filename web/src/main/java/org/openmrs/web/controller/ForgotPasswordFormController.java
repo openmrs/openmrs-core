@@ -16,6 +16,9 @@ package org.openmrs.web.controller;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +55,10 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		return "";
 	}
 	
+    private Map<String, Integer> usersmap = new HashMap<String, Integer>();
+	
+	private String username;
+	
 	/**
 	 * The mapping from user's IP address to the number of attempts at logging in from that IP
 	 */
@@ -75,7 +82,12 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		
-		String username = request.getParameter("uname");
+		username = request.getParameter("uname");
+		if (!usersmap.containsKey(username)) {
+			usersmap.put(username, 0);
+		} else {
+			usersmap.put(username, usersmap.get(username) + 1);
+		}
 		
 		String ipAddress = request.getRemoteAddr();
 		Integer forgotPasswordAttempts = loginAttemptsByIP.get(ipAddress);
@@ -127,7 +139,10 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 				
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user == null) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.fill");
+						request.setAttribute("secretQuestion", getRandomFakeSecretQuestion());
+					} else if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 				} else {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
@@ -152,7 +167,10 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				}
 				
 				// check the secret question again in case the user got here "illegally"
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user == null) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.fill");
+					request.setAttribute("secretQuestion", getRandomFakeSecretQuestion());
+				} else if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 				} else if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
 					
@@ -186,5 +204,20 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		request.setAttribute("uname", username);
 		return showForm(request, response, errors);
 	}
+	
+	private String getRandomFakeSecretQuestion() {
+		
+		List<String> questions = new ArrayList<String>();
+		
+		questions.add(Context.getMessageSourceService().getMessage("question.bestFriendName"));
+		questions.add(Context.getMessageSourceService().getMessage("question.grandfathersHomeTown"));
+		questions.add(Context.getMessageSourceService().getMessage("question.mothersMaidenName"));
+		questions.add(Context.getMessageSourceService().getMessage("question.favoriteBand"));
+		questions.add(Context.getMessageSourceService().getMessage("question.firstPetName"));
+		questions.add(Context.getMessageSourceService().getMessage("question.brothersMiddleName"));
+		questions.add(Context.getMessageSourceService().getMessage("question.cityBorn"));
+		return questions.get(usersmap.get(username));
+	}
+
 	
 }
