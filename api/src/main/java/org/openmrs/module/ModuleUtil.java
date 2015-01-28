@@ -336,7 +336,7 @@ public class ModuleUtil {
 	public static void checkRequiredVersion(String version, String versionRange) throws ModuleException {
 		if (!matchRequiredVersions(version, versionRange)) {
 			String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.outOfBounds",
-                    new String[]{versionRange, version}, Context.getLocale());
+			    new String[] { versionRange, version }, Context.getLocale());
 			throw new ModuleException(ms);
 		}
 	}
@@ -360,11 +360,11 @@ public class ModuleUtil {
 			if (version == null || value == null) {
 				return 0;
 			}
-
+			
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
 			String separator = "-";
-
+			
 			// strip off any qualifier e.g. "-SNAPSHOT"
 			int qualifierIndex = version.indexOf(separator);
 			if (qualifierIndex != -1) {
@@ -396,8 +396,8 @@ public class ModuleUtil {
 				int ret = ver.compareTo(val);
 				if (ret != 0) {
 					return ret;
+				}
 			}
-		}
 		}
 		catch (NumberFormatException e) {
 			log.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
@@ -406,7 +406,7 @@ public class ModuleUtil {
 		// default return value if an error occurs or elements are equal
 		return 0;
 	}
-
+	
 	/**
 	 * Checks for qualifier version (i.e "-SNAPSHOT", "-ALPHA" etc. after maven version conventions)
 	 *
