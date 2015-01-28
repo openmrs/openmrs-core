@@ -157,4 +157,57 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertSame(oldTaskInstance, task.getTaskInstance());
 	}
 	
+	@Test
+	@Verifies (value="should pass if repeat interval is not empty",method= "processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command,BindException errors)")
+	public void ShouldPassIfRepeatIntervalIsNotEmpty() throws Exception
+	{
+	    Date startTime = taskHelper.getTime(Calendar.SECOND, 2);
+	    TaskDefinition task = taskHelper.getScheduledTaskDefinition(startTime);
+	    
+	    mockRequest.setParameter("startTime", new SimpleDateFormat(DATE_TIME_FORMAT).format(startTime));
+	    mockRequest.setParameter("repeatInterval","1");
+	    mockRequest.setParameter("repeatIntervalUnits","seconds");
+	    
+	    ModelAndView mav1 = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+	    assertNotNull(mav1);
+	    Assert.assertEquals("1",task.getRepeatInterval().toString());
+	    
+	     mockRequest.setParameter("repeatInterval","1");
+	     mockRequest.setParameter("repeatIntervalUnits","minutes");
+	        
+	        ModelAndView mav2 = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+	        assertNotNull(mav2);
+	        Assert.assertEquals("60",task.getRepeatInterval().toString());
+	        
+	    mockRequest.setParameter("repeatInterval","1");
+	    mockRequest.setParameter("repeatIntervalUnits","hours");
+	            
+	            ModelAndView mav3 = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+	            assertNotNull(mav3);
+	            Assert.assertEquals("3600",task.getRepeatInterval().toString());
+	            
+	            mockRequest.setParameter("repeatInterval","1");
+	            mockRequest.setParameter("repeatIntervalUnits","days");
+	                
+	                ModelAndView mav4 = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+	                assertNotNull(mav4);
+	                Assert.assertEquals("86400",task.getRepeatInterval().toString());
+	    
+	}
+	@Test
+	@Verifies(value = "should not throw a null pointer exception if repeatInterval is empty", method = "processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command,BindException errors)")
+	public void ShouldNotThrowNPEIFRepeatIntervalIsEmpty() throws Exception {
+		Date startTime = taskHelper.getTime(Calendar.SECOND, 2);
+		TaskDefinition task = taskHelper.getScheduledTaskDefinition(startTime);
+		
+		mockRequest.setParameter("startTime", new SimpleDateFormat(DATE_TIME_FORMAT).format(startTime));
+		mockRequest.setParameter("repeatInterval", "");
+		mockRequest.setParameter("repeatIntervalUnits", "seconds");
+		
+		ModelAndView mav1 = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav1);
+		Assert.assertNull(task.getRepeatInterval());
+		
+	}
+	
 }
