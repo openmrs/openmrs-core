@@ -98,15 +98,18 @@ public class SchedulerFormController extends SimpleFormController {
 		String units = request.getParameter("repeatIntervalUnits");
 		Long interval = task.getRepeatInterval();
 		
-		if ("minutes".equals(units)) {
-			interval = interval * 60;
-		} else if ("hours".equals(units)) {
-			interval = interval * 60 * 60;
-		} else if ("days".equals(units)) {
-			interval = interval * 60 * 60 * 24;
+		if (interval != null) {
+			
+			if ("minutes".equals(units)) {
+				interval = interval * 60;
+			} else if ("hours".equals(units)) {
+				interval = interval * 60 * 60;
+			} else if ("days".equals(units)) {
+				interval = interval * 60 * 60 * 24;
+			}
+			
+			task.setRepeatInterval(interval);
 		}
-		
-		task.setRepeatInterval(interval);
 		
 		return super.processFormSubmission(request, response, task, errors);
 	}
