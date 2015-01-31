@@ -221,8 +221,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * To support MySQL datetime values (which are only precise to the second) we subtract one second. Eventually we may
-	 * move this method and enhance it to subtract the smallest moment the underlying database will represent.
+	 * To support MySQL datetime values (which are only precise to the second) we subtract one
+	 * second. Eventually we may move this method and enhance it to subtract the smallest moment the
+	 * underlying database will represent.
+	 * 
 	 * @param date
 	 * @return one moment before date
 	 */
@@ -644,14 +646,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
 	        Encounter encounter) throws Exception {
+		if (discontinueDate == null) {
+			discontinueDate = aMomentBefore(new Date());
+		}
 		stopOrder(orderToDiscontinue, discontinueDate);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReason(reasonCoded);
 		newOrder.setOrderer(orderer);
 		newOrder.setEncounter(encounter);
-		if (discontinueDate == null) {
-			discontinueDate = new Date();
-		}
 		newOrder.setDateActivated(discontinueDate);
 		return saveOrderInternal(newOrder, null);
 	}
@@ -663,14 +665,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
 	        Encounter encounter) throws Exception {
+		if (discontinueDate == null) {
+			discontinueDate = aMomentBefore(new Date());
+		}
 		stopOrder(orderToDiscontinue, discontinueDate);
 		Order newOrder = orderToDiscontinue.cloneForDiscontinuing();
 		newOrder.setOrderReasonNonCoded(reasonNonCoded);
 		newOrder.setOrderer(orderer);
 		newOrder.setEncounter(encounter);
-		if (discontinueDate == null) {
-			discontinueDate = new Date();
-		}
 		newOrder.setDateActivated(discontinueDate);
 		return saveOrderInternal(newOrder, null);
 	}
