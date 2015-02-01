@@ -31,6 +31,7 @@ import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -91,6 +92,14 @@ public class ConceptDrugFormController extends SimpleFormController {
 			else if (request.getParameter("unretireDrug") != null) {
 				conceptService.unretireDrug(drug);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.unretiredSuccessfully");
+			} else if (request.getParameter("conceptDrugPurgeProviderButton") != null) {
+				try {
+					conceptService.purgeDrug(drug);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.purged");
+				}
+				catch (DataIntegrityViolationException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+				}
 			} else {
 				conceptService.saveDrug(drug);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");

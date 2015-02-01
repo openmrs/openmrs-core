@@ -48,6 +48,14 @@
 		return false;
 	}
 
+    function confirmDrugPurge() {
+        if (confirm('<openmrs:message code="ConceptDrug.confirmDelete"/>')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 </script>
 
 <style>
@@ -234,6 +242,21 @@
 			<input type="submit" value='<openmrs:message code="ConceptDrug.retireDrug"/>' name="retireDrug"/>
 		</fieldset>
 	</form>
+    <br/>
+
+    <div class="box">
+        <form method="post" onsubmit="return confirmDrugPurge()">
+            <table cellpadding="3" cellspacing="0">
+                <tr>
+                    <th><openmrs:message code="ConceptDrug.purge" /></th>
+                </tr>
+                <tr>
+                    <td><input type="submit" name="conceptDrugPurgeProviderButton"
+                               value='<openmrs:message code="ConceptDrug.purge"/>'></td>
+                </tr>
+            </table>
+        </form>
+    </div>
 </c:if>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.footer" type="html" parameters="drugId=${drug.drugId}" />
