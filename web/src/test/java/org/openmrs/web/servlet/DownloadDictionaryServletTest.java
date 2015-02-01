@@ -1,6 +1,8 @@
 package org.openmrs.web.servlet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -34,8 +36,8 @@ public class DownloadDictionaryServletTest extends BaseWebContextSensitiveTest {
 	
 	@Test
 	public void shouldPrintHeaderAndFormattedConceptLines() throws Exception {
-		String actualContent = runServletWithConcepts(conceptDAO.getConcept(3), conceptDAO.getConcept(5),
-		    conceptDAO.getConcept(6));
+		String actualContent = runServletWithConcepts(conceptDAO.getConcept(3), conceptDAO.getConcept(5), conceptDAO
+		        .getConcept(6));
 		String expectedContent = EXPECTED_HEADER
 		        + "3,\"COUGH SYRUP\",\"This is used for coughs\",\"COUGH SYRUP\",\"\",\"\",\"Drug\",\"N/A\",\"\",\"Super User\"\n"
 		        + "5,\"SINGLE\",\"\",\"SINGLE\",\"\",\"\",\"Misc\",\"N/A\",\"\",\"Super User\"\n"
@@ -46,30 +48,35 @@ public class DownloadDictionaryServletTest extends BaseWebContextSensitiveTest {
 	@Test
 	public void shouldFormatMultipleAnswersWithLineBreaks() throws Exception {
 		String actualContent = runServletWithConcepts(conceptDAO.getConcept(4));
-		String expectedContent = EXPECTED_HEADER
-		        + "4,\"CIVIL STATUS\",\"What is the person's marital state\",\"CIVIL STATUS\",\"" + "SINGLE\nMARRIED\","
-		        + "\"\",\"ConvSet\",\"Coded\",\"Super User\",\"Super User\"\n";
-		Assert.assertEquals(expectedContent, actualContent);
+		String expectedStart = EXPECTED_HEADER
+		        + "4,\"CIVIL STATUS\",\"What is the person's marital state\",\"CIVIL STATUS\",";
+		String expectedEnd = ",\"\",\"ConvSet\",\"Coded\",\"Super User\",\"Super User\"\n";
+		String[] expectedLineBreakSections = { "SINGLE", "MARRIED" };
+		
+		assertContent(expectedStart, expectedEnd, expectedLineBreakSections, actualContent);
 	}
 	
 	@Test
 	public void shouldFormatMultipleSynonymsWithLineBreaks() throws Exception {
 		String actualContent = runServletWithConcepts(conceptDAO.getConcept(792));
-		String expectedContent = EXPECTED_HEADER
-		        + "792,\"STAVUDINE LAMIVUDINE AND NEVIRAPINE\",\"Combination antiretroviral drug.\","
-		        + "\"STAVUDINE LAMIVUDINE AND NEVIRAPINE\nD4T+3TC+NVP\nTRIOMUNE-30\nD4T+3TC+NVP\","
-		        + "\"\",\"\",\"Drug\",\"N/A\",\"Super User\",\"Super User\"\n";
-		Assert.assertEquals(expectedContent, actualContent);
+		String expectedStart = EXPECTED_HEADER
+		        + "792,\"STAVUDINE LAMIVUDINE AND NEVIRAPINE\",\"Combination antiretroviral drug.\",";
+		String expectedEnd = ",\"\",\"\",\"Drug\",\"N/A\",\"Super User\",\"Super User\"\n";
+		String[] expectedLineBreakSections = { "STAVUDINE LAMIVUDINE AND NEVIRAPINE", "D4T+3TC+NVP", "TRIOMUNE-30",
+		        "D4T+3TC+NVP" };
+		
+		assertContent(expectedStart, expectedEnd, expectedLineBreakSections, actualContent);
 	}
 	
 	@Test
 	public void shouldFormatMultipleSetMembersWithLineBreaks() throws Exception {
 		String actualContent = runServletWithConcepts(conceptDAO.getConcept(23));
-		String expectedContent = EXPECTED_HEADER
-		        + "23,\"FOOD CONSTRUCT\",\"Holder for all things edible\",\"FOOD CONSTRUCT\",\"\","
-		        + "\"FOOD ASSISTANCE\nDATE OF FOOD ASSISTANCE\nFAVORITE FOOD, NON-CODED\","
-		        + "\"ConvSet\",\"N/A\",\"\",\"Super User\"\n";
-		Assert.assertEquals(expectedContent, actualContent);
+		String expectedStart = EXPECTED_HEADER
+		        + "23,\"FOOD CONSTRUCT\",\"Holder for all things edible\",\"FOOD CONSTRUCT\",\"\",";
+		String expectedEnd = ",\"ConvSet\",\"N/A\",\"\",\"Super User\"\n";
+		String[] expectedLineBreakSections = { "FOOD ASSISTANCE", "DATE OF FOOD ASSISTANCE", "FAVORITE FOOD, NON-CODED" };
+		
+		assertContent(expectedStart, expectedEnd, expectedLineBreakSections, actualContent);
 	}
 	
 	@Test
@@ -90,5 +97,26 @@ public class DownloadDictionaryServletTest extends BaseWebContextSensitiveTest {
 		
 		downloadServlet.service(request, response);
 		return response.getContentAsString();
+	}
+	
+	private void assertContent(String expectedStart, String expectedEnd, String[] expectedLineSections, String actualContent) {
+		Assert.assertTrue(actualContent.startsWith(expectedStart));
+		Assert.assertTrue(actualContent.endsWith(expectedEnd));
+		
+		// The content with line breaks can come in any order so test for the content flexibly
+		String lineBreakContent = actualContent.substring(expectedStart.length(), actualContent.length()
+		        - expectedEnd.length());
+		
+		// Should start and end with "
+		Assert.assertTrue(lineBreakContent.startsWith("\""));
+		Assert.assertTrue(lineBreakContent.endsWith("\""));
+		
+		lineBreakContent = lineBreakContent.replace("\"", "");
+		List<String> actualLineBreakSections = Arrays.asList(lineBreakContent.split("\n"));
+		
+		Assert.assertEquals(expectedLineSections.length, actualLineBreakSections.size());
+		for (String expectedSection : expectedLineSections) {
+			Assert.assertTrue(actualLineBreakSections.contains(expectedSection));
+		}
 	}
 }
