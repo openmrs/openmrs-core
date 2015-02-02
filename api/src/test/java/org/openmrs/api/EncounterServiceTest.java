@@ -13,7 +13,24 @@
  */
 package org.openmrs.api;
 
-import org.hibernate.cfg.Environment;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -32,10 +49,10 @@ import org.openmrs.Patient;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.Role;
+import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
-import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
@@ -45,25 +62,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -86,16 +84,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ENC_INITIAL_DATA_XML);
 	}
-	
-	/*@Override
-	public Properties getRuntimeProperties() {
-		Properties props = super.getRuntimeProperties();
-		String url = props.getProperty(Environment.URL);
-		if (url.contains("jdbc:h2:") && !url.contains(";MVCC=TRUE")) {
-			props.setProperty(Environment.URL, url + ";MVCC=TRUE");
-		}
-		return props;
-	}*/
 
 	/**
 	 * @see {@link EncounterService#saveEncounter(Encounter)}
