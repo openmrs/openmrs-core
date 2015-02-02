@@ -87,7 +87,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ENC_INITIAL_DATA_XML);
 	}
 	
-	@Override
+	/*@Override
 	public Properties getRuntimeProperties() {
 		Properties props = super.getRuntimeProperties();
 		String url = props.getProperty(Environment.URL);
@@ -95,8 +95,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 			props.setProperty(Environment.URL, url + ";MVCC=TRUE");
 		}
 		return props;
-	}
-	
+	}*/
+
 	/**
 	 * @see {@link EncounterService#saveEncounter(Encounter)}
 	 */
