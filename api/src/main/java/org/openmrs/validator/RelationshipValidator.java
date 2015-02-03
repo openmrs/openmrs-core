@@ -44,6 +44,7 @@ public class RelationshipValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 *
 	 * @should fail if end date is prior to the start date
+	 * @should fail if start date is a future date
 	 * @should pass validation if field lengths are correct
 	 * @should fail validation if field lengths are not correct
 	 * @param target Relationship object to be validate
@@ -64,6 +65,12 @@ public class RelationshipValidator implements Validator {
 				}
 			}
 			ValidateUtil.validateFieldLengths(errors, target.getClass(), "voidReason");
+			if (startDate != null) {
+				Date currentDate = new Date();
+				if (startDate.after(currentDate)) {
+					errors.reject("error.date.future");
+				}
+			}
 		}
 		
 	}
