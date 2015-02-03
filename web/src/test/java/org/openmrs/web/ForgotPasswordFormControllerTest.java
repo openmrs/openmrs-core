@@ -284,4 +284,27 @@ public class ForgotPasswordFormControllerTest extends BaseWebContextSensitiveTes
 		Assert.assertTrue(Context.isAuthenticated());
 	}
 	
+	@Test
+	public void shouldAuthenticateWithInValidSecretQuestionIfUserIsNull() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("POST");
+		request.addParameter("uname", "");
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		Assert.assertNotNull(request.getAttribute("secretQuestion"));
+	}
+	
+	@Test
+	public void shouldExamineGetRandomFakeQuestionsOfForgotPasswordFormController() throws Exception {
+		ForgotPasswordFormController obj = new ForgotPasswordFormController();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("POST");
+		request.addParameter("uname", "");
+		HttpServletResponse response = new MockHttpServletResponse();
+		obj.handleRequest(request, response);
+		String output = obj.getRandomFakeSecretQuestion();
+		Assert.assertNotNull(output);
+	}
+	
 }
