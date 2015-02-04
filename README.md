@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/cs-worcester/openmrs-core-spring2015.png?label=ready&title=Ready)](https://waffle.io/cs-worcester/openmrs-core-spring2015)
 [![Build Status](https://secure.travis-ci.org/openmrs/openmrs-core.png?branch=master)](https://travis-ci.org/openmrs/openmrs-core)
 
 
