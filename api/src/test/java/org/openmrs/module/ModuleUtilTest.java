@@ -521,7 +521,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		String requiredOpenmrsVersion = "1.9.9-SNAPSHOT";
 		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
 	}
-
+	
 	@Test
 	@Verifies(value = "Should handle ALPHA versions ", method = "checkRequiredVersion(String, String)")
 	public void checkRequiredVersion_shouldHandleAlphaVersion() throws Exception {
