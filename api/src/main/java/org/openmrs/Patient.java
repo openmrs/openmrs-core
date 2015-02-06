@@ -14,8 +14,7 @@
 package org.openmrs;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -138,7 +137,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	public Set<PatientIdentifier> getIdentifiers() {
 		if (identifiers == null) {
-			identifiers = new LinkedHashSet<PatientIdentifier>();
+			identifiers = new TreeSet<PatientIdentifier>();
 		}
 		return this.identifiers;
 	}
@@ -190,7 +189,7 @@ public class Patient extends Person implements java.io.Serializable {
 		}
 		
 		if (identifiers == null) {
-			identifiers = new HashSet<PatientIdentifier>();
+			identifiers = new TreeSet<PatientIdentifier>();
 		}
 		identifiers.add(patientIdentifier);
 	}
