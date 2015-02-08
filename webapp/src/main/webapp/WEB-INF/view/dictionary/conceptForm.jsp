@@ -97,7 +97,9 @@
 	}
 	
 	function searchForConcepts() {
-		DWRConceptService.findBatchOfConcepts($j('#similarConceptsStart input').val(), false, null, null, null, null, null, 4, displayConcepts);
+		// get the selected locale
+		var locale = $j('.selectedTab').attr('id').substring(0, 2);
+		DWRConceptService.findBatchOfConcepts($j('#namesByLocale\\[' + locale + '\\]\\.name').val(), false, null, null, null, null, null, 4, displayConcepts);
 	}
 	
 	function displayConcepts(concepts) {
@@ -105,7 +107,8 @@
 		var conceptExists = false;
 		if(typeof(concepts[0]) !== 'string') { // check returned array not a message - indicates no results
 			var conceptsSize = concepts.length;
-			var theInput = $j.trim($j('#similarConceptsStart input').val().toLowerCase());
+			var locale = $j('.selectedTab').attr('id').substring(0, 2);
+			var theInput = $j.trim($j('#namesByLocale\\[' + locale + '\\]\\.name').val().toLowerCase());
 			aString = "| ";
 			$j.each(concepts.slice(0,3), function(index, value) {
 				var theName = value.name.toString().toLowerCase();
