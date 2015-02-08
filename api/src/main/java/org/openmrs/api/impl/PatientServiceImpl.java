@@ -209,6 +209,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return dao.getPatient(patientId);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientOrPromotePerson(Integer)
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Patient getPatientOrPromotePerson(Integer patientOrPersonId) {
@@ -847,6 +850,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		Context.getPersonService().savePersonMergeLog(personMergeLog);
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeProgramEnrolments(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all program enrollments
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
@@ -860,6 +869,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			}
 		}
 	}
+	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	
 	private void mergeVisits(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all visits, including voided ones (encounters will be handled below)
@@ -877,6 +893,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
@@ -889,6 +911,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeRelationships(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all relationships
 		PersonService personService = Context.getPersonService();
@@ -937,6 +965,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeObservationsNotContainedInEncounters(Patient preferred, Patient notPreferred,
 	        PersonMergeLogData mergedData) {
 		// move all obs that weren't contained in encounters
@@ -951,6 +985,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeIdentifiers(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all identifiers
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
@@ -986,6 +1026,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeDateOfDeath(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
 		if (preferred.getDeathDate() == null) {
@@ -1000,6 +1046,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeDateOfBirth(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
 		mergedData.setPriorDateOfBirthEstimated(preferred.isBirthdateEstimated());
@@ -1009,6 +1061,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergePersonAttributes(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy person attributes
 		for (PersonAttribute attr : notPreferred.getAttributes()) {
@@ -1022,6 +1080,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeGenderInformation(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all other patient info
 		mergedData.setPriorGender(preferred.getGender());
@@ -1030,6 +1094,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 */
 	private void mergeNames(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all names
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
@@ -1050,6 +1120,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * 
+	 * @param newName
+	 * @return
+	 */
 	private PersonName constructTemporaryName(PersonName newName) {
 		PersonName tmpName = PersonName.newInstance(newName);
 		tmpName.setPersonNameId(null);
@@ -1062,6 +1137,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return tmpName;
 	}
 	
+	/**
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @param mergedData
+	 * @throws SerializationException
+	 */
 	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData)
 	        throws SerializationException {
 		// move all addresses
@@ -1483,6 +1565,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return identifierValidators.get(identifierValidator);
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public Map<Class<? extends IdentifierValidator>, IdentifierValidator> getIdentifierValidators() {
 		if (identifierValidators == null) {
 			identifierValidators = new LinkedHashMap<Class<? extends IdentifierValidator>, IdentifierValidator>();

@@ -78,6 +78,18 @@ public interface MessageService {
 	 */
 	public Message createMessage(String recipients, String sender, String subject, String message) throws MessageException;
 	
+	/**
+	 * 
+	 * @param recipients
+	 * @param sender
+	 * @param subject
+	 * @param message
+	 * @param attachment
+	 * @param attachmentContentType
+	 * @param attachmentFileName
+	 * @return
+	 * @throws MessageException
+	 */
 	public Message createMessage(String recipients, String sender, String subject, String message, String attachment,
 	        String attachmentContentType, String attachmentFileName) throws MessageException;
 	
