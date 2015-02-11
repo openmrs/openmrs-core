@@ -513,6 +513,7 @@ public class ConceptFormController extends SimpleFormController {
 		 * object so that it can be saved to the database
 		 *
 		 * @return the concept to be saved to the database
+		 * @should set concept on concept answers
 		 */
 		public Concept getConceptFromFormData() {
 			
@@ -616,6 +617,10 @@ public class ConceptFormController extends SimpleFormController {
 			// if the user changed the datatype to be non "Coded", erase past saved datatypes
 			if (!concept.getDatatype().isCoded() && concept.getAnswers(true) != null) {
 				concept.getAnswers(true).clear();
+			} else {
+				for (ConceptAnswer ca : concept.getAnswers(true)) {
+					ca.setConcept(concept);
+				}
 			}
 			
 			// add in subobject specific code

@@ -42,6 +42,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSource;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
@@ -54,6 +55,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -1114,5 +1116,44 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(actualConcept);
 		assertNull(concept.getDescription());
 	}
-	
+
+	/**
+	 * @see ConceptFormBackingObject#getConceptFromFormData()
+	 */
+	@Test
+	@Verifies(value = "should set concept on concept answers", method = "getConceptFromFormData()")
+	public void getConceptFromFormData_shouldSetConceptOnConceptAnswers() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		int conceptId = 21;
+		
+		Concept concept = cs.getConcept(conceptId);
+		assertNotNull(concept);
+		
+		int initialCount = concept.getAnswers().size();
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "Save Concept");
+		mockRequest.setParameter("conceptId", "21");
+		mockRequest.setParameter("namesByLocale[en].name", concept.getName().getName());
+		mockRequest.setParameter("concept.datatype", "2");
+		mockRequest.setParameter("concept.answers", "7 8 22 5089");
+		
+		ConceptFormBackingObject cb = conceptFormController.formBackingObject(mockRequest);
+		
+		// Bind the request parameters
+		ServletRequestDataBinder srdb = new ServletRequestDataBinder(cb);
+		conceptFormController.initBinder(mockRequest, srdb);
+		srdb.bind(mockRequest);
+		
+		Concept parsedConcept = cb.getConceptFromFormData();
+		
+		assertEquals(initialCount + 1, parsedConcept.getAnswers().size());
+		for (ConceptAnswer ca : parsedConcept.getAnswers()) {
+			assertNotNull(ca.getConcept());
+		}
+	}
 }
