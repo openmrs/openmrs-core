@@ -104,12 +104,13 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals("question should be set", SECRET_QUESTION, lc.getSecretQuestion());
-		assertEquals("answer should be set", SECRET_ANSWER, lc.getSecretAnswer());
+		assertEquals("answer should be set", hashedSecretAnswer, lc.getSecretAnswer());
 		dao.changePassword(userJoe, "Openmr6zz");
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals("question should not have changed", SECRET_QUESTION, lc.getSecretQuestion());
-		assertEquals("answer should not have changed", SECRET_ANSWER, lc.getSecretAnswer());
+		assertEquals("answer should not have changed", hashedSecretAnswer, lc.getSecretAnswer());
 	}
 	
 	@Test
@@ -118,13 +119,14 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals("question should be set", SECRET_QUESTION, lc.getSecretQuestion());
-		assertEquals("answer should be set", SECRET_ANSWER, lc.getSecretAnswer());
+		assertEquals("answer should be set", hashedSecretAnswer, lc.getSecretAnswer());
 		userJoe.setUserProperty("foo", "bar");
 		dao.saveUser(userJoe, PASSWORD);
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals("question should not have changed", SECRET_QUESTION, lc.getSecretQuestion());
-		assertEquals("answer should not have changed", SECRET_ANSWER, lc.getSecretAnswer());
+		assertEquals("answer should not have changed", hashedSecretAnswer, lc.getSecretAnswer());
 	}
 	
 	@Test
@@ -133,13 +135,14 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals("question should be set", SECRET_QUESTION, lc.getSecretQuestion());
-		assertEquals("answer should be set", SECRET_ANSWER, lc.getSecretAnswer());
+		assertEquals("answer should be set", hashedSecretAnswer, lc.getSecretAnswer());
 		Context.authenticate(userJoe.getUsername(), PASSWORD);
 		dao.changePassword(PASSWORD, PASSWORD + "foo");
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals("question should not have changed", SECRET_QUESTION, lc.getSecretQuestion());
-		assertEquals("answer should not have changed", SECRET_ANSWER, lc.getSecretAnswer());
+		assertEquals("answer should not have changed", hashedSecretAnswer, lc.getSecretAnswer());
 	}
 	
 	@Test
@@ -148,13 +151,14 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.saveUser(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
+		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
 		assertEquals("question should be set", SECRET_QUESTION, lc.getSecretQuestion());
-		assertEquals("answer should be set", SECRET_ANSWER, lc.getSecretAnswer());
+		assertEquals("answer should be set", hashedSecretAnswer, lc.getSecretAnswer());
 		userJoe.setUserProperty("foo", "bar");
 		dao.changeHashedPassword(userJoe, "VakesJkw1", Security.getRandomToken());
 		lc = dao.getLoginCredential(userJoe);
 		assertEquals("question should not have changed", SECRET_QUESTION, lc.getSecretQuestion());
-		assertEquals("answer should not have changed", SECRET_ANSWER, lc.getSecretAnswer());
+		assertEquals("answer should not have changed", hashedSecretAnswer, lc.getSecretAnswer());
 	}
 	
 	@Test

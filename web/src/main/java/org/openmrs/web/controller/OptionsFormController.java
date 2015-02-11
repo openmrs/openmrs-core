@@ -358,13 +358,13 @@ public class OptionsFormController extends SimpleFormController {
 			// set language/locale options
 			map.put("languages", as.getPresentationLocales());
 			
-			String resetPassword = (String) httpSession.getAttribute("resetPassword");
-			if (resetPassword == null) {
-				resetPassword = "";
+			Object resetPasswordAttribute = httpSession.getAttribute("resetPassword");
+			if (resetPasswordAttribute == null) {
+				resetPasswordAttribute = "";
 			} else {
 				httpSession.removeAttribute("resetPassword");
 			}
-			map.put("resetPassword", resetPassword);
+			map.put("resetPassword", resetPasswordAttribute);
 			
 			//generate the password hint depending on the security GP settings
 			ArrayList<String> hints = new ArrayList<String>(5);

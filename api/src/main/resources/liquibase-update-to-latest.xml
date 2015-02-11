@@ -8570,4 +8570,9 @@
 		</delete>
 	</changeSet>
 
+	<changeSet id="20150211-TRUNK-3709" author="jkondrat">
+		<comment>Encrypting the users.secret_answer column</comment>
+		<customChange class="org.openmrs.util.databasechange.EncryptSecretAnswersChangeSet"/>
+	</changeSet>
+
 </databaseChangeLog>

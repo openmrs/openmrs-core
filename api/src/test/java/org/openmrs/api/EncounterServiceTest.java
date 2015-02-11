@@ -84,7 +84,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ENC_INITIAL_DATA_XML);
 	}
-
+	
 	/**
 	 * @see {@link EncounterService#saveEncounter(Encounter)}
 	 */
