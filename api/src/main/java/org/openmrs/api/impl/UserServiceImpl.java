@@ -29,6 +29,8 @@ import org.openmrs.Privilege;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
@@ -73,12 +75,14 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User, java.lang.String)
 	 * @deprecated
 	 */
+	@Deprecated
 	public User createUser(User user, String password) throws APIException {
 		return Context.getUserService().saveUser(user, password);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
+	 * @deprecated replaced by {@link #createUser(User, String)}
 	 */
 	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public User saveUser(User user, String password) throws APIException {
@@ -350,7 +354,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	/**
 	 * @see org.openmrs.api.UserService#changePassword(org.openmrs.User, java.lang.String)
+	 * @deprecated replaced by {@link #changePassword(User, String, String)}
 	 */
+	@Deprecated
 	public void changePassword(User u, String pw) throws APIException {
 		dao.changePassword(u, pw);
 	}
@@ -717,6 +723,27 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			user.setUserProperty(entry.getKey(), entry.getValue());
 		}
 		return dao.saveUser(user, null);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User, String, String)
+	 */
+	@Override
+	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
+	@Logging(ignoredArgumentIndexes = { 1, 2 })
+	public void changePassword(User user, String oldPassword, String newPassword) throws APIException {
+		if (user.getUserId() == null) {
+			throw new APIException("user.must.exist", (Object[]) null);
+		}
+		if (oldPassword == null) {
+			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
+				throw new APIException("null.old.password.privilege.required", (Object[]) null);
+			}
+		} else if (!dao.getLoginCredential(user).checkPassword(oldPassword)) {
+			throw new APIException("old.password.not.correct", (Object[]) null);
+		}
+		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
+		dao.changePassword(user, newPassword);
 	}
 	
 }

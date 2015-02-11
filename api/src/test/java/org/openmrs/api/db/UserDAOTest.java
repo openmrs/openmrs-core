@@ -53,6 +53,8 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 			// fetch the dao from the spring application context
 			// this bean name matches the name in /metadata/spring/applicationContext-service.xml
 			dao = (UserDAO) applicationContext.getBean("userDAO");
+		
+		dao.saveUser(userJoe, null);
 	}
 	
 	/**
@@ -101,7 +103,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not overwrite user secret question or answer on password change", method = "changePassword(User, String)")
 	public void updateUserPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() throws Exception {
-		dao.saveUser(userJoe, PASSWORD);
+		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
@@ -132,7 +134,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not overwrite user secret question or answer when changing password", method = "changePassword(String, String)")
 	public void changePassword_shouldNotOverwriteUserSecretQuestionOrAnswer() throws Exception {
-		dao.saveUser(userJoe, PASSWORD);
+		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
@@ -148,7 +150,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not overwrite user secret question or answer when saving hashed password", method = "changeHashedPassword(User, String, String)")
 	public void changeHashedPassword_shouldNotOverwriteUserSecretQuestionOrAnswer() throws Exception {
-		dao.saveUser(userJoe, PASSWORD);
+		dao.changePassword(userJoe, PASSWORD);
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		LoginCredential lc = dao.getLoginCredential(userJoe);
 		String hashedSecretAnswer = Security.encodeString(SECRET_ANSWER + lc.getSalt());
