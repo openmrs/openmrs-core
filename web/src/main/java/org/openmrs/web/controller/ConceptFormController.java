@@ -257,6 +257,11 @@ public class ConceptFormController extends SimpleFormController {
 					concept.getCreator().getPersonName();
 				}
 				
+				// Set current concept in all concept answers
+				for (ConceptAnswer ca : concept.getAnswers()) {
+					ca.setConcept(concept);
+				}
+				
 				try {
 					errors.pushNestedPath("concept");
 					ValidateUtil.validate(concept, errors);
