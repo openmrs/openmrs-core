@@ -62,8 +62,8 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Create user with given password.
 	 *
-	 * @param user
-	 * @param password
+	 * @param user the user to create
+	 * @param password the password for created user
 	 * @return created user
 	 * @throws APIException
 	 */
