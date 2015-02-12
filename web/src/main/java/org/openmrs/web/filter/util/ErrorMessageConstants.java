@@ -69,6 +69,8 @@ public class ErrorMessageConstants {
 	
 	public static final String ERROR_INPUT_REQ = "install.error.inputRequired";
 	
+	public static final String ERROR_UNWRITABLE_DATA_DIRECTORY = "install.error.unwritableDataDirectory";
+	
 	public static final String ERROR_MANDATORY_MOD_REQ = "install.error.mandatoryModuleRequired";
 	
 	public static final String ERROR_CORE_MOD_REQ = "install.error.coreModuleRequired";

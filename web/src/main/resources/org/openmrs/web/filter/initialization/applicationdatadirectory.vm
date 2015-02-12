@@ -1,0 +1,33 @@
+#parse($headerTemplate)
+
+<form method="post" autocomplete="off">
+
+	<div class="content" style="text-align:center">
+		<table align="center" cellspacing="5" cellpadding="9">
+			<tr>
+                <td colspan="2" align="center"><strong>$l10n.get("install.step").insert(${currentStepNumber}).insert(${numberOfSteps})</strong></td>
+			</tr>
+			<tr>
+				<td colspan="2" class="question">$l10n.get("install.advanced.other.dataDirectory.capt")</td>
+			</tr>
+			<tr>
+				<td colspan="2" >$l10n.get("install.advanced.other.dataDirectory") &nbsp;<input type="text" name="dataDirectory" size="45" value="${dataDirectory}" onKeyPress="return submitenter(this,event);"  /> </td>
+			</tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="image" src="images/back_button.png" value="Back" name="back" style="margin-right: 20px"/>
+                    <input type="image" src="images/forward_button.png" name="continue" style="margin-left: 20px"/>
+                </td>
+            </tr>
+		</table>
+	</div>
+
+	<input type="hidden" name="page" value="applicationdatadirectory.vm" />
+
+</form>
+
+<script type="text/javascript">
+	document.forms[0].elements[0].focus();
+</script>
+
+#parse($footerTemplate)

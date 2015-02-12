@@ -1281,9 +1281,10 @@ public class OpenmrsUtil {
 	 * Checks if we can write to a given folder.
 	 * 
 	 * @param folder the directory to check.
+	 * @since 1.11
 	 * @return true if we can write to it, else false.
 	 */
-	private static boolean canWrite(File folder) {
+	public static boolean canWrite(File folder) {
 		try {
 			//We need to first create the folder if it does not exist, 
 			//else File.canWrite() will return false even when we
