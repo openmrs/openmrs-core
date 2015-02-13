@@ -58,7 +58,7 @@ public class ConceptStopWordListController {
 			ConceptService conceptService = Context.getConceptService();
 			for (String conceptStopWordToBeDeleted : conceptStopWordsToBeDeleted) {
 				try {
-					conceptService.deleteConceptStopWord(new Integer(conceptStopWordToBeDeleted));
+					conceptService.deleteConceptStopWord(Integer.valueOf(conceptStopWordToBeDeleted));
 					session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.deleted");
 				}
 				catch (ConceptStopWordException e) {

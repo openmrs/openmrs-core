@@ -312,7 +312,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	public void saveProvider_shouldSaveAProviderWithPersonAlone() throws Exception {
 		Provider provider = new Provider();
 		provider.setIdentifier("unique");
-		Person person = Context.getPersonService().getPerson(new Integer(999));
+		Person person = Context.getPersonService().getPerson(Integer.valueOf(999));
 		provider.setPerson(person);
 		service.saveProvider(provider);
 		Assert.assertNotNull(provider.getId());

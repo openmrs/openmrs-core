@@ -35,7 +35,7 @@ public class DrugEditorTest extends BaseContextSensitiveTest {
 		Drug drug = (Drug) drugEditor.getValue();
 		
 		Assert.assertNotNull(drug);
-		Assert.assertEquals("", new Integer(2), drug.getDrugId());
+		Assert.assertEquals("", Integer.valueOf(2), drug.getDrugId());
 	}
 	
 	/**
