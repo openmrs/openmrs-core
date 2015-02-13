@@ -447,7 +447,7 @@ public class ModuleFactory {
 	 *
 	 * @return map<ModuleId, Module>
 	 */
-	public static synchronized Map<String, Module> getLoadedModulesMap() {
+	public static Map<String, Module> getLoadedModulesMap() {
 		if (loadedModules == null) {
 			loadedModules = new WeakHashMap<String, Module>();
 		}
@@ -461,7 +461,7 @@ public class ModuleFactory {
 	 *
 	 * @return map<PackageName, Module>
 	 */
-	public static synchronized Map<String, Module> getLoadedModulesMapPackage() {
+	public static Map<String, Module> getLoadedModulesMapPackage() {
 		if (loadedModules == null) {
 			loadedModules = new WeakHashMap<String, Module>();
 			return loadedModules;
@@ -505,7 +505,7 @@ public class ModuleFactory {
 	 *
 	 * @return Map&lt;ModuleId, Module&gt;
 	 */
-	public static synchronized Map<String, Module> getStartedModulesMap() {
+	public static Map<String, Module> getStartedModulesMap() {
 		if (startedModules == null) {
 			startedModules = new WeakHashMap<String, Module>();
 		}
@@ -628,7 +628,7 @@ public class ModuleFactory {
 	 * @param applicationContext the spring application context instance to refresh
 	 * @param applicationContext the spring application context instance to refresh
 	 */
-	public static synchronized Module startModuleInternal(Module module, boolean isOpenmrsStartup,
+	public static Module startModuleInternal(Module module, boolean isOpenmrsStartup,
 	        AbstractRefreshableApplicationContext applicationContext) throws ModuleException {
 		
 		if (module != null) {
@@ -1406,7 +1406,7 @@ public class ModuleFactory {
 	 *
 	 * @return Map<Module, ModuleClassLoader>
 	 */
-	public static synchronized Map<Module, ModuleClassLoader> getModuleClassLoaderMap() {
+	public static Map<Module, ModuleClassLoader> getModuleClassLoaderMap() {
 		if (moduleClassLoaders == null) {
 			moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
 		}
@@ -1419,7 +1419,7 @@ public class ModuleFactory {
 	 *
 	 * @return Map<String, List<Extension>>
 	 */
-	public static synchronized Map<String, List<Extension>> getExtensionMap() {
+	public static Map<String, List<Extension>> getExtensionMap() {
 		if (extensionMap == null) {
 			extensionMap = new WeakHashMap<String, List<Extension>>();
 		}

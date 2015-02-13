@@ -131,6 +131,7 @@ public class FieldGenTag extends TagSupport {
 					if (val != null) {
 						startVal = val.toString();
 					}
+					startVal = (startVal == null) ? "" : startVal;
 					String fieldLength = this.parameterMap != null ? (String) this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_FLOAT_LENGTH : fieldLength;
 					output.setLength(0);
@@ -512,7 +513,7 @@ public class FieldGenTag extends TagSupport {
 		}
 		catch (Exception e) {
 			factory = null;
-			log.error("Couldn't get FieldGenHandlerFactory.", e);
+			e.printStackTrace();
 		}
 		
 		if (factory != null) {

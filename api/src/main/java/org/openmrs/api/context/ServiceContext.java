@@ -134,7 +134,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return This VM's current ServiceContext.
 	 * @see org.openmrs.api.context.Context
 	 */
-	public static synchronized ServiceContext getInstance() {
+	public static ServiceContext getInstance() {
 		if (instance == null) {
 			instance = new ServiceContext();
 		}
@@ -146,7 +146,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * Null out the current instance of the ServiceContext. This should be used when modules are
 	 * refreshing (being added/removed) and/or openmrs is shutting down
 	 */
-	public static synchronized void destroyInstance() {
+	public static void destroyInstance() {
 		if (instance != null && instance.services != null) {
 			if (log.isDebugEnabled()) {
 				for (Map.Entry<Class, Object> entry : instance.services.entrySet()) {
