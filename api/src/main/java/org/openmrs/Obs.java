@@ -973,9 +973,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if (abbrev.equals("BIT")) {
+			if ("BIT".equals(abbrev)) {
 				return getValueAsBoolean() == null ? "" : getValueAsBoolean().toString();
-			} else if (abbrev.equals("CWE")) {
+			} else if ("CWE".equals(abbrev)) {
 				if (getValueCoded() == null) {
 					return "";
 				}
@@ -995,7 +995,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 						
 					}
 				}
-			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				if (getValueNumeric() == null) {
 					return "";
 				} else {
@@ -1010,15 +1010,15 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 						}
 					}
 				}
-			} else if (abbrev.equals("DT")) {
+			} else if ("DT".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : dateFormat.format(getValueDatetime()));
-			} else if (abbrev.equals("TM")) {
+			} else if ("TM".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIME));
-			} else if (abbrev.equals("TS")) {
+			} else if ("TS".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIMESTAMP));
-			} else if (abbrev.equals("ST")) {
+			} else if ("ST".equals(abbrev)) {
 				return getValueText();
-			} else if (abbrev.equals("ED") && getValueComplex() != null) {
+			} else if ("ED".equals(abbrev) && getValueComplex() != null) {
 				String[] valueComplex = getValueComplex().split("\\|");
 				for (int i = 0; i < valueComplex.length; i++) {
 					if (!"".equals(valueComplex[i])) {
@@ -1096,19 +1096,19 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		if (getConcept() != null && !StringUtils.isBlank(s)) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if (abbrev.equals("BIT")) {
+			if ("BIT".equals(abbrev)) {
 				setValueBoolean(Boolean.valueOf(s));
-			} else if (abbrev.equals("CWE")) {
+			} else if ("CWE".equals(abbrev)) {
 				throw new RuntimeException("Not Yet Implemented");
-			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				setValueNumeric(Double.valueOf(s));
-			} else if (abbrev.equals("DT")) {
+			} else if ("DT".equals(abbrev)) {
 				setValueDatetime(dateFormat.parse(s));
-			} else if (abbrev.equals("TM")) {
+			} else if ("TM".equals(abbrev)) {
 				setValueDatetime(timeFormat.parse(s));
-			} else if (abbrev.equals("TS")) {
+			} else if ("TS".equals(abbrev)) {
 				setValueDatetime(datetimeFormat.parse(s));
-			} else if (abbrev.equals("ST")) {
+			} else if ("ST".equals(abbrev)) {
 				setValueText(s);
 			} else {
 				throw new RuntimeException("Don't know how to handle " + abbrev);

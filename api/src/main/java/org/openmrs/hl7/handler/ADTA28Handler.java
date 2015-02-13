@@ -304,7 +304,7 @@ public class ADTA28Handler implements Application {
 			String precision = precisionTemp.getValue().toUpperCase();
 			log.debug("The birthdate is estimated: " + precision);
 			
-			if (precision.equals("Y") || precision.equals("L")) {
+			if ("Y".equals(precision) || "L".equals(precision)) {
 				patient.setBirthdateEstimated(true);
 			}
 		}
