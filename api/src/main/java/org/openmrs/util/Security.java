@@ -66,7 +66,7 @@ public class Security {
 	 */
 	public static boolean hashMatches(String hashedPassword, String passwordToHash) {
 		if (hashedPassword == null || passwordToHash == null) {
-			throw new APIException("Neither the hashed password or the password to hash cannot be null");
+			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
 		
 		return hashedPassword.equals(encodeString(passwordToHash))
@@ -93,10 +93,10 @@ public class Security {
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
-			throw new APIException("System cannot find password encryption algorithm", e);
+			throw new APIException("system.cannot.find.password.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return hexString(md.digest(input));
 	}
@@ -118,10 +118,10 @@ public class Security {
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
-			throw new APIException("System cannot find SHA1 encryption algorithm", e);
+			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return hexString(md.digest(input));
 	}
@@ -166,10 +166,10 @@ public class Security {
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
-			throw new APIException("System cannot find SHA1 encryption algorithm", e);
+			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return incorrectHexString(md.digest(input));
 	}
@@ -228,10 +228,10 @@ public class Security {
 			encrypted = cipher.doFinal(text.getBytes(encoding));
 		}
 		catch (GeneralSecurityException e) {
-			throw new APIException("could not encrypt text", e);
+			throw new APIException("could.not.encrypt.text", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		
 		return Base64.encode(encrypted);
@@ -273,10 +273,10 @@ public class Security {
 			decrypted = new String(original, encoding);
 		}
 		catch (GeneralSecurityException e) {
-			throw new APIException("could not decrypt text", e);
+			throw new APIException("could.not.decrypt.text", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		
 		return decrypted;
@@ -308,7 +308,7 @@ public class Security {
 			return Base64.decode(initVectorText);
 		}
 		
-		throw new APIException("no encryption initialization vector found");
+		throw new APIException("no.encryption.initialization.vector.found", (Object[]) null);
 	}
 	
 	/**
@@ -345,7 +345,7 @@ public class Security {
 			return Base64.decode(keyText);
 		}
 		
-		throw new APIException("no encryption secret key found");
+		throw new APIException("no.encryption.secret.key.found", (Object[]) null);
 	}
 	
 	/**
@@ -362,7 +362,7 @@ public class Security {
 			kgen = KeyGenerator.getInstance(OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 		}
 		catch (NoSuchAlgorithmException e) {
-			throw new APIException("Could not generate cipher key", e);
+			throw new APIException("could.not.generate.cipher.key", null, e);
 		}
 		kgen.init(128); // 192 and 256 bits may not be available
 		

@@ -339,11 +339,11 @@ public class HibernateFormDAO implements FormDAO {
 		}
 		
 		if (!containsAllAnswers.isEmpty()) {
-			throw new APIException("containsAllAnswers must be empty because this is not yet implemented");
+			throw new APIException("Form.getFields.error", new Object[] { "containsAllAnswers" });
 		}
 		
 		if (!containsAnyAnswer.isEmpty()) {
-			throw new APIException("containsAnyAnswer must be empty because this is not yet implemented");
+			throw new APIException("Form.getFields.error", new Object[] { "containsAnyAnswer" });
 		}
 		
 		if (retired != null) {

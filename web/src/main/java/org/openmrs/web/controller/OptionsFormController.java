@@ -46,6 +46,8 @@ import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -70,8 +72,8 @@ public class OptionsFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		OptionsForm opts = (OptionsForm) object;
 		
-		if (!opts.getOldPassword().equals("")) {
-			if (opts.getNewPassword().equals("")) {
+		if (!"".equals(opts.getOldPassword())) {
+			if ("".equals(opts.getNewPassword())) {
 				errors.rejectValue("newPassword", "error.password.weak");
 			} else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
 				errors.rejectValue("newPassword", "error.password.match");
@@ -79,12 +81,12 @@ public class OptionsFormController extends SimpleFormController {
 			}
 		}
 		
-		if (opts.getSecretQuestionPassword().equals("") && opts.getSecretAnswerNew().isEmpty()
+		if ("".equals(opts.getSecretQuestionPassword()) && opts.getSecretAnswerNew().isEmpty()
 		        && !opts.getSecretQuestionNew().equals(opts.getSecretQuestionCopy())) {
 			errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 		}
 		
-		if (!opts.getSecretQuestionPassword().equals("")) {
+		if (!"".equals(opts.getSecretQuestionPassword())) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
 				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
 				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
@@ -151,7 +153,7 @@ public class OptionsFormController extends SimpleFormController {
 			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS, opts.getNotificationAddress() == null ? ""
 			        : opts.getNotificationAddress().toString());
 			
-			if (!opts.getOldPassword().equals("")) {
+			if (!"".equals(opts.getOldPassword())) {
 				try {
 					String password = opts.getNewPassword();
 					
@@ -185,12 +187,12 @@ public class OptionsFormController extends SimpleFormController {
 			} else {
 				// if they left the old password blank but filled in new
 				// password
-				if (!opts.getNewPassword().equals("")) {
+				if (!"".equals(opts.getNewPassword())) {
 					errors.rejectValue("oldPassword", "error.password.incorrect");
 				}
 			}
 			
-			if (!opts.getSecretQuestionPassword().equals("")) {
+			if (!"".equals(opts.getSecretQuestionPassword())) {
 				if (!errors.hasErrors()) {
 					try {
 						user.setSecretQuestion(opts.getSecretQuestionNew());
@@ -201,7 +203,7 @@ public class OptionsFormController extends SimpleFormController {
 						errors.rejectValue("secretQuestionPassword", "error.password.match");
 					}
 				}
-			} else if (!opts.getSecretAnswerNew().equals("")) {
+			} else if (!"".equals(opts.getSecretAnswerNew())) {
 				// if they left the old password blank but filled in new
 				// password
 				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
@@ -253,7 +255,14 @@ public class OptionsFormController extends SimpleFormController {
 					user.addName(newPersonName);
 				}
 				
-				ValidateUtil.validate(user, errors);
+				Errors userErrors = new BindException(user, "user");
+				ValidateUtil.validate(user, userErrors);
+				
+				if (userErrors.hasErrors()) {
+					for (ObjectError error : userErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				
 				if (errors.hasErrors()) {
 					return super.processFormSubmission(request, response, opts, errors);
@@ -349,13 +358,13 @@ public class OptionsFormController extends SimpleFormController {
 			// set language/locale options
 			map.put("languages", as.getPresentationLocales());
 			
-			String resetPassword = (String) httpSession.getAttribute("resetPassword");
-			if (resetPassword == null) {
-				resetPassword = "";
+			Object resetPasswordAttribute = httpSession.getAttribute("resetPassword");
+			if (resetPasswordAttribute == null) {
+				resetPasswordAttribute = "";
 			} else {
 				httpSession.removeAttribute("resetPassword");
 			}
-			map.put("resetPassword", resetPassword);
+			map.put("resetPassword", resetPasswordAttribute);
 			
 			//generate the password hint depending on the security GP settings
 			ArrayList<String> hints = new ArrayList<String>(5);

@@ -1025,12 +1025,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.createAlias("conceptReferenceTerm", "term");
 		
 		// match the source code to the passed code
-		criteria.add(Restrictions.eq("term.code", code));
+		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+			criteria.add(Restrictions.eq("term.code", code).ignoreCase());
+		} else {
+			criteria.add(Restrictions.eq("term.code", code));
+		}
 		
 		// join to concept reference source and match to the h17Code or source name
 		criteria.createAlias("term.conceptSource", "source");
-		criteria.add(Restrictions.or(Restrictions.eq("source.name", sourceName), Restrictions.eq("source.hl7Code",
-		    sourceName)));
+		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+			criteria.add(Restrictions.or(Restrictions.eq("source.name", sourceName).ignoreCase(), Restrictions.eq(
+			    "source.hl7Code", sourceName).ignoreCase()));
+		} else {
+			criteria.add(Restrictions.or(Restrictions.eq("source.name", sourceName), Restrictions.eq("source.hl7Code",
+			    sourceName)));
+		}
 		
 		criteria.createAlias("concept", "concept");
 		
@@ -1544,9 +1553,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (terms.size() == 0) {
 			return null;
 		} else if (terms.size() > 1) {
-			throw new APIException(Context.getMessageSourceService().getMessage(
-			    "ConceptReferenceTerm.foundMultipleTermsWithNameInSource", new Object[] { name, conceptSource.getName() },
-			    null));
+			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithNameInSource", new Object[] { name,
+			        conceptSource.getName() });
 		}
 		return (ConceptReferenceTerm) terms.get(0);
 	}
@@ -1565,9 +1573,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (terms.size() == 0) {
 			return null;
 		} else if (terms.size() > 1) {
-			throw new APIException(Context.getMessageSourceService().getMessage(
-			    "ConceptReferenceTerm.foundMultipleTermsWithCodeInSource", new Object[] { code, conceptSource.getName() },
-			    null));
+			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithCodeInSource", new Object[] { code,
+			        conceptSource.getName() });
 		}
 		return (ConceptReferenceTerm) terms.get(0);
 	}

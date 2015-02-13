@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -25,10 +24,6 @@ import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.validator.VisitValidator;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 
 /**
  * Contains methods for processing DWR requests for visits
@@ -64,8 +59,7 @@ public class DWRVisitService {
 					visits = Context.getVisitService().getVisitsByPatient(p, includeInactive, includeVoided);
 				}
 			} else {
-				throw new APIException(mss.getMessage("errors.patientId.cannotBeNull", null, "Patient Id cannot be null",
-				    Context.getLocale()));
+				throw new APIException("errors.patientId.cannotBeNull", (Object[]) null);
 			}
 			
 			if (visits.size() > 0) {
@@ -114,7 +108,7 @@ public class DWRVisitService {
 					encounters = Context.getEncounterService().getEncountersByVisit(v, false);
 				}
 			} else {
-				throw new APIException(Context.getMessageSourceService().getMessage("VisitId.cannotBeNull"));
+				throw new APIException("VisitId.cannotBeNull", (Object[]) null);
 			}
 			
 			if (encounters.size() > 0) {

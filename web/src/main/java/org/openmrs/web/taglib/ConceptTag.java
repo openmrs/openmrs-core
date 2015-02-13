@@ -74,7 +74,7 @@ public class ConceptTag extends BodyTagSupport {
 		
 		// If user specifies a locale in the tag, try to find a matching locale. Otherwise, use the user's default locale
 		Locale loc = Context.getLocale();
-		if (locale != null && !locale.equals("")) {
+		if (locale != null && !"".equals(locale)) {
 			Locale[] locales = Locale.getAvailableLocales();
 			for (int i = 0; i < locales.length; i++) {
 				if (locale.equals(locales[i].toString())) {

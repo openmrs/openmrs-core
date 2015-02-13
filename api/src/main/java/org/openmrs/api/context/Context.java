@@ -41,7 +41,6 @@ import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.DataSetService;
 import org.openmrs.api.DatatypeService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
@@ -54,7 +53,6 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
@@ -73,7 +71,6 @@ import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
-import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
@@ -85,8 +82,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.Advisor;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -171,7 +166,7 @@ public class Context {
 	 */
 	private static ContextDAO getContextDAO() {
 		if (contextDAO == null) {
-			throw new APIException("contextDAO is null");
+			throw new APIException("error.context.null", (Object[]) null);
 		}
 		return contextDAO;
 	}
@@ -476,33 +471,6 @@ public class Context {
 	 */
 	public static SerializationService getSerializationService() {
 		return getServiceContext().getSerializationService();
-	}
-	
-	/**
-	 * @return report service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public static ReportService getReportService() {
-		return getServiceContext().getReportService();
-	}
-	
-	/**
-	 * @return report object service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public static ReportObjectService getReportObjectService() {
-		return getServiceContext().getReportObjectService();
-	}
-	
-	/**
-	 * @return dataset service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public static DataSetService getDataSetService() {
-		return getServiceContext().getDataSetService();
 	}
 	
 	/**

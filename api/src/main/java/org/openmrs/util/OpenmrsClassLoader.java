@@ -233,7 +233,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		result = super.findResource(name);
 		
 		// expand the jar url if necessary
-		if (result != null && result.getProtocol().equals("jar") && name.contains("openmrs")) {
+		if (result != null && "jar".equals(result.getProtocol()) && name.contains("openmrs")) {
 			result = expandURL(result, getLibCacheFolder());
 		}
 		
@@ -554,7 +554,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 						if (Modifier.isStatic(mods)) {
 							try {
 								// do not clear the log field on this class yet
-								if (clazz.equals(OpenmrsClassLoader.class) && field.getName().equals("log")) {
+								if (clazz.equals(OpenmrsClassLoader.class) && "log".equals(field.getName())) {
 									continue;
 								}
 								field.setAccessible(true);
@@ -806,7 +806,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			
 			@Override
 			public boolean accept(File dir, String name) {
-				return name.equals("lock");
+				return "lock".equals(name);
 			}
 		};
 		File tempLocation = libCacheFolder.getParentFile();

@@ -15,6 +15,7 @@ package org.openmrs.validator;
 
 import org.openmrs.VisitAttributeType;
 import org.openmrs.annotation.Handler;
+import org.springframework.validation.Errors;
 
 /**
  * Validates attributes on the {@link VisitAttributeType} object.
@@ -33,4 +34,15 @@ public class VisitAttributeTypeValidator extends BaseAttributeTypeValidator<Visi
 		return c.equals(VisitAttributeType.class);
 	}
 	
+	/**
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
+	 */
+	public void validate(Object obj, Errors errors) {
+		if (obj != null) {
+			super.validate(obj, errors);
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "datatypeClassname",
+			    "preferredHandlerClassname", "retireReason");
+		}
+	}
 }

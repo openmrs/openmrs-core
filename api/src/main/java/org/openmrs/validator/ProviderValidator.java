@@ -71,6 +71,8 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should accept duplicate identifier if the existing provider is retired
 	 * @should accept a duplicate identifier for a new provider which is not retired
 	 * @should accept a duplicate identifier for a new provider which is retired
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
@@ -91,6 +93,7 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 			errors.rejectValue("retireReason", "Provider.error.retireReason.required");
 		}
 		
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "identifier", "retireReason");
 		super.validateAttributes(provider, errors, Context.getProviderService().getAllProviderAttributeTypes());
 	}
 	

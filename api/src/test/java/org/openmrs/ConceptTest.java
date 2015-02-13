@@ -52,7 +52,7 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
-	 *
+	 * 
 	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
@@ -76,7 +76,7 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
-	 *
+	 * 
 	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
@@ -91,7 +91,7 @@ public class ConceptTest {
 	/**
 	 * The Concept should unmark the old conceptName as the locale preferred one to enforce the rule
 	 * that a each locale should have only one preferred name per concept
-	 *
+	 * 
 	 * @see {@link Concept#setPreferredName(ConceptName)}
 	 */
 	@Test
@@ -547,6 +547,47 @@ public class ConceptTest {
 	 * @see {@link Concept#getSetMembers()}
 	 */
 	@Test
+	@Verifies(value = "should return concept set members sorted with retired last", method = "getSetMembers()")
+	public void getSetMembers_shouldReturnConceptSetMembersSortedWithRetiredLast() throws Exception {
+		Concept c = new Concept();
+		Concept retiredConcept = new Concept(3);
+		retiredConcept.setRetired(true);
+		Concept retiredConcept2 = new Concept(0);
+		retiredConcept2.setRetired(true);
+		Concept retiredConcept3 = new Concept(0);
+		retiredConcept3.setRetired(true);
+		ConceptSet set0 = new ConceptSet(retiredConcept, 3.0);
+		ConceptSet set1 = new ConceptSet(new Concept(1), 2.0);
+		ConceptSet set2 = new ConceptSet(new Concept(2), 1.0);
+		ConceptSet set3 = new ConceptSet(retiredConcept2, 0.0);
+		ConceptSet set4 = new ConceptSet();
+		set4.setConcept(new Concept(3));
+		ConceptSet set5 = new ConceptSet();
+		set5.setConcept(retiredConcept3);
+		
+		List<ConceptSet> sets = new ArrayList<ConceptSet>();
+		sets.add(set0);
+		sets.add(set1);
+		sets.add(set2);
+		sets.add(set3);
+		sets.add(set4);
+		sets.add(set5);
+		
+		c.setConceptSets(sets);
+		
+		List<Concept> setMembers = c.getSetMembers();
+		Assert.assertEquals(set4.getConcept(), setMembers.get(0));
+		Assert.assertEquals(set2.getConcept(), setMembers.get(1));
+		Assert.assertEquals(set1.getConcept(), setMembers.get(2));
+		Assert.assertEquals(set5.getConcept(), setMembers.get(3));
+		Assert.assertEquals(set3.getConcept(), setMembers.get(4));
+		Assert.assertEquals(set0.getConcept(), setMembers.get(5));
+	}
+	
+	/**
+	 * @see {@link Concept#getSetMembers()}
+	 */
+	@Test
 	@Verifies(value = "should return all the conceptMembers of current Concept", method = "getSetMembers()")
 	public void getSetMembers_shouldReturnAllTheConceptMembersOfCurrentConcept() throws Exception {
 		Concept c = new Concept();
@@ -691,7 +732,6 @@ public class ConceptTest {
 	
 	/**
 	 * @see {@link Concept#getPreferredName(Locale)}
-	 *
 	 */
 	@Test
 	@Verifies(value = "should return the fully specified name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
@@ -995,7 +1035,7 @@ public class ConceptTest {
 	/**
 	 * Convenient factory method to create a populated Concept with a one fully specified name and
 	 * one short name
-	 *
+	 * 
 	 * @param conceptId the id for the concept to create
 	 * @param locale the locale of the of the conceptNames for the concept to create
 	 * @return the created concept
@@ -1018,7 +1058,7 @@ public class ConceptTest {
 	
 	/**
 	 * Convenient factory method to create a populated Concept name.
-	 *
+	 * 
 	 * @param conceptNameId id for the conceptName
 	 * @param locale for the conceptName
 	 * @param conceptNameType the conceptNameType of the concept

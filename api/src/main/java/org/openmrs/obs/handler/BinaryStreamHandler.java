@@ -81,7 +81,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				}
 			}
 			catch (Exception e) {
-				throw new APIException("An error occurred while trying to get binary complex obs.", e);
+				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}
 		}
 		// No other view supported
@@ -125,7 +125,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 			out.close();
 		}
 		catch (Exception e) {
-			throw new APIException("Error writing binary data complex obs to the file system. ", e);
+			throw new APIException("Obs.error.writing.binary.data.complex", null, e);
 		}
 		
 		return obs;

@@ -40,6 +40,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -47,7 +48,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Tests database upgrade from OpenMRS 1.9.7.
  */
-public class Database1_9_7UpgradeIT {
+public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	public static final String TEST_DATA_DIR = "/org/openmrs/util/databasechange/";
 	
@@ -164,7 +165,7 @@ public class Database1_9_7UpgradeIT {
 		expectedException.expect(IOException.class);
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		expectedException.expectMessage(errorMsgSubString1);
-		String errorMsgSubString2 = "Your order entry upgrade settings file does not have mapping for mg";
+		String errorMsgSubString2 = "upgrade.settings.file.not.have.mapping";
 		expectedException.expectMessage(errorMsgSubString2);
 		upgradeTestUtil.upgrade();
 	}
@@ -437,8 +438,8 @@ public class Database1_9_7UpgradeIT {
 	public void shouldSetValuesToNullIfUnitsOrFrequencyBlank() throws Exception {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
-		
 		upgradeTestUtil.executeDataset(TEST_DATA_DIR + "UpgradeTest-orderWithBlankUnitsOrFrequency.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		

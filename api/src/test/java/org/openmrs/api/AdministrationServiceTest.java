@@ -22,17 +22,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
+import org.openmrs.messagesource.MutableMessageSource;
+import org.openmrs.messagesource.impl.MutableResourceBundleMessageSource;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.HttpClient;
@@ -597,10 +601,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
-		Object value = adminService.getGlobalPropertyValue("valid.integer", new Integer(4));
+		Object value = adminService.getGlobalPropertyValue("valid.integer", Integer.valueOf(4));
 		
 		Assert.assertTrue(value instanceof Integer);
-		Assert.assertEquals(new Integer(1234), value);
+		Assert.assertEquals(Integer.valueOf(1234), value);
 	}
 	
 	/**
@@ -612,9 +616,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
-		Object value = adminService.getGlobalPropertyValue("does.not.exist", new Integer(1234));
+		Object value = adminService.getGlobalPropertyValue("does.not.exist", Integer.valueOf(1234));
 		
-		Assert.assertEquals(new Integer(1234), value);
+		Assert.assertEquals(Integer.valueOf(1234), value);
 	}
 	
 	/**
@@ -867,5 +871,133 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() throws Exception {
 		BindException errors = new BindException(new Object(), "");
 		Context.getAdministrationService().validate(null, errors);
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getPresentationLocales()}
+	 */
+	@Test
+	@Verifies(value = "should return only country locale if both country locale and language locale are specified in allowed list", method = "getPresentationLocales()")
+	public void getPresentationLocales_shouldReturnOnlyCountryLocaleIfBothCountryLocaleAndLanguageLocaleAreSpecifiedInAllowedList()
+	        throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es, es_CL"));
+		
+		List<Locale> locales = new ArrayList<Locale>();
+		locales.add(new Locale("pl", "PL"));
+		locales.add(new Locale("en"));
+		locales.add(new Locale("es"));
+		locales.add(new Locale("es", "CL"));
+		
+		MutableResourceBundleMessageSource mutableResourceBundleMessageSource = Mockito
+		        .mock(MutableResourceBundleMessageSource.class);
+		Mockito.when(mutableResourceBundleMessageSource.getLocales()).thenReturn(locales);
+		
+		MutableMessageSource mutableMessageSource = Context.getMessageSourceService().getActiveMessageSource();
+		Context.getMessageSourceService().setActiveMessageSource(mutableResourceBundleMessageSource);
+		
+		Set<Locale> presentationLocales = Context.getAdministrationService().getPresentationLocales();
+		
+		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
+		
+		Assert.assertEquals(2, presentationLocales.size());
+		Assert.assertTrue("en", presentationLocales.contains(new Locale("en")));
+		Assert.assertTrue("es_CL", presentationLocales.contains(new Locale("es", "CL")));
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getPresentationLocales()}
+	 */
+	@Test
+	@Verifies(value = "should return all country locales if language locale and no country locales are specified in allowed list", method = "getPresentationLocales()")
+	public void getPresentationLocales_shouldReturnAllCountryLocalesIfLanguageLocaleAndNoCountryLocalesAreSpecifiedInAllowedList()
+	        throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es"));
+		
+		List<Locale> locales = new ArrayList<Locale>();
+		locales.add(new Locale("pl", "PL"));
+		locales.add(new Locale("en"));
+		locales.add(new Locale("es"));
+		locales.add(new Locale("es", "CL"));
+		locales.add(new Locale("es", "SN"));
+		
+		MutableResourceBundleMessageSource mutableResourceBundleMessageSource = Mockito
+		        .mock(MutableResourceBundleMessageSource.class);
+		Mockito.when(mutableResourceBundleMessageSource.getLocales()).thenReturn(locales);
+		
+		MutableMessageSource mutableMessageSource = Context.getMessageSourceService().getActiveMessageSource();
+		Context.getMessageSourceService().setActiveMessageSource(mutableResourceBundleMessageSource);
+		
+		Set<Locale> presentationLocales = Context.getAdministrationService().getPresentationLocales();
+		
+		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
+		
+		Assert.assertEquals(3, presentationLocales.size());
+		Assert.assertTrue("es_CL", presentationLocales.contains(new Locale("es", "CL")));
+		Assert.assertTrue("es_SN", presentationLocales.contains(new Locale("es", "SN")));
+		Assert.assertTrue("en", presentationLocales.contains(new Locale("en")));
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getPresentationLocales()}
+	 */
+	@Test
+	@Verifies(value = "should return language locale if country locale is specified in allowed list but country locale message file is missing", method = "getPresentationLocales()")
+	public void getPresentationLocales_shouldReturnLanguageLocaleIfCountryLocaleIsSpecifiedInAllowedListButCountryLocaleMessageFileIsMissing()
+	        throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es_CL"));
+		
+		List<Locale> locales = new ArrayList<Locale>();
+		locales.add(new Locale("pl", "PL"));
+		locales.add(new Locale("en"));
+		locales.add(new Locale("es"));
+		
+		MutableResourceBundleMessageSource mutableResourceBundleMessageSource = Mockito
+		        .mock(MutableResourceBundleMessageSource.class);
+		Mockito.when(mutableResourceBundleMessageSource.getLocales()).thenReturn(locales);
+		
+		MutableMessageSource mutableMessageSource = Context.getMessageSourceService().getActiveMessageSource();
+		Context.getMessageSourceService().setActiveMessageSource(mutableResourceBundleMessageSource);
+		
+		Set<Locale> presentationLocales = Context.getAdministrationService().getPresentationLocales();
+		
+		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
+		
+		Assert.assertEquals(2, presentationLocales.size());
+		Assert.assertTrue("en", presentationLocales.contains(new Locale("en")));
+		Assert.assertTrue("es", presentationLocales.contains(new Locale("es")));
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getPresentationLocales()}
+	 */
+	@Test
+	@Verifies(value = "should return language locale if it is specified in allowed list and there are no country locale message files available", method = "getPresentationLocales()")
+	public void getPresentationLocales_shouldReturnLanguageLocaleIfItIsSpecifiedInAllowedListAndThereAreNoCountryLocaleMessageFilesAvailable()
+	        throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, es"));
+		
+		List<Locale> locales = new ArrayList<Locale>();
+		locales.add(new Locale("pl", "PL"));
+		locales.add(new Locale("en"));
+		locales.add(new Locale("es"));
+		
+		MutableResourceBundleMessageSource mutableResourceBundleMessageSource = Mockito
+		        .mock(MutableResourceBundleMessageSource.class);
+		Mockito.when(mutableResourceBundleMessageSource.getLocales()).thenReturn(locales);
+		
+		MutableMessageSource mutableMessageSource = Context.getMessageSourceService().getActiveMessageSource();
+		Context.getMessageSourceService().setActiveMessageSource(mutableResourceBundleMessageSource);
+		
+		Set<Locale> presentationLocales = Context.getAdministrationService().getPresentationLocales();
+		
+		Context.getMessageSourceService().setActiveMessageSource(mutableMessageSource);
+		
+		Assert.assertEquals(2, presentationLocales.size());
+		Assert.assertTrue("en", presentationLocales.contains(new Locale("en")));
+		Assert.assertTrue("es", presentationLocales.contains(new Locale("es")));
 	}
 }

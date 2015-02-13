@@ -258,7 +258,9 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				try {
+					errors.pushNestedPath("concept");
 					ValidateUtil.validate(concept, errors);
+					errors.popNestedPath();
 					
 					validateConceptUsesPersistedObjects(concept, errors);
 					
@@ -276,16 +278,19 @@ public class ConceptFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 				}
 				catch (ConceptsLockedException cle) {
+					errors.popNestedPath();
 					log.error("Tried to save concept while concepts were locked", cle);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked");
 					errors.reject("concept", "Concept.concepts.locked");
 				}
 				catch (DuplicateConceptNameException e) {
+					errors.popNestedPath();
 					log.error("Tried to save concept with a duplicate name", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.rejectValue("concept", "Concept.name.duplicate");
 				}
 				catch (APIException e) {
+					errors.popNestedPath();
 					log.error("Error while trying to save concept", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.reject("concept", "Concept.cannot.save");
@@ -568,8 +573,10 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
-				if (StringUtils.hasLength(descInLocale.getDescription())
-				        && !concept.getDescriptions().contains(descInLocale)) {
+				
+				if (!StringUtils.hasText(descInLocale.getDescription())) {
+					concept.removeDescription(descInLocale);
+				} else if (!concept.getDescriptions().contains(descInLocale)) {
 					concept.addDescription(descInLocale);
 				}
 			}
@@ -909,6 +916,7 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		
 		/**
+		 *
 		 * Get the list of extensions/metadata and the specific instances of them that use this
 		 * concept.
 		 *
@@ -1091,6 +1099,6 @@ public class ConceptFormController extends SimpleFormController {
 		public void setConceptAnswersByLocale(Map<Locale, Map<String, String>> conceptAnswersByLocale) {
 			this.conceptAnswersByLocale = conceptAnswersByLocale;
 		}
+		
 	}
-	
 }

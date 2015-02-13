@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.LockOptions;
-import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
@@ -45,7 +44,6 @@ import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.util.DatabaseUtil;
@@ -226,12 +224,13 @@ public class HibernateOrderDAO implements OrderDAO {
 		    OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED, LockOptions.UPGRADE);
 		
 		if (globalProperty == null) {
-			throw new APIException("Missing global property named: " + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
+			throw new APIException("GlobalProperty.missing ", new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
 		
 		String gpTextValue = globalProperty.getPropertyValue();
 		if (StringUtils.isBlank(gpTextValue)) {
-			throw new APIException("Invalid value for global property named: " + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
+			throw new APIException("GlobalProperty.invalid.value",
+			        new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
 		
 		Long gpNumericValue = null;
@@ -239,7 +238,8 @@ public class HibernateOrderDAO implements OrderDAO {
 			gpNumericValue = Long.parseLong(gpTextValue);
 		}
 		catch (NumberFormatException ex) {
-			throw new APIException("Invalid value for global property named: " + OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED);
+			throw new APIException("GlobalProperty.invalid.value",
+			        new Object[] { OpenmrsConstants.GP_NEXT_ORDER_NUMBER_SEED });
 		}
 		
 		globalProperty.setPropertyValue(String.valueOf(gpNumericValue + 1));

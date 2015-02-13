@@ -72,7 +72,7 @@ public class ForEachVisitTag extends BodyTagSupport {
 		log.debug("ForEachVisitTag found " + matchingVisits.size() + " visits matching type = " + type);
 		
 		// Next, sort the visits
-		if (sortBy == null || sortBy.equals("")) {
+		if (sortBy == null || "".equals(sortBy)) {
 			sortBy = "visitDatetime";
 		}
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())

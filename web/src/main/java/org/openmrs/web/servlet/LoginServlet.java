@@ -205,7 +205,7 @@ public class LoginServlet extends HttpServlet {
 		String redirect = request.getParameter("redirect");
 		
 		// second option for redirecting is the referrer parameter set at login.jsp
-		if (redirect == null || redirect.equals("")) {
+		if (redirect == null || "".equals(redirect)) {
 			redirect = request.getParameter("refererURL");
 			if (redirect != null && !redirect.startsWith("/")) {
 				// if we have an absolute url, make sure its in our domain
@@ -223,7 +223,7 @@ public class LoginServlet extends HttpServlet {
 		}
 		
 		// third option for redirecting is the main page of the webapp
-		if (redirect == null || redirect.equals("")) {
+		if (redirect == null || "".equals(redirect)) {
 			redirect = request.getContextPath();
 		}
 

@@ -32,6 +32,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.Security;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.web.test.WebTestHelper;
@@ -67,6 +68,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		request.setParameter("secretQuestionNew", "test_question");
 		
 		String answer = "test_answer";
+		String hashedAnswer = Security.encodeString(answer);
 		request.setParameter("secretAnswerNew", answer);
 		request.setParameter("secretAnswerConfirm", answer);
 		
@@ -74,7 +76,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		controller.handleRequest(request, response);
 		
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
-		assertEquals(answer, loginCredential.getSecretAnswer());
+		assertEquals(Security.encodeString(answer + loginCredential.getSalt()), loginCredential.getSecretAnswer());
 	}
 	
 	@Test
@@ -266,7 +268,8 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		controller.handleRequest(request, response);
 		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
-		Assert.assertEquals("easy answer", loginCredential.getSecretAnswer());
+		String hashedAnswer = Security.encodeString("easy answer" + loginCredential.getSalt());
+		Assert.assertEquals(hashedAnswer, loginCredential.getSecretAnswer());
 		String oldPassword = loginCredential.getHashedPassword();
 		
 		request.removeAllParameters();
@@ -280,7 +283,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 			request.setParameter("secretQuestionNew", "");
 			mav = controller.handleRequest(request, response);
 		}
-		Assert.assertEquals("easy answer", loginCredential.getSecretAnswer());
+		Assert.assertEquals(hashedAnswer, loginCredential.getSecretAnswer());
 		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
 	}
 }

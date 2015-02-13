@@ -615,7 +615,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			// throw back if the user didn't put in a password
-			if (wizardModel.adminUserPassword.equals("")) {
+			if ("".equals(wizardModel.adminUserPassword)) {
 				errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSDW_EMPTY, null);
 				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
@@ -1185,7 +1185,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @return true if the value is non-empty
 	 */
 	private boolean checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
-		if (value != null && !value.equals("")) {
+		if (value != null && !"".equals(value)) {
 			return true;
 		}
 		errors.put(errorMessageCode, null);
@@ -1688,7 +1688,7 @@ public class InitializationFilter extends StartupFilter {
 						
 						Context.openSession();
 						
-						if (!wizardModel.implementationId.equals("")) {
+						if (!"".equals(wizardModel.implementationId)) {
 							try {
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);

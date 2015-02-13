@@ -126,4 +126,45 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasErrors());
 	}
+	
+	/**
+	 * Test for all the field being set to some values
+	 * @see RelationshipTypeValidator#validate(Object,Errors)
+	 * @verifies pass validation if field lengths are correct
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		RelationshipType type = new RelationshipType();
+		type.setaIsToB("A is To B");
+		type.setbIsToA("B is To A");
+		type.setDescription("description");
+		type.setRetireReason("retireReason");
+		Errors errors = new BindException(type, "type");
+		new RelationshipTypeValidator().validate(type, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * Test for all the field being set to some values
+	 * @see RelationshipTypeValidator#validate(Object,Errors)
+	 * @verifies fail validation if field lengths are not correct
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		RelationshipType type = new RelationshipType();
+		type
+		        .setaIsToB("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setbIsToA("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(type, "type");
+		new RelationshipTypeValidator().validate(type, errors);
+		Assert.assertTrue(errors.hasFieldErrors("aIsToB"));
+		Assert.assertTrue(errors.hasFieldErrors("bIsToA"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

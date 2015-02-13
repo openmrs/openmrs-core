@@ -104,4 +104,35 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(attributeType, errors);
 		Assert.assertFalse(errors.hasErrors());
 	}
+	
+	/**
+	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
+	 * @verifies pass validation if field lengths are correct
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		attributeType.setName("name");
+		attributeType.setMinOccurs(1);
+		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
+		attributeType.setDatatypeConfig("[a-z]+");
+		attributeType.setHandlerConfig("HandlerConfig");
+		validator.validate(attributeType, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
+	 * @verifies fail validation if field lengths are not correct
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		attributeType.setName("name");
+		attributeType.setMinOccurs(1);
+		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
+		attributeType.setDatatypeConfig(new String(new char[66000]));
+		attributeType.setHandlerConfig(new String(new char[66000]));
+		validator.validate(attributeType, errors);
+		Assert.assertTrue(errors.hasFieldErrors("datatypeConfig"));
+		Assert.assertTrue(errors.hasFieldErrors("handlerConfig"));
+	}
 }

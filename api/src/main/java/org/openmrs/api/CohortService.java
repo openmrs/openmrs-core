@@ -14,16 +14,11 @@
 package org.openmrs.api;
 
 import java.util.List;
-import java.util.Map;
 
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.CohortDAO;
-import org.openmrs.cohort.CohortDefinition;
-import org.openmrs.cohort.CohortDefinitionItemHolder;
-import org.openmrs.cohort.CohortDefinitionProvider;
-import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -36,8 +31,6 @@ import org.openmrs.util.PrivilegeConstants;
  * </ul>
  * 
  * @see org.openmrs.Cohort
- * @see org.openmrs.cohort.CohortDefinition
- * @see org.openmrs.cohort.CohortDefinitionProvider
  */
 public interface CohortService extends OpenmrsService {
 	
@@ -217,122 +210,6 @@ public interface CohortService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_COHORTS })
 	public Cohort removePatientFromCohort(Cohort cohort, Patient patient) throws APIException;
-	
-	/**
-	 * Set the given CohortDefinitionProviders as the providers for this service. These are set via
-	 * spring injection in /metadata/spring/applicationContext-service.xml . This method acts more
-	 * like an "add" than a "set". All entries in the <code>providerClassMap</code> are added to the
-	 * already set list of providers. This allows multiple Spring application context files to call
-	 * this method with their own providers
-	 * 
-	 * @param providerClassMap mapping from CohortDefinition to its provider
-	 * @deprecated see reportingcompatibility module
-	 * @should not overwrite previously set providers if called twice
-	 */
-	@Deprecated
-	public void setCohortDefinitionProviders(
-	        Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) throws APIException;
-	
-	/**
-	 * Adds the given cohort definition provider to this service's list of providers
-	 * 
-	 * @param cohortDefClass the type of cohort definition that this provider works on
-	 * @param cohortDef the provider
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 * @should overwrite provider if duplicate CcohortDefinition class
-	 */
-	@Deprecated
-	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> cohortDefClass,
-	        CohortDefinitionProvider cohortDef) throws APIException;
-	
-	/**
-	 * Gets all the providers registered to this service. Will return an empty list instead of null.
-	 * 
-	 * @return this service's providers
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 * @see #setCohortDefinitionProviders(Map)
-	 * @should not return null if not providers have been set
-	 */
-	@Deprecated
-	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders()
-	        throws APIException;
-	
-	/**
-	 * Removing any mapping from CohortDefinition to provider in this server where the given
-	 * <code>providerClass</class> is the
-	 * CohortDefinitionProvider
-	 * 
-	 * @param providerClass the provider to remove
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 * @should not fail if providerClass not set
-	 */
-	@Deprecated
-	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass) throws APIException;
-	
-	/**
-	 * Get every cohort definition that every registered provider knows about. This is typically
-	 * used for selection by an end user, and so a list of Holders are returned instead of a list of
-	 * definitions so that the system knows which provider the definition came from
-	 * 
-	 * @return a list of CohortDefinitionItemHolder defined
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() throws APIException;
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass)
-	        throws APIException;
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id) throws APIException;
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public CohortDefinition getCohortDefinition(String cohortKey) throws APIException;
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public CohortDefinition saveCohortDefinition(CohortDefinition definition) throws APIException;
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void purgeCohortDefinition(CohortDefinition definition) throws APIException;
-	
-	/**
-	 * TODO Auto generated method comment
-	 * 
-	 * @param definition
-	 * @param evalContext
-	 * @return Cohort determined by the given CohortDefinition and EvaluationContext
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 * @should return all patients with blank patient search cohort definition provider
-	 */
-	@Deprecated
-	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException;
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public CohortDefinition getAllPatientsCohortDefinition() throws APIException;
 	
 	/**
 	 * Get Cohort by its UUID

@@ -13,8 +13,10 @@
  */
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openmrs.customdatatype.Customizable;
@@ -208,6 +210,24 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 */
 	public void setEncounters(Set<Encounter> encounters) {
 		this.encounters = encounters;
+	}
+	
+	/**
+	 * Gets a list of non voided encounters
+	 * 
+	 * @return the non voided encounter list
+	 * @since 1.11.0, 1.12.0
+	 */
+	public List<Encounter> getNonVoidedEncounters() {
+		List<Encounter> encounterList = new ArrayList<Encounter>();
+		if (encounters != null) {
+			for (Encounter encounter : encounters) {
+				if (!encounter.isVoided()) {
+					encounterList.add(encounter);
+				}
+			}
+		}
+		return encounterList;
 	}
 	
 	/**

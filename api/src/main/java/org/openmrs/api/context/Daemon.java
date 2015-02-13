@@ -118,8 +118,7 @@ public class Daemon {
 		//Class<?> callerClass = Reflection.getCallerClass(0);
 		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
 		if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
-			throw new APIException("This method can only be called from the TimerSchedulerTask class, not "
-			        + callerClass.getName());
+			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
 		}
 		
 		// now create a new thread and execute that task in it

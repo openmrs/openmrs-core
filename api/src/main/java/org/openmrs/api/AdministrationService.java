@@ -38,8 +38,6 @@ import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.Report;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
@@ -259,66 +257,6 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	 * @deprecated use {@link org.openmrs.api#deleteConceptDatatype(ConceptDatatype)}
 	 */
 	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException;
-	
-	/**
-	 * Create a new Report
-	 * 
-	 * @param report Report to create
-	 * @throws APIException
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void createReport(Report report) throws APIException;
-	
-	/**
-	 * Update Report
-	 * 
-	 * @param report Report to update
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void updateReport(Report report) throws APIException;
-	
-	/**
-	 * Delete Report
-	 * 
-	 * @param report Report to delete
-	 * @throws APIException
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void deleteReport(Report report) throws APIException;
-	
-	/**
-	 * Create a new Report Object
-	 * 
-	 * @param reportObject Report Object to create
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void createReportObject(AbstractReportObject reportObject) throws APIException;
-	
-	/**
-	 * Update Report Object
-	 * 
-	 * @param reportObject the Report Object to update
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void updateReportObject(AbstractReportObject reportObject) throws APIException;
-	
-	/**
-	 * Delete Report Object
-	 * 
-	 * @param reportObjectId Internal identifier for the Report Object to delete
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void deleteReportObject(Integer reportObjectId) throws APIException;
 	
 	/**
 	 * Create a concept proposal
@@ -655,6 +593,10 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	 * @return list of allowed presentation locales TODO change this return type to list?
 	 * @should return at least one locale if no locales defined in database yet
 	 * @should not return more locales than message source service locales
+	 * @should return only country locale if both country locale and language locale are specified in allowed list
+	 * @should return all country locales if language locale and no country locales are specified in allowed list
+	 * @should return language locale if country locale is specified in allowed list but country locale message file is missing
+	 * @should return language locale if it is specified in allowed list and there are no country locale message files available
 	 */
 	public Set<Locale> getPresentationLocales();
 	
@@ -734,7 +676,7 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	 * It is set to <b>true</b> by default.
 	 * 
 	 * @return true if database string comparison is case sensitive
-	 * @since 1.11
+	 * @since 1.9.9, 1.10.2, 1.11
 	 */
 	public boolean isDatabaseStringComparisonCaseSensitive();
 }

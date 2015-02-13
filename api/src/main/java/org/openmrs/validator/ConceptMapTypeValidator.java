@@ -55,6 +55,8 @@ public class ConceptMapTypeValidator implements Validator {
 	 * @should fail if the name is a white space character
 	 * @should fail if the concept map type name is a duplicate
 	 * @should pass if the name is unique amongst all concept map type names
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		
@@ -78,5 +80,6 @@ public class ConceptMapTypeValidator implements Validator {
 				errors.rejectValue("name", "ConceptMapType.duplicate.name", "Duplicate concept map type name: " + name);
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "retireReason");
 	}
 }

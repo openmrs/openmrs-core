@@ -126,7 +126,7 @@ public class SummaryServlet extends HttpServlet {
 		
 		// get patients according to start/end "Return Visit Date"
 		if ((startDateString.length() != 0) || (endDateString.length() != 0)) {
-			Concept c = Context.getConceptService().getConcept(new Integer("5096")); // RETURN VISIT DATE
+			Concept c = Context.getConceptService().getConcept(Integer.valueOf("5096")); // RETURN VISIT DATE
 			Calendar cal = Calendar.getInstance();
 			Date startDate;
 			Date endDate;
@@ -143,7 +143,7 @@ public class SummaryServlet extends HttpServlet {
 			}
 			
 			// if they don't input an end date, assume they meant "this week"
-			if (endDateString.equals("")) {
+			if ("".equals(endDateString)) {
 				while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 					cal.add(Calendar.DAY_OF_MONTH, -1);
 				}

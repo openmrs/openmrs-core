@@ -70,7 +70,7 @@ public class Sort {
 	 * @return: A sorted List of the passed elements
 	 */
 	public static <T> List<T> sort(Collection<T> c, String sortProperty, Boolean reverseOrder) {
-		if (sortProperty == null || sortProperty.equals("")) {
+		if (sortProperty == null || "".equals(sortProperty)) {
 			throw new IllegalArgumentException("sortProperty = " + sortProperty);
 		}
 		// fail early if the passed collection is null

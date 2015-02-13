@@ -249,9 +249,10 @@
     }
 
 	function toggleLocationBox(identifierType,identifierSelectMenuId) {
-		var boxId = 'location' + identifierSelectMenuId.substring(14,18);
-		var naBoxId = 'locationNA' + identifierSelectMenuId.substring(14,18);
-		var asterisk = 'locationRequired' + identifierSelectMenuId.substring(17,18);
+		var idNum = identifierSelectMenuId.match(/\d+$/)[0];
+		var boxId = 'locationBox' + idNum;
+		var naBoxId = 'locationNABox' + idNum;
+		var asterisk = 'locationRequired' + idNum;
 		if (identifierType == '') {
 			$j('#'+naBoxId).hide();
 			$j('#'+boxId).hide();
@@ -312,12 +313,6 @@
 </style>
 
 <h2><openmrs:message code="Patient.title"/></h2>
-
-<c:if test="${patient.voided}">
-	<div id="patientFormVoided" class="retiredMessage">
-		<div><openmrs:message code="Patient.voidedMessage"/></div>
-	</div>
-</c:if>
 
 <c:if test="${patient.dead}">
 	<div id="patientFormDeceased" class="retiredMessage">

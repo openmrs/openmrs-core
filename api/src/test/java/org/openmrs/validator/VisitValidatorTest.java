@@ -444,4 +444,33 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		}
 		return false;
 	}
+	
+	/**
+	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Visit visit = makeVisit(42);
+		visit.setVoidReason("voidReason");
+		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		assertEquals(false, errors.hasFieldErrors("voidReason"));
+	}
+	
+	/**
+	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Visit visit = makeVisit(42);
+		visit
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		assertEquals(true, errors.hasFieldErrors("voidReason"));
+	}
 }

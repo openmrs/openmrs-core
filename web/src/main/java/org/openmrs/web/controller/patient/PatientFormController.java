@@ -152,7 +152,7 @@ public class PatientFormController extends PersonFormController {
 				if (ids != null) {
 					for (int i = 0; i < ids.length; i++) {
 						String id = ids[i].trim();
-						if (!id.equals("") && !idTypes[i].equals("")) { //skips invalid and blank identifiers/identifierTypes
+						if (!"".equals(id) && !"".equals(idTypes[i])) { //skips invalid and blank identifiers/identifierTypes
 							PatientIdentifier pi = new PatientIdentifier();
 							pi.setIdentifier(id);
 							pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
@@ -402,7 +402,7 @@ public class PatientFormController extends PersonFormController {
 											obsDeath.setValueText(otherInfo);
 										} else {
 											// non empty text value implies concept changed from OTHER NON CODED to NONE
-											deathReasonChanged = !otherInfo.equals("");
+											deathReasonChanged = !"".equals(otherInfo);
 											log.debug("New concept is NOT the OTHER concept, so setting to blank");
 											obsDeath.setValueText("");
 										}
@@ -464,7 +464,10 @@ public class PatientFormController extends PersonFormController {
 					id = Integer.valueOf(patientId);
 					patient = ps.getPatientOrPromotePerson(id);
 					if (patient == null) {
-						throw new ServletException("There is no patient or person with id: '" + patientId + "'");
+						HttpSession session = request.getSession();
+						session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "patientDashboard.noPatientWithId");
+						session.setAttribute(WebConstants.OPENMRS_ERROR_ARGS, patientId);
+						return new Patient();
 					}
 				}
 				catch (NumberFormatException numberError) {

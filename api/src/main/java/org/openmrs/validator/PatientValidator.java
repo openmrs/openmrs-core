@@ -70,6 +70,8 @@ public class PatientValidator extends PersonValidator {
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should fail validation if a preferred patient identifier is not chosen for voided patients
 	 * @should not fail when patient has only one identifier and its not preferred
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled()) {
@@ -100,14 +102,18 @@ public class PatientValidator extends PersonValidator {
 		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
-		
+		int index = 0;
 		if (!errors.hasErrors()) {
 			// Validate PatientIdentifers
 			if (patient.getIdentifiers() != null) {
 				for (PatientIdentifier identifier : patient.getIdentifiers()) {
+					errors.pushNestedPath("identifiers[" + index + "]");
 					patientIdentifierValidator.validate(identifier, errors);
+					errors.popNestedPath();
+					index++;
 				}
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 }

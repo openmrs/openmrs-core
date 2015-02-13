@@ -54,6 +54,8 @@ public class EncounterTypeValidator implements Validator {
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation for an existing EncounterType
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		EncounterType encounterType = (EncounterType) obj;
@@ -71,6 +73,7 @@ public class EncounterTypeValidator implements Validator {
 					}
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "retireReason");
 		}
 	}
 }

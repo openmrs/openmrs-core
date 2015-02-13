@@ -35,7 +35,6 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
@@ -85,8 +84,6 @@ public class ContextMockHelper {
 	PatientService patientService;
 	
 	ProviderService providerService;
-	
-	ReportService reportService;
 	
 	SerializationService serializationService;
 	
@@ -243,11 +240,6 @@ public class ContextMockHelper {
 	public void setProviderService(ProviderService providerService) {
 		setService(ProviderService.class, providerService);
 		this.providerService = providerService;
-	}
-	
-	public void setReportService(ReportService reportService) {
-		setService(ReportService.class, reportService);
-		this.reportService = reportService;
 	}
 	
 	public void setSerializationService(SerializationService serializationService) {

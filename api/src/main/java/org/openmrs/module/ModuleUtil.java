@@ -257,7 +257,8 @@ public class ModuleUtil {
 	 * @should not match when version has wild card and is outside boundary
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
-		if (versionRange != null && !versionRange.equals("")) {
+		// There is a null check so no risk in keeping the literal on the right side
+		if (versionRange != null && !"".equals(versionRange)) {
 			String[] ranges = versionRange.split(",");
 			for (String range : ranges) {
 				// need to externalize this string
@@ -529,7 +530,7 @@ public class ModuleUtil {
 						log.debug("Creating parent dirs: " + parent.getAbsolutePath());
 					}
 					// we don't want to "expand" directories or empty names
-					if (entryName.endsWith("/") || entryName.equals("")) {
+					if (entryName.endsWith("/") || "".equals(entryName)) {
 						continue;
 					}
 					input = jarFile.getInputStream(jarEntry);
@@ -654,7 +655,7 @@ public class ModuleUtil {
 					http.disconnect();
 					// Redirection should be allowed only for HTTP and HTTPS
 					// and should be limited to 5 redirections at most.
-					if (target == null || !(target.getProtocol().equals("http") || target.getProtocol().equals("https"))
+					if (target == null || !("http".equals(target.getProtocol()) || "https".equals(target.getProtocol()))
 					        || redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
 					}
@@ -720,7 +721,7 @@ public class ModuleUtil {
 		
 		for (Module mod : ModuleFactory.getLoadedModules()) {
 			String updateURL = mod.getUpdateURL();
-			if (updateURL != null && !updateURL.equals("")) {
+			if (updateURL != null && !"".equals(updateURL)) {
 				try {
 					// get the contents pointed to by the url
 					URL url = new URL(updateURL);
@@ -731,7 +732,7 @@ public class ModuleUtil {
 					String content = getURL(url);
 					
 					// skip empty or invalid updates
-					if (content.equals("")) {
+					if ("".equals(content)) {
 						continue;
 					}
 					
@@ -1091,7 +1092,7 @@ public class ModuleUtil {
 				String packageName = name.substring(0, indexOfLastSlash);
 				
 				// skip over some folders in the jar/omod
-				if (packageName.equals("lib") || packageName.equals("META-INF") || packageName.startsWith("web/module")) {
+				if ("lib".equals(packageName) || "META-INF".equals(packageName) || packageName.startsWith("web/module")) {
 					continue;
 				}
 				

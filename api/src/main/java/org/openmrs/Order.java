@@ -493,7 +493,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public boolean isDiscontinued(Date checkDate) {
 		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
-			throw new APIException("The order has invalid dateStopped and autoExpireDate values");
+			throw new APIException("Order.error.invalidDateStoppedAndAutoExpireDate", (Object[]) null);
 		}
 		if (isVoided()) {
 			return false;
@@ -535,7 +535,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public boolean isExpired(Date checkDate) {
 		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
-			throw new APIException("The order has invalid dateStopped and autoExpireDate values");
+			throw new APIException("Order.error.invalidDateStoppedAndAutoExpireDate", (Object[]) null);
 		}
 		if (isVoided()) {
 			return false;

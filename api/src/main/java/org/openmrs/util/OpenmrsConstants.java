@@ -807,8 +807,6 @@ public final class OpenmrsConstants {
 	@Deprecated
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS = "report.xmlMacros";
 	
-	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS = "dashboard.regimen.standardRegimens";
-	
 	public static final String GLOBAL_PROPERTY_SHOW_PATIENT_NAME = "dashboard.showPatientName";
 	
 	public static final String GLOBAL_PROPERTY_ENABLE_VISITS = "visits.enabled";
@@ -861,6 +859,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_FALSE_CONCEPT = "concept.false";
 	
+	public static final String GLOBAL_PROPERTY_UNKNOWN_CONCEPT = "concept.unknown";
+	
 	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
 	
 	public static final String GLOBAL_PROPERTY_REPORT_BUG_URL = "reportProblem.url";
@@ -879,29 +879,22 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG = "drugOrder.requireDrug";
 	
-	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
+	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
 	        + "      <property name=\"address2\" value=\"Location.address2\"/>\n"
 	        + "      <property name=\"address1\" value=\"Location.address1\"/>\n"
 	        + "      <property name=\"country\" value=\"Location.country\"/>\n"
 	        + "      <property name=\"stateProvince\" value=\"Location.stateProvince\"/>\n"
-	        + "      <property name=\"cityVillage\" value=\"Location.cityVillage\"/>\n"
-	        + "    </nameMappings>\n"
-	        + "    <sizeMappings class=\"properties\">\n"
-	        + "      <property name=\"postalCode\" value=\"10\"/>\n"
-	        + "      <property name=\"address2\" value=\"40\"/>\n"
-	        + "      <property name=\"address1\" value=\"40\"/>\n"
+	        + "      <property name=\"cityVillage\" value=\"Location.cityVillage\"/>\n" + "    </nameMappings>\n"
+	        + "    <sizeMappings class=\"properties\">\n" + "      <property name=\"postalCode\" value=\"10\"/>\n"
+	        + "      <property name=\"address2\" value=\"40\"/>\n" + "      <property name=\"address1\" value=\"40\"/>\n"
 	        + "      <property name=\"country\" value=\"10\"/>\n"
 	        + "      <property name=\"stateProvince\" value=\"10\"/>\n"
-	        + "      <property name=\"cityVillage\" value=\"10\"/>\n"
-	        + "    </sizeMappings>\n"
-	        + "    <lineByLineFormat>\n"
-	        + "      <string>address1</string>\n"
-	        + "      <string>address2</string>\n"
-	        + "      <string>cityVillage stateProvince country postalCode</string>\n"
-	        + "    </lineByLineFormat>\n"
-	        + "   <requiredElements>\\n\" + \" </requiredElements>\\n\" + \" </org.openmrs.layout.web.address.AddressTemplate>";
+	        + "      <property name=\"cityVillage\" value=\"10\"/>\n" + "    </sizeMappings>\n" + "    <lineByLineFormat>\n"
+	        + "      <string>address1</string>\n" + "      <string>address2</string>\n"
+	        + "      <string>cityVillage stateProvince country postalCode</string>\n" + "    </lineByLineFormat>\n"
+	        + "   <requiredElements>\\n\" + \" </requiredElements>\\n\" + \" </org.openmrs.layout.address.AddressTemplate>";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
@@ -1069,6 +1062,9 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 	
+	/**
+	 * @since 1.9.9, 1.10.2, 1.11
+	 */
 	public static final String GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON = "search.caseSensitiveDatabaseStringComparison";
 	
 	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
@@ -1190,55 +1186,6 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS_ENABLE, "false",
 		        "Set to true to enable TLS encryption, else set to false"));
-		
-		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
-		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "    </drugComponents>"
-		        + "    <displayName>3TC + d4T(30) + NVP (Triomune-30)</displayName>"
-		        + "    <codeName>standardTri30</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
-		        + "        <drugId>3</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "    </drugComponents>"
-		        + "    <displayName>3TC + d4T(40) + NVP (Triomune-40)</displayName>"
-		        + "    <codeName>standardTri40</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
-		        + "        <drugId>39</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "      <drugSuggestion>" + "        <drugId>22</drugId>"
-		        + "        <dose>200</dose>" + "        <units>mg</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "    </drugComponents>" + "    <displayName>AZT + 3TC + NVP</displayName>"
-		        + "    <codeName>standardAztNvp</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>"
-		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[3]/drugComponents/drugSuggestion\"/>"
-		        + "      <drugSuggestion>" + "        <drugId>11</drugId>" + "        <dose>600</dose>"
-		        + "        <units>mg</units>" + "        <frequency>1/day x 7 days/week</frequency>"
-		        + "        <instructions></instructions>" + "      </drugSuggestion>" + "    </drugComponents>"
-		        + "    <displayName>AZT + 3TC + EFV(600)</displayName>" + "    <codeName>standardAztEfv</codeName>"
-		        + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" + "  </regimenSuggestion>" + "  <regimenSuggestion>"
-		        + "    <drugComponents>" + "      <drugSuggestion>" + "        <drugId>5</drugId>"
-		        + "        <dose>30</dose>" + "        <units>mg</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "      <drugSuggestion>" + "        <drugId>42</drugId>"
-		        + "        <dose>150</dose>" + "        		<units>mg</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>"
-		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[4]/drugComponents/drugSuggestion[2]\"/>"
-		        + "    </drugComponents>" + "    <displayName>d4T(30) + 3TC + EFV(600)</displayName>"
-		        + "    <codeName>standardD4t30Efv</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
-		        + "        <drugId>6</drugId>" + "        <dose>40</dose>" + "        <units>mg</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>"
-		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[5]/drugComponents/drugSuggestion[2]\"/>"
-		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[4]/drugComponents/drugSuggestion[2]\"/>"
-		        + "    </drugComponents>" + "    <displayName>d4T(40) + 3TC + EFV(600)</displayName>"
-		        + "    <codeName>standardD4t40Efv</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "</list>";
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS, standardRegimens,
-		        "XML description of standard drug regimens, to be shown as shortcuts on the dashboard regimen entry tab"));
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));

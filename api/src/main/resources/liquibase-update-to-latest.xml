@@ -4607,6 +4607,7 @@
 	</changeSet>
     
 	<changeSet id="201109301703" author="suho">
+		<validCheckSum>3:5118bfbc227de5580786f6cce75b6347</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4659,7 +4660,7 @@
 		</preConditions>
 		<comment>Converting general address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 			&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 			  &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;&#10;
 			  &lt;property name=&quot;longitude&quot; value=&quot;Location.longitude&quot;/&gt;&#10;
@@ -4691,13 +4692,14 @@
 			  &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
 			  &lt;string&gt;startDate endDate&lt;/string&gt;&#10;
 			&lt;/lineByLineFormat&gt;&#10;
-		  &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+		  &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301704" author="suho">
+		<validCheckSum>3:6dda0cc75bebb1cbb6c67a3c462a7878</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 				<and>
 					<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4710,7 +4712,7 @@
 		</preConditions>
 		<comment>Converting Spain address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address2&quot; value=&quot;Location.address2&quot;/&gt;&#10;
 					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.stateProvince&quot;/&gt;&#10;
@@ -4737,13 +4739,14 @@
 					 &lt;string&gt;cityVillage stateProvince country postalCode&lt;/string&gt;&#10;
 					 &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				 &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				 &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301705" author="suho">
+		<validCheckSum>3:464ccc7834881a26600aa995aa175d57</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4761,7 +4764,7 @@
 		</preConditions>
 		<comment>Converting Rwanda address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address3&quot; value=&quot;Location.cell&quot;/&gt;&#10;
 					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.province&quot;/&gt;&#10;
@@ -4786,13 +4789,14 @@
 					 &lt;string&gt;address3&lt;/string&gt;&#10;
 					 &lt;string&gt;address1&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				 &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				 &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301706" author="suho">
+		<validCheckSum>3:7c654c2e26d9c89e8a405e5e39c86143</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4810,7 +4814,7 @@
 		</preConditions>
 		<comment>Converting USA address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address2&quot; value=&quot;Location.address2&quot;/&gt;&#10;
 					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.state&quot;/&gt;&#10;
@@ -4833,13 +4837,14 @@
 					 &lt;string&gt;address2&lt;/string&gt;&#10;
 					 &lt;string&gt;cityVillage stateProvince postalCode&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-					&lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+					&lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301707" author="suho">
+		<validCheckSum>3:16443a97b649b95129f4df95ef2772e7</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4857,7 +4862,7 @@
 		</preConditions>
 		<comment>Converting Kenya address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;&#10;
 					 &lt;property name=&quot;longitude&quot; value=&quot;Location.longitude&quot;/&gt;&#10;
@@ -4909,13 +4914,14 @@
 					 &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
 					 &lt;string&gt;country&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-			  &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+			  &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301708" author="suho">
+		<validCheckSum>3:c0a63cb8054a29ae8a46949d0a025fe0</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4933,7 +4939,7 @@
 		</preConditions>
 		<comment>Converting Lesotho address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;countyDistrict&quot; value=&quot;Location.district&quot;/&gt;&#10;
 					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.village&quot;/&gt;&#10;
@@ -4949,13 +4955,14 @@
 					 &lt;string&gt;&#10;countyDistrict&lt;/string&gt;&#10;
 					 &lt;string&gt;&#10;cityVillage&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				&lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				&lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301709" author="suho">
+		<validCheckSum>3:c477d196658523a0ec8b477a1750c2f3</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4973,7 +4980,7 @@
 		</preConditions>
 		<comment>Converting Malawi address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address3&quot; value=&quot;Location.neighborhood&quot;/&gt;&#10;
 					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.district&quot;/&gt;&#10;
@@ -4998,13 +5005,14 @@
 					 &lt;string&gt;countyDistrict&lt;/string&gt;&#10;
 					 &lt;string&gt;stateProvince&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				 &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				 &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301710" author="suho">
+		<validCheckSum>3:a52f8e9920c42fd31df171e05bd0d91c</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -5022,7 +5030,7 @@
 		</preConditions>
 		<comment>Converting Tanzania address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address6&quot; value=&quot;Location.region&quot;/&gt;&#10;
 					 &lt;property name=&quot;address5&quot; value=&quot;Location.ward&quot;/&gt;&#10;
@@ -5041,7 +5049,7 @@
 					 &lt;string&gt;countyDistrict&lt;/string&gt;&#10;
 					 &lt;string&gt;address6&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				 &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				 &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
@@ -8544,4 +8552,27 @@
 		<renameColumn tableName="drug_ingredient"
 			oldColumnName="quantity" newColumnName="strength" columnDataType="double"/>
 	</changeSet>
+
+	<changeSet id="20150108-TRUNK-3849" author="rpuzdrowski" >
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">SELECT count(*) FROM global_property WHERE property = 'layout.address.format'
+				AND property_value LIKE '%org.openmrs.layout.web.%'
+			</sqlCheck>
+		</preConditions>
+		<comment>Updating layout.address.format global property</comment>
+		<customChange class="org.openmrs.util.databasechange.UpdateLayoutAddressFormatChangeSet"/>
+	</changeSet>
+
+	<changeSet id="20150108-TRUNK-14" author="rpuzdrowski">
+		<comment>Removing dashboard.regimen.standardRegimens global property</comment>
+		<delete tableName="global_property">
+			<where>property = 'dashboard.regimen.standardRegimens'</where>
+		</delete>
+	</changeSet>
+
+	<changeSet id="20150211-TRUNK-3709" author="jkondrat">
+		<comment>Encrypting the users.secret_answer column</comment>
+		<customChange class="org.openmrs.util.databasechange.EncryptSecretAnswersChangeSet"/>
+	</changeSet>
+
 </databaseChangeLog>

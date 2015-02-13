@@ -207,14 +207,14 @@ public class FormatTag extends TagSupport {
 			location = Context.getLocationService().getLocation(locationId);
 		}
 		if (location != null) {
-			printMetadata(sb, location);
+			printLocation(sb, location);
 		}
 		
 		if (locationTagId != null) {
 			locationTag = Context.getLocationService().getLocationTag(locationTagId);
 		}
 		if (locationTag != null) {
-			printMetadata(sb, locationTag);
+			printLocationTag(sb, locationTag);
 		}
 		
 		if (programId != null) {
@@ -488,6 +488,30 @@ public class FormatTag extends TagSupport {
 	private void printMetadata(StringBuilder sb, OpenmrsMetadata metadata) {
 		if (metadata != null) {
 			sb.append(applyConversion(metadata.getName()));
+		}
+	}
+	
+	/**
+	 * @param sb
+	 * @param location
+	 */
+	private void printLocation(StringBuilder sb, Location location) {
+		if (location != null) {
+			String name = StringEscapeUtils.escapeHtml(location.getName());
+			name = StringEscapeUtils.escapeJavaScript(name);
+			sb.append(applyConversion(name));
+		}
+	}
+	
+	/**
+	 * @param sb
+	 * @param locationTag
+	 */
+	private void printLocationTag(StringBuilder sb, LocationTag locationTag) {
+		if (locationTag != null) {
+			String name = StringEscapeUtils.escapeHtml(locationTag.getName());
+			name = StringEscapeUtils.escapeJavaScript(name);
+			sb.append(applyConversion(name));
 		}
 	}
 	

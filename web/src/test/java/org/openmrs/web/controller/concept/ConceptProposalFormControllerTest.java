@@ -95,4 +95,44 @@ public class ConceptProposalFormControllerTest extends BaseWebContextSensitiveTe
 		Assert.assertEquals(1, proposals.size());
 		Assert.assertEquals(21, proposals.get(0).getObsConcept().getConceptId().intValue());
 	}
+	
+	/**
+	 * @see {@link ConceptProposalFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should work properly for country locales", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldWorkProperlyForCountryLocales() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-proposals.xml");
+		
+		ConceptService cs = Context.getConceptService();
+		
+		final Integer conceptproposalId = 5;
+		ConceptProposal cp = cs.getConceptProposal(conceptproposalId);
+		Concept conceptToMap = cs.getConcept(4);
+		Locale locale = new Locale("en", "GB");
+		
+		Assert.assertFalse(conceptToMap.hasName(cp.getOriginalText(), locale));
+		
+		ConceptProposalFormController controller = (ConceptProposalFormController) applicationContext
+		        .getBean("conceptProposalForm");
+		controller.setApplicationContext(applicationContext);
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setSession(new MockHttpSession(null));
+		request.setMethod("POST");
+		request.addParameter("conceptProposalId", conceptproposalId.toString());
+		request.addParameter("finalText", cp.getOriginalText());
+		request.addParameter("conceptId", conceptToMap.getConceptId().toString());
+		request.addParameter("conceptNamelocale", locale.toString());
+		request.addParameter("action", "");
+		request.addParameter("actionToTake", "saveAsSynonym");
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		ModelAndView mav = controller.handleRequest(request, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Assert.assertEquals(cp.getOriginalText(), cp.getFinalText());
+		Assert.assertTrue(conceptToMap.hasName(cp.getOriginalText(), locale));
+	}
 }

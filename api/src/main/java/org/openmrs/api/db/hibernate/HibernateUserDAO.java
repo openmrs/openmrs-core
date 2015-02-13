@@ -256,7 +256,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		log.debug("updating password");
 		//update the user with the new password
-		String salt = Security.getRandomToken();
+		String salt = getLoginCredential(u).getSalt();
 		String newHashedPassword = Security.encodeString(pw + salt);
 		
 		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
@@ -315,7 +315,7 @@ public class HibernateUserDAO implements UserDAO {
 		log.info("updating password for " + u.getUsername());
 		
 		// update the user with the new password
-		String salt = Security.getRandomToken();
+		String salt = getLoginCredential(u).getSalt();
 		String newHashedPassword = Security.encodeString(pw2 + salt);
 		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
@@ -344,7 +344,8 @@ public class HibernateUserDAO implements UserDAO {
 		
 		LoginCredential credentials = getLoginCredential(u);
 		credentials.setSecretQuestion(question);
-		credentials.setSecretAnswer(answer);
+		String hashedAnswer = Security.encodeString(answer.toLowerCase() + credentials.getSalt());
+		credentials.setSecretAnswer(hashedAnswer);
 		credentials.setDateChanged(new Date());
 		credentials.setChangedBy(u);
 		
@@ -356,12 +357,14 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
 		
-		if (answer == null || answer.equals("")) {
+		if (answer == null || "".equals(answer)) {
 			return false;
 		}
 		
-		String answerOnRecord = getLoginCredential(u).getSecretAnswer();
-		return (answer.equals(answerOnRecord));
+		LoginCredential credentials = getLoginCredential(u);
+		String answerOnRecord = credentials.getSecretAnswer();
+		String hashedAnswer = Security.encodeString(answer.toLowerCase() + credentials.getSalt());
+		return (hashedAnswer.equals(answerOnRecord));
 	}
 	
 	/**

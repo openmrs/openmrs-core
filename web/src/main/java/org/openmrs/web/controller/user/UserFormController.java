@@ -264,7 +264,7 @@ public class UserFormController {
 			} else {
 				us.saveUser(user, null);
 				
-				if (!password.equals("") && Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
+				if (!"".equals(password) && Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
 					if (log.isDebugEnabled()) {
 						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
 					}

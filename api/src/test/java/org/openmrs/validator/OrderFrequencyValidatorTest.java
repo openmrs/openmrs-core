@@ -140,4 +140,53 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 		expectedException.expectMessage(expectedMsg);
 		Context.getOrderService().saveOrderFrequency(orderFrequency);
 	}
+	
+	/**
+	 * @verifies pass validation if field lengths are correct
+	 * @see OrderFrequencyValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = new Concept();
+		ConceptName cn = new ConceptName("new name", Context.getLocale());
+		concept.setConceptClass(cs.getConceptClass(19));
+		concept.addName(cn);
+		cs.saveConcept(concept);
+		
+		OrderFrequency orderFrequency = new OrderFrequency();
+		orderFrequency.setConcept(concept);
+		
+		orderFrequency.setRetireReason("retireReason");
+		
+		Errors errors = new BindException(orderFrequency, "orderFrequency");
+		new OrderFrequencyValidator().validate(orderFrequency, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @verifies fail validation if field lengths are not correct
+	 * @see OrderFrequencyValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = new Concept();
+		ConceptName cn = new ConceptName("new name", Context.getLocale());
+		concept.setConceptClass(cs.getConceptClass(19));
+		concept.addName(cn);
+		cs.saveConcept(concept);
+		
+		OrderFrequency orderFrequency = new OrderFrequency();
+		orderFrequency.setConcept(concept);
+		
+		orderFrequency
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(orderFrequency, "orderFrequency");
+		new OrderFrequencyValidator().validate(orderFrequency, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
 }

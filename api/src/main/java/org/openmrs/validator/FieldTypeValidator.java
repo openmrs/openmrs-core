@@ -52,6 +52,8 @@ public class FieldTypeValidator implements Validator {
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 * @should fail validation if field type name already exist in none retired filed types
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		FieldType fieldType = (FieldType) obj;
@@ -65,6 +67,7 @@ public class FieldTypeValidator implements Validator {
 					errors.rejectValue("name", "fieldtype.duplicate.name");
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name");
 		}
 	}
 	

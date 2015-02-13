@@ -51,6 +51,8 @@ public class ConceptSourceValidator implements Validator {
 	 * @should pass validation if description is null or empty or whitespace
 	 * @should pass validation if HL7 Code is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws IllegalArgumentException {
 		if (obj == null || !(obj instanceof ConceptSource)) {
@@ -58,6 +60,7 @@ public class ConceptSourceValidator implements Validator {
 			        + ConceptSource.class);
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Code", "description", "retireReason");
 		}
 		
 	}

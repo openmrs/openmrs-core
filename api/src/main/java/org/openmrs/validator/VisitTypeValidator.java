@@ -50,6 +50,8 @@ public class VisitTypeValidator implements Validator {
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should fail validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		VisitType visitType = (VisitType) obj;
@@ -57,6 +59,7 @@ public class VisitTypeValidator implements Validator {
 			errors.rejectValue("visitType", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "retireReason");
 		}
 	}
 }

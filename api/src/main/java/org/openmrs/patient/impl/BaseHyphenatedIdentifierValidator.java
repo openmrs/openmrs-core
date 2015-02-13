@@ -70,34 +70,34 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 			throw new UnallowedIdentifierException("Identifier must have a check digit of length 1.");
 		}
 		
-		if (checkDigit.equalsIgnoreCase("A")) {
+		if ("A".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "0";
 		}
-		if (checkDigit.equalsIgnoreCase("B")) {
+		if ("B".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "1";
 		}
-		if (checkDigit.equalsIgnoreCase("C")) {
+		if ("C".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "2";
 		}
-		if (checkDigit.equalsIgnoreCase("D")) {
+		if ("D".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "3";
 		}
-		if (checkDigit.equalsIgnoreCase("E")) {
+		if ("E".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "4";
 		}
-		if (checkDigit.equalsIgnoreCase("F")) {
+		if ("F".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "5";
 		}
-		if (checkDigit.equalsIgnoreCase("G")) {
+		if ("G".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "6";
 		}
-		if (checkDigit.equalsIgnoreCase("H")) {
+		if ("H".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "7";
 		}
-		if (checkDigit.equalsIgnoreCase("I")) {
+		if ("I".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "8";
 		}
-		if (checkDigit.equalsIgnoreCase("J")) {
+		if ("J".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "9";
 		}
 		

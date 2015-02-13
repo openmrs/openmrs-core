@@ -50,6 +50,8 @@ public class ConceptDatatypeValidator implements Validator {
 	 * @should pass validation if description is null or empty or whitespace	 *      
 	 * @should fail validation if name is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		ConceptDatatype cd = (ConceptDatatype) obj;
@@ -57,6 +59,8 @@ public class ConceptDatatypeValidator implements Validator {
 			errors.rejectValue("conceptDatatype", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "hl7Abbreviation", "description",
+			    "retireReason");
 		}
 	}
 	

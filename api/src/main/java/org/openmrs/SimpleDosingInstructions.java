@@ -13,10 +13,10 @@
  */
 package org.openmrs;
 
+import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 import java.util.Date;
 import java.util.Locale;
 
-import static org.apache.commons.lang3.time.DateUtils.addMilliseconds;
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -101,8 +101,8 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	@Override
 	public DosingInstructions getDosingInstructions(DrugOrder order) {
 		if (!order.getDosingType().equals(this.getClass())) {
-			throw new APIException("Dosing type of drug order is mismatched. Expected:" + this.getClass().getName()
-			        + " but received:" + order.getDosingType());
+			throw new APIException("DrugOrder.error.dosingTypeIsMismatched", new Object[] { this.getClass().getName(),
+			        order.getDosingType() });
 		}
 		SimpleDosingInstructions simpleDosingInstructions = new SimpleDosingInstructions();
 		simpleDosingInstructions.setDose(order.getDose());
@@ -228,7 +228,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	}
 	
 	private Date aMomentBefore(Date date) {
-		return addMilliseconds(date, -1);
+		return addSeconds(date, -1);
 	}
 	
 }

@@ -928,7 +928,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(visit.getDateCreated());
 		assertEquals(originalSize + 1, vs.getAllVisits().size());
 		assertEquals(1, visit.getEncounters().size());
-		assertEquals(new Integer(4), ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
+		assertEquals(Integer.valueOf(4), ((Encounter) visit.getEncounters().toArray()[0]).getEncounterId());
 	}
 	
 	/**
@@ -940,11 +940,14 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		VisitService vs = Context.getVisitService();
 		Visit visit = vs.getVisit(1);
+		EncounterService es = Context.getEncounterService();
 		
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(new Date());
 		encounter.setPatient(visit.getPatient());
 		encounter.setLocation(visit.getLocation());
+		encounter.setEncounterType(es.getEncounterType(1));
+		
 		visit.addEncounter(encounter);
 		
 		Context.getEncounterService().saveEncounter(encounter);

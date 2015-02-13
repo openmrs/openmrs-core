@@ -106,7 +106,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		DateFormat dateFormat = Context.getDateFormat();
 		
-		Concept c = cs.getConcept(new Integer("5096")); // RETURN VISIT DATE
+		Concept c = cs.getConcept(Integer.valueOf("5096")); // RETURN VISIT DATE
 		Calendar cal = Calendar.getInstance();
 		
 		Date start;
@@ -128,7 +128,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		
 		// if they don't input an end date, assume they meant "this week"
-		if (endDate == null || endDate.equals("")) {
+		if (endDate == null || "".equals(endDate)) {
 			while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 				cal.add(Calendar.DAY_OF_MONTH, -1);
 			}
@@ -149,7 +149,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		List<Obs> allObs = null;
 		
-		if (location == null || location.equals("")) {
+		if (location == null || "".equals(location)) {
 			allObs = os.getObservations(c, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
 		} else {
 			Location locationObj = es.getLocation(Integer.valueOf(location));
@@ -199,7 +199,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		
 		// if they don't input an end date, assume they meant "this week"
-		if (endDate == null || endDate.equals("")) {
+		if (endDate == null || "".equals(endDate)) {
 			while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 				cal.add(Calendar.DAY_OF_MONTH, -1);
 			}
@@ -220,7 +220,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		Collection<Encounter> encounters = null;
 		
-		if (location == null || location.equals("")) {
+		if (location == null || "".equals(location)) {
 			encounters = es.getEncounters(null, null, start, end, null, null, null, true);
 		} else {
 			Location locationObj = ls.getLocation(Integer.valueOf(location));
@@ -261,7 +261,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		
 		// if they don't input an end date, assume they meant "this week"
-		if (endDate == null || endDate.equals("")) {
+		if (endDate == null || "".equals(endDate)) {
 			while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 				cal.add(Calendar.DAY_OF_MONTH, -1);
 			}

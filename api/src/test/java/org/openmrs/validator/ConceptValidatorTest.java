@@ -1,6 +1,7 @@
 package org.openmrs.validator;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
@@ -371,5 +372,89 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		//the second mapping should be rejected
 		Assert.assertEquals(false, errors.hasFieldErrors("conceptMappings[1]"));
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		concept.setVersion("version");
+		concept.setRetireReason("retireReason");
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		concept.setVersion("too long text too long text too long text too long text");
+		concept
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertTrue(errors.hasFieldErrors("version"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if fully specified name is the same as short name", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfFullySpecifiedNameIsTheSameAsShortName() throws Exception {
+		Concept concept = new Concept();
+		
+		ConceptName conceptFullySpecifiedName = new ConceptName("YES", new Locale("pl"));
+		conceptFullySpecifiedName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+		
+		ConceptName conceptShortName = new ConceptName("yes", new Locale("pl"));
+		conceptShortName.setConceptNameType(ConceptNameType.SHORT);
+		
+		concept.addName(conceptFullySpecifiedName);
+		concept.addName(conceptShortName);
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if different concepts have the same short name", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfDifferentConceptsHaveTheSameShortNames() throws Exception {
+		Context.setLocale(new Locale("en", "GB"));
+		
+		List<Concept> concepts = Context.getConceptService().getConceptsByName("HSM");
+		Assert.assertEquals(1, concepts.size());
+		Assert.assertEquals(true, concepts.get(0).getShortNameInLocale(Context.getLocale()).getName()
+		        .equalsIgnoreCase("HSM"));
+		
+		Concept concept = new Concept();
+		ConceptName conceptFullySpecifiedName = new ConceptName("holosystolic murmur", Context.getLocale());
+		conceptFullySpecifiedName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+		
+		ConceptName conceptShortName = new ConceptName("HSM", Context.getLocale());
+		conceptShortName.setConceptNameType(ConceptNameType.SHORT);
+		
+		concept.addName(conceptFullySpecifiedName);
+		concept.addName(conceptShortName);
+		
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(false, errors.hasErrors());
 	}
 }

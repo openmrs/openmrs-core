@@ -176,7 +176,7 @@ public class CustomDatatypeUtil {
 					valueReference = customDatatype.getReferenceStringForValue(e.getValue());
 				}
 				catch (UnsupportedOperationException ex) {
-					throw new APIException("Cannot search for attributes with custom datatype: " + customDatatype.getClass());
+					throw new APIException("CustomDatatype.error.cannot.search", new Object[] { customDatatype.getClass() });
 				}
 				serializedAttributeValues.put(vat, valueReference);
 			}

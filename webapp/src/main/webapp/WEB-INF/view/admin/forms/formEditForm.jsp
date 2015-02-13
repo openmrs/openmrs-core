@@ -38,7 +38,7 @@
 		<td><openmrs:message code="general.name"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="form.name">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
+				<input type="text" name="${status.expression}" <c:out value="${status.value}"/> size="35" />
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
@@ -47,7 +47,7 @@
 		<td valign="top"><openmrs:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="form.description">
-				<textarea name="description" rows="3" cols="40" type="_moz">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" type="_moz"><c:out value="${status.value}"/></textarea>
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
@@ -56,7 +56,7 @@
 		<td><openmrs:message code="Form.version"/><span class="required">*</span></td>
 		<td>
 			<spring:bind path="form.version">
-				<input type="text" name="${status.expression}" value="${status.value}" size="5" />
+				<input type="text" name="${status.expression}" <c:out value="${status.value}"/> size="5" />
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
@@ -111,7 +111,7 @@
 		<td><openmrs:message code="general.retiredReason"/></td>
 		<spring:bind path="form.retireReason">
 			<td>
-				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
+				<input type="text" name="${status.expression}" id="retiredReason" <c:out value="${status.value}"/> />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
@@ -258,7 +258,8 @@
 		overflow: hidden;
 	}
 	#fieldSearchDiv {
-		xposition: fixed;
+		position: fixed;		
+		bottom: 55px;
 		z-index: 10;
 		background-color: white;
 	}

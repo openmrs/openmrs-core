@@ -76,6 +76,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	public void validate_shouldFailIfAnyNameHasMoreThan50Characters() throws Exception {
 		Patient p = ps.getPatient(2);
 		p.getPersonName().setGivenName("ooooooooooooooooooooooooooooooooooooooooooooooooooo");
+		p.getPersonName().setFamilyName("FamilyName");
 		ShortPatientModel model = new ShortPatientModel(p);
 		Errors errors = new BindException(model, "patientModel");
 		validator.validate(model, errors);

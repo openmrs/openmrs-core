@@ -52,19 +52,44 @@ public interface UserService extends OpenmrsService {
 	 * @should update users username
 	 * @should grant new roles in roles list to user
 	 * @should fail to create the user with a weak password
+	 * @deprecated replaced by {@link #createUser(User, String)}
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_USERS, PrivilegeConstants.EDIT_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User saveUser(User user, String password) throws APIException;
 	
 	/**
-	 * @see #saveUser(User, String)
-	 * @deprecated replaced by {@link #saveUser(User, String)}
+	 * Create user with given password.
+	 *
+	 * @param user the user to create
+	 * @param password the password for created user
+	 * @return created user
+	 * @throws APIException
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User createUser(User user, String password) throws APIException;
+	
+	/**
+	 * Change user password.
+	 *
+	 * @param user the user to update password
+	 * @param oldPassword the user password to update
+	 * @param newPassword the new user password
+	 * @throws APIException for not existing user and if old password is weak
+	 * @since 1.12
+	 * @should throw APIException if old password is not correct
+	 * @should throw APIException if given user does not exist
+	 * @should change password for given user if oldPassword is correctly passed
+	 * @should change password for given user if oldPassword is null and changing user have privileges
+	 * @should throw exception if oldPassword is null and changing user have not privileges
+	 * @should throw exception if new password is too short
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@Logging(ignoredArgumentIndexes = { 1, 2 })
+	public void changePassword(User user, String oldPassword, String newPassword) throws APIException;
 	
 	/**
 	 * Get user by internal user identifier.
@@ -389,9 +414,11 @@ public interface UserService extends OpenmrsService {
 	 * @param pw new password
 	 * @throws APIException
 	 * @should change password for the given user and password
+	 * @deprecated replaced by {@link #changePassword(User, String, String)}
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
 	@Logging(ignoredArgumentIndexes = { 1 })
+	@Deprecated
 	public void changePassword(User u, String pw) throws APIException;
 	
 	/**

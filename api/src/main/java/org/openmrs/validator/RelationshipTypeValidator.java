@@ -50,6 +50,8 @@ public class RelationshipTypeValidator implements Validator {
 	 * @should fail validation if description is null or empty or whitespace
 	 * @should pass validation if all required fields are set
 	 * @should fail validation if relationshipTypeName already exist
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		RelationshipType relationshipType = (RelationshipType) obj;
@@ -65,6 +67,7 @@ public class RelationshipTypeValidator implements Validator {
 			        && !OpenmrsUtil.nullSafeEquals(relationshipType.getUuid(), exist.getUuid())) {
 				errors.reject("duplicate.relationshipType");
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "aIsToB", "bIsToA", "description", "retireReason");
 		}
 	}
 }

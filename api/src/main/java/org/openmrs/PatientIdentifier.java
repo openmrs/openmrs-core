@@ -210,6 +210,15 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 			if (retValue == 0) {
 				retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
 			}
+			if (getIdentifierType() == null && other.getIdentifierType() == null) {
+				return 0;
+			}
+			if (getIdentifierType() == null && other.getIdentifierType() != null) {
+				retValue = 1;
+			}
+			if (other.getIdentifierType() == null && getIdentifierType() != null) {
+				retValue = -1;
+			}
 			if (retValue == 0) {
 				retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifierType().getPatientIdentifierTypeId(), other
 				        .getIdentifierType().getPatientIdentifierTypeId());

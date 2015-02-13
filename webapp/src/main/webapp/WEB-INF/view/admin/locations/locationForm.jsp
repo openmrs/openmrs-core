@@ -17,7 +17,7 @@
 				<c:out value="${location.retiredBy.personName}" />
 				<openmrs:formatDate date="${location.dateRetired}" type="medium" />
 				-
-				${location.retireReason}
+				<c:out value="${location.retireReason}"/>
 				<input type="submit" value='<openmrs:message code="Location.unretireLocation"/>' name="unretireLocation"/>
 			</div>
 		</div>
@@ -34,7 +34,7 @@
 			<th><openmrs:message code="general.name"/><span class="required">*</span></th>
 			<td colspan="5">
 				<spring:bind path="location.name">
-					<input type="text" name="name" value='<c:out value="${status.value}"/>' size="35" />
+					<input type="text" name="name" value="${status.value}" size="35" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

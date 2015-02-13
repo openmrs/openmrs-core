@@ -14,8 +14,7 @@
 package org.openmrs;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.TreeSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -115,7 +114,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	@Deprecated
 	public Tribe getTribe() {
-		throw new APIException("The Patient.getTribe method is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.install.module", new Object[] { "Patient.getTribe" });
 	}
 	
 	/**
@@ -124,7 +123,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	@Deprecated
 	public void setTribe(Tribe tribe) {
-		throw new APIException("The Patient.setTribe(Tribe) method is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.install.module", new Object[] { "Patient.setTribe(Tribe)" });
 	}
 	
 	/**
@@ -138,7 +137,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	public Set<PatientIdentifier> getIdentifiers() {
 		if (identifiers == null) {
-			identifiers = new LinkedHashSet<PatientIdentifier>();
+			identifiers = new TreeSet<PatientIdentifier>();
 		}
 		return this.identifiers;
 	}
@@ -190,7 +189,7 @@ public class Patient extends Person implements java.io.Serializable {
 		}
 		
 		if (identifiers == null) {
-			identifiers = new HashSet<PatientIdentifier>();
+			identifiers = new TreeSet<PatientIdentifier>();
 		}
 		identifiers.add(patientIdentifier);
 	}

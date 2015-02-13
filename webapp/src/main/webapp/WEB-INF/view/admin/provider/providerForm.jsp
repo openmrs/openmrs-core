@@ -57,6 +57,14 @@ function validateForm(){
 	}
 	return result;
 }
+
+function confirmPurge() {
+	if (confirm('<openmrs:message code="Provider.confirmDelete"/>')) {
+		return true;
+	} else {
+		return false;
+	}
+}
 </script>
 
 <style>
@@ -189,7 +197,6 @@ function validateForm(){
 	</div>
 	
 	<br/>
-    <br/>
 
 	<c:if test="${provider.providerId != null}">
 		<div class="box">
@@ -238,7 +245,23 @@ function validateForm(){
 							<td><input type="submit" name="unretireProviderButton"
 								value='<openmrs:message code="Provider.unretire"/>'></td>
 						</tr>
-					</c:if>		
+					</c:if>
+				</table>
+			</form>
+		</div>
+
+		<br/>
+
+		<div class="box">
+			<form method="post" onsubmit="return confirmPurge()">
+				<table cellpadding="3" cellspacing="0">
+					<tr>
+						<th><openmrs:message code="Provider.purge" /></th>
+					</tr>
+					<tr>
+						<td><input type="submit" name="purgeProviderButton"
+						value='<openmrs:message code="Provider.purge"/>'></td>
+					</tr>
 				</table>
 			</form>
 		</div>

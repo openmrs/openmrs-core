@@ -73,8 +73,7 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 		if (person.isPersonVoided()) {
 			
 			if (!StringUtils.hasLength(person.getPersonVoidReason())) {
-				throw new APIException(
-				        "The voided bit was set to true, so a void reason is required at save time for person: " + person);
+				throw new APIException("Person.voided.bit", new Object[] { person });
 			}
 			
 			if (person.getPersonVoidedBy() == null) {

@@ -60,10 +60,13 @@ public class EncounterValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the patients for the visit and the encounter dont match
 	 * @should fail if patient is not set
+	 * @should fail if encounter type is not set
 	 * @should fail if encounter dateTime is not set
 	 * @should fail if encounter dateTime is after current dateTime
 	 * @should fail if encounter dateTime is before visit startDateTime
 	 * @should fail if encounter dateTime is after visit stopDateTime
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
@@ -75,6 +78,9 @@ public class EncounterValidator implements Validator {
 		}
 		
 		Encounter encounter = (Encounter) obj;
+		
+		ValidationUtils.rejectIfEmpty(errors, "encounterType", "Encounter.error.encounterType.required",
+		    "Encounter type is Required");
 		
 		ValidationUtils.rejectIfEmpty(errors, "patient", "Encounter.error.patient.required", "Patient is required");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "Encounter.datetime.required");
@@ -102,5 +108,6 @@ public class EncounterValidator implements Validator {
 				    "The encounter datetime should be between the visit start and stop dates.");
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 }

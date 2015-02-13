@@ -16,6 +16,7 @@ package org.openmrs.web.controller.person;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,6 +41,8 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
@@ -53,6 +56,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -222,12 +226,45 @@ public class PersonFormController extends SimpleFormController {
 		String action = request.getParameter("action");
 		PersonService ps = Context.getPersonService();
 		
+		String linkedProviders = "";
+		if (action.equals(msa.getMessage("Person.delete")) || action.equals(msa.getMessage("Person.void"))) {
+			Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
+			if (providerCollection != null && !providerCollection.isEmpty()) {
+				for (Provider provider : providerCollection) {
+					linkedProviders = linkedProviders + provider.getName() + ", ";
+				}
+				linkedProviders = linkedProviders.substring(0, linkedProviders.length() - 2);
+			}
+		}
+		
 		if (action.equals(msa.getMessage("Person.delete"))) {
 			try {
-				ps.purgePerson(person);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.deleted");
+				if (!linkedProviders.isEmpty()) {
+					errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.providers")
+					        + " " + linkedProviders);
+				}
 				
-				return new ModelAndView(new RedirectView("index.htm"));
+				Collection<User> userCollection = Context.getUserService().getUsersByPerson(person, true);
+				String linkedUsers = "";
+				if (userCollection != null && !userCollection.isEmpty()) {
+					for (User user : userCollection) {
+						linkedUsers = linkedUsers + user.getSystemId() + ", ";
+					}
+					linkedUsers = linkedUsers.substring(0, linkedUsers.length() - 2);
+				}
+				if (!linkedUsers.isEmpty()) {
+					errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.users") + " "
+					        + linkedUsers);
+				}
+				
+				if (errors.hasErrors()) {
+					return showForm(request, response, errors);
+				} else {
+					ps.purgePerson(person);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.deleted");
+					
+					return new ModelAndView(new RedirectView("index.htm"));
+				}
 			}
 			catch (DataIntegrityViolationException e) {
 				log.error("Unable to delete person because of database FK errors: " + person, e);
@@ -241,9 +278,14 @@ public class PersonFormController extends SimpleFormController {
 				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
 				        .getLocale());
 			}
-			ps.voidPerson(person, voidReason);
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
-			
+			if (linkedProviders.isEmpty()) {
+				ps.voidPerson(person, voidReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
+			} else {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+				    "Person.cannot.void.linkedTo.providers")
+				        + " " + linkedProviders);
+			}
 			return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId()));
 		} else if (action.equals(msa.getMessage("Person.unvoid"))) {
 			ps.unvoidPerson(person);
@@ -326,7 +368,7 @@ public class PersonFormController extends SimpleFormController {
 										obsDeath.setValueText(otherInfo);
 									} else {
 										// non empty text value implies concept changed from OTHER NON CODED to NONE
-										deathReasonChanged = !otherInfo.equals("");
+										deathReasonChanged = !"".equals(otherInfo);
 										log.debug("New concept is NOT the OTHER concept, so setting to blank");
 										obsDeath.setValueText("");
 									}
@@ -656,7 +698,13 @@ public class PersonFormController extends SimpleFormController {
 				}
 				
 				//check if all required addres fields are filled
-				new PersonAddressValidator().validate(pa, errors);
+				Errors addressErrors = new BindException(pa, "personAddress");
+				new PersonAddressValidator().validate(pa, addressErrors);
+				if (addressErrors.hasErrors()) {
+					for (ObjectError error : addressErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				if (errors.hasErrors()) {
 					return;
 				}
@@ -670,7 +718,13 @@ public class PersonFormController extends SimpleFormController {
 				currentAddress = addresses.next();
 				
 				//check if all required addres fields are filled
-				new PersonAddressValidator().validate(currentAddress, errors);
+				Errors addressErrors = new BindException(currentAddress, "personAddress");
+				new PersonAddressValidator().validate(currentAddress, addressErrors);
+				if (addressErrors.hasErrors()) {
+					for (ObjectError error : addressErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				if (errors.hasErrors()) {
 					return;
 				}
@@ -774,7 +828,7 @@ public class PersonFormController extends SimpleFormController {
 		person.setGender(gender);
 		Date birthdate = null;
 		boolean birthdateEstimated = false;
-		if (date != null && !date.equals("")) {
+		if (date != null && !"".equals(date)) {
 			try {
 				// only a year was passed as parameter
 				if (date.length() < 5) {
@@ -794,7 +848,7 @@ public class PersonFormController extends SimpleFormController {
 			catch (ParseException e) {
 				log.debug("Error getting date from birthdate", e);
 			}
-		} else if (age != null && !age.equals("")) {
+		} else if (age != null && !"".equals(age)) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			Integer d = c.get(Calendar.YEAR);

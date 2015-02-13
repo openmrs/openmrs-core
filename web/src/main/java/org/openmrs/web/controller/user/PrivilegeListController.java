@@ -84,7 +84,7 @@ public class PrivilegeListController extends SimpleFormController {
 					//TODO convenience method deletePrivilege(String) ??
 					try {
 						us.purgePrivilege(us.getPrivilege(p));
-						if (!success.equals("")) {
+						if (!"".equals(success)) {
 							success.append("<br/>");
 						}
 						success.append(p).append(" ").append(deleted);
@@ -101,10 +101,10 @@ public class PrivilegeListController extends SimpleFormController {
 			}
 			
 			view = getSuccessView();
-			if (!success.equals("")) {
+			if (!"".equals(success)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!error.equals("")) {
+			if (!"".equals(error)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 			}
 		}
@@ -123,7 +123,7 @@ public class PrivilegeListController extends SimpleFormController {
 	 */
 	private String handlePrivilegeIntegrityException(Exception e, String error, String notDeleted) {
 		log.warn("Error deleting privilege", e);
-		if (!error.equals("")) {
+		if (!"".equals(error)) {
 			error += "<br/>";
 		}
 		error += notDeleted;

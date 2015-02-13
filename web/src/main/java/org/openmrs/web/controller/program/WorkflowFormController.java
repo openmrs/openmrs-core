@@ -99,7 +99,7 @@ public class WorkflowFormController extends SimpleFormController {
 			// get list of states to be deleted
 			String statesToDelete = request.getParameter("deleteStates");
 			Set<Integer> cantBeDeleted = new HashSet<Integer>(); // holds concept ids that cant be deleted
-			if (!statesToDelete.equals("")) {
+			if (!"".equals(statesToDelete)) {
 				// then delete listed states first
 				Map<Integer, ProgramWorkflowState> toRemove = new HashMap<Integer, ProgramWorkflowState>();
 				for (StringTokenizer std = new StringTokenizer(statesToDelete, "|"); std.hasMoreTokens();) {
@@ -141,7 +141,7 @@ public class WorkflowFormController extends SimpleFormController {
 			}
 			// get list of states, and update the command object
 			String statesStr = request.getParameter("newStates");
-			if (!statesStr.equals("")) {
+			if (!"".equals(statesStr)) {
 				// This is a brute-force algorithm, but n will be small.
 				Set<Integer> doneSoFar = new HashSet<Integer>(); // concept ids done so far
 				for (StringTokenizer st = new StringTokenizer(statesStr, "|"); st.hasMoreTokens();) {

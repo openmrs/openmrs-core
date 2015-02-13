@@ -56,6 +56,8 @@ public class PatientIdentifierTypeValidator implements Validator {
 	 * @should fail validation if regEx field length is too long
 	 * @should fail validation if name field length is too long
 	 * @should fail validation if name is already exist in non retired identifier types
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		PatientIdentifierType identifierType = (PatientIdentifierType) obj;
@@ -63,7 +65,8 @@ public class PatientIdentifierTypeValidator implements Validator {
 			errors.rejectValue("identifierType", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidateUtil.validateFieldLengths(errors, identifierType.getClass(), "name", "description", "format");
+			ValidateUtil.validateFieldLengths(errors, identifierType.getClass(), "name", "format", "formatDescription",
+			    "validator", "retireReason");
 			PatientIdentifierType exist = Context.getPatientService().getPatientIdentifierTypeByName(
 			    identifierType.getName());
 			if (exist != null && !exist.isRetired()

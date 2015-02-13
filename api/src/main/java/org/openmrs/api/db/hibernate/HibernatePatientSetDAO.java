@@ -1166,25 +1166,25 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				}
 				continue;
 				//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
-			} else if (attribute.equals("valueDate")) {
+			} else if ("valueDate".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("valueTime")) {
+			} else if ("valueTime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("valueDatetime")) {
+			} else if ("valueDatetime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("obsDatetime")) {
+			} else if ("obsDatetime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("location")) {
+			} else if ("location".equals(attribute)) {
 				// pass -- same column name
 				classNames.add("obs.location");
 				attribute = "location.name";
-			} else if (attribute.equals("comment")) {
+			} else if ("comment".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("encounterType")) {
+			} else if ("encouterType".equals(attribute)) {
 				classNames.add("obs.encounter");
 				classNames.add("encounter.encounterType");
 				attribute = "encounterType.name";
-			} else if (attribute.equals("provider")) {
+			} else if ("provider".equals(attribute)) {
 				classNames.add("obs.encounter");
 				attribute = "encounter.provider";
 			} else {
@@ -1290,16 +1290,16 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		String abbrev = c.getDatatype().getHl7Abbreviation();
 		List<String> columns = new Vector<String>();
 		
-		if (abbrev.equals("BIT")) {
+		if ("BIT".equals(abbrev)) {
 			columns.add("valueCoded");
-		} else if (abbrev.equals("CWE")) {
+		} else if ("CWE".equals(abbrev)) {
 			columns.add("valueDrug");
 			columns.add("valueCoded");
-		} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+		} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 			columns.add("valueNumeric");
-		} else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS")) {
+		} else if ("DT".equals(abbrev) || "TM".equals(abbrev) || "TS".equals(abbrev)) {
 			columns.add("valueDatetime");
-		} else if (abbrev.equals("ST")) {
+		} else if ("ST".equals(abbrev)) {
 			columns.add("valueText");
 		}
 		
@@ -1493,9 +1493,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Criteria criteria = null;
 		
 		// make 'patient.**' reference 'patient' like alias instead of object
-		if (className.equals("org.openmrs.Patient")) {
+		if ("org.openmrs.Patient".equals(className)) {
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Patient", "patient");
-		} else if (className.equals("org.openmrs.Person")) {
+		} else if ("org.openmrs.Person".equals(className)) {
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Person", "person");
 		} else {
 			criteria = sessionFactory.getCurrentSession().createCriteria(className);
@@ -1516,7 +1516,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			
 			// do not include voided person rows
-			if (className.equals("org.openmrs.Person")) {
+			if ("org.openmrs.Person".equals(className)) {
 				// the voided column on the person table is mapped to the person object
 				// through the getPersonVoided() to distinguish it from patient/user.voided
 				criteria.add(Restrictions.eq("personVoided", false));
@@ -1543,7 +1543,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		try {
 			boolean hasPreferred = false;
 			for (Field f : Class.forName(className).getDeclaredFields()) {
-				if (f.getName().equals("preferred")) {
+				if ("preferred".equals(f.getName())) {
 					hasPreferred = true;
 				}
 			}
@@ -2331,7 +2331,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@Override
 	public Integer getCountOfPatients() {
 		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = '0'");
-		return new Integer(query.uniqueResult().toString());
+		return Integer.valueOf(query.uniqueResult().toString());
 	}
 	
 	@Override

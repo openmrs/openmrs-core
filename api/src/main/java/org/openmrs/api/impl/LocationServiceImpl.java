@@ -60,7 +60,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	public Location saveLocation(Location location) throws APIException {
 		if (location.getName() == null) {
-			throw new APIException("Location name is required");
+			throw new APIException("Location.name.required", (Object[]) null);
 		}
 		
 		// Check for transient tags. If found, try to match by name and overwrite, otherwise throw exception.
@@ -70,7 +70,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 				// only check transient (aka non-precreated) location tags
 				if (tag.getLocationTagId() == null) {
 					if (!StringUtils.hasLength(tag.getName())) {
-						throw new APIException("A tag name is required");
+						throw new APIException("Location.tag.name.required", (Object[]) null);
 					}
 					
 					LocationTag existing = Context.getLocationService().getLocationTagByName(tag.getName());
@@ -78,14 +78,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 						location.removeTag(tag);
 						location.addTag(existing);
 					} else {
-						throw new APIException("Cannot add transient tags! "
-						        + "Save all location tags to the database before saving this location");
+						throw new APIException("Location.cannot.add.transient.tags", (Object[]) null);
 					}
 				}
 			}
 		}
-		//Check for XSS
-		location.validateXSS();
+		
 		CustomDatatypeUtil.saveAttributesIfNecessary(location);
 		
 		return dao.saveLocation(location);
@@ -121,12 +119,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 		
 		//Try to look up 'Unknown Location' in case the global property is something else
-		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown Location"))) {
+		if (location == null && (!StringUtils.hasText(locationGP) || !"Unknown Location".equalsIgnoreCase(locationGP))) {
 			location = Context.getLocationService().getLocation("Unknown Location");
 		}
 		
 		// If Unknown Location does not exist, try Unknown if the global property was different
-		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown"))) {
+		if (location == null && (!StringUtils.hasText(locationGP) || !"Unknown".equalsIgnoreCase(locationGP))) {
 			location = Context.getLocationService().getLocation("Unknown");
 		}
 		
@@ -302,7 +300,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Transactional(readOnly = true)
 	public List<LocationTag> getLocationTags(String search) throws APIException {
-		if (search == null || search.equals("")) {
+		if (search == null || "".equals(search)) {
 			return Context.getLocationService().getAllLocationTags(true);
 		}
 		
@@ -317,7 +315,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 			return tag;
 		} else {
 			if (reason == null) {
-				throw new APIException("Reason is required");
+				throw new APIException("Location.retired.reason.required", (Object[]) null);
 			}
 			tag.setRetired(true);
 			tag.setRetireReason(reason);

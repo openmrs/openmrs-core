@@ -18,7 +18,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +36,9 @@ import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.Report;
-import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -84,39 +79,6 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#createReport(org.openmrs.reporting.Report)
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void createReport(Report r) throws DAOException {
-		r.setCreator(Context.getAuthenticatedUser());
-		r.setDateCreated(new Date());
-		sessionFactory.getCurrentSession().save(r);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#updateReport(org.openmrs.reporting.Report)
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void updateReport(Report r) throws DAOException {
-		if (r.getReportId() == null) {
-			createReport(r);
-		} else {
-			sessionFactory.getCurrentSession().saveOrUpdate(r);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#deleteReport(org.openmrs.reporting.Report)
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void deleteReport(Report r) throws DAOException {
-		sessionFactory.getCurrentSession().delete(r);
 	}
 	
 	/**
@@ -195,51 +157,6 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 		
 		return logs;
-	}
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void createReportObject(AbstractReportObject ro) throws DAOException {
-		
-		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
-		User user = Context.getAuthenticatedUser();
-		Date now = new Date();
-		wrappedReportObject.setCreator(user);
-		wrappedReportObject.setDateCreated(now);
-		wrappedReportObject.setVoided(false);
-		sessionFactory.getCurrentSession().save(wrappedReportObject);
-	}
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void updateReportObject(AbstractReportObject ro) throws DAOException {
-		if (ro.getReportObjectId() == null) {
-			createReportObject(ro);
-		} else {
-			sessionFactory.getCurrentSession().clear();
-			ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
-			User user = Context.getAuthenticatedUser();
-			Date now = new Date();
-			wrappedReportObject.setChangedBy(user);
-			wrappedReportObject.setDateChanged(now);
-			
-			sessionFactory.getCurrentSession().saveOrUpdate(wrappedReportObject);
-		}
-	}
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void deleteReportObject(Integer reportObjectId) throws DAOException {
-		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(
-		    ReportObjectWrapper.class, reportObjectId);
-		
-		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
 	
 	/**
@@ -348,12 +265,19 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 			configuration = sessionFactoryBean.getConfiguration();
 		}
 		
-		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
+		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
 			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
 		}
-		
-		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
+		int fieldLength;
+		try {
+			fieldLength = ((Column) persistentClass.getProperty(fieldName).getColumnIterator().next()).getLength();
+		}
+		catch (Exception e) {
+			log.debug("Could not determine maximum length", e);
+			return -1;
+		}
+		return fieldLength;
 	}
 	
 	@Override

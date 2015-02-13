@@ -73,7 +73,7 @@ public class ForEachObsTag extends BodyTagSupport {
 		log.debug("ForEachObsTag found " + matchingObs.size() + " observations matching conceptId = " + conceptId);
 		
 		// Next, sort these observations
-		if (sortBy == null || sortBy.equals("")) {
+		if (sortBy == null || "".equals(sortBy)) {
 			sortBy = "obsDatetime";
 		}
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())

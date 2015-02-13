@@ -1329,4 +1329,68 @@ public class EncounterTest extends BaseContextMockTest {
 		//should contain the voided provider
 		Assert.assertTrue(encounter.getProvidersByRole(role, true).contains(provider));
 	}
+	
+	/**
+	 * @see {@link Encounter#copyAndAssignToAnotherPatient(org.openmrs.Patient)}
+	 */
+	@Test
+	@Verifies(value = "should copy all Encounter data except visit and assign copied Encounter to given Patient", method = "copy()")
+	public void copy_shouldCopyAllEncounterDataExceptVisitAndAssignCopiedEncounterToGivenPatient() throws Exception {
+		Encounter encounter = new Encounter();
+		
+		encounter.setCreator(new User());
+		encounter.setDateCreated(new Date());
+		encounter.setChangedBy(new User());
+		encounter.setDateChanged(new Date());
+		encounter.setVoidReason("void");
+		encounter.setDateVoided(new Date());
+		
+		encounter.setEncounterDatetime(new Date());
+		encounter.setEncounterType(new EncounterType());
+		encounter.setForm(new Form());
+		encounter.setLocation(new Location());
+		encounter.setPatient(new Patient());
+		
+		encounter.addObs(new Obs());
+		encounter.addOrder(new Order());
+		
+		EncounterRole encounterRole = new EncounterRole();
+		encounter.addProvider(encounterRole, new Provider());
+		
+		encounter.setVisit(new Visit());
+		
+		Patient patient = new Patient(1234);
+		
+		Encounter encounterCopy = encounter.copyAndAssignToAnotherPatient(patient);
+		
+		Assert.assertNotEquals(encounter, encounterCopy);
+		
+		Assert.assertEquals(encounter.getCreator(), encounterCopy.getCreator());
+		Assert.assertEquals(encounter.getDateCreated(), encounterCopy.getDateCreated());
+		Assert.assertEquals(encounter.getChangedBy(), encounterCopy.getChangedBy());
+		Assert.assertEquals(encounter.getDateChanged(), encounterCopy.getDateChanged());
+		Assert.assertEquals(encounter.getVoided(), encounterCopy.getVoided());
+		Assert.assertEquals(encounter.getVoidReason(), encounterCopy.getVoidReason());
+		Assert.assertEquals(encounter.getDateVoided(), encounterCopy.getDateVoided());
+		
+		Assert.assertEquals(encounter.getEncounterDatetime(), encounterCopy.getEncounterDatetime());
+		Assert.assertEquals(encounter.getEncounterType(), encounterCopy.getEncounterType());
+		Assert.assertEquals(encounter.getForm(), encounterCopy.getForm());
+		Assert.assertEquals(encounter.getLocation(), encounterCopy.getLocation());
+		
+		Assert.assertEquals(1, encounter.getObs().size());
+		Assert.assertEquals(1, encounterCopy.getObs().size());
+		Assert.assertEquals(1, encounter.getOrders().size());
+		Assert.assertEquals(1, encounterCopy.getOrders().size());
+		
+		Assert.assertEquals(1, encounter.getProvidersByRole(encounterRole).size());
+		Assert.assertEquals(1, encounterCopy.getProvidersByRole(encounterRole).size());
+		Assert.assertEquals(true, encounter.getProvidersByRole(encounterRole).containsAll(
+		    encounterCopy.getProvidersByRole(encounterRole)));
+		
+		Assert.assertNotNull(encounter.getVisit());
+		Assert.assertNull(encounterCopy.getVisit());
+		
+		Assert.assertEquals(patient, encounterCopy.getPatient());
+	}
 }

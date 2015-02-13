@@ -1195,7 +1195,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatientByExample(examplePatient);
 		Assert.assertNotNull(patient);
 		Assert.assertTrue(patient.getClass().isAssignableFrom(Patient.class));
-		Assert.assertEquals(new Integer(2), patient.getPatientId());
+		Assert.assertEquals(Integer.valueOf(2), patient.getPatientId());
 	}
 	
 	/**
@@ -3550,8 +3550,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void mergePatients_shouldFailIfNotPreferredPatientHasUnvoidedOrders() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers
-		        .is("Cannot merge patients where the not preferred patient has unvoided orders"));
+		expectedException.expectMessage(Matchers.is("Patient.cannot.merge"));
 		Patient preferredPatient = patientService.getPatient(8);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		patientService.mergePatients(preferredPatient, notPreferredPatient);

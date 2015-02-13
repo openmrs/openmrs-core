@@ -414,4 +414,77 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
 		Assert.assertEquals("Order.error.dateActivatedInFuture", errors.getFieldError("dateActivated").getCode());
 	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Order order = new Order();
+		Encounter encounter = new Encounter();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		Patient patient = Context.getPatientService().getPatient(2);
+		encounter.setPatient(patient);
+		order.setPatient(patient);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setCareSetting(new CareSetting());
+		order.setEncounter(encounter);
+		order.setUrgency(Order.Urgency.ROUTINE);
+		order.setAction(Order.Action.NEW);
+		
+		order.setOrderReasonNonCoded("orderReasonNonCoded");
+		order.setAccessionNumber("accessionNumber");
+		order.setCommentToFulfiller("commentToFulfiller");
+		order.setVoidReason("voidReason");
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Order order = new Order();
+		Encounter encounter = new Encounter();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		Patient patient = Context.getPatientService().getPatient(2);
+		encounter.setPatient(patient);
+		order.setPatient(patient);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setCareSetting(new CareSetting());
+		order.setEncounter(encounter);
+		order.setUrgency(Order.Urgency.ROUTINE);
+		order.setAction(Order.Action.NEW);
+		
+		order
+		        .setOrderReasonNonCoded("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order
+		        .setAccessionNumber("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order
+		        .setCommentToFulfiller("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("accessionNumber"));
+		Assert.assertTrue(errors.hasFieldErrors("orderReasonNonCoded"));
+		Assert.assertTrue(errors.hasFieldErrors("commentToFulfiller"));
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+	}
 }

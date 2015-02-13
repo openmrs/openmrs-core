@@ -352,7 +352,7 @@ public class ORUR01Handler implements Application {
 					Concept questionConcept = proposingException.getConcept();
 					String value = proposingException.getValueName();
 					//if the sender never specified any text for the proposed concept
-					if (value != null && !value.equals("")) {
+					if (value != null && !"".equals(value)) {
 						conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
 					} else {
 						errorInHL7Queue = new HL7Exception(Context.getMessageSourceService().getMessage(
@@ -687,7 +687,7 @@ public class ORUR01Handler implements Application {
 			if (value == null || value.length() == 0) {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
-			} else if (value.equals("0") || value.equals("1")) {
+			} else if ("0".equals(value) || "1".equals(value)) {
 				concept = concept.hydrate(concept.getConceptId().toString());
 				obs.setConcept(concept);
 				if (concept.getDatatype().isBoolean()) {
@@ -702,7 +702,7 @@ public class ORUR01Handler implements Application {
 						    new Object[] { value, concept.getConceptId(), conceptName.getName(), uid }, null), e);
 					}
 				} else if (concept.getDatatype().isCoded()) {
-					Concept answer = value.equals("1") ? Context.getConceptService().getTrueConcept() : Context
+					Concept answer = "1".equals(value) ? Context.getConceptService().getTrueConcept() : Context
 					        .getConceptService().getFalseConcept();
 					boolean isValidAnswer = false;
 					Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
@@ -753,7 +753,7 @@ public class ORUR01Handler implements Application {
 					obs.setValueCoded(valueConcept);
 					if (HL7Constants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
 						Drug valueDrug = new Drug();
-						valueDrug.setDrugId(new Integer(value.getAlternateIdentifier().getValue()));
+						valueDrug.setDrugId(Integer.valueOf(value.getAlternateIdentifier().getValue()));
 						obs.setValueDrug(valueDrug);
 					} else {
 						ConceptName valueConceptName = getConceptName(value);
@@ -917,7 +917,7 @@ public class ORUR01Handler implements Application {
 		if (hl7ConceptNameId != null) {
 			// get the exact concept name specified by the id
 			try {
-				Integer conceptNameId = new Integer(hl7ConceptNameId);
+				Integer conceptNameId = Integer.valueOf(hl7ConceptNameId);
 				specifiedConceptName = new ConceptName();
 				specifiedConceptName.setConceptNameId(conceptNameId);
 			}
@@ -989,7 +989,7 @@ public class ORUR01Handler implements Application {
 		if (codingSystem == null || HL7Constants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
 			// the concept is local
 			try {
-				Integer conceptId = new Integer(hl7ConceptId);
+				Integer conceptId = Integer.valueOf(hl7ConceptId);
 				return Context.getConceptService().getConcept(conceptId);
 			}
 			catch (NumberFormatException e) {

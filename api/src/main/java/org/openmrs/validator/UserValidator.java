@@ -64,6 +64,8 @@ public class UserValidator implements Validator {
 	 * @should fail validation if email as username enabled and email invalid
 	 * @should fail validation if email as username disabled and email provided
 	 * @should not throw NPE when user is null
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
@@ -114,6 +116,8 @@ public class UserValidator implements Validator {
 					errors.rejectValue("username", "error.username.pattern");
 				}
 			}
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "username", "systemId", "retireReason",
+			    "secretQuestion");
 		}
 	}
 	

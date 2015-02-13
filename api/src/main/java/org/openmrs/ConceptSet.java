@@ -15,6 +15,7 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -55,7 +56,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Gets the concept set identifier.
-	 *
+	 * 
 	 * @return the concept set identifier
 	 */
 	public Integer getConceptSetId() {
@@ -64,7 +65,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Sets the concept set identifier.
-	 *
+	 * 
 	 * @param conceptSetId The concept set identifier.
 	 */
 	public void setConceptSetId(Integer conceptSetId) {
@@ -163,7 +164,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used. Always returns null.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#getChangedBy()
 	 */
 	public User getChangedBy() {
@@ -172,7 +173,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used. Always returns null.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#getDateChanged()
 	 */
 	public Date getDateChanged() {
@@ -181,7 +182,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
 	 */
 	public void setChangedBy(User changedBy) {
@@ -189,7 +190,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
 	 */
 	public void setDateChanged(Date dateChanged) {
@@ -199,15 +200,10 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(ConceptSet cs) {
-		if ((getSortWeight() == null) && (cs.getSortWeight() != null)) {
-			return -1;
+		int value = OpenmrsUtil.compareWithNullAsLowest(concept.isRetired(), cs.concept.isRetired());
+		if (value == 0) {
+			value = OpenmrsUtil.compareWithNullAsLowest(this.getSortWeight(), cs.getSortWeight());
 		}
-		if ((getSortWeight() != null) && (cs.getSortWeight() == null)) {
-			return 1;
-		}
-		if ((getSortWeight() == null) && (cs.getSortWeight() == null)) {
-			return 0;
-		}
-		return (getSortWeight() < cs.getSortWeight()) ? -1 : (getSortWeight() > cs.getSortWeight()) ? 1 : 0;
+		return value;
 	}
 }
