@@ -76,6 +76,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private static OrderNumberGenerator orderNumberGenerator = null;
 	
+	/**
+	 * empty public default constructor
+	 */
 	public OrderServiceImpl() {
 	}
 	
@@ -230,6 +233,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return DateUtils.addSeconds(date, -1);
 	}
 	
+	/**
+	 * saves the order
+	 * @param Order order
+	 * @param OrderContext orderContext
+	 * @return Order
+	 */
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
 		if (order.getOrderId() == null) {
 			setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
@@ -258,6 +267,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return dao.saveOrder(order);
 	}
 	
+	/**
+	 * sets the property 
+	 * @param Order order
+	 * @param String propertyName
+	 * @param Object value
+	 */
 	private void setProperty(Order order, String propertyName, Object value) {
 		Boolean isAccessible = null;
 		Field field = null;
@@ -675,6 +690,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return saveOrderInternal(newOrder, null);
 	}
 	
+	/**
+	 * Revise or discontinue order
+	 * @param Orderorder
+	 * @return true or false  
+	 */
 	private boolean isDiscontinueOrReviseOrder(Order order) {
 		return DISCONTINUE == order.getAction() || REVISE == order.getAction();
 	}
@@ -890,12 +910,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_ROUTES_CONCEPT_UUID);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugDosingUnits()
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDrugDosingUnits() {
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
 	}
 	
+	/**
+	 *  @see org.openmrs.api.OrderService#getDrugDispensingUnits()
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDrugDispensingUnits() {
@@ -909,6 +935,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return dispensingUnits;
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getDurationUnits()
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDurationUnits() {
@@ -923,6 +952,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID);
 	}
 	
+	/**
+	 * 
+	 * get and set members of concept set from GP
+	 * @param String globalProperty
+	 * @return List of concept
+	 */
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);

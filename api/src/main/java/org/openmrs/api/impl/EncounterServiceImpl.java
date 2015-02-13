@@ -772,6 +772,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		    dao.getEncountersByVisit(visit, includeVoided), null);
 	}
 	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounterVisitHandlers()
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<EncounterVisitHandler> getEncounterVisitHandlers() {

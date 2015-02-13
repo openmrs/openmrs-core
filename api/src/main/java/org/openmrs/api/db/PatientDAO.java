@@ -260,6 +260,9 @@ public interface PatientDAO {
 	 */
 	public Patient getPatientByUuid(String uuid);
 	
+	/** 
+	 * @see org.openmrs.api.PatientService#getPatientIdentifierByUuid(String) 
+	 */
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid);
 	
 	/**

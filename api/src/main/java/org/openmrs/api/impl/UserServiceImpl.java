@@ -64,9 +64,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
 	
+	/**
+	 * empty public default constructor
+	 */
+	
 	public UserServiceImpl() {
 	}
 	
+	/**
+	 * set the user data access object 
+	 * @param UserDAO dao
+	 */
 	public void setUserDAO(UserDAO dao) {
 		this.dao = dao;
 	}
@@ -702,6 +710,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.api.UserService#saveUserProperty(String, String)
+	 */
 	@Override
 	public User saveUserProperty(String key, String value) {
 		User user = Context.getAuthenticatedUser();
@@ -712,6 +723,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		return dao.saveUser(user, null);
 	}
 	
+	/**
+	 * @see org.openmrs.api.UserService#saveUserProperties(Map)
+	 */
 	@Override
 	public User saveUserProperties(Map<String, String> properties) {
 		User user = Context.getAuthenticatedUser();
