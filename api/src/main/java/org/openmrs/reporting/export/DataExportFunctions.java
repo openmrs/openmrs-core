@@ -261,8 +261,7 @@ public class DataExportFunctions {
 				map.remove(this.patientId);
 			}
 		}
-		
-		// reclaim some memory
+		//reclaim some memory
 		garbageCollect();
 		
 		setPatient(null);
