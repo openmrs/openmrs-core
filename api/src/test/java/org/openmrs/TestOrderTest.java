@@ -1,5 +1,3 @@
-package org.openmrs;
-
 /**
  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
@@ -13,6 +11,7 @@ package org.openmrs;
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+package org.openmrs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

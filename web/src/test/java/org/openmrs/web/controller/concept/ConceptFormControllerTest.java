@@ -1,15 +1,3 @@
-package org.openmrs.web.controller.concept;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.openmrs.Concept;
-import org.openmrs.ConceptMap;
-import org.openmrs.ConceptNumeric;
-import org.openmrs.web.controller.ConceptFormController;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
-
-import java.util.ArrayList;
-
 /**
  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
@@ -23,6 +11,18 @@ import java.util.ArrayList;
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+package org.openmrs.web.controller.concept;
+
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.openmrs.Concept;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.web.controller.ConceptFormController;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
+
+import java.util.ArrayList;
+
 public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	@Test
