@@ -670,7 +670,7 @@ public class DatabaseUpdater {
 	 *
 	 * @param warnings list of warnings to append to the end of the current list
 	 */
-	public static synchronized void reportUpdateWarnings(List<String> warnings) {
+	public static void reportUpdateWarnings(List<String> warnings) {
 		if (updateWarnings == null) {
 			updateWarnings = new LinkedList<String>();
 		}

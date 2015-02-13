@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.Arrays;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
@@ -242,7 +241,7 @@ public class Context {
 		Object[] arr = userContextHolder.get();
 		
 		if (log.isTraceEnabled()) {
-			log.trace("Getting user context " + Arrays.toString(arr) + " from userContextHolder " + userContextHolder);
+			log.trace("Getting user context " + arr + " from userContextHolder " + userContextHolder);
 		}
 		
 		if (arr == null) {

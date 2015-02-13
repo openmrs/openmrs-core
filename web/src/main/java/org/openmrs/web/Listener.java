@@ -77,8 +77,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 	private static boolean runtimePropertiesFound = false;
 	
-	Log log = LogFactory.getLog(Listener.class);
-	
 	private static Throwable errorAtStartup = null;
 	
 	/**
@@ -284,7 +282,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @return current contextPath of this webapp without initial slash
 	 */
 	private String getContextPath(ServletContext servletContext) {
-		Log log = LogFactory.getLog(Listener.class);
 		// Get the context path without the request.
 		String contextPath = "";
 		try {
@@ -300,11 +297,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
 			}
 			catch (Exception e) {
-				log.error("Cannot find the contextPath of current webapp.", e);
+				e.printStackTrace();
 			}
 		}
 		catch (Exception e) {
-			log.error("ContextPath not defined", e);
+			e.printStackTrace();
 		}
 		
 		// trim off initial slash if it exists
@@ -532,7 +529,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		catch (Exception e) {
 			// don't print the unhelpful "contextDAO is null" message
 			if (!"contextDAO is null".equals(e.getMessage())) {
-				log.error("Listener.contextDestroyed: Error while shutting down openmrs: ", e);
+				// not using log.error here so it can be garbage collected
+				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
+				e.printStackTrace();
 			}
 		}
 		finally {
@@ -564,7 +563,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			}
 		}
 		catch (Exception e) {
-			log.error("Listener.contextDestroyed: Failed to cleanup drivers in webapp", e);
+			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
+			e.printStackTrace();
 		}
 		
 		MemoryLeakUtil.shutdownMysqlCancellationTimer();
