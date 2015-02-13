@@ -83,7 +83,7 @@ public class RoleFormController extends SimpleFormController {
 		
 		String[] privileges = request.getParameterValues("privileges");
 		if (privileges == null) {
-			role.setPrivileges(Collections.EMPTY_SET);
+			role.setPrivileges((Set) (Collections.emptySet()));
 		}
 		
 		return super.processFormSubmission(request, response, role, errors);
