@@ -478,7 +478,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		Concept c = null;
 		Integer conceptId = null;
 		try {
-			conceptId = new Integer(conceptIdOrName);
+			conceptId = Integer.valueOf(conceptIdOrName);
 		}
 		catch (NumberFormatException nfe) {
 			conceptId = null;
@@ -520,7 +520,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		Integer drugId = null;
 		
 		try {
-			drugId = new Integer(drugNameOrId);
+			drugId = Integer.valueOf(drugNameOrId);
 		}
 		catch (NumberFormatException nfe) {
 			drugId = null;

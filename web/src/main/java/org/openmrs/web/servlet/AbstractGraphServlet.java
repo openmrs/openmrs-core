@@ -40,8 +40,8 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 		
 		try {
 			// Set default values
-			Integer width = new Integer(500);
-			Integer height = new Integer(300);
+			Integer width = Integer.valueOf(500);
+			Integer height = Integer.valueOf(300);
 			String mimeType = PNG_MIME_TYPE;
 			
 			// Retrieve custom values

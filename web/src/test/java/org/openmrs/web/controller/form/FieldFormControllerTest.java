@@ -108,6 +108,6 @@ public class FieldFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		controller.handleRequest(request, response);
 		
-		Assert.assertNull(Context.getFormService().getField(new Integer(FIELD_ID)));
+		Assert.assertNull(Context.getFormService().getField(Integer.valueOf(FIELD_ID)));
 	}
 }

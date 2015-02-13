@@ -43,7 +43,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	// so that we can guarantee tests running accurately instead of tests interfering with the next
-	public final Integer TASK_TEST_METHOD_LOCK = new Integer(1);
+	public final Integer TASK_TEST_METHOD_LOCK = Integer.valueOf(1);
 	
 	// used to check for concurrent task execution. Only initialized by code protected by TASK_TEST_METHOD_LOCK.
 	public static CountDownLatch latch;

@@ -152,7 +152,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	private void assertEquals(int i1, int i2) {
-		Assert.assertEquals(new Integer(i1), new Integer(i2));
+		Assert.assertEquals(Integer.valueOf(i1), Integer.valueOf(i2));
 	}
 	
 }
