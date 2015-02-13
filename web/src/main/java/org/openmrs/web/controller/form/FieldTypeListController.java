@@ -73,14 +73,14 @@ public class FieldTypeListController extends SimpleFormController {
 					//TODO convenience method deleteFieldType(Integer) ??
 					try {
 						fs.purgeFieldType(fs.getFieldType(Integer.valueOf(fieldTypeId)));
-						if (!success.equals("")) {
+						if (!"".equals(success)) {
 							success += "<br/>";
 						}
 						success += textFieldType + " " + fieldTypeId + " " + deleted;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting field type", e);
-						if (!error.equals("")) {
+						if (!"".equals(error)) {
 							error += "<br/>";
 						}
 						error += textFieldType + " " + fieldTypeId + " " + notDeleted;
@@ -95,10 +95,10 @@ public class FieldTypeListController extends SimpleFormController {
 				success += noneDeleted;
 			}
 			view = getSuccessView();
-			if (!success.equals("")) {
+			if (!"".equals(success)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 			}
-			if (!error.equals("")) {
+			if (!"".equals(error)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 			}
 		}

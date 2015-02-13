@@ -42,7 +42,7 @@ public class FormListController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -71,14 +71,14 @@ public class FormListController extends SimpleFormController {
 					//TODO convenience method deleteForm(Integer) ??
 					try {
 						fs.purgeForm(fs.getForm(Integer.valueOf(p)));
-						if (!success.equals("")) {
+						if (!"".equals(success)) {
 							success.append("<br/>");
 						}
 						success.append(textForm).append(" ").append(p).append(" ").append(deleted);
 					}
 					catch (APIException e) {
 						log.warn("Error deleting form", e);
-						if (!error.equals("")) {
+						if (!"".equals(error)) {
 							error.append("<br/>");
 						}
 						error.append(textForm).append(" ").append(p).append(" ").append(notDeleted);
@@ -88,10 +88,10 @@ public class FormListController extends SimpleFormController {
 				success.append(noneDeleted);
 			}
 			view = getSuccessView();
-			if (!success.equals("")) {
+			if (!"".equals(success)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!error.equals("")) {
+			if (!"".equals(error)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}
@@ -102,7 +102,7 @@ public class FormListController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {

@@ -84,7 +84,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	 */
 	public AttributableDate hydrate(String s) {
 		// don't do anything to empty dates
-		if (s == null || s.equals("")) {
+		if (s == null || "".equals(s)) {
 			return null;
 		}
 		

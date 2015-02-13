@@ -368,7 +368,7 @@ public class PersonFormController extends SimpleFormController {
 										obsDeath.setValueText(otherInfo);
 									} else {
 										// non empty text value implies concept changed from OTHER NON CODED to NONE
-										deathReasonChanged = !otherInfo.equals("");
+										deathReasonChanged = !"".equals(otherInfo);
 										log.debug("New concept is NOT the OTHER concept, so setting to blank");
 										obsDeath.setValueText("");
 									}
@@ -828,7 +828,7 @@ public class PersonFormController extends SimpleFormController {
 		person.setGender(gender);
 		Date birthdate = null;
 		boolean birthdateEstimated = false;
-		if (date != null && !date.equals("")) {
+		if (date != null && !"".equals(date)) {
 			try {
 				// only a year was passed as parameter
 				if (date.length() < 5) {
@@ -848,7 +848,7 @@ public class PersonFormController extends SimpleFormController {
 			catch (ParseException e) {
 				log.debug("Error getting date from birthdate", e);
 			}
-		} else if (age != null && !age.equals("")) {
+		} else if (age != null && !"".equals(age)) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			Integer d = c.get(Calendar.YEAR);

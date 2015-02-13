@@ -72,7 +72,7 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 		log.debug("ForEachDrugOrderTag found " + matchingDrugOrders.size() + " drug orders");
 		
 		// Next, sort the encounters
-		if (sortBy == null || sortBy.equals("")) {
+		if (sortBy == null || "".equals(sortBy)) {
 			sortBy = defaultSortBy;
 		}
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())

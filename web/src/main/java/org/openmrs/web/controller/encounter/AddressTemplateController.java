@@ -50,7 +50,7 @@ public class AddressTemplateController {
 	@RequestMapping("/admin/locations/addressTemplateAdd")
 	public String add(@RequestParam("xml") String xml, WebRequest request) {
 		
-		if (!StringUtils.hasText(xml) || xml.trim().equals("")) {
+		if (!StringUtils.hasText(xml) || "".equals(xml.trim())) {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
 			    "AddressTemplate.error.empty"), WebRequest.SCOPE_SESSION);
 		} else {

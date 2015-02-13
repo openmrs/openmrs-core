@@ -109,10 +109,10 @@ public class Hl7InQueueListController {
 		
 		Map<String, Object> results = new HashMap<String, Object>();
 		
-		if (!success.toString().equals("")) {
+		if (!"".equals(success.toString())) {
 			results.put(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 		}
-		if (!error.toString().equals("")) {
+		if (!"".equals(error.toString())) {
 			results.put(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		

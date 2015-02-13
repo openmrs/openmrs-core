@@ -194,7 +194,7 @@ public class ModuleListController extends SimpleFormController {
 					}
 				}
 			}
-		} else if (moduleId.equals("")) {
+		} else if ("".equals(moduleId)) {
 			if (action.equals(msa.getMessage("Module.startAll"))) {
 				boolean someModuleNeedsARefresh = false;
 				Collection<Module> modules = ModuleFactory.getLoadedModules();
@@ -269,11 +269,11 @@ public class ModuleListController extends SimpleFormController {
 		
 		view = getSuccessView();
 		
-		if (!success.equals("")) {
+		if (!"".equals(success)) {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 		}
 		
-		if (!error.equals("")) {
+		if (!"".equals(error)) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
 		

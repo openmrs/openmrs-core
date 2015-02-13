@@ -406,7 +406,7 @@ public class EncounterDisplayController implements Controller {
 				label += formField.getFieldPart();
 			}
 			
-			if (label.equals("")) {
+			if ("".equals(label)) {
 				return "--";
 			} else {
 				return label;

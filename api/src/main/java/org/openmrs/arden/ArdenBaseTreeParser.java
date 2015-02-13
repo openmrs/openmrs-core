@@ -839,7 +839,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 					}
 				}
 				
-				if (b.equals("")) {
+				if ("".equals(b)) {
 					b = a;
 					a = "";
 				}
@@ -2103,7 +2103,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 						_t = _t.getFirstChild();
 						a = ift.getText();
 						System.err.println("text = " + a);
-						if (instr.equals("")) {
+						if ("".equals(instr)) {
 							obj.AddToEvaluateList(section, a);
 							s = a;
 							
@@ -2274,7 +2274,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							match(_t, TERM_LITERAL);
 							_t = _t.getNextSibling();
 							
-							if (instr.equals("")) {
+							if ("".equals(instr)) {
 								// LHS , example - 'ABC' in Variable
 								b = termlit.getText();
 								s = obj.SetAnswerList(section, b, instr);

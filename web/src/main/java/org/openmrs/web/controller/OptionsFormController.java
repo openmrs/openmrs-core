@@ -72,8 +72,8 @@ public class OptionsFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		OptionsForm opts = (OptionsForm) object;
 		
-		if (!opts.getOldPassword().equals("")) {
-			if (opts.getNewPassword().equals("")) {
+		if (!"".equals(opts.getOldPassword())) {
+			if ("".equals(opts.getNewPassword())) {
 				errors.rejectValue("newPassword", "error.password.weak");
 			} else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
 				errors.rejectValue("newPassword", "error.password.match");
@@ -81,12 +81,12 @@ public class OptionsFormController extends SimpleFormController {
 			}
 		}
 		
-		if (opts.getSecretQuestionPassword().equals("") && opts.getSecretAnswerNew().isEmpty()
+		if ("".equals(opts.getSecretQuestionPassword()) && opts.getSecretAnswerNew().isEmpty()
 		        && !opts.getSecretQuestionNew().equals(opts.getSecretQuestionCopy())) {
 			errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 		}
 		
-		if (!opts.getSecretQuestionPassword().equals("")) {
+		if (!"".equals(opts.getSecretQuestionPassword())) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
 				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
 				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
@@ -153,7 +153,7 @@ public class OptionsFormController extends SimpleFormController {
 			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS, opts.getNotificationAddress() == null ? ""
 			        : opts.getNotificationAddress().toString());
 			
-			if (!opts.getOldPassword().equals("")) {
+			if (!"".equals(opts.getOldPassword())) {
 				try {
 					String password = opts.getNewPassword();
 					
@@ -187,12 +187,12 @@ public class OptionsFormController extends SimpleFormController {
 			} else {
 				// if they left the old password blank but filled in new
 				// password
-				if (!opts.getNewPassword().equals("")) {
+				if (!"".equals(opts.getNewPassword())) {
 					errors.rejectValue("oldPassword", "error.password.incorrect");
 				}
 			}
 			
-			if (!opts.getSecretQuestionPassword().equals("")) {
+			if (!"".equals(opts.getSecretQuestionPassword())) {
 				if (!errors.hasErrors()) {
 					try {
 						user.setSecretQuestion(opts.getSecretQuestionNew());
@@ -203,7 +203,7 @@ public class OptionsFormController extends SimpleFormController {
 						errors.rejectValue("secretQuestionPassword", "error.password.match");
 					}
 				}
-			} else if (!opts.getSecretAnswerNew().equals("")) {
+			} else if (!"".equals(opts.getSecretAnswerNew())) {
 				// if they left the old password blank but filled in new
 				// password
 				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");

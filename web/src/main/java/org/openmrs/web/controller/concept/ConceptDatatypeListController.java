@@ -81,7 +81,7 @@ public class ConceptDatatypeListController extends SimpleFormController {
 			for (String cd : cdList) {
 				try {
 					cs.purgeConceptDatatype(cs.getConceptDatatype(Integer.valueOf(cd)));
-					if (!success.toString().equals("")) {
+					if (!"".equals(success.toString())) {
 						success.append("<br/>");
 					}
 					success.append(cd);
@@ -90,7 +90,7 @@ public class ConceptDatatypeListController extends SimpleFormController {
 				}
 				catch (APIException e) {
 					log.warn("Error deleting concept datatype", e);
-					if (!error.equals("")) {
+					if (!"".equals(error)) {
 						error.append("<br/>");
 					}
 					error.append(cd).append(" ").append(notDeleted);
@@ -98,10 +98,10 @@ public class ConceptDatatypeListController extends SimpleFormController {
 			}
 			
 			view = getSuccessView();
-			if (!success.toString().equals("")) {
+			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!error.equals("")) {
+			if (!"".equals(error)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}

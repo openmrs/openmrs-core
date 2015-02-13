@@ -143,7 +143,7 @@ public class SummaryServlet extends HttpServlet {
 			}
 			
 			// if they don't input an end date, assume they meant "this week"
-			if (endDateString.equals("")) {
+			if ("".equals(endDateString)) {
 				while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 					cal.add(Calendar.DAY_OF_MONTH, -1);
 				}

@@ -694,7 +694,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#executeSQL(java.lang.String, boolean)
 	 */
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
-		if (sql == null || sql.trim().equals("")) {
+		if (sql == null || "".equals(sql.trim())) {
 			return null;
 		}
 		

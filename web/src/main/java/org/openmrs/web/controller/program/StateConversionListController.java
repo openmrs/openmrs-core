@@ -70,7 +70,7 @@ public class StateConversionListController extends SimpleFormController {
 				for (String id : conversionIdList) {
 					try {
 						pws.purgeConceptStateConversion(pws.getConceptStateConversion(Integer.valueOf(id)));
-						if (!success.equals("")) {
+						if (!"".equals(success)) {
 							success.append("<br/>");
 						}
 						success.append(textConversion).append(" ").append(id).append(" ").append(deleted);
@@ -78,7 +78,7 @@ public class StateConversionListController extends SimpleFormController {
 					}
 					catch (APIException e) {
 						log.warn("Error deleting concept state conversion", e);
-						if (!error.equals("")) {
+						if (!"".equals(error)) {
 							error.append("<br/>");
 						}
 						error.append(textConversion).append(" ").append(id).append(" ").append(notDeleted);
@@ -92,10 +92,10 @@ public class StateConversionListController extends SimpleFormController {
 				success.append(noneDeleted);
 			}
 			view = getSuccessView();
-			if (!success.equals("")) {
+			if (!"".equals(success)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!error.equals("")) {
+			if (!"".equals(error)) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}

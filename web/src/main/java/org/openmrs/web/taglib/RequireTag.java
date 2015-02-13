@@ -164,7 +164,7 @@ public class RequireTag extends TagSupport {
 		
 		if (errorOccurred) {
 			String url = "";
-			if (redirect != null && !redirect.equals("")) {
+			if (redirect != null && !"".equals(redirect)) {
 				url = request.getContextPath() + redirect;
 			} else {
 				url = request.getRequestURI();

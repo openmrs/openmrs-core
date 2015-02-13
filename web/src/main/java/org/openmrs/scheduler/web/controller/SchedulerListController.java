@@ -141,10 +141,10 @@ public class SchedulerListController extends SimpleFormController {
 		
 		view = getSuccessView();
 		
-		if (!success.toString().equals("")) {
+		if (!"".equals(success.toString())) {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 		}
-		if (!error.toString().equals("")) {
+		if (!"".equals(error.toString())) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		

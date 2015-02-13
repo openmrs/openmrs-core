@@ -41,7 +41,7 @@ public class UserSaveHandler implements SaveHandler<User> {
 	 */
 	public void handle(User user, User creator, Date dateCreated, String other) {
 		// if the user doesn't have a system id, generate one
-		if (user.getSystemId() == null || user.getSystemId().equals("")) {
+		if (user.getSystemId() == null || "".equals(user.getSystemId())) {
 			user.setSystemId(Context.getUserService().generateSystemId());
 		}
 		
