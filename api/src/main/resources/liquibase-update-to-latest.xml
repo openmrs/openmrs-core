@@ -8575,4 +8575,62 @@
 		<customChange class="org.openmrs.util.databasechange.EncryptSecretAnswersChangeSet"/>
 	</changeSet>
 
+    <changeSet id="201411101055-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit" />
+        </preConditions>
+        <comment>Temporarily removing foreign key constraint from person_attribute_type.edit_privilege column</comment>
+        <dropForeignKeyConstraint baseTableName="person_attribute_type" constraintName="privilege_which_can_edit" />
+    </changeSet>
+
+    <changeSet id="201411101056-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="privilege_definitions" />
+        </preConditions>
+        <comment>Temporarily removing foreign key constraint from role_privilege.privilege column</comment>
+        <dropForeignKeyConstraint baseTableName="role_privilege" constraintName="privilege_definitions" />
+    </changeSet>
+
+    <changeSet id="201411101057-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="privilege" columnName="privilege"/>
+        </preConditions>
+        <comment>Increasing the size of the privilege column in the privilege table</comment>
+        <ext:modifyColumn tableName="privilege">
+            <column name="privilege" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </ext:modifyColumn>
+    </changeSet>
+
+    <changeSet id="201411101058-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit" /></not>
+        </preConditions>
+        <comment>Adding foreign key constraint to person_attribute_type.edit_privilege column</comment>
+        <addForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
+                                 referencedTableName="privilege" referencedColumnNames="privilege" />
+    </changeSet>
+
+    <changeSet id="201411101106-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="role_privilege" columnName="privilege"/>
+        </preConditions>
+        <comment>Increasing the size of the privilege column in the role_privilege table</comment>
+        <ext:modifyColumn tableName="role_privilege">
+            <column name="privilege" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </ext:modifyColumn>
+    </changeSet>
+
+    <changeSet id="201411101107-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="privilege_definitions" /></not>
+        </preConditions>
+        <comment>Adding foreign key constraint to role_privilege.privilege column</comment>
+        <addForeignKeyConstraint constraintName="privilege_definitions" baseTableName="role_privilege" baseColumnNames="privilege"
+                                 referencedTableName="privilege" referencedColumnNames="privilege" />
+    </changeSet>
+
 </databaseChangeLog>
