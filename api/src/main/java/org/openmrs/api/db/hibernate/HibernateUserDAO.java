@@ -357,7 +357,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
 		
-		if (answer == null || answer.equals("")) {
+		if (answer == null || "".equals(answer)) {
 			return false;
 		}
 		

@@ -70,7 +70,7 @@ public class ProposeConceptFormController extends SimpleFormController {
 			cp.setEncounter(e);
 		}
 		
-		if (cp.getOriginalText().equals("")) {
+		if ("".equals(cp.getOriginalText())) {
 			errors.rejectValue("originalText", "error.null");
 		}
 		

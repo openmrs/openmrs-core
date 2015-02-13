@@ -64,11 +64,11 @@ public class ModulePropertiesFormController extends SimpleFormController {
 		
 		view = getSuccessView();
 		
-		if (!success.equals("")) {
+		if (!"".equals(success)) {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 		}
 		
-		if (!error.equals("")) {
+		if (!"".equals(error)) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
 		

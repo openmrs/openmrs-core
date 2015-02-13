@@ -258,7 +258,7 @@ public class ModuleUtil {
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
 		// There is a null check so no risk in keeping the literal on the right side
-		if (versionRange != null && !versionRange.equals("")) {
+		if (versionRange != null && !"".equals(versionRange)) {
 			String[] ranges = versionRange.split(",");
 			for (String range : ranges) {
 				// need to externalize this string

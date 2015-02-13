@@ -211,7 +211,7 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 	 * @return Whether this identifier type has a validator.
 	 */
 	public boolean hasValidator() {
-		return validator != null && !validator.equals("");
+		return validator != null && !"".equals(validator);
 	}
 	
 	/**

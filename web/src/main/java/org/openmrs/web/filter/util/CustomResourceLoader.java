@@ -152,7 +152,7 @@ public class CustomResourceLoader {
 		
 		String localespec = filename.substring(0, filename.indexOf('.'));
 		
-		if (localespec.equals("")) {
+		if ("".equals(localespec)) {
 			result = Locale.ENGLISH;
 		} else {
 			localespec = localespec.substring(1);

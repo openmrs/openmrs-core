@@ -105,7 +105,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	public boolean hasPrivilege(String privilege) {
 		
 		// All authenticated users have the "" (empty) privilege
-		if (privilege == null || privilege.equals("")) {
+		if (privilege == null || "".equals(privilege)) {
 			return true;
 		}
 		

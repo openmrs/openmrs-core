@@ -67,7 +67,7 @@ public class PortletTag extends ImportSupport {
 		}
 		
 		try {
-			if (url.equals("")) {
+			if ("".equals(url)) {
 				pageContext.getOut().print("Every portlet must be defined with a URI");
 			} else {
 				url = generatePortletUrl(url, moduleId);

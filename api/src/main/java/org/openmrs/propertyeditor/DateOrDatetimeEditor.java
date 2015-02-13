@@ -35,7 +35,7 @@ public class DateOrDatetimeEditor extends PropertyEditorSupport {
 	 */
 	@Override
 	public void setAsText(String asString) throws IllegalArgumentException {
-		if (asString == null || asString.equals("")) {
+		if (asString == null || "".equals(asString)) {
 			setValue(null);
 			return;
 		}

@@ -90,7 +90,7 @@ public class MLMObjectElement {
 	
 	private String getReadTypeAsString() {
 		String retVal = "";
-		if (readType != null && !readType.equals("") && !readType.equalsIgnoreCase("exist")) {
+		if (readType != null && !"".equals(readType) && !readType.equalsIgnoreCase("exist")) {
 			retVal = "." + readType;
 		} else {
 			retVal = ".last"; // TODO: for now default

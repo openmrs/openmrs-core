@@ -868,7 +868,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			personType = PERSON_TYPE.PATIENT;
 		} else if ("user".equals(personTypeStr)) {
 			personType = PERSON_TYPE.USER;
-		} else if (personTypeStr == null || personTypeStr.equals("")) {
+		} else if (personTypeStr == null || "".equals(personTypeStr)) {
 			personType = null;
 		} else {
 			throw new APIException("Person.invalid.personType.attribute", new Object[] { personTypeStr });

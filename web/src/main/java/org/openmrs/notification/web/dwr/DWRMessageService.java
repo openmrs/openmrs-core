@@ -37,7 +37,7 @@ public class DWRMessageService {
 				MessageService messageService = Context.getMessageService();
 				
 				String recipients = NotificationConstants.FEEDBACK_EMAIL_ADDRESS;
-				if (subject == null || subject.equals("")) {
+				if (subject == null || "".equals(subject)) {
 					subject = NotificationConstants.FEEDBACK_EMAIL_SUBJECT;
 				}
 				

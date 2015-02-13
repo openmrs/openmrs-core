@@ -100,7 +100,7 @@ public class AlertFormController extends SimpleFormController {
 				// create user list
 				if (userIdValues != null) {
 					for (String userId : userIdValues) {
-						if (!userId.trim().equals("")) {
+						if (!"".equals(userId.trim())) {
 							userIds.add(Integer.valueOf(userId.trim()));
 						}
 					}
@@ -109,7 +109,7 @@ public class AlertFormController extends SimpleFormController {
 				// create role list
 				if (roleValues != null) {
 					for (String role : roleValues) {
-						if (!role.trim().equals("")) {
+						if (!"".equals(role.trim())) {
 							roles.add(role.trim());
 						}
 					}

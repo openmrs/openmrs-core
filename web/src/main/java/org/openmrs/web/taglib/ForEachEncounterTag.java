@@ -68,7 +68,7 @@ public class ForEachEncounterTag extends BodyTagSupport {
 		}
 		
 		//First, sort the encounters
-		if (sortBy == null || sortBy.equals("")) {
+		if (sortBy == null || "".equals(sortBy)) {
 			sortBy = "encounterDatetime";
 		}
 		
