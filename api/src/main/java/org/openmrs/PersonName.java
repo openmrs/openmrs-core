@@ -127,31 +127,31 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		}
 		PersonName newName = new PersonName(Integer.valueOf(pn.getPersonNameId()));
 		if (pn.getGivenName() != null) {
-			newName.setGivenName(new String(pn.getGivenName()));
+			newName.setGivenName(String.valueOf(pn.getGivenName()));
 		}
 		if (pn.getMiddleName() != null) {
-			newName.setMiddleName(new String(pn.getMiddleName()));
+			newName.setMiddleName(String.valueOf(pn.getMiddleName()));
 		}
 		if (pn.getFamilyName() != null) {
-			newName.setFamilyName(new String(pn.getFamilyName()));
+			newName.setFamilyName(String.valueOf(pn.getFamilyName()));
 		}
 		if (pn.getFamilyName2() != null) {
-			newName.setFamilyName2(new String(pn.getFamilyName2()));
+			newName.setFamilyName2(String.valueOf(pn.getFamilyName2()));
 		}
 		if (pn.getFamilyNamePrefix() != null) {
-			newName.setFamilyNamePrefix(new String(pn.getFamilyNamePrefix()));
+			newName.setFamilyNamePrefix(String.valueOf(pn.getFamilyNamePrefix()));
 		}
 		if (pn.getFamilyNameSuffix() != null) {
-			newName.setFamilyNameSuffix(new String(pn.getFamilyNameSuffix()));
+			newName.setFamilyNameSuffix(String.valueOf(pn.getFamilyNameSuffix()));
 		}
 		if (pn.getPrefix() != null) {
-			newName.setPrefix(new String(pn.getPrefix()));
+			newName.setPrefix(String.valueOf(pn.getPrefix()));
 		}
 		if (pn.getDegree() != null) {
-			newName.setDegree(new String(pn.getDegree()));
+			newName.setDegree(String.valueOf(pn.getDegree()));
 		}
 		if (pn.getVoidReason() != null) {
-			newName.setVoidReason(new String(pn.getVoidReason()));
+			newName.setVoidReason(String.valueOf(pn.getVoidReason()));
 		}
 		
 		if (pn.getDateChanged() != null) {
