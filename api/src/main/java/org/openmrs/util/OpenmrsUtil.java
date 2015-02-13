@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -1797,7 +1798,7 @@ public class OpenmrsUtil {
 	 * @return file new file that is able to be written to
 	 */
 	public static File getOutFile(File dir, Date date, User user) {
-		
+		Random gen = new Random();
 		File outFile;
 		do {
 			// format to print date in filenmae
@@ -1821,7 +1822,7 @@ public class OpenmrsUtil {
 			}
 			
 			// the end of the filename is a randome number between 0 and 10000
-			filename.append((int) (Math.random() * 10000));
+			filename.append(gen.nextInt() * 10000);
 			filename.append(".xml");
 			
 			outFile = new File(dir, filename.toString());
@@ -1840,9 +1841,10 @@ public class OpenmrsUtil {
 	 * @return unique string
 	 */
 	public static String generateUid(Integer size) {
+		Random gen = new Random();
 		StringBuffer sb = new StringBuffer(size);
 		for (int i = 0; i < size; i++) {
-			int ch = (int) (Math.random() * 62);
+			int ch = gen.nextInt() * 62;
 			if (ch < 10) {
 				// 0-9
 				sb.append(ch);
