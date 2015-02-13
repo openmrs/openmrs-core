@@ -733,4 +733,51 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		}
 	}
 	
+	public Encounter copy() {
+		return copyHelper(new Encounter());
+	}
+	
+	/**
+	 * The purpose of this method is to allow subclasses of Encounter to delegate a portion of their
+	 * copy() method back to the superclass, in case the base class implementation changes.
+	 * 
+	 * @param target a Encounter that will have the data of <code>this</code> copied into it
+	 * @return the Encounter that was passed in, with data copied into it
+	 */
+	protected Encounter copyHelper(Encounter target) {
+		target.setEncounterDatetime(getEncounterDatetime());
+		target.setEncounterType(getEncounterType());
+		target.setForm(getForm());
+		// copy list of all observations
+		if (getAllObs() != null && !getAllObs().isEmpty()) {
+			for (Obs observation : getAllObs()) {
+				// if the observation hasn't been saved yet, no need to duplicate it
+				if (observation.getObsId() == null) {
+					target.addObs(observation);
+				} else {
+					target.addObs(Obs.newInstance(observation));
+				}
+			}
+		}
+		target.setLocation(getLocation());
+		// copy list of all orders
+		if (getOrders() != null && !getOrders().isEmpty()) {
+			for (Order order : getOrders()) {
+				// if the order hasn't been saved yet, no need to duplicate it
+				if (order.getOrderId() == null) {
+					target.addOrder(order);
+				} else {
+					target.addOrder(order.copy());
+				}
+			}
+		}
+		target.setPatient(getPatient());
+		target.setVisit(getVisit());
+		target.setCreator(Context.getAuthenticatedUser());
+		target.setVoided(getVoided());
+		target.setVoidedBy(getVoidedBy());
+		target.setVoidReason(getVoidReason());
+		return target;
+	}
+	
 }

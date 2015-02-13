@@ -678,7 +678,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should void non preferred patient
 	 * @should void all relationships for non preferred patient
 	 * @should not void relationships for same type and side with different relatives
-	 * @should audit moved encounters
+	 * @should audit copied encounters
 	 * @should audit moved visits
 	 * @should audit created patient programs
 	 * @should audit voided relationships
@@ -696,6 +696,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should audit prior gender
 	 * @should not copy over duplicate patient identifiers
 	 * @should fail if not preferred patient has unvoided orders
+	 * @should retain two copies of encounters one referring to not preferred patient and one to preferred patient
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException;

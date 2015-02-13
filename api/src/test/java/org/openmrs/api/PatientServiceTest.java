@@ -2744,10 +2744,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
-	 * @verifies audit moved encounters
+	 * @verifies audit copied encounters
 	 */
 	@Test
-	public void mergePatients_shouldAuditMovedEncounters() throws Exception {
+	public void mergePatients_shouldAuditCopiedEncounters() throws Exception {
 		//retrieve patients
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(7);
@@ -3554,5 +3554,27 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferredPatient = patientService.getPatient(8);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		patientService.mergePatients(preferredPatient, notPreferredPatient);
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 * @verifies retain two copies of encounters one referring to not preferred patient and one to preferred patient
+	 */
+	@Test
+	public void mergePatients_shouldRetainTwoCopiesOfEncountersOneReferringToNotPreferredPatientAndOneToPreferredPatient()
+	        throws Exception {
+		//TODO auto-generated
+		Patient preferredPatient = patientService.getPatient(999);
+		Patient notPreferredPatient = patientService.getPatient(7);
+		Assert.assertEquals(0, Context.getEncounterService().getEncounters(preferredPatient, null, null, null, null, null,
+		    null, null, null, true).size());
+		Assert.assertEquals(3, Context.getEncounterService().getEncounters(notPreferredPatient, null, null, null, null,
+		    null, null, null, null, true).size());
+		
+		patientService.mergePatients(preferredPatient, notPreferredPatient);
+		Assert.assertEquals(3, Context.getEncounterService().getEncounters(preferredPatient, null, null, null, null, null,
+		    null, null, null, true).size());
+		Assert.assertEquals(3, Context.getEncounterService().getEncounters(notPreferredPatient, null, null, null, null,
+		    null, null, null, null, true).size());
 	}
 }
