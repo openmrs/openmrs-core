@@ -14,12 +14,16 @@
 
 package org.openmrs;
 
+import java.io.Serializable;
+
 /**
  * Mapping Class between Encounters and Providers which allows many to many relationship.
  * 
  * @since 1.9
  */
-public class EncounterProvider extends BaseOpenmrsData {
+public class EncounterProvider extends BaseOpenmrsData implements Serializable {
+	
+	public static final long serialVersionUID = 1L;
 	
 	private Integer encounterProviderId;
 	
@@ -94,5 +98,26 @@ public class EncounterProvider extends BaseOpenmrsData {
 	 */
 	public void setEncounterRole(EncounterRole encounterRole) {
 		this.encounterRole = encounterRole;
+	}
+	
+	/**
+	 * @return copied encounter provider
+	 *
+	 * @should copy all EncounterProvider data
+	 */
+	public EncounterProvider copy() {
+		EncounterProvider target = new EncounterProvider();
+		target.setChangedBy(getChangedBy());
+		target.setCreator(getCreator());
+		target.setDateChanged(getDateChanged());
+		target.setDateCreated(getDateCreated());
+		target.setDateVoided(getDateVoided());
+		target.setVoided(getVoided());
+		target.setVoidedBy(getVoidedBy());
+		target.setVoidReason(getVoidReason());
+		target.setEncounter(getEncounter());
+		target.setEncounterRole(getEncounterRole());
+		target.setProvider(getProvider());
+		return target;
 	}
 }

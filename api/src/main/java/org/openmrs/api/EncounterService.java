@@ -938,4 +938,19 @@ public interface EncounterService extends OpenmrsService {
 	
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTER_ROLES })
 	public List<EncounterRole> getEncounterRolesByName(String name);
+	
+	/**
+	 *Transfer encounter to another patient
+	 *
+	 * @param encounter
+	 * @param patient
+	 * @return
+	 * @since 1.12
+	 *
+	 * @should transfer an encounter with orders and observations to given patient
+	 * @should void given encounter
+	 * @should void given encounter visit if given encounter is the only encounter
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
+	public Encounter transferEncounter(Encounter encounter, Patient patient);
 }
