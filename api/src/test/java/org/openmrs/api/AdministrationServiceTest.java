@@ -44,7 +44,7 @@ import org.openmrs.util.OpenmrsConstants;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.interceptor.DefaultKeyGenerator;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -858,7 +858,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	private List<Locale> getCachedSearchLocalesForCurrentUser() {
 		Object[] params = { Context.getLocale(), Context.getAuthenticatedUser() };
-		Object key = (new DefaultKeyGenerator()).generate(null, null, params);
+		Object key = (new SimpleKeyGenerator()).generate(null, null, params);
 		return (List<Locale>) cacheManager.getCache("userSearchLocales").get(key).get();
 	}
 	

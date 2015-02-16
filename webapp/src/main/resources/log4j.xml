@@ -16,6 +16,14 @@
 				value="%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n" />
 		</layout>
 	</appender>	
+	
+	<appender name="DEBUGGING_FILE_APPENDER" class="org.apache.log4j.RollingFileAppender">
+      <param name="append" value="false"/>
+      <param name="file" value="openmrs.log"/>
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+      </layout>
+   </appender>
 
 	<logger name="org.apache">
 		<level value="WARN" />
@@ -60,6 +68,9 @@
 		<level value="WARN" />
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="MEMORY_APPENDER" />
+		<!--
+		<appender-ref ref="DEBUGGING_FILE_APPENDER" />
+		-->
 	</root>
 
 </log4j:configuration>
