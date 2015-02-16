@@ -40,7 +40,7 @@ public class FieldTypeListControllerTest extends BaseWebContextSensitiveTest {
 	 * @verifies display a user friendly error message
 	 */
 	@Test
-	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void onSubmit_shouldDisplayAUserFriendlyErrorMessage() throws Exception {
 		MockHttpServletRequest post = webTestHelper.newPOST("/admin/forms/fieldType.list");
 		
