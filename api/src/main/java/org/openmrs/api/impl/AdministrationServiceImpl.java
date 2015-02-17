@@ -72,6 +72,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
 /**
@@ -1172,8 +1173,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (object == null) {
 			throw new APIException("error.null", (Object[]) null);
 		}
-		
-		dao.validate(object, errors);
+
+        //if (Context.getAdministrationService().getGlobalProperty("validation.disableValidation").equals("false")) {
+        //    dao.validate(object, errors);
+        //}
 	}
 	
 	/**
