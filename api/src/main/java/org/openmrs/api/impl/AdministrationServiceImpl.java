@@ -71,7 +71,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 /**
@@ -681,6 +681,33 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
 		// only try to save it if the global property has a key
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
+			if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
+				if (gp.getPropertyValue() != null) {
+					List<Locale> localeList = new ArrayList<Locale>();
+					
+					for (String localeString : gp.getPropertyValue().split(",")) {
+						localeList.add(LocaleUtility.fromSpecification(localeString.trim()));
+					}
+					if (!localeList.contains(LocaleUtility.getDefaultLocale())) {
+						gp.setPropertyValue(StringUtils.join(getAllowedLocales(), ", "));
+						throw new APIException(Context.getMessageSourceService().getMessage(
+						    "general.locale.localeListNotIncludingDefaultLocale",
+						    new Object[] { LocaleUtility.getDefaultLocale() }, null));
+					}
+				}
+			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE)) {
+				if (gp.getPropertyValue() != null) {
+					List<Locale> localeList = getAllowedLocales();
+					
+					if (!localeList.contains(LocaleUtility.fromSpecification(gp.getPropertyValue().trim()))) {
+						String value = gp.getPropertyValue();
+						gp.setPropertyValue(LocaleUtility.getDefaultLocale().toString());
+						throw new APIException((Context.getMessageSourceService().getMessage(
+						    "general.locale.defaultNotInAllowedLocalesList", new Object[] { value }, null)));
+					}
+				}
+			}
+			
 			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
 			notifyGlobalPropertyChange(gp);
@@ -844,13 +871,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	private String checkImplementationIdValidity(String implementationId, String description, String passphrase)
 	        throws APIException {
 		
-		if (!StringUtils.hasLength(implementationId)) {
+		if (StringUtils.isEmpty(implementationId)) {
 			throw new APIException("cannot.be.empty", new Object[] { "implementationid" });
 		}
-		if (!StringUtils.hasLength(description)) {
+		if (StringUtils.isEmpty(description)) {
 			throw new APIException("cannot.be.empty", new Object[] { "description" });
 		}
-		if (!StringUtils.hasLength(passphrase)) {
+		if (StringUtils.isEmpty(passphrase)) {
 			throw new APIException("cannot.be.empty", new Object[] { "passphrase" });
 		}
 		
@@ -1016,7 +1043,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		String propVal = Context.getAdministrationService().getGlobalProperty(propertyName);
-		if (!StringUtils.hasLength(propVal)) {
+		if (StringUtils.isEmpty(propVal)) {
 			return defaultValue;
 		}
 		

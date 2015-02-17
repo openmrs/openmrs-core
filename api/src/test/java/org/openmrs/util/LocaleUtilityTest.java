@@ -117,10 +117,16 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not fail with bogus global property value", method = "getDefaultLocale()")
 	public void getDefaultLocale_shouldNotFailWithBogusGlobalPropertyValue() throws Exception {
 		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, asdfasdf"));
+		
+		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "asdfasdf"));
 		
 		// check for nonnullness
 		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
+		
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, ""));
 	}
 	
 	/**
@@ -156,6 +162,9 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return locale object for global property", method = "getDefaultLocale()")
 	public void getDefaultLocale_shouldReturnLocaleObjectForGlobalProperty() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, ja"));
+		
 		GlobalProperty gp = Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
 		
@@ -247,8 +256,8 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a set of locales with a predictable order", method = "getLocalesInOrder()")
 	public void getLocalesInOrder_shouldReturnASetOfLocalesWithAPredictableOrder() throws Exception {
-		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "lu, sw_KE, en_US, en",
-		        "Test Allowed list of locales");
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
+		        "lu, sw_KE, en_US, en_GB", "Test Allowed list of locales");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		Locale lu_UG = new Locale("lu", "UG");
 		Context.setLocale(lu_UG);
@@ -269,7 +278,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return a set of locales with no duplicates", method = "getLocalesInOrder()")
 	public void getLocalesInOrder_shouldReturnASetOfLocalesWithNoDuplicates() throws Exception {
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
-		        "lu_UG, lu, sw_KE, en_US, en, en, sw_KE", "Test Allowed list of locales");
+		        "lu_UG, lu, sw_KE, en_US, en, en, en_GB, sw_KE", "Test Allowed list of locales");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		GlobalProperty defaultLocale = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "lu",
 		        "Test Allowed list of locales");
@@ -278,6 +287,9 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Context.setLocale(lu_UG);
 		//note that unique list of locales should be lu_UG, lu, sw_KE, en_US, en
 		Assert.assertEquals(6, LocaleUtility.getLocalesInOrder().size());
+		
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, ""));
 	}
 	
 	/**
@@ -304,6 +316,8 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDefaultLocale_shouldNotCacheLocaleWhenSessionIsNotOpen() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, ja"));
 		// set GP default locale to valid locale that is not the OpenmrsConstant default locale
 		GlobalProperty gp = Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
