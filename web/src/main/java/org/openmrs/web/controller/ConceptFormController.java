@@ -487,7 +487,7 @@ public class ConceptFormController extends SimpleFormController {
 			conceptMappings = ListUtils.lazyList(new ArrayList<ConceptMap>(concept.getConceptMappings()), FactoryUtils
 			        .instantiateFactory(ConceptMap.class));
 			
-			if (concept.isNumeric()) {
+			if (concept instanceof ConceptNumeric) {
 				ConceptNumeric cn = (ConceptNumeric) concept;
 				this.hiAbsolute = cn.getHiAbsolute();
 				this.lowAbsolute = cn.getLowAbsolute();
@@ -498,7 +498,7 @@ public class ConceptFormController extends SimpleFormController {
 				this.precise = cn.getPrecise();
 				this.displayPrecision = cn.getDisplayPrecision();
 				this.units = cn.getUnits();
-			} else if (concept.isComplex()) {
+			} else if (concept instanceof ConceptComplex) {
 				ConceptComplex complex = (ConceptComplex) concept;
 				this.handlerKey = complex.getHandler();
 			}
