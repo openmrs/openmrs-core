@@ -209,6 +209,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return dao.getPatient(patientId);
 	}
 	
+	/** 
+	 * @see org.openmrs.api.PatientService#getPatientOrPromotePerson(Integer) 
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Patient getPatientOrPromotePerson(Integer patientOrPersonId) {
@@ -847,6 +850,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		Context.getPersonService().savePersonMergeLog(personMergeLog);
 	}
 	
+	/** 
+	 * merge Program Enrolments  
+	 * @param Patient preferred to merge Program Enrolments 
+	 * @param Patient notPreferred to merge Program Enrolments 
+	 * @param PersonMergeLogData mergedData to merge Program Enrolments 
+	 */
+	
 	private void mergeProgramEnrolments(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all program enrollments
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
@@ -861,6 +871,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * merge Visits 
+	 * @param Patient preferred to merge visits
+	 * @param Patient notPreferred to merge visits 
+	 * @param mergedData to merge visits
+	 */
 	private void mergeVisits(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all visits, including voided ones (encounters will be handled below)
 		//TODO: this should be a copy, not a move
@@ -877,6 +893,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * merge Encounters 
+	 * @param Patient preferred to merge encounters 
+	 * @param Patient notPreferred to merge encounters 
+	 * @param Patient mergedData to merge encounters 
+	 */
 	private void mergeEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
@@ -888,6 +910,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			mergedData.addMovedEncounter(persisted.getUuid());
 		}
 	}
+	
+	/** 
+	 * merge Relationships  
+	 * @param Patient preferred to merge relationships 
+	 * @param Patient notPreferred to merge relationships 
+	 * @param PersonMergeLogData mergedData to merge relationships 
+	 */
 	
 	private void mergeRelationships(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all relationships
@@ -951,6 +980,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * merge Observations which are not contained in Encounters  
+	 * @param preferred to merge Observations which are not contained in Encounters  
+	 * @param notPreferred to merge Observations which are not contained in Encounters  
+	 * @param PersonMergeLogData mergedData 
+	 */
 	private void mergeIdentifiers(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all identifiers
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
@@ -986,6 +1021,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * merge date of death 
+	 * @param Patient preferred to merge date of death 
+	 * @param Patient notPreferred to merge date of death 
+	 * @param PersonMergeLogData mergedData to merge date of death 
+	 */
 	private void mergeDateOfDeath(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
 		if (preferred.getDeathDate() == null) {
@@ -1000,6 +1041,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * merge date of birth  
+	 * @param Patient preferred to merge date of birth 
+	 * @param Patient notPreferred to merge date of birth 
+	 * @param PersonMergeLogData mergedData to merge date of birth 
+	 */
 	private void mergeDateOfBirth(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
 		mergedData.setPriorDateOfBirthEstimated(preferred.isBirthdateEstimated());
@@ -1009,6 +1056,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * merge Person's attributes  
+	 * @param Patient preferred to merge Person's attributes 
+	 * @param Patient notPreferred to merge Person's attributes 
+	 * @param PersonMergeLogData mergedData to merge Person's attributes 
+	 */
 	private void mergePersonAttributes(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy person attributes
 		for (PersonAttribute attr : notPreferred.getAttributes()) {
@@ -1022,6 +1075,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * merge Gender Information 
+	 * @param Patient preferred to merge Gender Information 
+	 * @param Patient notPreferred to merge Gender Information 
+	 * @param PersonMergeLogData mergedData to merge Gender Information 
+	 */
 	private void mergeGenderInformation(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all other patient info
 		mergedData.setPriorGender(preferred.getGender());
@@ -1030,6 +1089,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * merge names  
+	 * @param Patient preferred to merge names 
+	 * @param Patient notPreferred to merge names 
+	 * @param PersonMergeLogData mergedData to merge names 
+	 */
 	private void mergeNames(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all names
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
@@ -1050,6 +1115,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * construct temporary name  
+	 * @param PersonName newName 
+	 * @return PersonName 
+	 */
 	private PersonName constructTemporaryName(PersonName newName) {
 		PersonName tmpName = PersonName.newInstance(newName);
 		tmpName.setPersonNameId(null);
@@ -1061,6 +1131,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		tmpName.setUuid(UUID.randomUUID().toString());
 		return tmpName;
 	}
+	
+	/** 
+	 * merge address  
+	 * @param Patient preferred to merge address  
+	 * @param Patient notPreferred to merge address 
+	 * @param PersonMergeLogData mergedData to merge address 
+	 * @throws SerializationException to merge address 
+	 */
 	
 	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData)
 	        throws SerializationException {
@@ -1483,6 +1561,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return identifierValidators.get(identifierValidator);
 	}
 	
+	/** 
+	 * gets Identifier Validator  
+	 * @return IdentifierValidator 
+	 */
 	public Map<Class<? extends IdentifierValidator>, IdentifierValidator> getIdentifierValidators() {
 		if (identifierValidators == null) {
 			identifierValidators = new LinkedHashMap<Class<? extends IdentifierValidator>, IdentifierValidator>();

@@ -103,6 +103,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return dao.getPeople(searchPhrase, dead);
 	}
 	
+	/** 
+	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean, Boolean) 
+	 */
+	
 	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException {
 		
 		return dao.getPeople(searchPhrase, dead, voided);
@@ -301,6 +305,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public void deletePersonAttributeType(PersonAttributeType type) {
 		dao.deletePersonAttributeType(type);
 	}
+	
+	/** 
+	 * @see org.openmrs.api.PatientService#unretirePatientIdentifierType(org.openmrs.PatientIdentifierType) 
+	 */
 	
 	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException {
 		checkIfPersonAttributeTypesAreLocked();

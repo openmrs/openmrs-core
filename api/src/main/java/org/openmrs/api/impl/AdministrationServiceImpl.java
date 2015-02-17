@@ -1218,6 +1218,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		return new ArrayList<Locale>(locales);
 	}
 	
+	/**
+	 * @see org.openmrs.api.AdministrationService#setImplementationIdHttpClient()
+	 */
 	@Override
 	public void setImplementationIdHttpClient(HttpClient implementationIdHttpClient) {
 		this.implementationIdHttpClient = implementationIdHttpClient;
@@ -1230,6 +1233,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public boolean isDatabaseStringComparisonCaseSensitive() {
 		return Boolean.valueOf(getGlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, "true"));
 	}
+	
+	/** 
+	 * get the GlobalPropertyListeners  
+	 * @return list of Global Property Listener 
+	 */
 	
 	private List<GlobalPropertyListener> getGlobalPropertyListeners() {
 		return Context.getRegisteredComponent("openmrsEventListeners", EventListeners.class).getGlobalPropertyListeners();

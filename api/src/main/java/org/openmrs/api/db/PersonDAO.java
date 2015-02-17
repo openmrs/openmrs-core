@@ -55,6 +55,10 @@ public interface PersonDAO {
 	 */
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws DAOException;
 	
+	/**  
+	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean, Boolean)  
+	 */
+	
 	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws DAOException;
 	
 	/**
