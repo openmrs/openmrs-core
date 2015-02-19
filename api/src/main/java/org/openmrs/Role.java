@@ -45,6 +45,8 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private Set<Role> childRoles;
 	
+	private Set<Role> allChildRoles;
+	
 	// Constructors
 	
 	/** default constructor */

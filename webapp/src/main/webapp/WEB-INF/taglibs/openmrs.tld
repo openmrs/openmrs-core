@@ -132,6 +132,24 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+	<name>inheritingItems</name>
+ 
+ 	<required>false</required>
+ 
+ 	<rtexprvalue>true</rtexprvalue>
+ 
+	</attribute>
+ 
+ 	<attribute>
+ 
+	<name>tooltipText</name>
+ 
+ 		<required>false</required>
+ 
+	<rtexprvalue>true</rtexprvalue>
+ 
+ </attribute>
+ <attribute>
 		<name>currentItems</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>

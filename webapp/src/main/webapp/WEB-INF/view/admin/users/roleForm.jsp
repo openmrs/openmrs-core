@@ -96,7 +96,7 @@
 			<br/>
 			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
-				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" />
+				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" inheritingItems="${role.allChildRoles}" tooltipText="${error.role.cannotInherit}"/> 		
 			</c:if>
 		</td>
 	</tr>
@@ -119,7 +119,7 @@
      <c:if test="${role.role != null}">
        <th><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></th>
        <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub>${role.uuid}</sub></font></td>
-     </c:if>
+   </c:if>
    </tr>
 </table>
 
@@ -127,8 +127,8 @@
 </form>
 
 <script type="text/javascript">
- document.forms[0].elements[0].focus();
- <c:if test="${role.role != null}">
+document.forms[0].elements[0].focus();
+<c:if test="${role.role != null}">
    updateRoleName('${role.role}');
  </c:if>
 </script>
