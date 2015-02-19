@@ -39,12 +39,12 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.interceptor.DefaultKeyGenerator;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -63,6 +63,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
+	
+	@Autowired
+	CacheManager cacheManager;
 	
 	public UserServiceImpl() {
 	}
@@ -84,7 +87,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
 	 * @deprecated replaced by {@link #createUser(User, String)}
 	 */
-	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public User saveUser(User user, String password) throws APIException {
 		if (user.getUserId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_USERS);
@@ -110,6 +112,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (user.getUserId() == null && password != null) {
 			OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 		}
+		
+		// clear the cached user locale
+		Object[] params = { Context.getLocale(), Context.getAuthenticatedUser() };
+		Object key = (new DefaultKeyGenerator()).generate(null, null, params);
+		cacheManager.getCache("userSearchLocales").evict(key);
 		
 		return dao.saveUser(user, password);
 	}
