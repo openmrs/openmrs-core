@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 /**
@@ -239,4 +240,10 @@ public class InitializationWizardModel {
 	 * The total number of steps. e.g Step ... of 5
 	 */
 	public Integer numberOfSteps = 1;
+	
+	/**
+	 * The path to the application data directory
+	 */
+	public String dataDirectory = OpenmrsUtil.getApplicationDataDirectory();
+	
 }

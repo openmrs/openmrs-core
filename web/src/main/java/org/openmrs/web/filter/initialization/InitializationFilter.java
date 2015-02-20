@@ -118,6 +118,11 @@ public class InitializationFilter extends StartupFilter {
 	private final String OTHER_RUNTIME_PROPS = "otherruntimeproperties.vm";
 	
 	/**
+	 * This page lets the user set a custom application data directory
+	 */
+	private final String APPLICATION_DATA_DIRECTORY = "applicationdatadirectory.vm";
+	
+	/**
 	 * A page that tells the user that everything is collected and will now be processed
 	 */
 	private static final String WIZARD_COMPLETE = "wizardcomplete.vm";
@@ -417,7 +422,7 @@ public class InitializationFilter extends StartupFilter {
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				page = TESTING_REMOTE_DETAILS_SETUP;
 				wizardModel.currentStepNumber = 1;
-				wizardModel.numberOfSteps = skipDatabaseSetupPage() ? 1 : 3;
+				wizardModel.numberOfSteps = skipDatabaseSetupPage() ? 2 : 4;
 			} else {
 				page = DATABASE_SETUP;
 				wizardModel.currentStepNumber = 1;
@@ -572,26 +577,52 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			if (errors.isEmpty()) { // go to next page
-				page = InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod) ? WIZARD_COMPLETE
-				        : OTHER_RUNTIME_PROPS;
+				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
+					wizardModel.currentStepNumber = 4;
+					page = APPLICATION_DATA_DIRECTORY;
+				} else {
+					page = OTHER_RUNTIME_PROPS;
+				}
 			}
 			
 			renderTemplate(page, referenceMap, httpResponse);
 		} // step three
-		else if (OTHER_RUNTIME_PROPS.equals(page)) {
+		else if (OTHER_RUNTIME_PROPS.equals(page) || APPLICATION_DATA_DIRECTORY.equals(page)) {
 			
 			if (goBack(httpRequest)) {
-				renderTemplate(DATABASE_TABLES_AND_USER, referenceMap, httpResponse);
+				page = DATABASE_TABLES_AND_USER;
+				if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
+					wizardModel.currentStepNumber -= 1;
+					if (skipDatabaseSetupPage()) {
+						page = TESTING_REMOTE_DETAILS_SETUP;
+					}
+				}
+				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
 			
-			wizardModel.moduleWebAdmin = "yes".equals(httpRequest.getParameter("module_web_admin"));
-			wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
+			wizardModel.dataDirectory = httpRequest.getParameter("dataDirectory");
 			
-			if (wizardModel.createTables) { // go to next page if they are creating tables
-				page = ADMIN_USER_SETUP;
-			} else { // skip a page
-				page = IMPLEMENTATION_ID_SETUP;
+			// throw back if the application data directory is not valid
+			if (!OpenmrsUtil.canWrite(new File(wizardModel.dataDirectory))) {
+				errors.put(ErrorMessageConstants.ERROR_UNWRITABLE_DATA_DIRECTORY, null);
+				renderTemplate(page, referenceMap, httpResponse);
+				return;
+			}
+			
+			wizardModel.runtimePropertiesPath = getRuntimePropertiesFile(wizardModel.dataDirectory).getAbsolutePath();
+			
+			if (OTHER_RUNTIME_PROPS.equals(page)) {
+				wizardModel.moduleWebAdmin = "yes".equals(httpRequest.getParameter("module_web_admin"));
+				wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
+				
+				if (wizardModel.createTables) { // go to next page if they are creating tables
+					page = ADMIN_USER_SETUP;
+				} else { // skip a page
+					page = IMPLEMENTATION_ID_SETUP;
+				}
+			} else {
+				page = WIZARD_COMPLETE;
 			}
 			
 			renderTemplate(page, referenceMap, httpResponse);
@@ -672,11 +703,7 @@ public class InitializationFilter extends StartupFilter {
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
 				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					if (skipDatabaseSetupPage()) {
-						page = TESTING_REMOTE_DETAILS_SETUP;
-					} else {
-						page = DATABASE_TABLES_AND_USER;
-					}
+					page = APPLICATION_DATA_DIRECTORY;
 				} else {
 					page = IMPLEMENTATION_ID_SETUP;
 				}
@@ -763,7 +790,7 @@ public class InitializationFilter extends StartupFilter {
 								}
 								
 								wizardModel.databaseName = InitializationWizardModel.DEFAULT_DATABASE_NAME;
-								page = WIZARD_COMPLETE;
+								page = APPLICATION_DATA_DIRECTORY;
 							} else {
 								page = DATABASE_SETUP;
 								wizardModel.currentStepNumber = 2;
@@ -964,14 +991,17 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Convenience method to load the runtime properties file.
 	 *
+	 * @param customDir Path to the custom application data directory
 	 * @return the runtime properties file.
 	 */
-	private File getRuntimePropertiesFile() {
+	private File getRuntimePropertiesFile(String customDir) {
 		File file = null;
 		
 		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(WebConstants.WEBAPP_NAME);
 		if (pathName != null) {
 			file = new File(pathName);
+		} else if (customDir != null) {
+			file = new File(customDir, getRuntimePropertiesFileName());
 		} else {
 			file = new File(OpenmrsUtil.getApplicationDataDirectory(), getRuntimePropertiesFileName());
 		}
@@ -979,6 +1009,10 @@ public class InitializationFilter extends StartupFilter {
 		log.debug("Using file: " + file.getAbsolutePath());
 		
 		return file;
+	}
+	
+	private File getRuntimePropertiesFile() {
+		return getRuntimePropertiesFile(null);
 	}
 	
 	private String getRuntimePropertiesFileName() {
@@ -1437,6 +1471,7 @@ public class InitializationFilter extends StartupFilter {
 						// save the properties for startup purposes
 						Properties runtimeProperties = new Properties();
 						
+						runtimeProperties.put("application_data_directory", wizardModel.dataDirectory);
 						runtimeProperties.put("connection.url", finalDatabaseConnectionString);
 						runtimeProperties.put("connection.username", connectionUsername);
 						runtimeProperties.put("connection.password", connectionPassword.toString());
