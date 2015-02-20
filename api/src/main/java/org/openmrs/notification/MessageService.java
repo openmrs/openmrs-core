@@ -62,7 +62,18 @@ public interface MessageService {
 	
 	// Prepare message methods
 	public Message createMessage(String subject, String message) throws MessageException;
-	
+	/**
+	 * create Message with details about the recipients, sender,subject,message,attachment,attachmentContentType and attachementFileName
+	 * @param recipients to mention the recipients of the message
+	 * @param sender to mention the sender of the message
+	 * @param subject to mention the subject line of the message
+	 * @param message to mention the message for which it was created 
+	 * @param attachment for the attachment to be added with the message 
+	 * @param attachmentContentType for the attachment's content type 
+	 * @param attachmentFileName for the file name of the attachment to be added with the message
+	 * @return Message
+	 * @throws MessageException
+	 */
 	public Message createMessage(String sender, String subject, String message) throws MessageException;
 	
 	/**

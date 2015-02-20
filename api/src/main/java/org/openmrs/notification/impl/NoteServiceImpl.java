@@ -33,11 +33,18 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	private static final long serialVersionUID = 5649635694623650303L;
 	
 	private NoteDAO dao;
-	
+	/**
+	 * get the Note data access object 
+	 * @return Note data access object  object 
+	 */
 	private NoteDAO getNoteDAO() {
 		return dao;
 	}
-	
+	/**
+	 * set the Note data access object 
+	 * @param NoteDAO dao to set the Note data access object
+	 * @param dao
+	 */
 	public void setNoteDAO(NoteDAO dao) {
 		this.dao = dao;
 	}
