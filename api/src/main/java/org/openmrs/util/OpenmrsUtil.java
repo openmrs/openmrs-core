@@ -461,7 +461,7 @@ public class OpenmrsUtil {
 		Set<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
 		
 		for (Class cls : classes) {
-			Field flds[] = cls.getDeclaredFields();
+			Field[] flds = cls.getDeclaredFields();
 			for (Field fld : flds) {
 				String fieldValue = null;
 				
@@ -500,7 +500,7 @@ public class OpenmrsUtil {
 	public static Map<String, String> getCoreRoles() {
 		Map<String, String> roles = new HashMap<String, String>();
 		
-		Field flds[] = RoleConstants.class.getDeclaredFields();
+		Field[] flds = RoleConstants.class.getDeclaredFields();
 		for (Field fld : flds) {
 			String fieldValue = null;
 			
