@@ -129,46 +129,43 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	@Override
 	public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
-		// Synchronize as in ClassLoader#loadClasss
-		synchronized (getClassLoadingLock(name)) {
-			// Check if the class has already been loaded by this class loader
-			Class<?> c = getLoadedClass(name);
+		// Check if the class has already been loaded by this class loader
+		Class<?> c = getLoadedClass(name);
+		if (c == null) {
+			// Try loading from any module
+			try {
+				c = loadModuleClass(name, ModuleFactory.getModuleClassLoaders());
+			}
+			catch (ClassNotFoundException e) {
+				//Continue trying...
+			}
+			
 			if (c == null) {
-				// Try loading from any module
+				// Try loading from web container
 				try {
-					c = loadModuleClass(name, ModuleFactory.getModuleClassLoaders());
+					if (getParent() instanceof OpenmrsClassLoader) {
+						throw new RuntimeException(getParent().toString());
+					}
+					c = getParent().loadClass(name);
 				}
 				catch (ClassNotFoundException e) {
-					//Continue trying...
+					// Continue trying...
 				}
-				
-				if (c == null) {
-					// Try loading from web container
-					try {
-						if (getParent() instanceof OpenmrsClassLoader) {
-							throw new RuntimeException(getParent().toString());
-						}
-						c = getParent().loadClass(name);
-					}
-					catch (ClassNotFoundException e) {
-						// Continue trying...
-					}
-				}
-				
-				if (c == null) {
-					// Finally try loading from this class loader
-					c = this.findClass(name);
-				}
-				
-				addLoadedClass(name, c);
 			}
 			
-			if (resolve) {
-				resolveClass(c);
+			if (c == null) {
+				// Finally try loading from this class loader
+				c = this.findClass(name);
 			}
 			
-			return c;
+			addLoadedClass(name, c);
 		}
+		
+		if (resolve) {
+			resolveClass(c);
+		}
+		
+		return c;
 	}
 	
 	public Class<?> getLoadedClass(String name) {
