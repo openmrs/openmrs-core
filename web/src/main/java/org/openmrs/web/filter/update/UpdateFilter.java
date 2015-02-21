@@ -144,7 +144,7 @@ public class UpdateFilter extends StartupFilter {
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
+	protected synchronized void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
 		
 		String page = httpRequest.getParameter("page");
@@ -350,9 +350,13 @@ public class UpdateFilter extends StartupFilter {
 					String storedPassword = results.getString(2);
 					String salt = results.getString(3);
 					String passwordToHash = password + salt;
-					return Security.hashMatches(storedPassword, passwordToHash) && isSuperUser(connection, userId);
+					boolean result = Security.hashMatches(storedPassword, passwordToHash) && isSuperUser(connection, userId);
+					statement.close();
+					return result;
 				}
 			}
+			// Close statement
+			statement.close();
 		}
 		catch (Exception e) {
 			log

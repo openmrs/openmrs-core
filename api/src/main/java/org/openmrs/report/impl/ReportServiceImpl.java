@@ -224,6 +224,10 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.ReportService#setRenderers(java.util.Map)
 	 */
 	public void setRenderers(Map<Class<? extends ReportRenderer>, ReportRenderer> newRenderers) throws APIException {
+		if (newRenderers == null) {
+			renderers = null;
+			return;
+		}
 		for (Map.Entry<Class<? extends ReportRenderer>, ReportRenderer> entry : newRenderers.entrySet()) {
 			registerRenderer(entry.getKey(), entry.getValue());
 		}

@@ -71,6 +71,9 @@ public class FilterUtil {
 							currentLocale = results.getString(1);
 						}
 					}
+					
+					//close statement
+					statement.close();
 				}
 				
 				// if locale is still null we should try to retrieve system locale global property's value
@@ -180,6 +183,8 @@ public class FilterUtil {
 				if (statement.executeUpdate() != 1) {
 					log.warn("Unable to set system default locale property.");
 				}
+				// close statement to release resources
+				statement.close();
 			}
 			catch (Exception e) {
 				log.warn("Locale " + locale + " could not be set for user with id " + userId + " .", e);
