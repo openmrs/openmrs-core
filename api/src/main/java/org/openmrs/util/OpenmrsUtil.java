@@ -2294,7 +2294,7 @@ public class OpenmrsUtil {
 			try {
 				int minLength = Integer.parseInt(lengthGp);
 				if (password.length() < minLength) {
-					throw new ShortPasswordException(getMessage("error.password.length", lengthGp));
+					throw new ShortPasswordException(getMessage("error.password.belowStandard", lengthGp));
 				}
 			}
 			catch (NumberFormatException nfe) {
@@ -2305,15 +2305,15 @@ public class OpenmrsUtil {
 		}
 		
 		if ("true".equals(caseGp) && !containsUpperAndLowerCase(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase"));
+			throw new InvalidCharactersPasswordException(getMessage("error.password.belowStandard"));
 		}
 		
 		if ("true".equals(digitGp) && !containsDigit(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber"));
+			throw new InvalidCharactersPasswordException(getMessage("error.password.belowStandard"));
 		}
 		
 		if ("true".equals(nonDigitGp) && containsOnlyDigits(password)) {
-			throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter"));
+			throw new InvalidCharactersPasswordException(getMessage("error.password.belowStandard"));
 		}
 		
 		if (StringUtils.isNotEmpty(regexGp)) {

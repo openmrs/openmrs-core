@@ -263,7 +263,7 @@ public class ChangePasswordFormController {
 			if (newPassword.isNotSameAsConfirmPassword()) {
 				errors.reject("error.password.match");
 			} else if (newPassword.isEmpty()) {
-				errors.reject("error.password.weak");
+				errors.reject("error.password.belowStandard");
 			} else {
 				try {
 					newPassword.checkStrength(user);

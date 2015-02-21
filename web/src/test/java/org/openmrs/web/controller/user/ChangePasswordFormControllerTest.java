@@ -95,7 +95,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 		        .getAuthenticatedUser(), errors);
 		
 		assertTrue(errors.hasErrors());
-		assertEquals("error.password.weak", errors.getGlobalError().getCode());
+		assertEquals("error.password.belowStandard", errors.getGlobalError().getCode());
 	}
 	
 	/**
@@ -111,7 +111,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 		        .getAuthenticatedUser(), errors);
 		
 		assertTrue(errors.hasErrors());
-		assertEquals("error.password.requireMixedCase", errors.getGlobalError().getCode());
+		assertEquals("error.password.belowStandard", errors.getGlobalError().getCode());
 	}
 	
 	/**
