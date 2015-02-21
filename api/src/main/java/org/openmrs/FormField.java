@@ -277,7 +277,7 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @return Returns the required status.
 	 */
 	public Boolean isRequired() {
-		return (required == null ? false : required);
+		return required == null ? false : required;
 	}
 	
 	/**

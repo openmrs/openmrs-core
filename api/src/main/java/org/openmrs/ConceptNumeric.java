@@ -258,7 +258,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	 */
 	@Override
 	public boolean isNumeric() {
-		return (getDatatype().getName().equals("Numeric"));
+		return getDatatype().getName().equals("Numeric");
 	}
 	
 	/**
@@ -286,6 +286,6 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 	
 	public Boolean isAllowDecimal() {
-		return (allowDecimal == null ? false : allowDecimal);
+		return allowDecimal == null ? false : allowDecimal;
 	}
 }
