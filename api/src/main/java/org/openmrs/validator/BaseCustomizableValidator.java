@@ -44,8 +44,7 @@ public abstract class BaseCustomizableValidator implements Validator {
 						++numFound;
 					}
 				}
-				if (at.getMinOccurs() > 0) {
-					if (numFound < at.getMinOccurs()) {
+				if (at.getMinOccurs() > 0 && numFound < at.getMinOccurs()) {
 						// report an error
 						if (at.getMinOccurs() == 1) {
 							errors.rejectValue("activeAttributes", "error.required", new Object[] { at.getName() }, null);
@@ -53,13 +52,10 @@ public abstract class BaseCustomizableValidator implements Validator {
 							errors.rejectValue("activeAttributes", "attribute.error.minOccurs", new Object[] { at.getName(),
 							        at.getMinOccurs() }, null);
 						}
-					}
 				}
-				if (at.getMaxOccurs() != null) {
-					if (numFound > at.getMaxOccurs()) {
+				if (at.getMaxOccurs() != null && numFound > at.getMaxOccurs()) {
 						errors.rejectValue("activeAttributes", "attribute.error.maxOccurs", new Object[] { at.getName(),
 						        at.getMaxOccurs() }, null);
-					}
 				}
 			}
 		}

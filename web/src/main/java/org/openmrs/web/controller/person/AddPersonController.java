@@ -85,10 +85,9 @@ public class AddPersonController extends SimpleFormController {
 			// if they picked a person, go to the type of view that was requested
 			
 			// if they selected view, do a double check to make sure that type of person already exists
-			if ("view".equals(viewType)) {
+			if ("view".equals(viewType) && "patient".equals(personType)) {
 				// TODO Do we even want to ever redirect to a 'view'.  I'm torn between jumping the DAs right to the 
 				// dashboard or jumping them to the short edit screen to make (potential) adjustments
-				if ("patient".equals(personType)) {
 					try {
 						if (Context.getPatientService().getPatient(Integer.valueOf(personId)) == null) {
 							viewType = "shortEdit";
@@ -98,7 +97,6 @@ public class AddPersonController extends SimpleFormController {
 						// if there is no patient yet, they must go through those motions
 						viewType = "shortEdit";
 					}
-				}
 			}
 			
 			// redirect to the appropriate url

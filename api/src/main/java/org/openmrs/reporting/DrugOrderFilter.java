@@ -129,8 +129,7 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		Integer within_last_days = getWithinLastDays();
 		Integer within_last_months = getWithinLastMonths();
 		
-		if (!currentlyCase) {
-			if (within_last_days != null || within_last_months != null) {
+		if (!currentlyCase && (within_last_days != null || within_last_months != null)) {
 				if (within_last_months != null)
 					ret.append(" ").append(
 					    mss.getMessage("reporting.WithinTheLastMonths", new Object[] { within_last_months }, locale));
@@ -139,7 +138,6 @@ public class DrugOrderFilter extends CachingPatientFilter {
 					ret.append(" ").append(
 					    mss.getMessage("reporting.WithinTheLastDays", new Object[] { within_last_days }, locale));
 				
-			}
 		}
 		if (getSinceDate() != null) {
 			ret.append(" ").append(mss.getMessage("reporting.since", new Object[] { df.format(getSinceDate()) }, locale));

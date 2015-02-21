@@ -100,10 +100,9 @@ public class DWREncounterService {
 			if (phrase.matches("\\d+")) {
 				// user searched on a number.  Insert concept with corresponding encounterId
 				Encounter e = es.getEncounter(Integer.valueOf(phrase));
-				if (e != null && (patientId == null || patientId.equals(e.getPatient().getPatientId()))) {
-					if (!e.isVoided() || includeVoided == true) {
+				if ((e != null && (patientId == null || patientId.equals(e.getPatient().getPatientId()))) 
+					&& (!e.isVoided() || includeVoided == true)) {
 						encs.add(e);
-					}
 				}
 			}
 			
@@ -157,10 +156,8 @@ public class DWREncounterService {
 				if (phrase.matches("\\d+")) {
 					// user searched on a number
 					Encounter e = es.getEncounter(Integer.valueOf(phrase));
-					if (e != null) {
-						if (!e.isVoided() || includeVoided == true) {
+					if (e != null && (!e.isVoided() || includeVoided == true)) {
 							encounterCount++;
-						}
 					}
 				}
 			}

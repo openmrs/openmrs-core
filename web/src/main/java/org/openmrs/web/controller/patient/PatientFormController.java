@@ -201,19 +201,15 @@ public class PatientFormController extends PersonFormController {
 					if (format == null) {
 						formatStr = "";
 					}
-					if (formatDescription != null) {
-						if (formatDescription.length() > 0) {
+					if (formatDescription != null && formatDescription.length() > 0) {
 							formatStr = formatDescription;
-						}
 					}
 					String[] args = { identifier, formatStr };
 					try {
-						if (format != null) {
-							if (format.length() > 0 && !identifier.matches(format)) {
+						if (format != null && format.length() > 0 && !identifier.matches(format)) {
 								log.error("Identifier format is not valid: (" + format + ") " + identifier);
 								String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
 								errors.rejectValue("identifiers", msg);
-							}
 						}
 					}
 					catch (Exception e) {

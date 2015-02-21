@@ -737,10 +737,8 @@ public class DatabaseUpdater {
 		try {
 			Liquibase liquibase = getLiquibase(null, null);
 			database = liquibase.getDatabase();
-			if (database.hasDatabaseChangeLogLockTable()) {
-				if (isLocked()) {
+			if (database.hasDatabaseChangeLogLockTable() && isLocked()) {
 					LockService.getInstance(database).forceReleaseLock();
-				}
 			}
 		}
 		catch (Exception e) {

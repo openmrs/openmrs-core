@@ -161,20 +161,16 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			
 			for (Obs obs : encounter.getAllObs(true)) {
 				// if the date was changed
-				if (OpenmrsUtil.compare(originalDate, newDate) != 0) {
+				if (OpenmrsUtil.compare(originalDate, newDate) != 0 && OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
 					
 					// if the obs datetime is the same as the
 					// original encounter datetime, fix it
-					if (OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
 						obs.setObsDatetime(newDate);
-					}
 					
 				}
 				
-				if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation)) {
-					if (obs.getLocation().equals(originalLocation)) {
+				if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation) && obs.getLocation().equals(originalLocation)) {
 						obs.setLocation(newLocation);
-					}
 				}
 				
 				// if the Person in the obs doesn't match the Patient in the

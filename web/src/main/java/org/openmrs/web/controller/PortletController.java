@@ -176,9 +176,8 @@ public class PortletController implements Controller {
 			if (o != null) {
 				String patientVariation = "";
 				Integer patientId = (Integer) o;
-				if (!model.containsKey("patient")) {
+				if (!model.containsKey("patient") && Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
 					// we can't continue if the user can't view patients
-					if (Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
 						Patient p = Context.getPatientService().getPatient(patientId);
 						model.put("patient", p);
 						if (p.isDead()) {
@@ -223,11 +222,9 @@ public class PortletController implements Controller {
 										        || obs.getObsDatetime().compareTo(latestWeight.getObsDatetime()) > 0) {
 											latestWeight = obs;
 										}
-									} else if (obs.getConcept().equals(heightConcept)) {
-										if (latestHeight == null
-										        || obs.getObsDatetime().compareTo(latestHeight.getObsDatetime()) > 0) {
+									} else if (obs.getConcept().equals(heightConcept) && (latestHeight == null
+											|| obs.getObsDatetime().compareTo(latestHeight.getObsDatetime()) > 0)) {
 											latestHeight = obs;
-										}
 									}
 								}
 								if (latestWeight != null) {
@@ -286,7 +283,6 @@ public class PortletController implements Controller {
 						model.put("personId", personId);
 						
 						model.put("patientVariation", patientVariation);
-					}
 				}
 			}
 			
@@ -308,8 +304,7 @@ public class PortletController implements Controller {
 					model.put("person", p);
 				}
 				
-				if (!model.containsKey("personRelationships")) {
-					if (Context.hasPrivilege(PrivilegeConstants.VIEW_RELATIONSHIPS)) {
+				if (!model.containsKey("personRelationships") && Context.hasPrivilege(PrivilegeConstants.VIEW_RELATIONSHIPS)) {
 						List<Relationship> relationships = new ArrayList<Relationship>();
 						relationships.addAll(Context.getPersonService().getRelationshipsByPerson(p));
 						Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
@@ -324,50 +319,42 @@ public class PortletController implements Controller {
 						
 						model.put("personRelationships", relationships);
 						model.put("personRelationshipsByType", relationshipsByType);
-					}
 				}
 			}
 			
 			// if an encounter id is available, put "encounter" and "encounterObs" in the model
 			o = request.getAttribute("org.openmrs.portlet.encounterId");
 			if (o != null && !model.containsKey("encounterId")) {
-				if (!model.containsKey("encounter")) {
-					if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS)) {
+				if (!model.containsKey("encounter") && Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS)) {
 						Encounter e = Context.getEncounterService().getEncounter((Integer) o);
 						model.put("encounter", e);
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
 							model.put("encounterObs", e.getObs());
 						}
-					}
 					model.put("encounterId", (Integer) o);
 				}
 			}
 			
 			// if a user id is available, put "user" in the model
 			o = request.getAttribute("org.openmrs.portlet.userId");
-			if (o != null) {
-				if (!model.containsKey("user")) {
+			if (o != null && !model.containsKey("user")) {
 					if (Context.hasPrivilege(PrivilegeConstants.VIEW_USERS)) {
 						User u = Context.getUserService().getUser((Integer) o);
 						model.put("user", u);
 					}
 					model.put("userId", (Integer) o);
-				}
 			}
 			
 			// if a list of patient ids is available, make a patientset out of it
 			o = request.getAttribute("org.openmrs.portlet.patientIds");
-			if (o != null && !"".equals(o) && !model.containsKey("patientIds")) {
-				if (!model.containsKey("patientSet")) {
+			if (o != null && !"".equals(o) && !model.containsKey("patientIds") && !model.containsKey("patientSet")) {
 					Cohort ps = new Cohort((String) o);
 					model.put("patientSet", ps);
 					model.put("patientIds", (String) o);
-				}
 			}
 			
 			o = model.get("conceptIds");
-			if (o != null && !"".equals(o)) {
-				if (!model.containsKey("conceptMap")) {
+			if (o != null && !"".equals(o) && !model.containsKey("conceptMap")) {
 					log.debug("Found conceptIds parameter: " + o);
 					Map<Integer, Concept> concepts = new HashMap<Integer, Concept>();
 					Map<String, Concept> conceptsByStringIds = new HashMap<String, Concept>();
@@ -384,7 +371,6 @@ public class PortletController implements Controller {
 					}
 					model.put("conceptMap", concepts);
 					model.put("conceptMapByStringIds", conceptsByStringIds);
-				}
 			}
 			
 			populateModel(request, model);

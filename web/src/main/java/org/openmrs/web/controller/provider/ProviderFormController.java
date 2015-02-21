@@ -75,8 +75,7 @@ public class ProviderFormController {
 		
 		new ProviderValidator().validate(provider, errors);
 		
-		if (!errors.hasErrors()) {
-			if (Context.isAuthenticated()) {
+		if (!errors.hasErrors() && Context.isAuthenticated()) {
 				ProviderService service = Context.getProviderService();
 				
 				String message = "Provider.saved";
@@ -92,7 +91,6 @@ public class ProviderFormController {
 				
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
 				return "redirect:index.htm";
-			}
 		}
 		
 		return showForm();
@@ -101,11 +99,9 @@ public class ProviderFormController {
 	@ModelAttribute("provider")
 	public Provider formBackingObject(@RequestParam(required = false) Integer providerId) throws ServletException {
 		Provider provider = new Provider();
-		if (Context.isAuthenticated()) {
-			if (providerId != null) {
+		if (Context.isAuthenticated() && providerId != null) {
 				ProviderService ps = Context.getProviderService();
 				return ps.getProvider(providerId);
-			}
 		}
 		return provider;
 	}

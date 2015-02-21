@@ -306,14 +306,12 @@ public class WebModuleUtil {
 			outFile.deleteOnExit();
 			
 			// additional checks on module needing a context refresh
-			if (moduleNeedsContextRefresh == false) {
+			if (moduleNeedsContextRefresh == false && mod.getAdvicePoints() != null && mod.getAdvicePoints().size() > 0) {
 				
 				// AOP advice points are only loaded during the context refresh now.
 				// if the context hasn't been marked to be refreshed yet, mark it
 				// now if this module defines some advice
-				if (mod.getAdvicePoints() != null && mod.getAdvicePoints().size() > 0) {
 					moduleNeedsContextRefresh = true;
-				}
 				
 			}
 			
@@ -355,7 +353,7 @@ public class WebModuleUtil {
 				
 			}
 			
-			if (!delayContextRefresh) {
+			if (!delayContextRefresh && ModuleFactory.isModuleStarted(mod)) {
 				// only loading the servlets/filters if spring is refreshed because one
 				// might depend on files being available in spring
 				// if the caller wanted to delay the refresh then they are responsible for
@@ -363,11 +361,9 @@ public class WebModuleUtil {
 				
 				// find and cache the module's servlets
 				//(only if the module started successfully previously)
-				if (ModuleFactory.isModuleStarted(mod)) {
 					log.debug("Loading servlets and filters for module: " + mod);
 					loadServlets(mod, servletContext);
 					loadFilters(mod, servletContext);
-				}
 			}
 			
 			// return true if the module needs a context refresh and we didn't do it here
@@ -536,10 +532,8 @@ public class WebModuleUtil {
 					if (childNode.getTextContent() != null) {
 						name = childNode.getTextContent().trim();
 					}
-				} else if ("servlet-class".equals(childNode.getNodeName())) {
-					if (childNode.getTextContent() != null) {
+				} else if ("servlet-class".equals(childNode.getNodeName()) && childNode.getTextContent() != null) {
 						className = childNode.getTextContent().trim();
-					}
 				}
 			}
 			if (name.length() == 0 || className.length() == 0) {
@@ -608,15 +602,13 @@ public class WebModuleUtil {
 			String name = "";
 			for (int j = 0; j < childNodes.getLength(); j++) {
 				Node childNode = childNodes.item(j);
-				if ("servlet-name".equals(childNode.getNodeName())) {
-					if (childNode.getTextContent() != null) {
+				if ("servlet-name".equals(childNode.getNodeName()) && childNode.getTextContent() != null) {
 						name = childNode.getTextContent().trim();
 						HttpServlet servlet = moduleServlets.get(name);
 						if (servlet != null) {
 							servlet.destroy(); // shut down the servlet
 							moduleServlets.remove(name);
 						}
-					}
 				}
 			}
 		}

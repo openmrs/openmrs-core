@@ -102,12 +102,10 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				throwUnauthorized(user, method, privileges);
 			}
 			
-		} else if (attributes.hasAuthorizedAnnotation(method)) {
+		} else if (attributes.hasAuthorizedAnnotation(method) && Context.isAuthenticated() == false) {
 			// if there are no privileges defined, just require that 
 			// the user be authenticated
-			if (Context.isAuthenticated() == false) {
 				throwUnauthorized(user, method);
-			}
 		}
 	}
 	

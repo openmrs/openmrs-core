@@ -54,10 +54,9 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 	
 	public boolean matchOpenmrsProfileAttributes(Map<String, Object> openmrsProfile) {
 		Object openmrsVersion = openmrsProfile.get("openmrsVersion");
-		if (StringUtils.isNotBlank((String) openmrsVersion)) {
-			if (!ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsVersion)) {
+		if (StringUtils.isNotBlank((String) openmrsVersion) 
+			&& !ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsVersion)) {
 				return false;
-			}
 		}
 		
 		String[] modules = (String[]) openmrsProfile.get("modules");
@@ -69,11 +68,9 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 			
 			boolean moduleMatched = false;
 			for (Module module : ModuleFactory.getStartedModules()) {
-				if (module.getModuleId().equals(moduleId)) {
-					if (ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
+				if (module.getModuleId().equals(moduleId) && ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
 						moduleMatched = true;
 						break;
-					}
 				}
 			}
 			

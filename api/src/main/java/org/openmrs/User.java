@@ -145,10 +145,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	 *         user is a superUser
 	 */
 	public boolean hasRole(String r, boolean ignoreSuperUser) {
-		if (ignoreSuperUser == false) {
-			if (isSuperUser()) {
+		if (ignoreSuperUser == false && isSuperUser()) {
 				return true;
-			}
 		}
 		
 		if (roles == null) {

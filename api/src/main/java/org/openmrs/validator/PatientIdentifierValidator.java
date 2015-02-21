@@ -95,13 +95,12 @@ public class PatientIdentifierValidator implements Validator {
 				    "PatientIdentifier.location.null", new Object[] { identifierString }, Context.getLocale()));
 			}
 			
-			if (pi.getIdentifierType().getUniquenessBehavior() != UniquenessBehavior.NON_UNIQUE) {
+			if (pi.getIdentifierType().getUniquenessBehavior() != UniquenessBehavior.NON_UNIQUE 
+				&& Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
 				// Check is already in use by another patient
-				if (Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
 					throw new IdentifierNotUniqueException(Context.getMessageSourceService().getMessage(
 					    "PatientIdentifier.error.notUniqueWithParameter", new Object[] { pi.getIdentifier() },
 					    Context.getLocale()), pi);
-				}
 			}
 		}
 	}

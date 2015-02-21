@@ -101,13 +101,11 @@ public class PatientValidator extends PersonValidator {
 			errors.reject("error.preferredIdentifier");
 		}
 		
-		if (!errors.hasErrors()) {
+		if (!errors.hasErrors() && patient.getIdentifiers() != null) {
 			// Validate PatientIdentifers
-			if (patient.getIdentifiers() != null) {
 				for (PatientIdentifier identifier : patient.getIdentifiers()) {
 					patientIdentifierValidator.validate(identifier, errors);
 				}
-			}
 		}
 	}
 }

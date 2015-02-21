@@ -1448,8 +1448,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @throws ConceptInUseException
 	 */
 	private void checkIfDatatypeCanBeChanged(Concept concept) {
-		if (concept.getId() != null) {
-			if (hasAnyObservation(concept) && hasDatatypeChanged(concept)) {
+		if (concept.getId() != null && hasAnyObservation(concept) && hasDatatypeChanged(concept)) {
 				// allow boolean concepts to be converted to coded
 				if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
 					throw new ConceptInUseException();
@@ -1457,7 +1456,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				if (log.isDebugEnabled()) {
 					log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
 				}
-			}
 		}
 	}
 	

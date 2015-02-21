@@ -33,8 +33,7 @@ public class ProgramWorkflowHandler extends AbstractFieldGenHandler implements F
 			String initialValue = "";
 			checkEmptyVal((ProgramWorkflow) null);
 			ProgramWorkflow pw = (ProgramWorkflow) this.fieldGenTag.getVal();
-			if (pw != null) {
-				if (pw.getProgramWorkflowId() != null) {
+			if (pw != null && pw.getProgramWorkflowId() != null) {
 					initialValue = pw.getProgramWorkflowId().toString();
 				}
 			}

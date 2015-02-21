@@ -972,11 +972,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				oldShortName.setConceptNameType(null);
 			}
 			shortName.setConceptNameType(ConceptNameType.SHORT);
-			if (StringUtils.isNotBlank(shortName.getName())) {
+			if (StringUtils.isNotBlank(shortName.getName()) 
+				&& (shortName.getConceptNameId() == null || !getNames().contains(shortName))) {
 				//add this name, if it is new or not among this concept's names
-				if (shortName.getConceptNameId() == null || !getNames().contains(shortName)) {
 					addName(shortName);
-				}
 			}
 		} else {
 			throw new APIException("Short name cannot be null");
@@ -1123,11 +1122,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (locale != null) {
 			for (ConceptName possibleName : getNames()) {
-				if (possibleName.getLocale().equals(locale)) {
-					if ((shortestNameForLocale == null)
-					        || (possibleName.getName().length() < shortestNameForLocale.getName().length())) {
+				if (possibleName.getLocale().equals(locale) && ((shortestNameForLocale == null)
+				        || (possibleName.getName().length() < shortestNameForLocale.getName().length()))) {
 						shortestNameForLocale = possibleName;
-					}
 				}
 				if ((shortestNameForConcept == null)
 				        || (possibleName.getName().length() < shortestNameForConcept.getName().length())) {
