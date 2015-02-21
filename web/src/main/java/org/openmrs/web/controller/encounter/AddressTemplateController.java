@@ -64,7 +64,7 @@ public class AddressTemplateController {
 				if (requiredElements != null) {
 					for (String fieldName : requiredElements) {
 						try {
-							Object value = PropertyUtils.getProperty(new PersonAddress(), fieldName);
+							PropertyUtils.getProperty(new PersonAddress(), fieldName);
 						}
 						catch (Exception e) {
 							//wrong field declared in template

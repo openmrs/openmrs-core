@@ -238,7 +238,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		
 		if (object instanceof OpenmrsData) {
 			OpenmrsData dataObj = (OpenmrsData) object;
-			serializedObject.setRetired(dataObj.isVoided() == Boolean.TRUE);
+			serializedObject.setRetired(dataObj.isVoided());
 			serializedObject.setRetiredBy(dataObj.getVoidedBy());
 			serializedObject.setDateRetired(dataObj.getDateVoided());
 			serializedObject.setRetireReason(dataObj.getVoidReason());
