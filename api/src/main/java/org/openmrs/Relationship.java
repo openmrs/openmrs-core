@@ -179,6 +179,7 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	 * @see #isVoided()
 	 * @return Returns the voided.
 	 */
+	@Deprecated
 	public Boolean getVoided() {
 		return isVoided();
 	}

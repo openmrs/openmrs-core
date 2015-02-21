@@ -380,7 +380,9 @@ public class PortletController implements Controller {
 							concepts.put(i, c);
 							conceptsByStringIds.put(i.toString(), c);
 						}
-						catch (Exception ex) {}
+						catch (Exception ex) {			
+							log.error ("Error during putting int i into concept c", ex);
+ 						}
 					}
 					model.put("conceptMap", concepts);
 					model.put("conceptMapByStringIds", conceptsByStringIds);

@@ -323,6 +323,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated The {@link #getObsGroup()} method should be used
 	 * @see #getObsGroup()
 	 */
+	@Deprecated
 	public Integer getObsGroupId() {
 		if (getObsGroup() == null) {
 			return null;
@@ -336,6 +337,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated This method should not be used. The #setObsGroup() method should be used instead
 	 * @see #setObsGroup(Obs)
 	 */
+	@Deprecated
 	public void setObsGroupId(Integer obsGroupId) {
 		throw new APIException("I don't know what to do here because I don't" + "know what the parent is of the group I'm "
 		        + "being put into. This method is deprecated " + "and should not be used.");
@@ -579,6 +581,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use getPerson()
 	 * @return Returns the patient.
 	 */
+	@Deprecated
 	public Patient getPatient() {
 		return (Patient) getPerson();
 	}
@@ -589,6 +592,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use setPerson(org.openmrs.Person)
 	 * @param patient
 	 */
+	@Deprecated
 	public void setPatient(Patient patient) {
 		setPerson(patient);
 	}
@@ -1130,6 +1134,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @deprecated
 	 */
+	@Deprecated
 	public Map<Locale, String> getValueAsString() {
 		Map<Locale, String> localeMap = new HashMap<Locale, String>();
 		Locale[] locales = Locale.getAvailableLocales(); // ABKTODO: get actual available locales
@@ -1248,8 +1253,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should reject a namepace and path combination longer than the max length
 	 */
 	public void setFormField(String namespace, String formFieldPath) {
-		if (namespace == null && formFieldPath == null)
+		if (namespace == null && formFieldPath == null) {
 			return;
+		}
 		
 		String nsAndPathTemp = "";
 		if (StringUtils.isNotBlank(namespace) && StringUtils.isNotBlank(formFieldPath)) {

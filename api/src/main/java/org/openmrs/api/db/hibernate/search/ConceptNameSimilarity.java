@@ -26,10 +26,11 @@ public class ConceptNameSimilarity extends DefaultSimilarity {
 	@Override
 	public float computeNorm(String field, FieldInvertState state) {
 		final int numTerms;
-		if (discountOverlaps)
+		if (discountOverlaps) {
 			numTerms = state.getLength() - state.getNumOverlap();
-		else
+		} else {
 			numTerms = state.getLength();
+		}
 		
 		//Score longer documents much lower
 		return state.getBoost() * ((float) (1.0 / numTerms / numTerms / numTerms / numTerms));

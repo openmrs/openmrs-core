@@ -45,6 +45,7 @@ public class DatabaseUtil {
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @throws ClassNotFoundException
+	 * @deprecated
 	 */
 	@Deprecated
 	public static void loadDatabaseDriver(String connectionUrl) throws ClassNotFoundException {

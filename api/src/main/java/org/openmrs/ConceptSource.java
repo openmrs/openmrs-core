@@ -89,6 +89,7 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	
 	/**
 	 * @return Returns the dateVoided.
+	 * @deprecated
 	 */
 	@Deprecated
 	@Element(required = false)
@@ -98,6 +99,7 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	
 	/**
 	 * @param dateVoided The dateVoided to set.
+	 * @deprecated
 	 */
 	@Deprecated
 	@Element(required = false)
