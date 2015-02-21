@@ -74,14 +74,14 @@ public class UpdateFilter extends StartupFilter {
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
-	private final String DEFAULT_PAGE = "maintenance.vm";
+	private static final String DEFAULT_PAGE = "maintenance.vm";
 	
 	/**
 	 * The page that lists off all the currently unexecuted changes
 	 */
-	private final String REVIEW_CHANGES = "reviewchanges.vm";
+	private static final String REVIEW_CHANGES = "reviewchanges.vm";
 	
-	private final String PROGRESS_VM_AJAXREQUEST = "updateProgress.vm.ajaxRequest";
+	private static final String PROGRESS_VM_AJAXREQUEST = "updateProgress.vm.ajaxRequest";
 	
 	/**
 	 * The model object behind this set of screens

@@ -25,7 +25,7 @@ import java.util.Vector;
  */
 public abstract class LayoutTemplate {
 	
-	protected final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
+	protected static final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
 	
 	protected String displayName;
 	

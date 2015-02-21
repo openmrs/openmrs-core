@@ -53,7 +53,7 @@ public class StartupErrorFilter extends StartupFilter {
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
-	private final String DEFAULT_PAGE = "generalerror.vm";
+	private static final String DEFAULT_PAGE = "generalerror.vm";
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests

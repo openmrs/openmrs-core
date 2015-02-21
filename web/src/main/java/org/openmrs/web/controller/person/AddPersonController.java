@@ -43,17 +43,17 @@ public class AddPersonController extends SimpleFormController {
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private final String PATIENT_SHORT_EDIT_URL = "/admin/patients/shortPatientForm.form";
+	private static final String PATIENT_SHORT_EDIT_URL = "/admin/patients/shortPatientForm.form";
 	
-	private final String PATIENT_EDIT_URL = "/admin/patients/patient.form";
+	private static final String PATIENT_EDIT_URL = "/admin/patients/patient.form";
 	
-	private final String PATIENT_VIEW_URL = "/patientDashboard.form";
+	private static final String PATIENT_VIEW_URL = "/patientDashboard.form";
 	
-	private final String USER_EDIT_URL = "/admin/users/user.form";
+	private static final String USER_EDIT_URL = "/admin/users/user.form";
 	
-	private final String PERSON_EDIT_URL = "/admin/person/person.form";
+	private static final String PERSON_EDIT_URL = "/admin/person/person.form";
 	
-	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
+	private static final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
 	
 	private boolean invalidAgeFormat = false;
 	
