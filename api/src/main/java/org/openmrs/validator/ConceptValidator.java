@@ -89,6 +89,8 @@ public class ConceptValidator implements Validator {
 	 * @should fail validation if field lengths are not correct
 	 * @should pass if fully specified name is the same as short name
 	 * @should pass if different concepts have the same short name
+	 * should pass if at least one description exists in any of the locales
+	 * should fail if at least one description does not exist in any of the locales
 	 */
 	public void validate(Object obj, Errors errors) throws APIException, DuplicateConceptNameException {
 		
@@ -100,6 +102,11 @@ public class ConceptValidator implements Validator {
 		//no name to validate, but why is this the case?
 		if (conceptToValidate.getNames().size() == 0) {
 			errors.reject("Concept.name.atLeastOneRequired");
+			return;
+		}
+		
+		if (conceptToValidate.getDescriptions().size() == 0) {
+			errors.rejectValue("descriptions", "Concept.Description.atLeastOneRequired");
 			return;
 		}
 		

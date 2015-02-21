@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
@@ -102,6 +103,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("same name", Context.getLocale()));
 		concept.addName(new ConceptName("same name", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 	}
@@ -167,9 +169,10 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should pass if the concept has atleast one fully specified name added to it", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAddedToIt() throws Exception {
+	public void validate_shouldPassIfTheConceptHasAtleastOneFullySpecifiedNameAndDescriptionAddedToIt() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("one name", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
@@ -240,6 +243,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		// Add the short name. Because the short name is not counted as a Synonym. 
 		// ConceptValidator will not record any errors.
 		ConceptName name = new ConceptName("CD4", Context.getLocale());
@@ -259,6 +263,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptService cs = Context.getConceptService();
 		concept.addName(new ConceptName("my name", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		ConceptMap map1 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
 		concept.addConceptMapping(map1);
 		ConceptMap map2 = new ConceptMap(cs.getConceptReferenceTerm(1), cs.getConceptMapType(1));
@@ -328,6 +333,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		ConceptMap map = new ConceptMap();
 		map.setSourceCode("unique code");
 		map.setSource(cs.getConceptSource(1));
@@ -382,6 +388,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		concept.setVersion("version");
 		concept.setRetireReason("retireReason");
 		
@@ -398,6 +405,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		concept.setVersion("too long text too long text too long text too long text");
 		concept
 		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
@@ -424,6 +432,7 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		concept.addName(conceptFullySpecifiedName);
 		concept.addName(conceptShortName);
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
@@ -452,9 +461,71 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		
 		concept.addName(conceptFullySpecifiedName);
 		concept.addName(conceptShortName);
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
 	}
+	
+	/**
+	* @see ConceptValidator#validate(Object,Errors)
+	**/
+	@Test
+	@Verifies(value = "fail if any description is a not entered while creating a new concept ", method = "validate(Object,Errors)")
+	public void  validate_shouldFailIfAnyDescriptionIsNotEnteredWhileCreatingANewConcept() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("some name", Context.getLocale()));			
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("descriptions"));
+	}	
+	
+	/**
+	* @see ConceptValidator#validate(Object,Errors)
+	**/
+	@Test
+	@Verifies(value = "fail if any description is a removed while editing a new concept ", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAnyDescriptionIsRemovedWhileEditingAExistingConcept() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(5497);
+		ConceptDescription description=concept.getDescription();
+		concept.removeDescription(description);			
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("descriptions"));
+	}
+	
+	/**
+	* @see ConceptValidator#validate(Object,Errors)
+	 **/
+	@Test
+	@Verifies(value = "should pass if  none of the concept descriptions is null", method = "validate(Object,Errors)")
+		public void validate_shouldPassIfNoneofTheConceptDescriptionsIsNull() throws Exception {
+		Concept concept = new Concept();
+		List<Locale> locales = Context.getAdministrationService().getAllowedLocales();
+		for (Locale loc : locales) {
+			concept.addName(new ConceptName("some name", loc));
+			concept.addDescription(new ConceptDescription("some description", loc));			
+		}
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	* @see ConceptValidator#validate(Object,Errors)
+	**/
+	@Test
+	@Verifies(value = "should fail if  atleast one ConceptDescription is not found in Concept", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfAtleastOneDescriptionIsNotFound() throws Exception {
+		Concept concept = new Concept();
+		List<Locale> locales = Context.getAdministrationService().getAllowedLocales();
+		for (Locale loc : locales) {
+		concept.addDescription(new ConceptDescription(null, loc));
+		}
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
 }
