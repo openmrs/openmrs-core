@@ -66,8 +66,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			//set up parameter answer Set for easier add/delete functions and removal of duplicates
 			for (String id : conceptIds) {
 				id = id.trim();
-				if (!id.equals("") && !requestConceptIds.contains(id)) //remove whitespace, blank lines, and duplicates
-				{
+				if (!id.equals("") && !requestConceptIds.contains(id)) { //remove whitespace, blank lines, and duplicates
 					requestConceptIds.add(id);
 				}
 			}
