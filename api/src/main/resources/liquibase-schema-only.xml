@@ -3425,6 +3425,9 @@
 	<changeSet id="20120529-2231" author="mvorobey">
         <addForeignKeyConstraint constraintName="privilege_which_can_edit_encounter_type" baseTableName="encounter_type" baseColumnNames="edit_privilege" referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
+	<changeSet id="20150221-1644" author="sandeepraparthi">
+	    <addForeignKeyConstraint constraintName="patient_id_fk" baseTableName="patient_identifier" baseColumnNames="patient_id"	referencedTableName="patient" referencedColumnNames="patient_id" /> 
+ 	</changeSet>
     
     <!-- Skip changesets from liquibase-update-to-latest when new installation -->
     <!-- TODO: CustomChange to avoid replicated columns-->
