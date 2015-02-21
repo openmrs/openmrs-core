@@ -72,6 +72,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	private Set<String> additionalPackages = new LinkedHashSet<String>();
 	
+	private boolean disposed = false;
+	
 	/**
 	 * @param module Module
 	 * @param urls resources "managed" by this class loader
@@ -125,6 +127,10 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	public ModuleClassLoader(final Module module, final ClassLoader parent) {
 		this(module, getUrls(module), parent);
+	}
+	
+	public boolean isDisposed() {
+		return disposed;
 	}
 	
 	/**
@@ -468,6 +474,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		requiredModules = null;
 		awareOfModules = null;
 		//resourceLoader = null;
+		
+		disposed = true;
 	}
 	
 	/**
