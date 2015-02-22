@@ -186,6 +186,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept c2 = new Concept(2);
 		ConceptName cn = new ConceptName("not a numeric anymore", Locale.US);
 		c2.addName(cn);
+		c2.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		
 		c2.setDatatype(new ConceptDatatype(3));
 		conceptService.saveConcept(c2);
@@ -214,6 +215,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		ConceptName cn = new ConceptName("a brand new conceptnumeric", Locale.US);
 		cn3.addName(cn);
+		cn3.addDescription(new ConceptDescription("some description", Context.getLocale()));
+		
 		cn3.setHiAbsolute(50.0);
 		conceptService.saveConcept(cn3);
 		
@@ -238,6 +241,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptNumeric cn = new ConceptNumeric(1);
 		cn.setDatatype(new ConceptDatatype(1));
 		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		cn.setHiAbsolute(20.0);
 		conceptService.saveConcept(cn);
 		
@@ -269,6 +273,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("Weight", Context.getLocale());
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		
 		concept.setConceptId(null);
 		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
@@ -290,6 +295,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = new Concept();
 		ConceptName cn = new ConceptName("Weight", Context.getLocale());
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		concept.setConceptId(conceptId);
 		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
 		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
@@ -356,6 +362,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cn.addTag(new ConceptNameTag("preferred_en", "preferred name in a language"));
 		Concept concept = new Concept();
 		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		
 		concept.setDatatype(new ConceptDatatype(1));
 		concept.setConceptClass(new ConceptClass(1));
@@ -1013,6 +1020,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept conceptToAdd = new Concept();
 		ConceptName cn = new ConceptName("new name", Context.getLocale());
 		conceptToAdd.addName(cn);
+		conceptToAdd.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		assertFalse(conceptService.getAllConcepts().contains(conceptToAdd));
 		conceptService.saveConcept(conceptToAdd);
 		assertTrue(conceptService.getAllConcepts().contains(conceptToAdd));
@@ -1685,6 +1693,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		concept.addName(new ConceptName("name4", Locale.FRENCH));
 		concept.addName(new ConceptName("name5", Locale.JAPANESE));
 		concept.addName(new ConceptName("name6", Locale.JAPANESE));
+		concept.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		
 		concept = Context.getConceptService().saveConcept(concept);
 		Assert.assertNotNull(concept.getPreferredName(Locale.ENGLISH));
@@ -2159,6 +2168,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		    otherConcept.getFullySpecifiedName(locale).getName()));
 		
 		duplicateNameToEdit.setName("new unique name");
+		conceptToEdit.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		conceptService.saveConcept(conceptToEdit);
 	}
 	
@@ -2230,14 +2240,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		String name = "Concept";
 		Concept concept1 = new Concept();
 		concept1.addName(new ConceptName(name, new Locale("en", "US")));
+		concept1.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		Context.getConceptService().saveConcept(concept1);
 		
 		Concept concept2 = new Concept();
 		concept2.addName(new ConceptName(name, new Locale("en", "GB")));
+		concept2.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		Context.getConceptService().saveConcept(concept2);
 		
 		Concept concept3 = new Concept();
 		concept3.addName(new ConceptName(name, new Locale("en")));
+		concept3.addDescription(new ConceptDescription("some description", Context.getLocale()));
 		Context.getConceptService().saveConcept(concept3);
 		
 		updateSearchIndex();
@@ -2262,14 +2275,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		String name = "Concept";
 		Concept concept1 = new Concept();
 		concept1.addName(new ConceptName(name, new Locale("en", "US")));
+		concept1.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		Context.getConceptService().saveConcept(concept1);
 		
 		Concept concept2 = new Concept();
 		concept2.addName(new ConceptName(name, new Locale("en", "GB")));
+		concept2.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		Context.getConceptService().saveConcept(concept2);
 		
 		Concept concept3 = new Concept();
 		concept3.addName(new ConceptName(name, new Locale("en")));
+		concept3.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		Context.getConceptService().saveConcept(concept3);
 		
 		updateSearchIndex();
@@ -2293,6 +2309,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("test name", Context.getLocale()));
+		concept.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		ConceptMap map = new ConceptMap();
 		map.setSourceCode("unique code");
 		map.setSource(conceptService.getConceptSource(1));
@@ -2449,9 +2466,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(concept.getDateChanged());
 		Assert.assertNull(concept.getChangedBy());
 		
-		ConceptDescription description = concept.getDescription();
-		Assert.assertNotNull(description);
-		Assert.assertTrue(concept.removeDescription(description));
+		ConceptAnswer conceptanswer = new ConceptAnswer();
+		concept.addAnswer(conceptanswer);
+		Assert.assertNotNull(conceptanswer);
+		Assert.assertTrue(concept.removeAnswer(conceptanswer));
 		conceptService.saveConcept(concept);
 		
 		Assert.assertNotNull(concept.getDateChanged());
@@ -2691,6 +2709,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(Context.getObsService().getObservationsByPersonAndConcept(cp.getEncounter().getPatient(),
 		    civilStatusConcept).isEmpty());
 		Concept mappedConcept = conceptService.getConcept(mappedConceptId);
+		mappedConcept.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		
 		cp.setFinalText(finalText);
 		cp.setObsConcept(civilStatusConcept);
@@ -2793,6 +2812,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cp.setFinalText(cp.getOriginalText());
 		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
 		Concept mappedConcept = cs.getConcept(5);
+		mappedConcept.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		Locale locale = new Locale("en", "GB");
 		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
 		
@@ -2809,6 +2829,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = conceptService.getConcept(3000);
 		Assert.assertFalse(concept.getSynonyms().isEmpty());
 		concept.removeName(concept.getSynonyms().iterator().next());
+		concept.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		conceptService.saveConcept(concept);
 	}
 	
@@ -3223,6 +3244,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		c1.addName(cn1a);
 		c1.setConceptClass(cc1);
 		c1.setDatatype(dt);
+		c1.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		cs.saveConcept(c1);
 		
 		Concept c2 = new Concept();
@@ -3230,6 +3252,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		c2.addName(cn2a);
 		c2.setConceptClass(cc3);
 		c2.setDatatype(dt);
+		c2.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		cs.saveConcept(c2);
 		
 		List<ConceptSearchResult> conceptSearchResultList = Context.getConceptService().getOrderableConcepts("one",
