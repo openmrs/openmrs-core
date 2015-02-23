@@ -61,7 +61,7 @@ public class FormFieldListItem {
 			pageNumber = ff.getPageNumber();
 			minOccurs = ff.getMinOccurs();
 			maxOccurs = ff.getMaxOccurs();
-			required = ff.isRequired() == true ? "yes" : "no";
+			required = ff.isRequired() ? "yes" : "no";
 			if (ff.getCreator() != null) {
 				creator = ff.getCreator().getPersonName().getFullName();
 			}

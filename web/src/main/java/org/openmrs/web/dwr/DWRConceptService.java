@@ -285,7 +285,7 @@ public class DWRConceptService {
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
 	        throws Exception {
 		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("You should not include voideds in the search.");
 		}
 		
@@ -409,7 +409,7 @@ public class DWRConceptService {
 		// If there are no drugs to choose from, this will be automatically
 		// selected
 		// by the openmrsSearch.fillTable(objs) function
-		if (showConcept == true) {
+		if (showConcept) {
 			ConceptDrugListItem thisConcept = new ConceptDrugListItem(null, conceptId, concept.getName(locale, false)
 			        .getName());
 			items.add(thisConcept);
@@ -419,7 +419,7 @@ public class DWRConceptService {
 		List<Drug> drugs = cs.getDrugsByConcept(concept);
 		
 		// if there are drugs to choose from, add some instructions
-		if (drugs.size() > 0 && showConcept == true) {
+		if (drugs.size() > 0 && showConcept) {
 			items.add("Or choose a form of " + concept.getName(locale, false).getName());
 		}
 		
@@ -432,7 +432,7 @@ public class DWRConceptService {
 	}
 	
 	public List<Object> findDrugs(String phrase, boolean includeRetired) throws APIException {
-		if (includeRetired == true) {
+		if (includeRetired) {
 			throw new APIException("You should not include voideds in the search.");
 		}
 		Locale locale = Context.getLocale();

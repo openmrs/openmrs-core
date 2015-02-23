@@ -154,7 +154,7 @@ public class RequireTag extends TagSupport {
 		if (differentIpAddresses(session_ip_addr, request_ip_addr)) {
 			errorOccurred = true;
 			// stops warning message in IE when refreshing repeatedly
-			if ("0.0.0.0".equals(request_ip_addr) == false) {
+			if (!"0.0.0.0".equals(request_ip_addr)) {
 				log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
 			}

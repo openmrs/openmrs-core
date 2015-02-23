@@ -213,7 +213,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs, boolean)
 	 */
 	public void purgeObs(Obs obs, boolean cascade) throws APIException {
-		if (purgeComplexData(obs) == false) {
+		if (!purgeComplexData(obs)) {
 			throw new APIException("Unable to purge complex data for obs: " + obs);
 		}
 		
@@ -505,7 +505,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Set<Obs> getObservations(Person who, boolean includeVoided) {
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Voided observations are no longer allowed to be queried");
 		}
 		

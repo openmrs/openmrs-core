@@ -920,7 +920,7 @@ public class ModuleFactory {
 					log.info("Global property " + key + " was not found. Creating one now.");
 					gp = new GlobalProperty(key, version, description);
 					as.saveGlobalProperty(gp);
-				} else if (gp.getPropertyValue().equals(version) == false) {
+				} else if (!gp.getPropertyValue().equals(version)) {
 					log.info("Updating global property " + key + " to version: " + version);
 					gp.setDescription(description);
 					gp.setPropertyValue(version);
@@ -1092,7 +1092,7 @@ public class ModuleFactory {
 				}
 			}
 			
-			if (skipOverStartedProperty == false && !Context.isRefreshingContext()) {
+			if (!skipOverStartedProperty && !Context.isRefreshingContext()) {
 				saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
 			}
 			
@@ -1253,7 +1253,7 @@ public class ModuleFactory {
 		
 		// if this pointId doesn't contain the separator character, search
 		// for this point prepended with each MEDIA TYPE
-		if (pointId.contains(Extension.extensionIdSeparator) == false) {
+		if (!pointId.contains(Extension.extensionIdSeparator)) {
 			for (MEDIA_TYPE mediaType : Extension.MEDIA_TYPE.values()) {
 				
 				// get all extensions for this type and point id
@@ -1262,7 +1262,7 @@ public class ModuleFactory {
 				// 'extensions' should be a unique list
 				if (tmpExtensions != null) {
 					for (Extension ext : tmpExtensions) {
-						if (extensions.contains(ext) == false) {
+						if (!extensions.contains(ext)) {
 							extensions.add(ext);
 						}
 					}

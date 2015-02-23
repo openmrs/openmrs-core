@@ -691,7 +691,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field, boolean)
 	 */
 	public void purgeField(Field field, boolean cascade) throws APIException {
-		if (cascade == true) {
+		if (cascade) {
 			throw new APIException("Not Yet Implemented");
 		} else {
 			dao.deleteField(field);
@@ -710,7 +710,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form, boolean)
 	 */
 	public void purgeForm(Form form, boolean cascade) throws APIException {
-		if (cascade == true) {
+		if (cascade) {
 			throw new APIException("Not Yet Implemented");
 		}
 		
@@ -733,7 +733,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#retireField(org.openmrs.Field)
 	 */
 	public Field retireField(Field field) throws APIException {
-		if (field.getRetired() == false) {
+		if (!field.getRetired()) {
 			field.setRetired(true);
 			return Context.getFormService().saveField(field);
 		} else {
@@ -819,7 +819,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#unretireField(org.openmrs.Field)
 	 */
 	public Field unretireField(Field field) throws APIException {
-		if (field.getRetired() == true) {
+		if (field.getRetired()) {
 			field.setRetired(false);
 			return Context.getFormService().saveField(field);
 		} else {

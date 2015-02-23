@@ -1003,7 +1003,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 				} else {
 					if (getConcept() instanceof ConceptNumeric) {
 						ConceptNumeric cn = (ConceptNumeric) getConcept();
-						if (cn.isPrecise() != true) {
+						if (!cn.isPrecise()) {
 							double d = getValueNumeric();
 							int i = (int) d;
 							return Integer.toString(i);

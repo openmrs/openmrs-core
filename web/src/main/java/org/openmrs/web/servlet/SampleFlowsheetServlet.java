@@ -54,7 +54,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 			return;
 		}
 		
-		if (Context.isAuthenticated() == false || !Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)
+		if (!Context.isAuthenticated() || !Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)
 		        || !Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privileges required: " + PrivilegeConstants.VIEW_PATIENTS
 			        + " and " + PrivilegeConstants.VIEW_OBS);
