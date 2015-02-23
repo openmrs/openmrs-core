@@ -83,7 +83,7 @@ public class TestInstallUtil {
 			try {
 				br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 				String line;
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				while ((line = br.readLine()) != null) {
 					sb.append(System.getProperty("line.separator"));
 					sb.append(line);

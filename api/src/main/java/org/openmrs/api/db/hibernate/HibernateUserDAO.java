@@ -45,7 +45,7 @@ import org.openmrs.util.UserByNameComparator;
 
 /**
  * Hibernate specific database methods for the UserService
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.db.UserDAO
  * @see org.openmrs.api.UserService
@@ -61,7 +61,7 @@ public class HibernateUserDAO implements UserDAO {
 	
 	/**
 	 * Set session factory
-	 *
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -83,8 +83,8 @@ public class HibernateUserDAO implements UserDAO {
 			String salt = Security.getRandomToken();
 			String hashedPassword = Security.encodeString(password + salt);
 			
-			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
-			        .getUserId());
+			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(),
+			    user.getUserId());
 		}
 		
 		return user;
@@ -279,7 +279,7 @@ public class HibernateUserDAO implements UserDAO {
 	 * @param userId2
 	 */
 	private void updateUserPassword(String newHashedPassword, String salt, Integer changedBy, Date dateChanged,
-	        Integer userIdToChange) {
+	                                Integer userIdToChange) {
 		User changeForUser = getUser(userIdToChange);
 		if (changeForUser == null) {
 			throw new DAOException("Couldn't find user to set password for userId=" + userIdToChange);
@@ -444,8 +444,8 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#getRoleByUuid(java.lang.String)
 	 */
 	public Role getRoleByUuid(String uuid) {
-		return (Role) sessionFactory.getCurrentSession().createQuery("from Role r where r.uuid = :uuid").setString("uuid",
-		    uuid).uniqueResult();
+		return (Role) sessionFactory.getCurrentSession().createQuery("from Role r where r.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
@@ -456,8 +456,8 @@ public class HibernateUserDAO implements UserDAO {
 		
 		if (uuid != null) {
 			uuid = uuid.trim();
-			ret = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString(
-			    "uuid", uuid).uniqueResult();
+			ret = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid")
+			        .setString("uuid", uuid).uniqueResult();
 		}
 		
 		return ret;
@@ -477,8 +477,8 @@ public class HibernateUserDAO implements UserDAO {
 		if (uuid == null) {
 			return null;
 		} else {
-			return (LoginCredential) sessionFactory.getCurrentSession().createQuery(
-			    "from LoginCredential where uuid = :uuid").setString("uuid", uuid.trim()).uniqueResult();
+			return (LoginCredential) sessionFactory.getCurrentSession()
+			        .createQuery("from LoginCredential where uuid = :uuid").setString("uuid", uuid.trim()).uniqueResult();
 		}
 	}
 	
@@ -517,7 +517,7 @@ public class HibernateUserDAO implements UserDAO {
 	
 	/**
 	 * Utility methods that creates a hibernate query object from the specified arguments
-	 *
+	 * 
 	 * @param name The name of the user to search against
 	 * @param roles the roles to match against
 	 * @param includeRetired Specifies if retired users should be included or not
