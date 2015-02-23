@@ -13,6 +13,15 @@
  */
 package org.openmrs.module;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,15 +51,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIException;
-import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-
 /**
  * Standard implementation of module class loader. <br/>
  * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)<br/>
@@ -71,6 +71,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	private boolean probeParentLoaderLast = true;
 	
 	private Set<String> additionalPackages = new LinkedHashSet<String>();
+	
+	private boolean disposed = false;
 	
 	/**
 	 * @param module Module
@@ -125,6 +127,10 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	public ModuleClassLoader(final Module module, final ClassLoader parent) {
 		this(module, getUrls(module), parent);
+	}
+	
+	public boolean isDisposed() {
+		return disposed;
 	}
 	
 	/**
@@ -468,6 +474,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		requiredModules = null;
 		awareOfModules = null;
 		//resourceLoader = null;
+		
+		disposed = true;
 	}
 	
 	/**
