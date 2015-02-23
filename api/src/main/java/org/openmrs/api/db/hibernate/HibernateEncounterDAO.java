@@ -49,6 +49,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.parameter.EncounterSearchCriteria;
 
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
@@ -110,15 +111,23 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.Patient, org.openmrs.Location,
-	 *      java.util.Date, java.util.Date, java.util.Collection, java.util.Collection,
-	 *      java.util.Collection, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
+	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria) {
+		
+		Patient patient = encounterSearchCriteria.getPatient();
+		Location location = encounterSearchCriteria.getLocation();
+		Date fromDate = encounterSearchCriteria.getFromDate();
+		Date toDate = encounterSearchCriteria.getToDate();
+		Date dateChanged = encounterSearchCriteria.getDateChanged();
+		Collection<Form> enteredViaForms = encounterSearchCriteria.getEnteredViaForms();
+		Collection<EncounterType> encounterTypes = encounterSearchCriteria.getEncounterTypes();
+		Collection<Provider> providers = encounterSearchCriteria.getProviders();
+		Collection<VisitType> visitTypes = encounterSearchCriteria.getVisitTypes();
+		Collection<Visit> visits = encounterSearchCriteria.getVisits();
+		Boolean includeVoided = encounterSearchCriteria.getIncludeVoided();
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		
@@ -133,6 +142,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
 		if (toDate != null) {
 			crit.add(Restrictions.le("encounterDatetime", toDate));
+		}
+		if (dateChanged != null) {
+			crit.add(Restrictions.or(Restrictions.and(Restrictions.isNull("dateChanged"), Restrictions.ge("dateCreated",
+			    dateChanged)), Restrictions.ge("dateChanged", dateChanged)));
 		}
 		if (enteredViaForms != null && enteredViaForms.size() > 0) {
 			crit.add(Restrictions.in("form", enteredViaForms));
@@ -420,7 +433,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisit(Visit)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisit(Visit, boolean)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -491,7 +504,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * Convenience method since this DAO fetches several different domain objects by uuid
 	 *
 	 * @param uuid uuid to fetch
-	 * @param table a simple classname (e.g. "Encounter")
+	 * @param clazz a simple classname (e.g. "Encounter")
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")

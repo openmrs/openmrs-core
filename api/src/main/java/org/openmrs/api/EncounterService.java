@@ -32,6 +32,7 @@ import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
+import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
@@ -203,10 +204,23 @@ public interface EncounterService extends OpenmrsService {
 	 * @should exclude voided encounters
 	 * @should include voided encounters
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
+	
+	/**
+	 * Get all encounters that match a variety of (nullable) criteria contained in the parameter object.
+	 * Each extra value for a parameter that is provided acts as an "and" and will reduce the number of results returned
+	 *
+	 * @param encounterSearchCriteria the object containing search parameters
+	 * @return a list of encounters ordered by increasing encounterDatetime
+	 * @since 1.12
+	 * @should get encounters by date changed
+	 */
+	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
+	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
 	
 	/**
 	 * Voiding a encounter essentially removes it from circulation
@@ -804,7 +818,7 @@ public interface EncounterService extends OpenmrsService {
 	 * Unretire an EncounterRole. This brings back the given encounter role and says that it can be
 	 * used again
 	 * 
-	 * @param encounterRole the encounter role to unretire
+	 * @param encounterType the encounter role to unretire
 	 * @throws APIException
 	 * @since 1.9
 	 * @should unretire type and unmark attributes
