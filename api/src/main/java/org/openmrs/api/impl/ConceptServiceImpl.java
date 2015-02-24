@@ -2093,7 +2093,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			locales.add(Context.getLocale());
 		}
 		return dao.getConcepts(phrase, locales, false, mappedClasses, (List) Collections.emptyList(), (List) Collections
-			.emptyList(), (List) Collections.emptyList(), null, start, length);
+		        .emptyList(), (List) Collections.emptyList(), null, start, length);
 	}
 	
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {

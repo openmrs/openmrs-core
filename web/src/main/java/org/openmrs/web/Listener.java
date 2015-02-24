@@ -571,7 +571,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		OpenmrsClassLoader.onShutdown();
 		
 		LogManager.shutdown();
-
+		
 		// just to make things nice and clean.
 		System.gc();
 		System.gc();

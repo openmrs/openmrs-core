@@ -951,7 +951,7 @@ public class InitializationFilter extends StartupFilter {
 			//Set Database Driver using driver String
 			Class.forName(loadedDriverString).newInstance();
 			tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
-
+			
 			return true;
 			
 		}
@@ -960,11 +960,13 @@ public class InitializationFilter extends StartupFilter {
 			        + " See the error log for more details", null); // TODO internationalize this
 			log.warn("Error while checking the connection user account", e);
 			return false;
-		} finally {
-			if(tempConnection != null) {
+		}
+		finally {
+			if (tempConnection != null) {
 				try {
 					tempConnection.close();
-				} catch (SQLException e) {
+				}
+				catch (SQLException e) {
 					log.warn("Error while closing the connection", e);
 				}
 			}
@@ -1163,10 +1165,11 @@ public class InitializationFilter extends StartupFilter {
 			log.error("Error generated", e);
 		}
 		finally {
-			if(statement != null) {
+			if (statement != null) {
 				try {
 					statement.close();
-				} catch (SQLException e) {
+				}
+				catch (SQLException e) {
 					log.warn("Error while closing statement", e);
 				}
 			}

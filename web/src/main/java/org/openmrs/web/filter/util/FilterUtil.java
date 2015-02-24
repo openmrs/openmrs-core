@@ -83,10 +83,11 @@ public class FilterUtil {
 				log.error("Error while retriving locale property", e);
 			}
 			finally {
-				if(statement != null) {
+				if (statement != null) {
 					try {
 						statement.close();
-					} catch (SQLException e) {
+					}
+					catch (SQLException e) {
 						log.warn("Error while closing statement", e);
 					}
 				}
@@ -138,10 +139,11 @@ public class FilterUtil {
 			log.error("Error while retrieving system default locale", e);
 		}
 		finally {
-			if(statement != null) {
+			if (statement != null) {
 				try {
 					statement.close();
-				} catch (SQLException e) {
+				}
+				catch (SQLException e) {
 					log.warn("Error while closing statement", e);
 				}
 			}

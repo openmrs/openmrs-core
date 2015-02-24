@@ -102,7 +102,6 @@ public class ConceptDatatypeListController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
 			if (!"".equals(error)) {
-			if (!error.toString().equals("")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}
