@@ -18,7 +18,6 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 
 /**
  * Validator for {@link org.openmrs.EncounterRole} class

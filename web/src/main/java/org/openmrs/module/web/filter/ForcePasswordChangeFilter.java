@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
 
 /**

@@ -35,7 +35,6 @@ import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.hl7.Hl7InArchivesMigrateThread;
 import org.openmrs.hl7.db.HL7DAO;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * OpenMRS HL7 API database default hibernate implementation This class shouldn't be instantiated by
