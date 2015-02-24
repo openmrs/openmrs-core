@@ -399,7 +399,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		//should still return the correct value if the arguments are switched
 		Assert.assertTrue(ModuleUtil.compareVersion(olderVersion, newerVersion) < 0);
 	}
-
+	
 	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
 	 */
@@ -410,7 +410,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		String requiredOpenmrsVersion = "1.4.5-SNAPSHOT";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
 	}
-
+	
 	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
 	 */
@@ -421,7 +421,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		String requiredOpenmrsVersion = "1.9.2-SNAPSHOT";
 		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
 	}
-
+	
 	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
 	 */
@@ -432,7 +432,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		String requiredOpenmrsVersion = "1.9.9-SNAPSHOT";
 		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
 	}
-
+	
 	@Test
 	@Verifies(value = "Should handle ALPHA versions ", method = "checkRequiredVersion(String, String)")
 	public void checkRequiredVersion_shouldHandleAlphaVersion() throws Exception {
@@ -440,5 +440,5 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		String requiredOpenmrsVersion = "1.9.2-ALPHA";
 		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
 	}
-
+	
 }

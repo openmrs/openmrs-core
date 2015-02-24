@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Vector;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -69,6 +71,8 @@ public class ModuleFactory {
 	
 	// maps to keep track of the memory and objects to free/close
 	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	
+	private static Map<String, Set<ModuleClassLoader>> providedPackages = new ConcurrentHashMap<String, Set<ModuleClassLoader>>();
 	
 	// the name of the file within a module file
 	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
@@ -524,6 +528,7 @@ public class ModuleFactory {
 				// fire up the classloader for this module
 				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, ModuleFactory.class.getClassLoader());
 				getModuleClassLoaderMap().put(module, moduleClassLoader);
+				registerProvidedPackages(moduleClassLoader);
 				
 				// don't load the advice objects into the Context
 				// At startup, the spring context isn't refreshed until all modules
@@ -658,6 +663,43 @@ public class ModuleFactory {
 		// refresh spring service context?
 		
 		return module;
+	}
+	
+	private static void registerProvidedPackages(ModuleClassLoader moduleClassLoader) {
+		for (String providedPackage : moduleClassLoader.getProvidedPackages()) {
+			Set<ModuleClassLoader> newSet = new HashSet<ModuleClassLoader>();
+			
+			Set<ModuleClassLoader> set = providedPackages.get(providedPackage);
+			if (set != null) {
+				newSet.addAll(set);
+			}
+			
+			newSet.add(moduleClassLoader);
+			providedPackages.put(providedPackage, newSet);
+		}
+	}
+	
+	private static void unregisterProvidedPackages(ModuleClassLoader moduleClassLoader) {
+		for (String providedPackage : moduleClassLoader.getProvidedPackages()) {
+			Set<ModuleClassLoader> newSet = new HashSet<ModuleClassLoader>();
+			
+			Set<ModuleClassLoader> set = providedPackages.get(providedPackage);
+			if (set != null) {
+				newSet.addAll(set);
+			}
+			newSet.remove(moduleClassLoader);
+			
+			providedPackages.put(providedPackage, newSet);
+		}
+	}
+	
+	public static Set<ModuleClassLoader> getModuleClassLoadersForPackage(String packageName) {
+		Set<ModuleClassLoader> set = providedPackages.get(packageName);
+		if (set == null) {
+			return Collections.emptySet();
+		} else {
+			return new HashSet<ModuleClassLoader>(set);
+		}
 	}
 	
 	/**
@@ -916,7 +958,10 @@ public class ModuleFactory {
 				saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
 			}
 			
-			if (getModuleClassLoaderMap().containsKey(mod)) {
+			ModuleClassLoader moduleClassLoader = getModuleClassLoaderMap().get(mod);
+			if (moduleClassLoader != null) {
+				unregisterProvidedPackages(moduleClassLoader);
+				
 				log.debug("Mod was in classloader map.  Removing advice and extensions.");
 				// remove all advice by this module
 				try {
