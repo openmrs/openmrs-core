@@ -66,9 +66,9 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			
 			if (location.isRetired() && !StringUtils.hasLength(location.getRetireReason())) {
-					location.setRetired(false); // so that the jsp page displays
-					// properly again
-					errors.rejectValue("retireReason", "error.null");
+				location.setRetired(false); // so that the jsp page displays
+				// properly again
+				errors.rejectValue("retireReason", "error.null");
 			}
 			
 			Location exist = Context.getLocationService().getLocation(location.getName());

@@ -86,8 +86,8 @@ public class SummaryTest extends TagSupport {
 			String[] lines = expr.split("\n");
 			for (String line : lines) {
 				if (line.trim().startsWith("!") && command.length() > 0) {
-						commands.add(command.toString());
-						command = new StringBuilder();
+					commands.add(command.toString());
+					command = new StringBuilder();
 				}
 				command.append(line.trim());
 				command.append("\n");

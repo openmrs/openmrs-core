@@ -53,6 +53,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * ids. This class is a bit of a hack, because I don't know a better way to do this. -DJ The
 	 * purpose is to retire and un-retire workflows where possible rather than deleting and creating
 	 * them.
+	 * 
 	 * @should update workflows in program
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -110,7 +111,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	
 	/**
 	 * Convert this program's workflows into "id: wkflowid wkflowid wkflowid"
-	 *
+	 * 
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
 	@SuppressWarnings("unchecked")

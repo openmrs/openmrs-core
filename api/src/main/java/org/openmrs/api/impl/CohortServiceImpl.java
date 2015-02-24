@@ -35,7 +35,6 @@ import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 /**
  * API functions related to Cohorts
@@ -98,6 +97,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.CohortService#createCohort(org.openmrs.Cohort)
 	 * @deprecated
 	 */
+	@Deprecated
 	public Cohort createCohort(Cohort cohort) {
 		return Context.getCohortService().saveCohort(cohort);
 	}
@@ -115,6 +115,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated
 	 */
 	@Transactional(readOnly = true)
+	@Deprecated
 	public List<Cohort> getCohorts() {
 		return Context.getCohortService().getAllCohorts();
 	}
@@ -163,6 +164,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.CohortService#updateCohort(org.openmrs.Cohort)
 	 * @deprecated
 	 */
+	@Deprecated
 	public Cohort updateCohort(Cohort cohort) {
 		return Context.getCohortService().saveCohort(cohort);
 	}

@@ -30,7 +30,7 @@ import org.openmrs.report.EvaluationContext;
 @Deprecated
 public class CompoundPatientFilter extends AbstractPatientFilter implements PatientFilter {
 	
-	protected static final Log log = LogFactory.getLog(CompoundPatientFilter.class);
+	private static final Log LOGGER = LogFactory.getLog(CompoundPatientFilter.class);
 	
 	private BooleanOperator operator;
 	
@@ -71,7 +71,7 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements Pati
 			Set<Integer> ptIds = new HashSet<Integer>();
 			for (PatientFilter pf : filters) {
 				ptIds.addAll(pf.filter(input, context).getMemberIds());
-				log.debug("or " + pf.getName() + " (" + pf.toString() + ")");
+				LOGGER.debug("or " + pf.getName() + " (" + pf.toString() + ")");
 			}
 			Cohort ret = new Cohort();
 			ret.setMemberIds(ptIds);

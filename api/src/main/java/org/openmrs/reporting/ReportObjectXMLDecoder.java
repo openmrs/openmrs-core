@@ -24,8 +24,6 @@ import java.io.ByteArrayInputStream;
 @Deprecated
 public class ReportObjectXMLDecoder {
 	
-	//private Log log = LogFactory.getLog(this.getClass());
-	
 	private String xmlToDecode;
 	
 	public ReportObjectXMLDecoder(String xmlToDecode) {

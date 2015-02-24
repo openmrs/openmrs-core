@@ -14,7 +14,6 @@
 
 package org.openmrs.hl7.web.controller;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7Util;
 import org.openmrs.hl7.Hl7InArchivesMigrateThread;

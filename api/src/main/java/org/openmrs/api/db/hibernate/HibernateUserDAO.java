@@ -45,7 +45,7 @@ import org.openmrs.util.UserByNameComparator;
 
 /**
  * Hibernate specific database methods for the UserService
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.db.UserDAO
  * @see org.openmrs.api.UserService
@@ -61,7 +61,7 @@ public class HibernateUserDAO implements UserDAO {
 	
 	/**
 	 * Set session factory
-	 *
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -517,7 +517,7 @@ public class HibernateUserDAO implements UserDAO {
 	
 	/**
 	 * Utility methods that creates a hibernate query object from the specified arguments
-	 *
+	 * 
 	 * @param name The name of the user to search against
 	 * @param roles the roles to match against
 	 * @param includeRetired Specifies if retired users should be included or not

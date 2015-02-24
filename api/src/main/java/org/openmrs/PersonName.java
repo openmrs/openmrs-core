@@ -13,13 +13,9 @@
  */
 package org.openmrs;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.apache.commons.lang.builder.EqualsBuilder;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 import org.apache.commons.logging.Log;
@@ -594,10 +590,11 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	public static void setFormat(String format) {
-		if (StringUtils.isEmpty(format))
+		if (StringUtils.isEmpty(format)) {
 			PersonName.format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;
-		else
+		} else {
 			PersonName.format = format;
+		}
 	}
 	
 	public static String getFormat() {

@@ -70,7 +70,9 @@ public class UserFormController {
 		try {
 			u = Context.getUserService().getUser(Integer.valueOf(userId));
 		}
-		catch (Exception ex) {}
+		catch (Exception ex) {
+			log.error("Error while getting user", ex);
+		}
 		if (u == null) {
 			u = new User();
 		}
@@ -245,10 +247,11 @@ public class UserFormController {
 				}
 			}
 			
-			if (StringUtils.hasLength(secretQuestion) && !StringUtils.hasLength(secretAnswer))
+			if (StringUtils.hasLength(secretQuestion) && !StringUtils.hasLength(secretAnswer)) {
 				errors.reject("error.User.secretAnswer.empty");
-			else if (!StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer))
+			} else if (!StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer)) {
 				errors.reject("error.User.secretQuestion.empty");
+			}
 			
 			new UserProperties(user.getUserProperties()).setSupposedToChangePassword(forcePassword);
 			
@@ -284,7 +287,7 @@ public class UserFormController {
 	/**
 	 * Superficially determines if this form is being filled out for a new user (basically just
 	 * looks for a primary key (user_id)
-	 *
+	 * 
 	 * @param user
 	 * @return true/false if this user is new
 	 */

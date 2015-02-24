@@ -1992,7 +1992,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		Map<Integer, List<Person>> ret = new HashMap<Integer, List<Person>>();
 		if (patients != null && patients.size() == 0) {
-				return ret;
+			return ret;
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);
@@ -2107,7 +2107,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" and orderReason.id in (:orderReasonIdList) ");
 		}
 		if (discontinued != null) {
-			if (discontinued == true) {
+			if (discontinued) {
 				if (stopDateFrom != null && stopDateTo != null) {
 					sb.append(" and dateStopped between :stopDateFrom and :stopDateTo ");
 				} else {

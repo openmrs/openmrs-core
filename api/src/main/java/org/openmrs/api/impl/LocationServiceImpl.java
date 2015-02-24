@@ -356,6 +356,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	
 	/**
 	 * @see LocationService#getLocations(String, boolean, Integer, Integer)
+	 * @deprecated
 	 */
 	@Override
 	@Deprecated

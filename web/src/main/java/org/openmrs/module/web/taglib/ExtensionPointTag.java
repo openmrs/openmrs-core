@@ -147,7 +147,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			extensions = validExtensions.iterator();
 		}
 		
-		if (extensions == null || extensions.hasNext() == false) {
+		if (extensions == null || !extensions.hasNext()) {
 			extensions = null;
 			return SKIP_BODY;
 		} else {
@@ -195,7 +195,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			
 			// set up and apply the status variable
 			status.put(STATUS_FIRST, index == 0);
-			status.put(STATUS_LAST, extensions.hasNext() == false);
+			status.put(STATUS_LAST, !extensions.hasNext());
 			status.put(STATUS_INDEX, index++);
 			pageContext.setAttribute(varStatus, status);
 		} else {

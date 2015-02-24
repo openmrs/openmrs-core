@@ -133,12 +133,12 @@ public class FilterUtil {
 		}
 		finally {
 			if (needToCloseConection && connection != null) {
-					try {
-						connection.close();
-					}
-					catch (SQLException e) {
-						log.debug("Error while closing the database", e);
-					}
+				try {
+					connection.close();
+				}
+				catch (SQLException e) {
+					log.debug("Error while closing the database", e);
+				}
 			}
 		}
 		return systemDefaultLocale;

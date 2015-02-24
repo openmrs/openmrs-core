@@ -166,8 +166,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		}
 		
 		if (index >= 0 && (currentState[index] == null || !setNullOnly) && !value.equals(currentState[index])) {
-					currentState[index] = value;
-					return true;
+			currentState[index] = value;
+			return true;
 		}
 		return false;
 	}

@@ -15,7 +15,6 @@ package org.openmrs.customdatatype;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 /**
  * Indicates that a CustomDatatypeHandler allows underlying custom values to be downloaded or streamed in some

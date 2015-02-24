@@ -326,7 +326,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		// only do this if the concept isn't retired already
-		if (concept.isRetired() == false) {
+		if (!concept.isRetired()) {
 			checkIfLocked();
 			
 			concept.setRetired(true);
@@ -598,7 +598,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> getDrugs(Concept concept, boolean includeRetired) {
-		if (includeRetired == true) {
+		if (includeRetired) {
 			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
 		}
 		
@@ -622,7 +622,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> findDrugs(String phrase, boolean includeRetired) {
-		if (includeRetired == true) {
+		if (includeRetired) {
 			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
 		}
 		
@@ -1174,6 +1174,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getAllConceptSources()
+	 * @deprecated
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
@@ -1449,13 +1450,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	private void checkIfDatatypeCanBeChanged(Concept concept) {
 		if (concept.getId() != null && hasAnyObservation(concept) && hasDatatypeChanged(concept)) {
-				// allow boolean concepts to be converted to coded
-				if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
-					throw new ConceptInUseException();
-				}
-				if (log.isDebugEnabled()) {
-					log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
-				}
+			// allow boolean concepts to be converted to coded
+			if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
+				throw new ConceptInUseException();
+			}
+			if (log.isDebugEnabled()) {
+				log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
+			}
 		}
 	}
 	
@@ -2069,7 +2070,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			locales.add(Context.getLocale());
 		}
 		return dao.getConcepts(phrase, locales, false, mappedClasses, (List) Collections.emptyList(), (List) Collections
-			.emptyList(), (List) Collections.emptyList(), null, start, length);
+		        .emptyList(), (List) Collections.emptyList(), null, start, length);
 	}
 	
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {

@@ -14,13 +14,13 @@
 package org.openmrs.web.taglib.fieldgen;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.*;
 
 import org.openmrs.Drug;
-import org.openmrs.util.DrugsByNameComparator;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.DrugsByNameComparator;
 
 public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 	
@@ -34,7 +34,7 @@ public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHand
 			checkEmptyVal((Drug) null);
 			Drug d = (Drug) this.fieldGenTag.getVal();
 			if (d != null && d.getDrugId() != null) {
-					initialValue = d.getDrugId().toString();
+				initialValue = d.getDrugId().toString();
 			}
 			String optionHeader = "";
 			if (this.fieldGenTag.getParameterMap() != null) {
@@ -43,8 +43,6 @@ public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHand
 			if (optionHeader == null) {
 				optionHeader = "";
 			}
-			
-			//HttpServletRequest request = (HttpServletRequest)this.fieldGenTag.getPageContext().getRequest();
 			
 			ConceptService cs = Context.getConceptService();
 			List<Drug> drugs = cs.getAllDrugs();

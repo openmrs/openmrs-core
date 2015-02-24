@@ -394,7 +394,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
 		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Searching on voided patients is no longer allowed");
 		}
 		
@@ -409,7 +409,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
 		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Searching on voided patients is no longer allowed");
 		}
 		
@@ -433,7 +433,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
 		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Searching on voided patients is no longer allowed");
 		}
 		
@@ -542,7 +542,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType patientIdentifierType,
 	        boolean includeVoided) throws APIException {
 		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Searching on voided identifiers is no longer allowed");
 		}
 		
@@ -703,7 +703,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> findPatients(String query, boolean includeVoided) throws APIException {
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Searching on voided patients is no longer allowed");
 		}
 		

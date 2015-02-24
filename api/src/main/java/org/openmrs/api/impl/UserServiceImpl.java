@@ -577,7 +577,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User, boolean)
 	 */
 	public void purgeUser(User user, boolean cascade) throws APIException {
-		if (cascade == true) {
+		if (cascade) {
 			throw new APIException("I don't think we want to cascade here");
 		}
 		

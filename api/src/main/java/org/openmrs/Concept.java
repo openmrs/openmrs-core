@@ -200,6 +200,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 *
 	 * @param locale
 	 * @return the answers for this concept sorted according to ConceptAnswerComparator
+	 * @deprecated
 	 */
 	@Deprecated
 	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
@@ -714,7 +715,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return exactName;
 		}
 		
-		if (exact == false) {
+		if (!exact) {
 			Locale broaderLocale = new Locale(locale.getLanguage());
 			ConceptName name = getNameInLocale(broaderLocale);
 			return name;
@@ -972,10 +973,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				oldShortName.setConceptNameType(null);
 			}
 			shortName.setConceptNameType(ConceptNameType.SHORT);
-			if (StringUtils.isNotBlank(shortName.getName()) 
-				&& (shortName.getConceptNameId() == null || !getNames().contains(shortName))) {
+			if (StringUtils.isNotBlank(shortName.getName())
+			        && (shortName.getConceptNameId() == null || !getNames().contains(shortName))) {
 				//add this name, if it is new or not among this concept's names
-					addName(shortName);
+				addName(shortName);
 			}
 		} else {
 			throw new APIException("Short name cannot be null");
@@ -1122,9 +1123,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (locale != null) {
 			for (ConceptName possibleName : getNames()) {
-				if (possibleName.getLocale().equals(locale) && ((shortestNameForLocale == null)
-				        || (possibleName.getName().length() < shortestNameForLocale.getName().length()))) {
-						shortestNameForLocale = possibleName;
+				if (possibleName.getLocale().equals(locale)
+				        && ((shortestNameForLocale == null) || (possibleName.getName().length() < shortestNameForLocale
+				                .getName().length()))) {
+					shortestNameForLocale = possibleName;
 				}
 				if ((shortestNameForConcept == null)
 				        || (possibleName.getName().length() < shortestNameForConcept.getName().length())) {

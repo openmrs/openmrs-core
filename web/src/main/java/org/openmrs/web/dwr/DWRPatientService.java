@@ -151,7 +151,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 					}
 					identifierMatchesValidationScheme = true;
 				}
-				catch (UnallowedIdentifierException e) {}
+				catch (UnallowedIdentifierException e) {
+					log.error("Error while validating identifier", e);
+				}
 			}
 			
 			if (identifierMatchesValidationScheme) {

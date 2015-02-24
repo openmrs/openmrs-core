@@ -413,7 +413,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 				
 				// if the to-be-added attribute isn't already voided itself
 				// and if we have the same type, different value
-				if (newAttribute.isVoided() == false || newIsNull) {
+				if (!newAttribute.isVoided() || newIsNull) {
 					if (currentAttribute.getCreator() != null) {
 						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
 					} else {
@@ -441,7 +441,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
 		if (attributes != null && attributes.remove(attribute)) {
-				attributeMap = null;
+			attributeMap = null;
 		}
 	}
 	
@@ -972,6 +972,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return true/false whether this person is a user or not
 	 * @deprecated use {@link UserService#getUsersByPerson(Person, boolean)}
 	 */
+	@Deprecated
 	public boolean isUser() {
 		return false;
 	}

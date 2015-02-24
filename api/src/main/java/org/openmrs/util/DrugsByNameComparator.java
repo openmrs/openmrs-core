@@ -28,7 +28,7 @@ import org.openmrs.Drug;
 public class DrugsByNameComparator implements Comparator<Drug> {
 	
 	/** The Constant log. */
-	private final static Log log = LogFactory.getLog(DrugsByNameComparator.class);
+	private final static Log LOGGER = LogFactory.getLog(DrugsByNameComparator.class);
 	
 	/* (non-Jsdoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
