@@ -945,11 +945,13 @@ public class InitializationFilter extends StartupFilter {
 	 * @return true/false whether it was verified or not
 	 */
 	private boolean verifyConnection(String connectionUsername, String connectionPassword, String databaseConnectionFinalUrl) {
+		Connection tempConnection = null;
 		try {
 			// verify connection
 			//Set Database Driver using driver String
 			Class.forName(loadedDriverString).newInstance();
-			DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
+			tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
+
 			return true;
 			
 		}
@@ -958,6 +960,14 @@ public class InitializationFilter extends StartupFilter {
 			        + " See the error log for more details", null); // TODO internationalize this
 			log.warn("Error while checking the connection user account", e);
 			return false;
+		} finally {
+			if(tempConnection != null) {
+				try {
+					tempConnection.close();
+				} catch (SQLException e) {
+					log.warn("Error while closing the connection", e);
+				}
+			}
 		}
 	}
 	
@@ -1106,6 +1116,7 @@ public class InitializationFilter extends StartupFilter {
 	private int executeStatement(boolean silent, String user, String pw, String sql, String... args) {
 		
 		Connection connection = null;
+		Statement statement = null;
 		try {
 			String replacedSql = sql;
 			
@@ -1131,7 +1142,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			// run the sql statement
-			Statement statement = connection.createStatement();
+			statement = connection.createStatement();
 			return statement.executeUpdate(replacedSql);
 			
 		}
@@ -1152,6 +1163,13 @@ public class InitializationFilter extends StartupFilter {
 			log.error("Error generated", e);
 		}
 		finally {
+			if(statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					log.warn("Error while closing statement", e);
+				}
+			}
 			try {
 				if (connection != null) {
 					connection.close();
