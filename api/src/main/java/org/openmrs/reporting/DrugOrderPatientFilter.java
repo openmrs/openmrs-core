@@ -38,7 +38,7 @@ import org.openmrs.util.OpenmrsUtil;
 @Deprecated
 public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter, Comparable<DrugOrderPatientFilter> {
 	
-	protected static final Log log = LogFactory.getLog(DrugOrderPatientFilter.class);
+	private static final Log LOGGER = LogFactory.getLog(DrugOrderPatientFilter.class);
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -147,7 +147,7 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 			if (drugId != null) {
 				Drug drug = Context.getConceptService().getDrug(drugId);
 				if (drug == null) {
-					log.error("Can't find drug with id " + drugId);
+					LOGGER.error("Can't find drug with id " + drugId);
 					names.add(mss.getMessage("reporting.missingDrug") + " " + drugId);
 				} else {
 					names.add(drug.getName());

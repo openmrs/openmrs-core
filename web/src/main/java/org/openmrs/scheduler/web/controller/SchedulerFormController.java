@@ -44,7 +44,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected static final Log log = LogFactory.getLog(SchedulerFormController.class);
+	private static final Log LOGGER = LogFactory.getLog(SchedulerFormController.class);
 	
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
@@ -54,14 +54,13 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(java.lang.Long.class, new CustomNumberEditor(java.lang.Long.class, true));
 		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(DEFAULT_DATE_FORMAT, true));
@@ -74,7 +73,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command,
-	        BindException errors) throws Exception {
+	                                             BindException errors) throws Exception {
 		
 		TaskDefinition task = (TaskDefinition) command;
 		
@@ -114,7 +113,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -125,7 +124,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	        BindException errors) throws Exception {
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -133,7 +132,7 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		TaskDefinition task = (TaskDefinition) command;
 		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
-		log.info("task started? " + task.getStarted());
+		LOGGER.info("task started? " + task.getStarted());
 		
 		//TODO Add unit test method to check that an executing task doesn't get rescheduled, it would require adding a test task 
 		//that runs for a period that spans beyond time it takes to execute all the necessary assertions in the test method
@@ -157,7 +156,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
