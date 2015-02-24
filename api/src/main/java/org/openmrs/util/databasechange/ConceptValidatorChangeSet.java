@@ -228,16 +228,16 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						}
 					}
 					
-					if ((nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred()) 
-						&& !isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
-							if (localeDuplicateNamesMap == null) {
-								localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
-							}
-							if (!localeDuplicateNamesMap.containsKey(conceptNameLocale)) {
-								localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<String>());
-							}
-							
-							localeDuplicateNamesMap.get(conceptNameLocale).add(nameInLocale.getName());
+					if ((nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred())
+					        && !isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
+						if (localeDuplicateNamesMap == null) {
+							localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
+						}
+						if (!localeDuplicateNamesMap.containsKey(conceptNameLocale)) {
+							localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<String>());
+						}
+						
+						localeDuplicateNamesMap.get(conceptNameLocale).add(nameInLocale.getName());
 					}
 					
 					String name = nameInLocale.getName().toLowerCase();

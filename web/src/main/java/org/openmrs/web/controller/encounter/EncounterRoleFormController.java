@@ -65,10 +65,10 @@ public class EncounterRoleFormController {
 	        BindingResult errors) throws Exception {
 		new EncounterRoleValidator().validate(encounterRole, errors);
 		if (!errors.hasErrors() && Context.isAuthenticated()) {
-				EncounterService service = Context.getEncounterService();
-				String message = saveEncounterRole(encounterRole, service);
-				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
-				return showEncounterList();
+			EncounterService service = Context.getEncounterService();
+			String message = saveEncounterRole(encounterRole, service);
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
+			return showEncounterList();
 		}
 		
 		return showForm();
@@ -90,10 +90,10 @@ public class EncounterRoleFormController {
 			errors.reject("retireReason", "general.retiredReason.empty");
 		}
 		if (!errors.hasErrors() && Context.isAuthenticated()) {
-				EncounterService service = Context.getEncounterService();
-				String message = retireEncounterRole(encounterRole, service);
-				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
-				return showEncounterList();
+			EncounterService service = Context.getEncounterService();
+			String message = retireEncounterRole(encounterRole, service);
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
+			return showEncounterList();
 		}
 		
 		return showForm();
@@ -111,9 +111,9 @@ public class EncounterRoleFormController {
 	        BindingResult errors) throws Exception {
 		new EncounterRoleValidator().validate(encounterRole, errors);
 		if (!errors.hasErrors() && Context.isAuthenticated()) {
-				EncounterService service = Context.getEncounterService();
-				unRetireEncounterRole(encounterRole, service, session);
-				return showEncounterList();
+			EncounterService service = Context.getEncounterService();
+			unRetireEncounterRole(encounterRole, service, session);
+			return showEncounterList();
 		}
 		
 		return showForm();
@@ -133,9 +133,9 @@ public class EncounterRoleFormController {
 	        BindingResult errors) throws Exception {
 		new EncounterRoleValidator().validate(encounterRole, errors);
 		if (!errors.hasErrors() && Context.isAuthenticated()) {
-				EncounterService service = Context.getEncounterService();
-				purgeEncounterRole(session, encounterRole, service);
-				return showEncounterList();
+			EncounterService service = Context.getEncounterService();
+			purgeEncounterRole(session, encounterRole, service);
+			return showEncounterList();
 		}
 		
 		return showForm();
@@ -145,8 +145,8 @@ public class EncounterRoleFormController {
 	public EncounterRole formBackingObject(@RequestParam(required = false) Integer encounterRoleId) throws ServletException {
 		EncounterRole encounterRole = new EncounterRole();
 		if (Context.isAuthenticated() && encounterRoleId != null) {
-				EncounterService encounterService = Context.getEncounterService();
-				encounterRole = encounterService.getEncounterRole(encounterRoleId);
+			EncounterService encounterService = Context.getEncounterService();
+			encounterRole = encounterService.getEncounterRole(encounterRoleId);
 		}
 		return encounterRole;
 	}

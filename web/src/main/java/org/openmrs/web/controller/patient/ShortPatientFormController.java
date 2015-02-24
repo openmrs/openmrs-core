@@ -355,8 +355,8 @@ public class ShortPatientFormController {
 	
 	/**
 	 * Creates a map of string of the form 3b, 3a and the actual person Relationships
-	 * @param result 
 	 * 
+	 * @param result
 	 * @param person the patient/person whose relationships to return
 	 * @param request the webRequest Object
 	 * @return map of strings matched against actual relationships
@@ -577,9 +577,11 @@ public class ShortPatientFormController {
 		PersonName personName = patient.getPersonName();
 		if (personNameCache.getId() != null) {
 			// if the existing persoName has been edited
-			if (!getPersonNameString(personName).equalsIgnoreCase(getPersonNameString(personNameCache)) && log.isDebugEnabled()) {
+			if (!getPersonNameString(personName).equalsIgnoreCase(getPersonNameString(personNameCache))) {
+				if (log.isDebugEnabled()) {
 					log.debug("Voiding person name with id: " + personName.getId() + " and replacing it with a new one: "
 					        + personName.getFullName());
+				}
 				foundChanges = true;
 				// create a new one and copy the changes to it
 				PersonName newName = PersonName.newInstance(personName);
@@ -608,10 +610,11 @@ public class ShortPatientFormController {
 		
 		PersonAddress personAddress = patient.getPersonAddress();
 		if (personAddress != null) {
-			if (personAddressCache.getId() != null && !personAddress.isBlank() 
-					&& !personAddressCache.isBlank() && !personAddress.equalsContent(personAddressCache)
-					&& log.isDebugEnabled()) {
+			if (personAddressCache.getId() != null) {
 				// if the existing personAddress has been edited
+				if (!personAddress.isBlank() && !personAddressCache.isBlank()
+				        && !personAddress.equalsContent(personAddressCache)) {
+					if (log.isDebugEnabled()) {
 						log.debug("Voiding person address with id: " + personAddress.getId()
 						        + " and replacing it with a new one: " + personAddress.toString());
 					}
@@ -647,6 +650,8 @@ public class ShortPatientFormController {
 					
 					// Add the created one
 					patient.addAddress(newAddress);
+				}
+			}
 		}
 		
 		return foundChanges;

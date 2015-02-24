@@ -82,11 +82,11 @@ public class HtmlIncludeTag extends TagSupport {
 		String fileExt = file.substring(file.lastIndexOf("."));
 		
 		if (this.type != null && this.type.length() > 0) {
-				if (HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(type) >= 0) {
-					isCss = true;
-				} else if (HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(type) >= 0) {
-					isJs = true;
-				}
+			if (HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(type) >= 0) {
+				isCss = true;
+			} else if (HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(type) >= 0) {
+				isJs = true;
+			}
 		}
 		
 		if (!isCss && !isJs && fileExt.length() > 0) {

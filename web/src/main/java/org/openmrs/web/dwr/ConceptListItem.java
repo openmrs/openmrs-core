@@ -139,8 +139,9 @@ public class ConceptListItem {
 				// if the name hit is not the preferred or fully specified one, put the fully specified one here
 				if (!conceptName.isPreferred()) {
 					ConceptName preferredNameObj = concept.getPreferredName(locale);
-					if (preferredNameObj == null && !StringUtils.isBlank(locale.getCountry()) || !StringUtils.isBlank(locale.getVariant())) {
-							preferredNameObj = concept.getPreferredName(new Locale(locale.getLanguage()));
+					if (preferredNameObj == null && !StringUtils.isBlank(locale.getCountry())
+					        || !StringUtils.isBlank(locale.getVariant())) {
+						preferredNameObj = concept.getPreferredName(new Locale(locale.getLanguage()));
 					}
 					if (preferredNameObj != null) {
 						preferredName = preferredNameObj.getName();

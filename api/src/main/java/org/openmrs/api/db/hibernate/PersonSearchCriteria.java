@@ -34,31 +34,27 @@ public class PersonSearchCriteria {
 	
 	Criterion prepareCriterionForAttribute(String value, Boolean voided, MatchMode matchMode) {
 		if (voided == null || !voided) {
-			return Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true))
-			        .add(Restrictions.eq("attribute.voided", false))
-			        .add(Restrictions.ilike("attribute.value", value, matchMode));
+			return Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
+			    Restrictions.eq("attribute.voided", false)).add(Restrictions.ilike("attribute.value", value, matchMode));
 		} else {
-			return Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true))
-			        .add(Restrictions.ilike("attribute.value", value, matchMode));
+			return Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
+			    Restrictions.ilike("attribute.value", value, matchMode));
 		}
 	}
 	
 	Criterion prepareCriterionForName(String value, Boolean voided) {
 		if (voided == null || !voided) {
-			return Restrictions
-			        .conjunction()
-			        .add(Restrictions.eq("name.voided", false))
-			        .add(
-			            Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START))
-			                    .add(Restrictions.ilike("name.middleName", value, MatchMode.START))
-			                    .add(Restrictions.ilike("name.familyName", value, MatchMode.START))
-			                    .add(Restrictions.ilike("name.familyName2", value, MatchMode.START)));
+			return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
+			    Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START)).add(
+			        Restrictions.ilike("name.middleName", value, MatchMode.START)).add(
+			        Restrictions.ilike("name.familyName", value, MatchMode.START)).add(
+			        Restrictions.ilike("name.familyName2", value, MatchMode.START)));
 		} else {
 			return Restrictions.conjunction().add(
-			    Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START))
-			            .add(Restrictions.ilike("name.middleName", value, MatchMode.START))
-			            .add(Restrictions.ilike("name.familyName", value, MatchMode.START))
-			            .add(Restrictions.ilike("name.familyName2", value, MatchMode.START)));
+			    Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START)).add(
+			        Restrictions.ilike("name.middleName", value, MatchMode.START)).add(
+			        Restrictions.ilike("name.familyName", value, MatchMode.START)).add(
+			        Restrictions.ilike("name.familyName2", value, MatchMode.START)));
 		}
 	}
 	

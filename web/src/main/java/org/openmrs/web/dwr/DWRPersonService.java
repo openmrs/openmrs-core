@@ -76,7 +76,7 @@ public class DWRPersonService {
 				dateObject = format.parse(birthdate);
 			}
 			catch (Exception e) {
-				log.error ("Error during parse birthdate", e);
+				log.error("Error during parse birthdate", e);
 			}
 			
 			if (dateObject != null) {
@@ -227,7 +227,7 @@ public class DWRPersonService {
 				cal.add(Calendar.YEAR, -(Integer.parseInt(age)));
 			}
 			catch (NumberFormatException nfe) {
-				log.error ("Error during adding date into calendar", nfe);
+				log.error("Error during adding date into calendar", nfe);
 			}
 			return cal.getTime();
 		} else {

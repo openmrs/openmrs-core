@@ -98,8 +98,8 @@ public class FormUtil {
 		boolean underscoreFlag = false;
 		for (int i = 0; i < s.length(); i++) {
 			if (nameChars.indexOf(s.charAt(i)) != -1 && (s.charAt(i) != '_' || !underscoreFlag)) {
-					token.append(s.charAt(i));
-					underscoreFlag = (s.charAt(i) == '_');
+				token.append(s.charAt(i));
+				underscoreFlag = (s.charAt(i) == '_');
 			}
 		}
 		

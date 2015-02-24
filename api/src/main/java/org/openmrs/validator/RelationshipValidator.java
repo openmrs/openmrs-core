@@ -57,7 +57,7 @@ public class RelationshipValidator implements Validator {
 			Date startDate = relationship.getStartDate();
 			Date endDate = relationship.getEndDate();
 			if (startDate != null && endDate != null && startDate.after(endDate)) {
-					errors.reject("Relationship.InvalidEndDate.error");
+				errors.reject("Relationship.InvalidEndDate.error");
 			}
 		}
 		

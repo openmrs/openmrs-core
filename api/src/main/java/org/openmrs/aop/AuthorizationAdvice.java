@@ -45,7 +45,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	 * @throws Throwable
 	 * @should notify listeners about checked privileges
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings( { "unchecked" })
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		
 		if (log.isDebugEnabled()) {

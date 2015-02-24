@@ -76,21 +76,21 @@ public class ProviderFormController {
 		new ProviderValidator().validate(provider, errors);
 		
 		if (!errors.hasErrors() && Context.isAuthenticated()) {
-				ProviderService service = Context.getProviderService();
-				
-				String message = "Provider.saved";
-				if (saveProviderButton != null) {
-					service.saveProvider(provider);
-				} else if (retireProviderButton != null) {
-					service.retireProvider(provider, provider.getRetireReason());
-					message = "Provider.retired";
-				} else if (unretireProviderButton != null) {
-					service.unretireProvider(provider);
-					message = "Provider.unretired";
-				}
-				
-				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
-				return "redirect:index.htm";
+			ProviderService service = Context.getProviderService();
+			
+			String message = "Provider.saved";
+			if (saveProviderButton != null) {
+				service.saveProvider(provider);
+			} else if (retireProviderButton != null) {
+				service.retireProvider(provider, provider.getRetireReason());
+				message = "Provider.retired";
+			} else if (unretireProviderButton != null) {
+				service.unretireProvider(provider);
+				message = "Provider.unretired";
+			}
+			
+			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
+			return "redirect:index.htm";
 		}
 		
 		return showForm();
@@ -100,8 +100,8 @@ public class ProviderFormController {
 	public Provider formBackingObject(@RequestParam(required = false) Integer providerId) throws ServletException {
 		Provider provider = new Provider();
 		if (Context.isAuthenticated() && providerId != null) {
-				ProviderService ps = Context.getProviderService();
-				return ps.getProvider(providerId);
+			ProviderService ps = Context.getProviderService();
+			return ps.getProvider(providerId);
 		}
 		return provider;
 	}

@@ -128,7 +128,7 @@ public class ModuleConditionalResource {
 			}
 			if (version != null ? !version.equals(that.version) : that.version != null) {
 				return false;
-			}	
+			}
 			
 			return true;
 		}

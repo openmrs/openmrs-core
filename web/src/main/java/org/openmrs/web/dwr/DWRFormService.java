@@ -128,7 +128,7 @@ public class DWRFormService {
 			concept = Context.getConceptService().getConcept(i);
 		}
 		catch (NumberFormatException e) {
-			log.error ("Error during getting concept", e);
+			log.error("Error during getting concept", e);
 		}
 		
 		Map<Integer, Boolean> fieldForConceptAdded = new HashMap<Integer, Boolean>();
@@ -189,9 +189,9 @@ public class DWRFormService {
 	}
 	
 	public Integer[] saveFormField(Integer fieldId, String name, String fieldDesc, Integer fieldTypeId, Integer conceptId,
-	                               String table, String attr, String defaultValue, boolean multiple, Integer formFieldId,
-	                               Integer formId, Integer parent, Integer number, String part, Integer page, Integer min,
-	                               Integer max, boolean required, float sortWeight) {
+	        String table, String attr, String defaultValue, boolean multiple, Integer formFieldId, Integer formId,
+	        Integer parent, Integer number, String part, Integer page, Integer min, Integer max, boolean required,
+	        float sortWeight) {
 		
 		FormField ff = null;
 		Field field = null;
@@ -318,7 +318,7 @@ public class DWRFormService {
 		        + "defaultValue: \"" + WebUtil.escapeQuotesAndNewlines(field.getDefaultValue()) + "\", "
 		        + "selectMultiple: " + field.getSelectMultiple() + ", " + "isCodedDatatype: " + isCodedDatatype + ", "
 		        + "numForms: " + size + ", " + "isSet: " + isSet + ", " +
-		        
+
 		        "fieldNumber: " + ff.getFieldNumber() + ", " + "fieldPart: \""
 		        + (ff.getFieldPart() == null ? "" : WebUtil.escapeQuotesAndNewlines(ff.getFieldPart())) + "\", "
 		        + "pageNumber: " + ff.getPageNumber() + ", " + "minOccurs: " + ff.getMinOccurs() + ", " + "maxOccurs: "

@@ -66,7 +66,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
-			}	
+			}
 			if (obj == null) {
 				return false;
 			}
@@ -80,7 +80,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 				}
 			} else if (!handlerType.equals(other.handlerType)) {
 				return false;
-			}	
+			}
 			if (type == null) {
 				if (other.type != null) {
 					return false;

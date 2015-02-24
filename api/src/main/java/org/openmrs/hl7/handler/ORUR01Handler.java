@@ -894,8 +894,8 @@ public class ORUR01Handler implements Application {
 	 */
 	private ConceptName getConceptName(ST altIdentifier, ID altCodingSystem) throws HL7Exception {
 		if (altIdentifier != null && HL7Constants.HL7_LOCAL_CONCEPT_NAME.equals(altCodingSystem.getValue())) {
-				String hl7ConceptNameId = altIdentifier.getValue();
-				return getConceptName(hl7ConceptNameId);
+			String hl7ConceptNameId = altIdentifier.getValue();
+			return getConceptName(hl7ConceptNameId);
 		}
 		
 		return null;

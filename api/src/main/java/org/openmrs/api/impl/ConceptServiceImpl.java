@@ -1450,13 +1450,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	private void checkIfDatatypeCanBeChanged(Concept concept) {
 		if (concept.getId() != null && hasAnyObservation(concept) && hasDatatypeChanged(concept)) {
-				// allow boolean concepts to be converted to coded
-				if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
-					throw new ConceptInUseException();
-				}
-				if (log.isDebugEnabled()) {
-					log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
-				}
+			// allow boolean concepts to be converted to coded
+			if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
+				throw new ConceptInUseException();
+			}
+			if (log.isDebugEnabled()) {
+				log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
+			}
 		}
 	}
 	
@@ -2070,7 +2070,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			locales.add(Context.getLocale());
 		}
 		return dao.getConcepts(phrase, locales, false, mappedClasses, (List) Collections.emptyList(), (List) Collections
-			.emptyList(), (List) Collections.emptyList(), null, start, length);
+		        .emptyList(), (List) Collections.emptyList(), null, start, length);
 	}
 	
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {

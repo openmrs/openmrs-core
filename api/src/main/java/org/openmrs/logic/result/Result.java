@@ -590,7 +590,7 @@ public class Result extends ArrayList<Result> {
 				return valueNumeric;
 			}
 			switch (datatype) {
-			
+				
 				case BOOLEAN:
 					return (valueBoolean == null || !valueBoolean ? 0D : 1D);
 				case CODED:

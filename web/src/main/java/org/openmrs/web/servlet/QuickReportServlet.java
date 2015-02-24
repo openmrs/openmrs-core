@@ -161,7 +161,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		for (Obs o : allObs) {
 			if (o.getValueDatetime() != null && o.getValueDatetime().after(start) && o.getValueDatetime().before(end)) {
-					obs.add(o);
+				obs.add(o);
 			}
 		}
 		

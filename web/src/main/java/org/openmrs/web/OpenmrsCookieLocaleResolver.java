@@ -44,8 +44,8 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		// if a user clicks on the locale change links 
 		// AND their current default locale is different (so the msg isn't repeated)
 		if (request.getParameter("lang") != null && Context.isAuthenticated() && !Context.getLocale().equals(locale)) {
-				session.setAttribute(WebConstants.OPENMRS_MSG_ARGS, request.getContextPath());
-				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.localeChangeHint");
+			session.setAttribute(WebConstants.OPENMRS_MSG_ARGS, request.getContextPath());
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.localeChangeHint");
 		}
 		
 		Context.setLocale(locale);

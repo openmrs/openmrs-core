@@ -67,7 +67,7 @@ public class ConceptDrugFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		String view = getFormView();
@@ -85,7 +85,7 @@ public class ConceptDrugFormController extends SimpleFormController {
 				conceptService.retireDrug(drug, retireReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.retiredSuccessfully");
 			}
-			
+
 			// if this obs is already voided and needs to be unvoided
 			else if (request.getParameter("unretireDrug") != null) {
 				conceptService.unretireDrug(drug);

@@ -132,13 +132,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		List<String> roleList = null;
 		
 		if (roles != null && roles.length() > 0) {
-				String[] splitRoles = roles.split(",");
-				for (String role : splitRoles) {
-					if (roleList == null) {
-						roleList = new ArrayList<String>();
-					}
-					roleList.add(role);
+			String[] splitRoles = roles.split(",");
+			for (String role : splitRoles) {
+				if (roleList == null) {
+					roleList = new ArrayList<String>();
 				}
+				roleList.add(role);
+			}
 		}
 		
 		return Context.getPersonService().findPeople(searchPhrase, includeVoided, roleList);

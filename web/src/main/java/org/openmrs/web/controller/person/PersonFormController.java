@@ -347,7 +347,8 @@ public class PersonFormController extends SimpleFormController {
 						}
 					}
 				} else {
-					LOGGER.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+					LOGGER
+					        .debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 				}
 				
 			}
@@ -527,49 +528,49 @@ public class PersonFormController extends SimpleFormController {
 			int maxAddrs = 0;
 			
 			if (add1s != null && add1s.length > maxAddrs) {
-					maxAddrs = add1s.length;
+				maxAddrs = add1s.length;
 			}
 			if (add2s != null && add2s.length > maxAddrs) {
-					maxAddrs = add2s.length;
+				maxAddrs = add2s.length;
 			}
 			if (cities != null && cities.length > maxAddrs) {
-					maxAddrs = cities.length;
+				maxAddrs = cities.length;
 			}
 			if (states != null && states.length > maxAddrs) {
-					maxAddrs = states.length;
+				maxAddrs = states.length;
 			}
 			if (countries != null && countries.length > maxAddrs) {
-					maxAddrs = countries.length;
+				maxAddrs = countries.length;
 			}
 			if (lats != null && lats.length > maxAddrs) {
-					maxAddrs = lats.length;
+				maxAddrs = lats.length;
 			}
 			if (longs != null && longs.length > maxAddrs) {
-					maxAddrs = longs.length;
+				maxAddrs = longs.length;
 			}
 			if (pCodes != null && pCodes.length > maxAddrs) {
-					maxAddrs = pCodes.length;
+				maxAddrs = pCodes.length;
 			}
 			if (counties != null && counties.length > maxAddrs) {
-					maxAddrs = counties.length;
+				maxAddrs = counties.length;
 			}
 			if (add3s != null && add3s.length > maxAddrs) {
-					maxAddrs = add3s.length;
+				maxAddrs = add3s.length;
 			}
 			if (add6s != null && add6s.length > maxAddrs) {
-					maxAddrs = add6s.length;
+				maxAddrs = add6s.length;
 			}
 			if (add5s != null && add5s.length > maxAddrs) {
-					maxAddrs = add5s.length;
+				maxAddrs = add5s.length;
 			}
 			if (add4s != null && add4s.length > maxAddrs) {
-					maxAddrs = add4s.length;
+				maxAddrs = add4s.length;
 			}
 			if (startDates != null && startDates.length > maxAddrs) {
-					maxAddrs = startDates.length;
+				maxAddrs = startDates.length;
 			}
 			if (endDates != null && endDates.length > maxAddrs) {
-					maxAddrs = endDates.length;
+				maxAddrs = endDates.length;
 			}
 			
 			LOGGER.debug("There appears to be " + maxAddrs + " addresses that need to be saved");

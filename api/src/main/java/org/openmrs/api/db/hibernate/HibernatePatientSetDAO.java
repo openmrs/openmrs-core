@@ -1992,7 +1992,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		Map<Integer, List<Person>> ret = new HashMap<Integer, List<Person>>();
 		if (patients != null && patients.size() == 0) {
-				return ret;
+			return ret;
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);

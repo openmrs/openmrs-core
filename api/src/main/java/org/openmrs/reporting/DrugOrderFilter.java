@@ -116,8 +116,8 @@ public class DrugOrderFilter extends CachingPatientFilter {
 				}
 				ret.append(getDrugListToUse().get(0).getName());
 			} else {
-				ret.append(mss.getMessage("reporting.taking").toLowerCase()).append(" ").append(getAnyOrAll())
-				        .append(mss.getMessage("reporting.of")).append(" [");
+				ret.append(mss.getMessage("reporting.taking").toLowerCase()).append(" ").append(getAnyOrAll()).append(
+				    mss.getMessage("reporting.of")).append(" [");
 				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext();) {
 					ret.append(i.next().getName());
 					if (i.hasNext()) {
