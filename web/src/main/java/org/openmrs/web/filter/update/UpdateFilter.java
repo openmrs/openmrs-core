@@ -74,14 +74,14 @@ public class UpdateFilter extends StartupFilter {
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
-	private final String DEFAULT_PAGE = "maintenance.vm";
+	private static final String DEFAULT_PAGE = "maintenance.vm";
 	
 	/**
 	 * The page that lists off all the currently unexecuted changes
 	 */
-	private final String REVIEW_CHANGES = "reviewchanges.vm";
+	private static final String REVIEW_CHANGES = "reviewchanges.vm";
 	
-	private final String PROGRESS_VM_AJAXREQUEST = "updateProgress.vm.ajaxRequest";
+	private static final String PROGRESS_VM_AJAXREQUEST = "updateProgress.vm.ajaxRequest";
 	
 	/**
 	 * The model object behind this set of screens
@@ -334,11 +334,12 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	protected boolean authenticateAsSuperUser(String usernameOrSystemId, String password) throws ServletException {
 		Connection connection = null;
+		PreparedStatement statement = null;
 		try {
 			connection = DatabaseUpdater.getConnection();
 			
 			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = '0'";
-			PreparedStatement statement = connection.prepareStatement(select);
+			statement = connection.prepareStatement(select);
 			statement.setString(1, usernameOrSystemId);
 			statement.setString(2, usernameOrSystemId);
 			
@@ -364,7 +365,7 @@ public class UpdateFilter extends StartupFilter {
 			// again the old way
 			try {
 				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
-				PreparedStatement statement = connection.prepareStatement(select);
+				statement = connection.prepareStatement(select);
 				statement.setString(1, usernameOrSystemId);
 				statement.setString(2, usernameOrSystemId);
 				
@@ -385,6 +386,14 @@ public class UpdateFilter extends StartupFilter {
 			}
 		}
 		finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				}
+				catch (SQLException e) {
+					log.warn("Error while closing statement", e);
+				}
+			}
 			if (connection != null) {
 				try {
 					connection.close();

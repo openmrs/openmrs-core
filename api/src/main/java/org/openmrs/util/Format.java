@@ -30,7 +30,7 @@ public class Format {
 	
 	public enum FORMAT_TYPE {
 		DATE, TIME, TIMESTAMP
-	};
+	}
 	
 	public static String formatPercentage(double pct) {
 		return NumberFormat.getPercentInstance().format(pct);

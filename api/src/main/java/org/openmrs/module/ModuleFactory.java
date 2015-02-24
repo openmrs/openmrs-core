@@ -137,9 +137,8 @@ public class ModuleFactory {
 				if (replaceIfExists) {
 					// if the versions are the same and we're told to replaceIfExists, use the new
 					unloadModule(oldModule);
-				} else
-				// if the versions are equal and we're not told to replaceIfExists, jump out of here in a bad way
-				{
+				} else {
+					// if the versions are equal and we're not told to replaceIfExists, jump out of here in a bad way
 					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
 				}
 			} else {

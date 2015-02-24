@@ -52,6 +52,7 @@ public class FilterUtil {
 	 */
 	public static String restoreLocale(String username) {
 		String currentLocale = null;
+		PreparedStatement statement = null;
 		if (StringUtils.isNotBlank(username)) {
 			Connection connection = null;
 			try {
@@ -62,7 +63,7 @@ public class FilterUtil {
 				
 				if (userId != null) {
 					String select = "select property_value from user_property where user_id = ? and property = ?";
-					PreparedStatement statement = connection.prepareStatement(select);
+					statement = connection.prepareStatement(select);
 					statement.setInt(1, userId);
 					statement.setString(2, OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 					if (statement.execute()) {
@@ -82,6 +83,14 @@ public class FilterUtil {
 				log.error("Error while retriving locale property", e);
 			}
 			finally {
+				if (statement != null) {
+					try {
+						statement.close();
+					}
+					catch (SQLException e) {
+						log.warn("Error while closing statement", e);
+					}
+				}
 				if (connection != null) {
 					try {
 						connection.close();
@@ -110,13 +119,14 @@ public class FilterUtil {
 	public static String readSystemDefaultLocale(Connection connection) {
 		String systemDefaultLocale = null;
 		Boolean needToCloseConection = false;
+		PreparedStatement statement = null;
 		try {
 			if (connection == null) {
 				connection = DatabaseUpdater.getConnection();
 				needToCloseConection = true;
 			}
 			String select = "select property_value from global_property where property = ?";
-			PreparedStatement statement = connection.prepareStatement(select);
+			statement = connection.prepareStatement(select);
 			statement.setString(1, OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
 			if (statement.execute()) {
 				ResultSet results = statement.getResultSet();
@@ -129,6 +139,14 @@ public class FilterUtil {
 			log.error("Error while retrieving system default locale", e);
 		}
 		finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				}
+				catch (SQLException e) {
+					log.warn("Error while closing statement", e);
+				}
+			}
 			if (needToCloseConection) {
 				if (connection != null) {
 					try {

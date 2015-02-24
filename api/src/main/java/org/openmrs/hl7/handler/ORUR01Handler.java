@@ -804,12 +804,8 @@ public class ORUR01Handler implements Application {
 			if (value != null) {
 				Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), value.getHour(), value
 				        .getMinute(), value.getSecond());
-				if (valueDate != null) {
-					obs.setValueDatetime(valueDate);
-				} else {
-					log.warn("Not creating null valued obs for concept " + concept);
-					return null;
-				}
+				obs.setValueDatetime(valueDate);
+				
 			} else {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
@@ -1295,7 +1291,7 @@ public class ORUR01Handler implements Application {
 			
 			PersonAttribute currentHealthCenter = patient.getAttribute("Health Center");
 			
-			if (currentHealthCenter == null || !currentHealthCenter.equals(newLocationId.toString())) {
+			if (currentHealthCenter == null || !currentHealthCenter.getValue().equals(newLocationId.toString())) {
 				PersonAttribute newHealthCenter = new PersonAttribute(healthCenterAttrType, newLocationId.toString());
 				
 				log.debug("Updating patient's location from " + currentHealthCenter + " to " + newLocationId);

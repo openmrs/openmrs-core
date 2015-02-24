@@ -56,8 +56,8 @@ public class ConceptStateConversion extends BaseOpenmrsObject implements java.io
 	
 	/** @see Object#toString() */
 	public String toString() {
-		return ("ConceptStateConversion: Concept[" + concept + "] results in State [" + programWorkflowState
-		        + "] for workflow [" + programWorkflow + "]");
+		return "ConceptStateConversion: Concept[" + concept + "] results in State [" + programWorkflowState
+		        + "] for workflow [" + programWorkflow + "]";
 	}
 	
 	// ******************

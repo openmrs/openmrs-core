@@ -35,7 +35,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	
 	private static final long serialVersionUID = 4280303636131451746L;
 	
-	private final String dateFormat = "yyyy-MM-dd";
+	private static final String dateFormat = "yyyy-MM-dd";
 	
 	/**
 	 * Default empty constructor

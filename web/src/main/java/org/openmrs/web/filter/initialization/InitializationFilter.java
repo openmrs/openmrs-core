@@ -68,39 +68,39 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * The very first page of wizard, that asks user for select his preferred language
 	 */
-	private final String CHOOSE_LANG = "chooselang.vm";
+	private static final String CHOOSE_LANG = "chooselang.vm";
 	
 	/**
 	 * The second page of the wizard that asks for simple or advanced installation.
 	 */
-	private final String INSTALL_METHOD = "installmethod.vm";
+	private static final String INSTALL_METHOD = "installmethod.vm";
 	
 	/**
 	 * The simple installation setup page.
 	 */
-	private final String SIMPLE_SETUP = "simplesetup.vm";
+	private static final String SIMPLE_SETUP = "simplesetup.vm";
 	
 	/**
 	 * The first page of the advanced installation of the wizard that asks for a current or past
 	 * database
 	 */
-	private final String DATABASE_SETUP = "databasesetup.vm";
+	private static final String DATABASE_SETUP = "databasesetup.vm";
 	
 	/**
 	 * The page from where the user specifies the url to a remote system, username and password
 	 */
-	private final String TESTING_REMOTE_DETAILS_SETUP = "remotedetails.vm";
+	private static final String TESTING_REMOTE_DETAILS_SETUP = "remotedetails.vm";
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
-	private final String DEFAULT_PAGE = CHOOSE_LANG;
+	private static final String DEFAULT_PAGE = CHOOSE_LANG;
 	
 	/**
 	 * This page asks whether database tables/demo data should be inserted and what the
 	 * username/password that will be put into the runtime properties is
 	 */
-	private final String DATABASE_TABLES_AND_USER = "databasetablesanduser.vm";
+	private static final String DATABASE_TABLES_AND_USER = "databasetablesanduser.vm";
 	
 	/**
 	 * This page lets the user define the admin user
@@ -115,7 +115,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * This page asks for settings that will be put into the runtime properties files
 	 */
-	private final String OTHER_RUNTIME_PROPS = "otherruntimeproperties.vm";
+	private static final String OTHER_RUNTIME_PROPS = "otherruntimeproperties.vm";
 	
 	/**
 	 * A page that tells the user that everything is collected and will now be processed
@@ -945,11 +945,13 @@ public class InitializationFilter extends StartupFilter {
 	 * @return true/false whether it was verified or not
 	 */
 	private boolean verifyConnection(String connectionUsername, String connectionPassword, String databaseConnectionFinalUrl) {
+		Connection tempConnection = null;
 		try {
 			// verify connection
 			//Set Database Driver using driver String
 			Class.forName(loadedDriverString).newInstance();
-			DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
+			tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
+			
 			return true;
 			
 		}
@@ -958,6 +960,16 @@ public class InitializationFilter extends StartupFilter {
 			        + " See the error log for more details", null); // TODO internationalize this
 			log.warn("Error while checking the connection user account", e);
 			return false;
+		}
+		finally {
+			if (tempConnection != null) {
+				try {
+					tempConnection.close();
+				}
+				catch (SQLException e) {
+					log.warn("Error while closing the connection", e);
+				}
+			}
 		}
 	}
 	
@@ -1106,6 +1118,7 @@ public class InitializationFilter extends StartupFilter {
 	private int executeStatement(boolean silent, String user, String pw, String sql, String... args) {
 		
 		Connection connection = null;
+		Statement statement = null;
 		try {
 			String replacedSql = sql;
 			
@@ -1131,7 +1144,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			// run the sql statement
-			Statement statement = connection.createStatement();
+			statement = connection.createStatement();
 			return statement.executeUpdate(replacedSql);
 			
 		}
@@ -1152,6 +1165,14 @@ public class InitializationFilter extends StartupFilter {
 			log.error("Error generated", e);
 		}
 		finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				}
+				catch (SQLException e) {
+					log.warn("Error while closing statement", e);
+				}
+			}
 			try {
 				if (connection != null) {
 					connection.close();
