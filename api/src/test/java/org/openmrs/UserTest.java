@@ -53,7 +53,10 @@ public class UserTest {
 
     @Test
     public void isContainsRole_shouldBeEqual() throws Exception {
-        assertEquals(user.containsRole("Maternity Nurse"),user.containsRole("maternity nurse"));
+        user.addRole(new Role("Maternity Nurse"));
+        assertEquals(user.containsRole("Maternity Nurse"), true);
+        assertEquals(user.containsRole("maternity nurse"), true);
+
     }
 
 }
