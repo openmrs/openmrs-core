@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.util.RoleConstants;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -49,5 +50,13 @@ public class UserTest {
 	public void isSuperUser_shouldNotBeSuperUser() throws Exception {
 		assertFalse(user.isSuperUser());
 	}
-	
+
+    @Test
+    public void isContainsRole_shouldBeEqual() throws Exception {
+        user.addRole(new Role("Maternity Nurse"));
+        assertEquals(user.containsRole("Maternity Nurse"), true);
+        assertEquals(user.containsRole("maternity nurse"), true);
+
+    }
+
 }
