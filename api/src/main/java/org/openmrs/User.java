@@ -13,17 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -35,6 +24,16 @@ import org.openmrs.util.RoleConstants;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.load.Replace;
 import org.simpleframework.xml.load.Validate;
+import java.util.Collections;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
@@ -164,9 +163,9 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 		return containsRole(r);
 	}
 	
-	private boolean containsRole(String roleName) {
+	public boolean containsRole(String roleName) {
 		for (Role role : getAllRoles()) {
-			if (role.getRole().equals(roleName)) {
+			if (role.getRole().equalsIgnoreCase(roleName)) {
 				return true;
 			}
 		}
