@@ -137,7 +137,7 @@ public class PersonFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors)
-	    throws Exception {
+	        throws Exception {
 		Object person = errors.getTarget();
 		if (person instanceof Patient) {
 			Patient patient = (Patient) person;
@@ -159,7 +159,7 @@ public class PersonFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors,
-	                                Map controlModel) throws Exception {
+	        Map controlModel) throws Exception {
 		Object person = errors.getTarget();
 		if (person instanceof Patient) {
 			Patient patient = (Patient) person;
@@ -178,7 +178,7 @@ public class PersonFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                             BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		if (!Context.isAuthenticated()) {
 			errors.reject("auth.invalid");
 		}
@@ -209,7 +209,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		if (!Context.isAuthenticated()) {
 			errors.reject("auth.invalid");
 		}
@@ -275,16 +275,16 @@ public class PersonFormController extends SimpleFormController {
 		} else if (action.equals(msa.getMessage("Person.void"))) {
 			String voidReason = request.getParameter("voidReason");
 			if (StringUtils.isBlank(voidReason)) {
-				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form",
-				    Context.getLocale());
+				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
+				        .getLocale());
 			}
 			if (linkedProviders.isEmpty()) {
 				ps.voidPerson(person, voidReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
 			} else {
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-				    Context.getMessageSourceService().getMessage("Person.cannot.void.linkedTo.providers") + " "
-				            + linkedProviders);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+				    "Person.cannot.void.linkedTo.providers")
+				        + " " + linkedProviders);
 			}
 			return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId()));
 		} else if (action.equals(msa.getMessage("Person.unvoid"))) {
@@ -389,7 +389,8 @@ public class PersonFormController extends SimpleFormController {
 						}
 					}
 				} else {
-					LOGGER.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+					LOGGER
+					        .debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 				}
 				
 			}
@@ -545,7 +546,7 @@ public class PersonFormController extends SimpleFormController {
 	 * @throws ParseException
 	 */
 	protected void updatePersonAddresses(HttpServletRequest request, Person person, BindException errors)
-	    throws ParseException {
+	        throws ParseException {
 		String[] add1s = ServletRequestUtils.getStringParameters(request, "address1");
 		String[] add2s = ServletRequestUtils.getStringParameters(request, "address2");
 		String[] cities = ServletRequestUtils.getStringParameters(request, "cityVillage");

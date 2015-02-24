@@ -45,7 +45,7 @@ public class DWRVisitService {
 	 * @throws APIException
 	 */
 	public Vector<Object> findVisitsByPatient(Integer patientId, boolean includeInactive, boolean includeVoided)
-	    throws APIException {
+	        throws APIException {
 		// List to return
 		Vector<Object> objectList = new Vector<Object>();
 		MessageSourceService mss = Context.getMessageSourceService();

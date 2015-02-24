@@ -96,10 +96,9 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 			
 			try {
-				candidateUser = (User) session
-				        .createQuery(
-				            "from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.retired = '0'")
-				        .setString(0, login).setString(1, login).setString(2, loginWithDash).uniqueResult();
+				candidateUser = (User) session.createQuery(
+				    "from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.retired = '0'").setString(
+				    0, login).setString(1, login).setString(2, loginWithDash).uniqueResult();
 			}
 			catch (HibernateException he) {
 				log.error("Got hibernate exception while logging in: '" + login + "'", he);
@@ -137,8 +136,8 @@ public class HibernateContextDAO implements ContextDAO {
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				} else {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
-					    String.valueOf(System.currentTimeMillis()));
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
+					        .currentTimeMillis()));
 					throw new ContextAuthenticationException(
 					        "Invalid number of connection attempts. Please try again later.");
 				}
@@ -148,8 +147,8 @@ public class HibernateContextDAO implements ContextDAO {
 			        .addScalar("password", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId())
 			        .uniqueResult();
 			
-			String saltOnRecord = (String) session.createSQLQuery("select salt from users where user_id = ?")
-			        .addScalar("salt", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
+			String saltOnRecord = (String) session.createSQLQuery("select salt from users where user_id = ?").addScalar(
+			    "salt", StandardBasicTypes.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
 			
 			// if the username and password match, hydrate the user and return it
 			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
@@ -179,8 +178,8 @@ public class HibernateContextDAO implements ContextDAO {
 				Integer allowedFailedLoginCount = 7;
 				
 				try {
-					allowedFailedLoginCount = Integer.valueOf(Context.getAdministrationService()
-					        .getGlobalProperty(OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
+					allowedFailedLoginCount = Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
+					    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
 				}
 				catch (Exception ex) {
 					log.error("Unable to convert the global property "
@@ -190,8 +189,8 @@ public class HibernateContextDAO implements ContextDAO {
 				
 				if (attempts > allowedFailedLoginCount) {
 					// set the user as locked out at this exact time
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
-					    String.valueOf(System.currentTimeMillis()));
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
+					        .currentTimeMillis()));
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
 				}
@@ -216,8 +215,8 @@ public class HibernateContextDAO implements ContextDAO {
 		FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
 		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
 		
-		User u = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		User u = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString("uuid",
+		    uuid).uniqueResult();
 		
 		// reset the flush mode to whatever it was before
 		sessionFactory.getCurrentSession().setFlushMode(flushMode);

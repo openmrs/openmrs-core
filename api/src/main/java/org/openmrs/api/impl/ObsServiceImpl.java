@@ -308,9 +308,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
-	                                 boolean includeVoidedObs) throws APIException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+	        throws APIException {
 		
 		if (sort == null) {
 			sort = new Vector<String>();
@@ -330,9 +330,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
-	                                 boolean includeVoidedObs, String accessionNumber) throws APIException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
+	        String accessionNumber) throws APIException {
 		
 		if (sort == null) {
 			sort = new Vector<String>();
@@ -352,9 +352,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
-	    throws APIException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
 		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs, null));
 	}
@@ -366,9 +365,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
-	                                   String accessionNumber) throws APIException {
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+	        Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber) throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
 		    locations, obsGroupId, fromDate, toDate, null, includeVoidedObs, accessionNumber));
 	}
@@ -681,7 +679,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Object[]> getNumericAnswersForConcept(Concept question, Boolean sortByValue, Integer personType,
-	                                                  boolean includeVoided) {
+	        boolean includeVoided) {
 		List<String> sortList = new Vector<String>();
 		if (sortByValue) {
 			sortList.add("valueNumeric");

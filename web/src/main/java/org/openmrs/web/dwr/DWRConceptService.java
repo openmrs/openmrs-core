@@ -72,8 +72,8 @@ public class DWRConceptService {
 	 * @return a list of conceptListItems matching the given arguments
 	 */
 	public List<Object> findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	                                 List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                 List<String> excludeDatatypeNames, boolean includeDrugConcepts) {
+	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
+	        boolean includeDrugConcepts) {
 		return findBatchOfConcepts(phrase, includeRetired, includeClassNames, excludeClassNames, includeDatatypeNames,
 		    excludeDatatypeNames, null, null);
 	}
@@ -101,8 +101,8 @@ public class DWRConceptService {
 	 * @since 1.8
 	 */
 	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	                                        List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                        List<String> excludeDatatypeNames, Integer start, Integer length) {
+	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
+	        Integer start, Integer length) {
 		//TODO factor out the reusable code in this and findCountAndConcepts methods to a single utility method
 		// List to return
 		// Object type gives ability to return error strings
@@ -283,7 +283,7 @@ public class DWRConceptService {
 	 * @should not return duplicates
 	 */
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
-	    throws Exception {
+	        throws Exception {
 		
 		if (includeVoided) {
 			throw new APIException("You should not include voideds in the search.");
@@ -527,9 +527,8 @@ public class DWRConceptService {
 	 * @since 1.8
 	 */
 	public Map<String, Object> findCountAndConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	                                                List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                                List<String> excludeDatatypeNames, Integer start, Integer length,
-	                                                boolean getMatchCount) throws APIException {
+	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
+	        Integer start, Integer length, boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		Vector<Object> objectList = new Vector<Object>();
@@ -666,7 +665,7 @@ public class DWRConceptService {
 	 * @return a {@link List} of {@link ConceptReferenceTermListItem}
 	 */
 	public List<Object> findBatchOfConceptReferenceTerms(String phrase, Integer sourceId, Integer start, Integer length,
-	                                                     boolean includeRetired) {
+	        boolean includeRetired) {
 		Vector<Object> objectList = new Vector<Object>();
 		MessageSourceService mss = Context.getMessageSourceService();
 		try {
@@ -684,8 +683,8 @@ public class DWRConceptService {
 			terms.addAll(cs.getConceptReferenceTerms(phrase, source, start, length, includeRetired));
 			
 			if (terms.size() == 0) {
-				objectList.add(mss.getMessage("general.noMatchesFound", new Object[] { "'" + phrase + "'" },
-				    Context.getLocale()));
+				objectList.add(mss.getMessage("general.noMatchesFound", new Object[] { "'" + phrase + "'" }, Context
+				        .getLocale()));
 			} else {
 				objectList = new Vector<Object>(terms.size());
 				for (ConceptReferenceTerm term : terms) {
@@ -712,8 +711,7 @@ public class DWRConceptService {
 	 * @throws APIException
 	 */
 	public Map<String, Object> findCountAndConceptReferenceTerms(String phrase, Integer sourceId, Integer start,
-	                                                             Integer length, boolean includeRetired,
-	                                                             boolean getMatchCount) throws APIException {
+	        Integer length, boolean includeRetired, boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		List<Object> objectList = new Vector<Object>();

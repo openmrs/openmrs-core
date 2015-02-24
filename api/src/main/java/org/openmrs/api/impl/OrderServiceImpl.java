@@ -630,7 +630,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
-	                                                boolean includeRetired) {
+	        boolean includeRetired) {
 		if (searchPhrase == null) {
 			throw new IllegalArgumentException("searchPhrase is required");
 		}
@@ -643,7 +643,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
-	                              Encounter encounter) throws Exception {
+	        Encounter encounter) throws Exception {
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
@@ -662,7 +662,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
-	                              Encounter encounter) throws Exception {
+	        Encounter encounter) throws Exception {
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
