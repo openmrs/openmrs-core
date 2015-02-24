@@ -62,11 +62,8 @@ public class OpenmrsLabelLogic implements LabelLogic {
 				// check for each of the overriding pojo types
 				for (String objectName : new String[] { "User", "Patient", "ComplexObs", "ConceptNumeric" }) {
 					String className = "org.openmrs." + objectName;
-					if (realClassName.startsWith(className)) {
-						
-						if (!field.getName().equals(className)) {
-							return className;
-						}
+					if (realClassName.startsWith(className) && !field.getName().equals(className)) {
+						return className;
 					}
 				}
 				

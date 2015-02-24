@@ -13,8 +13,6 @@
  */
 package org.openmrs;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -589,7 +587,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * @since 1.9
 	 */
 	public Boolean isActive() {
-		return (this.endDate == null);
+		return this.endDate == null;
 	}
 	
 	/**

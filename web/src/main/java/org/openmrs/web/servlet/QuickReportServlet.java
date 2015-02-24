@@ -160,10 +160,8 @@ public class QuickReportServlet extends HttpServlet {
 		List<Obs> obs = new Vector<Obs>();
 		
 		for (Obs o : allObs) {
-			if (o.getValueDatetime() != null) {
-				if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end)) {
-					obs.add(o);
-				}
+			if (o.getValueDatetime() != null && o.getValueDatetime().after(start) && o.getValueDatetime().before(end)) {
+				obs.add(o);
 			}
 		}
 		
@@ -285,7 +283,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		List<Obs> obs = new Vector<Obs>();
 		for (Obs o : allObs) {
-			if (o.getVoided() == true) {
+			if (o.getVoided()) {
 				obs.add(o);
 			}
 		}

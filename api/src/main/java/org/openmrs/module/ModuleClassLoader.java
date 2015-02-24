@@ -525,10 +525,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			catch (NullPointerException e) {
 				log.debug("Error while attempting to load class: " + name + " from: " + this.toString());
 			}
-			if (result == null) {
-				if (getParent() != null) {
-					result = getParent().loadClass(name);
-				}
+			if (result == null && getParent() != null) {
+				result = getParent().loadClass(name);
 			}
 		} else {
 			try {
@@ -936,15 +934,13 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see #findResource(String)
 	 */
 	protected URL findResource(final String name, final ModuleClassLoader requestor, Set<String> seenModules) {
-		if (log.isTraceEnabled()) {
-			if (name != null && name.contains("starter")) {
-				if (seenModules != null) {
-					log.trace("seenModules.size: " + seenModules.size());
-				}
-				log.trace("name: " + name);
-				for (URL url : getURLs()) {
-					log.trace("url: " + url);
-				}
+		if (log.isTraceEnabled() && name != null && name.contains("starter")) {
+			if (seenModules != null) {
+				log.trace("seenModules.size: " + seenModules.size());
+			}
+			log.trace("name: " + name);
+			for (URL url : getURLs()) {
+				log.trace("url: " + url);
 			}
 		}
 		

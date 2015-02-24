@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.azeckoski.reflectutils.ClassData;
-import org.springframework.util.TypeUtils;
 
 /**
  * This class has convenience methods to find the fields on a class and superclass as well as
@@ -69,7 +68,7 @@ public class Reflect {
 	/**
 	 * This method return all the fields (including private) from the given class and its super
 	 * classes.
-	 *
+	 * 
 	 * @param fieldClass Class
 	 * @return List<Field>
 	 * @should return all fields include private and super classes
@@ -92,7 +91,8 @@ public class Reflect {
 	
 	/**
 	 * @param t
-	 * @return true if given type is a subclass, or a generic type bounded by a subclass of the parameterized class
+	 * @return true if given type is a subclass, or a generic type bounded by a subclass of the
+	 *         parameterized class
 	 * @should return true for a generic whose bound is a subclass
 	 * @should return false for a generic whose bound is not a subclass
 	 */
@@ -128,7 +128,7 @@ public class Reflect {
 	/**
 	 * This method validate the given field is Collection and the elements should be of
 	 * parameterized type
-	 *
+	 * 
 	 * @param field Field
 	 * @return boolean
 	 * @should return true if given field is Collection and its element type is given parameterized
@@ -157,7 +157,7 @@ public class Reflect {
 	
 	/**
 	 * This method return all the fields (including private) until the given parameterized class
-	 *
+	 * 
 	 * @param subClass Class
 	 * @return List<Field>
 	 * @should return only the sub class fields of given parameterized class

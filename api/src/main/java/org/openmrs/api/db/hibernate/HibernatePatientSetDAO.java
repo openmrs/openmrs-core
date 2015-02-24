@@ -1991,10 +1991,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			throw new IllegalArgumentException("Must give a relationship type");
 		}
 		Map<Integer, List<Person>> ret = new HashMap<Integer, List<Person>>();
-		if (patients != null) {
-			if (patients.size() == 0) {
-				return ret;
-			}
+		if (patients != null && patients.size() == 0) {
+			return ret;
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);
@@ -2109,7 +2107,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" and orderReason.id in (:orderReasonIdList) ");
 		}
 		if (discontinued != null) {
-			if (discontinued == true) {
+			if (discontinued) {
 				if (stopDateFrom != null && stopDateTo != null) {
 					sb.append(" and dateStopped between :stopDateFrom and :stopDateTo ");
 				} else {

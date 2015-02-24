@@ -518,7 +518,7 @@ public class ModuleUtil {
 				if (name == null || jarEntry.getName().startsWith(name)) {
 					String entryName = jarEntry.getName();
 					// trim out the name path from the name of the new file
-					if (keepFullPath == false && name != null) {
+					if (!keepFullPath && name != null) {
 						entryName = entryName.replaceFirst(name, "");
 					}
 					

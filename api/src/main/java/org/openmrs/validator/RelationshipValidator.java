@@ -59,10 +59,8 @@ public class RelationshipValidator implements Validator {
 		if (relationship != null) {
 			Date startDate = relationship.getStartDate();
 			Date endDate = relationship.getEndDate();
-			if (startDate != null && endDate != null) {
-				if (startDate.after(endDate)) {
-					errors.reject("Relationship.InvalidEndDate.error");
-				}
+			if (startDate != null && endDate != null && startDate.after(endDate)) {
+				errors.reject("Relationship.InvalidEndDate.error");
 			}
 			ValidateUtil.validateFieldLengths(errors, target.getClass(), "voidReason");
 			if (startDate != null) {

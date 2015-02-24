@@ -112,7 +112,6 @@ public class ActiveListWidget extends TagSupport {
 		
 		Map<Obs, Collection<Obs>> obsGroups = new HashMap<Obs, Collection<Obs>>();
 		if (doObsGroups) {
-			ObsService os = Context.getObsService();
 			for (Obs o : activeList.values()) {
 				if (o.isObsGrouping()) {
 					obsGroups.put(o, o.getGroupMembers());

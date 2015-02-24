@@ -43,17 +43,17 @@ public class AddPersonController extends SimpleFormController {
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private final String PATIENT_SHORT_EDIT_URL = "/admin/patients/shortPatientForm.form";
+	private static final String PATIENT_SHORT_EDIT_URL = "/admin/patients/shortPatientForm.form";
 	
-	private final String PATIENT_EDIT_URL = "/admin/patients/patient.form";
+	private static final String PATIENT_EDIT_URL = "/admin/patients/patient.form";
 	
-	private final String PATIENT_VIEW_URL = "/patientDashboard.form";
+	private static final String PATIENT_VIEW_URL = "/patientDashboard.form";
 	
-	private final String USER_EDIT_URL = "/admin/users/user.form";
+	private static final String USER_EDIT_URL = "/admin/users/user.form";
 	
-	private final String PERSON_EDIT_URL = "/admin/person/person.form";
+	private static final String PERSON_EDIT_URL = "/admin/person/person.form";
 	
-	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
+	private static final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
 	
 	/** Keys for this class */
 	private static final String NAME = "name";
@@ -100,19 +100,17 @@ public class AddPersonController extends SimpleFormController {
 			// if they picked a person, go to the type of view that was requested
 			
 			// if they selected view, do a double check to make sure that type of person already exists
-			if ("view".equals(viewType)) {
+			if ("view".equals(viewType) && "patient".equals(personType)) {
 				// TODO Do we even want to ever redirect to a 'view'.  I'm torn between jumping the DAs right to the 
 				// dashboard or jumping them to the short edit screen to make (potential) adjustments
-				if ("patient".equals(personType)) {
-					try {
-						if (Context.getPatientService().getPatient(Integer.valueOf(personId)) == null) {
-							viewType = "shortEdit";
-						}
-					}
-					catch (Exception noPatientEx) {
-						// if there is no patient yet, they must go through those motions
+				try {
+					if (Context.getPatientService().getPatient(Integer.valueOf(personId)) == null) {
 						viewType = "shortEdit";
 					}
+				}
+				catch (Exception noPatientEx) {
+					// if there is no patient yet, they must go through those motions
+					viewType = "shortEdit";
 				}
 			}
 			

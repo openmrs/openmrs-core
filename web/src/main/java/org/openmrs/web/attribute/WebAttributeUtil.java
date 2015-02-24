@@ -32,7 +32,6 @@ import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
-import org.openmrs.customdatatype.SingleCustomValue;
 import org.openmrs.web.attribute.handler.FieldGenDatatypeHandler;
 import org.openmrs.web.attribute.handler.WebDatatypeHandler;
 import org.springframework.validation.BindingResult;
@@ -69,8 +68,7 @@ public class WebAttributeUtil {
 		}
 		
 		String submittedValue = request.getParameter(paramName);
-		if (StringUtils.isNotEmpty(submittedValue)) // check empty instead of blank, because " " is meaningful
-		{
+		if (StringUtils.isNotEmpty(submittedValue)) { // check empty instead of blank, because " " is meaningful
 			return dt.fromReferenceString(submittedValue);
 		} else {
 			return null;

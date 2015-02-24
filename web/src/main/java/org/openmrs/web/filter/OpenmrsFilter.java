@@ -14,7 +14,6 @@
 package org.openmrs.web.filter;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

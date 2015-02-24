@@ -131,8 +131,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		        .getModuleClassLoaders());
 		
 		Class<?> c = loadModuleClass(name, moduleClassLoaders);
-		if (c != null)
+		if (c != null) {
 			return c;
+		}
 		
 		/* See org.mortbay.jetty.webapp.WebAppClassLoader.loadClass, from
 		 * http://dist.codehaus.org/jetty/jetty-6.1.10/jetty-6.1.10-src.zip */
@@ -814,15 +815,13 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		if (listFiles != null) {
 			for (File cacheDir : listFiles) {
 				//check if it is a directory, but is not the current lib cache
-				if (cacheDir.isDirectory() && !cacheDir.equals(libCacheFolder)) {
+				if (cacheDir.isDirectory() && !cacheDir.equals(libCacheFolder) && cacheDir.list(lockFilter).length == 0) {
 					// check if its not locked by another running openmrs instance
-					if (cacheDir.list(lockFilter).length == 0) {
-						try {
-							OpenmrsUtil.deleteDirectory(cacheDir);
-						}
-						catch (IOException io) {
-							log.warn("Unable to delete: " + cacheDir.getName());
-						}
+					try {
+						OpenmrsUtil.deleteDirectory(cacheDir);
+					}
+					catch (IOException io) {
+						log.warn("Unable to delete: " + cacheDir.getName());
 					}
 				}
 			}

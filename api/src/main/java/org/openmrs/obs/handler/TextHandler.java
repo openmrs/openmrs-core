@@ -132,6 +132,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 						}
 						fout.write(character);
 					}
+					tempRd.close();
 				}
 				catch (IOException e) {
 					throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "Reader" }, e);

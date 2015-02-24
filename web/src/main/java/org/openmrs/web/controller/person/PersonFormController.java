@@ -66,18 +66,18 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * This class controls the generic person properties (address, name, attributes). The Patient and
  * User form controllers extend this class.
- *
+ * 
  * @see org.openmrs.web.controller.patient.PatientFormController
  */
 public class PersonFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected static final Log log = LogFactory.getLog(PersonFormController.class);
+	private static final Log LOGGER = LogFactory.getLog(PersonFormController.class);
 	
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
 	 * are expected
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -131,13 +131,13 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Redirects to the patient form if the given personId points to a patient.
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException)
 	 */
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors)
-	        throws Exception {
+	    throws Exception {
 		Object person = errors.getTarget();
 		if (person instanceof Patient) {
 			Patient patient = (Patient) person;
@@ -152,14 +152,14 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Redirects to the patient form if the given personId points to a patient.
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException,
 	 *      java.util.Map)
 	 */
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors,
-	        Map controlModel) throws Exception {
+	                                Map controlModel) throws Exception {
 		Object person = errors.getTarget();
 		if (person instanceof Patient) {
 			Patient patient = (Patient) person;
@@ -178,7 +178,7 @@ public class PersonFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+	                                             BindException errors) throws Exception {
 		if (!Context.isAuthenticated()) {
 			errors.reject("auth.invalid");
 		}
@@ -209,7 +209,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	        BindException errors) throws Exception {
+	                                BindException errors) throws Exception {
 		if (!Context.isAuthenticated()) {
 			errors.reject("auth.invalid");
 		}
@@ -267,7 +267,7 @@ public class PersonFormController extends SimpleFormController {
 				}
 			}
 			catch (DataIntegrityViolationException e) {
-				log.error("Unable to delete person because of database FK errors: " + person, e);
+				LOGGER.error("Unable to delete person because of database FK errors: " + person, e);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Person.cannot.delete");
 				
 				return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId().toString()));
@@ -275,16 +275,16 @@ public class PersonFormController extends SimpleFormController {
 		} else if (action.equals(msa.getMessage("Person.void"))) {
 			String voidReason = request.getParameter("voidReason");
 			if (StringUtils.isBlank(voidReason)) {
-				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
-				        .getLocale());
+				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form",
+				    Context.getLocale());
 			}
 			if (linkedProviders.isEmpty()) {
 				ps.voidPerson(person, voidReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
 			} else {
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
-				    "Person.cannot.void.linkedTo.providers")
-				        + " " + linkedProviders);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+				    Context.getMessageSourceService().getMessage("Person.cannot.void.linkedTo.providers") + " "
+				            + linkedProviders);
 			}
 			return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId()));
 		} else if (action.equals(msa.getMessage("Person.unvoid"))) {
@@ -297,7 +297,7 @@ public class PersonFormController extends SimpleFormController {
 			
 			// If person is dead
 			if (person.getDead()) {
-				log.debug("Person is dead, so let's make sure there's an Obs for it");
+				LOGGER.debug("Person is dead, so let's make sure there's an Obs for it");
 				// need to make sure there is an Obs that represents the patient's cause of death, if applicable
 				
 				String causeOfDeathConceptId = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
@@ -307,18 +307,18 @@ public class PersonFormController extends SimpleFormController {
 					List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(person, causeOfDeath);
 					if (obssDeath != null) {
 						if (obssDeath.size() > 1) {
-							log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+							LOGGER.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
 						} else {
 							Obs obsDeath = null;
 							if (obssDeath.size() == 1) {
 								// already has a cause of death - let's edit it.
-								log.debug("Already has a cause of death, so changing it");
+								LOGGER.debug("Already has a cause of death, so changing it");
 								
 								obsDeath = obssDeath.iterator().next();
 								
 							} else {
 								// no cause of death obs yet, so let's make one
-								log.debug("No cause of death yet, let's create one.");
+								LOGGER.debug("No cause of death yet, let's create one.");
 								
 								obsDeath = new Obs();
 								obsDeath.setPerson(person);
@@ -328,7 +328,7 @@ public class PersonFormController extends SimpleFormController {
 								if (location != null) {
 									obsDeath.setLocation(location);
 								} else {
-									log.error("Could not find a suitable location for which to create this new Obs");
+									LOGGER.error("Could not find a suitable location for which to create this new Obs");
 								}
 							}
 							
@@ -336,13 +336,13 @@ public class PersonFormController extends SimpleFormController {
 							Concept currCause = person.getCauseOfDeath();
 							if (currCause == null) {
 								// set to NONE
-								log.debug("Current cause is null, attempting to set to NONE");
+								LOGGER.debug("Current cause is null, attempting to set to NONE");
 								String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
 								currCause = Context.getConceptService().getConcept(noneConcept);
 							}
 							
 							if (currCause != null) {
-								log.debug("Current cause is not null, setting to value_coded");
+								LOGGER.debug("Current cause is not null, setting to value_coded");
 								obsDeath.setValueCoded(currCause);
 								obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 								
@@ -364,16 +364,16 @@ public class PersonFormController extends SimpleFormController {
 									if (conceptOther.equals(currCause)) {
 										// seems like this is an other concept - let's try to get the "other" field info
 										deathReasonChanged = !otherInfo.equals(obsDeath.getValueText());
-										log.debug("Setting value_text as " + otherInfo);
+										LOGGER.debug("Setting value_text as " + otherInfo);
 										obsDeath.setValueText(otherInfo);
 									} else {
 										// non empty text value implies concept changed from OTHER NON CODED to NONE
-										deathReasonChanged = !"".equals(otherInfo);
-										log.debug("New concept is NOT the OTHER concept, so setting to blank");
+										deathReasonChanged = !otherInfo.equals("");
+										LOGGER.debug("New concept is NOT the OTHER concept, so setting to blank");
 										obsDeath.setValueText("");
 									}
 								} else {
-									log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
+									LOGGER.debug("Don't seem to know about an OTHER concept, so deleting value_text");
 									obsDeath.setValueText("");
 								}
 								boolean shouldSaveObs = (null == obsDeath.getId()) || deathReasonChanged;
@@ -384,12 +384,12 @@ public class PersonFormController extends SimpleFormController {
 									Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
 								}
 							} else {
-								log.debug("Current cause is still null - aborting mission");
+								LOGGER.debug("Current cause is still null - aborting mission");
 							}
 						}
 					}
 				} else {
-					log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+					LOGGER.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 				}
 				
 			}
@@ -418,7 +418,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person attributes based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param errors
 	 * @param person
@@ -447,7 +447,7 @@ public class PersonFormController extends SimpleFormController {
 				}
 				catch (APIException e) {
 					errors.rejectValue("attributes", "Invalid value for " + type.getName() + ": '" + value + "'");
-					log.warn("Got an invalid value: " + value + " while setting personAttributeType id #" + paramName, e);
+					LOGGER.warn("Got an invalid value: " + value + " while setting personAttributeType id #" + paramName, e);
 					
 					// setting the value to empty so that the user can reset the value to something else
 					attribute.setValue("");
@@ -457,14 +457,14 @@ public class PersonFormController extends SimpleFormController {
 			}
 		}
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Person Attributes: \n" + person.printAttributes());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Person Attributes: \n" + person.printAttributes());
 		}
 	}
 	
 	/**
 	 * Updates person names based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param person
 	 */
@@ -538,14 +538,14 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person addresses based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param person
 	 * @param errors
 	 * @throws ParseException
 	 */
 	protected void updatePersonAddresses(HttpServletRequest request, Person person, BindException errors)
-	        throws ParseException {
+	    throws ParseException {
 		String[] add1s = ServletRequestUtils.getStringParameters(request, "address1");
 		String[] add2s = ServletRequestUtils.getStringParameters(request, "address2");
 		String[] cities = ServletRequestUtils.getStringParameters(request, "cityVillage");
@@ -568,83 +568,53 @@ public class PersonFormController extends SimpleFormController {
 		        || add4s != null || startDates != null || endDates != null) {
 			int maxAddrs = 0;
 			
-			if (add1s != null) {
-				if (add1s.length > maxAddrs) {
-					maxAddrs = add1s.length;
-				}
+			if (add1s != null && add1s.length > maxAddrs) {
+				maxAddrs = add1s.length;
 			}
-			if (add2s != null) {
-				if (add2s.length > maxAddrs) {
-					maxAddrs = add2s.length;
-				}
+			if (add2s != null && add2s.length > maxAddrs) {
+				maxAddrs = add2s.length;
 			}
-			if (cities != null) {
-				if (cities.length > maxAddrs) {
-					maxAddrs = cities.length;
-				}
+			if (cities != null && cities.length > maxAddrs) {
+				maxAddrs = cities.length;
 			}
-			if (states != null) {
-				if (states.length > maxAddrs) {
-					maxAddrs = states.length;
-				}
+			if (states != null && states.length > maxAddrs) {
+				maxAddrs = states.length;
 			}
-			if (countries != null) {
-				if (countries.length > maxAddrs) {
-					maxAddrs = countries.length;
-				}
+			if (countries != null && countries.length > maxAddrs) {
+				maxAddrs = countries.length;
 			}
-			if (lats != null) {
-				if (lats.length > maxAddrs) {
-					maxAddrs = lats.length;
-				}
+			if (lats != null && lats.length > maxAddrs) {
+				maxAddrs = lats.length;
 			}
-			if (longs != null) {
-				if (longs.length > maxAddrs) {
-					maxAddrs = longs.length;
-				}
+			if (longs != null && longs.length > maxAddrs) {
+				maxAddrs = longs.length;
 			}
-			if (pCodes != null) {
-				if (pCodes.length > maxAddrs) {
-					maxAddrs = pCodes.length;
-				}
+			if (pCodes != null && pCodes.length > maxAddrs) {
+				maxAddrs = pCodes.length;
 			}
-			if (counties != null) {
-				if (counties.length > maxAddrs) {
-					maxAddrs = counties.length;
-				}
+			if (counties != null && counties.length > maxAddrs) {
+				maxAddrs = counties.length;
 			}
-			if (add3s != null) {
-				if (add3s.length > maxAddrs) {
-					maxAddrs = add3s.length;
-				}
+			if (add3s != null && add3s.length > maxAddrs) {
+				maxAddrs = add3s.length;
 			}
-			if (add6s != null) {
-				if (add6s.length > maxAddrs) {
-					maxAddrs = add6s.length;
-				}
+			if (add6s != null && add6s.length > maxAddrs) {
+				maxAddrs = add6s.length;
 			}
-			if (add5s != null) {
-				if (add5s.length > maxAddrs) {
-					maxAddrs = add5s.length;
-				}
+			if (add5s != null && add5s.length > maxAddrs) {
+				maxAddrs = add5s.length;
 			}
-			if (add4s != null) {
-				if (add4s.length > maxAddrs) {
-					maxAddrs = add4s.length;
-				}
+			if (add4s != null && add4s.length > maxAddrs) {
+				maxAddrs = add4s.length;
 			}
-			if (startDates != null) {
-				if (startDates.length > maxAddrs) {
-					maxAddrs = startDates.length;
-				}
+			if (startDates != null && startDates.length > maxAddrs) {
+				maxAddrs = startDates.length;
 			}
-			if (endDates != null) {
-				if (endDates.length > maxAddrs) {
-					maxAddrs = endDates.length;
-				}
+			if (endDates != null && endDates.length > maxAddrs) {
+				maxAddrs = endDates.length;
 			}
 			
-			log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
+			LOGGER.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
 			
 			for (int i = 0; i < maxAddrs; i++) {
 				PersonAddress pa = new PersonAddress();
@@ -745,7 +715,7 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Setup the person object. Should be called by the
 	 * PersonFormController.formBackingObject(request)
-	 *
+	 * 
 	 * @param person
 	 * @return
 	 */
@@ -771,7 +741,7 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Setup the reference map object. Should be called by the
 	 * PersonFormController.referenceData(...)
-	 *
+	 * 
 	 * @param person
 	 * @return
 	 */
@@ -792,16 +762,16 @@ public class PersonFormController extends SimpleFormController {
 					Obs obsDeath = obssDeath.iterator().next();
 					causeOfDeathOther = obsDeath.getValueText();
 					if (causeOfDeathOther == null) {
-						log.debug("cod is null, so setting to empty string");
+						LOGGER.debug("cod is null, so setting to empty string");
 						causeOfDeathOther = "";
 					} else {
-						log.debug("cod is valid: " + causeOfDeathOther);
+						LOGGER.debug("cod is valid: " + causeOfDeathOther);
 					}
 				} else {
-					log.debug("obssDeath is wrong size: " + obssDeath.size());
+					LOGGER.debug("obssDeath is wrong size: " + obssDeath.size());
 				}
 			} else {
-				log.warn("No concept death cause found");
+				LOGGER.warn("No concept death cause found");
 			}
 			
 		}
@@ -813,7 +783,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Add the given name, gender, and birthdate/age to the given Person
-	 *
+	 * 
 	 * @param <P> Should be a Patient or User object
 	 * @param person
 	 * @param name
@@ -846,7 +816,7 @@ public class PersonFormController extends SimpleFormController {
 				}
 			}
 			catch (ParseException e) {
-				log.debug("Error getting date from birthdate", e);
+				LOGGER.debug("Error getting date from birthdate", e);
 			}
 		} else if (age != null && !"".equals(age)) {
 			Calendar c = Calendar.getInstance();
@@ -858,7 +828,7 @@ public class PersonFormController extends SimpleFormController {
 				birthdateEstimated = true;
 			}
 			catch (ParseException e) {
-				log.debug("Error getting date from age", e);
+				LOGGER.debug("Error getting date from age", e);
 			}
 		}
 		if (birthdate != null) {

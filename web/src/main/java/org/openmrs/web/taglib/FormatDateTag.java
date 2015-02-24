@@ -109,7 +109,7 @@ public class FormatDateTag extends TagSupport {
 			}
 		}
 		
-		if (dateWasSet == false && date == null) {
+		if (!dateWasSet && date == null) {
 			log.warn("Both 'date' and 'path' cannot be null.  Page: " + pageContext.getPage() + " localname:"
 			        + pageContext.getRequest().getLocalName() + " rd:" + pageContext.getRequest().getRequestDispatcher(""));
 			return SKIP_BODY;

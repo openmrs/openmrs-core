@@ -61,7 +61,7 @@ public class DWRConceptService {
 	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
-	 *
+	 * 
 	 * @param phrase the concept name string to match against
 	 * @param includeRetired boolean if false, will exclude retired concepts
 	 * @param includeClassNames List of ConceptClasses to restrict to
@@ -72,15 +72,15 @@ public class DWRConceptService {
 	 * @return a list of conceptListItems matching the given arguments
 	 */
 	public List<Object> findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
-	        boolean includeDrugConcepts) {
+	                                 List<String> excludeClassNames, List<String> includeDatatypeNames,
+	                                 List<String> excludeDatatypeNames, boolean includeDrugConcepts) {
 		return findBatchOfConcepts(phrase, includeRetired, includeClassNames, excludeClassNames, includeDatatypeNames,
 		    excludeDatatypeNames, null, null);
 	}
 	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
-	 *
+	 * 
 	 * @param phrase the concept name string to match against
 	 * @param includeRetired boolean if false, will exclude retired concepts
 	 * @param includeClassNames List of ConceptClasses to restrict to
@@ -101,8 +101,8 @@ public class DWRConceptService {
 	 * @since 1.8
 	 */
 	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
-	        Integer start, Integer length) {
+	                                        List<String> excludeClassNames, List<String> includeDatatypeNames,
+	                                        List<String> excludeDatatypeNames, Integer start, Integer length) {
 		//TODO factor out the reusable code in this and findCountAndConcepts methods to a single utility method
 		// List to return
 		// Object type gives ability to return error strings
@@ -236,7 +236,7 @@ public class DWRConceptService {
 	
 	/**
 	 * Get a {@link ConceptListItem} by its internal database id.
-	 *
+	 * 
 	 * @param conceptId the id to look for
 	 * @return a {@link ConceptListItem} or null if conceptId is not found
 	 */
@@ -269,7 +269,7 @@ public class DWRConceptService {
 	/**
 	 * Find a list of {@link ConceptListItem} or {@link ConceptDrugListItem}s that are answers to
 	 * the given question. The given question is determined by the given <code>conceptId</code>
-	 *
+	 * 
 	 * @param text the text to search for within the answers
 	 * @param conceptId the conceptId of the question concept
 	 * @param includeVoided (this argument is ignored now. searching for voided answers is not
@@ -283,10 +283,10 @@ public class DWRConceptService {
 	 * @should not return duplicates
 	 */
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
-	        throws Exception {
+	    throws Exception {
 		
-		if (includeVoided == true) {
-			throw new APIException("you.should.not.included.voideds", (Object[]) null);
+		if (includeVoided) {
+			throw new APIException("You should not include voideds in the search.");
 		}
 		
 		ConceptService cs = Context.getConceptService();
@@ -409,7 +409,7 @@ public class DWRConceptService {
 		// If there are no drugs to choose from, this will be automatically
 		// selected
 		// by the openmrsSearch.fillTable(objs) function
-		if (showConcept == true) {
+		if (showConcept) {
 			ConceptDrugListItem thisConcept = new ConceptDrugListItem(null, conceptId, concept.getName(locale, false)
 			        .getName());
 			items.add(thisConcept);
@@ -419,7 +419,7 @@ public class DWRConceptService {
 		List<Drug> drugs = cs.getDrugsByConcept(concept);
 		
 		// if there are drugs to choose from, add some instructions
-		if (drugs.size() > 0 && showConcept == true) {
+		if (drugs.size() > 0 && showConcept) {
 			items.add("Or choose a form of " + concept.getName(locale, false).getName());
 		}
 		
@@ -432,7 +432,7 @@ public class DWRConceptService {
 	}
 	
 	public List<Object> findDrugs(String phrase, boolean includeRetired) throws APIException {
-		if (includeRetired == true) {
+		if (includeRetired) {
 			throw new APIException("you.should.not.included.voideds", (Object[]) null);
 		}
 		Locale locale = Context.getLocale();
@@ -485,7 +485,7 @@ public class DWRConceptService {
 	/**
 	 * Converts the datatype of a concept that already has Obs referencing it from boolean to coded
 	 * to support addition of more coded answers
-	 *
+	 * 
 	 * @param conceptId the conceptId of the concept to be converted
 	 * @return String to act as a signal if successfully converted or an error message
 	 */
@@ -512,7 +512,7 @@ public class DWRConceptService {
 	 * matching concepts (depending on values of start and length parameters) while the keys are are
 	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
 	 * matches will be returned from the start index if specified.
-	 *
+	 * 
 	 * @param phrase concept name or conceptId
 	 * @param includeRetired boolean if false, will exclude retired concepts
 	 * @param includeClassNames List of ConceptClasses to restrict to
@@ -527,8 +527,9 @@ public class DWRConceptService {
 	 * @since 1.8
 	 */
 	public Map<String, Object> findCountAndConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
-	        Integer start, Integer length, boolean getMatchCount) throws APIException {
+	                                                List<String> excludeClassNames, List<String> includeDatatypeNames,
+	                                                List<String> excludeDatatypeNames, Integer start, Integer length,
+	                                                boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		Vector<Object> objectList = new Vector<Object>();
@@ -641,7 +642,7 @@ public class DWRConceptService {
 	
 	/**
 	 * Get a {@link ConceptReferenceTerm} by its internal database id.
-	 *
+	 * 
 	 * @param conceptReferenceTermId the id to look for
 	 * @return a {@link ConceptReferenceTermListItem} or null if conceptReferenceTermId is not found
 	 */
@@ -656,7 +657,7 @@ public class DWRConceptService {
 	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
-	 *
+	 * 
 	 * @param phrase the string to search against
 	 * @param sourceId the id of concept source where to look up reference terms
 	 * @param start the beginning index
@@ -665,7 +666,7 @@ public class DWRConceptService {
 	 * @return a {@link List} of {@link ConceptReferenceTermListItem}
 	 */
 	public List<Object> findBatchOfConceptReferenceTerms(String phrase, Integer sourceId, Integer start, Integer length,
-	        boolean includeRetired) {
+	                                                     boolean includeRetired) {
 		Vector<Object> objectList = new Vector<Object>();
 		MessageSourceService mss = Context.getMessageSourceService();
 		try {
@@ -683,8 +684,8 @@ public class DWRConceptService {
 			terms.addAll(cs.getConceptReferenceTerms(phrase, source, start, length, includeRetired));
 			
 			if (terms.size() == 0) {
-				objectList.add(mss.getMessage("general.noMatchesFound", new Object[] { "'" + phrase + "'" }, Context
-				        .getLocale()));
+				objectList.add(mss.getMessage("general.noMatchesFound", new Object[] { "'" + phrase + "'" },
+				    Context.getLocale()));
 			} else {
 				objectList = new Vector<Object>(terms.size());
 				for (ConceptReferenceTerm term : terms) {
@@ -711,7 +712,8 @@ public class DWRConceptService {
 	 * @throws APIException
 	 */
 	public Map<String, Object> findCountAndConceptReferenceTerms(String phrase, Integer sourceId, Integer start,
-	        Integer length, boolean includeRetired, boolean getMatchCount) throws APIException {
+	                                                             Integer length, boolean includeRetired,
+	                                                             boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		List<Object> objectList = new Vector<Object>();
@@ -747,7 +749,7 @@ public class DWRConceptService {
 	
 	/**
 	 * Process calls to create new reference terms
-	 *
+	 * 
 	 * @param code the unique code for the reference term
 	 * @param conceptSourceId the concept source for the term
 	 * @param name the unique name for the reference term

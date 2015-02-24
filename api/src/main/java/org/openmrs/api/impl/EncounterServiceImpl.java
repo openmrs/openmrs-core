@@ -54,12 +54,13 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
+
 /**
  * Default implementation of the {@link EncounterService}
  * <p>
  * This class should not be instantiated alone, get a service class from the Context:
  * Context.getEncounterService();
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.EncounterService
  */
@@ -159,20 +160,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			
 			for (Obs obs : encounter.getAllObs(true)) {
 				// if the date was changed
-				if (OpenmrsUtil.compare(originalDate, newDate) != 0) {
+				if (OpenmrsUtil.compare(originalDate, newDate) != 0
+				        && OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
 					
 					// if the obs datetime is the same as the
 					// original encounter datetime, fix it
-					if (OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
-						obs.setObsDatetime(newDate);
-					}
+					obs.setObsDatetime(newDate);
 					
 				}
 				
-				if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation)) {
-					if (obs.getLocation().equals(originalLocation)) {
-						obs.setLocation(newLocation);
-					}
+				if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation) && obs.getLocation().equals(originalLocation)) {
+					obs.setLocation(newLocation);
 				}
 				
 				// if the Person in the obs doesn't match the Patient in the
@@ -275,7 +273,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     boolean includeVoided) {
 		return Context.getEncounterService().getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes,
 		    null, includeVoided);
 	}
@@ -290,8 +289,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
-	        boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<User> providers, boolean includeVoided) {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, usersToProviders(providers),
 		        null, null, includeVoided), null);
@@ -299,7 +298,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	
 	/**
 	 * Helper method that finds the corresponding providers for a collection of users
-	 *
+	 * 
 	 * @param users
 	 * @return a collection of providers, with 0-n for each item in users
 	 */
@@ -323,8 +322,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<Provider> providers, Collection<VisitType> visitTypes,
+	                                     Collection<Visit> visits, boolean includeVoided) {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, visitTypes, visits,
 		        includeVoided), null);
@@ -736,7 +736,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
-	        throws APIException {
+	    throws APIException {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(query, null, start, length, includeVoided), null);
 	}
@@ -748,7 +748,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
-	        boolean includeVoided) throws APIException {
+	                                     boolean includeVoided) throws APIException {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncounters(query, patientId, start, length, includeVoided), null);
 	}
@@ -911,7 +911,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
-	        Integer start, Integer length) throws APIException {
+	                                                       Integer start, Integer length) throws APIException {
 		return Context.getEncounterService().filterEncountersByViewPermissions(
 		    dao.getEncountersByVisitsAndPatient(patient, includeVoided, query, start, length), null);
 	}
@@ -923,7 +923,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
-	        throws APIException {
+	    throws APIException {
 		return dao.getEncountersByVisitsAndPatientCount(patient, includeVoided, query);
 	}
 	
@@ -1031,7 +1031,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	
 	/**
 	 * Convenient method that safely checks if user has given encounter privilege
-	 *
+	 * 
 	 * @param privilege the privilege to test
 	 * @param user the user instance to check if it has given privilege
 	 * @return true if given user has specified privilege

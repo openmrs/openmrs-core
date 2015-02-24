@@ -27,13 +27,14 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+import org.springframework.expression.EvaluationContext;
 
 /**
  * This class represents a list of patientIds. If it is generated from a CohortDefinition via
  * {@link ReportService#evaluate(org.openmrs.report.ReportSchema, Cohort, EvaluationContext)} then
  * it will contain a link back to the CohortDefinition it came from and the EvalutionContext that
  * definition was evaluated in.
- *
+ * 
  * @see org.openmrs.cohort.CohortDefinition
  */
 @Root(strict = false)
@@ -41,7 +42,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	public static final long serialVersionUID = 0L;
 	
-	private static final Log log = LogFactory.getLog(Cohort.class);
+	private static final Log LOGGER = LogFactory.getLog(Cohort.class);
 	
 	private Integer cohortId;
 	
@@ -58,7 +59,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * Convenience constructor to create a Cohort object that has an primarykey/internal identifier
 	 * of <code>cohortId</code>
-	 *
+	 * 
 	 * @param cohortId the internal identifier for this cohort
 	 */
 	public Cohort(Integer cohortId) {
@@ -69,7 +70,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param name
 	 * @param description optional description
@@ -87,7 +88,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param name
 	 * @param description optional description
@@ -105,7 +106,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
@@ -118,7 +119,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param name
 	 * @param description optional description
@@ -144,7 +145,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * Convenience contructor taking in a string that is a list of comma separated patient ids This
 	 * constructor does not check whether the database contains patients with the given ids, but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param commaSeparatedIds
 	 */
@@ -213,7 +214,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * Returns the union of two cohorts
-	 *
+	 * 
 	 * @param a The first Cohort
 	 * @param b The second Cohort
 	 * @return Cohort
@@ -234,7 +235,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * Returns the intersection of two cohorts, treating null as an empty cohort
-	 *
+	 * 
 	 * @param a The first Cohort
 	 * @param b The second Cohort
 	 * @return Cohort
@@ -251,7 +252,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * Subtracts a cohort from a cohort
-	 *
+	 * 
 	 * @param a the original Cohort
 	 * @param b the Cohort to subtract
 	 * @return Cohort
@@ -308,10 +309,11 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This method is only here for some backwards compatibility with the PatientSet object that
 	 * this Cohort object replaced. Do not use this method.
-	 *
+	 * 
 	 * @deprecated use #getMemberIds()
 	 * @return the memberIds
 	 */
+	@Deprecated
 	public Set<Integer> getPatientIds() {
 		return getMemberIds();
 	}

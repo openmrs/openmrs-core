@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.impl.SessionFactoryObjectFactory;
 
-import sun.net.www.http.HttpClient;
 import sun.net.www.http.KeepAliveCache;
 
 /**

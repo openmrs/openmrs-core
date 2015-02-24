@@ -22,7 +22,7 @@ import org.springframework.validation.Validator;
 /**
  * Validates objects and requires that "name" be filled in. Used by other validators so that they
  * don't have to check the name every time.
- *
+ * 
  * @since 1.5
  */
 public class RequireNameValidator implements Validator {

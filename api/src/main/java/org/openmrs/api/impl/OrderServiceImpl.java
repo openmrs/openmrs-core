@@ -630,7 +630,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
-	        boolean includeRetired) {
+	                                                boolean includeRetired) {
 		if (searchPhrase == null) {
 			throw new IllegalArgumentException("searchPhrase is required");
 		}
@@ -643,7 +643,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
-	        Encounter encounter) throws Exception {
+	                              Encounter encounter) throws Exception {
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
@@ -662,7 +662,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
-	        Encounter encounter) throws Exception {
+	                              Encounter encounter) throws Exception {
 		if (discontinueDate == null) {
 			discontinueDate = aMomentBefore(new Date());
 		}
@@ -708,7 +708,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException {
-		
 		if (orderFrequency.getOrderFrequencyId() != null) {
 			if (dao.isOrderFrequencyInUse(orderFrequency)) {
 				throw new APIException("Order.frequency.cannot.edit", (Object[]) null);
@@ -770,7 +769,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		orderNumberGenerator = null;
+		setOrderNumberGenerator(null);
 	}
 	
 	/**
@@ -778,7 +777,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		orderNumberGenerator = null;
+		setOrderNumberGenerator(null);
+	}
+	
+	/**
+	 * Helper method to deter instance methods from setting static fields
+	 */
+	private static void setOrderNumberGenerator(OrderNumberGenerator oNG) {
+		orderNumberGenerator = oNG;
 	}
 	
 	/**

@@ -14,20 +14,15 @@
 package org.openmrs.validator;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.springframework.validation.ValidationUtils;
 import org.openmrs.annotation.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 /**
  * This class validates a Patient object.
@@ -42,7 +37,7 @@ public class PatientValidator extends PersonValidator {
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
-	 *
+	 * 
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -57,7 +52,7 @@ public class PatientValidator extends PersonValidator {
 	/**
 	 * Validates the given Patient. Currently just checks for errors in identifiers. TODO: Check for
 	 * errors in all Patient fields.
-	 *
+	 * 
 	 * @param obj The patient to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
