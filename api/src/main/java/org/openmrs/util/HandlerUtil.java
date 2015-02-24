@@ -64,23 +64,30 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}	
+			if (obj == null) {
 				return false;
-			if (getClass() != obj.getClass())
+			}
+			if (getClass() != obj.getClass()) {
 				return false;
+			}
 			Key other = (Key) obj;
 			if (handlerType == null) {
-				if (other.handlerType != null)
+				if (other.handlerType != null) {
 					return false;
-			} else if (!handlerType.equals(other.handlerType))
+				}
+			} else if (!handlerType.equals(other.handlerType)) {
 				return false;
+			}	
 			if (type == null) {
-				if (other.type != null)
+				if (other.type != null) {
 					return false;
-			} else if (!type.equals(other.type))
+				}
+			} else if (!type.equals(other.type)) {
 				return false;
+			}
 			return true;
 		}
 		

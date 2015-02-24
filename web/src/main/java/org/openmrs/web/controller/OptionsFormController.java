@@ -174,8 +174,9 @@ public class OptionsFormController extends SimpleFormController {
 					
 					if (!errors.hasErrors()) {
 						us.changePassword(opts.getOldPassword(), password);
-						if (opts.getSecretQuestionPassword().equals(opts.getOldPassword()))
+						if (opts.getSecretQuestionPassword().equals(opts.getOldPassword())) {
 							opts.setSecretQuestionPassword(password);
+						}
 						new UserProperties(user.getUserProperties()).setSupposedToChangePassword(false);
 					}
 				}

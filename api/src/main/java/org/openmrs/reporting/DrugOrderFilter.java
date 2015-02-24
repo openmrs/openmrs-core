@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -115,8 +116,8 @@ public class DrugOrderFilter extends CachingPatientFilter {
 				}
 				ret.append(getDrugListToUse().get(0).getName());
 			} else {
-				ret.append(mss.getMessage("reporting.taking").toLowerCase()).append(" ").append(getAnyOrAll()).append(
-				    mss.getMessage("reporting.of")).append(" [");
+				ret.append(mss.getMessage("reporting.taking").toLowerCase()).append(" ").append(getAnyOrAll())
+				        .append(mss.getMessage("reporting.of")).append(" [");
 				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext();) {
 					ret.append(i.next().getName());
 					if (i.hasNext()) {
@@ -129,15 +130,18 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		Integer within_last_days = getWithinLastDays();
 		Integer within_last_months = getWithinLastMonths();
 		
-		if (!currentlyCase && (within_last_days != null || within_last_months != null)) {
-				if (within_last_months != null)
+		if (!currentlyCase) {
+			if (within_last_days != null || within_last_months != null) {
+				if (within_last_months != null) {
 					ret.append(" ").append(
 					    mss.getMessage("reporting.WithinTheLastMonths", new Object[] { within_last_months }, locale));
+				}
 				
-				if (within_last_days != null)
+				if (within_last_days != null) {
 					ret.append(" ").append(
 					    mss.getMessage("reporting.WithinTheLastDays", new Object[] { within_last_days }, locale));
-				
+				}
+			}
 		}
 		if (getSinceDate() != null) {
 			ret.append(" ").append(mss.getMessage("reporting.since", new Object[] { df.format(getSinceDate()) }, locale));
