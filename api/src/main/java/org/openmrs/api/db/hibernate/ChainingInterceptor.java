@@ -32,7 +32,7 @@ import org.hibernate.type.Type;
  * Used by the {@link HibernateSessionFactoryBean} to keep track of multiple interceptors <br/>
  * Each of the methods in {@link Interceptor} are called for each interceptor that is added to this
  * class
- *
+ * 
  * @since 1.9
  */
 public class ChainingInterceptor implements Interceptor {
@@ -45,7 +45,7 @@ public class ChainingInterceptor implements Interceptor {
 	/**
 	 * Adds the given interceptor to the list of interceptors to be applied to hibernate sessions.
 	 * Interceptors are called in the added order, with core interceptors being called first
-	 *
+	 * 
 	 * @param interceptor the interceptor to add to the queue
 	 */
 	public void addInterceptor(Interceptor interceptor) {
@@ -71,11 +71,11 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
-	        String[] propertyNames, Type[] types) {
+	                            String[] propertyNames, Type[] types) {
 		boolean objectChanged = false;
 		
 		for (Interceptor i : interceptors) {
-		// must be in this order so that java doesn't skip the method call for optimizations
+			// must be in this order so that java doesn't skip the method call for optimizations
 			objectChanged = i.onFlushDirty(entity, id, currentState, previousState, propertyNames, types) || objectChanged;
 		}
 		
@@ -150,7 +150,7 @@ public class ChainingInterceptor implements Interceptor {
 	}
 	
 	public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
-	        String[] propertyNames, Type[] types) {
+	                       String[] propertyNames, Type[] types) {
 		
 		List<Integer> uniqueIndices = new LinkedList<Integer>();
 		
