@@ -594,10 +594,11 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	public static void setFormat(String format) {
-		if (StringUtils.isEmpty(format))
+		if (StringUtils.isEmpty(format)) {
 			PersonName.format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;
-		else
+		} else {
 			PersonName.format = format;
+		}
 	}
 	
 	public static String getFormat() {

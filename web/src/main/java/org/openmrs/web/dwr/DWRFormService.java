@@ -127,7 +127,9 @@ public class DWRFormService {
 			Integer i = Integer.valueOf(txt);
 			concept = Context.getConceptService().getConcept(i);
 		}
-		catch (NumberFormatException e) {}
+		catch (NumberFormatException e) {
+			log.error ("Error during getting concept", e);
+		}
 		
 		Map<Integer, Boolean> fieldForConceptAdded = new HashMap<Integer, Boolean>();
 		

@@ -972,6 +972,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return true/false whether this person is a user or not
 	 * @deprecated use {@link UserService#getUsersByPerson(Person, boolean)}
 	 */
+	@Deprecated
 	public boolean isUser() {
 		return false;
 	}

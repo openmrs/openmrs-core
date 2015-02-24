@@ -315,6 +315,9 @@ public class PatientSetServiceImpl extends BaseOpenmrsService implements Patient
 		return getObservationsValues(patients, c, null);
 	}
 	
+	/**
+	 * @deprecated
+	 */
 	@Deprecated
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes) {
 		return getObservationsValues(patients, c, attributes, null, true);

@@ -261,6 +261,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	/**
 	 * @deprecated use {@link #getCurrentState(ProgramWorkflow)}
 	 */
+	@Deprecated
 	public PatientState getCurrentState() {
 		return getCurrentState(null);
 	}

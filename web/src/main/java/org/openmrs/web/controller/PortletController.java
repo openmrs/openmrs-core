@@ -357,6 +357,7 @@ public class PortletController implements Controller {
 			}
 			
 			o = model.get("conceptIds");
+			
 			if (o != null && !"".equals(o) && !model.containsKey("conceptMap")) {
 				log.debug("Found conceptIds parameter: " + o);
 				Map<Integer, Concept> concepts = new HashMap<Integer, Concept>();
@@ -370,8 +371,11 @@ public class PortletController implements Controller {
 						concepts.put(i, c);
 						conceptsByStringIds.put(i.toString(), c);
 					}
-					catch (Exception ex) {}
+					catch (Exception ex) {
+						log.error("Error during putting int i into concept c", ex);
+					}
 				}
+				
 				model.put("conceptMap", concepts);
 				model.put("conceptMapByStringIds", conceptsByStringIds);
 			}

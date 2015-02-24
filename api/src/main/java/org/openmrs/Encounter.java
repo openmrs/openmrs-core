@@ -462,6 +462,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return same provider for person if called twice
 	 * @should not return a voided provider
 	 */
+	@Deprecated
 	public Person getProvider() {
 		if (encounterProviders == null || encounterProviders.isEmpty()) {
 			return null;
@@ -480,6 +481,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param provider The provider to set.
 	 * @deprecated use {@link #setProvider(Person)}
 	 */
+	@Deprecated
 	public void setProvider(User provider) {
 		setProvider(provider.getPerson());
 	}
@@ -489,6 +491,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated since 1.9, use {@link #setProvider(EncounterRole, Provider)}
 	 * @should set existing provider for unknown role
 	 */
+	@Deprecated
 	public void setProvider(Person provider) {
 		EncounterRole unknownRole = Context.getEncounterService().getEncounterRoleByUuid(
 		    EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
