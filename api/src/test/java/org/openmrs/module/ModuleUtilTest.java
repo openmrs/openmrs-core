@@ -72,6 +72,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	
 	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#getMandatoryModules()}
+	>>>>>>> 6249afd... TRUNK-3586 Update unit testing environment to use mocks
 	 */
 	@Test
 	@Verifies(value = "should return mandatory module ids", method = "getMandatoryModules()")

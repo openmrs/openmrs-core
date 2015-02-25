@@ -13,27 +13,6 @@
  */
 package org.openmrs.module;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.Vector;
-import java.util.WeakHashMap;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
-
 import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +33,29 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.Advisor;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.Vector;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+
 /**
  * Methods for loading, starting, stopping, and storing OpenMRS modules
  */
@@ -69,6 +71,8 @@ public class ModuleFactory {
 	
 	// maps to keep track of the memory and objects to free/close
 	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	
+	private static Map<String, Set<ModuleClassLoader>> providedPackages = new ConcurrentHashMap<String, Set<ModuleClassLoader>>();
 	
 	// the name of the file within a module file
 	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
@@ -524,6 +528,7 @@ public class ModuleFactory {
 				// fire up the classloader for this module
 				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, ModuleFactory.class.getClassLoader());
 				getModuleClassLoaderMap().put(module, moduleClassLoader);
+				registerProvidedPackages(moduleClassLoader);
 				
 				// don't load the advice objects into the Context
 				// At startup, the spring context isn't refreshed until all modules
@@ -658,6 +663,43 @@ public class ModuleFactory {
 		// refresh spring service context?
 		
 		return module;
+	}
+	
+	private static void registerProvidedPackages(ModuleClassLoader moduleClassLoader) {
+		for (String providedPackage : moduleClassLoader.getProvidedPackages()) {
+			Set<ModuleClassLoader> newSet = new HashSet<ModuleClassLoader>();
+			
+			Set<ModuleClassLoader> set = providedPackages.get(providedPackage);
+			if (set != null) {
+				newSet.addAll(set);
+			}
+			
+			newSet.add(moduleClassLoader);
+			providedPackages.put(providedPackage, newSet);
+		}
+	}
+	
+	private static void unregisterProvidedPackages(ModuleClassLoader moduleClassLoader) {
+		for (String providedPackage : moduleClassLoader.getProvidedPackages()) {
+			Set<ModuleClassLoader> newSet = new HashSet<ModuleClassLoader>();
+			
+			Set<ModuleClassLoader> set = providedPackages.get(providedPackage);
+			if (set != null) {
+				newSet.addAll(set);
+			}
+			newSet.remove(moduleClassLoader);
+			
+			providedPackages.put(providedPackage, newSet);
+		}
+	}
+	
+	public static Set<ModuleClassLoader> getModuleClassLoadersForPackage(String packageName) {
+		Set<ModuleClassLoader> set = providedPackages.get(packageName);
+		if (set == null) {
+			return Collections.emptySet();
+		} else {
+			return new HashSet<ModuleClassLoader>(set);
+		}
 	}
 	
 	/**
@@ -916,7 +958,10 @@ public class ModuleFactory {
 				saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
 			}
 			
-			if (getModuleClassLoaderMap().containsKey(mod)) {
+			ModuleClassLoader moduleClassLoader = getModuleClassLoaderMap().get(mod);
+			if (moduleClassLoader != null) {
+				unregisterProvidedPackages(moduleClassLoader);
+				
 				log.debug("Mod was in classloader map.  Removing advice and extensions.");
 				// remove all advice by this module
 				try {
@@ -1428,5 +1473,49 @@ public class ModuleFactory {
 		catch (Throwable t) {
 			log.warn("Unable to save the global property", t);
 		}
+	}
+	
+	/**
+	 * Gets a list of modules in the order they are supposed to be started.
+	 *
+	 * @return the module list
+	 * @since 1.11.0
+	 */
+	public static Collection<Module> getModulesInStartOrder() {
+		List<String> moduleOrder = new ArrayList<String>();
+		
+		Collection<Module> modules = ModuleFactory.getLoadedModules();
+		for (Module module : modules) {
+			int moduleIndex = moduleOrder.indexOf(module.getPackageName());
+			if (moduleIndex == -1) {
+				moduleOrder.add(module.getPackageName());
+				moduleIndex = moduleOrder.indexOf(module.getPackageName());
+			}
+			
+			List<String> moduleIds = module.getRequiredModules();
+			for (String pkg : moduleIds) {
+				int index = moduleOrder.indexOf(pkg);
+				if (index == -1) {
+					//required module is not yet in the list
+					//add it before the current module
+					moduleOrder.add(moduleIndex, pkg);
+					moduleIndex = moduleOrder.indexOf(module.getPackageName());
+				} else if (index > moduleIndex) {
+					//required module is after the current module
+					//so move it before
+					moduleOrder.remove(pkg);
+					moduleOrder.add(moduleIndex, pkg);
+					moduleIndex = moduleOrder.indexOf(module.getPackageName());
+				}
+				//else required module is before current module as it should be
+			}
+		}
+		
+		Collection<Module> modulesInOrder = new ArrayList<Module>();
+		for (String pkg : moduleOrder) {
+			modulesInOrder.add(ModuleFactory.getModuleByPackage(pkg));
+		}
+		
+		return modulesInOrder;
 	}
 }
