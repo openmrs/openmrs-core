@@ -76,6 +76,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	private static OrderNumberGenerator orderNumberGenerator = null;
 	
+	/**
+	 * empty public default constructor
+	 */
 	public OrderServiceImpl() {
 	}
 	
@@ -230,6 +233,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return DateUtils.addSeconds(date, -1);
 	}
 	
+	/**
+	 * Method that saves or update the order
+	 * @param Order order from a provider to save or update the order 
+	 * @param OrderContext orderContext from a provider to save or update the order
+	 * @return Order which is saved or updated 
+	 */
 	private Order saveOrderInternal(Order order, OrderContext orderContext) {
 		if (order.getOrderId() == null) {
 			setProperty(order, "orderNumber", getOrderNumberGenerator().getNewOrderNumber(orderContext));
@@ -258,6 +267,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return dao.saveOrder(order);
 	}
 	
+	/**
+	 * sets the property
+	 * @param Order order from a provider to set the property
+	 * @param String propertyName to be given by the provider set the property
+	 * @param Object value , the value provided to set the property
+	 */
+	
 	private void setProperty(Order order, String propertyName, Object value) {
 		Boolean isAccessible = null;
 		Field field = null;
@@ -280,7 +296,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * Gets the configured order number generator, if none is specified, it defaults to an instance
 	 * if this class
 	 * 
-	 * @return
+	 * @return  OrderNumberGenerator
 	 */
 	private OrderNumberGenerator getOrderNumberGenerator() {
 		if (orderNumberGenerator == null) {
@@ -304,7 +320,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * then try to find a previousOrder and discontinue it. If cannot find a previousOrder, throw
 	 * exception
 	 * 
-	 * @param order
+	 * @param order  to discontinue existing orders if necessary
 	 */
 	private void discontinueExistingOrdersIfNecessary(Order order) {
 		//Ignore and return if this is not an order to discontinue
@@ -352,7 +368,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * Returns the class object of the specified persistent object returning the actual persistent
 	 * class in case it is a hibernate proxy
 	 * 
-	 * @param persistentObject
+	 * @param persistentObject to get the actual peristent class
 	 * @return the Class object
 	 */
 	private Class<?> getActualType(Object persistentObject) {
@@ -683,8 +699,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * Make necessary checks, set necessary fields for discontinuing <code>orderToDiscontinue</code>
 	 * and save.
 	 * 
-	 * @param orderToStop
-	 * @param discontinueDate
+	 * @param Order orderToStop to stop Order
+	 * @param Date discontinueDate to stop Order
 	 */
 	private void stopOrder(Order orderToStop, Date discontinueDate) {
 		if (discontinueDate == null) {
@@ -890,12 +906,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_ROUTES_CONCEPT_UUID);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugDosingUnits()
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDrugDosingUnits() {
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_DRUG_DOSING_UNITS_CONCEPT_UUID);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getDrugDispensingUnits()
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDrugDispensingUnits() {
@@ -909,6 +931,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return dispensingUnits;
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getDurationUnits()
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<Concept> getDurationUnits() {
@@ -923,6 +948,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return getSetMembersOfConceptSetFromGP(OpenmrsConstants.GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID);
 	}
 	
+	/**
+	 * get and set members of concept set from GP
+	 * @param String globalProperty to get and set members of concept set from GP
+	 * @return List of concept
+	 */
 	private List<Concept> getSetMembersOfConceptSetFromGP(String globalProperty) {
 		String conceptUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
 		Concept concept = Context.getConceptService().getConceptByUuid(conceptUuid);

@@ -344,6 +344,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		return dao.getHL7InQueue(hl7InQueueId);
 	}
 	
+	/** 
+	 *  @see org.openmrs.hl7.HL7Service#getHL7InQueueByUuid(String) 
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public HL7InQueue getHL7InQueueByUuid(String uuid) throws APIException {
@@ -1315,6 +1318,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		}
 	}
 	
+	/** 
+	 *  @see org.openmrs.hl7.HL7Service#getHl7QueueItemByUuid(String) 
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException {

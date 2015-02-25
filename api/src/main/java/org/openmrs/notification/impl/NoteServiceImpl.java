@@ -34,10 +34,18 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	
 	private NoteDAO dao;
 	
+	/**
+	 * get the Note data access object 
+	 * @return Note data access object  object 
+	 */
 	private NoteDAO getNoteDAO() {
 		return dao;
 	}
 	
+	/**
+	 * set the Note data access object 
+	 * @param NoteDAO dao to set the Note data access object
+	 */
 	public void setNoteDAO(NoteDAO dao) {
 		this.dao = dao;
 	}
