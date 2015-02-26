@@ -43,8 +43,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.interceptor.DefaultKeyGenerator;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -63,9 +61,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	@Autowired(required = false)
 	List<PrivilegeListener> privilegeListeners;
-	
-	@Autowired
-	CacheManager cacheManager;
 	
 	public UserServiceImpl() {
 	}
@@ -112,11 +107,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (user.getUserId() == null && password != null) {
 			OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 		}
-		
-		// clear the cached user locale
-		Object[] params = { Context.getLocale(), Context.getAuthenticatedUser() };
-		Object key = (new DefaultKeyGenerator()).generate(null, null, params);
-		cacheManager.getCache("userSearchLocales").evict(key);
 		
 		return dao.saveUser(user, password);
 	}
