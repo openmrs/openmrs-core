@@ -48,6 +48,9 @@ public class ArdenServiceImpl implements ArdenService {
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
+	/** 
+	 * Empty public default constructor 
+	 */
 	public ArdenServiceImpl() {
 	}
 	

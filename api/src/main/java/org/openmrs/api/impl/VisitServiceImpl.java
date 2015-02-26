@@ -59,6 +59,11 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		this.dao = dao;
 	}
 	
+	/** 
+	 * Gets the visit data access object 
+	 *  
+	 * @return Visit data access object 
+	 */
 	public VisitDAO getVisitDAO() {
 		return dao;
 	}

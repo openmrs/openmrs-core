@@ -209,6 +209,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return dao.getPatient(patientId);
 	}
 	
+	/** 
+	 * @see org.openmrs.api.PatientService#getPatientOrPromotePerson(Integer) 
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public Patient getPatientOrPromotePerson(Integer patientOrPersonId) {
@@ -847,6 +850,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		Context.getPersonService().savePersonMergeLog(personMergeLog);
 	}
 	
+	/** 
+	 * Convenience method to join multiple programs information into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge Program Enrolments 
+	 * @param Patient notPreferred are non preferred identifiers to merge Program Enrolments 
+	 * @param PersonMergeLogData mergedData the merged person's data to merge Program Enrolments 
+	 */
 	private void mergeProgramEnrolments(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all program enrollments
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
@@ -861,6 +871,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 Convenience method to join multiple visits information into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge Visits
+	 * @param Patient notPreferred are non preferred identifiers to merge Visits
+	 * @param PersonMergeLogData mergedData the merged person's data to merge Visits
+	 */
 	private void mergeVisits(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all visits, including voided ones (encounters will be handled below)
 		//TODO: this should be a copy, not a move
@@ -877,6 +894,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * Convenience method to join multiple encounters information into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge encounters
+	 * @param Patient notPreferred are non preferred identifiers to merge encounters
+	 * @param PersonMergeLogData mergedData the merged person's data to merge encounters
+	 */
 	private void mergeEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
@@ -889,6 +913,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * Convenience method to join multiple relationships information into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge Relationships
+	 * @param Patient notPreferred are non preferred identifiers to merge Relationships
+	 * @param PersonMergeLogData mergedData the merged person's data to merge Relationships
+	 */
 	private void mergeRelationships(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy all relationships
 		PersonService personService = Context.getPersonService();
@@ -937,6 +968,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * Convenience method to join multiple observations not contained in encounters information into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge  Observations which are not contained in Encounters 
+	 * @param Patient notPreferred are non preferred identifiers to merge Observations which are not contained in Encounters 
+	 * @param PersonMergeLogData mergedData the merged person's data to merge Observations which are not contained in Encounters 
+	 */
 	private void mergeObservationsNotContainedInEncounters(Patient preferred, Patient notPreferred,
 	        PersonMergeLogData mergedData) {
 		// move all obs that weren't contained in encounters
@@ -951,6 +989,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * Convenience method to join multiple identifiers into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge Identifiers 
+	 * @param Patient notPreferred are non preferred identifiers to merge Identifiers 
+	 * @param PersonMergeLogData mergedData the merged person's data to merge Identifiers  
+	 */
 	private void mergeIdentifiers(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all identifiers
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
@@ -986,6 +1031,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/**
+	 * Convenience method to merge date of death into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge date of death 
+	 * @param Patient notPreferred are non preferred identifiers to merge date of death 
+	 * @param PersonMergeLogData mergedData the merged person's data to merge date of death  
+	 */
 	private void mergeDateOfDeath(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
 		if (preferred.getDeathDate() == null) {
@@ -1000,6 +1052,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 *Convenience method to merge date of birth into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge date of birth
+	 * @param Patient notPreferred are non preferred identifiers to merge date of birth 
+	 * @param PersonMergeLogData mergedData the merged person's data to merge date of birth   
+	 */
 	private void mergeDateOfBirth(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
 		mergedData.setPriorDateOfBirthEstimated(preferred.isBirthdateEstimated());
@@ -1009,6 +1068,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * Convenience method to merge person's attributes into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge person's attributes
+	 * @param Patient notPreferred are non preferred identifiers to merge person's attributes
+	 * @param PersonMergeLogData mergedData the merged person's data to merge person's attributes  
+	 */
 	private void mergePersonAttributes(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// copy person attributes
 		for (PersonAttribute attr : notPreferred.getAttributes()) {
@@ -1022,6 +1088,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * Convenience method to merge gender information into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge gender information
+	 * @param Patient notPreferred are non preferred identifiers to merge gender information
+	 * @param PersonMergeLogData mergedData the merged person's data to merge gender information   
+	 */
 	private void mergeGenderInformation(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all other patient info
 		mergedData.setPriorGender(preferred.getGender());
@@ -1030,6 +1103,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * Convenience method to merge names into one record.
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge names
+	 * @param Patient notPreferred are non preferred identifiers to merge names
+	 * @param PersonMergeLogData mergedData the merged person's data to merge names 
+	 */
 	private void mergeNames(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all names
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
@@ -1050,6 +1130,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
+	/** 
+	 * Convenience method to construct a temporary name using a new name
+	 * @param PersonName newName , the name required to construct a temporary name
+	 * @return PersonName returns the constructed temporary name 
+	 */
 	private PersonName constructTemporaryName(PersonName newName) {
 		PersonName tmpName = PersonName.newInstance(newName);
 		tmpName.setPersonNameId(null);
@@ -1062,6 +1147,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return tmpName;
 	}
 	
+	/** 
+	 * Convenience method to merge addresses into one record. If it is unable to merge, it throws a Serialization Exception
+	 * 1) Moves object (encounters/obs) pointing to nonPreferred to preferred 2) Copies data  from nonPreferred to preferred if the data is missing or null in preferred 3) notPreferred is marked as voided 
+	 * @param Patient preferred are preferred identifiers to merge addresses
+	 * @param Patient notPreferred are non preferred identifiers to merge addresses
+	 * @param PersonMergeLogData mergedData the merged person's data to merge addresses 
+	 * @throws SerializationException based on the Throwable cause parameter
+	 */
 	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData)
 	        throws SerializationException {
 		// move all addresses
@@ -1158,8 +1251,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * Change user associations for notPreferred to preferred person.
 	 * 
-	 * @param preferred
-	 * @param notPreferred
+	 * @param preferred are preferred identifiers to change User Associations
+	 * @param notPreferred are non preferred identifiers to change User Associations 
 	 * @param mergedData a patient merge audit data object to update
 	 * @see PatientServiceImpl#mergePatients(Patient, Patient)
 	 */
@@ -1215,9 +1308,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * TODO: Patients should actually be allowed to exit multiple times
 	 * 
-	 * @param patient
-	 * @param exitDate
-	 * @param cause
+	 * @param patient the patient who wants to exit obs
+	 * @param exitDate  the date of exit obs
+	 * @param cause the reason for exit obs
 	 */
 	private void saveReasonForExitObs(Patient patient, Date exitDate, Concept cause) throws APIException {
 		
@@ -1483,6 +1576,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return identifierValidators.get(identifierValidator);
 	}
 	
+	/** 
+	 * Gets the Identifier Validator  
+	 * @return IdentifierValidator returns the identifier validator
+	 */
 	public Map<Class<? extends IdentifierValidator>, IdentifierValidator> getIdentifierValidators() {
 		if (identifierValidators == null) {
 			identifierValidators = new LinkedHashMap<Class<? extends IdentifierValidator>, IdentifierValidator>();
