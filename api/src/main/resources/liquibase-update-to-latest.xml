@@ -8670,5 +8670,13 @@
         <addForeignKeyConstraint constraintName="privilege_definitions" baseTableName="role_privilege" baseColumnNames="privilege"
                                  referencedTableName="privilege" referencedColumnNames="privilege" />
     </changeSet>
+    <changeSet id="20150221-1644" author="sandeepraparthi">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="patient_id" tableName="patient_identifier" />
+            <not><foreignKeyConstraintExists foreignKeyName="fk_patient_id_patient_identifier"/></not>
+        </preConditions>
+         <comment>Adding foreign key on patient_identifier.patient_id column</comment>
+        <addForeignKeyConstraint constraintName="fk_patient_id_patient_identifier" baseTableName="patient_identifier" baseColumnNames="patient_id"	referencedTableName="patient" referencedColumnNames="patient_id" /> 
+ 	</changeSet>
 
 </databaseChangeLog>
