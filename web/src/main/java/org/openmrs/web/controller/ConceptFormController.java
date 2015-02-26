@@ -487,7 +487,7 @@ public class ConceptFormController extends SimpleFormController {
 			conceptMappings = ListUtils.lazyList(new ArrayList<ConceptMap>(concept.getConceptMappings()), FactoryUtils
 			        .instantiateFactory(ConceptMap.class));
 			
-			if (concept.isNumeric()) {
+			if (concept instanceof ConceptNumeric) {
 				ConceptNumeric cn = (ConceptNumeric) concept;
 				this.hiAbsolute = cn.getHiAbsolute();
 				this.lowAbsolute = cn.getLowAbsolute();
@@ -498,7 +498,7 @@ public class ConceptFormController extends SimpleFormController {
 				this.precise = cn.getPrecise();
 				this.displayPrecision = cn.getDisplayPrecision();
 				this.units = cn.getUnits();
-			} else if (concept.isComplex()) {
+			} else if (concept instanceof ConceptComplex) {
 				ConceptComplex complex = (ConceptComplex) concept;
 				this.handlerKey = complex.getHandler();
 			}
@@ -609,17 +609,13 @@ public class ConceptFormController extends SimpleFormController {
 			}
 			
 			// if the user unchecked the concept sets box, erase past saved sets
-			if (!concept.isSet()) {
-				if (concept.getConceptSets() != null) {
-					concept.getConceptSets().clear();
-				}
+			if (!concept.isSet() && concept.getConceptSets() != null) {
+				concept.getConceptSets().clear();
 			}
 			
 			// if the user changed the datatype to be non "Coded", erase past saved datatypes
-			if (!concept.getDatatype().isCoded()) {
-				if (concept.getAnswers(true) != null) {
-					concept.getAnswers(true).clear();
-				}
+			if (!concept.getDatatype().isCoded() && concept.getAnswers(true) != null) {
+				concept.getAnswers(true).clear();
 			}
 			
 			// add in subobject specific code

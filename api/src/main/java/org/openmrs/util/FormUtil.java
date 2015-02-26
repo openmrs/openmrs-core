@@ -97,11 +97,9 @@ public class FormUtil {
 		StringBuilder token = new StringBuilder("");
 		boolean underscoreFlag = false;
 		for (int i = 0; i < s.length(); i++) {
-			if (nameChars.indexOf(s.charAt(i)) != -1) {
-				if (s.charAt(i) != '_' || !underscoreFlag) {
-					token.append(s.charAt(i));
-					underscoreFlag = (s.charAt(i) == '_');
-				}
+			if (nameChars.indexOf(s.charAt(i)) != -1 && (s.charAt(i) != '_' || !underscoreFlag)) {
+				token.append(s.charAt(i));
+				underscoreFlag = (s.charAt(i) == '_');
 			}
 		}
 		

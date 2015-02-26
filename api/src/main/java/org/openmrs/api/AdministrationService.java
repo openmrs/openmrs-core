@@ -35,7 +35,6 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
-import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.util.HttpClient;
@@ -56,7 +55,7 @@ import org.springframework.validation.Errors;
  * 
  * @see org.openmrs.api.context.Context
  */
-public interface AdministrationService extends OpenmrsService, GlobalPropertyListener {
+public interface AdministrationService extends OpenmrsService {
 	
 	/**
 	 * Used by Spring to set the specific/chosen database access implementation
@@ -644,21 +643,8 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	 * @should include currently selected full locale and langugage
 	 * @should include users proficient locales
 	 * @should exclude not allowed locales
-	 * @should cache results for an user
-	 * @should update cached results
 	 */
 	public List<Locale> getSearchLocales() throws APIException;
-	
-	/**
-	 * For inner use.
-	 *
-	 * @param currentLocale
-	 * @param user
-	 * @return locales
-	 * @throws APIException
-	 * @since 1.12
-	 */
-	public List<Locale> getSearchLocales(Locale currentLocale, User user) throws APIException;
 	
 	/**
 	 * Used by Spring to set the http client for accessing the openmrs implementation service

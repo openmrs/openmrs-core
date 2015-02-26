@@ -74,7 +74,6 @@ public class ProviderFormController {
 		List<ProviderAttributeType> attributeTypes = (List<ProviderAttributeType>) model.get("providerAttributeTypes");
 		WebAttributeUtil
 		        .handleSubmittedAttributesForType(provider, errors, ProviderAttribute.class, request, attributeTypes);
-		
 		if (Context.isAuthenticated()) {
 			ProviderService service = Context.getProviderService();
 			String message = "Provider.saved";
@@ -103,9 +102,10 @@ public class ProviderFormController {
 					message = "Provider.unretired";
 				}
 				
-				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
-				return "redirect:index.htm";
 			}
+			
+			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
+			return "redirect:index.htm";
 		}
 		
 		return showForm();
@@ -114,11 +114,9 @@ public class ProviderFormController {
 	@ModelAttribute("provider")
 	public Provider formBackingObject(@RequestParam(required = false) Integer providerId) throws ServletException {
 		Provider provider = new Provider();
-		if (Context.isAuthenticated()) {
-			if (providerId != null) {
-				ProviderService ps = Context.getProviderService();
-				return ps.getProvider(providerId);
-			}
+		if (Context.isAuthenticated() && providerId != null) {
+			ProviderService ps = Context.getProviderService();
+			return ps.getProvider(providerId);
 		}
 		return provider;
 	}

@@ -45,8 +45,11 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.solr.util.ArraysUtils;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -66,6 +69,7 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -73,6 +77,8 @@ import org.mockito.MockitoAnnotations;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.User;
+import org.openmrs.annotation.OpenmrsProfile;
+import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
@@ -213,6 +219,49 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			throw new RuntimeException(
 			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}
+	}
+	
+	/**
+	 * Allows to ignore the test if the environment does not match the given parameters.
+	 * 
+	 * @param openmrsVersion
+	 * @param modules
+	 * @since 1.11, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsProfile(String openmrsVersion, String... modules) {
+		OpenmrsProfileExcludeFilter filter = new OpenmrsProfileExcludeFilter();
+		Map<String, Object> profile = new HashMap<String, Object>();
+		profile.put("openmrsVersion", openmrsVersion);
+		if (modules != null) {
+			profile.put("modules", modules);
+		} else {
+			profile.put("modules", new String[0]);
+		}
+		String errorMessage = "Ignored. Expected profile: {openmrsVersion=" + openmrsVersion + ", modules=["
+		        + StringUtils.join((String[]) profile.get("modules"), ", ") + "]}";
+		Assume.assumeTrue(errorMessage, filter.matchOpenmrsProfileAttributes(profile));
+	}
+	
+	/**
+	 * Allows to ignore the test if the given modules are not running.
+	 * 
+	 * @param module in the format moduleId:version
+	 * @param modules additional list of modules in the format moduleId:version
+	 * @since 1.11, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsModules(String module, String... modules) {
+		String[] allModules = ArrayUtils.addAll(modules, module);
+		assumeOpenmrsProfile(null, allModules);
+	}
+	
+	/**
+	 * Allows to ignore the test if the environment does not match the given OpenMRS version.
+	 * 
+	 * @param openmrsVersion
+	 * @since 1.11, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsVersion(String openmrsVersion) {
+		assumeOpenmrsProfile(openmrsVersion);
 	}
 	
 	/**
@@ -804,9 +853,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	/**
 	 * It needs to be call if you want to do a concept search after you modify a concept in a test.
-	 * 
-	 * It is because index is automatically updated only after transaction is committed, which happens
-	 * only at the end of a test in our transactional tests.
+	 * It is because index is automatically updated only after transaction is committed, which
+	 * happens only at the end of a test in our transactional tests.
 	 */
 	public void updateSearchIndex() {
 		for (Class<?> indexType : getIndexedTypes()) {

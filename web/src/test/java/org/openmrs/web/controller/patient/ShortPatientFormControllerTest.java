@@ -535,7 +535,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel,
+	 *      BindingResult)
 	 * @verifies not void address if it was not changed
 	 */
 	@Test
@@ -557,7 +558,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel,
+	 *      BindingResult)
 	 * @verifies void address if it was changed
 	 */
 	@Test

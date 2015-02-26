@@ -79,7 +79,7 @@ public class FieldListItem {
 			}
 			table = field.getTableName();
 			attribute = field.getAttributeName();
-			selectMultiple = field.isSelectMultiple() == true ? "yes" : "no";
+			selectMultiple = field.isSelectMultiple() ? "yes" : "no";
 			//if (field.getCreator() != null)
 			//	creator = field.getCreator().getFirstName() + " " + field.getCreator().getLastName();
 			//if (field.getChangedBy() != null)

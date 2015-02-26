@@ -135,10 +135,9 @@ public class PatientGraphData {
 	}
 	
 	/**
-	 * Sets the units of the for which the graph is to be
-	 * plotted
+	 * Sets the units of the for which the graph is to be plotted
 	 * 
-	 * @param units	the units associated with the concept
+	 * @param units the units associated with the concept
 	 */
 	public void setUnits(String units) {
 		graph.put("units", units);

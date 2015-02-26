@@ -60,7 +60,9 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 				}
 			}
 		}
-		catch (IOException e) {}
+		catch (IOException e) {
+			log.error("Error during closing writer or stream", e);
+		}
 	}
 	
 	public void flushBuffer() throws IOException {

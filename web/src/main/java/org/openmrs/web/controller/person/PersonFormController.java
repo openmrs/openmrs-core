@@ -66,18 +66,18 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * This class controls the generic person properties (address, name, attributes). The Patient and
  * User form controllers extend this class.
- *
+ * 
  * @see org.openmrs.web.controller.patient.PatientFormController
  */
 public class PersonFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected static final Log log = LogFactory.getLog(PersonFormController.class);
+	private static final Log log = LogFactory.getLog(PersonFormController.class);
 	
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
 	 * are expected
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -131,7 +131,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Redirects to the patient form if the given personId points to a patient.
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException)
 	 */
@@ -152,7 +152,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Redirects to the patient form if the given personId points to a patient.
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException,
 	 *      java.util.Map)
@@ -368,7 +368,7 @@ public class PersonFormController extends SimpleFormController {
 										obsDeath.setValueText(otherInfo);
 									} else {
 										// non empty text value implies concept changed from OTHER NON CODED to NONE
-										deathReasonChanged = !"".equals(otherInfo);
+										deathReasonChanged = !otherInfo.equals("");
 										log.debug("New concept is NOT the OTHER concept, so setting to blank");
 										obsDeath.setValueText("");
 									}
@@ -418,7 +418,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person attributes based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param errors
 	 * @param person
@@ -464,7 +464,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person names based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param person
 	 */
@@ -538,7 +538,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person addresses based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param person
 	 * @param errors
@@ -568,80 +568,50 @@ public class PersonFormController extends SimpleFormController {
 		        || add4s != null || startDates != null || endDates != null) {
 			int maxAddrs = 0;
 			
-			if (add1s != null) {
-				if (add1s.length > maxAddrs) {
-					maxAddrs = add1s.length;
-				}
+			if (add1s != null && add1s.length > maxAddrs) {
+				maxAddrs = add1s.length;
 			}
-			if (add2s != null) {
-				if (add2s.length > maxAddrs) {
-					maxAddrs = add2s.length;
-				}
+			if (add2s != null && add2s.length > maxAddrs) {
+				maxAddrs = add2s.length;
 			}
-			if (cities != null) {
-				if (cities.length > maxAddrs) {
-					maxAddrs = cities.length;
-				}
+			if (cities != null && cities.length > maxAddrs) {
+				maxAddrs = cities.length;
 			}
-			if (states != null) {
-				if (states.length > maxAddrs) {
-					maxAddrs = states.length;
-				}
+			if (states != null && states.length > maxAddrs) {
+				maxAddrs = states.length;
 			}
-			if (countries != null) {
-				if (countries.length > maxAddrs) {
-					maxAddrs = countries.length;
-				}
+			if (countries != null && countries.length > maxAddrs) {
+				maxAddrs = countries.length;
 			}
-			if (lats != null) {
-				if (lats.length > maxAddrs) {
-					maxAddrs = lats.length;
-				}
+			if (lats != null && lats.length > maxAddrs) {
+				maxAddrs = lats.length;
 			}
-			if (longs != null) {
-				if (longs.length > maxAddrs) {
-					maxAddrs = longs.length;
-				}
+			if (longs != null && longs.length > maxAddrs) {
+				maxAddrs = longs.length;
 			}
-			if (pCodes != null) {
-				if (pCodes.length > maxAddrs) {
-					maxAddrs = pCodes.length;
-				}
+			if (pCodes != null && pCodes.length > maxAddrs) {
+				maxAddrs = pCodes.length;
 			}
-			if (counties != null) {
-				if (counties.length > maxAddrs) {
-					maxAddrs = counties.length;
-				}
+			if (counties != null && counties.length > maxAddrs) {
+				maxAddrs = counties.length;
 			}
-			if (add3s != null) {
-				if (add3s.length > maxAddrs) {
-					maxAddrs = add3s.length;
-				}
+			if (add3s != null && add3s.length > maxAddrs) {
+				maxAddrs = add3s.length;
 			}
-			if (add6s != null) {
-				if (add6s.length > maxAddrs) {
-					maxAddrs = add6s.length;
-				}
+			if (add6s != null && add6s.length > maxAddrs) {
+				maxAddrs = add6s.length;
 			}
-			if (add5s != null) {
-				if (add5s.length > maxAddrs) {
-					maxAddrs = add5s.length;
-				}
+			if (add5s != null && add5s.length > maxAddrs) {
+				maxAddrs = add5s.length;
 			}
-			if (add4s != null) {
-				if (add4s.length > maxAddrs) {
-					maxAddrs = add4s.length;
-				}
+			if (add4s != null && add4s.length > maxAddrs) {
+				maxAddrs = add4s.length;
 			}
-			if (startDates != null) {
-				if (startDates.length > maxAddrs) {
-					maxAddrs = startDates.length;
-				}
+			if (startDates != null && startDates.length > maxAddrs) {
+				maxAddrs = startDates.length;
 			}
-			if (endDates != null) {
-				if (endDates.length > maxAddrs) {
-					maxAddrs = endDates.length;
-				}
+			if (endDates != null && endDates.length > maxAddrs) {
+				maxAddrs = endDates.length;
 			}
 			
 			log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
@@ -745,7 +715,7 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Setup the person object. Should be called by the
 	 * PersonFormController.formBackingObject(request)
-	 *
+	 * 
 	 * @param person
 	 * @return
 	 */
@@ -771,7 +741,7 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Setup the reference map object. Should be called by the
 	 * PersonFormController.referenceData(...)
-	 *
+	 * 
 	 * @param person
 	 * @return
 	 */
@@ -813,7 +783,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Add the given name, gender, and birthdate/age to the given Person
-	 *
+	 * 
 	 * @param <P> Should be a Patient or User object
 	 * @param person
 	 * @param name

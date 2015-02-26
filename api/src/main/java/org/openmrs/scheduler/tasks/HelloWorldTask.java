@@ -17,7 +17,6 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.scheduler.Task;
 
 /**
  * Implementation of a task that writes "Hello World" to a log file.

@@ -59,13 +59,12 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			T ret = null;
 			
 			for (T at : this.layoutTemplates) {
-				if (at != null) {
-					if (templateName.equalsIgnoreCase(at.getDisplayName())
-					        || templateName.equalsIgnoreCase(at.getCodeName())
-					        || templateName.equalsIgnoreCase(at.getCountry())) {
-						ret = at;
-						log.debug("Found Layout Template named " + at.getDisplayName());
-					}
+				if (at != null
+				        && (templateName.equalsIgnoreCase(at.getDisplayName())
+				                || templateName.equalsIgnoreCase(at.getCodeName()) || templateName.equalsIgnoreCase(at
+				                .getCountry()))) {
+					ret = at;
+					log.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 			
@@ -81,11 +80,9 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			T ret = null;
 			
 			for (T at : this.layoutTemplates) {
-				if (at != null) {
-					if (templateName.equalsIgnoreCase(at.getCodeName())) {
-						ret = at;
-						log.debug("Found Layout Template named " + at.getDisplayName());
-					}
+				if (at != null && templateName.equalsIgnoreCase(at.getCodeName())) {
+					ret = at;
+					log.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 			
@@ -101,11 +98,9 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			T ret = null;
 			
 			for (T at : this.layoutTemplates) {
-				if (at != null) {
-					if (templateName.equalsIgnoreCase(at.getCountry())) {
-						ret = at;
-						log.debug("Found Layout Template named " + at.getDisplayName());
-					}
+				if (at != null && templateName.equalsIgnoreCase(at.getCountry())) {
+					ret = at;
+					log.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 			
@@ -121,11 +116,9 @@ public abstract class LayoutSupport<T extends LayoutTemplate> {
 			T ret = null;
 			
 			for (T at : this.layoutTemplates) {
-				if (at != null) {
-					if (templateName.equalsIgnoreCase(at.getDisplayName())) {
-						ret = at;
-						log.debug("Found Layout Template named " + at.getDisplayName());
-					}
+				if (at != null && templateName.equalsIgnoreCase(at.getDisplayName())) {
+					ret = at;
+					log.debug("Found Layout Template named " + at.getDisplayName());
 				}
 			}
 			

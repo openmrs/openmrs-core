@@ -251,4 +251,13 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 		}
 		return (getSortWeight() < ca.getSortWeight()) ? -1 : (getSortWeight() > ca.getSortWeight()) ? 1 : 0;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof ConceptAnswer) {
+			return compareTo((ConceptAnswer) other) == 0;
+		} else {
+			return false;
+		}
+	}
 }

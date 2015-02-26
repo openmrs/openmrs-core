@@ -60,7 +60,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Set<Class<? extends CustomDatatype<?>>> getAllDatatypeClasses() {
+	public synchronized Set<Class<? extends CustomDatatype<?>>> getAllDatatypeClasses() {
 		if (datatypeClasses == null) {
 			populateBeanListsFromContext();
 		}
@@ -72,7 +72,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Set<Class<? extends CustomDatatypeHandler<?, ?>>> getAllHandlerClasses() {
+	public synchronized Set<Class<? extends CustomDatatypeHandler<?, ?>>> getAllHandlerClasses() {
 		if (handlerClasses == null) {
 			populateBeanListsFromContext();
 		}
@@ -159,7 +159,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public CustomDatatypeHandler<?, ?> getHandler(CustomDatatype<?> datatype, String handlerConfig) {
+	public synchronized CustomDatatypeHandler<?, ?> getHandler(CustomDatatype<?> datatype, String handlerConfig) {
 		if (prioritizedHandlerClasses == null) {
 			prioritizeHandlers();
 		}

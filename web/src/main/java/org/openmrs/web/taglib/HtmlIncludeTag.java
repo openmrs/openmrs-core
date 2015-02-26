@@ -81,13 +81,11 @@ public class HtmlIncludeTag extends TagSupport {
 		
 		String fileExt = file.substring(file.lastIndexOf("."));
 		
-		if (this.type != null) {
-			if (this.type.length() > 0) {
-				if (HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(type) >= 0) {
-					isCss = true;
-				} else if (HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(type) >= 0) {
-					isJs = true;
-				}
+		if (this.type != null && this.type.length() > 0) {
+			if (HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(type) >= 0) {
+				isCss = true;
+			} else if (HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(type) >= 0) {
+				isJs = true;
 			}
 		}
 		
@@ -110,7 +108,7 @@ public class HtmlIncludeTag extends TagSupport {
 			}
 			
 			if (!isAlreadyUsed(file, initialRequestId)) {
-				StringBuffer output = new StringBuffer();
+				StringBuilder output = new StringBuilder();
 				String prefix = "";
 				try {
 					prefix = request.getContextPath();

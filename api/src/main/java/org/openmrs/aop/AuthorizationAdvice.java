@@ -38,7 +38,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
-	 *
+	 * 
 	 * @param method
 	 * @param args
 	 * @param target
@@ -95,25 +95,21 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				}
 			}
 			
-			if (requireAll == false) {
+			if (!requireAll) {
 				// If there's no match, then we know there are privileges and
 				// that the user didn't have any of them. The user is not
 				// authorized to access the method
 				throwUnauthorized(user, method, privileges);
 			}
 			
-		} else if (attributes.hasAuthorizedAnnotation(method)) {
-			// if there are no privileges defined, just require that 
-			// the user be authenticated
-			if (Context.isAuthenticated() == false) {
-				throwUnauthorized(user, method);
-			}
+		} else if (attributes.hasAuthorizedAnnotation(method) && !Context.isAuthenticated()) {
+			throwUnauthorized(user, method);
 		}
 	}
 	
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 *
+	 * 
 	 * @param user authenticated user
 	 * @param method acting method
 	 * @param attrs Collection of String privilege names that the user must have
@@ -128,7 +124,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 *
+	 * 
 	 * @param user authenticated user
 	 * @param method acting method
 	 * @param attrs privilege names that the user must have
@@ -143,7 +139,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	
 	/**
 	 * Throws an APIAuthorization exception stating why the user failed
-	 *
+	 * 
 	 * @param user authenticated user
 	 * @param method acting method
 	 */

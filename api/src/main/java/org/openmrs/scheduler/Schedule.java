@@ -60,7 +60,7 @@ public class Schedule {
 	/**
 	 * Default TODO Move to constants or properties
 	 */
-	public final String DEFAULT_DATE_FORMAT = "MM-dd-yyyy hh:mm:ss";
+	public static final String DEFAULT_DATE_FORMAT = "MM-dd-yyyy hh:mm:ss";
 	
 	/**
 	 * Date formatter used to format a date specified by a string

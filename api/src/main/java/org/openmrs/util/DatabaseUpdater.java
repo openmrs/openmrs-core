@@ -70,7 +70,7 @@ import org.openmrs.api.context.Context;
  */
 public class DatabaseUpdater {
 	
-	private static Log log = LogFactory.getLog(DatabaseUpdater.class);
+	private static final Log log = LogFactory.getLog(DatabaseUpdater.class);
 	
 	private static final String CHANGE_LOG_FILE = "liquibase-update-to-latest.xml";
 	
@@ -737,10 +737,8 @@ public class DatabaseUpdater {
 		try {
 			Liquibase liquibase = getLiquibase(null, null);
 			database = liquibase.getDatabase();
-			if (database.hasDatabaseChangeLogLockTable()) {
-				if (isLocked()) {
-					LockService.getInstance(database).forceReleaseLock();
-				}
+			if (database.hasDatabaseChangeLogLockTable() && isLocked()) {
+				LockService.getInstance(database).forceReleaseLock();
 			}
 		}
 		catch (Exception e) {

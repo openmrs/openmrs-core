@@ -48,7 +48,7 @@ public class DWRFormService {
 	
 	/**
 	 * Finds forms based on search text.
-	 *
+	 * 
 	 * @param text the string to search on
 	 * @param includeUnpublished true/false whether to include unpublished forms
 	 * @return list of {@link FormListItem}s
@@ -66,7 +66,7 @@ public class DWRFormService {
 	/**
 	 * Gets a list of FormListItems that correspond to forms. If includueUnpublished is true, all
 	 * forms are returned. If false, only published forms are returned.
-	 *
+	 * 
 	 * @param includeUnpublished true/false to include unpublished forms
 	 * @return list of {@link FormListItem}s
 	 */
@@ -127,7 +127,9 @@ public class DWRFormService {
 			Integer i = Integer.valueOf(txt);
 			concept = Context.getConceptService().getConcept(i);
 		}
-		catch (NumberFormatException e) {}
+		catch (NumberFormatException e) {
+			log.error("Error during getting concept", e);
+		}
 		
 		Map<Integer, Boolean> fieldForConceptAdded = new HashMap<Integer, Boolean>();
 		
@@ -327,7 +329,7 @@ public class DWRFormService {
 	/**
 	 * Sorts loosely on: FieldListItems first, then concepts FieldListItems with higher number of
 	 * forms first, then lower Concepts with shorter names before longer names
-	 *
+	 * 
 	 * @param <Obj>
 	 */
 	

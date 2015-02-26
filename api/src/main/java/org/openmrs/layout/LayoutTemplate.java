@@ -26,7 +26,7 @@ import java.util.Vector;
  */
 public abstract class LayoutTemplate {
 	
-	protected final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
+	protected static final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
 	
 	protected String displayName;
 	
@@ -148,29 +148,27 @@ public abstract class LayoutTemplate {
 					}
 				}
 			}
-		} else if (line != null) {
-			if (line.length() > 0) {
-				// looks like we have a single token on a line by itself
-				if (ret == null) {
-					ret = new Vector<Map<String, String>>();
-				}
-				Map<String, String> currToken = new HashMap<String, String>();
-				
-				// adding a nontoken to match the code that does "more than a single token on a line"
-				Map<String, String> currNonToken = new HashMap<String, String>();
-				currNonToken.put("isToken", getNonLayoutToken());
-				currNonToken.put("displayText", "");
-				ret.add(currNonToken);
-				
-				currToken.put("isToken", getLayoutToken());
-				String realToken = line;
-				currToken.put("displayText", this.getNameMappings().get(realToken));
-				currToken.put("displaySize", this.getSizeMappings().get(realToken));
-				currToken.put("codeName", realToken);
-				//numTokens++;
-				
-				ret.add(currToken);
+		} else if (line != null && line.length() > 0) {
+			// looks like we have a single token on a line by itself
+			if (ret == null) {
+				ret = new Vector<Map<String, String>>();
 			}
+			Map<String, String> currToken = new HashMap<String, String>();
+			
+			// adding a nontoken to match the code that does "more than a single token on a line"
+			Map<String, String> currNonToken = new HashMap<String, String>();
+			currNonToken.put("isToken", getNonLayoutToken());
+			currNonToken.put("displayText", "");
+			ret.add(currNonToken);
+			
+			currToken.put("isToken", getLayoutToken());
+			String realToken = line;
+			currToken.put("displayText", this.getNameMappings().get(realToken));
+			currToken.put("displaySize", this.getSizeMappings().get(realToken));
+			currToken.put("codeName", realToken);
+			//numTokens++;
+			
+			ret.add(currToken);
 		}
 		
 		if (ret != null && this.maxTokens < ret.size()) {

@@ -25,7 +25,7 @@ public class Message implements Serializable {
 	
 	private Integer id;
 	
-	private StringBuffer recipients = new StringBuffer();
+	private StringBuilder recipients = new StringBuilder();
 	
 	private String sender;
 	
@@ -106,7 +106,7 @@ public class Message implements Serializable {
 	 */
 	public void setRecipients(String recipients) {
 		if (recipients != null) {
-			this.recipients = new StringBuffer(recipients);
+			this.recipients = new StringBuilder(recipients);
 		}
 	}
 	

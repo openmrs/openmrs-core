@@ -30,7 +30,7 @@ public class Format {
 	
 	public enum FORMAT_TYPE {
 		DATE, TIME, TIMESTAMP
-	};
+	}
 	
 	public static String formatPercentage(double pct) {
 		return NumberFormat.getPercentInstance().format(pct);
@@ -74,7 +74,6 @@ public class Format {
 		} else if (type == FORMAT_TYPE.TIME) {
 			dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
 		} else {
-			//if (type == FORMAT_TYPE.DATE) (default)
 			dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		}
 		return date == null ? "" : dateFormat.format(date);

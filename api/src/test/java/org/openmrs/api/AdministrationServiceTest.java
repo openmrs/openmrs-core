@@ -41,10 +41,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -59,9 +55,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	protected static final String ADMIN_INITIAL_DATA_XML = "org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml";
 	
 	private HttpClient implementationHttpClient;
-	
-	@Autowired
-	CacheManager cacheManager;
 	
 	/**
 	 * Run this before each unit test in this class. It simply assigns the services used in this
@@ -588,7 +581,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not return duplicates even if the global property has them", method = "getAllowedLocales()")
 	public void getAllowedLocales_shouldNotReturnDuplicatesEvenIfTheGlobalPropertyHasThem() throws Exception {
 		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en,fr,es,en"));
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB,fr,es,en_GB"));
 		Assert.assertEquals(3, Context.getAdministrationService().getAllowedLocales().size());
 	}
 	
@@ -732,14 +725,14 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see AdministrationService#getSearchLocales()
+	 * @see AdministrationService#getSearchLocales(User)
 	 * @verifies exclude not allowed locales
 	 */
 	@Test
 	public void getSearchLocales_shouldExcludeNotAllowedLocales() throws Exception {
 		//given
 		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_US, pl, es"));
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_US, en_GB, pl, es"));
 		
 		User user = Context.getAuthenticatedUser();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "es_CL, en_US, pl");
@@ -756,7 +749,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see AdministrationService#getSearchLocales()
+	 * @see AdministrationService#getSearchLocales(User)
 	 * @verifies include currently selected full locale and langugage
 	 */
 	@Test
@@ -778,7 +771,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see AdministrationService#getSearchLocales()
+	 * @see AdministrationService#getSearchLocales(User)
 	 * @verifies include users proficient locales
 	 */
 	@Test
@@ -798,68 +791,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue("en_GB", searchLocales.contains(new Locale("en", "GB")));
 		Assert.assertTrue("en_US", searchLocales.contains(new Locale("en", "US")));
 		Assert.assertFalse("pl", searchLocales.contains(new Locale("pl")));
-	}
-	
-	/**
-	 * @see AdministrationService#getSearchLocales()
-	 * @verifies cache results for an user
-	 */
-	@Test
-	public void getSearchLocales_shouldCacheResultsForAnUser() throws Exception {
-		//given
-		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
-		
-		User user = Context.getAuthenticatedUser();
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_GB, en_US");
-		Context.getUserService().saveUser(user, null);
-		
-		//when
-		Context.getAdministrationService().getSearchLocales();
-		
-		List<Locale> cachedSearchLocales = getCachedSearchLocalesForCurrentUser();
-		
-		//then
-		Assert.assertTrue("en_GB", cachedSearchLocales.contains(new Locale("en", "GB")));
-		Assert.assertTrue("en_US", cachedSearchLocales.contains(new Locale("en", "US")));
-		Assert.assertFalse("pl", cachedSearchLocales.contains(new Locale("pl")));
-	}
-	
-	/**
-	 * @see AdministrationService#getSearchLocales()
-	 * @verifies update cached results
-	 */
-	@Test
-	public void getSearchLocales_shouldUpdateCachedResults() throws Exception {
-		//given
-		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
-		
-		User user = Context.getAuthenticatedUser();
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_GB, en_US");
-		Context.getUserService().saveUser(user, null);
-		
-		//when
-		List<Locale> initialSearchLocales = Context.getAdministrationService().getSearchLocales();
-		
-		user = Context.getAuthenticatedUser();
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "pl");
-		Context.getUserService().saveUser(user, null);
-		
-		Context.getAdministrationService().getSearchLocales();
-		
-		List<Locale> cachedSearchLocales = getCachedSearchLocalesForCurrentUser();
-		
-		//then
-		Assert.assertTrue("en_US", initialSearchLocales.contains(new Locale("en", "US")));
-		Assert.assertFalse("pl", initialSearchLocales.contains(new Locale("pl")));
-		Assert.assertTrue("pl", cachedSearchLocales.contains(new Locale("pl")));
-	}
-	
-	private List<Locale> getCachedSearchLocalesForCurrentUser() {
-		Object[] params = { Context.getLocale(), Context.getAuthenticatedUser() };
-		Object key = (new SimpleKeyGenerator()).generate(null, null, params);
-		return (List<Locale>) cacheManager.getCache("userSearchLocales").get(key).get();
 	}
 	
 	/**

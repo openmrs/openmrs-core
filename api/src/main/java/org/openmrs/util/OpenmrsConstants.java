@@ -46,7 +46,7 @@ import org.openmrs.scheduler.SchedulerConstants;
  */
 public final class OpenmrsConstants {
 	
-	private static Log log = LogFactory.getLog(OpenmrsConstants.class);
+	private static final Log log = LogFactory.getLog(OpenmrsConstants.class);
 	
 	/**
 	 * This is the hard coded primary key of the order type for DRUG. This has to be done because

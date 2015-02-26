@@ -37,7 +37,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 	
 	/**
 	 * Default constructor taking in the current sets on a concept
-	 *
+	 * 
 	 * @param conceptSets the current object on the concept
 	 */
 	public ConceptSetsEditor(Collection<ConceptSet> conceptSets) {
@@ -62,8 +62,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 			// and removal of duplicates
 			for (String id : conceptIds) {
 				id = id.trim();
-				if (!"".equals(id) && !requestConceptIds.contains(Integer.valueOf(id))) //remove whitespace, blank lines, and duplicate entries
-				{
+				if (!id.equals("") && !requestConceptIds.contains(Integer.valueOf(id))) { //remove whitespace, blank lines, and duplicate entries
 					requestConceptIds.add(Integer.valueOf(id));
 				}
 			}

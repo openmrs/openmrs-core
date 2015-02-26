@@ -40,7 +40,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	/**
 	 * Default constructor taking in the original answers. This should be the actual list on the
 	 * pojo object to prevent hibernate errors later on.
-	 *
+	 * 
 	 * @param originalAnswers the list on the pojo
 	 */
 	public ConceptAnswersEditor(Collection<ConceptAnswer> originalAnswers) {
@@ -54,7 +54,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	/**
 	 * loops over the textbox assigned to this property. The textbox is assumed to be a string of
 	 * conceptIds^drugIds separated by spaces.
-	 *
+	 * 
 	 * @param text list of conceptIds (not conceptAnswerIds)
 	 * @should set the sort weights with the least possible changes
 	 */
@@ -66,8 +66,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			//set up parameter answer Set for easier add/delete functions and removal of duplicates
 			for (String id : conceptIds) {
 				id = id.trim();
-				if (!"".equals(id) && !requestConceptIds.contains(id)) //remove whitespace, blank lines, and duplicates
-				{
+				if (!id.equals("") && !requestConceptIds.contains(id)) { //remove whitespace, blank lines, and duplicates
 					requestConceptIds.add(id);
 				}
 			}
@@ -203,7 +202,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	/**
 	 * Parses the string and returns the Integer concept id Expected string: "123" or "123^34"
 	 * ("conceptId^drugId")
-	 *
+	 * 
 	 * @param conceptId
 	 * @return
 	 */
@@ -218,7 +217,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	/**
 	 * Parses the string and returns the Integer drug id or null if none Expected string: "123" or
 	 * "123^34" ("conceptId^drugId")
-	 *
+	 * 
 	 * @param conceptId
 	 * @return
 	 */

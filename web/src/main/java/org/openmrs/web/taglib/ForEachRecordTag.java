@@ -171,7 +171,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			}
 		}
 		
-		if (records == null || records.hasNext() == false) {
+		if (records == null || !records.hasNext()) {
 			records = null;
 			return SKIP_BODY;
 		} else {
