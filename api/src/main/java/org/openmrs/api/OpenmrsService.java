@@ -21,7 +21,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
  * to implement this interface. It is recommended that all services extend the
  * {@link BaseOpenmrsService} abstract class to buffer themselves from changes to this interface.
  * 
- * @see BaseOpenmrsService
+ * @see org.openmrs.api.BaseOpenmrsService
  */
 public interface OpenmrsService {
 	

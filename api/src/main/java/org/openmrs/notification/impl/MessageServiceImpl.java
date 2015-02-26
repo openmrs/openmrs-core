@@ -44,6 +44,10 @@ public class MessageServiceImpl implements MessageService {
 	
 	private MessagePreparator messagePreparator; // Prepares message for delivery 
 	
+	/** 
+	 * Sets the TemplateDAO 
+	 * @param dao to set the TemplateDAO
+	 */
 	public void setTemplateDAO(TemplateDAO dao) {
 		this.templateDAO = dao;
 	}
@@ -56,27 +60,29 @@ public class MessageServiceImpl implements MessageService {
 	}
 	
 	/**
-	 * Set the message preparator.
-	 *
-	 * @param messagePreparator
+	 * @see org.openmrs.notification.MessageService#setMessagePreparator()
 	 */
 	public void setMessagePreparator(MessagePreparator messagePreparator) {
 		this.messagePreparator = messagePreparator;
 	}
 	
+	/**
+	 * @see org.openmrs.notification.MessageService#getMessageSender() 
+	 */
 	public MessagePreparator getMessagePreparator() {
 		return this.messagePreparator;
 	}
 	
 	/**
-	 * Set the message sender.
-	 *
-	 * @param messageSender
+	 * @see org.openmrs.notification.MessageService#setMessageSender() 
 	 */
 	public void setMessageSender(MessageSender messageSender) {
 		this.messageSender = messageSender;
 	}
 	
+	/**
+	 * @see org.openmrs.notification.MessageService#getMessageSender()
+	 */
 	public MessageSender getMessageSender() {
 		return this.messageSender;
 	}
