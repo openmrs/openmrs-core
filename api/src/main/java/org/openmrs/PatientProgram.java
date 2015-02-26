@@ -190,7 +190,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 		newState.setState(programWorkflowState);
 		newState.setStartDate(onDate);
 		
-		if (programWorkflowState.getTerminal() == Boolean.TRUE) {
+		if (programWorkflowState.getTerminal()) {
 			setDateCompleted(onDate);
 		}
 		
@@ -261,6 +261,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	/**
 	 * @deprecated use {@link #getCurrentState(ProgramWorkflow)}
 	 */
+	@Deprecated
 	public PatientState getCurrentState() {
 		return getCurrentState(null);
 	}

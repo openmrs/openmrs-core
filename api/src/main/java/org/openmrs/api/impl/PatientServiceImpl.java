@@ -378,7 +378,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// ignore this patient (loop until no changes made)
 		while (patients.remove(ignorePatient)) {}
-		;
 		
 		if (patients.size() > 0) {
 			return patients.get(0);
@@ -394,8 +393,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
-		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
@@ -409,8 +407,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
-		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
@@ -433,8 +430,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
-		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
@@ -542,8 +538,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType patientIdentifierType,
 	        boolean includeVoided) throws APIException {
-		
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Patient.identifiers.search.voided", (Object[]) null);
 		}
 		
@@ -704,7 +699,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> findPatients(String query, boolean includeVoided) throws APIException {
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
@@ -1496,6 +1491,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @param identifierValidators
 	 */
 	public void setIdentifierValidators(Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
+		if (identifierValidators == null) {
+			this.identifierValidators = null;
+			return;
+		}
 		for (Map.Entry<Class<? extends IdentifierValidator>, IdentifierValidator> entry : identifierValidators.entrySet()) {
 			getIdentifierValidators().put(entry.getKey(), entry.getValue());
 		}
@@ -1699,7 +1698,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query)) {
 			return count;
 		}
-		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
 		
 		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query));
 	}

@@ -83,7 +83,7 @@ public class AlertFormController extends SimpleFormController {
 		try {
 			// check that the user has the right privileges here because
 			// we are giving them a proxy privilege in the line following this
-			if (Context.hasPrivilege(PrivilegeConstants.MANAGE_ALERTS) == false) {
+			if (!Context.hasPrivilege(PrivilegeConstants.MANAGE_ALERTS)) {
 				throw new APIAuthenticationException("Must be logged in as user with alerts privileges");
 			}
 			

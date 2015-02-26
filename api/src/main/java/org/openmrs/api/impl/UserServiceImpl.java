@@ -48,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
  * OpenMRS implementation should be fetched from the Context
- *
+ * 
  * @see org.openmrs.api.UserService
  * @see org.openmrs.api.context.Context
  */
@@ -455,7 +455,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	/**
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
-	 *
+	 * 
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(User user) {
@@ -538,7 +538,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	/**
 	 * Generates system ids based on the following algorithm scheme: user_id-check digit
-	 *
+	 * 
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	@Transactional(readOnly = true)
@@ -580,7 +580,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User, boolean)
 	 */
 	public void purgeUser(User user, boolean cascade) throws APIException {
-		if (cascade == true) {
+		if (cascade) {
 			throw new APIException("cascade.do.not.think", (Object[]) null);
 		}
 		
@@ -590,7 +590,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
 	 * to the new role
-	 *
+	 * 
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(Role role) {

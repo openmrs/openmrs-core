@@ -13,8 +13,6 @@
  */
 package org.openmrs.web.controller.observation.handler;
 
-import java.lang.String;
-
 import org.openmrs.Obs;
 import org.openmrs.web.WebConstants;
 

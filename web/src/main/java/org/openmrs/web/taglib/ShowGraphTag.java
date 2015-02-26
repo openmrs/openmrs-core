@@ -16,7 +16,6 @@ package org.openmrs.web.taglib;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;

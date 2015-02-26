@@ -245,7 +245,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		String message = Context.getMessageSourceService().getMessage(messageCode, messageArguments, Context.getLocale());
 		
 		if (cause != null) {
-			StringBuffer stackTrace = new StringBuffer();
+			StringBuilder stackTrace = new StringBuilder();
 			// get the first two lines of the stack trace ( no more can fit in the alert text )
 			
 			for (StackTraceElement traceElement : cause.getStackTrace()) {

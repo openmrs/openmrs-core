@@ -24,7 +24,6 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
-import org.openmrs.util.Format;
 import org.openmrs.web.WebUtil;
 
 /**

@@ -16,13 +16,9 @@ package org.openmrs.validator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptSource;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-
-import java.util.List;
 
 /**
  * Validates attributes on the {@link org.openmrs.ConceptSource} object.

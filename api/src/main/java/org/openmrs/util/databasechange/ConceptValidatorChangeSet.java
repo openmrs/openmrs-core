@@ -23,7 +23,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -229,17 +228,16 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						}
 					}
 					
-					if (nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred()) {
-						if (!isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
-							if (localeDuplicateNamesMap == null) {
-								localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
-							}
-							if (!localeDuplicateNamesMap.containsKey(conceptNameLocale)) {
-								localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<String>());
-							}
-							
-							localeDuplicateNamesMap.get(conceptNameLocale).add(nameInLocale.getName());
+					if ((nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred())
+					        && !isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
+						if (localeDuplicateNamesMap == null) {
+							localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
 						}
+						if (!localeDuplicateNamesMap.containsKey(conceptNameLocale)) {
+							localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<String>());
+						}
+						
+						localeDuplicateNamesMap.get(conceptNameLocale).add(nameInLocale.getName());
 					}
 					
 					String name = nameInLocale.getName().toLowerCase();

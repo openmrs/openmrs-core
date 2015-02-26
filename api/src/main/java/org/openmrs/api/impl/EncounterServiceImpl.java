@@ -59,7 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>
  * This class should not be instantiated alone, get a service class from the Context:
  * Context.getEncounterService();
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.EncounterService
  */
@@ -159,20 +159,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			
 			for (Obs obs : encounter.getAllObs(true)) {
 				// if the date was changed
-				if (OpenmrsUtil.compare(originalDate, newDate) != 0) {
+				if (OpenmrsUtil.compare(originalDate, newDate) != 0
+				        && OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
 					
 					// if the obs datetime is the same as the
 					// original encounter datetime, fix it
-					if (OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
-						obs.setObsDatetime(newDate);
-					}
+					obs.setObsDatetime(newDate);
 					
 				}
 				
-				if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation)) {
-					if (obs.getLocation().equals(originalLocation)) {
-						obs.setLocation(newLocation);
-					}
+				if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation) && obs.getLocation().equals(originalLocation)) {
+					obs.setLocation(newLocation);
 				}
 				
 				// if the Person in the obs doesn't match the Patient in the
@@ -299,7 +296,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	
 	/**
 	 * Helper method that finds the corresponding providers for a collection of users
-	 *
+	 * 
 	 * @param users
 	 * @return a collection of providers, with 0-n for each item in users
 	 */
@@ -1031,7 +1028,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	
 	/**
 	 * Convenient method that safely checks if user has given encounter privilege
-	 *
+	 * 
 	 * @param privilege the privilege to test
 	 * @param user the user instance to check if it has given privilege
 	 * @return true if given user has specified privilege

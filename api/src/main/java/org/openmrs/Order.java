@@ -388,6 +388,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see #isActive(java.util.Date)
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was current on the input date
+	 * @deprecated use {@link #isActive(Date)}
 	 */
 	@Deprecated
 	public boolean isCurrent(Date checkDate) {
@@ -397,6 +398,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @see #isActive()
 	 * @return
+	 * @deprecated use {@link #isActive()}
 	 */
 	@Deprecated
 	public boolean isCurrent() {
@@ -417,8 +419,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Deprecated
 	public boolean isFuture(Date checkDate) {
-		if (isVoided())
+		if (isVoided()) {
 			return false;
+		}
 		if (checkDate == null) {
 			checkDate = new Date();
 		}

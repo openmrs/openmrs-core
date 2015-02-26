@@ -58,7 +58,7 @@ import org.springframework.validation.BindException;
  * <p>
  * This class should not be instantiated alone, get a service class from the Context:
  * Context.getFormService();
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.FormService
  */
@@ -80,7 +80,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * Method used to inject the data access object.
-	 *
+	 * 
 	 * @param dao
 	 */
 	public void setFormDAO(FormDAO dao) {
@@ -151,7 +151,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * Duplicate this form and form_fields associated with this form
-	 *
+	 * 
 	 * @param form
 	 * @return New duplicated form
 	 * @throws APIException
@@ -691,7 +691,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field, boolean)
 	 */
 	public void purgeField(Field field, boolean cascade) throws APIException {
-		if (cascade == true) {
+		if (cascade) {
 			throw new APIException("general.not.yet.implemented", (Object[]) null);
 		} else {
 			dao.deleteField(field);
@@ -710,7 +710,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form, boolean)
 	 */
 	public void purgeForm(Form form, boolean cascade) throws APIException {
-		if (cascade == true) {
+		if (cascade) {
 			throw new APIException("general.not.yet.implemented", (Object[]) null);
 		}
 		
@@ -733,7 +733,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#retireField(org.openmrs.Field)
 	 */
 	public Field retireField(Field field) throws APIException {
-		if (field.getRetired() == false) {
+		if (!field.getRetired()) {
 			field.setRetired(true);
 			return Context.getFormService().saveField(field);
 		} else {
@@ -819,7 +819,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#unretireField(org.openmrs.Field)
 	 */
 	public Field unretireField(Field field) throws APIException {
-		if (field.getRetired() == true) {
+		if (field.getRetired()) {
 			field.setRetired(false);
 			return Context.getFormService().saveField(field);
 		} else {
@@ -994,7 +994,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * duplicates form resources from one form to another
-	 *
+	 * 
 	 * @param source the form to copy resources from
 	 * @param destination the form to copy resources to
 	 */

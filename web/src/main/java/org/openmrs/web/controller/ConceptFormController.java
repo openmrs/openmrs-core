@@ -609,17 +609,13 @@ public class ConceptFormController extends SimpleFormController {
 			}
 			
 			// if the user unchecked the concept sets box, erase past saved sets
-			if (!concept.isSet()) {
-				if (concept.getConceptSets() != null) {
-					concept.getConceptSets().clear();
-				}
+			if (!concept.isSet() && concept.getConceptSets() != null) {
+				concept.getConceptSets().clear();
 			}
 			
 			// if the user changed the datatype to be non "Coded", erase past saved datatypes
-			if (!concept.getDatatype().isCoded()) {
-				if (concept.getAnswers(true) != null) {
-					concept.getAnswers(true).clear();
-				}
+			if (!concept.getDatatype().isCoded() && concept.getAnswers(true) != null) {
+				concept.getAnswers(true).clear();
 			}
 			
 			// add in subobject specific code

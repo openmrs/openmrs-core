@@ -176,8 +176,9 @@ public class OptionsFormController extends SimpleFormController {
 					
 					if (!errors.hasErrors()) {
 						us.changePassword(opts.getOldPassword(), password);
-						if (opts.getSecretQuestionPassword().equals(opts.getOldPassword()))
+						if (opts.getSecretQuestionPassword().equals(opts.getOldPassword())) {
 							opts.setSecretQuestionPassword(password);
+						}
 						new UserProperties(user.getUserProperties()).setSupposedToChangePassword(false);
 					}
 				}
@@ -210,13 +211,13 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			String notifyType = opts.getNotification();
-			if (notifyType != null) {
-				if (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email")) {
-					if (opts.getNotificationAddress().isEmpty()) {
-						errors.reject("error.options.notificationAddress.empty");
-					} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
-						errors.reject("error.options.notificationAddress.invalid");
-					}
+			if (notifyType != null
+			        && (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType
+			                .equals("email"))) {
+				if (opts.getNotificationAddress().isEmpty()) {
+					errors.reject("error.options.notificationAddress.empty");
+				} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
+					errors.reject("error.options.notificationAddress.invalid");
 				}
 			}
 			
@@ -420,10 +421,8 @@ public class OptionsFormController extends SimpleFormController {
 	 * @param message the localized message to add
 	 */
 	private void addHint(ArrayList<String> hints, String gpValue, String message) {
-		if (Boolean.valueOf(gpValue)) {
-			if (!StringUtils.isBlank(message)) {
-				hints.add(message);
-			}
+		if (Boolean.valueOf(gpValue) && !StringUtils.isBlank(message)) {
+			hints.add(message);
 		}
 	}
 }

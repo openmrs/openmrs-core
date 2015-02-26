@@ -32,7 +32,6 @@ import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Handler for storing basic images for complex obs to the file system. The image mime type used is

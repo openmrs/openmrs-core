@@ -14,7 +14,6 @@
 package org.openmrs.web.controller.concept;
 
 import java.util.Locale;
-import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 

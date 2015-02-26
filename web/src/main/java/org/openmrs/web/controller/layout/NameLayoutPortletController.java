@@ -20,7 +20,7 @@ import org.openmrs.layout.name.NameSupport;
 
 public class NameLayoutPortletController extends LayoutPortletController {
 	
-	private static Log log = LogFactory.getLog(NameLayoutPortletController.class);
+	private static final Log log = LogFactory.getLog(NameLayoutPortletController.class);
 	
 	protected String getDefaultsPropertyName() {
 		return "layout.name.defaults";

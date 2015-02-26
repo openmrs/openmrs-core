@@ -234,34 +234,30 @@ public class FieldGenTag extends TagSupport {
 						        + "] in FieldGenTag");
 					}
 					
-					if (cls != null) {
-						if (cls.isEnum()) {
-							Object[] enumConstants = cls.getEnumConstants();
-							
-							if (enumConstants != null) {
-								if (enumConstants.length > 0) {
-									String startVal = "";
-									if (val != null) {
-										startVal = val.toString();
-									}
-									log.debug("val is " + val);
-									log.debug("val.toString is " + startVal);
-									if (startVal == null) {
-										startVal = "";
-									}
-									output.setLength(0);
-									output.append("<select name=\"").append(formFieldName).append("\" id=\"").append(
-									    formFieldName).append("\">");
-									StringBuilder options = new StringBuilder();
-									for (int i = 0; i < enumConstants.length; i++) {
-										options.append("<option value=\"").append(enumConstants[i].toString()).append("\"")
-										        .append(startVal.equals(enumConstants[i].toString()) ? " selected" : "")
-										        .append(">").append(enumConstants[i].toString()).append("</option>");
-									}
-									output.append(options.toString());
-									output.append("</select> ");
-								}
+					if (cls != null && cls.isEnum()) {
+						Object[] enumConstants = cls.getEnumConstants();
+						
+						if (enumConstants != null && enumConstants.length > 0) {
+							String startVal = "";
+							if (val != null) {
+								startVal = val.toString();
 							}
+							log.debug("val is " + val);
+							log.debug("val.toString is " + startVal);
+							if (startVal == null) {
+								startVal = "";
+							}
+							output.setLength(0);
+							output.append("<select name=\"").append(formFieldName).append("\" id=\"").append(formFieldName)
+							        .append("\">");
+							StringBuilder options = new StringBuilder();
+							for (int i = 0; i < enumConstants.length; i++) {
+								options.append("<option value=\"").append(enumConstants[i].toString()).append("\"").append(
+								    startVal.equals(enumConstants[i].toString()) ? " selected" : "").append(">").append(
+								    enumConstants[i].toString()).append("</option>");
+							}
+							output.append(options.toString());
+							output.append("</select> ");
 						}
 					}
 				} else if (type.equals("dropDownList")) {

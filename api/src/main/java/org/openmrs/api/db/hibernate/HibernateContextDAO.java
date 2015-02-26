@@ -14,10 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -37,7 +34,6 @@ import org.hibernate.search.Search;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
-import org.hibernate.util.ConfigHelper;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -53,7 +49,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
  * directly, instead, the methods on the static {@link Context} file should be used.
- *
+ * 
  * @see ContextDAO
  * @see Context
  */
@@ -69,7 +65,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
-	 *
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -230,7 +226,7 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	/**
 	 * Call the UserService to save the given user while proxying the privileges needed to do so.
-	 *
+	 * 
 	 * @param user the User to save
 	 */
 	private void saveUserProperties(User user) {
@@ -239,7 +235,7 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	/**
 	 * Get the integer stored for the given user that is their number of login attempts
-	 *
+	 * 
 	 * @param user the user to check
 	 * @return the # of login attempts for this user defaulting to zero if none defined
 	 */
@@ -378,7 +374,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Takes the default properties defined in /metadata/api/hibernate/hibernate.default.properties
 	 * and merges it into the user-defined runtime properties
-	 *
+	 * 
 	 * @see org.openmrs.api.db.ContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
 	 * @should merge default runtime properties
 	 */

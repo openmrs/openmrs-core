@@ -179,10 +179,8 @@ public class VisitListController {
 	
 	private boolean isActive(Date start, Date end) {
 		Date now = new Date();
-		if (OpenmrsUtil.compare(now, start) >= 0) {
-			if (OpenmrsUtil.compareWithNullAsLatest(now, end) < 0) {
-				return true;
-			}
+		if (OpenmrsUtil.compare(now, start) >= 0 && OpenmrsUtil.compareWithNullAsLatest(now, end) < 0) {
+			return true;
 		}
 		return false;
 	}

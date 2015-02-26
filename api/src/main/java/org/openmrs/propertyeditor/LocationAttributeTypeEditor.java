@@ -15,8 +15,6 @@ package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;

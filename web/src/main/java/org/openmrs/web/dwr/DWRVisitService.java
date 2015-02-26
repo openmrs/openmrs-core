@@ -27,7 +27,7 @@ import org.openmrs.messagesource.MessageSourceService;
 
 /**
  * Contains methods for processing DWR requests for visits
- *
+ * 
  * @since 1.9
  */
 public class DWRVisitService {
@@ -36,7 +36,7 @@ public class DWRVisitService {
 	
 	/**
 	 * Gets all visits for the patient matching the given patientId
-	 *
+	 * 
 	 * @param patientId the patient id for the patient whose visits to find
 	 * @param includeInactive specifies if ended visits should be returned or not
 	 * @param includeVoided specifies if voided visits should be returned or not
@@ -78,7 +78,7 @@ public class DWRVisitService {
 	
 	/**
 	 * Gets the visit matching the specified visitId
-	 *
+	 * 
 	 * @param visitId the visit id to search against
 	 * @return the {@link VisitListItem} for the matching visit
 	 * @throws APIException
@@ -90,7 +90,7 @@ public class DWRVisitService {
 	
 	/**
 	 * Fetches all encounters belonging to the visit that matches the specified visitId
-	 *
+	 * 
 	 * @param visitId
 	 * @return
 	 * @throws APIException

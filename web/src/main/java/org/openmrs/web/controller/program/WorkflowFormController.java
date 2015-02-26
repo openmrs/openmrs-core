@@ -26,13 +26,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.PatientState;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -106,7 +104,6 @@ public class WorkflowFormController extends SimpleFormController {
 					String str = std.nextToken();
 					String[] state = str.split(",");
 					Integer conceptIdDelete = Integer.valueOf(state[0]);
-					ProgramWorkflowState pws = null;
 					
 					for (ProgramWorkflowState s : wf.getStates()) {
 						if (s.getConcept().getConceptId().equals(conceptIdDelete)) {

@@ -355,8 +355,8 @@ public class ShortPatientFormController {
 	
 	/**
 	 * Creates a map of string of the form 3b, 3a and the actual person Relationships
-	 * @param result 
 	 * 
+	 * @param result
 	 * @param person the patient/person whose relationships to return
 	 * @param request the webRequest Object
 	 * @return map of strings matched against actual relationships
@@ -427,7 +427,7 @@ public class ShortPatientFormController {
 				}
 				
 				// if no relationship was found, create a stub one now
-				if (relationshipFound == false) {
+				if (!relationshipFound) {
 					Relationship relationshipStub = new Relationship();
 					relationshipStub.setRelationshipType(relationshipType);
 					if (aIsToB) {

@@ -55,7 +55,7 @@ public class ProgramWorkflowState extends BaseOpenmrsMetadata implements Seriali
 	
 	/** @see Object#toString() */
 	public String toString() {
-		return ("State " + getConcept().getName() + " initial=" + getInitial() + " terminal=" + getTerminal());
+		return "State " + getConcept().getName() + " initial=" + getInitial() + " terminal=" + getTerminal();
 	}
 	
 	// ******************

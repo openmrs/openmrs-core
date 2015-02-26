@@ -14,7 +14,10 @@
 package org.openmrs.api.db.hibernate;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -30,27 +33,29 @@ public class PersonSearchCriteria {
 	}
 	
 	Criterion prepareCriterionForAttribute(String value, Boolean voided, MatchMode matchMode) {
-		if (voided == null || voided == false)
+		if (voided == null || !voided) {
 			return Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
 			    Restrictions.eq("attribute.voided", false)).add(Restrictions.ilike("attribute.value", value, matchMode));
-		else
+		} else {
 			return Restrictions.conjunction().add(Restrictions.eq("attributeType.searchable", true)).add(
 			    Restrictions.ilike("attribute.value", value, matchMode));
+		}
 	}
 	
 	Criterion prepareCriterionForName(String value, Boolean voided) {
-		if (voided == null || voided == false)
+		if (voided == null || !voided) {
 			return Restrictions.conjunction().add(Restrictions.eq("name.voided", false)).add(
 			    Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START)).add(
 			        Restrictions.ilike("name.middleName", value, MatchMode.START)).add(
 			        Restrictions.ilike("name.familyName", value, MatchMode.START)).add(
 			        Restrictions.ilike("name.familyName2", value, MatchMode.START)));
-		else
+		} else {
 			return Restrictions.conjunction().add(
 			    Restrictions.disjunction().add(Restrictions.ilike("name.givenName", value, MatchMode.START)).add(
 			        Restrictions.ilike("name.middleName", value, MatchMode.START)).add(
 			        Restrictions.ilike("name.familyName", value, MatchMode.START)).add(
 			        Restrictions.ilike("name.familyName2", value, MatchMode.START)));
+		}
 	}
 	
 	void addAliasForName(Criteria criteria) {

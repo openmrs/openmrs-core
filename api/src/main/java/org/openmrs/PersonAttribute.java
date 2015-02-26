@@ -322,6 +322,15 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		return OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeId(), other.getPersonAttributeId());
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof PersonAttribute) {
+			return compareTo((PersonAttribute) other) == 0;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()

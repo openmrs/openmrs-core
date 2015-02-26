@@ -174,7 +174,7 @@ public class WebUtil implements GlobalPropertyListener {
 			return null;
 		}
 		
-		StringBuffer outputString = new StringBuffer();
+		StringBuilder outputString = new StringBuilder();
 		
 		boolean first = true;
 		
