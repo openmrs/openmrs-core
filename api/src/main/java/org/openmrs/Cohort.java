@@ -41,7 +41,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	public static final long serialVersionUID = 0L;
 	
-	private static final Log logger = LogFactory.getLog(Cohort.class);
+	private static final Log log = LogFactory.getLog(Cohort.class);
 	
 	private Integer cohortId;
 	
