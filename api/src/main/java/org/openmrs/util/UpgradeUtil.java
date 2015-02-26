@@ -51,14 +51,13 @@ public class UpgradeUtil {
 					conceptId = prop.getValue().toString();
 					
 					if (conceptId != null) {
-						fis.close();
 						return Integer.valueOf(conceptId);
 					} else {
-						fis.close();
 						return null;
 					}
 				}
 			}
+			fis.close();
 		}
 		catch (NumberFormatException e) {
 			throw new APIException("upgrade.settings.file.invalid.mapping", new Object[] { units, conceptId }, e);

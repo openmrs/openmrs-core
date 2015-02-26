@@ -46,7 +46,7 @@ import org.openmrs.scheduler.SchedulerConstants;
  */
 public final class OpenmrsConstants {
 	
-	private static final Log LOGGER = LogFactory.getLog(OpenmrsConstants.class);
+	private static final Log log = LogFactory.getLog(OpenmrsConstants.class);
 	
 	/**
 	 * This is the hard coded primary key of the order type for DRUG. This has to be done because
@@ -116,7 +116,7 @@ public final class OpenmrsConstants {
 	public static String getOpenmrsProperty(String property) {
 		InputStream file = OpenmrsConstants.class.getClassLoader().getResourceAsStream("org/openmrs/api/openmrs.properties");
 		if (file == null) {
-			LOGGER.error("Unable to find the openmrs.properties file");
+			log.error("Unable to find the openmrs.properties file");
 			return null;
 		}
 		
@@ -129,7 +129,7 @@ public final class OpenmrsConstants {
 			return props.getProperty(property);
 		}
 		catch (IOException e) {
-			LOGGER.error("Unable to parse the openmrs.properties file", e);
+			log.error("Unable to parse the openmrs.properties file", e);
 		}
 		finally {
 			IOUtils.closeQuietly(file);

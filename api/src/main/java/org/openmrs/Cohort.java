@@ -27,7 +27,6 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
-import org.springframework.expression.EvaluationContext;
 
 /**
  * This class represents a list of patientIds. If it is generated from a CohortDefinition via
@@ -42,7 +41,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	public static final long serialVersionUID = 0L;
 	
-	private static final Log LOGGER = LogFactory.getLog(Cohort.class);
+	private static final Log logger = LogFactory.getLog(Cohort.class);
 	
 	private Integer cohortId;
 	

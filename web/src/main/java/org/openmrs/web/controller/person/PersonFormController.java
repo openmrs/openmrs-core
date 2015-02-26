@@ -72,7 +72,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class PersonFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	private static final Log LOGGER = LogFactory.getLog(PersonFormController.class);
+	private static final Log log = LogFactory.getLog(PersonFormController.class);
 	
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
@@ -267,7 +267,7 @@ public class PersonFormController extends SimpleFormController {
 				}
 			}
 			catch (DataIntegrityViolationException e) {
-				LOGGER.error("Unable to delete person because of database FK errors: " + person, e);
+				log.error("Unable to delete person because of database FK errors: " + person, e);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Person.cannot.delete");
 				
 				return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId().toString()));
@@ -297,7 +297,7 @@ public class PersonFormController extends SimpleFormController {
 			
 			// If person is dead
 			if (person.getDead()) {
-				LOGGER.debug("Person is dead, so let's make sure there's an Obs for it");
+				log.debug("Person is dead, so let's make sure there's an Obs for it");
 				// need to make sure there is an Obs that represents the patient's cause of death, if applicable
 				
 				String causeOfDeathConceptId = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
@@ -307,18 +307,18 @@ public class PersonFormController extends SimpleFormController {
 					List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(person, causeOfDeath);
 					if (obssDeath != null) {
 						if (obssDeath.size() > 1) {
-							LOGGER.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+							log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
 						} else {
 							Obs obsDeath = null;
 							if (obssDeath.size() == 1) {
 								// already has a cause of death - let's edit it.
-								LOGGER.debug("Already has a cause of death, so changing it");
+								log.debug("Already has a cause of death, so changing it");
 								
 								obsDeath = obssDeath.iterator().next();
 								
 							} else {
 								// no cause of death obs yet, so let's make one
-								LOGGER.debug("No cause of death yet, let's create one.");
+								log.debug("No cause of death yet, let's create one.");
 								
 								obsDeath = new Obs();
 								obsDeath.setPerson(person);
@@ -328,7 +328,7 @@ public class PersonFormController extends SimpleFormController {
 								if (location != null) {
 									obsDeath.setLocation(location);
 								} else {
-									LOGGER.error("Could not find a suitable location for which to create this new Obs");
+									log.error("Could not find a suitable location for which to create this new Obs");
 								}
 							}
 							
@@ -336,13 +336,13 @@ public class PersonFormController extends SimpleFormController {
 							Concept currCause = person.getCauseOfDeath();
 							if (currCause == null) {
 								// set to NONE
-								LOGGER.debug("Current cause is null, attempting to set to NONE");
+								log.debug("Current cause is null, attempting to set to NONE");
 								String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
 								currCause = Context.getConceptService().getConcept(noneConcept);
 							}
 							
 							if (currCause != null) {
-								LOGGER.debug("Current cause is not null, setting to value_coded");
+								log.debug("Current cause is not null, setting to value_coded");
 								obsDeath.setValueCoded(currCause);
 								obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 								
@@ -364,16 +364,16 @@ public class PersonFormController extends SimpleFormController {
 									if (conceptOther.equals(currCause)) {
 										// seems like this is an other concept - let's try to get the "other" field info
 										deathReasonChanged = !otherInfo.equals(obsDeath.getValueText());
-										LOGGER.debug("Setting value_text as " + otherInfo);
+										log.debug("Setting value_text as " + otherInfo);
 										obsDeath.setValueText(otherInfo);
 									} else {
 										// non empty text value implies concept changed from OTHER NON CODED to NONE
 										deathReasonChanged = !otherInfo.equals("");
-										LOGGER.debug("New concept is NOT the OTHER concept, so setting to blank");
+										log.debug("New concept is NOT the OTHER concept, so setting to blank");
 										obsDeath.setValueText("");
 									}
 								} else {
-									LOGGER.debug("Don't seem to know about an OTHER concept, so deleting value_text");
+									log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
 									obsDeath.setValueText("");
 								}
 								boolean shouldSaveObs = (null == obsDeath.getId()) || deathReasonChanged;
@@ -384,13 +384,12 @@ public class PersonFormController extends SimpleFormController {
 									Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
 								}
 							} else {
-								LOGGER.debug("Current cause is still null - aborting mission");
+								log.debug("Current cause is still null - aborting mission");
 							}
 						}
 					}
 				} else {
-					LOGGER
-					        .debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+					log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 				}
 				
 			}
@@ -448,7 +447,7 @@ public class PersonFormController extends SimpleFormController {
 				}
 				catch (APIException e) {
 					errors.rejectValue("attributes", "Invalid value for " + type.getName() + ": '" + value + "'");
-					LOGGER.warn("Got an invalid value: " + value + " while setting personAttributeType id #" + paramName, e);
+					log.warn("Got an invalid value: " + value + " while setting personAttributeType id #" + paramName, e);
 					
 					// setting the value to empty so that the user can reset the value to something else
 					attribute.setValue("");
@@ -458,8 +457,8 @@ public class PersonFormController extends SimpleFormController {
 			}
 		}
 		
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Person Attributes: \n" + person.printAttributes());
+		if (log.isDebugEnabled()) {
+			log.debug("Person Attributes: \n" + person.printAttributes());
 		}
 	}
 	
@@ -615,7 +614,7 @@ public class PersonFormController extends SimpleFormController {
 				maxAddrs = endDates.length;
 			}
 			
-			LOGGER.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
+			log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
 			
 			for (int i = 0; i < maxAddrs; i++) {
 				PersonAddress pa = new PersonAddress();
@@ -763,16 +762,16 @@ public class PersonFormController extends SimpleFormController {
 					Obs obsDeath = obssDeath.iterator().next();
 					causeOfDeathOther = obsDeath.getValueText();
 					if (causeOfDeathOther == null) {
-						LOGGER.debug("cod is null, so setting to empty string");
+						log.debug("cod is null, so setting to empty string");
 						causeOfDeathOther = "";
 					} else {
-						LOGGER.debug("cod is valid: " + causeOfDeathOther);
+						log.debug("cod is valid: " + causeOfDeathOther);
 					}
 				} else {
-					LOGGER.debug("obssDeath is wrong size: " + obssDeath.size());
+					log.debug("obssDeath is wrong size: " + obssDeath.size());
 				}
 			} else {
-				LOGGER.warn("No concept death cause found");
+				log.warn("No concept death cause found");
 			}
 			
 		}
@@ -817,7 +816,7 @@ public class PersonFormController extends SimpleFormController {
 				}
 			}
 			catch (ParseException e) {
-				LOGGER.debug("Error getting date from birthdate", e);
+				log.debug("Error getting date from birthdate", e);
 			}
 		} else if (age != null && !"".equals(age)) {
 			Calendar c = Calendar.getInstance();
@@ -829,7 +828,7 @@ public class PersonFormController extends SimpleFormController {
 				birthdateEstimated = true;
 			}
 			catch (ParseException e) {
-				LOGGER.debug("Error getting date from age", e);
+				log.debug("Error getting date from age", e);
 			}
 		}
 		if (birthdate != null) {

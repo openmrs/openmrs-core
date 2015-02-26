@@ -44,7 +44,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	private static final Log LOGGER = LogFactory.getLog(SchedulerFormController.class);
+	private static final Log log = LogFactory.getLog(SchedulerFormController.class);
 	
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
@@ -132,7 +132,7 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		TaskDefinition task = (TaskDefinition) command;
 		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
-		LOGGER.info("task started? " + task.getStarted());
+		log.info("task started? " + task.getStarted());
 		
 		//TODO Add unit test method to check that an executing task doesn't get rescheduled, it would require adding a test task 
 		//that runs for a period that spans beyond time it takes to execute all the necessary assertions in the test method

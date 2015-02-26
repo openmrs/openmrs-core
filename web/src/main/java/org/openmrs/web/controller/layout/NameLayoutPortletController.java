@@ -20,7 +20,7 @@ import org.openmrs.layout.name.NameSupport;
 
 public class NameLayoutPortletController extends LayoutPortletController {
 	
-	private static final Log LOGGER = LogFactory.getLog(NameLayoutPortletController.class);
+	private static final Log log = LogFactory.getLog(NameLayoutPortletController.class);
 	
 	protected String getDefaultsPropertyName() {
 		return "layout.name.defaults";
@@ -31,7 +31,7 @@ public class NameLayoutPortletController extends LayoutPortletController {
 	}
 	
 	protected LayoutSupport getLayoutSupportInstance() {
-		LOGGER.debug("Getting name layout instance");
+		log.debug("Getting name layout instance");
 		return NameSupport.getInstance();
 	}
 }
