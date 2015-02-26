@@ -47,12 +47,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.activelist.Allergy;
+import org.openmrs.activelist.Problem;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
@@ -1724,6 +1727,67 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs obsSaved = obsService.saveObs(obs, changeMessage);
 		
 		assertEquals(obs.getPerson(), obsSaved.getEncounter().getPatient());
+	}
+	
+	/**
+	 * @see ObsService#purgeObs(Obs,boolean)
+	 */
+	
+	@Test
+	@Verifies(value = "Should delete any related objects here before deleting the obs", method = "purgeObs(Obs,boolean)")
+	public void purgeObs_shouldDeleteRelatedObsBeforeDeletingTheObs() throws Exception {
+		
+		executeDataSet(INITIAL_OBS_XML);
+		ObsService obsService = Context.getObsService();
+		
+		Obs obs = obsService.getObs(1);
+		Obs obs1 = obsService.getObs(2);
+		Obs obs2 = obsService.getObs(3);
+		Obs obs3 = obsService.getObs(4);
+		
+		obs.addGroupMember(obs1);
+		obs.addGroupMember(obs2);
+		obs.addGroupMember(obs3);
+		
+		//before calling purgeObs method the Obs exists
+		ConceptProposal conceptProposal = new ConceptProposal();
+		conceptProposal.setObs(obsService.getObs(5));
+		obs.addGroupMember(conceptProposal.getObs());
+		
+		Allergy allergy = new Allergy();
+		allergy.setStartObs(obsService.getObs(6));
+		allergy.setStopObs(obsService.getObs(7));
+		obs.addGroupMember(allergy.getStartObs());
+		obs.addGroupMember(allergy.getStopObs());
+		
+		Problem problem = new Problem();
+		problem.setStartObs(obsService.getObs(8));
+		problem.setStopObs(obsService.getObs(9));
+		obs.addGroupMember(problem.getStartObs());
+		obs.addGroupMember(problem.getStopObs());
+		
+		Assert.assertNotNull(obsService.getObs(1));
+		Assert.assertNotNull(obsService.getObs(2));
+		Assert.assertNotNull(obsService.getObs(3));
+		Assert.assertNotNull(obsService.getObs(4));
+		Assert.assertNotNull(obsService.getObs(5));
+		Assert.assertNotNull(obsService.getObs(6));
+		Assert.assertNotNull(obsService.getObs(7));
+		Assert.assertNotNull(obsService.getObs(8));
+		Assert.assertNotNull(obsService.getObs(9));
+		
+		Context.getObsService().purgeObs(obs, false);
+		
+		Assert.assertNull(obsService.getObs(1));
+		Assert.assertNull(obsService.getObs(2));
+		Assert.assertNull(obsService.getObs(3));
+		Assert.assertNull(obsService.getObs(4));
+		Assert.assertNull(obsService.getObs(5));
+		Assert.assertNull(obsService.getObs(6));
+		Assert.assertNull(obsService.getObs(7));
+		Assert.assertNull(obsService.getObs(8));
+		Assert.assertNull(obsService.getObs(9));
+		//	After calling purgeObs method Obs are deleted 
 	}
 	
 }
