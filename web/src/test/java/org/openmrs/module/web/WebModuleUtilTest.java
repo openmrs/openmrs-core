@@ -100,7 +100,7 @@ public class WebModuleUtilTest {
 		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
 		assertFalse(result);
 	}
-
+	
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
 	 * @verifies creates dwr-modules.xml if not found
