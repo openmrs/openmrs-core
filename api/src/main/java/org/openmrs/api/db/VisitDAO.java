@@ -32,6 +32,7 @@ import org.openmrs.api.VisitService;
  * Database access functions for visits.
  * 
  * @since 1.9
+ * org.openmrs.api.VisitService
  */
 public interface VisitDAO {
 	
