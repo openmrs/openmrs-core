@@ -13,17 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -35,6 +24,17 @@ import org.openmrs.util.RoleConstants;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.load.Replace;
 import org.simpleframework.xml.load.Validate;
+
+import java.util.Collections;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
@@ -163,10 +163,23 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 		
 		return containsRole(r);
 	}
-	
-	private boolean containsRole(String roleName) {
+
+	/**
+     * Returns true if the given Role Name(roleName) is already in the system.
+	 * and the method would return false if the Role Name(role name) is not there
+	 * in the system.
+	 * This method is case insensitive. That means it will consider "Example Role"
+	 * and "example role" as equal. It will ignore the cases of letters and check in
+     * the system.
+	 *
+     * @param  roleName is a String which is the Role Name(roleName) of a Role in the system
+     * @return true if the roleName is already there or false if the roleName is not there
+     * @should return true if the Role name exists
+     * @should roleName be case insensitive
+     */
+    public boolean containsRole(String roleName) {
 		for (Role role : getAllRoles()) {
-			if (role.getRole().equals(roleName)) {
+			if (role.getRole().equalsIgnoreCase(roleName)) {
 				return true;
 			}
 		}
