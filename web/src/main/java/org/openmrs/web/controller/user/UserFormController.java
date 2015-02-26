@@ -185,7 +185,7 @@ public class UserFormController {
 				errors.reject("error.password.match");
 			
 			if (password.length() == 0 && isNewUser(user))
-				errors.reject("error.password.weak");
+				errors.reject("error.password.belowStandard");
 			
 			//check password strength
 			if (password.length() > 0) {

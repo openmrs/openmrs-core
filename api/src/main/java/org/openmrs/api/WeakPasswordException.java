@@ -29,7 +29,7 @@ public class WeakPasswordException extends PasswordException {
 	private static final long serialVersionUID = 31620091004L;
 	
 	public WeakPasswordException() {
-		super("error.password.weak");
+		super("error.password.belowStandard");
 	}
 	
 	public WeakPasswordException(String message) {
