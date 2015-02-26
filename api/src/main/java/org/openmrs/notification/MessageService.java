@@ -24,12 +24,29 @@ public interface MessageService {
 	
 	// Set dependencies for message services
 	// TODO Should these be required or do we let the implementations constructor dictate the dependencies?
+	
+	/**
+	 * Sets the Message Sender
+	 * @param sender sets the message sender
+	 */
 	public void setMessageSender(MessageSender sender);
 	
+	/**
+	 *Gets the Message Sender 
+	 * @return MessageSender returns the message sender 
+	 */
 	public MessageSender getMessageSender();
 	
+	/**
+	 * Sets the Message Preparator
+	 * @param preparator sets the message preparator 
+	 */
 	public void setMessagePreparator(MessagePreparator preparator);
 	
+	/**
+	 *Gets the Message Preparator
+	 * @return MessagePreparator returns the message preparator
+	 */
 	public MessagePreparator getMessagePreparator();
 	
 	/* Send Message Methods */
@@ -63,6 +80,14 @@ public interface MessageService {
 	// Prepare message methods
 	public Message createMessage(String subject, String message) throws MessageException;
 	
+	/**
+	 * Creates Message with details about the sender, subject and message
+	 * @param sender of the message
+	 * @param subject of the message
+	 * @param message for which it was created 
+	 * @return Message created 
+	 * @throws MessageException based on the Throwable cause parameter
+	 */
 	public Message createMessage(String sender, String subject, String message) throws MessageException;
 	
 	/**
@@ -78,18 +103,42 @@ public interface MessageService {
 	 */
 	public Message createMessage(String recipients, String sender, String subject, String message) throws MessageException;
 	
+	/**
+	 * Creates Message with details about the recipients, sender,subject,message,attachment,attachmentContentType and attachementFileName
+	 * @param recipients to mention the recipients of the message
+	 * @param sender of the message
+	 * @param subject of the message
+	 * @param message for which it was created 
+	 * @param attachment for the attachment to be added with the message 
+	 * @param attachmentContentType for the attachment's content type 
+	 * @param attachmentFileName for the file name of the attachment to be added with the message
+	 * @return Message,returns the message created 
+	 * @throws MessageException based on the Throwable cause parameter
+	 */
 	public Message createMessage(String recipients, String sender, String subject, String message, String attachment,
 	        String attachmentContentType, String attachmentFileName) throws MessageException;
 	
 	@SuppressWarnings("unchecked")
 	public Message prepareMessage(String templateName, Map data) throws MessageException;
 	
+	/**
+	 * Prepare the message based on the template. It throws MessageException if unable to prepare message 
+	 * @param template used to prepare the message 
+	 * @return Message created using the template 
+	 * @throws MessageException based on the Throwable cause parameter
+	 */
 	public Message prepareMessage(Template template) throws MessageException;
 	
 	// Template methods
 	@SuppressWarnings("unchecked")
 	public List getAllTemplates() throws MessageException;
 	
+	/**
+	 * Gets the Template based on the id , throws MessageException if its unable to get the Template
+	 * @param id the integer value passed to get the Template
+	 * @return Template based on the id value passed in the parameter
+	 * @throws MessageException based on the Throwable cause parameter
+	 */
 	public Template getTemplate(Integer id) throws MessageException;
 	
 	@SuppressWarnings("unchecked")
