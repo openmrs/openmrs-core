@@ -34,8 +34,8 @@ public class DownloadDictionaryServletTest extends BaseWebContextSensitiveTest {
 	
 	@Test
 	public void shouldPrintHeaderAndFormattedConceptLines() throws Exception {
-		String actualContent = runServletWithConcepts(conceptDAO.getConcept(3), conceptDAO.getConcept(5),
-		    conceptDAO.getConcept(6));
+		String actualContent = runServletWithConcepts(conceptDAO.getConcept(3), conceptDAO.getConcept(5), conceptDAO
+		        .getConcept(6));
 		String expectedContent = EXPECTED_HEADER
 		        + "3,\"COUGH SYRUP\",\"This is used for coughs\",\"COUGH SYRUP\",\"\",\"\",\"Drug\",\"N/A\",\"\",\"Super User\"\n"
 		        + "5,\"SINGLE\",\"\",\"SINGLE\",\"\",\"\",\"Misc\",\"N/A\",\"\",\"Super User\"\n"
