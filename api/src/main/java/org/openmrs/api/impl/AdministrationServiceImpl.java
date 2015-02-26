@@ -1245,6 +1245,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		return new ArrayList<Locale>(locales);
 	}
 	
+	/**
+	 * @see org.openmrs.api.AdministrationService#setImplementationIdHttpClient()
+	 */
 	@Override
 	public void setImplementationIdHttpClient(HttpClient implementationIdHttpClient) {
 		this.implementationIdHttpClient = implementationIdHttpClient;
