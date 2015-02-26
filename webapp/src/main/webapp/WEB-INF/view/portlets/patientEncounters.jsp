@@ -117,7 +117,12 @@ Parameters
 
 	<openmrs:hasPrivilege privilege="View Encounters">
 		<div id="encounters">
-			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><openmrs:message code="Encounter.header"/></c:when><c:otherwise><openmrs:message code="${model.title}" arguments="${model.num}"/></c:otherwise></c:choose></div>
+			<div class="boxHeader${model.patientVariation}">
+                <c:choose>
+                    <c:when test="${empty model.title}"><openmrs:message code="Encounter.header"/></c:when>
+                    <c:otherwise><openmrs:message code="${model.title}" arguments="${model.num}"/></c:otherwise>
+                </c:choose>
+			</div>
 			<div class="box${model.patientVariation}">
 				<div>
 					<table cellspacing="0" cellpadding="2" id="patientEncountersTable">
@@ -139,7 +144,7 @@ Parameters
 						</thead>
 						<tbody>
 							<%-- WARNING: if sortBy="encounterDatetime" is changed, update the hidden Sorting Order column, in order to sort the encounterDatetime column too --%>
-							<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}">
+							<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}" >
 								<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 									<td class="hidden">
 										<%--  this column contains the encounter id and will be used for sorting in the dataTable's encounter edit column --%>
@@ -187,6 +192,86 @@ Parameters
 					</table>
 				</div>
 			</div>
+			 <c:if test="${model.filterSpecific}">
+                <div id="specificEncounters">
+                            <div class="boxHeader${model.patientVariation}">
+                                <c:choose>
+                                    <c:when test="${empty model.title}"><openmrs:message code="Encounter.specificHeader"/></c:when>
+                                    <c:otherwise><openmrs:message code="${model.title}" arguments="${model.num}"/></c:otherwise>
+                                </c:choose>
+                            </div>
+
+                    <div class="box${model.patientVariation}">
+                                    <div>
+                                        <table cellspacing="0" cellpadding="2" id="patientEncountersTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="hidden"> hidden Encounter id </th>
+                                                    <th class="encounterView" align="center"><c:if test="${showViewLink == 'true'}">
+                                                        <openmrs:message code="general.view"/>
+                                                    </c:if></th>
+                                                    <th class="encounterDatetimeHeader"> <openmrs:message code="Encounter.datetime"/> </th>
+                                                    <th class="hidden"> hidden Sorting Order (by Encounter.datetime) </th>
+                                                    <th class="encounterTypeHeader"> <openmrs:message code="Encounter.type"/>     </th>
+                                                    <th class="encounterVisitHeader"><openmrs:message code="Encounter.visit"/></th>
+                                                    <th class="encounterProviderHeader"> <openmrs:message code="Encounter.provider"/> </th>
+                                                    <th class="encounterFormHeader"> <openmrs:message code="Encounter.form"/>     </th>
+                                                    <th class="encounterLocationHeader"> <openmrs:message code="Encounter.location"/> </th>
+                                                    <th class="encounterEntererHeader"> <openmrs:message code="Encounter.enterer"/>  </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <%-- WARNING: if sortBy="encounterDatetime" is changed, update the hidden Sorting Order column, in order to sort the encounterDatetime column too --%>
+                                                <openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}" filterSpecific="${model.filterSpecific}">
+                                                    <tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
+                                                        <td class="hidden">
+                                                            <%--  this column contains the encounter id and will be used for sorting in the dataTable's encounter edit column --%>
+                                                            ${enc.encounterId}
+                                                        </td>
+                                                        <td class="encounterView" align="center">
+                                                            <c:if test="${showViewLink}">
+                                                                <c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}"/>
+                                                                <c:choose>
+                                                                    <c:when test="${ model.formToViewUrlMap[enc.form] != null }">
+                                                                        <c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[enc.form]}">
+                                                                            <c:param name="encounterId" value="${enc.encounterId}"/>
+                                                                        </c:url>
+                                                                    </c:when>
+                                                                    <c:when test="${ model.formToEditUrlMap[enc.form] != null }">
+                                                                        <c:url var="viewEncounterUrl" value="${model.formToEditUrlMap[enc.form]}">
+                                                                            <c:param name="encounterId" value="${enc.encounterId}"/>
+                                                                        </c:url>
+                                                                    </c:when>
+                                                                </c:choose>
+                                                                <a href="${viewEncounterUrl}">
+                                                                    <img src="${pageContext.request.contextPath}/images/file.gif" title="<openmrs:message code="general.view"/>" border="0" />
+                                                                </a>
+                                                            </c:if>
+                                                        </td>
+                                                        <td class="encounterDatetime">
+                                                            <openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
+                                                        </td>
+                                                        <td class="hidden">
+                                                        <%--  this column contains the sorting order provided by ForEachEncounterTag (by encounterDatetime) --%>
+                                                        <%--  and will be used for the initial sorting and sorting in the dataTable's encounterDatetime column --%>
+                                                            ${count}
+                                                        </td>
+                                                        <td class="encounterType"><openmrs:format encounterType="${enc.encounterType}"/></td>
+                                                        <td class="encounterVisit">
+                                                            <c:if test="${enc.visit != null}"><openmrs:format visitType="${enc.visit.visitType}"/></c:if>
+                                                        </td>
+                                                        <td class="encounterProvider"><openmrs:format encounterProviders="${enc.providersByRoles}"/></td>
+                                                        <td class="encounterForm">${enc.form.name}</td>
+                                                        <td class="encounterLocation"><openmrs:format location="${enc.location}"/></td>
+                                                        <td class="encounterEnterer"><c:out value="${enc.creator.personName}" /></td>
+                                                    </tr>
+                                                </openmrs:forEachEncounter>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                    </div>
+            </c:if>
 		</div>
 		
 		<c:if test="${model.showPagination != 'true'}">

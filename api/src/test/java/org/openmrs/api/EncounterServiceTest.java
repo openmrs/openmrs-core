@@ -2093,6 +2093,80 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(beforeSize + 1, patientEncounters.size());
 	}
 	
+	@Test
+	@Verifies(value = "should filter only encounters specified in GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS property", method = "filterEncountersBySpecifiedInGlobalProperty(List, User)")
+	public void filterEncountersBySpecifiedInGlobalProperty_shouldFilterEncountersEvenIfSpecificatorsAreRedundant()
+	        throws Exception {
+		
+		Form form = Context.getFormService().getForm(1);
+		EncounterService encounterService = Context.getEncounterService();
+		
+		Encounter encounter1 = new Encounter();
+		encounter1.setLocation(new Location(1));
+		encounter1.setEncounterDatetime(new Date());
+		encounter1.setPatient(Context.getPatientService().getPatient(3));
+		EncounterType encounterType = Context.getEncounterService().getEncounterType(1); //no matching specificators
+		encounterType.setViewPrivilege(Context.getUserService().getPrivilege(PrivilegeConstants.GET_ENCOUNTERS));
+		encounter1.setEncounterType(encounterType);
+		EncounterRole role = new EncounterRole();
+		role.setName("role");
+		role = encounterService.saveEncounterRole(role);
+		Provider provider = new Provider();
+		provider.setName("provider");
+		provider.setIdentifier("id1");
+		provider = Context.getProviderService().saveProvider(provider);
+		encounter1.addProvider(role, provider);
+		encounterService.saveEncounter(encounter1);
+		
+		Encounter encounter2 = new Encounter();
+		encounter2.setLocation(new Location(1));
+		encounter2.setEncounterDatetime(new Date());
+		encounter2.setPatient(Context.getPatientService().getPatient(3));
+		EncounterType encounterType2 = Context.getEncounterService().getEncounterType(2); //matching type specificator
+		encounterType2.setViewPrivilege(Context.getUserService().getPrivilege(PrivilegeConstants.GET_ENCOUNTERS));
+		encounter2.setEncounterType(encounterType2);
+		role = encounterService.saveEncounterRole(role);
+		encounter2.addProvider(role, provider);
+		encounterService.saveEncounter(encounter2);
+		
+		Encounter encounter3 = new Encounter();
+		encounter3.setLocation(new Location(1));
+		encounter3.setEncounterDatetime(new Date());
+		encounter3.setPatient(Context.getPatientService().getPatient(3));
+		encounter3.setForm(form); //matching two specificators: encounterType and FormName
+		encounter3.setEncounterType(encounterType2);
+		role = encounterService.saveEncounterRole(role);
+		encounter3.addProvider(role, provider);
+		encounterService.saveEncounter(encounter3);
+		
+		Encounter encounter4 = new Encounter();
+		encounter4.setForm(form); //matching form specificator
+		encounter4.setEncounterDatetime(new Date());
+		EncounterType encounterType3 = Context.getEncounterService().getEncounterType(3);
+		encounterType3.setViewPrivilege(Context.getUserService().getPrivilege(PrivilegeConstants.GET_ENCOUNTERS));
+		encounter4.setEncounterType(encounterType3);
+		encounter4.setPatient(Context.getPatientService().getPatient(3));
+		role = encounterService.saveEncounterRole(role);
+		encounter4.addProvider(role, provider);
+		encounterService.saveEncounter(encounter4);
+		
+		List<Encounter> all = encounterService.getEncountersByPatientId(3);
+		assertNotNull(all);
+		
+		//GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS);
+		GlobalProperty gp = new GlobalProperty();
+		gp.setProperty((OpenmrsConstants.GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS));
+		gp.setPropertyValue("Test Enc Type A,Basic Form");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		GlobalProperty gp1 = Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GLOBAL_PROPERTY_SPECIFY_CERTAIN_TYPE_OF_ENCOUNTERS);
+		
+		List<Encounter> filtered = encounterService.filterEncountersBySpecifiedInGlobalProperty(all, Context
+		        .getAuthenticatedUser());
+		//3 from test + 2 from db
+		assertEquals(5, filtered.size());
+	}
+	
 	/**
 	 * @see {@link EncounterService#canViewAllEncounterTypes(User)}
 	 */
