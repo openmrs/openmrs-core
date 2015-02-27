@@ -10,8 +10,12 @@ import static org.junit.Assert.assertTrue;
 public class UserTest {
 	
 	private User user;
-	
-	@Before
+	private final String MATERNITY_NURSE_UPPERCASE = "Maternity Nurse";
+    private final String MATERNITY_NURSE_LOWERCASE = "maternity nurse";
+    private final String ROLE_WHICH_DOES_NOT_EXIT  = "Role Which Does Not Exist";
+
+
+    @Before
 	public void setUp() throws Exception {
 		user = new User();
 		user.addRole(new Role("Some Role", "This is a test role"));
@@ -49,5 +53,37 @@ public class UserTest {
 	public void isSuperUser_shouldNotBeSuperUser() throws Exception {
 		assertFalse(user.isSuperUser());
 	}
+
+
+    /**
+     * @verifies be case insensitive
+     * @see User#containsRole(String)
+    */
+    @Test
+    public void containsRole_shouldBeCaseInsensitive() throws Exception {
+        user.addRole(new Role(MATERNITY_NURSE_UPPERCASE));
+        assertTrue(user.containsRole(MATERNITY_NURSE_UPPERCASE));
+        assertTrue(user.containsRole(MATERNITY_NURSE_LOWERCASE));
+     }
+
+    /**
+    * @verifies return true if the user has the given role
+    * @see User#containsRole(String)
+    */
+    @Test
+    public void containsRole_shouldReturnTrueIfTheUserHasTheGivenRole() throws Exception {
+        user.addRole(new Role(MATERNITY_NURSE_UPPERCASE));
+        assertTrue(user.containsRole(MATERNITY_NURSE_UPPERCASE));
+     }
+
+     /**
+     * @verifies return false if the user does not have the given role
+     * @see User#containsRole(String)
+     */
+     @Test
+    public void containsRole_shouldReturnFalseIfTheUserDoesNotHaveTheGivenRole() throws Exception {
+       assertFalse(user.containsRole(ROLE_WHICH_DOES_NOT_EXIT));
+    }
+
 	
 }
