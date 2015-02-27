@@ -157,4 +157,22 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertSame(oldTaskInstance, task.getTaskInstance());
 	}
 	
+	@Test
+	@Verifies(value = "should not throw a null pointer exception if repeatInterval is empty", method = "processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command,BindException errors)")
+	public void shouldNotThrowNullPointerExceptionIfRepeatIntervalIsEmpty() throws Exception {
+		Date startTime = taskHelper.getTime(Calendar.SECOND, 2);
+		TaskDefinition task = taskHelper.getScheduledTaskDefinition(startTime);
+		
+		mockRequest.setParameter("startTime", new SimpleDateFormat(DATE_TIME_FORMAT).format(startTime));
+		mockRequest.setParameter("repeatInterval", " ");
+		mockRequest.setParameter("repeatIntervalUnits", "minutes");
+		
+		ModelAndView mav = controller.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		Assert.assertNotNull(task.getRepeatInterval());
+		Long interval = 0L;
+		Assert.assertEquals(interval, task.getRepeatInterval());
+		
+	}
+	
 }
