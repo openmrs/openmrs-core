@@ -181,10 +181,16 @@ public class FormUtil {
 		return dateToString(new Date());
 	}
 	
-	private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+	private static final ThreadLocal<DateFormat> dateFormatter = new ThreadLocal<DateFormat>() { // Made DateFormat Threadsafe using ThreadLocal		
+		
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		}
+	};
 	
 	public static String dateToString(Date date) {
-		String dateString = dateFormatter.format(new Date());
+		String dateString = dateFormatter.get().format(new Date());
 		// ISO 8601 requires a colon in time zone offset (Java doesn't
 		// include the colon, so we need to insert it
 		return dateString.substring(0, 22) + ":" + dateString.substring(22);

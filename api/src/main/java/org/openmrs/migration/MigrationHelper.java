@@ -68,7 +68,13 @@ public class MigrationHelper {
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	
-	static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	static ThreadLocal<DateFormat> df = new ThreadLocal<DateFormat>() { // Made DateFormat Threadsafe using ThreadLocal		
+		
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		}
+	};
 	
 	public static Date parseDate(String s) throws ParseException {
 		if (s == null || s.length() == 0) {
@@ -77,7 +83,7 @@ public class MigrationHelper {
 			if (s.length() == 10) {
 				s += " 00:00:00";
 			}
-			return df.parse(s);
+			return df.get().parse(s);
 		}
 	}
 	
