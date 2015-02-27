@@ -264,7 +264,7 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
                <excludes>
-                  <exclude>**/test/*</exclude>
+                  <exclude>org/openmrs/test/*</exclude>
                   <!-- Exclude mail test, slows build, breaks portability with requirements on port 25 -->
                   <exclude>**/notification/MessageServiceTest.java</exclude>
                </excludes>
