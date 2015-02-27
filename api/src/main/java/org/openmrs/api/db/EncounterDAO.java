@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,13 +21,11 @@ import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
-import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.Provider;
 import org.openmrs.Visit;
-import org.openmrs.VisitType;
 import org.openmrs.api.EncounterService;
+import org.openmrs.parameter.EncounterSearchCriteria;
 
 /**
  * Encounter-related database functions
@@ -67,14 +64,9 @@ public interface EncounterDAO {
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
-	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection,
-	 *      boolean)
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
-	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
+	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
 	
 	/**
 	 * Save an Encounter Type
@@ -199,7 +191,7 @@ public interface EncounterDAO {
 	/**
 	 * Saves an encounter role
 	 * 
-	 * @param encounter role to be saved
+	 * @param encounterRole role to be saved
 	 * @throws org.openmrs.api.db.DAOException
 	 */
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws DAOException;
@@ -234,12 +226,12 @@ public interface EncounterDAO {
 	 * @param includeRetired include retired
 	 * @return enconter roles
 	 * @throws org.openmrs.api.db.DAOException
-	 * @see org.openmrs.api.EncounterRoleService#getAllEncounterRoles(boolan includeRetired)
+	 * @see org.openmrs.api.EncounterService#getAllEncounterRoles(boolean includeRetired)
 	 */
 	public List<EncounterRole> getAllEncounterRoles(boolean includeRetired) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.EncounterRoleService#getEncounterRoleByName(String name)
+	 * @see org.openmrs.api.EncounterService#getEncounterRoleByName(String name)
 	 */
 	public EncounterRole getEncounterRoleByName(String name) throws DAOException;
 	
@@ -249,7 +241,7 @@ public interface EncounterDAO {
 	public List<Encounter> getEncountersNotAssignedToAnyVisit(Patient patient) throws DAOException;
 	
 	/**
-	 * @see EncounterService#getEncountersByVisitsAndPatient(Patient, boolean, String, Date, Date)
+	 * @see EncounterService#getEncountersByVisitsAndPatient(Patient, boolean, String, java.lang.Integer, java.lang.Integer)
 	 */
 	List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query, Integer start,
 	        Integer length);
@@ -265,7 +257,7 @@ public interface EncounterDAO {
 	 * @param name encounter role name
 	 * @return encounter roles
 	 * @throws org.openmrs.api.db.DAOException
-	 * @see org.openmrs.api.EncounterRoleService#getEncounterRolesByName(String name)
+	 * @see org.openmrs.api.EncounterService#getEncounterRolesByName(String name)
 	 */
 	
 	public List<EncounterRole> getEncounterRolesByName(String name) throws DAOException;

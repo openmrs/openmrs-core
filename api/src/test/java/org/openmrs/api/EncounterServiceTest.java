@@ -58,6 +58,7 @@ import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.api.handler.NoVisitAssignmentHandler;
+import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -876,6 +877,23 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should exclude voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldExcludeVoidedEncounters() throws Exception {
 		assertEquals(6, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, false).size());
+	}
+	
+	/**
+	 * @see {@link org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)}
+	 */
+	@Test
+	@Verifies(value = "should get encounters by date changed", method = "getEncounters(EncounterSearchParameter)")
+	public void getEncounters_shouldGetEncountersByDateChanged() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteria().setIncludeVoided(true);
+		Assert.assertEquals(7, encounterService.getEncounters(
+		    encounterSearchCriteria.setDateChanged(sdf.parse("2006-01-01"))).size());
+		Assert.assertEquals(5, encounterService.getEncounters(
+		    encounterSearchCriteria.setDateChanged(sdf.parse("2008-06-01"))).size());
+		Assert.assertEquals(1, encounterService.getEncounters(
+		    encounterSearchCriteria.setDateChanged(sdf.parse("2010-01-01"))).size());
 	}
 	
 	/**
