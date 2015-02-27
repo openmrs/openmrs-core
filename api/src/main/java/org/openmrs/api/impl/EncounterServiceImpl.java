@@ -297,7 +297,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * Helper method that finds the corresponding providers for a collection of users
 	 * 
-	 * @param users
+	 * @param users the collection of users whose corresponding providers we are to return
 	 * @return a collection of providers, with 0-n for each item in users
 	 */
 	private Collection<Provider> usersToProviders(Collection<User> users) {
@@ -769,6 +769,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		    dao.getEncountersByVisit(visit, includeVoided), null);
 	}
 	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounterVisitHandlers() 
+	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<EncounterVisitHandler> getEncounterVisitHandlers() {
@@ -1063,6 +1066,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return dao.getEncounterRolesByName(name);
 	}
 	
+	/**
+	 * @see org.openmrs.api.EncounterService#transferEncounter(Encounter, Patient)
+	 */
 	@Override
 	public Encounter transferEncounter(Encounter encounter, Patient patient) {
 		Encounter encounterCopy = encounter.copyAndAssignToAnotherPatient(patient);
