@@ -341,7 +341,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		// make sure one of the parents of this role isn't itself...this would
 		// cause an infinite loop
 		if (role.getAllParentRoles().contains(role)) {
-			throw new APIAuthenticationException("Invalid Role or parent Role.  A role cannot inherit itself.");
+			throw new APIAuthenticationException("Invalid Role or parent Role.  A role cannot inherit itself or it's child.");
 		}
 		
 		checkPrivileges(role);
