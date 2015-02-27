@@ -149,12 +149,4 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 		return retValue;
 	}
 	
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof BaseAttribute) {
-			return compareTo((BaseAttribute) other) == 0;
-		} else {
-			return false;
-		}
-	}
 }

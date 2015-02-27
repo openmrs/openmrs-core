@@ -136,15 +136,6 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 		
 	}
 	
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof FormField) {
-			return compareTo((FormField) other) == 0;
-		} else {
-			return false;
-		}
-	}
-	
 	// Property accessors
 	
 	/**
