@@ -49,5 +49,34 @@ public class UserTest {
 	public void isSuperUser_shouldNotBeSuperUser() throws Exception {
 		assertFalse(user.isSuperUser());
 	}
-	
+
+    /**
+     * @verifies be case insensitive
+     * @see User#containsRole(String)
+     */
+    @Test
+    public void containsRole_shouldBeCaseInsensitive() throws Exception {
+        user.addRole(new Role("Maternity Nurse"));
+        assertTrue(user.containsRole("Maternity Nurse"));
+        assertTrue(user.containsRole("maternity nurse"));
+    }
+
+    /**
+     * @verifies return true if the user has the given role
+     * @see User#containsRole(String)
+     */
+    @Test
+    public void containsRole_shouldReturnTrueIfTheUserHasTheGivenRole() throws Exception {
+        user.addRole(new Role("Maternity Nurse"));
+        assertTrue(user.containsRole("Maternity Nurse"));
+    }
+
+    /**
+     * @verifies return false if the user does not have the given role
+     * @see User#containsRole(String)
+     */
+    @Test
+    public void containsRole_shouldReturnFalseIfTheUserDoesNotHaveTheGivenRole() throws Exception {
+        assertFalse(user.containsRole("Role Which Does Not Exist"));
+    }
 }
