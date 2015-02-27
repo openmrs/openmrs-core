@@ -165,10 +165,11 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	}
 
     /**
-     * Checks if the user has a given role. Roles name comparisons are not case sensitive.
+     * Checks if the user has a given role. Role name comparisons are not case sensitive.
      * @param  roleName the name of the role to check
      * @return true if the user has the given role, else false
-     * @should return true if the role exists
+     * @should return true if the user has the given role
+     * @should return false if the user does not have the given role
      * @should be case insensitive
      */
 	public boolean containsRole(String roleName) {
