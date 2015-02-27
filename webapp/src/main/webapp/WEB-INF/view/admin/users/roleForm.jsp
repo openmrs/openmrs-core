@@ -96,7 +96,7 @@
 			<br/>
 			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
-				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" />
+				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}"inheritingItems="${role.allChildRoles}"/>
 			</c:if>
 		</td>
 	</tr>
@@ -111,7 +111,7 @@
 			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
 				<div class="listItem listItemSelectAll"><input type="checkbox" id="toggleSelectionCheckbox"><spring:message code="general.selectOrUnselectAll"/></div>
-				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" inheritedItems="${inheritedPrivileges}" />
+				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" inheritedItems="${inheritedPrivileges}"/>
 			</c:if>
 		</td>
 	</tr>
