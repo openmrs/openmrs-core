@@ -261,36 +261,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @throws Exception 
-	 * @see FormService#getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)
-	 * @verifies return forms containing all form fields in containingAllFormFields
-	 */
-	@Test
-	public void getForms_shouldReturnFormsContainingAllFormFieldsInContainingAllFormFields() throws Exception {
-		
-		executeDataSet(INITIAL_FIELDS_XML);
-		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
-		
-		FormService formService = Context.getFormService();
-		
-		Set<FormField> formFields = new HashSet<FormField>();
-		formFields.add(new FormField(3));
-		formFields.add(new FormField(5));
-		formFields.add(new FormField(7));
-		
-		List<Form> forms = formService.getForms(null, null, null, null, null, formFields, null);
-		assertEquals(1, forms.size());
-		
-		formFields = new HashSet<FormField>();
-		formFields.add(new FormField(2));
-		formFields.add(new FormField(4));
-		formFields.add(new FormField(6));
-		
-		forms = formService.getForms(null, null, null, null, null, formFields, null);
-		assertEquals(0, forms.size());
-	}
-	
-	/**
 	 * @see {@link FormService#saveFieldType(FieldType)}
 	 */
 	@Test
@@ -521,7 +491,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getFormService().getFieldByUuid("b1843148-da2f-4349-c9c7-1164b98d91dd"));
 		
 		// duplicateField should be purged
-		assertEquals(2, Context.getFormService().getAllFields().size());
+		assertEquals(3, Context.getFormService().getAllFields().size());
 	}
 	
 	/**
