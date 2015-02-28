@@ -120,13 +120,4 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 		
 		return mySW.compareTo(theirSW);
 	}
-	
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof Problem) {
-			return compareTo((Problem) other) == 0;
-		} else {
-			return false;
-		}
-	}
 }
