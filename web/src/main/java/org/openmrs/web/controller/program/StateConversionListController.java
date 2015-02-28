@@ -92,10 +92,10 @@ public class StateConversionListController extends SimpleFormController {
 				success.append(noneDeleted);
 			}
 			view = getSuccessView();
-			if (!"".equals(success)) {
+			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!"".equals(error)) {
+			if (!"".equals(error.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}
