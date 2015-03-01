@@ -13,11 +13,7 @@
  */
 package org.openmrs.api;
 
-import java.util.Collection;
-import java.util.List;
-
 import junit.framework.Assert;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Cohort;
@@ -26,7 +22,11 @@ import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Contains methods to test behavior of OpenmrsService methods
@@ -44,7 +44,7 @@ public class OpenmrsServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Ignore
-	@NotTransactional
+    @Transactional(propagation= Propagation.NOT_SUPPORTED)
 	public void shouldCheckThatAMethodIsNotRolledBackInCaseOfAnErrorInAnotherInvokedInsideIt() throws Exception {
 		//TODO FIx why this test fails when run with other tests
 		PatientService patientService = Context.getPatientService();
