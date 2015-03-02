@@ -220,7 +220,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail with unsecure Password by default", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithUnsecuredPasswordByDefault() throws Exception {
+	public void validatePassword_shouldFailWithUnsecuredPasswordNotAllowed() throws Exception {
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
 	}
 	

@@ -2184,8 +2184,8 @@ public class OpenmrsUtil {
 		String lengthGp = "8";
 		String caseGp = "true";
 		String digitGp = "true";
-		String nonDigitGp = "true";
 		String securePasswordRulesGp = "true";
+		String nonDigitGp = "true";
 		String regexGp = null;
 		AdministrationService svc = null;
 		
