@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.hamcrest.Matchers;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.api.ConceptNameType;
@@ -52,6 +53,7 @@ public class FormatTagTest extends BaseContextSensitiveTest {
 		c.addName(buildName("English synonym", locale, false, null, null));
 		c.addName(buildName("English tag", locale, false, null, tag));
 		c.addName(buildName("English another tag", locale, false, null, anotherTag));
+		c.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		c.setDatatype(service.getConceptDatatype(1));
 		c.setConceptClass(service.getConceptClass(1));
 		
@@ -92,6 +94,7 @@ public class FormatTagTest extends BaseContextSensitiveTest {
 		Concept c = new Concept();
 		c.addName(buildName("English fully\"><script>alert('xss possible!')</script> specified", locale, true,
 		    ConceptNameType.FULLY_SPECIFIED, null));
+		c.addDescription(new ConceptDescription("Description", Context.getLocale()));
 		c.setDatatype(service.getConceptDatatype(1));
 		c.setConceptClass(service.getConceptClass(1));
 		
