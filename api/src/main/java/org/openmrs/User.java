@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -36,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
-
 
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
@@ -165,15 +163,16 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 		
 		return containsRole(r);
 	}
-    /**
-     * Checks if the user has a given role. Role name comparisons are not case sensitive.
-     * @param  roleName the name of the role to check
-     * @return true if the user has the given role, else false
-     * @should return true if the user has the given role
-     * @should return false if the user does not have the given role
-     * @should be case insensitive
-     */
-    public boolean containsRole(String roleName) {
+	
+	/**
+	 * Checks if the user has a given role. Role name comparisons are not case sensitive.
+	 * @param  roleName the name of the role to check
+	 * @return true if the user has the given role, else false
+	 * @should return true if the user has the given role
+	 * @should return false if the user does not have the given role
+	 * @should be case insensitive
+	 */
+	public boolean containsRole(String roleName) {
 		for (Role role : getAllRoles()) {
 			if (role.getRole().equalsIgnoreCase(roleName)) {
 				return true;

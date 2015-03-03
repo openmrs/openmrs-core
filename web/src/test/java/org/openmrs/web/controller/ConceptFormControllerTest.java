@@ -1116,7 +1116,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(actualConcept);
 		assertNull(concept.getDescription());
 	}
-
+	
 	/**
 	 * @see ConceptFormBackingObject#getConceptFromFormData()
 	 */
