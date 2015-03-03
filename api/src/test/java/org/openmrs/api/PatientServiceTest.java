@@ -39,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -73,6 +74,7 @@ import org.openmrs.Visit;
 import org.openmrs.activelist.Allergy;
 import org.openmrs.activelist.Problem;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
 import org.openmrs.patient.IdentifierValidator;
@@ -1954,7 +1956,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatients = patientService.getAllPatients();
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
-		assertEquals(4, allPatients.size());
+		assertEquals(5, allPatients.size());
 	}
 	
 	/**
@@ -1967,7 +1969,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatients = patientService.getAllPatients(false);
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
-		assertEquals(4, allPatients.size());
+		assertEquals(5, allPatients.size());
 	}
 	
 	/**
@@ -1980,7 +1982,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Patient> allPatients = patientService.getAllPatients(true);
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
-		assertEquals(6, allPatients.size());
+		assertEquals(7, allPatients.size());
 	}
 	
 	/**
@@ -3554,5 +3556,87 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferredPatient = patientService.getPatient(8);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		patientService.mergePatients(preferredPatient, notPreferredPatient);
+	}
+	
+	/**
+	 * @see {@link PatientService#savePatientIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should fail if savePatient is not threadsafe", method = "savePatient(Patient)")
+	public void savePatient_shouldFailIfSavePatientIsNotThreadsafe() {
+		
+		final UserContext ctx = Context.getUserContext();
+		final PatientIdentifier patientIdentifier = new PatientIdentifier(), patientIdentifier2 = new PatientIdentifier();
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getAllPatientIdentifierTypes(false).get(0);
+		
+		patientIdentifier.setIdentifier("142456789");
+		patientIdentifier.setDateCreated(new Date());
+		patientIdentifier.setIdentifierType(patientIdentifierType);
+		patientIdentifier.setLocation(Context.getLocationService().getDefaultLocation());
+
+		patientIdentifier2.setIdentifier("142456789");
+		patientIdentifier2.setDateCreated(new Date());
+		patientIdentifier2.setIdentifierType(patientIdentifierType);
+		patientIdentifier2.setLocation(Context.getLocationService().getDefaultLocation());
+		
+		final AtomicBoolean isSavePatientThreadsafe = new AtomicBoolean(true);
+		
+		Runnable r1 = new Runnable() {
+			
+			public void run() {
+				Context.setUserContext(ctx);
+				Context.openSessionWithCurrentUser();
+				Patient p = Context.getPatientService().getPatient(7);
+				p.addIdentifier(patientIdentifier);
+				try {
+					patientService.savePatient(p);
+				}
+				catch (Exception e) {
+					// patientService tried to save duplicate identifier to the database
+					log.error(e);
+					//isSavePatientThreadsafe.set(false);
+				}
+				Context.closeSession();
+			}
+		};
+		
+		Runnable r2 = new Runnable() {
+			
+			public void run() {
+				Context.setUserContext(ctx);
+				Context.openSessionWithCurrentUser();
+				Patient p = Context.getPatientService().getPatient(10);
+				p.addIdentifier(patientIdentifier2);
+				try {
+					patientService.savePatient(p);
+				}
+				catch (Exception e) {
+					// patientService tried to save duplicate identifier to the database
+					log.error(e);
+					//isSavePatientThreadsafe.set(false);
+				}
+				Context.closeSession();
+			}
+		};
+		
+		Thread t1 = new Thread(r1), t2 = new Thread(r2);
+		t1.start();
+		t2.start();
+		// Prevent automatic database closing
+		try {
+			t1.join();
+			t2.join();
+		}
+		catch (Exception e) {
+
+		}
+		
+		Assert.assertTrue(isSavePatientThreadsafe.get());
+		
+		// Make sure that the identifier was saved properly for one and only one patient
+		Assert.assertTrue(patientIdentifier.equals(Context.getPatientService().getPatient(7).getPatientIdentifier(
+		    patientIdentifierType))
+		        ^ patientIdentifier2.equals(Context.getPatientService().getPatient(10).getPatientIdentifier(
+		            patientIdentifierType)));
 	}
 }
