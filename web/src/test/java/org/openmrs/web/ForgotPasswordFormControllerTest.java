@@ -13,6 +13,8 @@
  */
 package org.openmrs.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
@@ -282,6 +284,32 @@ public class ForgotPasswordFormControllerTest extends BaseWebContextSensitiveTes
 		controller.handleRequest(request7, new MockHttpServletResponse());
 		
 		Assert.assertTrue(Context.isAuthenticated());
+	}
+	
+	@Test
+	public void shouldAuthenticateWithInValidSecretQuestionIfUserIsNull() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("POST");
+		request.addParameter("uname", "");
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		Assert.assertNotNull(request.getAttribute("secretQuestion"));
+	}
+	
+	@Test
+	public void shouldExamineGetRandomFakeQuestionsOfForgotPasswordFormController() throws Exception {
+		ForgotPasswordFormController obj = new ForgotPasswordFormController();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("POST");
+		request.addParameter("uname", "");
+		HttpServletResponse response = new MockHttpServletResponse();
+		List<String> questions = obj.getList();
+		for (int i = 0; i < questions.size(); i++) {
+			obj.handleRequest(request, response);
+			String output = obj.getRandomFakeSecretQuestion(questions);
+			Assert.assertNotNull(output);
+		}
 	}
 	
 }
