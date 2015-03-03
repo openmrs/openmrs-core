@@ -41,7 +41,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
-
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 

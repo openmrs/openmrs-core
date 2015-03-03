@@ -25,7 +25,8 @@ import org.openmrs.web.test.WebTestHelper.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
 
 public class FieldTypeListControllerTest extends BaseWebContextSensitiveTest {
@@ -39,7 +40,7 @@ public class FieldTypeListControllerTest extends BaseWebContextSensitiveTest {
 	 * @verifies display a user friendly error message
 	 */
 	@Test
-	@NotTransactional
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void onSubmit_shouldDisplayAUserFriendlyErrorMessage() throws Exception {
 		MockHttpServletRequest post = webTestHelper.newPOST("/admin/forms/fieldType.list");
 		

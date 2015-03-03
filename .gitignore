@@ -8,6 +8,7 @@
 
 ### Maven ###
 target/
+pom.xml.versionsBackup
 #############
 
 ### Eclipse ###
