@@ -25,6 +25,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.UserService;
+import org.openmrs.customdatatype.Customizable;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -42,7 +43,7 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Root(strict = false)
-public class Person extends BaseOpenmrsData implements java.io.Serializable {
+public class Person extends BaseCustomizableData<PersonAttribute> implements Customizable<PersonAttribute> {
 	
 	public static final long serialVersionUID = 2L;
 	
