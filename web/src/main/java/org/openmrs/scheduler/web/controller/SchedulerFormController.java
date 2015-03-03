@@ -70,6 +70,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should not throw null pointer exception if repeat interval is null
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command,
@@ -96,16 +97,19 @@ public class SchedulerFormController extends SimpleFormController {
 		// if the user selected a different repeat interval unit, fix repeatInterval
 		String units = request.getParameter("repeatIntervalUnits");
 		Long interval = task.getRepeatInterval();
-		
-		if ("minutes".equals(units)) {
-			interval = interval * 60;
-		} else if ("hours".equals(units)) {
-			interval = interval * 60 * 60;
-		} else if ("days".equals(units)) {
-			interval = interval * 60 * 60 * 24;
+		if (interval != null) {
+			if ("minutes".equals(units)) {
+				interval = interval * 60;
+			} else if ("hours".equals(units)) {
+				interval = interval * 60 * 60;
+			} else if ("days".equals(units)) {
+				interval = interval * 60 * 60 * 24;
+			}
+			
+			task.setRepeatInterval(interval);
+		} else {
+			task.setRepeatInterval(0L);
 		}
-		
-		task.setRepeatInterval(interval);
 		
 		return super.processFormSubmission(request, response, task, errors);
 	}
