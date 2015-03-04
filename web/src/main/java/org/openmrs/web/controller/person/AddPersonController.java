@@ -54,22 +54,22 @@ public class AddPersonController extends SimpleFormController {
 	private final String PERSON_EDIT_URL = "/admin/person/person.form";
 	
 	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
-	
+
 	/** Keys for this class */
-	private static final String NAME = "name";
-	
-	private static final String BIRTHDATE = "birthdate";
-	
-	private static final String AGE = "age";
-	
-	private static final String GENDER = "gender";
-	
-	private static final String PERSONTYPE = "personType";
-	
-	private static final String PERSONID = "personId";
-	
-	private static final String VIEWTYPE = "viewType";
-	
+        private static final String NAME = "name";      
+
+        private static final String BIRTHDATE = "birthdate";
+
+        private static final String AGE = "age";
+
+        private static final String  GENDER = "gender";
+
+        private static final String  PERSONTYPE = "personType";
+
+        private static final String  PERSONID = "personId";
+
+        private static final String  VIEWTYPE = "viewType";
+
 	private boolean invalidAgeFormat = false;
 	
 	/**
@@ -340,3 +340,4 @@ public class AddPersonController extends SimpleFormController {
 		return person;
 	}
 }
+
