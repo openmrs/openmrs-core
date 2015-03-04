@@ -1293,7 +1293,7 @@ public class ORUR01Handler implements Application {
 			
 			PersonAttribute currentHealthCenter = patient.getAttribute("Health Center");
 			
-			if (currentHealthCenter == null || !currentHealthCenter.equals(newLocationId.toString())) {
+			if (currentHealthCenter == null || !newLocationId.toString().equals(currentHealthCenter.getValue())) {
 				PersonAttribute newHealthCenter = new PersonAttribute(healthCenterAttrType, newLocationId.toString());
 				
 				log.debug("Updating patient's location from " + currentHealthCenter + " to " + newLocationId);

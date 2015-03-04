@@ -101,7 +101,7 @@ public class PrivilegeListController extends SimpleFormController {
 			}
 			
 			view = getSuccessView();
-			if (!"".equals(success)) {
+			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
 			if (!"".equals(error)) {
