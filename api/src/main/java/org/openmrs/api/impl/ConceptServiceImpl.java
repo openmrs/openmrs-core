@@ -978,6 +978,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				conceptName.setUuid(UUID.randomUUID().toString());
 			}
 			mappedConcept.addName(conceptName);
+			mappedConcept.addDescription(new ConceptDescription("some description", Context.getLocale()));
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
 			mappedConcept.setDateChanged(new Date());
 			ValidateUtil.validate(mappedConcept);
