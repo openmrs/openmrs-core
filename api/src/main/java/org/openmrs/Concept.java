@@ -1421,6 +1421,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@ElementList
 	public Collection<ConceptDescription> getDescriptions() {
+		if (descriptions == null) {
+			descriptions = new HashSet<ConceptDescription>();
+		}
 		return descriptions;
 	}
 	
