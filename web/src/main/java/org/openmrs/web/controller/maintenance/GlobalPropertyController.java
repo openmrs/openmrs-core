@@ -91,7 +91,8 @@ public class GlobalPropertyController extends SimpleFormController {
 				
 				for (int x = 0; x < keys.length; x++) {
 					String key = keys[x];
-					String val = values[x];
+					String temp = values[x];
+					String val = temp.replaceAll("\\s", "");
 					String desc = descriptions[x];
 					
 					// try to get an already-used global property for this key
