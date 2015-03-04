@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
   <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="225b6937-6d47-4cf3-9735-2501f21bdb96"/>
   <concept concept_id="2" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="95a8585d-fe14-4821-b238-9b781718efa5"/>
