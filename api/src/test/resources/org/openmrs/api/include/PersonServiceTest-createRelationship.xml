@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
   <relationship_type relationship_type_id="3" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="21275268-89df-42f9-b0e3-b1996a25eed5"/>
   <relationship_type relationship_type_id="4" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="0" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="3fb0da52-68ad-4b87-aa42-418b19e81d43"/>

@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
 	<serialized_object serialized_object_id="1" name="TestReport" description="Test Report For Serialization" type="org.openmrs.report.ReportSchema" subtype="org.openmrs.report.ReportSchema" serialization_class="org.openmrs.module.serialization.xstream.XStreamSerializer" serialized_data="&lt;org.openmrs.report.ReportSchema&gt;&lt;name&gt;TestReport&lt;/name&gt;&lt;description&gt;Test Report For Serialization&lt;/description&gt;&lt;/org.openmrs.report.ReportSchema&gt;" date_created="2005-01-01 00:00:00.0" creator="1" retired="false"  uuid="68547121-1b70-465f-99ee-c9dfd95e7d30"/>
 	<serialized_object serialized_object_id="2" name="TestReport2" description="Test Report 2 For Serialization" type="org.openmrs.report.ReportSchema" subtype="org.openmrs.report.ReportSchema" serialization_class="org.openmrs.module.serialization.xstream.XStreamSerializer" serialized_data="&lt;org.openmrs.report.ReportSchema&gt;&lt;name&gt;TestReport2&lt;/name&gt;&lt;description&gt;Test Report 2 For Serialization&lt;/description&gt;&lt;/org.openmrs.report.ReportSchema&gt;" date_created="2005-01-01 00:00:00.0" creator="1" retired="false"  uuid="83b452ca-a4c8-4bf2-9e0b-8bbddf2f9901"/>

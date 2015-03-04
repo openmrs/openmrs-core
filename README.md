@@ -47,10 +47,6 @@ The project tree is set up as follows:
   <td>(deprecated) ANT build file containing convenience methods into the maven build</td>
  </tr>
  <tr>
-  <td>license.txt</td>
-  <td>The OpenMRS license</td>
- </tr>
- <tr>
   <td>liquibase.build.xml</td>
   <td>ANT build file containing convenience methods to run liquibase actions</td>
  </tr>

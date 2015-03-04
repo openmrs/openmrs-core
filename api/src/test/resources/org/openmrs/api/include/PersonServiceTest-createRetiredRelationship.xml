@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
   <relationship relationship_id="6" person_a="7" relationship="2" person_b="1" creator="1" date_created="2008-01-01 00:00:00.0" voided="true" voided_by="1" date_voided="2009-05-17 10:00:00.0" void_reason="testing only" uuid="b7ghb368-cf80-4a22-9d75-5d0d1f9b75dc"/>
   <relationship_type relationship_type_id="12" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="7agh8365-e758-4dce-b918-2f8a1f26bb1c"/>
