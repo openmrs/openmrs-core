@@ -1,3 +1,14 @@
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -16,13 +27,13 @@
 
 	<licenses>
 		<license>
-			<name>OpenMRS Public License</name>
-			<url>http://openmrs.org/wiki/License</url>
+			<name>Mozilla Public License 2.0 with Healthcare Disclaimer</name>
+			<url>http://openmrs.org/license</url>
 		</license>
 	</licenses>
 
 	<organization>
-		<name>OpenMRS LLC.</name>
+		<name>OpenMRS Inc.</name>
 		<url>http://openmrs.org</url>
 	</organization>
 
@@ -694,7 +705,6 @@
 						<compilerTargetPlatform>${javaCompilerVersion}</compilerTargetPlatform>
 						<configFile>eclipse/OpenMRSFormatter.xml</configFile>
 						<overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
-						<lineEnding>CRLF</lineEnding>
 					</configuration>
 					<dependencies>
 						<dependency>
@@ -853,6 +863,37 @@
 		</pluginManagement>
 
 		<plugins>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<header>license-header.txt</header>
+					<includes>
+						<include>**/*.java</include>
+						<include>**/*.txt</include>
+						<include>**/*.xml</include>
+					</includes>
+					<excludes>
+						<exclude>**/license-header.txt</exclude>
+						<exclude>.git/**</exclude>
+						<exclude>**/NaturalStrings.java</exclude>
+						<exclude>puppet/**</exclude>
+						<exclude>target/**</exclude>
+						<exclude>web/src/main/java/org/springframework/**</exclude>
+						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/dojo/**</exclude>
+						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
+						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/jquery-ui/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
