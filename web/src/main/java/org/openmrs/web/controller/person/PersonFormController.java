@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.person;
 
@@ -222,72 +218,72 @@ public class PersonFormController extends SimpleFormController {
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		String action = request.getParameter("action");
 		PersonService ps = Context.getPersonService();
-
-        String linkedProviders = "";
-        if (action.equals(msa.getMessage("Person.delete")) || action.equals(msa.getMessage("Person.void"))) {
-            Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
-            if (providerCollection != null && !providerCollection.isEmpty()) {
-                for (Provider provider : providerCollection) {
-                    linkedProviders = linkedProviders + provider.getName() + ", ";
-                }
-                linkedProviders = linkedProviders.substring(0, linkedProviders.length() - 2);
-            }
-        }
-
-        if (action.equals(msa.getMessage("Person.delete"))) {
-            try {
-                if (!linkedProviders.isEmpty()) {
-                    errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.providers")
-                            + " " + linkedProviders);
-                }
-
-                Collection<User> userCollection = Context.getUserService().getUsersByPerson(person, true);
-                String linkedUsers = "";
-                if (userCollection != null && !userCollection.isEmpty()) {
-                    for (User user : userCollection) {
-                        linkedUsers = linkedUsers + user.getSystemId() + ", ";
-                    }
-                    linkedUsers = linkedUsers.substring(0, linkedUsers.length() - 2);
-                }
-                if (!linkedUsers.isEmpty()) {
-                    errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.users") + " "
-                            + linkedUsers);
-                }
-
-                if (errors.hasErrors()) {
-                    return showForm(request, response, errors);
-                } else {
-                    ps.purgePerson(person);
-                    httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.deleted");
-
-                    return new ModelAndView(new RedirectView("index.htm"));
-                }
-            }
-            catch (DataIntegrityViolationException e) {
-                log.error("Unable to delete person because of database FK errors: " + person, e);
-                httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Person.cannot.delete");
-
-                return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId().toString()));
-            }
-        } else if (action.equals(msa.getMessage("Person.void"))) {
-            String voidReason = request.getParameter("voidReason");
-            if (StringUtils.isBlank(voidReason)) {
-                voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
-                        .getLocale());
-            }
-            if (linkedProviders.isEmpty()) {
-                ps.voidPerson(person, voidReason);
-                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
-            } else {
-                httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
-                        "Person.cannot.void.linkedTo.providers")
-                        + " " + linkedProviders);
-            }
+		
+		String linkedProviders = "";
+		if (action.equals(msa.getMessage("Person.delete")) || action.equals(msa.getMessage("Person.void"))) {
+			Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
+			if (providerCollection != null && !providerCollection.isEmpty()) {
+				for (Provider provider : providerCollection) {
+					linkedProviders = linkedProviders + provider.getName() + ", ";
+				}
+				linkedProviders = linkedProviders.substring(0, linkedProviders.length() - 2);
+			}
+		}
+		
+		if (action.equals(msa.getMessage("Person.delete"))) {
+			try {
+				if (!linkedProviders.isEmpty()) {
+					errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.providers")
+					        + " " + linkedProviders);
+				}
+				
+				Collection<User> userCollection = Context.getUserService().getUsersByPerson(person, true);
+				String linkedUsers = "";
+				if (userCollection != null && !userCollection.isEmpty()) {
+					for (User user : userCollection) {
+						linkedUsers = linkedUsers + user.getSystemId() + ", ";
+					}
+					linkedUsers = linkedUsers.substring(0, linkedUsers.length() - 2);
+				}
+				if (!linkedUsers.isEmpty()) {
+					errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.users") + " "
+					        + linkedUsers);
+				}
+				
+				if (errors.hasErrors()) {
+					return showForm(request, response, errors);
+				} else {
+					ps.purgePerson(person);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.deleted");
+					
+					return new ModelAndView(new RedirectView("index.htm"));
+				}
+			}
+			catch (DataIntegrityViolationException e) {
+				log.error("Unable to delete person because of database FK errors: " + person, e);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Person.cannot.delete");
+				
+				return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId().toString()));
+			}
+		} else if (action.equals(msa.getMessage("Person.void"))) {
+			String voidReason = request.getParameter("voidReason");
+			if (StringUtils.isBlank(voidReason)) {
+				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
+				        .getLocale());
+			}
+			if (linkedProviders.isEmpty()) {
+				ps.voidPerson(person, voidReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
+			} else {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+				    "Person.cannot.void.linkedTo.providers")
+				        + " " + linkedProviders);
+			}
 			return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId()));
 		} else if (action.equals(msa.getMessage("Person.unvoid"))) {
 			ps.unvoidPerson(person);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.unvoided");
-
+			
 			return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId()));
 		} else {
 			ps.savePerson(person);

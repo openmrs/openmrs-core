@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
   <patient_identifier_type patient_identifier_type_id="10001" name="Test OpenMRS Identification Number" description="Unique number used in OpenMRS for testing purpose" format="java.lang.Integer" check_digit="true" creator="1" date_created="2005-09-22 00:00:00.0" required="false" validator="org.openmrs.patient.impl.LuhnIdentifierValidator" retired="false" uuid="1agh9fe9-38bc-4ab3-b180-320988c0b968"/>
   <patient_identifier_type patient_identifier_type_id="10002" name="Test Old Identification Number" description="Number given out prior to the OpenMRS system (No check digit) for testing purpose" format="" check_digit="false" creator="1" date_created="2005-09-22 00:00:00.0" required="true" retired="false" uuid="2fgh0aa8-1d73-43b7-81b5-01f0c0dfa53c"/>

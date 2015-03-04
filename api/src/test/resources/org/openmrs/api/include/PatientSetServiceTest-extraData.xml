@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
     <encounter encounter_id="1000" patient_id="2" encounter_type="6" location_id="1" encounter_datetime="2009-08-03 00:00:00.0" creator="1" date_created="2008-08-01 15:16:00.0" voided="false" uuid="2ce2aa56-8062-11de-9ba9-001e378eb67e" />
     <encounter_provider encounter_provider_id="1000" encounter_id="1000" encounter_role_id="1" provider_id="1" creator="1" date_created="2008-08-01 15:16:00.0" voided="false" uuid="b66b4d0a-41c2-4356-b513-568c2e049d81" />

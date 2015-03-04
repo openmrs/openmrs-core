@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
     <concept_reference_term concept_reference_term_id="12" concept_source_id="2" code="258703001" name="Day(s)" description="Duration unit in day(s)" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="a9e71e68-23c7-4603-be43-aa74e1de2c71"/>
     <concept concept_id="1000" retired="0" datatype_id="4" class_id="3" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800200c9a76"/>
