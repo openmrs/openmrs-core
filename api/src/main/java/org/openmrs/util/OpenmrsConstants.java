@@ -897,12 +897,6 @@ public final class OpenmrsConstants {
 	        + "   <requiredElements>\\n\" + \" </requiredElements>\\n\" + \" </org.openmrs.layout.address.AddressTemplate>";
 	
 	/**
-	 * Global property name that allows specification of whether user passwords are according to the
-	 * standard.(Password with at lease 8 characters including a number, an upper case letter and a lower case letter
-	 */
-	public static String GP_PASSWORD_BELOW_STANDARD = "security.passwordNotSecure";
-	
-	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
 	 */
@@ -1380,10 +1374,6 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_NON_DIGIT, "true",
 		        "Configure whether passwords must contain at least one non-digit", BooleanDatatype.class, null));
-		
-		props.add(new GlobalProperty(GP_PASSWORD_BELOW_STANDARD, "true",
-		        "Configure whether passwords is according to the standard password content rules", BooleanDatatype.class,
-		        null));
 		
 		props
 		        .add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",

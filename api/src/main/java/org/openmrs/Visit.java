@@ -212,6 +212,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 		this.encounters = encounters;
 	}
 	
+
 	/**
 	 * Gets a list of non voided encounters
 	 * 

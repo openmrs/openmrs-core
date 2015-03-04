@@ -219,6 +219,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
+<<<<<<< HEAD
 	@Verifies(value = "should fail with unsecure Password by default", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldFailWithUnsecuredPasswordNotAllowed() throws Exception {
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
@@ -228,6 +229,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
+=======
+>>>>>>> parent of 74a375e... TRUNK-4549
 	@Verifies(value = "should fail with digit only password if not allowed", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldFailWithDigitOnlyPasswordIfNotAllowed() throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
@@ -242,7 +245,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void validatePassword_shouldPassWithDigitOnlyPasswordIfAllowed() throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_BELOW_STANDARD, "false");
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
 	}
 	
@@ -273,7 +275,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void validatePassword_shouldPassWithCharOnlyPasswordIfAllowed() throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_BELOW_STANDARD, "false");
 		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
 	}
 	
@@ -303,7 +304,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass without upper and lower case password if allowed", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldPassWithoutUpperAndLowerCasePasswordIfAllowed() throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_BELOW_STANDARD, "false");
 		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
 	}
 	
@@ -371,7 +371,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test(expected = ShortPasswordException.class)
 	@Verifies(value = "should fail with short password by default", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldFailWithShortPasswordByDefault() throws Exception {
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_BELOW_STANDARD, "false");
 		OpenmrsUtil.validatePassword("admin", "1234567", "1-8");
 	}
 	
@@ -382,7 +381,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail with short password if not allowed", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldFailWithShortPasswordIfNotAllowed() throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_BELOW_STANDARD, "false");
 		OpenmrsUtil.validatePassword("admin", "12345", "1-8");
 	}
 	
@@ -393,7 +391,6 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should pass with short password if allowed", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldPassWithShortPasswordIfAllowed() throws Exception {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "0");
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_BELOW_STANDARD, "false");
 		OpenmrsUtil.validatePassword("admin", "H4t", "1-8");
 	}
 	
