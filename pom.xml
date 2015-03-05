@@ -899,6 +899,7 @@
 						<exclude>nbactions.xml</exclude>
 						<exclude>nb-configuration.xml</exclude>
 						<exclude>**/dwr-modules.xml</exclude>
+                        <exclude>build-number.txt</exclude>
 					</excludes>
 				</configuration>
 				<executions>
