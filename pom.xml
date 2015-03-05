@@ -938,14 +938,27 @@
 					</includes>
 					<excludes>
 						<exclude>**/license-header.txt</exclude>
-						<exclude>readme.txt</exclude>
 						<exclude>.git/**</exclude>
 						<exclude>**/NaturalStrings.java</exclude>
 						<exclude>puppet/**</exclude>
-						<exclude>target/**</exclude>
 						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/dojo/**</exclude>
 						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
 						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/jquery-ui/**</exclude>
+						<!-- From gitignore -->
+						<exclude>.idea/**</exclude>
+						<exclude>target/**</exclude>
+						<exclude>bin/**</exclude>
+						<exclude>tmp/**</exclude>
+						<exclude>.settings/**</exclude>
+						<exclude>.externalToolBuilders/</exclude>
+						<exclude>nbproject/private/</exclude>
+						<exclude>build/</exclude>
+						<exclude>bin/</exclude>
+						<exclude>nbbuild/</exclude>
+						<exclude>dist/</exclude>
+						<exclude>nbdist/</exclude>
+						<exclude>nbactions.xml</exclude>
+						<exclude>nb-configuration.xml</exclude>
 						<exclude>**/dwr-modules.xml</exclude>
 					</excludes>
 				</configuration>
