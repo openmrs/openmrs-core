@@ -75,7 +75,7 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	private static final Log log = LogFactory.getLog(ServiceContext.class);
 	
-	private static ServiceContext instance;
+	private static volatile ServiceContext instance;
 	
 	private ApplicationContext applicationContext;
 	

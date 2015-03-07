@@ -62,21 +62,21 @@ public class ModuleFactory {
 	
 	private static Log log = LogFactory.getLog(ModuleFactory.class);
 	
-	protected static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
+	protected static volatile Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
 	
-	protected static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
+	protected static volatile Map<String, Module> startedModules = new WeakHashMap<String, Module>();
 	
-	protected static Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
+	protected static volatile Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
 	
 	// maps to keep track of the memory and objects to free/close
-	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	protected static volatile Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
 	
 	// the name of the file within a module file
 	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
 	
 	private static final Map<String, DaemonToken> daemonTokens = new WeakHashMap<String, DaemonToken>();
 	
-	private static Set<String> actualStartupOrder;
+	private static volatile Set<String> actualStartupOrder;
 	
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an
