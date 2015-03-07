@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -539,7 +540,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	private List<String> makeSortList(String sort) {
 		List<String> sortList = new Vector<String>();
-		if (sort != null && !"".equals(sort)) {
+		if (StringUtils.isNotEmpty(sort)) {
 			for (String sortPart : sort.split(",")) {
 				
 				sortPart = sortPart.trim();

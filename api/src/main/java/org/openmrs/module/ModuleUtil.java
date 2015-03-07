@@ -254,7 +254,7 @@ public class ModuleUtil {
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
 		// There is a null check so no risk in keeping the literal on the right side
-		if (versionRange != null && !"".equals(versionRange)) {
+		if (StringUtils.isNotEmpty(versionRange)) {
 			String[] ranges = versionRange.split(",");
 			for (String range : ranges) {
 				// need to externalize this string
@@ -717,7 +717,7 @@ public class ModuleUtil {
 		
 		for (Module mod : ModuleFactory.getLoadedModules()) {
 			String updateURL = mod.getUpdateURL();
-			if (updateURL != null && !"".equals(updateURL)) {
+			if (StringUtils.isNotEmpty(updateURL)) {
 				try {
 					// get the contents pointed to by the url
 					URL url = new URL(updateURL);

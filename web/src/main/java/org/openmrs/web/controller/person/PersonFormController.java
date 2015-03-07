@@ -794,7 +794,7 @@ public class PersonFormController extends SimpleFormController {
 		person.setGender(gender);
 		Date birthdate = null;
 		boolean birthdateEstimated = false;
-		if (date != null && !"".equals(date)) {
+		if (StringUtils.isNotEmpty(date)) {
 			try {
 				// only a year was passed as parameter
 				if (date.length() < 5) {

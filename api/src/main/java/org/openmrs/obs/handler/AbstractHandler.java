@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
@@ -113,7 +114,7 @@ public class AbstractHandler {
 		log.debug("titles length: " + filenameParts.length);
 		
 		String extension = (filenameParts.length < 2) ? filenameParts[0] : filenameParts[filenameParts.length - 1];
-		extension = (null != extension && !"".equals(extension)) ? extension : "raw";
+		extension = StringUtils.isNotEmpty(extension) ? extension : "raw";
 		
 		return extension;
 	}

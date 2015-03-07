@@ -23,6 +23,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
@@ -69,7 +70,7 @@ public class ForEachObsTag extends BodyTagSupport {
 		log.debug("ForEachObsTag found " + matchingObs.size() + " observations matching conceptId = " + conceptId);
 		
 		// Next, sort these observations
-		if (sortBy == null || "".equals(sortBy)) {
+		if (StringUtils.isEmpty(sortBy)) {
 			sortBy = "obsDatetime";
 		}
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())

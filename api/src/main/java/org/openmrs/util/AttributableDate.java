@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Attributable;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -80,7 +81,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	 */
 	public AttributableDate hydrate(String s) {
 		// don't do anything to empty dates
-		if (s == null || "".equals(s)) {
+		if (StringUtils.isEmpty(s)) {
 			return null;
 		}
 		

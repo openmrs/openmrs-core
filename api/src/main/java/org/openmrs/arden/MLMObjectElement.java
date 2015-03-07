@@ -9,6 +9,8 @@
  */
 package org.openmrs.arden;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.Writer;
 
 /*
@@ -86,7 +88,7 @@ public class MLMObjectElement {
 	
 	private String getReadTypeAsString() {
 		String retVal = "";
-		if (readType != null && !"".equals(readType) && !readType.equalsIgnoreCase("exist")) {
+		if (StringUtils.isNotEmpty(readType) && !readType.equalsIgnoreCase("exist")) {
 			retVal = "." + readType;
 		} else {
 			retVal = ".last"; // TODO: for now default

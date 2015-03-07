@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
@@ -218,7 +219,7 @@ public class LoginServlet extends HttpServlet {
 		}
 		
 		// third option for redirecting is the main page of the webapp
-		if (redirect == null || "".equals(redirect)) {
+		if (StringUtils.isEmpty(redirect)) {
 			redirect = request.getContextPath();
 		}
 

@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -413,7 +414,7 @@ public class HibernateFormDAO implements FormDAO {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
-		if (partialName != null && !"".equals(partialName)) {
+		if (StringUtils.isNotEmpty(partialName)) {
 			crit.add(Restrictions.or(Restrictions.like("name", partialName, MatchMode.START), Restrictions.like("name", " "
 			        + partialName, MatchMode.ANYWHERE)));
 		}

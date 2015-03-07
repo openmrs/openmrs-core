@@ -15,6 +15,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -70,7 +71,7 @@ public class ConceptTag extends BodyTagSupport {
 		
 		// If user specifies a locale in the tag, try to find a matching locale. Otherwise, use the user's default locale
 		Locale loc = Context.getLocale();
-		if (locale != null && !"".equals(locale)) {
+		if (StringUtils.isNotEmpty(locale)) {
 			Locale[] locales = Locale.getAvailableLocales();
 			for (int i = 0; i < locales.length; i++) {
 				if (locale.equals(locales[i].toString())) {

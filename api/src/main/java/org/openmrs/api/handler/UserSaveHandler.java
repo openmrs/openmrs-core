@@ -12,6 +12,7 @@ package org.openmrs.api.handler;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -37,7 +38,7 @@ public class UserSaveHandler implements SaveHandler<User> {
 	 */
 	public void handle(User user, User creator, Date dateCreated, String other) {
 		// if the user doesn't have a system id, generate one
-		if (user.getSystemId() == null || "".equals(user.getSystemId())) {
+		if (StringUtils.isEmpty(user.getSystemId())) {
 			user.setSystemId(Context.getUserService().generateSystemId());
 		}
 		

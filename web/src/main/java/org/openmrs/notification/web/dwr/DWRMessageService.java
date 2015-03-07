@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
@@ -33,7 +34,7 @@ public class DWRMessageService {
 				MessageService messageService = Context.getMessageService();
 				
 				String recipients = NotificationConstants.FEEDBACK_EMAIL_ADDRESS;
-				if (subject == null || "".equals(subject)) {
+				if (StringUtils.isEmpty(subject)) {
 					subject = NotificationConstants.FEEDBACK_EMAIL_SUBJECT;
 				}
 				

@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -297,7 +298,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	public static ConceptNameTag preferredCountryTagFor(Locale locale) {
 		ConceptNameTag preferredCountryTag = null;
 		String country = locale.getCountry();
-		if (!"".equals(country)) {
+		if (StringUtils.isNotEmpty(country)) {
 			preferredCountryTag = preferredCountryTagFor(locale.getCountry());
 		}
 		return preferredCountryTag;

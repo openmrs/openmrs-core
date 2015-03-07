@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 
 /**
@@ -31,7 +32,7 @@ public class DateOrDatetimeEditor extends PropertyEditorSupport {
 	 */
 	@Override
 	public void setAsText(String asString) throws IllegalArgumentException {
-		if (asString == null || "".equals(asString)) {
+		if (StringUtils.isEmpty(asString)) {
 			setValue(null);
 			return;
 		}

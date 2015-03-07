@@ -1186,7 +1186,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @return true if the value is non-empty
 	 */
 	private boolean checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
-		if (value != null && !"".equals(value)) {
+		if (!StringUtils.isEmpty(value)) {
 			return true;
 		}
 		errors.put(errorMessageCode, null);

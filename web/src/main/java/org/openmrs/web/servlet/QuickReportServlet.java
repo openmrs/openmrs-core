@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
@@ -255,7 +256,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		
 		// if they don't input an end date, assume they meant "this week"
-		if (endDate == null || "".equals(endDate)) {
+		if (StringUtils.isEmpty(endDate)) {
 			while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 				cal.add(Calendar.DAY_OF_MONTH, -1);
 			}

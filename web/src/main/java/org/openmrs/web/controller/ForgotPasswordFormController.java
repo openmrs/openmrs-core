@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.PrivilegeConstants;
@@ -123,7 +124,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 				
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user == null || StringUtils.isEmpty(user.getSecretQuestion())) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 				} else {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
@@ -148,7 +149,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				}
 				
 				// check the secret question again in case the user got here "illegally"
-				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user == null || StringUtils.isEmpty(user.getSecretQuestion())) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 				} else if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
 					
