@@ -13,15 +13,12 @@
  */
 package org.openmrs.util;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Timer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.impl.SessionFactoryObjectFactory;
-
 import sun.net.www.http.KeepAliveCache;
+
+import java.lang.reflect.Field;
+import java.util.Timer;
 
 /**
  * Utility functions to clean up causes of memory leakages.
@@ -99,19 +96,19 @@ public class MemoryLeakUtil {
 	 * Clears the hibernate session factories cached in the SessionFactoryObjectFactory
 	 */
 	public static void clearHibernateSessionFactories() {
-		try {
-			Field field = SessionFactoryObjectFactory.class.getDeclaredField("INSTANCES");
+		/*try {
+			Field field = SessionFactoryRegistry.class.getDeclaredField("INSTANCES");
 			field.setAccessible(true);
 			Map instances = (Map) field.get(null);
 			instances.clear();
 			
-			field = SessionFactoryObjectFactory.class.getDeclaredField("NAMED_INSTANCES");
+			field = SessionFactoryRegistry.class.getDeclaredField("NAMED_INSTANCES");
 			field.setAccessible(true);
 			Map namedInstances = (Map) field.get(null);
 			namedInstances.clear();
 		}
 		catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
-		}
+		}*/
 	}
 }

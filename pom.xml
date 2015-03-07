@@ -259,9 +259,9 @@
 				<version>3.12.1.GA</version>
 			</dependency>
 			<dependency>
-				<groupId>org.openmrs.hibernate</groupId>
+				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>${hibernateVersion}-mod</version>
+				<version>${hibernateVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -1101,7 +1101,7 @@
         <openmrs.version>${project.version}</openmrs.version>
 
 		<springVersion>3.2.7.RELEASE</springVersion>
-		<hibernateVersion>3.6.5.Final</hibernateVersion>
+		<hibernateVersion>4.3.8.Final</hibernateVersion>
 		<customArgLineForTesting />
 		
 		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>

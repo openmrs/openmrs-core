@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.util.ConfigHelper;
+import org.hibernate.internal.util.ConfigHelper;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;

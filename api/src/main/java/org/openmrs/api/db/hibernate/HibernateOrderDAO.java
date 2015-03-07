@@ -446,7 +446,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		Map<String, ClassMetadata> metadata = sessionFactory.getAllClassMetadata();
 		for (Iterator<ClassMetadata> i = metadata.values().iterator(); i.hasNext();) {
 			ClassMetadata classMetadata = i.next();
-			Class<?> entityClass = classMetadata.getMappedClass(EntityMode.POJO);
+			Class<?> entityClass = classMetadata.getMappedClass();
 			if (Order.class.equals(entityClass)) {
 				continue; //ignore the org.openmrs.Order class itself
 			}

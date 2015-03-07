@@ -31,7 +31,6 @@ import org.hibernate.Session;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
-import org.hibernate.search.query.dsl.QueryBuilder;
 import org.openmrs.collection.ListPart;
 
 /**
@@ -193,15 +192,6 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * @param fullTextQuery
 	 */
 	protected void adjustFullTextQuery(FullTextQuery fullTextQuery) {
-	}
-	
-	/**
-	 * You can use it in {@link #prepareQuery()}.
-	 * 
-	 * @return the query builder
-	 */
-	protected QueryBuilder newQueryBuilder() {
-		return getFullTextSession().getSearchFactory().buildQueryBuilder().forEntity(getType()).get();
 	}
 	
 	/**
