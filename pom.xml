@@ -894,6 +894,7 @@
 						<exclude>nbactions.xml</exclude>
 						<exclude>nb-configuration.xml</exclude>
 						<exclude>**/dwr-modules.xml</exclude>
+						<exclude>src/main/webapp/WEB-INF/view/module/**</exclude>
                         <exclude>build-number.txt</exclude>
 					</excludes>
 				</configuration>
