@@ -60,7 +60,11 @@ public class Hl7InArchivesMigrateThread extends Thread {
 	 * The different states this thread can be in at a given point during migration
 	 */
 	public enum Status {
-		RUNNING, STOPPED, COMPLETED, ERROR, NONE
+		RUNNING,
+		STOPPED,
+		COMPLETED,
+		ERROR,
+		NONE
 	}
 	
 	public static void setProgressStatusMap(Map<String, Integer> progressStatusMap) {

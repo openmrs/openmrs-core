@@ -21,7 +21,13 @@ import org.openmrs.logic.op.Operand;
 public class Duration implements Operand {
 	
 	public static enum Units {
-		SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS
+		SECONDS,
+		MINUTES,
+		HOURS,
+		DAYS,
+		WEEKS,
+		MONTHS,
+		YEARS
 	}
 	
 	private Double duration;

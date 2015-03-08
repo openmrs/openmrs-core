@@ -24,7 +24,10 @@ public class InputRequiredException extends Exception {
 	 * Required input will be in one of these forms
 	 */
 	public enum DATATYPE {
-		STRING, INTEGER, DOUBLE, DATE
+		STRING,
+		INTEGER,
+		DOUBLE,
+		DATE
 	}
 	
 	/**

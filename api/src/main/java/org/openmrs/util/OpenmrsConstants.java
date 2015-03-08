@@ -1793,7 +1793,9 @@ public final class OpenmrsConstants {
 	 * @see org.openmrs.api.PersonService
 	 */
 	public static enum PERSON_TYPE {
-		PERSON, PATIENT, USER
+		PERSON,
+		PATIENT,
+		USER
 	}
 	
 	//Patient Identifier Validators

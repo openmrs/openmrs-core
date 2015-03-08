@@ -13,5 +13,9 @@ package org.openmrs.activelist;
  *
  */
 public enum AllergySeverity {
-	UNKNOWN, INTOLERANCE, MILD, MODERATE, SEVERE
+	UNKNOWN,
+	INTOLERANCE,
+	MILD,
+	MODERATE,
+	SEVERE
 }

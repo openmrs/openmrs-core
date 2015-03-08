@@ -27,7 +27,8 @@ package org.openmrs;
 public class CareSetting extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public enum CareSettingType {
-		OUTPATIENT, INPATIENT
+		OUTPATIENT,
+		INPATIENT
 	}
 	
 	private Integer careSettingId;

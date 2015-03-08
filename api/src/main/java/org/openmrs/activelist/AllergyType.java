@@ -13,5 +13,11 @@ package org.openmrs.activelist;
  *
  */
 public enum AllergyType {
-	DRUG, FOOD, ENVIRONMENT, ANIMAL, PLANT, POLLEN, OTHER
+	DRUG,
+	FOOD,
+	ENVIRONMENT,
+	ANIMAL,
+	PLANT,
+	POLLEN,
+	OTHER
 }

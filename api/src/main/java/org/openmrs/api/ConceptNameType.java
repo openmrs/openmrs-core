@@ -34,6 +34,8 @@ import org.openmrs.ConceptName;
  */
 public enum ConceptNameType {
 	
-	FULLY_SPECIFIED, SHORT, INDEX_TERM;
+	FULLY_SPECIFIED,
+	SHORT,
+	INDEX_TERM;
 	
 }

@@ -29,7 +29,15 @@ public class ArdenClause {
 	private ArdenClause clause;
 	
 	public static enum Predicate {
-		last, first, max, min, avg, greaterThan, lessThan, greaterThanEqual, lessThanEqual
+		last,
+		first,
+		max,
+		min,
+		avg,
+		greaterThan,
+		lessThan,
+		greaterThanEqual,
+		lessThanEqual
 	};
 	
 	private Predicate predicate;

@@ -18,7 +18,9 @@ package org.openmrs;
 public class TestOrder extends Order {
 	
 	public enum Laterality {
-		LEFT, RIGHT, BILATERAL
+		LEFT,
+		RIGHT,
+		BILATERAL
 	}
 	
 	public static final long serialVersionUID = 1L;

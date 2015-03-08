@@ -25,7 +25,9 @@ public class Format {
 	private static Log log = LogFactory.getLog(Format.class);
 	
 	public enum FORMAT_TYPE {
-		DATE, TIME, TIMESTAMP
+		DATE,
+		TIME,
+		TIMESTAMP
 	}
 	
 	public static String formatPercentage(double pct) {

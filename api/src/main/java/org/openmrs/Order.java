@@ -40,14 +40,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.9.2, 1.10
 	 */
 	public enum Urgency {
-		ROUTINE, STAT, ON_SCHEDULED_DATE
+		ROUTINE,
+		STAT,
+		ON_SCHEDULED_DATE
 	}
 	
 	/**
 	 * @since 1.10
 	 */
 	public enum Action {
-		NEW, REVISE, DISCONTINUE, RENEW
+		NEW,
+		REVISE,
+		DISCONTINUE,
+		RENEW
 	}
 	
 	private static final Log log = LogFactory.getLog(Order.class);

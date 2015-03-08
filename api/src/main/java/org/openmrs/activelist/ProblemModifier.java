@@ -13,7 +13,8 @@ package org.openmrs.activelist;
  *
  */
 public enum ProblemModifier {
-	RULE_OUT("Rule Out"), HISTORY_OF("History of");
+	RULE_OUT("Rule Out"),
+	HISTORY_OF("History of");
 	
 	private String text;
 	

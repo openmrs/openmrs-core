@@ -497,7 +497,11 @@ public interface PatientSetService extends OpenmrsService {
 	public List<Encounter> getEncountersByForm(Cohort patients, List<Form> form);
 	
 	public enum Modifier {
-		LESS_THAN("<"), LESS_EQUAL("<="), EQUAL("="), GREATER_EQUAL(">="), GREATER_THAN(">");
+		LESS_THAN("<"),
+		LESS_EQUAL("<="),
+		EQUAL("="),
+		GREATER_EQUAL(">="),
+		GREATER_THAN(">");
 		
 		public final String sqlRep;
 		
@@ -511,20 +515,33 @@ public interface PatientSetService extends OpenmrsService {
 	}
 	
 	public enum TimeModifier {
-		ANY, NO, FIRST, LAST, MIN, MAX, AVG;
+		ANY,
+		NO,
+		FIRST,
+		LAST,
+		MIN,
+		MAX,
+		AVG;
 	}
 	
 	public enum BooleanOperator {
-		AND, OR, NOT;
+		AND,
+		OR,
+		NOT;
 	}
 	
 	// probably should combine this with TimeModifier
 	public enum GroupMethod {
-		ANY, ALL, NONE;
+		ANY,
+		ALL,
+		NONE;
 	}
 	
 	public enum PatientLocationMethod {
-		EARLIEST_ENCOUNTER, LATEST_ENCOUNTER, ANY_ENCOUNTER, PATIENT_HEALTH_CENTER
+		EARLIEST_ENCOUNTER,
+		LATEST_ENCOUNTER,
+		ANY_ENCOUNTER,
+		PATIENT_HEALTH_CENTER
 	}
 	
 	/**
