@@ -23,6 +23,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Visit;
@@ -68,7 +69,7 @@ public class ForEachVisitTag extends BodyTagSupport {
 		log.debug("ForEachVisitTag found " + matchingVisits.size() + " visits matching type = " + type);
 		
 		// Next, sort the visits
-		if (sortBy == null || "".equals(sortBy)) {
+		if (StringUtils.isEmpty(sortBy)) {
 			sortBy = "visitDatetime";
 		}
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())

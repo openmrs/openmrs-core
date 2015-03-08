@@ -648,7 +648,7 @@ public class OpenmrsUtil {
 		if (logLevel != null) {
 			
 			// the default log level is org.openmrs
-			if (logClass == null || "".equals(logClass)) {
+			if (StringUtils.isEmpty(logClass)) {
 				logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
 			}
 			

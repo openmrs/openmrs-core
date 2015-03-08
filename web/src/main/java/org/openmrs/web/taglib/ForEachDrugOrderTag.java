@@ -23,6 +23,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
@@ -68,7 +69,7 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 		log.debug("ForEachDrugOrderTag found " + matchingDrugOrders.size() + " drug orders");
 		
 		// Next, sort the encounters
-		if (sortBy == null || "".equals(sortBy)) {
+		if (StringUtils.isEmpty(sortBy)) {
 			sortBy = defaultSortBy;
 		}
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())

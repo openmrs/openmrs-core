@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -101,7 +102,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	public boolean hasPrivilege(String privilege) {
 		
 		// All authenticated users have the "" (empty) privilege
-		if (privilege == null || "".equals(privilege)) {
+		if (StringUtils.isEmpty(privilege)) {
 			return true;
 		}
 		
@@ -620,7 +621,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 						Locale proficientLocale = LocaleUtility.fromSpecification(proficientLocaleSpec);
 						if (!proficientLocales.contains(proficientLocale)) {
 							proficientLocales.add(proficientLocale);
-							if (!"".equals(proficientLocale.getCountry())) {
+							if (StringUtils.isNotEmpty(proficientLocale.getCountry())) {
 								// add the language also
 								Locale languageOnlyLocale = LocaleUtility.fromSpecification(proficientLocale.getLanguage());
 								if (!proficientLocales.contains(languageOnlyLocale)) {

@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Functions used within taglibs in a webapp jsp page. <br/>
@@ -64,7 +65,7 @@ public class Sort {
 	 * @return: A sorted List of the passed elements
 	 */
 	public static <T> List<T> sort(Collection<T> c, String sortProperty, Boolean reverseOrder) {
-		if (sortProperty == null || "".equals(sortProperty)) {
+		if (StringUtils.isEmpty(sortProperty)) {
 			throw new IllegalArgumentException("sortProperty = " + sortProperty);
 		}
 		// fail early if the passed collection is null

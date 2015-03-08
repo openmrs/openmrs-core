@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.Serializable;
 
 /**
@@ -210,7 +212,7 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 	 * @return Whether this identifier type has a validator.
 	 */
 	public boolean hasValidator() {
-		return validator != null && !"".equals(validator);
+		return StringUtils.isNotEmpty(validator);
 	}
 	
 	/**

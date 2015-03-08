@@ -344,7 +344,7 @@ public class PortletController implements Controller {
 			
 			// if a list of patient ids is available, make a patientset out of it
 			o = request.getAttribute("org.openmrs.portlet.patientIds");
-			if (o != null && !"".equals(o) && !model.containsKey("patientIds") && !model.containsKey("patientSet")) {
+			if (!StringUtils.isEmpty(o) && !model.containsKey("patientIds") && !model.containsKey("patientSet")) {
 				Cohort ps = new Cohort((String) o);
 				model.put("patientSet", ps);
 				model.put("patientIds", (String) o);
@@ -352,7 +352,7 @@ public class PortletController implements Controller {
 			
 			o = model.get("conceptIds");
 			
-			if (o != null && !"".equals(o) && !model.containsKey("conceptMap")) {
+			if (!StringUtils.isEmpty(o) && !model.containsKey("conceptMap")) {
 				log.debug("Found conceptIds parameter: " + o);
 				Map<Integer, Concept> concepts = new HashMap<Integer, Concept>();
 				Map<String, Concept> conceptsByStringIds = new HashMap<String, Concept>();

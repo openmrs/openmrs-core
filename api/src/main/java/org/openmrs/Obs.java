@@ -1022,7 +1022,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			} else if ("ED".equals(abbrev) && getValueComplex() != null) {
 				String[] valueComplex = getValueComplex().split("\\|");
 				for (int i = 0; i < valueComplex.length; i++) {
-					if (!"".equals(valueComplex[i])) {
+					if (StringUtils.isNotEmpty(valueComplex[i])) {
 						return valueComplex[i].trim();
 					}
 				}
@@ -1067,7 +1067,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		if (getValueComplex() != null) {
 			String[] valueComplex = getValueComplex().split("\\|");
 			for (int i = 0; i < valueComplex.length; i++) {
-				if (!"".equals(valueComplex[i])) {
+				if (StringUtils.isNotEmpty(valueComplex[i])) {
 					return valueComplex[i].trim();
 				}
 			}

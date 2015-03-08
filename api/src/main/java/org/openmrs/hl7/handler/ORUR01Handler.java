@@ -348,7 +348,7 @@ public class ORUR01Handler implements Application {
 					Concept questionConcept = proposingException.getConcept();
 					String value = proposingException.getValueName();
 					//if the sender never specified any text for the proposed concept
-					if (value != null && !"".equals(value)) {
+					if (!StringUtils.isEmpty(value)) {
 						conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
 					} else {
 						errorInHL7Queue = new HL7Exception(Context.getMessageSourceService().getMessage(

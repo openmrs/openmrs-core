@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -217,7 +218,7 @@ public class HibernateObsDAO implements ObsDAO {
 		
 		if (CollectionUtils.isNotEmpty(sortList)) {
 			for (String sort : sortList) {
-				if (sort != null && !"".equals(sort)) {
+				if (StringUtils.isNotEmpty(sort)) {
 					// Split the sort, the field name shouldn't contain space char, so it's safe
 					String[] split = sort.split(" ", 2);
 					String fieldName = split[0];

@@ -296,7 +296,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Transactional(readOnly = true)
 	public List<LocationTag> getLocationTags(String search) throws APIException {
-		if (search == null || "".equals(search)) {
+		if (StringUtils.isEmpty(search)) {
 			return Context.getLocationService().getAllLocationTags(true);
 		}
 		
