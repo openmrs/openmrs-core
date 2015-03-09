@@ -45,12 +45,7 @@ public class UpgradeUtil {
 			for (Map.Entry prop : props.entrySet()) {
 				if (prop.getKey().equals(units)) {
 					conceptId = prop.getValue().toString();
-					
-					if (conceptId != null) {
-						return Integer.valueOf(conceptId);
-					} else {
-						return null;
-					}
+					return Integer.valueOf(conceptId);
 				}
 			}
 			fis.close();
