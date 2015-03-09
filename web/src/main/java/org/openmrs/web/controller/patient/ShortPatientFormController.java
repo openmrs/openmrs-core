@@ -404,7 +404,7 @@ public class ShortPatientFormController {
 				// flag to know if we need to create a stub relationship
 				boolean relationshipFound = false;
 				
-				if (person != null && person.getPersonId() != null) {
+				if (person.getPersonId() != null) {
 					if (aIsToB) {
 						List<Relationship> relationships = Context.getPersonService().getRelationships(null, person,
 						    relationshipType);

@@ -57,12 +57,12 @@ public interface PersonService extends OpenmrsService {
 		 * Attributes to be shown when listing off multiple patients or users
 		 */
 		LISTING,
-
+		
 		/**
 		 * Attributes to be shown when only showing one patient or user
 		 */
 		VIEWING,
-
+		
 		/**
 		 * Attributes to be shown in the header
 		 */

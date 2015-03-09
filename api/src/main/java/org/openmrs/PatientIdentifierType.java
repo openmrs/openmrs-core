@@ -44,12 +44,12 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements Serial
 		 * Indicates that identifiers should be globally unique
 		 */
 		UNIQUE,
-
+		
 		/**
 		 * Indicates that duplicates identifiers are allowed
 		 */
 		NON_UNIQUE,
-
+		
 		/**
 		 * Indicates that identifiers should be unique only across a location if the identifier's
 		 * location property is not null
