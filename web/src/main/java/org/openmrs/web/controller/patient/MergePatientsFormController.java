@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +56,7 @@ public class MergePatientsFormController extends SimpleFormController {
 			log.debug("Error name: " + e.getObjectName());
 			log.debug("Error code: " + e.getCode());
 			log.debug("Error message: " + e.getDefaultMessage());
-			log.debug("Error args: " + e.getArguments());
+			log.debug("Error args: " + Arrays.toString(e.getArguments()));
 			log.debug("Error codes: " + e.getCodes());
 		}
 		
