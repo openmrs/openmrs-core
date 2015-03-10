@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
@@ -25,16 +26,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.Comparator;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.ehcache.CacheManager;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -60,8 +62,11 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	// placeholder to hold mementos to restore
 	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<String, OpenmrsMemento>();
 	
-	// holds a list of all classes that this classloader loaded so that they can be cleaned up
-	private Set<Class<?>> loadedClasses = new HashSet<Class<?>>();
+	/**
+	 * Holds all classes that has been requested from this class loader. We use weak references so that
+	 * module classes can be garbage collected when modules are unloaded.
+	 */
+	private Map<String, WeakReference<Class<?>>> cachedClasses = new ConcurrentHashMap<String, WeakReference<Class<?>>>();
 	
 	// suffix of the OpenMRS required library cache folder
 	private static final String LIBCACHESUFFIX = ".openmrs-lib-cache";
@@ -71,19 +76,24 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	public OpenmrsClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
-		OpenmrsClassLoaderHolder.INSTANCE = this;
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
+		if (parent instanceof OpenmrsClassLoader) {
+			throw new IllegalArgumentException("Parent must not be OpenmrsClassLoader nor null");
+		} else if (parent instanceof ModuleClassLoader) {
+			throw new IllegalArgumentException("Parent must not be ModuleClassLoader");
 		}
 		
+		OpenmrsClassLoaderHolder.INSTANCE = this;
+		
+		if (log.isDebugEnabled())
+			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
+		
 		//disable caching so the jars aren't locked
-		// if performance is effected, this can be disabled in favor of
-		//  copying all opened jars to a temp location
-		//  (ala org.apache.catalina.loader.WebappClassLoader antijarlocking)
+		//if performance is effected, this can be disabled in favor of
+		//copying all opened jars to a temp location
+		//(ala org.apache.catalina.loader.WebappClassLoader antijarlocking)
 		URLConnection urlConnection = new OpenmrsURLConnection();
 		urlConnection.setDefaultUseCaches(false);
-		
 	}
 	
 	/**
@@ -118,95 +128,85 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
+	 * It loads classes from the web container class loader first (parent class loader) and then
+	 * tries module class loaders.
+	 * 
 	 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
+	 * @should load class from cache second time
+	 * @should not load class from cache if class loader has been disposed
+	 * @should load class from parent first
+	 * @should load class if two module class loaders have same packages
 	 */
 	@Override
-	public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
-		
-		ArrayList<ModuleClassLoader> moduleClassLoaders = new ArrayList<ModuleClassLoader>(ModuleFactory
-		        .getModuleClassLoaders());
-		
-		Class<?> c = loadModuleClass(name, moduleClassLoaders);
-		if (c != null) {
-			return c;
-		}
-		
-		/* See org.mortbay.jetty.webapp.WebAppClassLoader.loadClass, from
-		 * http://dist.codehaus.org/jetty/jetty-6.1.10/jetty-6.1.10-src.zip */
-		ClassNotFoundException ex = null;
-		
-		try {
-			c = getParent().loadClass(name);
-			loadedClasses.add(c);
-			return c;
-		}
-		catch (ClassNotFoundException e) {
-			ex = e;
-		}
-		
-		try {
-			c = this.findClass(name);
-			return c;
-		}
-		catch (ClassNotFoundException e) {
-			ex = e;
-		}
-		
-		throw ex;
-	}
-	
-	/**
-	 * @should load class from longest match first
-	 * @should if longest match fails should try other matches
-	 */
-	Class<?> loadModuleClass(String name, Collection<ModuleClassLoader> moduleClassLoaders) {
-		int pos = name.lastIndexOf(".");
-		String classPackageName;
-		if (pos > 0) {
-			classPackageName = name.substring(0, pos);
-		} else {
-			classPackageName = name;
-		}
-		//We need to put class loaders for modules with longer package name first to make sure that if a module contains '.'
-		// in a name it is considered first for the startsWith comparison, e.g. reporting.ui module will be considered before reporting
-		ArrayList<ModuleClassLoader> moduleClassLoaderArrayList = new ArrayList<ModuleClassLoader>(moduleClassLoaders);
-		Collections.sort(moduleClassLoaderArrayList, new Comparator<ModuleClassLoader>() {
-			
-			@Override
-			public int compare(ModuleClassLoader o1, ModuleClassLoader o2) {
-				return o2.getModule().getPackageName().length() - o1.getModule().getPackageName().length();
+	public synchronized Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
+		// Check if the class has already been requested from this class loader
+		Class<?> c = getCachedClass(name);
+		if (c == null) {
+			// Try loading from web container
+			try {
+				c = getParent().loadClass(name);
 			}
-		});
-		
-		for (ModuleClassLoader classLoader : moduleClassLoaderArrayList) {
-			// this is to prevent unnecessary looping over providedPackages
-			boolean tryToLoad = classPackageName.startsWith(classLoader.getModule().getPackageName());
+			catch (ClassNotFoundException e) {
+				// Continue trying...
+			}
 			
-			// the given class name doesn't match the config.xml package in this module,
-			// check the "providedPackage" list to see if its in a lib
-			if (!tryToLoad) {
-				for (String providedPackage : classLoader.getAdditionalPackages()) {
-					// break out early if we match a package
-					if (classPackageName.startsWith(providedPackage)) {
-						tryToLoad = true;
+			// We do not try to load classes using this.findClass on purpose.
+			// All classes are loaded by web container or by module class loaders.
+			
+			if (c == null) {
+				// Finally try loading from modules
+				String packageName = StringUtils.substringBeforeLast(name, ".");
+				Set<ModuleClassLoader> moduleClassLoaders = ModuleFactory.getModuleClassLoadersForPackage(packageName);
+				for (ModuleClassLoader moduleClassLoader : moduleClassLoaders) {
+					try {
+						c = moduleClassLoader.loadClass(name);
+						
 						break;
+					}
+					catch (ClassNotFoundException e) {
+						// Continue trying...
 					}
 				}
 			}
 			
-			if (tryToLoad) {
-				try {
-					//if (classLoader.isLoadingFromParent() == false)
-					Class<?> c = classLoader.loadClass(name);
-					loadedClasses.add(c);
-					return c;
-				}
-				catch (ClassNotFoundException e) {
-					//log.debug("Didn't find entry for: " + name);
+			if (c == null) {
+				throw new ClassNotFoundException(name);
+			}
+			
+			cacheClass(name, c);
+		}
+		
+		if (resolve) {
+			resolveClass(c);
+		}
+		
+		return c;
+	}
+	
+	private Class<?> getCachedClass(String name) {
+		WeakReference<Class<?>> ref = cachedClasses.get(name);
+		if (ref != null) {
+			Class<?> loadedClass = ref.get();
+			if (loadedClass == null || loadedClass.getClassLoader() == null) {
+				// Class has been garbage collected
+				cachedClasses.remove(name);
+				loadedClass = null;
+			} else if (loadedClass.getClassLoader() instanceof ModuleClassLoader) {
+				ModuleClassLoader moduleClassLoader = (ModuleClassLoader) loadedClass.getClassLoader();
+				if (moduleClassLoader.isDisposed()) {
+					// Class has been unloaded
+					cachedClasses.remove(name);
+					loadedClass = null;
 				}
 			}
+			
+			return loadedClass;
 		}
 		return null;
+	}
+	
+	private void cacheClass(String name, Class<?> clazz) {
+		cachedClasses.put(name, new WeakReference<Class<?>>(clazz));
 	}
 	
 	/**
@@ -538,7 +538,11 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		// Null out any static or final fields from loaded classes,
 		// as a workaround for apparent garbage collection bugs
-		for (Class<?> clazz : getInstance().loadedClasses) {
+		for (WeakReference<Class<?>> refClazz : getInstance().cachedClasses.values()) {
+			if (refClazz == null) {
+				continue;
+			}
+			Class<?> clazz = refClazz.get();
 			if (clazz != null && clazz.getName().contains("openmrs")) { // only clean up openmrs classes
 				try {
 					Field[] fields = clazz.getDeclaredFields();
@@ -566,18 +570,18 @@ public class OpenmrsClassLoader extends URLClassLoader {
 									}
 								}
 							}
-							catch (Exception e) {
+							catch (Throwable t) {
 								if (log.isDebugEnabled()) {
 									log.debug("Could not set field " + field.getName() + " to null in class "
-									        + clazz.getName(), e);
+									        + clazz.getName(), t);
 								}
 							}
 						}
 					}
 				}
-				catch (Exception e) {
+				catch (Throwable t) {
 					if (log.isDebugEnabled()) {
-						log.debug("Could not clean fields for class " + clazz.getName(), e);
+						log.debug("Could not clean fields for class " + clazz.getName(), t);
 					}
 				}
 			}
@@ -586,7 +590,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		// now we can clear the log field on this class
 		OpenmrsClassLoader.log = null;
 		
-		getInstance().loadedClasses.clear();
+		getInstance().cachedClasses.clear();
 	}
 	
 	/**
@@ -663,19 +667,14 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see #destroyInstance()
 	 */
 	public static void saveState() {
-		
-		// TODO our services should implement a common
-		// OpenmrsService so this can be generalized
 		try {
 			String key = SchedulerService.class.getName();
-			if (!Context.isRefreshingContext()) {
+			if (!Context.isRefreshingContext())
 				mementos.put(key, Context.getSchedulerService().saveToMemento());
-			}
 		}
-		catch (Exception e) {
+		catch (Throwable t) {
 			// pass
 		}
-		
 	}
 	
 	/**
@@ -685,8 +684,6 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see #saveState()
 	 */
 	public static void restoreState() {
-		// TODO our services should implement a common
-		// OpenmrsService so this can be generalized
 		try {
 			String key = SchedulerService.class.getName();
 			Context.getSchedulerService().restoreFromMemento(mementos.get(key));
@@ -788,6 +785,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	/**
 	 * Deletes the old lib cache folders that might not have been deleted when OpenMRS closed
+	 * 
 	 * @param libCacheFolder
 	 */
 	public static void deleteOldLibCaches(File libCacheFolder) {
