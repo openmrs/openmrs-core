@@ -1410,7 +1410,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Concept getUnknownConcept() {
 		if (unknownConcept == null) {
 			try {
-				unknownConcept = Context.getConceptService().getConcept(
+				ConceptServiceImpl.unknownConcept = Context.getConceptService().getConcept(
 				    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT)));
 			}
