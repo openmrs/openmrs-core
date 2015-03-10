@@ -1410,9 +1410,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Concept getUnknownConcept() {
 		if (unknownConcept == null) {
 			try {
-				unknownConcept = Context.getConceptService().getConcept(
+				ConceptServiceImpl.setStaticUnknownConcept(Context.getConceptService().getConcept(
 				    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT)));
+				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT))));
 			}
 			catch (NumberFormatException e) {
 				log.warn("Concept id for unknown concept should be a number");
@@ -1420,6 +1420,15 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		return unknownConcept;
+	}
+	
+	/**
+	 * Sets unknownConcept using static method
+	 *
+	 * @param currentUnknownConcept
+	 */
+	private static void setStaticUnknownConcept(Concept currentUnknownConcept) {
+		ConceptServiceImpl.unknownConcept = currentUnknownConcept;
 	}
 	
 	/**
