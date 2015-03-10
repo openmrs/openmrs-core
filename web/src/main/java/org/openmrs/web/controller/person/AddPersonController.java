@@ -86,7 +86,7 @@ public class AddPersonController extends SimpleFormController {
 		String personType = person.get(PERSON_TYPE);
 		
 		if (isEmpty(personId)) {
-			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
+			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requested)
 			if ("view".equals(viewType) || "shortEdit".equals(viewType)) {
 				viewType = "shortEdit";
 			} else {
@@ -159,7 +159,7 @@ public class AddPersonController extends SimpleFormController {
 				try {
 					//Do these if there's a value in the birthdate string
 					if (birthdate.length() > 0) {
-						Date birthdateFormatted = (Date) Context.getDateFormat().parse(birthdate);
+						Date birthdateFormatted = Context.getDateFormat().parse(birthdate);
 						Calendar calender = Calendar.getInstance();
 						calender.setTime(birthdateFormatted);
 						birthyear = calender.get(Calendar.YEAR);
@@ -176,7 +176,7 @@ public class AddPersonController extends SimpleFormController {
 				
 				// -1 means the birth-year has not defined.
 				if (birthyear != -1) {
-					d = Integer.valueOf(birthyear);
+					d = birthyear;
 				} else if (age.length() > 0) {
 					Calendar c = Calendar.getInstance();
 					c.setTime(new Date());
