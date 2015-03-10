@@ -194,4 +194,7 @@ public interface LocationDAO {
 	 * @see LocationService#getLocationAttributeTypeByName(String)
 	 */
 	public LocationAttributeType getLocationAttributeTypeByName(String name);
+	
+	List<Location> getAllLocationsByLocationTag(List<Integer> locationTagIdList);
+	
 }

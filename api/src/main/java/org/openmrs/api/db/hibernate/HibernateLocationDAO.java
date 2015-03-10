@@ -18,7 +18,14 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Expression;
+
+import org.hibernate.classic.Session;
+
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -318,5 +325,15 @@ public class HibernateLocationDAO implements LocationDAO {
 	public LocationAttributeType getLocationAttributeTypeByName(String name) {
 		return (LocationAttributeType) sessionFactory.getCurrentSession().createCriteria(LocationAttributeType.class).add(
 		    Restrictions.eq("name", name)).uniqueResult();
+	}
+	
+	@Override
+	public List<Location> getAllLocationsByLocationTag(List<Integer> locationTagIdList) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class, "location");
+		criteria.createAlias("location.tags", "locationTag");
+		criteria.add(Restrictions.in("locationTag.locationTagId", locationTagIdList));
+		criteria.addOrder(Order.asc("name"));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		return criteria.list();
 	}
 }

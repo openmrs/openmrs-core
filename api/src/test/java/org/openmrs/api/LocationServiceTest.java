@@ -442,8 +442,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return empty list when no location has the given tags", method = "getLocationsHavingAllTags(List<QLocationTag;>)")
 	public void getLocationsHavingAllTags_shouldReturnEmptyListWhenNoLocationHasTheGivenTags() throws Exception {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(0, ls.getLocationsHavingAllTags(Collections.singletonList(ls.getLocationTagByName("Retired")))
-		        .size());
+		Assert.assertEquals(0, ls.getLocationsHavingAllTags(
+		    Collections.singletonList(ls.getLocationTagByName("Test Retired Tag"))).size());
 	}
 	
 	/**
