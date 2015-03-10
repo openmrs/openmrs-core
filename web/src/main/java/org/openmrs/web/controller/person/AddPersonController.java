@@ -33,6 +33,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 public class AddPersonController extends SimpleFormController {
 	
@@ -79,11 +81,11 @@ public class AddPersonController extends SimpleFormController {
 		
 		HashMap<String, String> person = getParametersFromRequest(request);
 		
-		String personId = person.get("personId");
-        String viewType = person.get("viewType");
-		String personType = person.get("personType");
+		String personId = person.get(PERSON_ID);
+        String viewType = person.get(VIEW_TYPE);
+		String personType = person.get(PERSON_TYPE);
 		
-		if ("".equals(personId)) {
+		if (isEmpty(personId)) {
 			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
 			if ("view".equals(viewType) || "shortEdit".equals(viewType)) {
 				viewType = "shortEdit";
@@ -145,7 +147,7 @@ public class AddPersonController extends SimpleFormController {
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
-			if (!"".equals(name) || !"".equals(birthdate) || !"".equals(age) || !"".equals(gender)) {
+			if (isNotEmpty(name) || isNotEmpty(birthdate) || isNotEmpty(age) || isNotEmpty(gender)) {
 				
 				log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
 				
@@ -244,8 +246,8 @@ public class AddPersonController extends SimpleFormController {
 			}
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
-			
-			if (!"".equals(name) || !"".equals(birthdate) || !"".equals(age) || !"".equals(gender)) {
+
+            if (isNotEmpty(name) || isNotEmpty(birthdate) || isNotEmpty(age) || isNotEmpty(gender)) {
 				mav.clear();
 				mav.setView(new RedirectView(getPersonURL("", personType, viewType, request)));
 			}
@@ -304,7 +306,7 @@ public class AddPersonController extends SimpleFormController {
 	 */
 	private String getParametersForURL(HashMap<String, String> person) throws UnsupportedEncodingException {
 		
-		if ("".equals(person.get(PERSON_ID))) {
+		if (isEmpty(person.get(PERSON_ID))) {
 			return "?addName=" + URLEncoder.encode(person.get(NAME), "UTF-8") + "&addBirthdate=" + person.get(BIRTH_DATE)
 			        + "&addAge=" + person.get(AGE) + "&addGender=" + person.get(GENDER);
 		} else {
