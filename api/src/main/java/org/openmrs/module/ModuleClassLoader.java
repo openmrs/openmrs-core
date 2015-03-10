@@ -65,7 +65,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	private Map<URI, File> libraryCache;
 	
-	private boolean probeParentLoaderLast = true;
+	private boolean probeParentLoaderLast = false;
 	
 	private Set<String> providedPackages = new LinkedHashSet<String>();
 	
