@@ -874,10 +874,10 @@
 						<exclude>.git/**</exclude>
 						<exclude>**/NaturalStrings.java</exclude>
 						<exclude>puppet/**</exclude>
-						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/dojo/**</exclude>
-						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
-						<exclude>webapp/src/main/webapp/WEB-INF/view/scripts/jquery-ui/**</exclude>
-						<exclude>webapp/src/main/webapp/WEB-INF/view/module/**</exclude>
+						<exclude>src/main/webapp/WEB-INF/view/scripts/dojo/**</exclude>
+						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
+						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery-ui/**</exclude>
+						<exclude>src/main/webapp/WEB-INF/view/module/**</exclude>
 						<!-- From gitignore -->
 						<exclude>.idea/**</exclude>
 						<exclude>target/**</exclude>
