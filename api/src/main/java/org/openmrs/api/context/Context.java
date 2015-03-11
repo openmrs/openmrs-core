@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.WeakHashMap;
-
+import java.util.Arrays;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -232,7 +232,7 @@ public class Context {
 		Object[] arr = userContextHolder.get();
 		
 		if (log.isTraceEnabled()) {
-			log.trace("Getting user context " + arr + " from userContextHolder " + userContextHolder);
+			log.trace("Getting user context " + Arrays.toString(arr) + " from userContextHolder " + userContextHolder);
 		}
 		
 		if (arr == null) {
@@ -1276,7 +1276,7 @@ public class Context {
 	
 	/**
 	 * @since 1.9
-	 * @see ServiceCotext#getDatatypeService()
+	 * @see ServiceContext#getDatatypeService()
 	 */
 	public static DatatypeService getDatatypeService() {
 		return getServiceContext().getDatatypeService();
