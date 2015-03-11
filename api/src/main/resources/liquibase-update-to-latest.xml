@@ -3513,30 +3513,68 @@
 		<validCheckSum><comment>After changing to boolean</comment>3:b57c0f651ed477457fd16e503eaf51a4</validCheckSum>
 		<validCheckSum>3:002108aacdf55731f4fd472d5308c5c8</validCheckSum>
         <validCheckSum>3:6a72bbb390155596e52da4e8d065d1a2</validCheckSum>
+        <validCheckSum><comment>Fixing TRUNK-4040</comment>3:74026cd4543ebbf561999a81c276224d</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
-					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred%'
+					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred\___' OR concept_name_tag_id = 4
 				</sqlCheck>
 			</not>
 		</preConditions>
 		<comment>
-			Converting concept names with preferred concept name tags to preferred and fully specified names
+			Converting concept names with 'preferred' and 'preferred_XX' concept name tags to preferred names
 		</comment>    	
 		<update tableName="concept_name">
-            <column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<column name="locale_preferred" valueBoolean="true"/>
+			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<where>
 				concept_name_id IN (SELECT concept_name_id FROM concept_name_tag cnt, concept_name_tag_map cntm 
-				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred%')
+				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND (cnt.tag like 'preferred\___' OR cnt.concept_name_tag_id = 4))
 			</where>
 		</update>
 		<delete tableName="concept_name_tag_map">
 			<where>
-				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred%')
+				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred\___') OR concept_name_tag_id = 4
 			</where>
 		</delete>
-		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred%'</where></delete>
+		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred\___' OR concept_name_tag_id = 4</where></delete>
+	</changeSet>
+	
+	<changeSet id="20150122-1414" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 1
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Reverting concept name type to NULL for concepts having names tagged as default</comment>
+		<update tableName="concept_name">
+			<column name="concept_name_type" />
+			<where>concept_id IN (SELECT concept_id FROM (SELECT concept_id FROM concept_name LEFT JOIN concept_name_tag_map 
+			ON concept_name.concept_name_id = concept_name_tag_map.concept_name_id WHERE concept_name_tag_id = 1) AS x)</where>
+		</update>
+	</changeSet>
+	
+	<changeSet id="20150122-1420" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 1
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Setting concept name type to fully specified for names tagged as default</comment>
+		<update tableName="concept_name">
+			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
+			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 1)</where>
+		</update>
+		<delete tableName="concept_name_tag_map">
+			<where>concept_name_tag_id = 1</where>
+		</delete>	
+		<delete tableName="concept_name_tag">
+			<where>concept_name_tag_id = 1</where>
+		</delete>
 	</changeSet>
 
 	<changeSet id="20100607-1550g" author="wyclif">
