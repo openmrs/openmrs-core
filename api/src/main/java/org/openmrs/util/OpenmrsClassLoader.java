@@ -142,35 +142,28 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		// Check if the class has already been requested from this class loader
 		Class<?> c = getCachedClass(name);
 		if (c == null) {
-			// Try loading from web container
-			try {
-				c = getParent().loadClass(name);
-			}
-			catch (ClassNotFoundException e) {
-				// Continue trying...
-			}
-			
 			// We do not try to load classes using this.findClass on purpose.
 			// All classes are loaded by web container or by module class loaders.
 			
-			if (c == null) {
-				// Finally try loading from modules
-				String packageName = StringUtils.substringBeforeLast(name, ".");
-				Set<ModuleClassLoader> moduleClassLoaders = ModuleFactory.getModuleClassLoadersForPackage(packageName);
-				for (ModuleClassLoader moduleClassLoader : moduleClassLoaders) {
-					try {
-						c = moduleClassLoader.loadClass(name);
-						
-						break;
-					}
-					catch (ClassNotFoundException e) {
-						// Continue trying...
-					}
+			// First try loading from modules such that we allow modules to load
+			// different versions of the same libraries that may already be used
+			// by core or the web container. An example is the chartsearch module
+			// which uses different versions of lucene and solr from core
+			String packageName = StringUtils.substringBeforeLast(name, ".");
+			Set<ModuleClassLoader> moduleClassLoaders = ModuleFactory.getModuleClassLoadersForPackage(packageName);
+			for (ModuleClassLoader moduleClassLoader : moduleClassLoaders) {
+				try {
+					c = moduleClassLoader.loadClass(name);
+					break;
+				}
+				catch (ClassNotFoundException e) {
+					// Continue trying...
 				}
 			}
 			
 			if (c == null) {
-				throw new ClassNotFoundException(name);
+				// Finally try loading from web container
+				c = getParent().loadClass(name);
 			}
 			
 			cacheClass(name, c);
