@@ -229,6 +229,11 @@
 			<version>1.7.6</version>
 			<type>jar</type>
 		</dependency>
+       <dependency>
+           <groupId>jboss</groupId>
+           <artifactId>jboss-common</artifactId>
+           <version>4.2.2.GA</version>
+       </dependency>
    </dependencies>
    <build>
      <resources>
