@@ -508,7 +508,7 @@ public class FieldGenTag extends TagSupport {
 		}
 		catch (Exception e) {
 			factory = null;
-			e.printStackTrace();
+			log.error(e);
 		}
 		
 		if (factory != null) {

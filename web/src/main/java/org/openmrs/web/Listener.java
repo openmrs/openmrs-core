@@ -71,7 +71,9 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
 
-	private static boolean runtimePropertiesFound = false;
+    protected final Log log = LogFactory.getLog(getClass());
+
+    private static boolean runtimePropertiesFound = false;
 	
 	private static Throwable errorAtStartup = null;
 	
@@ -293,11 +295,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				log.error(e);
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
 		}
 		
 		// trim off initial slash if it exists
@@ -527,7 +529,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			if (!"contextDAO is null".equals(e.getMessage())) {
 				// not using log.error here so it can be garbage collected
 				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
-				e.printStackTrace();
+				log.error(e);
 			}
 		}
 		finally {
@@ -560,7 +562,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		catch (Exception e) {
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
-			e.printStackTrace();
+			log.error(e);
 		}
 		
 		MemoryLeakUtil.shutdownMysqlCancellationTimer();
