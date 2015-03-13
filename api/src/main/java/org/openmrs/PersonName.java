@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -530,42 +531,13 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should return negative if other familynamePrefix is greater
 	 * @should return negative if other familyNameSuffix is greater
 	 * @should return negative if other dateCreated is greater
+	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:3AS1210")
 	public int compareTo(PersonName other) {
-		int ret = isVoided().compareTo(other.isVoided());
-		if (ret == 0) {
-			ret = other.isPreferred().compareTo(isPreferred());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName(), other.getFamilyName());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName2(), other.getFamilyName2());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getGivenName(), other.getGivenName());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getMiddleName(), other.getMiddleName());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNamePrefix(), other.getFamilyNamePrefix());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNameSuffix(), other.getFamilyNameSuffix());
-		}
-		if (ret == 0 && getDateCreated() != null) {
-			ret = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-		}
-		
-		// if we've gotten this far, just check all name values. If they are
-		// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
-		// and return that (they are not equal).
-		if (ret == 0 && !equalsContent(other)) {
-			ret = 1;
-		}
-		
-		return ret;
+		DefaultComparator pnDefaultComparator = new DefaultComparator();
+		return pnDefaultComparator.compare(this, other);
 	}
 	
 	/**
@@ -596,4 +568,49 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	public static String getFormat() {
 		return PersonName.format;
 	}
+	
+	/**
+	 Provides a default comparator.
+	 @since 1.12
+	 **/
+	public static class DefaultComparator implements Comparator<PersonName> {
+		
+		public int compare(PersonName pn1, PersonName pn2) {
+			int ret = pn1.isVoided().compareTo(pn2.isVoided());
+			if (ret == 0) {
+				ret = pn2.isPreferred().compareTo(pn1.isPreferred());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyName(), pn2.getFamilyName());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyName2(), pn2.getFamilyName2());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getGivenName(), pn2.getGivenName());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getMiddleName(), pn2.getMiddleName());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyNamePrefix(), pn2.getFamilyNamePrefix());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyNameSuffix(), pn2.getFamilyNameSuffix());
+			}
+			if (ret == 0 && pn1.getDateCreated() != null) {
+				ret = OpenmrsUtil.compareWithNullAsLatest(pn1.getDateCreated(), pn2.getDateCreated());
+			}
+			
+			// if we've gotten this far, just check all name values. If they are
+			// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
+			// and return that (they are not equal).
+			if (ret == 0 && !pn1.equalsContent(pn2)) {
+				ret = 1;
+			}
+			
+			return ret;
+		}
+	}
+	
 }

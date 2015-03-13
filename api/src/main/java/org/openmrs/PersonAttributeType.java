@@ -14,6 +14,8 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.util.Comparator;
+
 /**
  * PersonAttributeType
  */
@@ -175,8 +177,29 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 		
 	}
 	
+	/**
+	 *
+	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
+	 */
 	@Override
+	@SuppressWarnings("squid:3AS1210")
 	public int compareTo(PersonAttributeType other) {
-		return OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeTypeId(), other.getPersonAttributeTypeId());
+		DefaultComparator patDefaultComparator = new DefaultComparator();
+		return patDefaultComparator.compare(this, other);
 	}
+	
+	/**
+	 Provides a default comparator.
+	 @since 1.12
+	 **/
+	public static class DefaultComparator implements Comparator<PersonAttributeType> {
+		
+		@Override
+		public int compare(PersonAttributeType pat1, PersonAttributeType pat2) {
+			return OpenmrsUtil.compareWithNullAsGreatest(pat1.getPersonAttributeTypeId(), pat2.getPersonAttributeTypeId());
+			
+		}
+	}
+	
 }
