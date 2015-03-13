@@ -79,8 +79,9 @@ public class Format {
 	
 	public static String format(Throwable t) {
 		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		t.printStackTrace(pw);
+//		PrintWriter pw = new PrintWriter(sw);
+//		t.printStackTrace(pw);
+        log.error(t);
 		return t + "\n" + sw.toString();
 	}
 	

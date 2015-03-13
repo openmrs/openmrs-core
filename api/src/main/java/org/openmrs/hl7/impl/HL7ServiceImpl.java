@@ -902,9 +902,10 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			hl7InError.setErrorDetails("");
 		} else {
 			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw, true);
-			cause.printStackTrace(pw);
-			pw.flush();
+			//			PrintWriter pw = new PrintWriter(sw, true);
+			//			cause.printStackTrace(pw);
+			log.error(cause);
+			//			pw.flush();
 			sw.flush();
 			hl7InError.setErrorDetails(OpenmrsUtil.shortenedStackTrace(sw.toString()));
 		}

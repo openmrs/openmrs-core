@@ -141,7 +141,8 @@ public class SchedulerUtil {
 	public static String getExceptionAsString(Throwable t) {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter, true);
-		t.printStackTrace(printWriter);
+		log.error(t);
+		//		t.printStackTrace(printWriter);
 		printWriter.flush();
 		stringWriter.flush();
 		return stringWriter.toString();

@@ -12,6 +12,8 @@ package org.openmrs.web.filter.startuperror;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
 
@@ -21,6 +23,8 @@ import org.openmrs.web.filter.update.UpdateFilter;
  * the {@link StartupFilter}.
  */
 public class StartupErrorFilterModel {
+	
+	protected static final Log log = LogFactory.getLog(StartupErrorFilterModel.class);
 	
 	// automatically given to the .vm files and used there
 	public String headerTemplate = "org/openmrs/web/filter/startuperror/header.vm";
@@ -39,8 +43,9 @@ public class StartupErrorFilterModel {
 		errorAtStartup = t;
 		
 		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		t.printStackTrace(pw);
+		//		PrintWriter pw = new PrintWriter(sw);
+		//        t.printStackTrace(pw);
+		log.error(t);
 		stacktrace = sw.toString();
 	}
 	
