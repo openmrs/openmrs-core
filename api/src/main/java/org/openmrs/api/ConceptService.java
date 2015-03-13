@@ -1289,7 +1289,7 @@ public interface ConceptService extends OpenmrsService {
 	
 	/**
 	 * Returns the UNKNOWN concept
-	 * 
+	 *
 	 * @return unknown concept
 	 * @should return the unknown concept
 	 */

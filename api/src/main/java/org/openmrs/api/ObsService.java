@@ -691,7 +691,7 @@ public interface ObsService extends OpenmrsService {
 	 * ComplexObsHandler to this service. If the given String key exists, that handler is
 	 * overwritten with the given handler For most situations, this map is set via spring, see the
 	 * applicationContext-service.xml file to add more handlers.
-	 * 
+	 *
 	 * @param handlers Map of class to handler object
 	 * @throws APIException
 	 * @since 1.5
@@ -702,7 +702,7 @@ public interface ObsService extends OpenmrsService {
 	
 	/**
 	 * Gets the handlers map registered
-	 * 
+	 *
 	 * @return map of keys to handlers
 	 * @since 1.5
 	 * @throws APIException
@@ -713,7 +713,7 @@ public interface ObsService extends OpenmrsService {
 	/**
 	 * Registers the given handler with the given key If the given String key exists, that handler
 	 * is overwritten with the given handler
-	 * 
+	 *
 	 * @param key the key name to use for this handler
 	 * @param handler the class to register with this key
 	 * @throws APIException

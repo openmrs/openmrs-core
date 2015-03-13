@@ -1488,7 +1488,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public void setIdentifierValidators(Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
 		if (identifierValidators == null) {
-			this.identifierValidators = null;
+			PatientServiceImpl.identifierValidators = null;
 			return;
 		}
 		for (Map.Entry<Class<? extends IdentifierValidator>, IdentifierValidator> entry : identifierValidators.entrySet()) {
