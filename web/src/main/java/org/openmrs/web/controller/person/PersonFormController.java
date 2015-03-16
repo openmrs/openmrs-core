@@ -222,20 +222,20 @@ public class PersonFormController extends SimpleFormController {
 		String action = request.getParameter("action");
 		PersonService ps = Context.getPersonService();
 		
-		String linkedProviders = "";
+		StringBuilder linkedProviders = new StringBuilder();
 		if (action.equals(msa.getMessage("Person.delete")) || action.equals(msa.getMessage("Person.void"))) {
 			Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
 			if (providerCollection != null && !providerCollection.isEmpty()) {
 				for (Provider provider : providerCollection) {
-					linkedProviders = linkedProviders + provider.getName() + ", ";
+					linkedProviders.append(provider.getName() + ", ");
 				}
-				linkedProviders = linkedProviders.substring(0, linkedProviders.length() - 2);
+				linkedProviders = new StringBuilder(linkedProviders.substring(0, linkedProviders.length() - 2));
 			}
 		}
-		
+		String linkedProvidersString = linkedProviders.toString();
 		if (action.equals(msa.getMessage("Person.delete"))) {
 			try {
-				if (!linkedProviders.isEmpty()) {
+				if (!linkedProvidersString.isEmpty()) {
 					errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.providers")
 					        + " " + linkedProviders);
 				}
@@ -274,7 +274,7 @@ public class PersonFormController extends SimpleFormController {
 				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
 				        .getLocale());
 			}
-			if (linkedProviders.isEmpty()) {
+			if (linkedProvidersString.isEmpty()) {
 				ps.voidPerson(person, voidReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
 			} else {
