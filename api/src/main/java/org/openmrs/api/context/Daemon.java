@@ -181,7 +181,7 @@ public class Daemon {
 				isDaemonThread.set(true);
 				try {
 					Context.openSession();
-					runnable.run();
+                    new Thread(runnable).start();
 				}
 				finally {
 					Context.closeSession();
@@ -274,7 +274,7 @@ public class Daemon {
 				isDaemonThread.set(true);
 				try {
 					Context.openSession();
-					runnable.run();
+                    new Thread(runnable).start();
 				}
 				finally {
 					Context.closeSession();
