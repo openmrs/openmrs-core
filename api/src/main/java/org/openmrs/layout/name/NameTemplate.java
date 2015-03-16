@@ -41,22 +41,23 @@ public class NameTemplate extends LayoutTemplate {
 		
 		try {
 			for (List<Map<String, String>> line : lines) {
-				String nameLine = "";
+				StringBuilder nameLine = new StringBuilder();
 				Boolean hasToken = false;
 				for (Map<String, String> lineToken : line) {
 					if (lineToken.get("isToken").equals(layoutToken)) {
 						String tokenValue = BeanUtils.getProperty(personName, lineToken.get("codeName"));
 						if (StringUtils.isNotBlank(tokenValue)) {
 							hasToken = true;
-							nameLine += tokenValue;
+							nameLine.append(tokenValue);
 						}
 					} else {
-						nameLine += lineToken.get("displayText");
+						nameLine.append(lineToken.get("displayText"));
 					}
 				}
 				// only display a line if there's at least one token within it we've been able to resolve
-				if (StringUtils.isNotBlank(nameLine) && hasToken) {
-					personNameLines.add(nameLine);
+				String nameLineString = nameLine.toString();
+				if (StringUtils.isNotBlank(nameLineString) && hasToken) {
+					personNameLines.add(nameLineString);
 				}
 			}
 			// bit of hack, but we ignore the "line-by-line" format and just delimit a "line" with blank space
