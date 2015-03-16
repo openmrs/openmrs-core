@@ -53,13 +53,12 @@ public class EditUserPasswordSteps extends Steps {
 		clickOn(button().with(attribute("name", equalTo("action"))));
 	}
 
-	@When("I chose to edit the user")
+	@When("I choose to edit the user")
 	public void editUser() {
-		//TODO currently the user to edit is hard coded to the first row of the users search result. Need to change this.
 		WebElement openmrsSearchTable = driver.findElement(By.className("openmrsSearchTable"));
 		List<WebElement> trList = openmrsSearchTable.findElements(By.tagName("tr"));
-		if (trList.size() > 0) {
-			trList.get(1).findElement(By.tagName("td")).findElement(By.tagName("a")).click();
+		for (int i=0; i < trList.size(); i++) {
+			trList.get(i).findElement(By.tagName("td")).findElement(By.tagName("a")).click();
 		}
 	}
 
