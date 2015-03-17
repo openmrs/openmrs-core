@@ -1093,7 +1093,7 @@ public class ModuleFactory {
 				if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
 					mod.getModuleActivator().willStop();
 			}
-			catch (Throwable t) {
+			catch (Exception t) {
 				log.warn("Unable to call module's Activator.willStop() method", t);
 			}
 			
@@ -1154,12 +1154,12 @@ public class ModuleFactory {
 								Context.removeAdvice(cls, (Advice) aopObject);
 							}
 						}
-						catch (Throwable t) {
+						catch (Exception t) {
 							log.warn("Could not remove advice point: " + advice.getPoint(), t);
 						}
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception t) {
 					log.warn("Error while getting advicePoints from module: " + moduleId, t);
 				}
 				
@@ -1180,7 +1180,7 @@ public class ModuleFactory {
 						}
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception t) {
 					log.warn("Error while getting extensions from module: " + moduleId, t);
 				}
 			}
@@ -1199,7 +1199,7 @@ public class ModuleFactory {
 				else
 					mod.getActivator().shutdown();//implements old  Activator interface
 			}
-			catch (Throwable t) {
+			catch (Exception t) {
 				log.warn("Unable to call module's Activator.shutdown() method", t);
 			}
 			
