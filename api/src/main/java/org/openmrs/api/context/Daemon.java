@@ -168,6 +168,8 @@ public class Daemon {
 	 * @should throw error if called from a non daemon thread
 	 * @should not throw error if called from a daemon thread
 	 */
+	@SuppressWarnings("squid:3AS1217")
+	//We intentionally do not start a new thread yet, rather wrap the run call in a session.
 	public static Thread runInNewDaemonThread(final Runnable runnable) {
 		// make sure we're already in a daemon thread
 		if (!isDaemonThread()) {
@@ -182,7 +184,7 @@ public class Daemon {
 				isDaemonThread.set(true);
 				try {
 					Context.openSession();
-                    new Thread(runnable).start();
+					runnable.run();
 				}
 				finally {
 					Context.closeSession();
@@ -263,6 +265,8 @@ public class Daemon {
 	 * @return the newly spawned {@link Thread}
 	 * @since 1.9.2
 	 */
+	@SuppressWarnings("squid:3AS1217")
+	//We intentionally do not start a new thread yet, rather wrap the run call in a session.
 	public static Thread runInDaemonThread(final Runnable runnable, DaemonToken token) {
 		if (!ModuleFactory.isTokenValid(token)) {
 			throw new ContextAuthenticationException("Invalid token " + token);
@@ -275,7 +279,7 @@ public class Daemon {
 				isDaemonThread.set(true);
 				try {
 					Context.openSession();
-                    new Thread(runnable).start();
+					runnable.run();
 				}
 				finally {
 					Context.closeSession();
