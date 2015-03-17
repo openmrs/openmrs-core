@@ -71,9 +71,9 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
 
-    protected final Log log = LogFactory.getLog(getClass());
-
-    private static boolean runtimePropertiesFound = false;
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	private static boolean runtimePropertiesFound = false;
 	
 	private static Throwable errorAtStartup = null;
 	
