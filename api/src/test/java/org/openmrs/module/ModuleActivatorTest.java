@@ -1,20 +1,17 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.module;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -123,7 +120,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
-	public void shouldExcludePrevouslyStoppedModulesOnShutdown() {
+	public void shouldExcludePreviouslyStoppedModulesOnShutdown() {
 		//At OpenMRS shutdown, willStop() and stopped() methods get called for all 
 		//started module's activator EXCLUDING any module(s) that were previously stopped.
 		
@@ -167,5 +164,16 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getWillStopCallCount(MODULE2_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE1_ID) == 0);
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
+	}
+	
+	@Test
+	public void shouldStartBeforeAnotherModule() {
+		//module 1 should start before module 5
+		//module 5 should start before module 4
+		assertTrue(moduleTestData.getWillStartCallTime(MODULE5_ID) <= moduleTestData.getWillStartCallTime(MODULE4_ID));
+		assertTrue(moduleTestData.getWillStartCallTime(MODULE1_ID) <= moduleTestData.getWillStartCallTime(MODULE5_ID));
+		
+		assertTrue(moduleTestData.getStartedCallTime(MODULE5_ID) <= moduleTestData.getStartedCallTime(MODULE4_ID));
+		assertTrue(moduleTestData.getStartedCallTime(MODULE1_ID) <= moduleTestData.getStartedCallTime(MODULE5_ID));
 	}
 }

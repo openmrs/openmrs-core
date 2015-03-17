@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.layout.web;
 
@@ -22,7 +18,10 @@ import java.util.Vector;
 
 /**
  * Generic class used by AddressTemplate and NameTemplate layouts
+ * @deprecated
+ * @see org.openmrs.layout.LayoutTemplate
  */
+@Deprecated
 public abstract class LayoutTemplate {
 	
 	protected final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
@@ -45,6 +44,8 @@ public abstract class LayoutTemplate {
 	
 	protected List<String> lineByLineFormat;
 	
+	protected List<String> requiredElements;
+	
 	protected int maxTokens = 0; // The largest number of tokens on one given line
 	
 	protected String startDate;
@@ -56,7 +57,7 @@ public abstract class LayoutTemplate {
 	
 	/**
 	 * Very crude way of setting just one line of template. This just puts
-	 * something on {@link #setLineByLineFormat(List)} with this string
+	 * something on {@link #setLineByLineFormat(java.util.List)} with this string
 	 *
 	 * @param simpleTemplate
 	 *            first template line
@@ -287,7 +288,7 @@ public abstract class LayoutTemplate {
 	 * Set the element formats. These can be used to display an example format that an element
 	 * should look like.
 	 *
-	 * @param elementFormats the elementFormats to set
+	 * @param elementRegexFormats the elementFormats to set
 	 */
 	public void setElementRegexFormats(Map<String, String> elementRegexFormats) {
 		this.elementRegexFormats = elementRegexFormats;
@@ -305,6 +306,20 @@ public abstract class LayoutTemplate {
 	 */
 	public void setLineByLineFormat(List<String> lineByLineFormat) {
 		this.lineByLineFormat = lineByLineFormat;
+	}
+	
+	/**
+	 * @return the requiredElements
+	 */
+	public List<String> getRequiredElements() {
+		return requiredElements;
+	}
+	
+	/**
+	 * @param requiredElements the requiredElements to set
+	 */
+	public void setRequiredElements(List<String> requiredElements) {
+		this.requiredElements = requiredElements;
 	}
 	
 	/**

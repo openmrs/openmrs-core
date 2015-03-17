@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <order_type order_type_id="100" name="some Order Type" parent="2" java_class_name="org.openmrs.TestOrder" description="Some lab order" creator="1" date_created="2008-08-15 15:49:04.0" retired="1" retired_by="1" retire_reason="None" date_retired="2008-08-15 00:00:00.0" uuid="dd3fb1d0-ae06-22e3-a5e2-0800211c9a66"/>
+    <orders order_id="101" order_type_id="7" order_number="ORD-101" urgency="ROUTINE" order_action="NEW" concept_id="5497" orderer="1" date_activated="2008-11-19 09:24:10.0" patient_id="2" care_setting="1" encounter_id="6" uuid="7d96f25c-4949-4f72-9931-d808fbc226de" date_created="2008-11-19 09:24:10.0" creator="1" voided="0" />
+    <orders order_id="102" order_type_id="100" order_number="ORD-102" urgency="ROUTINE" order_action="NEW" concept_id="5497" orderer="1" date_activated="2008-12-19 09:24:10.0" patient_id="2" care_setting="1" encounter_id="6" uuid="8d96f25c-4949-4f72-9931-d808fbc226de" date_created="2008-12-19 09:24:10.0" creator="1" voided="0" />
+    <orders order_id="103" order_type_id="9" order_number="ORD-103" urgency="ROUTINE" order_action="NEW" concept_id="5497" orderer="1" date_activated="2008-12-19 09:24:10.0" patient_id="2" care_setting="1" encounter_id="6" uuid="9d96f25c-4949-4f72-9931-d808fbc226de" date_created="2008-12-19 09:24:10.0" creator="1" voided="0" />
+    <orders order_id="104" order_type_id="10" order_number="ORD-104" urgency="ROUTINE" order_action="NEW" concept_id="5497" orderer="1" date_activated="2008-12-19 09:24:10.0" patient_id="2" care_setting="1" encounter_id="6" uuid="0d96f25c-4949-4f72-9931-d808fbc226de" date_created="2008-12-19 09:24:10.0" creator="1" voided="0" />
+</dataset>

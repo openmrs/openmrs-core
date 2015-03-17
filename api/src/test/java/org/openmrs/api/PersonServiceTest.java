@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -31,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Location;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -378,6 +375,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonAttributeType pat = new PersonAttributeType();
 		pat.setName("attr type name");
 		pat.setDescription("attr type desc");
+		pat.setFormat("java.lang.String");
 		
 		service.savePersonAttributeType(pat);
 		
@@ -1225,6 +1223,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonAttributeType pat = new PersonAttributeType();
 		pat.setName("attr type name");
 		pat.setDescription("attr type desc");
+		pat.setFormat("java.lang.String");
 		
 		service.savePersonAttributeType(pat);
 		
@@ -2121,4 +2120,70 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(address.isPreferred());
 	}
 	
+	/**
+	 * Creates a new Global Property to lock person attribute types by setting its value
+	 * @param propertyValue value for person attribute types locked GP
+	 */
+	public void createPersonAttributeTypeLockedGPAndSetValue(String propertyValue) {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED);
+		gp.setPropertyValue(propertyValue);
+		Context.getAdministrationService().saveGlobalProperty(gp);
+	}
+	
+	/**
+	 * @see {@link PersonService#savePersonAttributeType(PersonAttributeType)}
+	 * @throws PersonAttributeTypeLockedException
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(method = "savePersonAttributeType(PersonAttributeType)", value = "should throw an error when trying to save person attribute type while person attribute types are locked")
+	public void savePersonAttributeType_shouldThrowAnErrorWhenTryingToSavePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
+	        throws Exception {
+		PersonService ps = Context.getPersonService();
+		createPersonAttributeTypeLockedGPAndSetValue("true");
+		PersonAttributeType pat = ps.getPersonAttributeType(1);
+		pat.setDescription("New person attribute type");
+		ps.savePersonAttributeType(pat);
+	}
+	
+	/**
+	 * @see {@link PersonService#retirePersonAttributeType(PersonAttributeType, String)}
+	 * @throws PersonAttributeTypeLockedException
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(method = "retirePersonAttributeType(PersonAttributeType, String)", value = "should throw an error when trying to retire person attribute type while person attribute types are locked")
+	public void retirePersonAttributeType_shouldThrowAnErrorWhenTryingToRetirePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
+	        throws Exception {
+		PersonService ps = Context.getPersonService();
+		createPersonAttributeTypeLockedGPAndSetValue("true");
+		PersonAttributeType pat = ps.getPersonAttributeType(1);
+		ps.retirePersonAttributeType(pat, "Retire test");
+	}
+	
+	/**
+	 * @see {@link PersonService#unretirePersonAttributeType(PersonAttributeType)}
+	 * @throws PersonAttributeTypeLockedException
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(method = "unretirePersonAttributeType(PersonAttributeType)", value = "should throw an error when trying to unretire person attribute type while person attribute types are locked")
+	public void unretirePersonAttributeType_shouldThrowAnErrorWhenTryingToUnretirePersonAttributeTypeWhilePersonAttributeTypesAreLocked()
+	        throws Exception {
+		PersonService ps = Context.getPersonService();
+		createPersonAttributeTypeLockedGPAndSetValue("true");
+		PersonAttributeType pat = ps.getPersonAttributeType(1);
+		ps.unretirePersonAttributeType(pat);
+	}
+	
+	/**
+	 * @see {@link PersonService#purgePersonAttributeType(PersonAttributeType)}
+	 * @throws PersonAttributeTypeLockedException
+	 */
+	@Test(expected = PersonAttributeTypeLockedException.class)
+	@Verifies(method = "purgePersonAttributeType(PersonAttributeType)", value = "should throw an error when trying to delete person attribute type while person attribute types are locked")
+	public void purgePersonAttributeType_shouldThrowAnErrorWhileTryingToDeletePersonAttributeTypeWhenPersonAttributeTypesAreLocked()
+	        throws Exception {
+		PersonService ps = Context.getPersonService();
+		createPersonAttributeTypeLockedGPAndSetValue("true");
+		PersonAttributeType pat = ps.getPersonAttributeType(1);
+		ps.purgePersonAttributeType(pat);
+	}
 }

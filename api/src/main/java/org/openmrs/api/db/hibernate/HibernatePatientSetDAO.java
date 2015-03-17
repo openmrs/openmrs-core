@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
@@ -72,6 +68,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
@@ -93,7 +90,7 @@ import org.w3c.dom.Element;
  * <br/>
  * This class should not be instantiated. Rather, it is injected into the PatientSetService by
  * Spring.
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.PatientSetService
  * @see org.openmrs.api.db.PatientSetDAO
@@ -109,7 +106,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Set sessionFactory.getCurrentSession() factory
-	 *
+	 * 
 	 * @param sessionFactory SessionFactory to set
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -209,7 +206,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Note that the formatting may depend on locale
-	 *
+	 * 
 	 * @deprecated
 	 */
 	@Deprecated
@@ -383,24 +380,20 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 						if (order.getInstructions() != null) {
 							orderNode.setAttribute("instructions", order.getInstructions());
 						}
-						if (order.getStartDate() != null) {
-							orderNode.setAttribute("start_date", df.format(order.getStartDate()));
+						if (order.getDateActivated() != null) {
+							orderNode.setAttribute("date_activated", df.format(order.getDateActivated()));
 						}
 						if (order.getAutoExpireDate() != null) {
 							orderNode.setAttribute("auto_expire_date", df.format(order.getAutoExpireDate()));
 						}
 						if (order.getOrderer() != null) {
-							orderNode.setAttribute("orderer", order.getOrderer().getProviderId() + "^"
-							        + order.getOrderer().getName());
+							orderNode.setAttribute("orderer", formatProvider(order.getOrderer()));
 						}
-						if (order.getDiscontinued() != null) {
-							orderNode.setAttribute("discontinued", order.getDiscontinued().toString());
+						if (order.getDateStopped() != null) {
+							orderNode.setAttribute("date_stopped", df.format(order.getDateStopped()));
 						}
-						if (order.getDiscontinuedDate() != null) {
-							orderNode.setAttribute("discontinued_date", df.format(order.getDiscontinuedDate()));
-						}
-						if (order.getDiscontinuedReason() != null) {
-							orderNode.setAttribute("discontinued_reason", order.getDiscontinuedReason());
+						if (order.getOrderReason() != null) {
+							orderNode.setAttribute("order_reason", order.getOrderReason().getName(locale, false).getName());
 						}
 						
 						ordersNode.appendChild(orderNode);
@@ -471,7 +464,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * given program, workflow, and state, within a given date range
-	 *
+	 * 
 	 * @param program The program the patient must have been in
 	 * @param stateList List of states the patient must have been in (implies a workflow) (can be
 	 *            null)
@@ -842,7 +835,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * within <code>startTime</code> and <code>endTime</code>
-	 *
+	 * 
 	 * @param conceptId
 	 * @param startTime
 	 * @param endTime
@@ -1169,25 +1162,25 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				}
 				continue;
 				//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
-			} else if (attribute.equals("valueDate")) {
+			} else if ("valueDate".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("valueTime")) {
+			} else if ("valueTime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("valueDatetime")) {
+			} else if ("valueDatetime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("obsDatetime")) {
+			} else if ("obsDatetime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("location")) {
+			} else if ("location".equals(attribute)) {
 				// pass -- same column name
 				classNames.add("obs.location");
 				attribute = "location.name";
-			} else if (attribute.equals("comment")) {
+			} else if ("comment".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("encounterType")) {
+			} else if ("encouterType".equals(attribute)) {
 				classNames.add("obs.encounter");
 				classNames.add("encounter.encounterType");
 				attribute = "encounterType.name";
-			} else if (attribute.equals("provider")) {
+			} else if ("provider".equals(attribute)) {
 				classNames.add("obs.encounter");
 				attribute = "encounter.provider";
 			} else {
@@ -1293,16 +1286,16 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		String abbrev = c.getDatatype().getHl7Abbreviation();
 		List<String> columns = new Vector<String>();
 		
-		if (abbrev.equals("BIT")) {
+		if ("BIT".equals(abbrev)) {
 			columns.add("valueCoded");
-		} else if (abbrev.equals("CWE")) {
+		} else if ("CWE".equals(abbrev)) {
 			columns.add("valueDrug");
 			columns.add("valueCoded");
-		} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+		} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 			columns.add("valueNumeric");
-		} else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS")) {
+		} else if ("DT".equals(abbrev) || "TM".equals(abbrev) || "TS".equals(abbrev)) {
 			columns.add("valueDatetime");
-		} else if (abbrev.equals("ST")) {
+		} else if ("ST".equals(abbrev)) {
 			columns.add("valueText");
 		}
 		
@@ -1346,7 +1339,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
-	 *
+	 * 
 	 * @param patients the patients to filter by (null will return all encounters for all patients)
 	 * @param forms the forms to filter by
 	 */
@@ -1496,9 +1489,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Criteria criteria = null;
 		
 		// make 'patient.**' reference 'patient' like alias instead of object
-		if (className.equals("org.openmrs.Patient")) {
+		if ("org.openmrs.Patient".equals(className)) {
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Patient", "patient");
-		} else if (className.equals("org.openmrs.Person")) {
+		} else if ("org.openmrs.Person".equals(className)) {
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Person", "person");
 		} else {
 			criteria = sessionFactory.getCurrentSession().createCriteria(className);
@@ -1519,7 +1512,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			
 			// do not include voided person rows
-			if (className.equals("org.openmrs.Person")) {
+			if ("org.openmrs.Person".equals(className)) {
 				// the voided column on the person table is mapped to the person object
 				// through the getPersonVoided() to distinguish it from patient/user.voided
 				criteria.add(Restrictions.eq("personVoided", false));
@@ -1546,7 +1539,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		try {
 			boolean hasPreferred = false;
 			for (Field f : Class.forName(className).getDeclaredFields()) {
-				if (f.getName().equals("preferred")) {
+				if ("preferred".equals(f.getName())) {
 					hasPreferred = true;
 				}
 			}
@@ -1780,7 +1773,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * Returns a Map from patientId to a Collection of drugIds for drugs active for the patients on
 	 * that date If patientIds is null then do this for all patients Does not return anything for
 	 * voided patients
-	 *
+	 * 
 	 * @throws DAOException
 	 */
 	@SuppressWarnings("unchecked")
@@ -1794,11 +1787,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<String> whereClauses = new ArrayList<String>();
 		whereClauses.add("o.voided = false");
 		if (toDate != null) {
-			whereClauses.add("o.start_date <= :toDate");
+			whereClauses.add("o.date_activated <= :toDate");
 		}
 		if (fromDate != null) {
 			whereClauses.add("(o.auto_expire_date is null or o.auto_expire_date > :fromDate)");
-			whereClauses.add("(o.discontinued_date is null or o.discontinued_date > :fromDate)");
+			whereClauses.add("(o.date_stopped is null or o.date_stopped > :fromDate)");
 		}
 		
 		StringBuilder sql = new StringBuilder("select o.patient_id, d.drug_inventory_id " + "from orders o "
@@ -1930,11 +1923,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			criteria.add(Restrictions.in("concept", drugConcepts));
 		}
 		criteria.add(Restrictions.eq("voided", false));
-		criteria.add(Restrictions.le("startDate", now));
-		criteria.add(Restrictions.or(Restrictions.and(Restrictions.eq("discontinued", false), Restrictions.or(Restrictions
-		        .isNull("autoExpireDate"), Restrictions.gt("autoExpireDate", now))), Restrictions.and(Restrictions.eq(
-		    "discontinued", true), Restrictions.gt("discontinuedDate", now))));
-		criteria.addOrder(org.hibernate.criterion.Order.asc("startDate"));
+		criteria.add(Restrictions.le("dateActivated", now));
+		criteria.add(Restrictions.and(Restrictions.or(Restrictions.isNull("autoExpireDate"), Restrictions.gt(
+		    "autoExpireDate", now)), Restrictions
+		        .or(Restrictions.isNull("dateStopped"), Restrictions.gt("dateStopped", now))));
+		criteria.addOrder(org.hibernate.criterion.Order.asc("dateActivated"));
 		log.debug("criteria: " + criteria);
 		List<DrugOrder> temp = criteria.list();
 		for (DrugOrder regimen : temp) {
@@ -1969,7 +1962,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			criteria.add(Restrictions.in("concept", drugConcepts));
 		}
 		criteria.add(Restrictions.eq("voided", false));
-		criteria.addOrder(org.hibernate.criterion.Order.asc("startDate"));
+		criteria.addOrder(org.hibernate.criterion.Order.asc("dateActivated"));
 		log.debug("criteria: " + criteria);
 		List<DrugOrder> temp = criteria.list();
 		for (DrugOrder regimen : temp) {
@@ -1994,10 +1987,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			throw new IllegalArgumentException("Must give a relationship type");
 		}
 		Map<Integer, List<Person>> ret = new HashMap<Integer, List<Person>>();
-		if (patients != null) {
-			if (patients.size() == 0) {
-				return ret;
-			}
+		if (patients != null && patients.size() == 0) {
+			return ret;
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);
@@ -2083,7 +2074,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	public Cohort getPatientsHavingDrugOrder(List<Drug> drugList, List<Concept> drugConceptList, Date startDateFrom,
-	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> discontinuedReason) {
+	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> orderReason) {
 		if (drugList != null && drugList.size() == 0) {
 			drugList = null;
 		}
@@ -2099,29 +2090,28 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" and concept.id in (:drugConceptIdList) ");
 		}
 		if (startDateFrom != null && startDateTo != null) {
-			sb.append(" and startDate between :startDateFrom and :startDateTo ");
+			sb.append(" and dateActivated between :startDateFrom and :startDateTo ");
 		} else {
 			if (startDateFrom != null) {
-				sb.append(" and startDate >= :startDateFrom ");
+				sb.append(" and dateActivated >= :startDateFrom ");
 			}
 			if (startDateTo != null) {
-				sb.append(" and startDate <= :startDateTo ");
+				sb.append(" and dateActivated <= :startDateTo ");
 			}
 		}
-		if (discontinuedReason != null && discontinuedReason.size() > 0) {
-			sb.append(" and discontinuedReason.id in (:discontinuedReasonIdList) ");
+		if (orderReason != null && orderReason.size() > 0) {
+			sb.append(" and orderReason.id in (:orderReasonIdList) ");
 		}
 		if (discontinued != null) {
-			sb.append(" and discontinued = :discontinued ");
-			if (discontinued == true) {
+			if (discontinued) {
 				if (stopDateFrom != null && stopDateTo != null) {
-					sb.append(" and discontinuedDate between :stopDateFrom and :stopDateTo ");
+					sb.append(" and dateStopped between :stopDateFrom and :stopDateTo ");
 				} else {
 					if (stopDateFrom != null) {
-						sb.append(" and discontinuedDate >= :stopDateFrom ");
+						sb.append(" and dateStopped >= :stopDateFrom ");
 					}
 					if (stopDateTo != null) {
-						sb.append(" and discontinuedDate <= :stopDateTo ");
+						sb.append(" and dateStopped <= :stopDateTo ");
 					}
 				}
 			} else { // discontinued == false
@@ -2138,13 +2128,13 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 		} else { // discontinued == null, so we need either
 			if (stopDateFrom != null && stopDateTo != null) {
-				sb.append(" and coalesce(discontinuedDate, autoExpireDate) between :stopDateFrom and :stopDateTo ");
+				sb.append(" and coalesce(dateStopped, autoExpireDate) between :stopDateFrom and :stopDateTo ");
 			} else {
 				if (stopDateFrom != null) {
-					sb.append(" and coalesce(discontinuedDate, autoExpireDate) >= :stopDateFrom ");
+					sb.append(" and coalesce(dateStopped, autoExpireDate) >= :stopDateFrom ");
 				}
 				if (stopDateTo != null) {
-					sb.append(" and coalesce(discontinuedDate, autoExpireDate) <= :stopDateTo ");
+					sb.append(" and coalesce(dateStopped, autoExpireDate) <= :stopDateTo ");
 				}
 			}
 		}
@@ -2180,12 +2170,12 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (discontinued != null) {
 			query.setBoolean("discontinued", discontinued);
 		}
-		if (discontinuedReason != null && discontinuedReason.size() > 0) {
+		if (orderReason != null && orderReason.size() > 0) {
 			List<Integer> ids = new ArrayList<Integer>();
-			for (Concept c : discontinuedReason) {
+			for (Concept c : orderReason) {
 				ids.add(c.getConceptId());
 			}
-			query.setParameterList("discontinuedReasonIdList", ids);
+			query.setParameterList("orderReasonIdList", ids);
 		}
 		
 		return new Cohort(query.list());
@@ -2242,7 +2232,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/**
-	 *
 	 * @see org.openmrs.api.db.PatientSetDAO#getPatientsByRelationship(org.openmrs.RelationshipType,
 	 *      boolean, boolean, org.openmrs.Person)
 	 */
@@ -2336,7 +2325,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@Override
 	public Integer getCountOfPatients() {
 		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = '0'");
-		return new Integer(query.uniqueResult().toString());
+		return Integer.valueOf(query.uniqueResult().toString());
 	}
 	
 	@Override
@@ -2356,6 +2345,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		ids.addAll(query.list());
 		
 		return new Cohort("Batch of " + size + " patients starting at " + start, "", ids);
+	}
+	
+	private String formatProvider(Provider p) {
+		return p.getName();
 	}
 	
 }

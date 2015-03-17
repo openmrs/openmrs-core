@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept concept_id="1" retired="false" datatype_id="1" class_id="11" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="4a5048b1-cf85-4c64-9339-7cab41e5e364"/>
+    <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="8b46218d-8dcf-4f45-91b5-837d11486a53"/>
+    <concept_name concept_id="1" name="Discontinue reason" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="8add472b-156b-468f-ad62-d9333fb86976" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+</dataset>

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -20,6 +16,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +45,7 @@ import org.openmrs.Patient;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.Role;
+import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
@@ -69,6 +67,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-initialData.xml";
 	
 	protected static final String UNIQUE_ENC_WITH_PAGING_XML = "org/openmrs/api/include/EncounterServiceTest-pagingWithUniqueEncounters.xml";
+	
+	protected static final String TRANSFER_ENC_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-transferEncounter.xml";
 	
 	/**
 	 * This method is run before all of the tests in this class because it has the @Before
@@ -258,6 +258,50 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		newObs.setValueNumeric(50d);
 		newObs.setLocation(new Location(2));
 		return newObs;
+	}
+	
+	/**
+	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should set date stopped on the original after adding revise order", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldSetDateStoppedOnTheOriginalAfterAddingReviseOrder() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		
+		TestOrder order = (TestOrder) Context.getOrderService().getOrder(7);
+		Assert.assertNull(order.getDateStopped());
+		
+		Encounter encounter = es.getEncounter(6);
+		TestOrder reviseOrder = order.cloneForRevision();
+		reviseOrder.setOrderer(Context.getProviderService().getProvider(1));
+		
+		encounter.addOrder(reviseOrder);
+		es.saveEncounter(encounter);
+		
+		Context.flushSession();
+		Context.clearSession();
+		
+		Date dateStopped = Context.getOrderService().getOrder(7).getDateStopped();
+		Assert.assertNotNull(dateStopped);
+	}
+	
+	/**
+	 * @see {@link EncounterService#unvoidEncounter(Encounter)}
+	 */
+	@Test
+	@Verifies(value = "should not cascade to existing order", method = "saveEncounter(Encounter)")
+	public void saveEncounter_shouldNotCascadeToExistingOrder() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		
+		TestOrder order = (TestOrder) Context.getOrderService().getOrder(7);
+		order.setVoided(true);
+		
+		Encounter encounter = es.getEncounter(6);
+		es.saveEncounter(encounter);
+		
+		String sql = "SELECT voided FROM orders WHERE order_id=7";
+		Boolean voided = (Boolean) Context.getAdministrationService().executeSQL(sql, true).get(0).get(0);
+		Assert.assertFalse(voided);
 	}
 	
 	/**
@@ -483,19 +527,29 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		User creator = new User(1);
 		encounter.setCreator(creator);
 		
+		ConceptService cs = Context.getConceptService();
 		// create and add an obs to this encounter
-		Obs obs = new Obs(new Patient(2), new Concept(1), new Date(), new Location(1));
+		Obs obs = new Obs(new Patient(2), cs.getConcept(1), new Date(), new Location(1));
 		obs.setDateCreated(date);
 		obs.setCreator(creator);
 		encounter.addObs(obs);
 		
+		OrderService os = Context.getOrderService();
 		// create and add an order to this encounter
-		Order order = new Order();
-		order.setConcept(new Concept(1));
+		TestOrder order = new TestOrder();
+		order.setConcept(Context.getConceptService().getConcept(5497));
 		order.setPatient(new Patient(2));
-		order.setStartDate(new Date());
+		order.setDateActivated(new Date());
+		order.setOrderType(os.getOrderType(2));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		Field field = Order.class.getDeclaredField("orderNumber");
+		field.setAccessible(true);
+		field.set(order, "ORD-1");
+		
 		order.setDateCreated(date);
 		order.setCreator(creator);
+		
+		order.setCareSetting(os.getCareSetting(1));
 		encounter.addOrder(order);
 		
 		// make sure the logged in user isn't the user we're testing with
@@ -511,7 +565,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure the order date created and creator are the same as what we
 		// set
-		Order createdOrder = Context.getOrderService().getOrder(order.getOrderId());
+		Order createdOrder = os.getOrder(order.getOrderId());
 		assertEquals(date, createdOrder.getDateCreated());
 		assertEquals(creator, createdOrder.getCreator());
 	}
@@ -741,18 +795,18 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// test for a min date long before all dates
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2004-12-31"), null,
 		    null, null, null, false);
-		assertEquals(4, encounters.size());
+		assertEquals(5, encounters.size());
 		assertEquals(1, encounters.get(0).getEncounterId().intValue());
 		
 		// test for exact date search
 		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-01"), null, null, null,
 		    null, false);
-		assertEquals(4, encounters.size());
+		assertEquals(5, encounters.size());
 		
 		// test for one day later
 		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-02"), null, null, null,
 		    null, false);
-		assertEquals(3, encounters.size());
+		assertEquals(4, encounters.size());
 		assertEquals(3, encounters.get(0).getEncounterId().intValue());
 		assertEquals(4, encounters.get(1).getEncounterId().intValue());
 		assertEquals(5, encounters.get(2).getEncounterId().intValue());
@@ -782,7 +836,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		forms.add(new Form(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, null,
 		    true);
-		assertEquals(7, encounters.size());
+		assertEquals(8, encounters.size());
 	}
 	
 	/**
@@ -808,7 +862,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		types.add(new EncounterType(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, null,
 		    true);
-		assertEquals(6, encounters.size());
+		assertEquals(7, encounters.size());
 	}
 	
 	/**
@@ -817,7 +871,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should exclude voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldExcludeVoidedEncounters() throws Exception {
-		assertEquals(5, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, false).size());
+		assertEquals(6, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, false).size());
 	}
 	
 	/**
@@ -826,7 +880,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should include voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldIncludeVoidedEncounters() throws Exception {
-		assertEquals(7, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, true).size());
+		assertEquals(8, Context.getEncounterService().getEncounters(null, null, null, null, null, null, null, true).size());
 	}
 	
 	/**
@@ -945,6 +999,27 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterType newEncounterType = encounterService.getEncounterType(encounterType.getEncounterTypeId());
 		assertNotNull(newEncounterType);
 		assertEquals(date, encounterType.getDateCreated());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounterType(String)}
+	 */
+	@Test
+	@Verifies(value = "should not get retired types", method = "getEncounterType(String)")
+	public void getEncounterType_shouldNotGetRetiredTypes() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// loop over all types to make sure
+		// that the retired "Test Enc Type C" exists
+		boolean foundRetired = false;
+		for (EncounterType encType : encounterService.getAllEncounterTypes(true)) {
+			if (encType.getName().equals("Test Enc Type C") && encType.isRetired()) {
+				foundRetired = true;
+			}
+		}
+		assertTrue(foundRetired);
+		
+		assertNull(encounterService.getEncounterType("Test Enc Type C"));
 	}
 	
 	/**
@@ -1314,7 +1389,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient("John", false);
-		assertEquals(2, encounters.size());
+		assertEquals(3, encounters.size());
 	}
 	
 	/**
@@ -2600,5 +2675,77 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("valid EncounterROle object should be returned", encounterRoles);
 		assertEquals(encounterRoles.size(), 1);
 		assertEquals(encounterRoles.get(0).getName(), name);
+	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 */
+	@Test
+	@Verifies(value = "transfer an encounter with orders and observations to given patient", method = "transferEncounter(Encounter,Patient)")
+	public void transferEncounter_shouldTransferAnEncounterWithOrdersAndObservationsToGivenPatient() throws Exception {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient targetPatient = Context.getPatientService().getPatient(201);
+		// encounter has 2 obs which are connected with the same order
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(201);
+		
+		Assert.assertEquals(1, sourceEncounter.getOrders().size());
+		Assert.assertEquals(2, sourceEncounter.getObs().size());
+		
+		//transfer
+		Encounter transferredEncounter = Context.getEncounterService().transferEncounter(sourceEncounter, targetPatient);
+		List<Order> transferredOrders = new ArrayList<Order>(transferredEncounter.getOrders());
+		List<Obs> transferredObservations = new ArrayList<Obs>(transferredEncounter.getObs());
+		
+		//check if transferredEncounter is newly created encounter
+		Assert.assertNotEquals(sourceEncounter.getId(), transferredEncounter.getId());
+		Assert.assertEquals(targetPatient, transferredEncounter.getPatient());
+		
+		//check order
+		Assert.assertEquals(1, transferredOrders.size());
+		Order transferredOrder = transferredOrders.get(0);
+		Assert.assertEquals(targetPatient, transferredOrder.getPatient());
+		
+		//check obs
+		Assert.assertEquals(2, transferredObservations.size());
+		Assert.assertEquals(targetPatient, transferredObservations.get(0).getPerson());
+		Assert.assertEquals(targetPatient, transferredObservations.get(1).getPerson());
+		
+		//check if obs has reference to the same order
+		Assert.assertEquals(transferredOrder, transferredObservations.get(0).getOrder());
+		Assert.assertEquals(transferredOrder, transferredObservations.get(1).getOrder());
+		Assert.assertSame(transferredObservations.get(0).getOrder(), transferredObservations.get(1).getOrder());
+		
+		//check if form is transferred
+		Assert.assertNotNull(transferredEncounter.getForm());
+	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 */
+	@Test
+	@Verifies(value = "void given encounter", method = "transferEncounter(Encounter,Patient)")
+	public void transferEncounter_shouldVoidGivenEncounter() throws Exception {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient anyPatient = new Patient(2);
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(200);
+		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
+		//get fresh encounter from db
+		Encounter sourceEncounterAfterTransfer = Context.getEncounterService().getEncounter(sourceEncounter.getId());
+		Assert.assertTrue(sourceEncounterAfterTransfer.isVoided());
+	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 */
+	@Test
+	@Verifies(value = "void given encounter visit if given encounter is the only encounter", method = "transferEncounter(Encounter,Patient)")
+	public void transferEncounter_shouldVoidGivenEncounterVisitIfGivenEncounterIsTheOnlyEncounter() throws Exception {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient anyPatient = new Patient(2);
+		//belongs to visit with id 2 (has this encounter only)
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(200);
+		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
+		Visit visit = Context.getVisitService().getVisit(200);
+		Assert.assertTrue(visit.isVoided());
 	}
 }

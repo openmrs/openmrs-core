@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.scheduler.web.controller;
 
@@ -44,7 +40,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected static final Log log = LogFactory.getLog(SchedulerFormController.class);
+	private static final Log log = LogFactory.getLog(SchedulerFormController.class);
 	
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
@@ -54,14 +50,13 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(java.lang.Long.class, new CustomNumberEditor(java.lang.Long.class, true));
 		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(DEFAULT_DATE_FORMAT, true));
@@ -71,6 +66,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should not throw null pointer exception if repeat interval is null
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command,
@@ -97,16 +93,19 @@ public class SchedulerFormController extends SimpleFormController {
 		// if the user selected a different repeat interval unit, fix repeatInterval
 		String units = request.getParameter("repeatIntervalUnits");
 		Long interval = task.getRepeatInterval();
-		
-		if ("minutes".equals(units)) {
-			interval = interval * 60;
-		} else if ("hours".equals(units)) {
-			interval = interval * 60 * 60;
-		} else if ("days".equals(units)) {
-			interval = interval * 60 * 60 * 24;
+		if (interval != null) {
+			if ("minutes".equals(units)) {
+				interval = interval * 60;
+			} else if ("hours".equals(units)) {
+				interval = interval * 60 * 60;
+			} else if ("days".equals(units)) {
+				interval = interval * 60 * 60 * 24;
+			}
+			
+			task.setRepeatInterval(interval);
+		} else {
+			task.setRepeatInterval(0L);
 		}
-		
-		task.setRepeatInterval(interval);
 		
 		return super.processFormSubmission(request, response, task, errors);
 	}
@@ -114,7 +113,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -157,7 +156,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override

@@ -64,7 +64,7 @@ dojo.widget.defineWidget(
 				this.changeButton.style.display = "none";
 		},
 		
-		templateString: '<span id="$' + '{this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="' + omsgs.select + '" dojoAttachPoint="changeButton" class="smallButton" /> </span><span dojoAttachPoint="otherNode"><input type="text" value="" dojoAttachPoint="otherInputNode" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
+		templateString: '<span id="$' + '{this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="hidden" value="" dojoAttachPoint="hiddenCodedDatatype" id="hiddenCodedDatatype"/><input type="button" value="' + omsgs.select + '" dojoAttachPoint="changeButton" class="smallButton" /> </span><span dojoAttachPoint="otherNode"><input type="text" value="" dojoAttachPoint="otherInputNode" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
 		templateCssPath: "",
 		
 		postCreate: function(createdObject) {

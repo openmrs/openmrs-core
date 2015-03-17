@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.obs.handler;
 
@@ -22,6 +18,9 @@ import java.io.Reader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.util.Assert;
+
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
@@ -35,6 +34,10 @@ import org.openmrs.util.OpenmrsUtil;
  *
  */
 public class TextHandler extends AbstractHandler implements ComplexObsHandler {
+	
+	/** Views supported by this handler */
+	private static final String[] supportedViews = { ComplexObsHandler.TEXT_VIEW, ComplexObsHandler.RAW_VIEW,
+	        ComplexObsHandler.URI_VIEW, };
 	
 	public static final Log log = LogFactory.getLog(TextHandler.class);
 	
@@ -56,24 +59,43 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
-		// to handle problem with downloading/saving files with blank spaces or commas in their names
-		// also need to remove the "file" text appended to the end of the file name
-		String[] names = obs.getValueComplex().split("\\|");
-		String originalFilename = names[0];
-		if ("download".equals(view)) {
+		
+		if (ComplexObsHandler.TEXT_VIEW.equals(view) || ComplexObsHandler.RAW_VIEW.equals(view)) {
+			// to handle problem with downloading/saving files with blank spaces or commas in their names
+			// also need to remove the "file" text appended to the end of the file name
+			String[] names = obs.getValueComplex().split("\\|");
+			String originalFilename = names[0];
 			originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$", "");
+			
+			try {
+				complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(originalFilename, OpenmrsUtil
+				        .getFileAsBytes(file)) : new ComplexData(originalFilename, OpenmrsUtil.getFileAsString(file));
+			}
+			catch (IOException e) {
+				log.error("Trying to read file: " + file.getAbsolutePath(), e);
+			}
+		} else if (ComplexObsHandler.URI_VIEW.equals(view)) {
+			complexData = new ComplexData(file.getName(), file.getPath());
+		}
+		// No other view supported
+		// NOTE: if adding support for another view, don't forget to update supportedViews list above
+		else {
+			return null;
 		}
 		
-		try {
-			complexData = new ComplexData(originalFilename, OpenmrsUtil.getFileAsString(file).toCharArray());
-		}
-		catch (IOException e) {
-			log.error("Trying to read file: " + file.getAbsolutePath(), e);
-		}
-		
+		Assert.notNull(complexData, "Complex data must not be null");
+		complexData.setMIMEType("text/plain");
 		obs.setComplexData(complexData);
 		
 		return obs;
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+	 */
+	@Override
+	public String[] getSupportedViews() {
+		return supportedViews;
 	}
 	
 	/**
@@ -106,10 +128,10 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 						}
 						fout.write(character);
 					}
+					tempRd.close();
 				}
 				catch (IOException e) {
-					throw new APIException(
-					        "Unable to convert complex data to a valid Reader and then read it into a buffered image");
+					throw new APIException("Obs.error.unable.convert.complex.data", new Object[] { "Reader" }, e);
 				}
 			}
 			
@@ -121,7 +143,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 			
 		}
 		catch (IOException ioe) {
-			throw new APIException("Trying to write complex obs to the file system. ", ioe);
+			throw new APIException("Obs.error.trying.write.complex", null, ioe);
 		}
 		finally {
 			try {

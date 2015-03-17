@@ -53,6 +53,9 @@ function showCalendar(obj, yearsPrevious, yearsNext) {
 	}
 	
 	opts["yearRange"] = "-"+yearsPrevious+":+"+yearsNext;
+
+	if (gp.weekStart)
+		opts["firstDay"] = gp.weekStart;
 	
 	var dp = new DatePicker(jsDateFormat, obj.id, opts);
 	jQuery.datepicker.setDefaults(jQuery.datepicker.regional[jsLocale]);

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.obs.handler;
 
@@ -18,7 +14,9 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
@@ -89,7 +87,7 @@ public class AbstractHandler {
 		while (obs.getObsId() == null && outputfile.exists() && i < 100) {
 			tmp = null;
 			// Remove the extension from the filename.
-			tmp = new String(outputfile.getAbsolutePath().replace("." + extension, ""));
+			tmp = String.valueOf(outputfile.getAbsolutePath().replace("." + extension, ""));
 			outputfile = null;
 			// Append two-digit count number to the filename.
 			String filename = (i < 1) ? tmp + "_" + nf.format(Integer.valueOf(++i)) : tmp.replace(nf.format(Integer
@@ -116,7 +114,7 @@ public class AbstractHandler {
 		log.debug("titles length: " + filenameParts.length);
 		
 		String extension = (filenameParts.length < 2) ? filenameParts[0] : filenameParts[filenameParts.length - 1];
-		extension = (null != extension && !"".equals(extension)) ? extension : "raw";
+		extension = StringUtils.isNotEmpty(extension) ? extension : "raw";
 		
 		return extension;
 	}
@@ -169,6 +167,20 @@ public class AbstractHandler {
 		File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		return new File(dir, filename);
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+	 */
+	public String[] getSupportedViews() {
+		return new String[0];
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#supportsView(java.lang.String)
+	 */
+	public boolean supportsView(String view) {
+		return Arrays.asList(getSupportedViews()).contains(view);
 	}
 	
 }

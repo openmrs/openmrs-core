@@ -1,5 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/openmrs/openmrs-core.png?branch=master)](https://travis-ci.org/openmrs/openmrs-core)
 
+
 OpenMRS is an patient-based medical record system focusing on giving providers a free customizable EMR.
 
 Read more at http://openmrs.org/about
@@ -44,10 +45,6 @@ The project tree is set up as follows:
  <tr>
   <td>build.xml</td>
   <td>(deprecated) ANT build file containing convenience methods into the maven build</td>
- </tr>
- <tr>
-  <td>license.txt</td>
-  <td>The OpenMRS license</td>
  </tr>
  <tr>
   <td>liquibase.build.xml</td>

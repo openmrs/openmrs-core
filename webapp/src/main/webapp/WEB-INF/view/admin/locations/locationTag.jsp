@@ -70,11 +70,11 @@
 			<tr <c:if test="${locationTag.retired == true}"> class="retired" </c:if> >
 				<td valign="top">
 					<a href="locationTagEdit.form?locationTagId=${locationTag.locationTagId}">
-						${locationTag.name}
+						<c:out value="${locationTag.name}"/>
 					</a>
 				</td>
 				<td valign="top">
-					${locationTag.description}
+					<c:out value="${locationTag.description}"/>
 				</td>
 				<td valign="top">
 					<openmrs:format user="${locationTag.creator}"/>

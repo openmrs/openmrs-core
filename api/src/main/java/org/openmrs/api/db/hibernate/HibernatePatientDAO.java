@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
@@ -20,6 +16,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -31,6 +29,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -215,19 +214,93 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, Integer, Integer)
+	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, boolean, Integer, Integer)
+	 * @should return exact match first
 	 */
 	@Override
-	public List<Patient> getPatients(String query, Integer start, Integer length) throws DAOException {
+	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws DAOException {
 		if (StringUtils.isBlank(query) || (length != null && length < 1)) {
 			return Collections.emptyList();
 		}
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query);
-		setFirstAndMaxResult(criteria, start, length);
+		if (start == null || start < 0) {
+			start = 0;
+		}
+		if (length == null) {
+			length = HibernatePersonDAO.getMaximumSearchResults();
+		}
 		
-		return criteria.list();
+		Criteria criteriaExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
+		    false, includeVoided);
+		
+		criteriaExactMatch.setProjection(Projections.rowCount());
+		Integer listSize = ((Number) criteriaExactMatch.uniqueResult()).intValue();
+		
+		criteriaExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
+		    true, includeVoided);
+		
+		LinkedHashSet<Patient> patients = new LinkedHashSet<Patient>();
+		
+		if (start < listSize) {
+			setFirstAndMaxResult(criteriaExactMatch, start, length);
+			patients.addAll(criteriaExactMatch.list());
+			
+			length -= patients.size();
+		}
+		
+		if (length > 0) {
+			Criteria criteriaAllMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteriaAllMatch = new PatientSearchCriteria(sessionFactory, criteriaAllMatch).prepareCriteria(query, null,
+			    false, includeVoided);
+			criteriaAllMatch.setProjection(Projections.rowCount());
+			
+			start -= listSize;
+			listSize = ((Number) criteriaAllMatch.uniqueResult()).intValue();
+			
+			criteriaAllMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteriaAllMatch = new PatientSearchCriteria(sessionFactory, criteriaAllMatch).prepareCriteria(query, null,
+			    true, includeVoided);
+			
+			if (start < listSize) {
+				setFirstAndMaxResult(criteriaAllMatch, start, length);
+				
+				List<Patient> patientsList = criteriaAllMatch.list();
+				
+				patients.addAll(patientsList);
+				
+				length -= patientsList.size();
+			}
+		}
+		
+		if (length > 0) {
+			Criteria criteriaNoExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteriaNoExactMatch = new PatientSearchCriteria(sessionFactory, criteriaNoExactMatch).prepareCriteria(query,
+			    false, false, includeVoided);
+			criteriaNoExactMatch.setProjection(Projections.rowCount());
+			
+			start -= listSize;
+			listSize = ((Number) criteriaNoExactMatch.uniqueResult()).intValue();
+			
+			criteriaNoExactMatch = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteriaNoExactMatch = new PatientSearchCriteria(sessionFactory, criteriaNoExactMatch).prepareCriteria(query,
+			    false, true, includeVoided);
+			
+			if (start < listSize) {
+				setFirstAndMaxResult(criteriaNoExactMatch, start, length);
+				patients.addAll(criteriaNoExactMatch.list());
+			}
+		}
+		return new ArrayList<Patient>(patients);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, Integer, Integer)
+	 */
+	@Override
+	public List<Patient> getPatients(String query, Integer start, Integer length) throws DAOException {
+		return getPatients(query, false, start, length);
 	}
 	
 	private void setFirstAndMaxResult(Criteria criteria, Integer start, Integer length) {
@@ -614,6 +687,23 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query);
+		
+		// Using Hibernate projections did NOT work here, the resulting queries could not be executed due to
+		// missing group-by clauses. Hence the poor man's implementation of counting search results.
+		//
+		return (long) criteria.list().size();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getCountOfPatients(String, boolean)
+	 */
+	public Long getCountOfPatients(String query, boolean includeVoided) {
+		if (StringUtils.isBlank(query)) {
+			return 0L;
+		}
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(query, includeVoided);
 		
 		// Using Hibernate projections did NOT work here, the resulting queries could not be executed due to
 		// missing group-by clauses. Hence the poor man's implementation of counting search results.

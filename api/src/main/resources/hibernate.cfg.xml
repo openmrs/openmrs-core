@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <!DOCTYPE hibernate-configuration PUBLIC
 "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
@@ -6,22 +17,10 @@
 <hibernate-configuration>
 
 	<session-factory>
-		<!-- Hibernate Search configuration -->
-		<property name="hibernate.search.default.directory_provider">
-			org.hibernate.search.store.FSDirectoryProvider
-		</property>
-		<!-- TODO: change this to just "lucene-index" where does it go then?
-		           (because windows machines don't put "~" in the same place as the app data dir)
-		     TODO: add this to the openmrs-runtime properties wiki page as an option
-		-->
-		<property name="hibernate.search.default.indexBase">
-			~/.OpenMRS/lucene-index/ 
-		</property>
-
         <property name="javax.persistence.validation.mode">none</property>
 
 		<!--  Hibernate Mapping files -->
-		
+
 		<!-- API -->
 		<mapping resource="org/openmrs/api/db/hibernate/ActiveListItem.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ActiveListType.hbm.xml" />
@@ -38,7 +37,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStateConversion.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSet.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptMap.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/ConceptWord.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptStopWord.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSource.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTerm.hbm.xml" />
@@ -46,6 +44,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptReferenceTermMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Drug.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DrugIngredient.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/DrugReferenceMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Field.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldAnswer.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FieldType.hbm.xml" />
@@ -54,8 +53,6 @@
         <mapping resource="org/openmrs/api/db/hibernate/FormResource.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/GlobalProperty.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Note.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/NoteType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttribute.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttributeType.hbm.xml" />
@@ -71,7 +68,9 @@
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifierType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Relationship.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/OrderType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/CareSetting.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Location.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationTag.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationAttributeType.hbm.xml" />
@@ -87,17 +86,13 @@
 		<mapping resource="org/openmrs/api/db/hibernate/PatientState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/SerializedObject.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/OrderFrequency.hbm.xml" />
 
 		<!-- HL7 -->
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InQueue.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InArchive.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InError.hbm.xml" />
-		
-		<!-- Reporting -->
-		<mapping resource="org/openmrs/reporting/db/hibernate/Report.hbm.xml" />
-		<mapping resource="org/openmrs/reporting/db/hibernate/ReportObject.hbm.xml" />
-		<mapping resource="org/openmrs/reporting/db/hibernate/ReportSchemaXml.hbm.xml" />
 		
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Template.hbm.xml" />

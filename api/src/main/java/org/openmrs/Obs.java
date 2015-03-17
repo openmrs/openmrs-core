@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -67,7 +63,7 @@ import org.openmrs.util.Format.FORMAT_TYPE;
  * newObs.setPreviousVersion(oldObs);
  * Context.getObsService().saveObs(newObs,"Your reason for the change here");
  * Context.getObsService().voidObs(oldObs, "Your reason for the change here");
- *
+ * 
  * @see Encounter
  */
 public class Obs extends BaseOpenmrsData implements java.io.Serializable {
@@ -75,6 +71,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	public static final long serialVersionUID = 112342333L;
 	
 	private static final Log log = LogFactory.getLog(Obs.class);
+	
+	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
+	
+	private static final int FORM_NAMESPACE_PATH_MAX_LENGTH = 255;
 	
 	protected Integer obsId;
 	
@@ -88,7 +88,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * The "parent" of this obs. It is the grouping that brings other obs together. note:
 	 * obsGroup.getConcept().isSet() should be true This will be non-null if this obs is a member of
 	 * another groupedObs
-	 *
+	 * 
 	 * @see #isObsGrouping() (??)
 	 */
 	protected Obs obsGroup;
@@ -134,6 +134,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Obs previousVersion;
 	
+	private String formNamespaceAndPath;
+	
 	/** default constructor */
 	public Obs() {
 	}
@@ -141,7 +143,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Required parameters constructor A value is also required, but that can be one of: valueCoded,
 	 * valueDrug, valueNumeric, or valueText
-	 *
+	 * 
 	 * @param person The Person this obs is acting on
 	 * @param question The question concept this obs is related to
 	 * @param obsDatetime The time this obs took place
@@ -165,7 +167,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * This is an equivalent to a copy constructor. Creates a new copy of the given
 	 * <code>obsToCopy</code> with a null obs id
-	 *
+	 * 
 	 * @param obsToCopy The Obs that is going to be copied
 	 * @return a new Obs object with all the same attributes as the given obs
 	 */
@@ -213,7 +215,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * This method isn't needed anymore. There are handlers that are mapped around the saveObs(obs)
 	 * method that get called automatically. See {@link SaveHandler}, et al.
-	 *
+	 * 
 	 * @see SaveHandler
 	 * @see OpenmrsObjectSaveHandler
 	 * @deprecated no longer needed. Replaced by handlers.
@@ -256,7 +258,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Get the concept description that is tied to the concept name that was used when making this
 	 * observation
-	 *
+	 * 
 	 * @return ConceptDescription the description used
 	 */
 	public ConceptDescription getConceptDescription() {
@@ -317,6 +319,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated The {@link #getObsGroup()} method should be used
 	 * @see #getObsGroup()
 	 */
+	@Deprecated
 	public Integer getObsGroupId() {
 		if (getObsGroup() == null) {
 			return null;
@@ -330,16 +333,16 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated This method should not be used. The #setObsGroup() method should be used instead
 	 * @see #setObsGroup(Obs)
 	 */
+	@Deprecated
 	public void setObsGroupId(Integer obsGroupId) {
-		throw new APIException("I don't know what to do here because I don't" + "know what the parent is of the group I'm "
-		        + "being put into. This method is deprecated " + "and should not be used.");
+		throw new APIException("Obs.error.setObsGroupId", (Object[]) null);
 	}
 	
 	/**
 	 * An obs grouping occurs when the question (#getConcept()) is a set. (@link
 	 * org.openmrs.Concept#isSet()) If this is non-null, it means the current Obs is in the list
 	 * returned by <code>obsGroup</code>.{@link #getGroupMembers()}
-	 *
+	 * 
 	 * @return the Obs that is the grouping factor
 	 */
 	public Obs getObsGroup() {
@@ -350,7 +353,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * This method does NOT add this current obs to the list of obs in obsGroup.getGroupMembers().
 	 * That must be done (and should be done) manually. (I am not doing it here for fear of screwing
 	 * up the normal loading and creation of this object via hibernate/spring)
-	 *
+	 * 
 	 * @param obsGroup the obsGroup to set
 	 */
 	public void setObsGroup(Obs obsGroup) {
@@ -369,7 +372,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * simplified jstl call like ${obs.obsGroup} ? With this setup, ${obs.obsGrouping} returns a
 	 * boolean of whether this obs is a parent and has members. ${obs.obsGroup} returns the parent
 	 * object to this obs if this obs is a group member of some other group.
-	 *
+	 * 
 	 * @return true if this is the parent group of other obs
 	 */
 	public boolean isObsGrouping() {
@@ -380,7 +383,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * A convenience method to check for nullity and length to determine if this obs has group
 	 * members. By default, this ignores voided-objects. To include voided, use
 	 * {@link #hasGroupMembers(boolean)} with value true.
-	 *
+	 * 
 	 * @return true if this is the parent group of other obs
 	 * @should not include voided obs
 	 */
@@ -392,7 +395,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Convenience method that checks for nullity and length to determine if this obs has group
 	 * members. The parameter specifies if this method whether or not voided obs should be
 	 * considered.
-	 *
+	 * 
 	 * @param includeVoided determines if Voided members should be considered as group members.
 	 * @return true if this is the parent group of other Obs
 	 * @should return true if this obs has group members based on parameter
@@ -409,7 +412,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * <p>
 	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
 	 * true, then this returns null.
-	 *
+	 * 
 	 * @return a Set<Obs> of the members of this group.
 	 * @see #addGroupMember(Obs)
 	 * @see #hasGroupMembers()
@@ -422,7 +425,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Get the group members of this obs group, if this obs is a group. This method will either
 	 * return all group members, or only non-voided group members, depending on if the argument is
 	 * set to be true or false respectively.
-	 *
+	 * 
 	 * @param includeVoided
 	 * @return the set of group members in this obs group
 	 * @should Get all group members if passed true, and non-voided if passed false
@@ -452,7 +455,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * <p>
 	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
 	 * true, then this returns null.
-	 *
+	 * 
 	 * @param groupMembers the groupedObs to set
 	 * @see #addGroupMember(Obs)
 	 * @see #hasGroupMembers()
@@ -465,7 +468,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Convenience method to add the given <code>obs</code> to this grouping. Will implicitly make
 	 * this obs an ObsGroup.
-	 *
+	 * 
 	 * @param member Obs to add to this group
 	 * @see #setGroupMembers(Set)
 	 * @see #getGroupMembers()
@@ -482,8 +485,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		// a quick sanity check to make sure someone isn't adding
 		// itself to the group
 		if (member.equals(this)) {
-			throw new APIException("An obsGroup cannot have itself as a mentor. obsGroup: " + this
-			        + " obsMember attempting to add: " + member);
+			throw new APIException("Obs.error.groupCannotHaveItselfAsAMentor", new Object[] { this, member });
 		}
 		
 		member.setObsGroup(this);
@@ -493,7 +495,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Convenience method to remove an Obs from this grouping This also removes the link in the
 	 * given <code>obs</code>object to this obs grouper
-	 *
+	 * 
 	 * @param member Obs to remove from this group
 	 * @see #setGroupMembers(Set)
 	 * @see #getGroupMembers()
@@ -515,7 +517,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * null, in which case an empty set is returned. If the Obs argument is an ObsGroup: a Set<Obs>
 	 * will be returned containing 1. all of this Obs' group members, and 2. all ancestor Obs that
 	 * are not themselves obsGroups.
-	 *
+	 * 
 	 * @return Set<Obs>
 	 */
 	public Set<Obs> getRelatedObservations() {
@@ -573,16 +575,18 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use getPerson()
 	 * @return Returns the patient.
 	 */
+	@Deprecated
 	public Patient getPatient() {
 		return (Patient) getPerson();
 	}
 	
 	/**
 	 * To associate a patient with an obs, use <code>setPerson(org.openmrs.Person)</code>
-	 *
+	 * 
 	 * @deprecated use setPerson(org.openmrs.Person)
 	 * @param patient
 	 */
+	@Deprecated
 	public void setPatient(Patient patient) {
 		setPerson(patient);
 	}
@@ -591,7 +595,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * The person id of the person on this object. This should be the same as
 	 * <code>{@link #getPerson()}.getPersonId()</code>. It is duplicated here for speed and
 	 * simplicity reasons
-	 *
+	 * 
 	 * @return the integer person id of the person this obs is acting on
 	 */
 	public Integer getPersonId() {
@@ -602,7 +606,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Set the person id on this obs object. This method is here for convenience, but really the
 	 * {@link #setPerson(Person)} method should be used like
 	 * <code>setPerson(new Person(personId))</code>
-	 *
+	 * 
 	 * @see #setPerson(Person)
 	 * @param personId
 	 */
@@ -612,7 +616,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Get the person object that this obs is acting on.
-	 *
+	 * 
 	 * @see #getPersonId()
 	 * @return the person object
 	 */
@@ -622,7 +626,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Set the person object to this obs object. This will also set the personId on this obs object
-	 *
+	 * 
 	 * @see #setPersonId(Integer)
 	 * @param person the Patient/Person object that this obs is acting on
 	 */
@@ -635,7 +639,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Sets the value of this obs to the specified valueBoolean if this obs has a boolean concept.
-	 *
+	 * 
 	 * @param valueBoolean the boolean value matching the boolean coded concept to set to
 	 */
 	public void setValueBoolean(Boolean valueBoolean) {
@@ -649,7 +653,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Coerces a value to a Boolean representation
-	 *
+	 * 
 	 * @return Boolean representation of the obs value
 	 * @should return true for value_numeric concepts if value is 1
 	 * @should return false for value_numeric concepts if value is 0
@@ -676,7 +680,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Returns the boolean value if the concept of this obs is of boolean datatype
-	 *
+	 * 
 	 * @return true or false if value is set otherwise null
 	 * @should return true if value coded answer concept is true concept
 	 * @should return false if value coded answer concept is false concept
@@ -706,7 +710,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Gets the specific name used for the coded value.
-	 *
+	 * 
 	 * @return the name of the coded value
 	 */
 	public ConceptName getValueCodedName() {
@@ -715,7 +719,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Sets the specific name used for the coded value.
-	 *
+	 * 
 	 * @param valueCodedName the name of the coded value
 	 */
 	public void setValueCodedName(ConceptName valueCodedName) {
@@ -862,7 +866,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * valueComplex has two parts separated by a bar '|' character: part A) the title; and part B)
 	 * the URI. The title is the readable description of the valueComplex that is returned by
 	 * {@link Obs#getValueAsString()}. The URI is the location where the ComplexData is stored.
-	 *
+	 * 
 	 * @return readable title and URI for the location of the ComplexData binary object.
 	 * @since 1.5
 	 */
@@ -875,7 +879,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * valueComplex has two parts separated by a bar '|' character: part A) the title; and part B)
 	 * the URI. The title is the readable description of the valueComplex that is returned by
 	 * Obs.getValueAsString(). The URI is the location where the ComplexData is stored.
-	 *
+	 * 
 	 * @param valueComplex readable title and URI for the location of the ComplexData binary object.
 	 * @since 1.5
 	 */
@@ -889,7 +893,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * <br/>
 	 * {@link ComplexObsHandler}s that are registered to {@link ConceptComplex}s will persist the
 	 * {@link ComplexData#getData()} object to the correct place for the given concept.
-	 *
+	 * 
 	 * @param complexData
 	 * @since 1.5
 	 */
@@ -902,21 +906,24 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * or another location, not from the database. <br/>
 	 * <br/>
 	 * This will be null unless you call:
-	 *
+	 * 
 	 * <pre>
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 * Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
 	 * </pre>
-	 *
+	 * 
 	 * @return the complex data for this obs (if its a complex obs)
 	 * @since 1.5
 	 */
@@ -947,12 +954,12 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * returns the title of the complexData denoted by the section of getValueComplex() before the
 	 * first bar '|' character; or returns the entire getValueComplex() if the bar '|' character is
 	 * missing.
-	 *
+	 * 
 	 * @param locale locale for locale-specific depictions of value
 	 * @should return first part of valueComplex for complex obs
 	 * @should return first part of valueComplex for non null valueComplexes
 	 * @should return non precise values for NumericConcepts
-	 * @should return proper DateFormat
+	 * @should return date in correct format
 	 * @should not return long decimal numbers as scientific notation
 	 * @should use commas or decimal places depending on locale
 	 * @should not use thousand separator
@@ -967,9 +974,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if (abbrev.equals("BIT")) {
+			if ("BIT".equals(abbrev)) {
 				return getValueAsBoolean() == null ? "" : getValueAsBoolean().toString();
-			} else if (abbrev.equals("CWE")) {
+			} else if ("CWE".equals(abbrev)) {
 				if (getValueCoded() == null) {
 					return "";
 				}
@@ -989,13 +996,13 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 						
 					}
 				}
-			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				if (getValueNumeric() == null) {
 					return "";
 				} else {
 					if (getConcept() instanceof ConceptNumeric) {
 						ConceptNumeric cn = (ConceptNumeric) getConcept();
-						if (cn.isPrecise() != true) {
+						if (!cn.isPrecise()) {
 							double d = getValueNumeric();
 							int i = (int) d;
 							return Integer.toString(i);
@@ -1004,18 +1011,18 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 						}
 					}
 				}
-			} else if (abbrev.equals("DT")) {
-				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE));
-			} else if (abbrev.equals("TM")) {
+			} else if ("DT".equals(abbrev)) {
+				return (getValueDatetime() == null ? "" : dateFormat.format(getValueDatetime()));
+			} else if ("TM".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIME));
-			} else if (abbrev.equals("TS")) {
+			} else if ("TS".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIMESTAMP));
-			} else if (abbrev.equals("ST")) {
+			} else if ("ST".equals(abbrev)) {
 				return getValueText();
-			} else if (abbrev.equals("ED") && getValueComplex() != null) {
+			} else if ("ED".equals(abbrev) && getValueComplex() != null) {
 				String[] valueComplex = getValueComplex().split("\\|");
 				for (int i = 0; i < valueComplex.length; i++) {
-					if (!"".equals(valueComplex[i])) {
+					if (StringUtils.isNotEmpty(valueComplex[i])) {
 						return valueComplex[i].trim();
 					}
 				}
@@ -1060,7 +1067,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		if (getValueComplex() != null) {
 			String[] valueComplex = getValueComplex().split("\\|");
 			for (int i = 0; i < valueComplex.length; i++) {
-				if (!"".equals(valueComplex[i])) {
+				if (StringUtils.isNotEmpty(valueComplex[i])) {
 					return valueComplex[i].trim();
 				}
 			}
@@ -1077,7 +1084,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Sets the value for the obs from a string depending on the datatype of the question concept
-	 *
+	 * 
 	 * @param s the string to coerce to a boolean
 	 * @should set value as boolean if the datatype of the question concept is boolean
 	 * @should fail if the value of the string is null
@@ -1090,19 +1097,19 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		if (getConcept() != null && !StringUtils.isBlank(s)) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if (abbrev.equals("BIT")) {
+			if ("BIT".equals(abbrev)) {
 				setValueBoolean(Boolean.valueOf(s));
-			} else if (abbrev.equals("CWE")) {
+			} else if ("CWE".equals(abbrev)) {
 				throw new RuntimeException("Not Yet Implemented");
-			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				setValueNumeric(Double.valueOf(s));
-			} else if (abbrev.equals("DT")) {
+			} else if ("DT".equals(abbrev)) {
 				setValueDatetime(dateFormat.parse(s));
-			} else if (abbrev.equals("TM")) {
+			} else if ("TM".equals(abbrev)) {
 				setValueDatetime(timeFormat.parse(s));
-			} else if (abbrev.equals("TS")) {
+			} else if ("TS".equals(abbrev)) {
 				setValueDatetime(datetimeFormat.parse(s));
-			} else if (abbrev.equals("ST")) {
+			} else if ("ST".equals(abbrev)) {
 				setValueText(s);
 			} else {
 				throw new RuntimeException("Don't know how to handle " + abbrev);
@@ -1119,9 +1126,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * because jstl can't pass parameters to a method (${obs.valueAsString[locale]} was used instead
 	 * of what would be convenient ${obs.valueAsString(locale)}) Now the openmrs:format tag should
 	 * be used in the web layer: <openmrs:format obsValue="${obs}"/>
-	 *
+	 * 
 	 * @deprecated
 	 */
+	@Deprecated
 	public Map<Locale, String> getValueAsString() {
 		Map<Locale, String> localeMap = new HashMap<Locale, String>();
 		Locale[] locales = Locale.getAvailableLocales(); // ABKTODO: get actual available locales
@@ -1171,7 +1179,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * A previousVersion indicates that this Obs replaces an earlier one.
-	 *
+	 * 
 	 * @param previousVersion the Obs that this Obs superceeds
 	 */
 	public void setPreviousVersion(Obs previousVersion) {
@@ -1182,4 +1190,84 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		return getPreviousVersion() != null;
 	}
 	
+	/**
+	 * Gets the namespace for the form field that was used to capture the obs details in the form
+	 * 
+	 * @return the namespace
+	 * @since 1.11
+	 * @should return the namespace for a form field that has no path
+	 * @should return the correct namespace for a form field with a path
+	 * @should return null if the namespace is not specified
+	 */
+	public String getFormFieldNamespace() {
+		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
+			//Only the path was specified
+			if (formNamespaceAndPath.startsWith(FORM_NAMESPACE_PATH_SEPARATOR)) {
+				return null;
+			}
+			return formNamespaceAndPath.substring(0, formNamespaceAndPath.indexOf(FORM_NAMESPACE_PATH_SEPARATOR));
+		}
+		
+		return formNamespaceAndPath;
+	}
+	
+	/**
+	 * Gets the path for the form field that was used to capture the obs details in the form
+	 * 
+	 * @return the the form field path
+	 * @since 1.11
+	 * @should return the path for a form field that has no namespace
+	 * @should return the correct path for a form field with a namespace
+	 * @should return null if the path is not specified
+	 */
+	public String getFormFieldPath() {
+		if (StringUtils.isNotBlank(formNamespaceAndPath)) {
+			//Only the namespace was specified
+			if (formNamespaceAndPath.endsWith(FORM_NAMESPACE_PATH_SEPARATOR)) {
+				return null;
+			}
+			return formNamespaceAndPath.substring(formNamespaceAndPath.indexOf(FORM_NAMESPACE_PATH_SEPARATOR) + 1);
+		}
+		
+		return formNamespaceAndPath;
+	}
+	
+	/**
+	 * Sets the namespace and path of the form field that was used to capture the obs details in the
+	 * form.<br>
+	 * <b>Note:</b> Namespace and formFieldPath together must not exceed 254 characters in length,
+	 * form applications can subtract the length of their namespace from 254 to determine the
+	 * maximum length they can use for a form field path.
+	 * 
+	 * @param namespace the namespace of the form field
+	 * @param formFieldPath the path of the form field
+	 * @since 1.11
+	 * @should set the underlying formNamespaceAndPath in the correct pattern
+	 * @should reject a namepace containing the separator
+	 * @should reject a path containing the separator
+	 * @should reject a namepace and path combination longer than the max length
+	 */
+	public void setFormField(String namespace, String formFieldPath) {
+		if (namespace == null && formFieldPath == null) {
+			return;
+		}
+		
+		String nsAndPathTemp = "";
+		if (StringUtils.isNotBlank(namespace) && StringUtils.isNotBlank(formFieldPath)) {
+			nsAndPathTemp = namespace + FORM_NAMESPACE_PATH_SEPARATOR + formFieldPath;
+		} else if (StringUtils.isNotBlank(namespace)) {
+			nsAndPathTemp = namespace + FORM_NAMESPACE_PATH_SEPARATOR;
+		} else if (StringUtils.isNotBlank(formFieldPath)) {
+			nsAndPathTemp = FORM_NAMESPACE_PATH_SEPARATOR + formFieldPath;
+		}
+		
+		if (nsAndPathTemp.length() > FORM_NAMESPACE_PATH_MAX_LENGTH) {
+			throw new APIException("Obs.namespaceAndPathTooLong", (Object[]) null);
+		}
+		if (StringUtils.countMatches(nsAndPathTemp, FORM_NAMESPACE_PATH_SEPARATOR) > 1) {
+			throw new APIException("Obs.namespaceAndPathNotContainSeparator", (Object[]) null);
+		}
+		
+		formNamespaceAndPath = nsAndPathTemp;
+	}
 }

@@ -19,6 +19,8 @@
 
 <h2><openmrs:message code="PatientIdentifierType.title"/></h2>
 
+<openmrs:globalProperty key="patientIdentifierTypes.locked" var="PatientIdentifierTypesLocked"/>
+
 <c:if test="${patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId}">
 	<form action="" method="post">
 		<div class="retiredMessage">
@@ -28,12 +30,15 @@
 				<openmrs:formatDate date="${patientIdentifierType.dateRetired}" type="medium" />
 				-
 				<c:out value="${patientIdentifierType.retireReason}" />
-				<input type="submit" value='<openmrs:message code="PatientIdentifierType.unretirePatientIdentifierType"/>' name="unretire"/>
+				<input type="submit" value='<openmrs:message code="PatientIdentifierType.unretirePatientIdentifierType"/>' 
+						name="unretire" <c:if test="${PatientIdentifierTypesLocked == 'true'}"> disabled</c:if> />
 			</div>
 		</div>
 	</form>
 </c:if>
-
+<spring:hasBindErrors name="patientIdentifierType">
+    <openmrs_tag:errorNotify errors="${errors}" />
+</spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>
@@ -159,7 +164,8 @@
 </table>
 <input type="hidden" name="patientIdentifierTypeId:int" value="${patientIdentifierType.patientIdentifierTypeId}">
 <br />
-<input type="submit" value="<openmrs:message code="PatientIdentifierType.save"/>" name="save" />
+<input type="submit" value="<openmrs:message code="PatientIdentifierType.save"/>" name="save" 
+		<c:if test="${PatientIdentifierTypesLocked == 'true'}"> disabled</c:if> />
 </fieldset>
 </form>
 
@@ -178,7 +184,8 @@
 				</c:forEach>
 			</spring:hasBindErrors>
 			<br/>
-			<input type="submit" value='<openmrs:message code="PatientIdentifierType.retirePatientIdentifierType"/>' name="retire"/>
+			<input type="submit" value='<openmrs:message code="PatientIdentifierType.retirePatientIdentifierType"/>' 
+					name="retire" <c:if test="${PatientIdentifierTypesLocked == 'true'}"> disabled</c:if> />
 		</fieldset>
 	</form>
 	
@@ -190,7 +197,8 @@
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
 				<h4><openmrs:message code="PatientIdentifierType.purgePatientIdentifierType"/></h4>
-				<input type="submit" value='<openmrs:message code="PatientIdentifierType.purgePatientIdentifierType"/>' name="purge" />
+				<input type="submit" value='<openmrs:message code="PatientIdentifierType.purgePatientIdentifierType"/>' 
+						name="purge" <c:if test="${PatientIdentifierTypesLocked == 'true'}"> disabled</c:if> />
 			</fieldset>
 		</form>
 	</openmrs:hasPrivilege>

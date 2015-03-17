@@ -181,6 +181,9 @@
 			<div style="float:left">
 				<form method="post"><input type="submit" value='<openmrs:message code="Module.checkForUpdates"/>'/></form>
 			</div>
+			<div style="float:right">
+				<form method="post"><input type="submit" name="action" value='<openmrs:message code="Module.startAll"/>'/></form>
+			</div>
 			<div style="clear:both">&nbsp;</div>
 		</div>	
 	</c:when>

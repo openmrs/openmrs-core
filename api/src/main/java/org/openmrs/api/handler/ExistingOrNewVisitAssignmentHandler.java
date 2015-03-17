@@ -1,20 +1,17 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.handler;
 
+import java.util.HashMap;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Encounter;
@@ -29,10 +26,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
 /**
  * This handler assigns an encounter to an existing visit, where appropriate, or creates a new one.
  *
@@ -40,7 +33,11 @@ import com.google.common.cache.LoadingCache;
  */
 public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignmentHandler implements GlobalPropertyListener {
 	
-	private static volatile LoadingCache<EncounterType, VisitType> encounterVisitMapping = null;
+	private static volatile Map<EncounterType, VisitType> encounterVisitMapping;
+	
+	private static void setEncounterVisitMapping(Map<EncounterType, VisitType> encounterVisitMapping) {
+		ExistingOrNewVisitAssignmentHandler.encounterVisitMapping = encounterVisitMapping;
+	}
 	
 	/**
 	 * @see org.openmrs.api.handler.ExistingVisitAssignmentHandler#getDisplayName(java.util.Locale)
@@ -49,10 +46,6 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 	public String getDisplayName(Locale locale) {
 		return Context.getMessageSourceService().getMessage("visit.assignmentHandler.assignToExistingVisitOrNew", null,
 		    locale);
-	}
-	
-	public static void setEncounterVisitMapping(LoadingCache<EncounterType, VisitType> encounterVisitMapping) {
-		ExistingOrNewVisitAssignmentHandler.encounterVisitMapping = encounterVisitMapping;
 	}
 	
 	/**
@@ -77,27 +70,23 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 		visit.setLocation(encounter.getLocation());
 		visit.setPatient(encounter.getPatient());
 		
-		try {
-			
-			if (encounterVisitMapping == null) {
-				// Create cache of mappings encounter type - visit type
-				LoadingCache<EncounterType, VisitType> temp = CacheBuilder.newBuilder().build(
-				    new CacheLoader<EncounterType, VisitType>() {
-					    
-					    public VisitType load(EncounterType key) throws APIException {
-						    return loadVisitType(key);
-					    }
-				    });
-				setEncounterVisitMapping(temp);
-				Context.getAdministrationService().addGlobalPropertyListener(this);
-			}
-			
-			VisitType visitType = encounterVisitMapping.get(encounter.getEncounterType());
-			visit.setVisitType(visitType);
+		if (encounterVisitMapping == null) {
+			//initial one-time setup
+			setEncounterVisitMapping(new HashMap<EncounterType, VisitType>());
+			Context.getAdministrationService().addGlobalPropertyListener(this);
 		}
-		catch (ExecutionException e) {
-			throw new APIException("Error getting mapping encounter type - visit type from cache", e);
+		
+		VisitType visitType = encounterVisitMapping.get(encounter.getEncounterType());
+		if (visitType == null) {
+			visitType = loadVisitType(encounter.getEncounterType());
+			
+			//replace reference instead of synchronizing
+			Map<EncounterType, VisitType> newMap = new HashMap<EncounterType, VisitType>(encounterVisitMapping);
+			newMap.put(encounter.getEncounterType(), visitType);
+			
+			setEncounterVisitMapping(newMap);
 		}
+		visit.setVisitType(visitType);
 		
 		//set stop date time to last millisecond of the encounter day.
 		visit.setStopDatetime(OpenmrsUtil.getLastMomentOfDay(encounter.getEncounterDatetime()));
@@ -146,9 +135,7 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 			}
 			
 			// Reaching here means this encounter type is not in the user's mapping.
-			throw new APIException(
-			        "Global Property: visit.encounterTypeToVisitTypeMapping does not have a mapping for encounter type: "
-			                + encounterType.getName());
+			throw new APIException("GlobalProperty.error.loadVisitType", new Object[] { encounterType.getName() });
 		}
 		
 		return Context.getVisitService().getAllVisitTypes().get(0);
@@ -161,12 +148,12 @@ public class ExistingOrNewVisitAssignmentHandler extends ExistingVisitAssignment
 	
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		encounterVisitMapping.invalidateAll();
+		setEncounterVisitMapping(new HashMap<EncounterType, VisitType>());
 	}
 	
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		encounterVisitMapping.invalidateAll();
+		setEncounterVisitMapping(new HashMap<EncounterType, VisitType>());
 	}
 	
 }

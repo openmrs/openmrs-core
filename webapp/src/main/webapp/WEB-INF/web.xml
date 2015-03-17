@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
@@ -33,6 +44,10 @@
     <context-param>
         <param-name>application.data.directory</param-name>
         <param-value></param-value>
+    </context-param>
+    <context-param>
+    	<param-name>log4jExposeWebAppRoot</param-name>
+    	<param-value>false</param-value>
     </context-param>
 	<!-- // End init parameters -->
 
@@ -171,7 +186,7 @@
 	
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
-		<!--  extends ContextLoaderListener -->
+		<!--  extends ContextLoader -->
 	</listener>
 
 	<listener>
@@ -397,7 +412,7 @@
 	
 	<servlet>
 		<servlet-name>jsp</servlet-name>
-		<servlet-class>org.openmrs.web.OpenmrsJspServlet</servlet-class>
+		<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
 	</servlet>
 	
 	<!-- Gives access to servlets within modules -->

@@ -1,12 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<groupId>org.openmrs</groupId>
 		<artifactId>openmrs</artifactId>
-		<version>1.11.0-SNAPSHOT</version>
+		<version>1.12.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openmrs</groupId>
 	<artifactId>openmrs-release-test</artifactId>
 	<name>openmrs-release-test</name>
     <description>Jbehave release testing infrastructure to test trunk.
@@ -119,7 +128,7 @@
 		<profile>
             <!-- This profile is used to run all the tests in the release test server. This will delete and recreates
             the database with demo data and runs all the jbehave tests-->
-			<id>integration-test</id>
+			<id>release-test</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.obs.handler;
 
@@ -21,6 +17,9 @@ import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.util.Assert;
+
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
@@ -35,6 +34,9 @@ import org.openmrs.util.OpenmrsUtil;
  * @since 1.8
  */
 public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHandler {
+	
+	/** Views supported by this handler */
+	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
 	
 	public static final Log log = LogFactory.getLog(BinaryStreamHandler.class);
 	
@@ -57,26 +59,46 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
+		ComplexData complexData = null;
 		
-		try {
-			File file = getComplexDataFile(obs);
-			String[] names = obs.getValueComplex().split("\\|");
-			String originalFilename = names[0];
-			if ("download".equals(view)) {
+		// Raw stream
+		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
+			try {
+				File file = getComplexDataFile(obs);
+				String[] names = obs.getValueComplex().split("\\|");
+				String originalFilename = names[0];
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
+				
+				if (file.exists()) {
+					FileInputStream fileInputStream = new FileInputStream(file);
+					complexData = new ComplexData(originalFilename, fileInputStream);
+				} else {
+					log.error("Unable to find file associated with complex obs " + obs.getId());
+				}
 			}
-			
-			if (file.exists()) {
-				FileInputStream fileInputStream = new FileInputStream(file);
-				obs.setComplexData(new ComplexData(originalFilename, fileInputStream));
-			} else {
-				log.error("Unable to find file associated with complex obs " + obs.getId());
+			catch (Exception e) {
+				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}
 		}
-		catch (Exception e) {
-			throw new APIException("An error occurred while trying to get binary complex obs.", e);
+		// No other view supported
+		// NOTE: if adding support for another view, don't forget to update supportedViews list above
+		else {
+			return null;
 		}
+		
+		Assert.notNull(complexData, "Complex data must not be null");
+		complexData.setMIMEType("application/octet-stream");
+		obs.setComplexData(complexData);
+		
 		return obs;
+	}
+	
+	/**
+	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+	 */
+	@Override
+	public String[] getSupportedViews() {
+		return supportedViews;
 	}
 	
 	/**
@@ -99,7 +121,7 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 			out.close();
 		}
 		catch (Exception e) {
-			throw new APIException("Error writing binary data complex obs to the file system. ", e);
+			throw new APIException("Obs.error.writing.binary.data.complex", null, e);
 		}
 		
 		return obs;

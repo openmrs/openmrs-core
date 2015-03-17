@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util.databasechange;
 
@@ -84,8 +80,11 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 		Statement stmt = null;
 		PreparedStatement pStmt = null;
 		ResultSet rs = null;
+		Boolean initialAutoCommit = null;
 		
 		try {
+			initialAutoCommit = connection.getAutoCommit();
+			
 			// set auto commit mode to false for UPDATE action
 			connection.setAutoCommit(false);
 			
@@ -116,10 +115,10 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 				Map.Entry pairs = (Map.Entry) it2.next();
 				
 				HashSet values = (HashSet) pairs.getValue();
-				List<Integer> editableNames = new ArrayList<Integer>(values);
+				List<Integer> ids = new ArrayList<Integer>(values);
 				
 				int duplicateNameId = 1;
-				for (int i = 1; i < editableNames.size(); i++) {
+				for (int i = 1; i < ids.size(); i++) {
 					String newName = pairs.getKey() + "_" + duplicateNameId;
 					List<List<Object>> duplicateResult = null;
 					boolean duplicateName = false;
@@ -151,7 +150,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 					Date date = new Date(cal.getTimeInMillis());
 					
 					pStmt.setDate(3, date);
-					pStmt.setInt(4, editableNames.get(i));
+					pStmt.setInt(4, ids.get(i));
 					duplicateNameId += 1;
 					
 					pStmt.executeUpdate();
@@ -173,28 +172,20 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 			// marks the changeset as a failed one
 			throw new CustomChangeException("Failed to update one or more duplicate EncounterRole names", e);
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Error while updating duplicate EncounterRole object names", e);
-		}
-		catch (SQLException e) {
-			throw new CustomChangeException("Error while updating duplicate EncounterRole object names", e);
-		}
-		catch (DAOException e) {
-			throw new CustomChangeException("Error accessing database connection", e);
-		}
 		catch (Exception e) {
-			throw new CustomChangeException("Error accessing database connection", e);
+			throw new CustomChangeException(e);
 		}
 		finally {
-			// reset to auto commit mode
+			// set auto commit to its initial state
 			try {
 				connection.commit();
-				connection.setAutoCommit(true);
+				if (initialAutoCommit != null) {
+					connection.setAutoCommit(initialAutoCommit);
+				}
 				// connection.close();
-				
 			}
 			catch (DatabaseException e) {
-				log.warn("Failed to reset auto commit back to true", e);
+				log.warn("Failed to set auto commit to ids initial state", e);
 			}
 			
 			if (rs != null) {

@@ -33,8 +33,7 @@
 	<tr>
 		<th><openmrs:message code="general.name" /></th>
 		<%-- <th> <openmrs:message code="ConceptDrug.concept"/> </th> --%>
-		<th><openmrs:message code="ConceptDrug.doseStrength" /></th>
-		<th><openmrs:message code="ConceptDrug.units" /></th>
+		<th><openmrs:message code="ConceptDrug.strength" /></th>
 	</tr>
 
 	<c:forEach var="drug" items="${conceptDrugList}">
@@ -42,8 +41,7 @@
 			<td><a
 				href="conceptDrug.form?drugId=${drug.drugId}"><c:out value="${drug.name}" /> </a></td>
 			<%-- <td>${drug.concept}</td> --%>
-			<td><c:out value="${drug.doseStrength}" /></td>
-			<td><c:out value="${drug.units}" /></td>
+			<td><c:out value="${drug.strength}" /></td>
 		</tr>
 	</c:forEach>
 </table>

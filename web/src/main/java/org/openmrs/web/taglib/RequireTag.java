@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.taglib;
 
@@ -98,7 +94,7 @@ public class RequireTag extends TagSupport {
 			log.error("userContext is null. Did this pass through a filter?");
 			//httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 			//TODO find correct error to throw 
-			throw new APIException("The context is currently null.  Please try reloading the site.");
+			throw new APIException("context.is.null", (Object[]) null);
 		}
 		
 		// Parse comma-separated list of privileges in allPrivileges and anyPrivileges attributes
@@ -154,7 +150,7 @@ public class RequireTag extends TagSupport {
 		if (differentIpAddresses(session_ip_addr, request_ip_addr)) {
 			errorOccurred = true;
 			// stops warning message in IE when refreshing repeatedly
-			if ("0.0.0.0".equals(request_ip_addr) == false) {
+			if (!"0.0.0.0".equals(request_ip_addr)) {
 				log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
 			}
@@ -164,7 +160,7 @@ public class RequireTag extends TagSupport {
 		
 		if (errorOccurred) {
 			String url = "";
-			if (redirect != null && !redirect.equals("")) {
+			if (redirect != null && !"".equals(redirect)) {
 				url = request.getContextPath() + redirect;
 			} else {
 				url = request.getRequestURI();

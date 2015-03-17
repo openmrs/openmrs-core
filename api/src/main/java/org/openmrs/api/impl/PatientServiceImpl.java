@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -53,8 +49,8 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.api.PatientIdentifierTypeLockedException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
@@ -62,7 +58,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.order.OrderUtil;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
@@ -78,7 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Default implementation of the patient service. This class should not be used on its own. The
  * current OpenMRS implementation should be fetched from the Context via
  * <code>Context.getPatientService()</code>
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.PatientService
  * @see org.openmrs.api.PersonService
@@ -105,7 +100,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
-	 *
+	 * 
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	@Override
@@ -379,7 +374,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// ignore this patient (loop until no changes made)
 		while (patients.remove(ignorePatient)) {}
-		;
 		
 		if (patients.size() > 0) {
 			return patients.get(0);
@@ -395,9 +389,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
-		
-		if (includeVoided == true) {
-			throw new APIException("Searching on voided patients is no longer allowed");
+		if (includeVoided) {
+			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
 		return Context.getPatientService().getPatients(null, identifier, null);
@@ -410,9 +403,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
-		
-		if (includeVoided == true) {
-			throw new APIException("Searching on voided patients is no longer allowed");
+		if (includeVoided) {
+			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
 		return Context.getPatientService().getPatients(null, identifier, null);
@@ -434,9 +426,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
-		
-		if (includeVoided == true) {
-			throw new APIException("Searching on voided patients is no longer allowed");
+		if (includeVoided) {
+			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
 		return Context.getPatientService().getPatients(name, (String) null, null);
@@ -543,9 +534,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Transactional(readOnly = true)
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType patientIdentifierType,
 	        boolean includeVoided) throws APIException {
-		
-		if (includeVoided == true) {
-			throw new APIException("Searching on voided identifiers is no longer allowed");
+		if (includeVoided) {
+			throw new APIException("Patient.identifiers.search.voided", (Object[]) null);
 		}
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
@@ -580,10 +570,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * TODO: Add changedBy and DateChanged columns to table patient_identifier_type
-	 *
+	 * 
 	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+		checkIfPatientIdentifierTypesAreLocked();
 		return dao.savePatientIdentifierType(patientIdentifierType);
 	}
 	
@@ -662,8 +653,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public PatientIdentifierType retirePatientIdentifierType(PatientIdentifierType patientIdentifierType, String reason)
 	        throws APIException {
+		checkIfPatientIdentifierTypesAreLocked();
 		if (reason == null || reason.length() < 1) {
-			throw new APIException("A reason is required when retiring an identifier type");
+			throw new APIException("Patient.identifier.retire.reason", (Object[]) null);
 		}
 		
 		patientIdentifierType.setRetired(true);
@@ -678,6 +670,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public PatientIdentifierType unretirePatientIdentifierType(PatientIdentifierType patientIdentifierType)
 	        throws APIException {
+		checkIfPatientIdentifierTypesAreLocked();
 		patientIdentifierType.setRetired(false);
 		patientIdentifierType.setRetiredBy(null);
 		patientIdentifierType.setDateRetired(null);
@@ -689,6 +682,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#purgePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public void purgePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+		checkIfPatientIdentifierTypesAreLocked();
 		dao.deletePatientIdentifierType(patientIdentifierType);
 	}
 	
@@ -701,8 +695,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Patient> findPatients(String query, boolean includeVoided) throws APIException {
-		if (includeVoided == true) {
-			throw new APIException("Searching on voided patients is no longer allowed");
+		if (includeVoided) {
+			throw new APIException("Patient.search.voided", (Object[]) null);
 		}
 		
 		return Context.getPatientService().getPatients(query);
@@ -731,7 +725,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * This default implementation simply looks at the OpenMRS internal id (patient_id). If the id
 	 * is null, assume this patient isn't found. If the patient_id is not null, try and find that id
 	 * in the database
-	 *
+	 * 
 	 * @see org.openmrs.api.PatientService#getPatientByExample(org.openmrs.Patient)
 	 */
 	@Transactional(readOnly = true)
@@ -762,7 +756,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) throws APIException {
 		
 		if (attributes == null || attributes.size() < 1) {
-			throw new APIException("There must be at least one attribute supplied to search on");
+			throw new APIException("Patient.no.attribute", (Object[]) null);
 		}
 		
 		return dao.getDuplicatePatientsByAttributes(attributes);
@@ -771,7 +765,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * generate a relationship hash for use in mergePatients; follows the convention:
 	 * [relationshipType][A|B][relativeId]
-	 *
+	 * 
 	 * @param rel relationship under consideration
 	 * @param primary the focus of the hash
 	 * @return hash depicting relevant information to avoid duplicates
@@ -787,7 +781,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * <code>preferred</code> 2) Copies data (gender/birthdate/names/ids/etc) from
 	 * <code>nonPreferred</code> to <code>preferred</code> iff the data is missing or null in
 	 * <code>preferred</code> 3) <code>notPreferred</code> is marked as voided
-	 *
+	 * 
 	 * @param preferred
 	 * @param notPreferred
 	 * @throws APIException
@@ -798,16 +792,20 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		        + notPreferred.getPatientId());
 		if (preferred.getPatientId().equals(notPreferred.getPatientId())) {
 			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
-			throw new APIException("Merge operation cancelled: Cannot merge user " + preferred.getPatientId() + " to self");
+			throw new APIException("Patient.merge.cancelled", new Object[] { preferred.getPatientId() });
 		}
-		
+		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(notPreferred);
+		for (Order order : orders) {
+			if (!order.isVoided()) {
+				throw new APIException("Patient.cannot.merge", (Object[]) null);
+			}
+		}
 		PersonMergeLogData mergedData = new PersonMergeLogData();
 		mergeVisits(preferred, notPreferred, mergedData);
 		mergeEncounters(preferred, notPreferred, mergedData);
 		mergeProgramEnrolments(preferred, notPreferred, mergedData);
 		mergeRelationships(preferred, notPreferred, mergedData);
 		mergeObservationsNotContainedInEncounters(preferred, notPreferred, mergedData);
-		mergeOrdersNotContainedInEncounters(preferred, notPreferred, mergedData);
 		mergeIdentifiers(preferred, notPreferred, mergedData);
 		
 		mergeNames(preferred, notPreferred, mergedData);
@@ -944,19 +942,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 	
-	private void mergeOrdersNotContainedInEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
-		// copy all orders that weren't contained in encounters
-		OrderService os = Context.getOrderService();
-		for (Order o : os.getOrdersByPatient(notPreferred)) {
-			if (o.getEncounter() == null && !o.getVoided()) {
-				Order tmpOrder = o.copy();
-				tmpOrder.setPatient(preferred);
-				Order persisted = os.saveOrder(tmpOrder);
-				mergedData.addCreatedOrder(persisted.getUuid());
-			}
-		}
-	}
-	
 	private void mergeIdentifiers(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all identifiers
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
@@ -1086,6 +1071,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpAddress.setVoided(false);
 				tmpAddress.setVoidedBy(null);
 				tmpAddress.setVoidReason(null);
+				tmpAddress.setPreferred(false); // addresses from non-preferred patient shouldn't be marked as preferred
 				tmpAddress.setUuid(UUID.randomUUID().toString());
 				preferred.addAddress(tmpAddress);
 				mergedData.addCreatedAddress(tmpAddress.getUuid());
@@ -1162,7 +1148,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * Change user associations for notPreferred to preferred person.
-	 *
+	 * 
 	 * @param preferred
 	 * @param notPreferred
 	 * @param mergedData a patient merge audit data object to update
@@ -1190,7 +1176,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * <li>Flagging patient table</li>
 	 * <li>Creating any relevant observations about the patient (if applicable)</li>
 	 * </ol>
-	 *
+	 * 
 	 * @param patient - the patient who has exited care
 	 * @param dateExited - the declared date/time of the patient's exit
 	 * @param reasonForExit - the concept that corresponds with why the patient has been declared as
@@ -1200,14 +1186,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) throws APIException {
 		
 		if (patient == null) {
-			throw new APIException("Attempting to exit from care an invalid patient. Cannot proceed");
+			throw new APIException("Patient.invalid.care", (Object[]) null);
 		}
 		if (dateExited == null) {
-			throw new APIException("Must supply a valid dateExited when indicating that a patient has left care");
+			throw new APIException("Patient.no.valid.dateExited", (Object[]) null);
 		}
 		if (reasonForExit == null) {
-			throw new APIException(
-			        "Must supply a valid reasonForExit (even if 'Unknown') when indicating that a patient has left care");
+			throw new APIException("Patient.no.valid.reasonForExit", (Object[]) null);
 		}
 		
 		// need to create an observation to represent this (otherwise how
@@ -1216,14 +1201,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// need to terminate any applicable programs
 		Context.getProgramWorkflowService().triggerStateConversion(patient, reasonForExit, dateExited);
-		
-		// need to discontinue any open orders for this patient
-		OrderUtil.discontinueAllOrders(patient, reasonForExit, dateExited);
 	}
 	
 	/**
 	 * TODO: Patients should actually be allowed to exit multiple times
-	 *
+	 * 
 	 * @param patient
 	 * @param exitDate
 	 * @param cause
@@ -1231,13 +1213,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private void saveReasonForExitObs(Patient patient, Date exitDate, Concept cause) throws APIException {
 		
 		if (patient == null) {
-			throw new APIException("Patient supplied to method is null");
+			throw new APIException("Patient.null", (Object[]) null);
 		}
 		if (exitDate == null) {
-			throw new APIException("Exit date supplied to method is null");
+			throw new APIException("Patient.exit.date.null", (Object[]) null);
 		}
 		if (cause == null) {
-			throw new APIException("Cause supplied to method is null");
+			throw new APIException("Patient.cause.null", (Object[]) null);
 		}
 		
 		// need to make sure there is an Obs that represents the patient's
@@ -1297,7 +1279,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * This is the way to establish that a patient has died. In addition to exiting the patient from
 	 * care (see above), this method will also set the appropriate patient characteristics to
 	 * indicate that they have died, when they died, etc.
-	 *
+	 * 
 	 * @param patient - the patient who has died
 	 * @param dateDied - the declared date/time of the patient's death
 	 * @param causeOfDeath - the concept that corresponds with the reason the patient died
@@ -1327,14 +1309,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			
 		} else {
 			if (patient == null) {
-				throw new APIException("Attempting to set an invalid patient's status to 'dead'");
+				throw new APIException("Patient.invalid.dead", (Object[]) null);
 			}
 			if (dateDied == null) {
-				throw new APIException("Must supply a valid dateDied when indicating that a patient has died");
+				throw new APIException("Patient.no.valid.dateDied", (Object[]) null);
 			}
 			if (causeOfDeath == null) {
-				throw new APIException(
-				        "Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
+				throw new APIException("Patient.no.valid.causeOfDeath", (Object[]) null);
 			}
 		}
 	}
@@ -1346,13 +1327,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void saveCauseOfDeathObs(Patient patient, Date deathDate, Concept cause, String otherReason) throws APIException {
 		
 		if (patient == null) {
-			throw new APIException("Patient supplied to method is null");
+			throw new APIException("Patient.null", (Object[]) null);
 		}
 		if (deathDate == null) {
-			throw new APIException("Death date supplied to method is null");
+			throw new APIException("Patient.death.date.null", (Object[]) null);
 		}
 		if (cause == null) {
-			throw new APIException("Cause supplied to method is null");
+			throw new APIException("Patient.cause.null", (Object[]) null);
 		}
 		
 		if (!patient.getDead()) {
@@ -1502,10 +1483,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * ADDs identifierValidators, doesn't replace them
-	 *
+	 * 
 	 * @param identifierValidators
 	 */
 	public void setIdentifierValidators(Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
+		if (identifierValidators == null) {
+			PatientServiceImpl.identifierValidators = null;
+			return;
+		}
 		for (Map.Entry<Class<? extends IdentifierValidator>, IdentifierValidator> entry : identifierValidators.entrySet()) {
 			getIdentifierValidators().put(entry.getKey(), entry.getValue());
 		}
@@ -1561,7 +1546,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public PatientIdentifier voidPatientIdentifier(PatientIdentifier patientIdentifier, String reason) throws APIException {
 		
 		if (patientIdentifier == null || StringUtils.isBlank(reason)) {
-			throw new APIException("patientIdentifier can't be null and the reason should not be an empty string");
+			throw new APIException("Patient.identifier.cannot.be.null", (Object[]) null);
 		}
 		return Context.getPatientService().savePatientIdentifier(patientIdentifier);
 		
@@ -1593,7 +1578,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		        || patientIdentifier.getIdentifierType() == null
 		        || StringUtils.isBlank(patientIdentifier.getIdentifier())
 		        || (locationBehavior == PatientIdentifierType.LocationBehavior.REQUIRED && patientIdentifier.getLocation() == null)) {
-			throw new APIException("PatientIdentifier argument or one of its required fields is null or invalid");
+			throw new APIException("Patient.identifier.null", (Object[]) null);
 		}
 		if (patientIdentifier.getPatientIdentifierId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS);
@@ -1709,9 +1694,23 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query)) {
 			return count;
 		}
-		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
 		
 		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query));
+	}
+	
+	/**
+	 * @see PatientService#getCountOfPatients(String, boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Integer getCountOfPatients(String query, boolean includeVoided) {
+		int count = 0;
+		if (StringUtils.isBlank(query)) {
+			return count;
+		}
+		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
+		
+		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query, includeVoided));
 	}
 	
 	/**
@@ -1730,6 +1729,20 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
+	 * @see PatientService#getPatients(String, boolean, Integer, Integer)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional(readOnly = true)
+	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException {
+		if (StringUtils.isBlank(query)) {
+			return Collections.emptyList();
+		}
+		
+		return dao.getPatients(query, includeVoided, start, length);
+	}
+	
+	/**
 	 * @see PatientService#getPatients(String, String, List, boolean, Integer, Integer)
 	 */
 	// TODO - search for usage with non-empty list of patient identifier types - not used
@@ -1742,5 +1755,16 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 		
 		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length, false);
+	}
+	
+	/**
+	 * @see PatientService#checkIfPatientIdentifierTypesAreLocked()
+	 */
+	public void checkIfPatientIdentifierTypesAreLocked() {
+		String locked = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false");
+		if (locked.toLowerCase().equals("true")) {
+			throw new PatientIdentifierTypeLockedException();
+		}
 	}
 }

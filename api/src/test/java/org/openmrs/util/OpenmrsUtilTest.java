@@ -1,30 +1,32 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -773,5 +775,27 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return false if only one of the strings is null", method = "nullSafeEqualsIgnoreCase(String,String)")
 	public void nullSafeEqualsIgnoreCase_shouldReturnFalseIfOnlyOneOfTheStringsIsNull() throws Exception {
 		Assert.assertFalse(OpenmrsUtil.nullSafeEqualsIgnoreCase(null, ""));
+	}
+	
+	@Test
+	public void storeProperties_shouldEscapeSlashes() throws Exception {
+		Charset utf8 = Charset.forName("UTF-8");
+		String expectedProperty = "blacklistRegex";
+		String expectedValue = "[^\\p{InBasicLatin}\\p{InLatin1Supplement}]";
+		Properties properties = new Properties();
+		properties.setProperty(expectedProperty, expectedValue);
+		
+		ByteArrayOutputStream actual = new ByteArrayOutputStream();
+		ByteArrayOutputStream expected = new ByteArrayOutputStream();
+		
+		OpenmrsUtil.storeProperties(properties, actual, null);
+		
+		// Java's underlying implementation correctly writes:
+		// blacklistRegex=[^\\p{InBasicLatin}\\p{InLatin1Supplement}]
+		// This method didn't exist in Java 5, which is why we wrote a utility method in the first place, so we should
+		// just get rid of our own implementation, and use the underlying java one.
+		properties.store(new OutputStreamWriter(expected, utf8), null);
+		
+		assertThat(actual.toByteArray(), is(expected.toByteArray()));
 	}
 }

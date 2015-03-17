@@ -1,18 +1,15 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +34,6 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStopWord;
-import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
@@ -51,17 +47,16 @@ import org.openmrs.util.PrivilegeConstants;
  * 
  * <pre>
  * 
- * 
- * 
- * 
+ *
+ *
+ *
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
- * 
  * To get a single concept:
  * 
  * <pre>
  * 
- * 
+ *
  * 
  * 
  * // if there is a concept row in the database with concept_id = 3845
@@ -69,7 +64,6 @@ import org.openmrs.util.PrivilegeConstants;
  * 
  * String name = concept.getPreferredName(Context.getLocale()).getName();
  * </pre>
- * 
  * To save a concept to the database
  * 
  * <pre>
@@ -381,7 +375,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @return the found Concept
 	 * @should get concept by name
-	 * @should get concept by partial name
 	 * @should return null given null parameter
 	 * @should find concepts with names in more specific locales
 	 * @should find concepts with names in more generic locales
@@ -417,43 +410,6 @@ public interface ConceptService extends OpenmrsService {
 	public Concept getConcept(String conceptIdOrName) throws APIException;
 	
 	/**
-	 * @deprecated use
-	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
-	        throws APIException;
-	
-	/**
-	 * @deprecated use {@link #getConcepts(String, Locale)} that returns a list of
-	 *             ConceptSearchResults
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<ConceptWord> getConceptWords(String phrase, Locale locale) throws APIException;
-	
-	/**
-	 * @deprecated use
-	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) throws APIException;
-	
-	/**
-	 * @deprecated use
-	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes) throws APIException;
-	
-	/**
 	 * Get Drug by its UUID
 	 * 
 	 * @param uuid
@@ -463,15 +419,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public Drug getDrugByUuid(String uuid);
-	
-	/**
-	 * @deprecated Use
-	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size)
-	        throws APIException;
 	
 	/**
 	 * Return the drug object corresponding to the given name or drugId
@@ -550,7 +497,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param phrase Search phrase
 	 * @throws APIException
 	 * @return A List<Drug> object containing all Drug matches
-	 * @should return drugs that are retired
+	 * @should not return drugs that are retired
 	 * @should return drugs by drug id
 	 * @should return drugs by drug concept id
 	 * @should not fail if there is no drug by given id
@@ -575,7 +522,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @deprecated use {@link #getAllConceptClasses(boolean)}
 	 */
 	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public List<ConceptClass> getConceptClasses() throws APIException;
 	
 	/**
@@ -585,7 +532,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return ConceptClass matching the given name
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public ConceptClass getConceptClassByName(String name) throws APIException;
 	
 	/**
@@ -594,7 +541,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @return List<ConceptClass> object with all ConceptClass objects
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public List<ConceptClass> getAllConceptClasses() throws APIException;
 	
 	/**
@@ -604,7 +551,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @return List<ConceptClass> object with all ConceptClass objects
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public List<ConceptClass> getAllConceptClasses(boolean includeRetired) throws APIException;
 	
 	/**
@@ -615,7 +562,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_CLASSES)
 	public ConceptClass getConceptClassByUuid(String uuid);
 	
 	/**
@@ -659,7 +606,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByUuid(String uuid);
 	
 	/**
@@ -721,7 +668,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @return List of ConceptDatatypes
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public List<ConceptDatatype> getAllConceptDatatypes() throws APIException;
 	
 	/**
@@ -731,7 +678,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @return List of ConceptDatatypes
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws APIException;
 	
 	/**
@@ -743,7 +690,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return List<ConceptDatatype> object of ConceptDatatypes matching the string
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	@Deprecated
 	public List<ConceptDatatype> getConceptDatatypes(String name) throws APIException;
 	
@@ -754,7 +701,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return ConceptDatatype matching the given identifier
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatype(Integer i) throws APIException;
 	
 	/**
@@ -765,7 +712,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatypeByUuid(String uuid);
 	
 	/**
@@ -777,7 +724,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return an exact match on name
 	 * @should not return a fuzzy match on name
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatypeByName(String name) throws APIException;
 	
 	/**
@@ -832,7 +779,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @deprecated use {@link #getAllConceptProposals(boolean)}
 	 */
 	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getConceptProposals(boolean includeCompleted) throws APIException;
 	
 	/**
@@ -842,7 +789,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return a List<ConceptProposal> object of all found ConceptProposals
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getAllConceptProposals(boolean includeCompleted) throws APIException;
 	
 	/**
@@ -863,7 +810,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the found ConceptProposal
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public ConceptProposal getConceptProposal(Integer conceptProposalId) throws APIException;
 	
 	/**
@@ -873,14 +820,14 @@ public interface ConceptService extends OpenmrsService {
 	 * @return a List<ConceptProposal> object containing matching concept proposals
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getConceptProposals(String text) throws APIException;
 	
 	/**
 	 * @deprecated Use {@link #getProposedConcepts(String)}
 	 */
 	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public List<Concept> findProposedConcepts(String text) throws APIException;
 	
 	/**
@@ -890,18 +837,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @return a List<Concept> object containing matching proposed concepts
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public List<Concept> getProposedConcepts(String text) throws APIException;
-	
-	/**
-	 * @deprecated use
-	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<ConceptWord> findConcepts(String phrase, List<Locale> searchLocales, boolean includeRetired,
-	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
-	        List<ConceptDatatype> excludeDatatypes);
 	
 	/**
 	 * @deprecated use {@link #saveConceptProposal(ConceptProposal)}
@@ -976,21 +913,6 @@ public interface ConceptService extends OpenmrsService {
 	public List<ConceptProposal> findMatchingConceptProposals(String text);
 	
 	/**
-	 * @deprecated use {@link #findConceptAnswers(String, Locale, Concept)}
-	 */
-	@Deprecated
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired)
-	        throws APIException;
-	
-	/**
-	 * @deprecated use {@link #findConceptAnswers(String, Locale, Concept)}
-	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	@Deprecated
-	public List<ConceptWord> getConceptAnswers(String phrase, Locale locale, Concept concept) throws APIException;
-	
-	/**
 	 * @deprecated use #getConceptsByAnswer(Concept)
 	 */
 	@Deprecated
@@ -1044,7 +966,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_PROPOSALS)
 	public ConceptProposal getConceptProposalByUuid(String uuid);
 	
 	/**
@@ -1055,20 +977,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getConceptsWithDrugsInFormulary() throws APIException;
-	
-	/**
-	 * @deprecated use {@link #updateConceptIndex(org.openmrs.Concept)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
-	public void updateConceptWord(Concept concept) throws APIException;
-	
-	/**
-	 * @deprecated use {@link #updateConceptIndexes()}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
-	public void updateConceptWords() throws APIException;
 	
 	/**
 	 * Get ConceptNameTag by its UUID
@@ -1083,13 +991,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
-	
-	/**
-	 * @deprecated use {@link #updateConceptIndexes(Integer, Integer)}
-	 */
-	@Deprecated
-	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
-	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 	
 	/**
 	 * Get a ComplexConcept with the given conceptId
@@ -1128,7 +1029,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @deprecated use {@link #getAllConceptSources(boolean)}
 	 */
 	@Deprecated
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public List<ConceptSource> getAllConceptSources() throws APIException;
 	
 	/**
@@ -1138,7 +1039,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param includeRetired whether or not to include retired sources
 	 * @return List of Concept source objects
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws APIException;
 	
 	/**
@@ -1147,7 +1048,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param i Integer conceptSourceId
 	 * @return ConceptSource
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_SOURCES)
 	public ConceptSource getConceptSource(Integer i) throws APIException;
 	
 	/**
@@ -1193,6 +1094,9 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the newly created or existing concept name tag
 	 * @should save a concept name tag if tag does not exist
 	 * @should not save a concept name tag if tag exists
+	 * @should not save a concept name tag if tag is null, empty or whitespace
+	 * @should save a concept name tag if tag is supplied
+	 * @should save an edited concept name tag
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_NAME_TAGS)
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
@@ -1245,7 +1149,7 @@ public interface ConceptService extends OpenmrsService {
 	 * returns retired concepts, this method will simply return the first concept in the list returns by
 	 * the dao method; retired concepts can be excluded by setting the includeRetired parameter to false,
 	 * but the above logic still applies
-	 * 
+	 *
 	 * @param code the code associated with a concept within a given {@link ConceptSource}
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
 	 * @param includeRetired whether or not to include retired concepts
@@ -1384,6 +1288,14 @@ public interface ConceptService extends OpenmrsService {
 	public Concept getFalseConcept();
 	
 	/**
+	 * Returns the UNKNOWN concept
+	 *
+	 * @return unknown concept
+	 * @should return the unknown concept
+	 */
+	public Concept getUnknownConcept();
+	
+	/**
 	 * Changes the datatype of a concept from boolean to coded when it has observations it is
 	 * associated to.
 	 * 
@@ -1426,8 +1338,11 @@ public interface ConceptService extends OpenmrsService {
 	 * @return a list of conceptSearchResults
 	 * @throws APIException
 	 * @should return concept search results that match unique concepts
-	 * @should return a search result whose concept name contains all word tokens
+	 * @should return a search result whose concept name contains all word tokens as first
+	 * @should return a search result for phrase with stop words
 	 * @should not return concepts with matching names that are voided
+	 * @should return preferred names higher
+	 * @should find concept by full code
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
@@ -1478,7 +1393,10 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptIdEnd ends update with this concept_id
 	 * @throws APIException
 	 * @since 1.8
+	 * @deprecated as of 1.11 call {@link #updateConceptIndexes()} or
+	 *             {@link #updateConceptIndex(Concept)
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptIndexes(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 	
@@ -1541,8 +1459,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param drugName the name of the drug
 	 * @param concept the drug concept
-	 * @param searchOnPhrase Specifies if the search should match names starting with or contain the
-	 *            text
+	 * @param searchKeywords (since 1.11) Specifies whether the search should match keywords or just phrase
 	 * @param searchDrugConceptNames Specifies whether a search on concept names for the drug's
 	 *            concept should be done or not
 	 * @param includeRetired specifies whether to include retired drugs
@@ -1553,7 +1470,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
-	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchKeywords, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws APIException;
 	
 	/**
@@ -1629,7 +1546,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all the concept map types excluding hidden ones
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_MAP_TYPES)
 	public List<ConceptMapType> getActiveConceptMapTypes() throws APIException;
 	
 	/**
@@ -1644,7 +1561,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return only un retired concept map types if includeRetired is set to false
 	 * @should not include hidden concept map types if includeHidden is set to false
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_MAP_TYPES)
 	public List<ConceptMapType> getConceptMapTypes(boolean includeRetired, boolean includeHidden) throws APIException;
 	
 	/**
@@ -1655,7 +1572,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.9
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_MAP_TYPES)
 	public ConceptMapType getConceptMapType(Integer conceptMapTypeId) throws APIException;
 	
 	/**
@@ -1667,7 +1584,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return a conceptMapType matching the specified uuid
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_MAP_TYPES)
 	public ConceptMapType getConceptMapTypeByUuid(String uuid) throws APIException;
 	
 	/**
@@ -1680,7 +1597,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return a conceptMapType matching the specified name
 	 * @should be case insensitive
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_MAP_TYPES)
 	public ConceptMapType getConceptMapTypeByName(String name) throws APIException;
 	
 	/**
@@ -1753,7 +1670,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all concept reference terms in the database
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public List<ConceptReferenceTerm> getAllConceptReferenceTerms() throws APIException;
 	
 	/**
@@ -1766,7 +1683,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return all the concept reference terms if includeRetired is set to true
 	 * @should return only un retired concept reference terms if includeRetired is set to false
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(boolean includeRetired) throws APIException;
 	
 	/**
@@ -1777,7 +1694,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.9
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public ConceptReferenceTerm getConceptReferenceTerm(Integer conceptReferenceTermId) throws APIException;
 	
 	/**
@@ -1789,7 +1706,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return the concept reference term that matches the given uuid
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public ConceptReferenceTerm getConceptReferenceTermByUuid(String uuid) throws APIException;
 	
 	/**
@@ -1804,7 +1721,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return a concept reference term that matches the given name from the given source
 	 * @should be case insensitive
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public ConceptReferenceTerm getConceptReferenceTermByName(String name, ConceptSource conceptSource) throws APIException;
 	
 	/**
@@ -1817,7 +1734,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return a concept reference term that matches the given code from the given source
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public ConceptReferenceTerm getConceptReferenceTermByCode(String code, ConceptSource conceptSource) throws APIException;
 	
 	/**
@@ -1885,7 +1802,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return unique terms with a code or name containing the search phrase
 	 * @should return only the concept reference terms from the given concept source
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS })
+	@Authorized( { PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS })
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(String query, ConceptSource conceptSource, Integer start,
 	        Integer length, boolean includeRetired) throws APIException;
 	
@@ -1901,7 +1818,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should include retired terms if includeRetired is set to true
 	 * @should not include retired terms if includeRetired is set to false
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public Integer getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)
 	        throws APIException;
 	
@@ -1915,7 +1832,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should return all concept reference term maps where the specified term is the termB
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_REFERENCE_TERMS)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS)
 	public List<ConceptReferenceTermMap> getReferenceTermMappingsTo(ConceptReferenceTerm term) throws APIException;
 	
 	/**
@@ -1948,6 +1865,113 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return same as by default
 	 * @should return type as set in gp
 	 */
-	@Authorized(PrivilegeConstants.VIEW_CONCEPT_MAP_TYPES)
+	@Authorized(PrivilegeConstants.GET_CONCEPT_MAP_TYPES)
 	public ConceptMapType getDefaultConceptMapType() throws APIException;
+	
+	/**
+	 * Determines if the given concept name is a duplicate.
+	 * <p>
+	 * Concept name is considered duplicate if it is a default non-retired name for a non-voided concept and
+	 * there is another name, which is:
+	 * <ol>
+	 * <li>equal ignoring case</li>
+	 * <li>non voided</li>
+	 * <li>in same locale or in same general language</li>
+	 * <li>non-retired and different concept</li>
+	 * <li>default name for concept</li>
+	 * </ol>
+	 * 
+	 * @param name
+	 * @return true if it is a duplicate name
+	 * @since 1.11
+	 */
+	public boolean isConceptNameDuplicate(ConceptName name);
+	
+	/**
+	 * Fetches un retired drugs that match the specified search phrase. The logic matches on drug
+	 * names, concept names of the associated concepts or the concept reference term codes of the
+	 * drug reference term mappings
+	 * 
+	 * @param searchPhrase The string to match against
+	 * @param locale The locale to match against when searching in drug concept names
+	 * @param exactLocale If false then concepts with names in a broader locale will be matched e.g
+	 *            in case en_GB is passed in then en will be matched
+	 * @param includeRetired Specifies if retired drugs that match should be included or not
+	 * @return A list of matching drugs
+	 * @since 1.10
+	 * @should get drugs with names matching the search phrase
+	 * @should include retired drugs if includeRetired is set to true
+	 * @should get drugs linked to concepts with names that match the phrase
+	 * @should get drugs linked to concepts with names that match the phrase and locale
+	 * @should get drugs linked to concepts with names that match the phrase and related locales
+	 * @should get drugs that have mappings with reference term codes that match the phrase
+	 * @should return unique drugs
+	 * @should return all drugs with a matching term code or drug name or concept name
+	 * @should reject a null search phrase
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Drug> getDrugs(String searchPhrase, Locale locale, boolean exactLocale, boolean includeRetired);
+	
+	/**
+	 * Fetches all drugs with reference mappings to the specified concept source that match the
+	 * specified code and concept map types
+	 * 
+	 * @param code the code the reference term code to match on
+	 * @param conceptSource the concept source on which to match on
+	 * @param withAnyOfTheseTypes the ConceptMapTypes to match on
+	 * @param includeRetired specifies if retired drugs should be included or not
+	 * @since 1.10
+	 * @return the list of {@link Drug}
+	 * @throws APIException
+	 * @should get a list of all drugs that match on all the parameter values
+	 * @should return retired and non-retired drugs if includeRetired is set to true
+	 * @should return empty list if no matches are found
+	 * @should match on the code
+	 * @should match on the concept source
+	 * @should match on the map types
+	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
+	 * @should exclude duplicate matches
+	 * @should fail if source is null
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public List<Drug> getDrugsByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws APIException;
+	
+	/**
+	 * Gets the "best" matching drug, i.e. matching the earliest ConceptMapType passed in e.g.
+	 * getDrugByMapping("12345", rxNorm, Arrays.asList(sameAs, narrowerThan)) If there are multiple
+	 * matches for the highest-priority ConceptMapType, throw an exception
+	 * 
+	 * @param code the code the reference term code to match on
+	 * @param conceptSource the concept source to match on
+	 * @param withAnyOfTheseTypesOrOrderOfPreference the ConceptMapTypes to match on
+	 * @since 1.10
+	 * @return the {@link Drug}
+	 * @throws APIException
+	 * @should return a drug that matches the code and source
+	 * @should return a drug that matches the code and source and the best map type
+	 * @should fail if multiple drugs are found matching the best map type
+	 * @should return null if no match found
+	 * @should fail if no code and concept source and withAnyOfTheseTypes are provided
+	 * @should fail if source is null
+	 */
+	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	public Drug getDrugByMapping(String code, ConceptSource conceptSource,
+	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws APIException;
+	
+	/**
+	 * An Orderable concept is one where its conceptClass has a mapping in the order_type_class_map
+	 * table. This method searches for orderable concepts which match the specified arguments
+	 * 
+	 * @param phrase the phrase to match on
+	 * @param locales list of locales to match on
+	 * @param includeRetired include retired concepts or not
+	 * @param start start index of search results
+	 * @param length number of concept results to be returned
+	 * @return List of ConceptSearchResults
+	 * @since 1.10
+	 * @should get orderable concepts
+	 */
+	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	        Integer start, Integer length);
 }

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
@@ -18,7 +14,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -43,6 +41,7 @@ public class DatabaseUtil {
 	 * @param connectionUrl the connection url for the database, such as
 	 *            "jdbc:mysql://localhost:3306/..."
 	 * @throws ClassNotFoundException
+	 * @deprecated
 	 */
 	@Deprecated
 	public static void loadDatabaseDriver(String connectionUrl) throws ClassNotFoundException {
@@ -62,6 +61,9 @@ public class DatabaseUtil {
 	 * @param connectionDriver the database driver class name, such as "com.mysql.jdbc.Driver"
 	 * @throws ClassNotFoundException
 	 */
+	
+	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
+	
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
 			Class.forName(connectionDriver);
@@ -115,7 +117,7 @@ public class DatabaseUtil {
 		try {
 			ps = conn.prepareStatement(sql);
 			
-			if (dataManipulation == true) {
+			if (dataManipulation) {
 				Integer i = ps.executeUpdate();
 				List<Object> row = new Vector<Object>();
 				row.add(i);
@@ -151,5 +153,29 @@ public class DatabaseUtil {
 		}
 		
 		return results;
+	}
+	
+	/**
+	 * Gets all unique values excluding nulls in the specified column and table
+	 * 
+	 * @param columnName the column
+	 * @param tableName the table
+	 * @param connection
+	 * @return
+	 * @throws Exception
+	 */
+	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,
+	        Connection connection) throws Exception {
+		Set<T> uniqueValues = new HashSet<T>();
+		final String alias = "unique_values";
+		String select = "SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName + " WHERE " + columnName
+		        + " IS NOT NULL";
+		List<List<Object>> rows = DatabaseUtil.executeSQL(connection, select, true);
+		for (List<Object> row : rows) {
+			//There can only be one column since we are selecting one
+			uniqueValues.add((T) row.get(0));
+		}
+		
+		return uniqueValues;
 	}
 }

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
@@ -22,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.azeckoski.reflectutils.ClassData;
-import org.springframework.util.TypeUtils;
 
 /**
  * This class has convenience methods to find the fields on a class and superclass as well as
@@ -69,7 +64,7 @@ public class Reflect {
 	/**
 	 * This method return all the fields (including private) from the given class and its super
 	 * classes.
-	 *
+	 * 
 	 * @param fieldClass Class
 	 * @return List<Field>
 	 * @should return all fields include private and super classes
@@ -92,7 +87,8 @@ public class Reflect {
 	
 	/**
 	 * @param t
-	 * @return true if given type is a subclass, or a generic type bounded by a subclass of the parameterized class
+	 * @return true if given type is a subclass, or a generic type bounded by a subclass of the
+	 *         parameterized class
 	 * @should return true for a generic whose bound is a subclass
 	 * @should return false for a generic whose bound is not a subclass
 	 */
@@ -128,7 +124,7 @@ public class Reflect {
 	/**
 	 * This method validate the given field is Collection and the elements should be of
 	 * parameterized type
-	 *
+	 * 
 	 * @param field Field
 	 * @return boolean
 	 * @should return true if given field is Collection and its element type is given parameterized
@@ -157,7 +153,7 @@ public class Reflect {
 	
 	/**
 	 * This method return all the fields (including private) until the given parameterized class
-	 *
+	 * 
 	 * @param subClass Class
 	 * @return List<Field>
 	 * @should return only the sub class fields of given parameterized class

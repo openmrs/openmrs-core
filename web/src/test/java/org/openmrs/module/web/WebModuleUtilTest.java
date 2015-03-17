@@ -1,3 +1,12 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
 package org.openmrs.module.web;
 
 import static org.hamcrest.core.Is.is;
@@ -5,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -47,6 +57,58 @@ public class WebModuleUtilTest {
 	private Properties propertiesWritten;
 	
 	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @verifies return false for different package names
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskClass_shouldReturnFalseForDifferentPackageName() throws Exception {
+		String modulePackageName = "org.openmrs.logic.task";
+		String taskClass = "org.openmrs.logic.TaskInitializeLogicRuleProvidersTask";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @verifies return false if module has longer package name
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskClass_shouldReturnFalseIfModuleHasLongerPackageName() throws Exception {
+		String modulePackageName = "org.openmrs.logic.task";
+		String taskClass = "org.openmrs.logic.TaskInitializeLogicRuleProvidersTask";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
+		assertFalse(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @verifies properly match subpackages
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskClass_shouldProperlyMatchSubpackages() throws Exception {
+		String modulePackageName = "org.openmrs.module.xforms";
+		String taskClass = "org.openmrs.module.xforms.ProcessXformsQueueTask";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
+		assertTrue(result);
+	}
+	
+	/**
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
+	 * @verifies return false for empty package names
+	 * @throws Exception
+	 */
+	@Test
+	public void isModulePackageNameInTaskClass_shouldReturnFalseForEmptyPackageNames() throws Exception {
+		String modulePackageName = "";
+		String taskClass = "";
+		boolean result = WebModuleUtil.isModulePackageNameInTaskClass(modulePackageName, taskClass);
+		assertFalse(result);
+	}
 	
 	/**
 	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)

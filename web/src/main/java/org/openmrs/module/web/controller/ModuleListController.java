@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.module.web.controller;
 
@@ -194,8 +190,27 @@ public class ModuleListController extends SimpleFormController {
 					}
 				}
 			}
-		} else if (moduleId.equals("")) {
-			ModuleUtil.checkForModuleUpdates();
+		} else if ("".equals(moduleId)) {
+			if (action.equals(msa.getMessage("Module.startAll"))) {
+				boolean someModuleNeedsARefresh = false;
+				Collection<Module> modules = ModuleFactory.getLoadedModules();
+				Collection<Module> modulesInOrder = ModuleFactory.getModulesInStartupOrder(modules);
+				for (Module module : modulesInOrder) {
+					if (ModuleFactory.isModuleStarted(module)) {
+						continue;
+					}
+					
+					ModuleFactory.startModule(module);
+					boolean thisModuleCausesRefresh = WebModuleUtil.startModule(module, getServletContext(), true);
+					someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
+				}
+				
+				if (someModuleNeedsARefresh) {
+					WebModuleUtil.refreshWAC(getServletContext(), false, null);
+				}
+			} else {
+				ModuleUtil.checkForModuleUpdates();
+			}
 		} else if (action.equals(msa.getMessage("Module.installUpdate"))) {
 			// download and install update
 			if (!ModuleUtil.allowAdmin()) {
@@ -250,11 +265,11 @@ public class ModuleListController extends SimpleFormController {
 		
 		view = getSuccessView();
 		
-		if (!success.equals("")) {
+		if (!"".equals(success)) {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 		}
 		
-		if (!error.equals("")) {
+		if (!"".equals(error)) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
 		

@@ -1,17 +1,12 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
-
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
@@ -24,6 +19,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -131,7 +127,7 @@ public class FieldGenTag extends TagSupport {
 					if (val != null) {
 						startVal = val.toString();
 					}
-					startVal = (startVal == null) ? "" : startVal;
+					
 					String fieldLength = this.parameterMap != null ? (String) this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_FLOAT_LENGTH : fieldLength;
 					output.setLength(0);
@@ -233,36 +229,58 @@ public class FieldGenTag extends TagSupport {
 						        + "] in FieldGenTag");
 					}
 					
-					if (cls != null) {
-						if (cls.isEnum()) {
-							Object[] enumConstants = cls.getEnumConstants();
-							
-							if (enumConstants != null) {
-								if (enumConstants.length > 0) {
-									String startVal = "";
-									if (val != null) {
-										startVal = val.toString();
-									}
-									log.debug("val is " + val);
-									log.debug("val.toString is " + startVal);
-									if (startVal == null) {
-										startVal = "";
-									}
-									output.setLength(0);
-									output.append("<select name=\"").append(formFieldName).append("\" id=\"").append(
-									    formFieldName).append("\">");
-									StringBuilder options = new StringBuilder();
-									for (int i = 0; i < enumConstants.length; i++) {
-										options.append("<option value=\"").append(enumConstants[i].toString()).append("\"")
-										        .append(startVal.equals(enumConstants[i].toString()) ? " selected" : "")
-										        .append(">").append(enumConstants[i].toString()).append("</option>");
-									}
-									output.append(options.toString());
-									output.append("</select> ");
-								}
+					if (cls != null && cls.isEnum()) {
+						Object[] enumConstants = cls.getEnumConstants();
+						
+						if (enumConstants != null && enumConstants.length > 0) {
+							String startVal = "";
+							if (val != null) {
+								startVal = val.toString();
 							}
+							log.debug("val is " + val);
+							log.debug("val.toString is " + startVal);
+							if (startVal == null) {
+								startVal = "";
+							}
+							output.setLength(0);
+							output.append("<select name=\"").append(formFieldName).append("\" id=\"").append(formFieldName)
+							        .append("\">");
+							StringBuilder options = new StringBuilder();
+							for (int i = 0; i < enumConstants.length; i++) {
+								options.append("<option value=\"").append(enumConstants[i].toString()).append("\"").append(
+								    startVal.equals(enumConstants[i].toString()) ? " selected" : "").append(">").append(
+								    enumConstants[i].toString()).append("</option>");
+							}
+							output.append(options.toString());
+							output.append("</select> ");
 						}
 					}
+				} else if (type.equals("dropDownList")) {
+					
+					String startVal = "";
+					if (val != null) {
+						startVal = StringEscapeUtils.escapeHtml(val.toString());
+					}
+					
+					String items = this.parameterMap != null ? (String) this.parameterMap.get("items") : null;
+					
+					output.setLength(0);
+					output.append("<select name=\"").append(formFieldName).append("\" id=\"").append(formFieldName).append(
+					    "\">");
+					
+					if (items != null && !items.isEmpty()) {
+						StringBuilder options = new StringBuilder();
+						for (String item : items.split(",")) {
+							String escapedItem = StringEscapeUtils.escapeHtml(item);
+							escapedItem = StringEscapeUtils.escapeJavaScript(escapedItem);
+							options.append("<option value=\"").append(escapedItem).append("\"").append(
+							    startVal.equals(escapedItem) ? " selected" : "").append(">").append(escapedItem).append(
+							    "</option>");
+						}
+						output.append(options.toString());
+					}
+					
+					output.append("</select> ");
 				} // end checking different built-in types
 				
 				try {

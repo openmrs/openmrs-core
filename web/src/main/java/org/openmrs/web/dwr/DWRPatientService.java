@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.dwr;
 
@@ -117,7 +113,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 		Collection<Patient> patients;
 		
 		try {
-			patients = ps.getPatients(searchValue, start, length);
+			patients = ps.getPatients(searchValue, includeVoided, start, length);
 		}
 		catch (APIAuthenticationException e) {
 			patientList.add(Context.getMessageSourceService().getMessage("Patient.search.error") + " - " + e.getMessage());
@@ -151,7 +147,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 					}
 					identifierMatchesValidationScheme = true;
 				}
-				catch (UnallowedIdentifierException e) {}
+				catch (UnallowedIdentifierException e) {
+					log.error("Error while validating identifier", e);
+				}
 			}
 			
 			if (identifierMatchesValidationScheme) {
@@ -175,29 +173,30 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * matches will be returned from the start index if specified.
 	 *
 	 * @param searchValue patient name or identifier
+	 * @param includeVoided true/false whether or not to included voided patients
 	 * @param start the beginning index
 	 * @param length the number of matching patients to return
 	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
 	 * @return a map of results
 	 * @throws APIException
-	 * @since 1.8
-	 * @should signal for a new search if the new search value has matches and is a first call
-	 * @should not signal for a new search if it is not the first ajax call
-	 * @should not signal for a new search if the new search value has no matches
-	 * @should match patient with identifiers that contain no digit
 	 */
-	public Map<String, Object> findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount)
-	        throws APIException {
+	public Map<String, Object> findCountAndPatientsWithVoided(String searchValue, Integer start, Integer length,
+	        boolean getMatchCount, Boolean includeVoided) throws APIException {
 		
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		Collection<Object> objectList = new Vector<Object>();
+		
+		if (includeVoided == null) {
+			includeVoided = false;
+		}
+		
 		try {
 			PatientService ps = Context.getPatientService();
 			int patientCount = 0;
 			//if this is the first call
 			if (getMatchCount) {
-				patientCount += ps.getCountOfPatients(searchValue);
+				patientCount += ps.getCountOfPatients(searchValue, includeVoided);
 				
 				// if there are no results found and a number was not in the
 				// search and this is the first call, then do a decapitated search: 
@@ -285,7 +284,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 			//if we have any matches or this isn't the first ajax call when the caller
 			//requests for the count
 			if (patientCount > 0 || !getMatchCount) {
-				objectList = findBatchOfPatients(searchValue, false, start, length);
+				objectList = findBatchOfPatients(searchValue, includeVoided, start, length);
 			}
 			
 			resultsMap.put("count", patientCount);
@@ -299,6 +298,29 @@ public class DWRPatientService implements GlobalPropertyListener {
 			resultsMap.put("objectList", objectList);
 		}
 		return resultsMap;
+	}
+	
+	/**
+	 * Returns a map of results with the values as count of matches and a partial list of the
+	 * matching patients (depending on values of start and length parameters) while the keys are are
+	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
+	 * matches will be returned from the start index if specified.
+	 *
+	 * @param searchValue patient name or identifier
+	 * @param start the beginning index
+	 * @param length the number of matching patients to return
+	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
+	 * @return a map of results
+	 * @throws APIException
+	 * @since 1.8
+	 * @should signal for a new search if the new search value has matches and is a first call
+	 * @should not signal for a new search if it is not the first ajax call
+	 * @should not signal for a new search if the new search value has no matches
+	 * @should match patient with identifiers that contain no digit
+	 */
+	public Map<String, Object> findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount)
+	        throws APIException {
+		return findCountAndPatientsWithVoided(searchValue, start, length, getMatchCount, false);
 	}
 	
 	/**

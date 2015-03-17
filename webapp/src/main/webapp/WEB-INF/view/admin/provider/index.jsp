@@ -44,7 +44,9 @@
 
 <h2><openmrs:message code="Provider.title"/></h2>
 
-<a href="provider.form"><openmrs:message code="Provider.add"/></a>
+<openmrs:hasPrivilege privilege="Manage Provider">
+	<a href="provider.form"><openmrs:message code="Provider.add"/></a>
+</openmrs:hasPrivilege>
 
 
 

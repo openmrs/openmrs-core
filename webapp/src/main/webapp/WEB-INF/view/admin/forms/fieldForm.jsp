@@ -17,12 +17,13 @@
 			function(msg) {
 				var popup = dojo.widget.manager.getWidgetById("conceptSelection");
 				popup.hiddenInputNode.value = msg.objs[0].conceptId;
+				popup.hiddenCodedDatatype.value = msg.objs[0].isCodedDatatype;
 				popup.displayNode.innerHTML = msg.objs[0].name;
+				setSelectMultiple(jQuery('#hiddenCodedDatatype').val());
 			}
 		);
 		
 		chooseFieldType(jQuery('#fieldType').val());
-		
 	});
 
 
@@ -30,14 +31,29 @@
 		if (fieldTypeId == 1) { // == 'Concept'
 			jQuery('#concept').css('display', "");
 			jQuery('#database').css('display', "none");
+			setSelectMultiple(jQuery('#hiddenCodedDatatype').val());
 		}
 		else if (fieldTypeId == 2) { // -- db element
 			jQuery('#database').css('display', "");
 			jQuery('#concept').css('display', "none");
+			jQuery('#selectMultiple').attr("disabled", "disabled");
+			jQuery('#selectMultiple').attr("checked", false);
 		}
 		else {
 			jQuery('#concept').css('display', "none");
 			jQuery('#database').css('display', "none");
+			jQuery('#selectMultiple').attr("disabled", "disabled");
+			jQuery('#selectMultiple').attr("checked", false);
+		}
+	}
+	
+	function setSelectMultiple(isCodedDatatype) {
+		if (isCodedDatatype == "true") {
+			jQuery('#selectMultiple').removeAttr("disabled");
+		}
+		else{
+			jQuery('#selectMultiple').attr("checked", false);
+			jQuery('#selectMultiple').attr("disabled", "disabled");
 		}
 	}
 

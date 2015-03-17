@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.maintenance;
 
@@ -21,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.ImplementationIdValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,12 +46,19 @@ public class ImplementationIdFormController extends SimpleFormController {
 		
 		ImplementationId implId = (ImplementationId) object;
 		
+		new ImplementationIdValidator().validate(implId, exceptions);
+		
+		if (exceptions.hasErrors()) {
+			return showForm(req, response, exceptions);
+		}
+		
 		try {
 			Context.getAdministrationService().setImplementationId(implId);
 			req.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ImplementationId.validatedId");
 		}
 		catch (APIException e) {
 			log.warn("Unable to set implementation id", e);
+			exceptions.reject(e.getMessage());
 			req.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 			return showForm(req, response, exceptions);
 		}

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -63,21 +59,19 @@ import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.Report;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the administration services. This class should not be used on its own.
  * The current OpenMRS implementation should be fetched from the Context
- *
+ * 
  * @see org.openmrs.api.AdministrationService
  * @see org.openmrs.api.context.Context
  */
@@ -173,62 +167,62 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Create a new Tribe
-	 *
+	 * 
 	 * @param tribe Tribe to create
 	 * @throws APIException
 	 * @deprecated
 	 */
 	@Deprecated
 	public void createTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
 	 * Update Tribe
-	 *
+	 * 
 	 * @param tribe Tribe to update
 	 * @throws APIException
 	 * @deprecated
 	 */
 	@Deprecated
 	public void updateTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
 	 * Delete Tribe
-	 *
+	 * 
 	 * @param tribe Tribe to delete
 	 * @throws APIException
 	 * @deprecated
 	 */
 	@Deprecated
 	public void deleteTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
 	 * Retire Tribe
-	 *
+	 * 
 	 * @param tribe Tribe to retire
 	 * @throws APIException
 	 * @deprecated
 	 */
 	@Deprecated
 	public void retireTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
 	 * Unretire Tribe
-	 *
+	 * 
 	 * @param tribe Tribe to unretire
 	 * @throws APIException
 	 * @deprecated
 	 */
 	@Deprecated
 	public void unretireTribe(Tribe tribe) throws APIException {
-		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+		throw new APIException("Tribe.object.not.supported", (Object[]) null);
 	}
 	
 	/**
@@ -409,126 +403,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
-	 * Create a new Report
-	 *
-	 * @param report Report to create
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void createReport(Report report) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORTS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORTS);
-		}
-		
-		dao.createReport(report);
-	}
-	
-	/**
-	 * Update Report
-	 *
-	 * @param report Report to update
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void updateReport(Report report) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORTS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORTS);
-		}
-		
-		dao.updateReport(report);
-	}
-	
-	/**
-	 * Delete Report
-	 *
-	 * @param report Report to delete
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void deleteReport(Report report) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORTS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORTS);
-		}
-		
-		dao.deleteReport(report);
-	}
-	
-	/**
-	 * Create a new Report Object
-	 *
-	 * @param reportObject Report Object to create
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void createReportObject(AbstractReportObject reportObject) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS);
-		}
-		
-		dao.createReportObject(reportObject);
-	}
-	
-	/**
-	 * Update Report Object
-	 *
-	 * @param reportObject Report Object to update
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void updateReportObject(AbstractReportObject reportObject) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS);
-		}
-		
-		dao.updateReportObject(reportObject);
-	}
-	
-	/**
-	 * Delete Report Object
-	 *
-	 * @param reportObjectId Internal Integer identifier of Report Object to delete
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void deleteReportObject(Integer reportObjectId) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS);
-		}
-		
-		dao.deleteReportObject(reportObjectId);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptServiceImpl
-	 */
-	@Deprecated
-	public void updateConceptWord(Concept concept) throws APIException {
-		Context.getConceptService().updateConceptWord(concept);
-	}
-	
-	/**
-	 * @deprecated moved to ConceptServiceImpl
-	 */
-	@Deprecated
-	public void updateConceptWords() throws APIException {
-		Context.getConceptService().updateConceptWords();
-	}
-	
-	/**
-	 * @deprecated moved to ConceptService
-	 */
-	@Deprecated
-	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
-		Context.getConceptService().updateConceptWords(conceptIdStart, conceptIdEnd);
-	}
-	
-	/**
 	 * @deprecated moved to ConceptService
 	 */
 	@Deprecated
@@ -706,7 +580,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			gp.setProperty(propertyName);
 		}
 		gp.setPropertyValue(propertyValue);
-		dao.saveGlobalProperty(gp);
+		Context.getAdministrationService().saveGlobalProperty(gp);
 	}
 	
 	/**
@@ -805,6 +679,33 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException {
 		// only try to save it if the global property has a key
 		if (gp.getProperty() != null && gp.getProperty().length() > 0) {
+			if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
+				if (gp.getPropertyValue() != null) {
+					List<Locale> localeList = new ArrayList<Locale>();
+					
+					for (String localeString : gp.getPropertyValue().split(",")) {
+						localeList.add(LocaleUtility.fromSpecification(localeString.trim()));
+					}
+					if (!localeList.contains(LocaleUtility.getDefaultLocale())) {
+						gp.setPropertyValue(StringUtils.join(getAllowedLocales(), ", "));
+						throw new APIException(Context.getMessageSourceService().getMessage(
+						    "general.locale.localeListNotIncludingDefaultLocale",
+						    new Object[] { LocaleUtility.getDefaultLocale() }, null));
+					}
+				}
+			} else if (gp.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE)) {
+				if (gp.getPropertyValue() != null) {
+					List<Locale> localeList = getAllowedLocales();
+					
+					if (!localeList.contains(LocaleUtility.fromSpecification(gp.getPropertyValue().trim()))) {
+						String value = gp.getPropertyValue();
+						gp.setPropertyValue(LocaleUtility.getDefaultLocale().toString());
+						throw new APIException((Context.getMessageSourceService().getMessage(
+						    "general.locale.defaultNotInAllowedLocalesList", new Object[] { value }, null)));
+					}
+				}
+			}
+			
 			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
 			notifyGlobalPropertyChange(gp);
@@ -818,7 +719,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#executeSQL(java.lang.String, boolean)
 	 */
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
-		if (sql == null || sql.trim().equals("")) {
+		if (sql == null || "".equals(sql.trim())) {
 			return null;
 		}
 		
@@ -841,7 +742,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Calls global property listeners registered for this create/change
-	 *
+	 * 
 	 * @param gp
 	 */
 	private void notifyGlobalPropertyChange(GlobalProperty gp) {
@@ -854,7 +755,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Calls global property listeners registered for this delete
-	 *
+	 * 
 	 * @param propertyName
 	 */
 	private void notifyGlobalPropertyDelete(String propertyName) {
@@ -957,7 +858,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * there is no implementation id or 2) there is a implementation id and this passphrase matches
 	 * it. In the case of 1), this implementation id and passphrase are saved to the remote server's
 	 * database
-	 *
+	 * 
 	 * @param implementationId
 	 * @param description
 	 * @param passphrase
@@ -968,14 +869,14 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	private String checkImplementationIdValidity(String implementationId, String description, String passphrase)
 	        throws APIException {
 		
-		if (!StringUtils.hasLength(implementationId)) {
-			throw new APIException("The implementationid cannot be empty");
+		if (StringUtils.isEmpty(implementationId)) {
+			throw new APIException("cannot.be.empty", new Object[] { "implementationid" });
 		}
-		if (!StringUtils.hasLength(description)) {
-			throw new APIException("The description cannot be empty");
+		if (StringUtils.isEmpty(description)) {
+			throw new APIException("cannot.be.empty", new Object[] { "description" });
 		}
-		if (!StringUtils.hasLength(passphrase)) {
-			throw new APIException("The passphrase cannot be empty");
+		if (StringUtils.isEmpty(passphrase)) {
+			throw new APIException("cannot.be.empty", new Object[] { "passphrase" });
 		}
 		
 		// set up the data map to post to the openmrs server
@@ -1037,7 +938,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Used by spring to set the GlobalLocaleList on this implementation
-	 *
+	 * 
 	 * @param gll the GlobalLocaleList object that is registered to the GlobalPropertyListeners as
 	 *            well
 	 */
@@ -1054,16 +955,40 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			presentationLocales = new HashSet<Locale>();
 			Collection<Locale> messageLocales = Context.getMessageSourceService().getLocales();
 			List<Locale> allowedLocales = getAllowedLocales();
-			for (Locale possibleLocale : messageLocales) {
-				if (allowedLocales.contains(possibleLocale)) {
-					presentationLocales.add(possibleLocale);
+			
+			for (Locale locale : allowedLocales) {
+				// if no country is specified all countries with this language will be added
+				if (StringUtils.isEmpty(locale.getCountry())) {
+					List<Locale> localsWithSameLanguage = new ArrayList<Locale>();
+					for (Locale possibleLocale : messageLocales) {
+						if (locale.getLanguage().equals(possibleLocale.getLanguage())
+						        && !StringUtils.isEmpty(possibleLocale.getCountry())) {
+							localsWithSameLanguage.add(possibleLocale);
+						}
+					}
+					
+					// if there are country locales we add those only
+					if (!localsWithSameLanguage.isEmpty()) {
+						presentationLocales.addAll(localsWithSameLanguage);
+					} else {
+						// if there are no country locales we add possibleLocale which has country as ""
+						// e.g: if 'es' locale has no country based entries es_CL etc. we show default 'es'
+						if (messageLocales.contains(locale)) {
+							presentationLocales.add(locale);
+						}
+					}
 				} else {
-					// to be sure, check for language-only matches
-					for (Locale allowedLocale : allowedLocales) {
-						if (("".equals(allowedLocale.getCountry()) || "".equals(possibleLocale.getCountry()))
-						        && (allowedLocale.getLanguage().equals(possibleLocale.getLanguage()))) {
-							presentationLocales.add(possibleLocale);
-							break;
+					// if locales list contains exact <language,country> pair add it
+					if (messageLocales.contains(locale)) {
+						presentationLocales.add(locale);
+					} else {
+						// if no such entry add possibleLocale with country ""
+						// e.g: we specify es_CL but it is not in list so we add es locale here
+						for (Locale possibleLocale : messageLocales) {
+							if (locale.getLanguage().equals(possibleLocale.getLanguage())
+							        && StringUtils.isEmpty(possibleLocale.getCountry())) {
+								presentationLocales.add(possibleLocale);
+							}
 						}
 					}
 				}
@@ -1116,7 +1041,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		String propVal = Context.getAdministrationService().getGlobalProperty(propertyName);
-		if (!StringUtils.hasLength(propVal)) {
+		if (StringUtils.isEmpty(propVal)) {
 			return defaultValue;
 		}
 		
@@ -1124,11 +1049,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return (T) defaultValue.getClass().getDeclaredConstructor(String.class).newInstance(propVal);
 		}
 		catch (InstantiationException e) {
-			throw new APIException(defaultValue.getClass().getName() + " is not able to be instantiated with value: "
-			        + propVal, e);
+			throw new APIException("is.not.able.instantiated", new Object[] { defaultValue.getClass().getName(), propVal },
+			        e);
 		}
 		catch (NoSuchMethodException e) {
-			throw new APIException(defaultValue.getClass().getName() + " does not have a string constructor", e);
+			throw new APIException("does.not.have.string.constructor", new Object[] { defaultValue.getClass().getName() }, e);
 		}
 		catch (Exception e) {
 			log.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
@@ -1270,7 +1195,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Transactional(readOnly = true)
 	public void validate(Object object, Errors errors) throws APIException {
 		if (object == null) {
-			throw new APIException(Context.getMessageSourceService().getMessage("error.null"));
+			throw new APIException("error.null", (Object[]) null);
 		}
 		
 		dao.validate(object, errors);
@@ -1321,4 +1246,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		this.implementationIdHttpClient = implementationIdHttpClient;
 	}
 	
+	/**
+	 * @see org.openmrs.api.AdministrationService#isDatabaseStringComparisonCaseSensitive()
+	 */
+	@Override
+	public boolean isDatabaseStringComparisonCaseSensitive() {
+		return Boolean.valueOf(getGlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, "true"));
+	}
 }

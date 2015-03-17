@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller;
 
@@ -32,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.Security;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.web.test.WebTestHelper;
@@ -67,6 +64,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		request.setParameter("secretQuestionNew", "test_question");
 		
 		String answer = "test_answer";
+		String hashedAnswer = Security.encodeString(answer);
 		request.setParameter("secretAnswerNew", answer);
 		request.setParameter("secretAnswerConfirm", answer);
 		
@@ -74,7 +72,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		controller.handleRequest(request, response);
 		
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
-		assertEquals(answer, loginCredential.getSecretAnswer());
+		assertEquals(Security.encodeString(answer + loginCredential.getSalt()), loginCredential.getSecretAnswer());
 	}
 	
 	@Test
@@ -251,5 +249,37 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
 		    "org.springframework.validation.BindingResult.opts");
 		Assert.assertTrue(bindingResult.hasErrors());
+	}
+	
+	@Test
+	public void shouldNotOverwriteUserSecretQuestionOrAnswerWhenChangingPassword() throws Exception {
+		LoginCredential loginCredential = userDao.getLoginCredential(user);
+		HttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		
+		request.setParameter("secretQuestionPassword", "test");
+		request.setParameter("secretQuestionNew", "easy question");
+		request.setParameter("secretAnswerNew", "easy answer");
+		request.setParameter("secretAnswerConfirm", "easy answer");
+		
+		controller.handleRequest(request, response);
+		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
+		String hashedAnswer = Security.encodeString("easy answer" + loginCredential.getSalt());
+		Assert.assertEquals(hashedAnswer, loginCredential.getSecretAnswer());
+		String oldPassword = loginCredential.getHashedPassword();
+		
+		request.removeAllParameters();
+		request.addParameter("secretQuestionNew", "easy question");
+		request.setParameter("oldPassword", "test");
+		request.setParameter("newPassword", "OpenMRS1");
+		request.setParameter("confirmPassword", "OpenMRS1");
+		ModelAndView mav = controller.handleRequest(request, response);
+		
+		if (oldPassword == loginCredential.getHashedPassword()) {
+			request.setParameter("secretQuestionNew", "");
+			mav = controller.handleRequest(request, response);
+		}
+		Assert.assertEquals(hashedAnswer, loginCredential.getSecretAnswer());
+		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
 	}
 }

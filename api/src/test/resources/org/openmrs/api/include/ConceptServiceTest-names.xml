@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <concept concept_id="3000" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5eb"/>
+  <concept concept_id="4000" retired="0" datatype_id="2" class_id="10" is_set="false" creator="1" date_created="2008-08-15 15:51:39.0" uuid="62984fc2-e878-11e0-950d-00248140a5eb"/>
+  <concept_name concept_id="3000" name="TRUST ALWAYS" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="9997" voided="false" locale_preferred="0" uuid="3e1b3848-e879-11e0-950d-00248140a5eb"/>
+  <concept_name concept_id="3000" name="TRUST ME" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="9998" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" uuid="36bf76ae-e879-11e0-950d-00248140a5eb"/>
+  <concept_name concept_id="4000" name="TRUST NOW" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="9999" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" uuid="67ce91b2-e879-11e0-950d-00248140a5eb"/>
+
+  <concept concept_id="240" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e1"/>
+  <concept concept_id="357" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e2"/>
+  <concept concept_id="798" retired="0" datatype_id="4" class_id="8" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e3"/>
+  <concept concept_id="328" retired="0" datatype_id="4" class_id="5" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e4"/>
+  <concept concept_id="1240" retired="0" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e5"/>
+  <concept concept_id="1241" retired="1" datatype_id="4" class_id="5" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" uuid="568b58c8-e878-11e0-950d-00248140a5e6"/>
+
+  <concept_name concept_id="240" name="SALBUTAMOL TABS" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="240" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e1"/>
+  <concept_name concept_id="357" name="SALBUTAMOL SYRUP" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="357" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e2"/>
+  <concept_name concept_id="798" name="SALBUTAMOL" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="798" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" uuid="67ce91b2-e879-11e0-950d-00248140a5e3"/>
+  <concept_name concept_id="798" name="SALBUTAMOL INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3256" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e4"/>
+  <concept_name concept_id="798" name="SALBUTAMOL SYRUP" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3257" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e5"/>
+  <concept_name concept_id="798" name="SALBUTAMOL TABS" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3258" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e6"/>
+  
+  <concept_name concept_id="328" name="VENTOLIN INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="328" voided="false" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e7"/>
+  <concept_name concept_id="798" name="VENTOLIN INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3403" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a5e8"/>
+  <concept_name concept_id="1240" name="BECLOMETHASONE INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2662" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a510"/>
+  <concept_name concept_id="1240" name="BECLOMETASONE INHALER" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2661" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a511"/>
+  <concept_name concept_id="1240" name="Tuberculosis of Knee" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2663" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a512"/>
+  <concept_name concept_id="1241" name="Retired Concept" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2664" voided="false" locale_preferred="0" uuid="67ce91b2-e879-11e0-950d-00248140a513"/>
+
+</dataset>

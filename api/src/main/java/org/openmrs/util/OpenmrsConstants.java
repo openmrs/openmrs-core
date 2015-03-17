@@ -1,19 +1,16 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,6 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -44,11 +42,13 @@ import org.openmrs.scheduler.SchedulerConstants;
  */
 public final class OpenmrsConstants {
 	
-	private static Log log = LogFactory.getLog(OpenmrsConstants.class);
+	private static final Log log = LogFactory.getLog(OpenmrsConstants.class);
 	
 	/**
 	 * This is the hard coded primary key of the order type for DRUG. This has to be done because
 	 * some logic in the API acts on this order type
+	 * 
+	 * @Deprecated
 	 */
 	public static final int ORDERTYPE_DRUG = 2;
 	
@@ -77,101 +77,58 @@ public final class OpenmrsConstants {
 	/**
 	 * This holds the current openmrs code version in a short space-less string.<br/>
 	 * The format is:<br/>
-	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i >
+	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i
+	 * >
 	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion() != null ? THIS_PACKAGE
 	        .getSpecificationVersion() : (getBuildVersionShort() != null ? getBuildVersionShort() : getVersion());
 	
 	/**
-	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858) defined in
-	 *         MANIFEST.MF(specification-Vendor)
+	 * @return build version with alpha characters (eg:1.10.0 SNAPSHOT Build 24858)
+	 * defined in MANIFEST.MF(specification-Vendor)
+	 *
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersion() {
-		
-		Properties props = new Properties();
-		
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
-		
-		if (url == null) {
-			log.error("Unable to find MANIFEST.MF file built by maven");
-			return null;
-		}
-		
-		// Load the file
-		try {
-			props.load(url.openStream());
-			
-			return props.getProperty("Specification-Vendor");
-		}
-		catch (IOException e) {
-			log.error("Unable to get MANIFEST.MF file into manifest object");
-		}
-		
-		return null;
+		return getOpenmrsProperty("openmrs.version.long");
 	}
 	
 	/**
-	 * @return build version without alpha characters (eg: 1.10.0.24858) defined in MANIFEST.MF
-	 *         (specification-Version)
+	 * @return build version without alpha characters (eg: 1.10.0.24858)
+	 * defined in MANIFEST.MF (specification-Version)
+	 *
 	 * @see #OPENMRS_VERSION_SHORT
 	 * @see #OPENMRS_VERSION
 	 */
 	private static String getBuildVersionShort() {
-		
-		Properties props = new Properties();
-		
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource("META-INF/MANIFEST.MF");
-		
-		if (url == null) {
-			log.error("Unable to find MANIFEST.MF file built by maven");
-			return null;
-		}
-		
-		// Load the file
-		try {
-			props.load(url.openStream());
-			
-			return props.getProperty("Specification-Version");
-		}
-		catch (IOException e) {
-			log.error("Unable to get MANIFEST.MF file into manifest object");
-		}
-		
-		return null;
+		return getOpenmrsProperty("openmrs.version.short");
 	}
 	
-	/**
-	 * Somewhat hacky method to fetch the version from the maven pom.properties file. <br/>
-	 * This method should not be used unless in a dev environment. The preferred way to get the
-	 * version is from the manifest in the api jar file. More detail is included in the properties
-	 * there.
-	 * 
-	 * @return version number defined in maven pom.xml file(s)
-	 * @see #OPENMRS_VERSION_SHORT
-	 * @see #OPENMRS_VERSION
-	 */
-	
 	private static String getVersion() {
-		Properties props = new Properties();
-		
-		// Get hold of the path to the properties file
-		// (Maven will make sure it's on the class path)
-		java.net.URL url = OpenmrsConstants.class.getClassLoader().getResource(
-		    "META-INF/maven/org.openmrs.api/openmrs-api/pom.properties");
-		if (url == null) {
-			log.error("Unable to find pom.properties file built by maven");
+		return getOpenmrsProperty("openmrs.version");
+	}
+	
+	public static String getOpenmrsProperty(String property) {
+		InputStream file = OpenmrsConstants.class.getClassLoader().getResourceAsStream("org/openmrs/api/openmrs.properties");
+		if (file == null) {
+			log.error("Unable to find the openmrs.properties file");
 			return null;
 		}
 		
-		// Load the file
 		try {
-			props.load(url.openStream());
-			return props.getProperty("version"); // this will return something like "1.9.0-SNAPSHOT" in dev environments
+			Properties props = new Properties();
+			props.load(file);
+			
+			file.close();
+			
+			return props.getProperty(property);
 		}
 		catch (IOException e) {
-			log.error("Unable to get pom.properties file into Properties object");
+			log.error("Unable to parse the openmrs.properties file", e);
+		}
+		finally {
+			IOUtils.closeQuietly(file);
 		}
 		
 		return null;
@@ -230,7 +187,9 @@ public final class OpenmrsConstants {
 	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
 	 * @see OpenmrsUtil#getApplicationDataDirectory()
 	 * @see OpenmrsUtil#startup(java.util.Properties)
+	 * @deprecated as of 1.11 use {@link OpenmrsUtil#getApplicationDataDirectory()}
 	 */
+	@Deprecated
 	public static String APPLICATION_DATA_DIRECTORY = null;
 	
 	/**
@@ -829,6 +788,12 @@ public final class OpenmrsConstants {
 	
 	public static final int GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE = 1000;
 	
+	public static final String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE = "person.attributeSearchMatchMode";
+	
+	public static final String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT = "EXACT";
+	
+	public static final String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE = "ANYWHERE";
+	
 	public static final String GLOBAL_PROPERTY_GZIP_ENABLED = "gzip.enabled";
 	
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
@@ -837,8 +802,6 @@ public final class OpenmrsConstants {
 	
 	@Deprecated
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS = "report.xmlMacros";
-	
-	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS = "dashboard.regimen.standardRegimens";
 	
 	public static final String GLOBAL_PROPERTY_SHOW_PATIENT_NAME = "dashboard.showPatientName";
 	
@@ -864,7 +827,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS = "minSearchCharacters";
 	
-	public static final int GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS = 3;
+	public static final int GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS = 2;
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "default_locale";
 	
@@ -882,6 +845,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START = "START";
 	
+	public static final String GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE = "providerSearch.matchMode";
+	
 	public static final String GLOBAL_PROPERTY_DEFAULT_SERIALIZER = "serialization.defaultSerializer";
 	
 	public static final String GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS = "hl7_processor.ignore_missing_patient_non_local";
@@ -889,6 +854,8 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_TRUE_CONCEPT = "concept.true";
 	
 	public static final String GLOBAL_PROPERTY_FALSE_CONCEPT = "concept.false";
+	
+	public static final String GLOBAL_PROPERTY_UNKNOWN_CONCEPT = "concept.unknown";
 	
 	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
 	
@@ -900,7 +867,15 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED = "EncounterType.encounterTypes.locked";
 	
-	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.web.address.AddressTemplate>\n"
+	public static final String GLOBAL_PROPERTY_FORMS_LOCKED = "forms.locked";
+	
+	public static final String GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED = "personAttributeTypes.locked";
+	
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED = "patientIdentifierTypes.locked";
+	
+	public static final String GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG = "drugOrder.requireDrug";
+	
+	public static final String DEFAULT_ADDRESS_TEMPLATE = "<org.openmrs.layout.address.AddressTemplate>\n"
 	        + "    <nameMappings class=\"properties\">\n"
 	        + "      <property name=\"postalCode\" value=\"Location.postalCode\"/>\n"
 	        + "      <property name=\"address2\" value=\"Location.address2\"/>\n"
@@ -915,7 +890,7 @@ public final class OpenmrsConstants {
 	        + "      <property name=\"cityVillage\" value=\"10\"/>\n" + "    </sizeMappings>\n" + "    <lineByLineFormat>\n"
 	        + "      <string>address1</string>\n" + "      <string>address2</string>\n"
 	        + "      <string>cityVillage stateProvince country postalCode</string>\n" + "    </lineByLineFormat>\n"
-	        + "  </org.openmrs.layout.web.address.AddressTemplate>";
+	        + "   <requiredElements>\\n\" + \" </requiredElements>\\n\" + \" </org.openmrs.layout.address.AddressTemplate>";
 	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
@@ -987,11 +962,6 @@ public final class OpenmrsConstants {
 	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
 	
 	/**
-	 * Global property name for the prefix used when creating order numbers.
-	 */
-	public static final String GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX = "orderEntry.orderNumberPrefix";
-	
-	/**
 	 * Global property name for the maximum number of results to return from a single search in the
 	 * search widgets
 	 */
@@ -1035,20 +1005,17 @@ public final class OpenmrsConstants {
 	public static final String GP_DASHBOARD_METADATA_CASE_CONVERSION = "dashboard.metadata.caseConversion";
 	
 	/**
-	 * Global property name for the default ConceptMapType which is set automatically when no other
-	 * is set manually.
+	 * Global property name for the default ConceptMapType which is set automatically when no other is set manually.
 	 */
 	public static final String GP_DEFAULT_CONCEPT_MAP_TYPE = "concept.defaultConceptMapType";
 	
 	/**
-	 * Global property name of the allowed concept classes for the dosage form field of the concept
-	 * drug management form.
+	 * Global property name of the allowed concept classes for the dosage form field of the concept drug management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_DOSAGE_FORM_CONCEPT_CLASSES = "conceptDrug.dosageForm.conceptClasses";
 	
 	/**
-	 * Global property name of the allowed concept classes for the route field of the concept drug
-	 * management form.
+	 * Global property name of the allowed concept classes for the route field of the concept drug management form.
 	 */
 	public static final String GP_CONCEPT_DRUG_ROUTE_CONCEPT_CLASSES = "conceptDrug.route.conceptClasses";
 	
@@ -1089,15 +1056,47 @@ public final class OpenmrsConstants {
 	 */
 	public static final String AUTO_CLOSE_VISITS_TASK_NAME = "Auto Close Visits Task";
 	
-	public static final String GP_CONCEPT_INDEX_UPDATE_TASK_LAST_UPDATED_CONCEPT = "concept.IndexUpdateTask.lastConceptUpdated";
-	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 	
-	public static final String GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE = "concept.caseSensitiveNamesInConceptNameTable";
+	/**
+	 * @since 1.9.9, 1.10.2, 1.11
+	 */
+	public static final String GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON = "search.caseSensitiveDatabaseStringComparison";
 	
 	public static final String GP_DASHBOARD_CONCEPTS = "dashboard.header.showConcept";
 	
 	public static final String GP_MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
+	
+	public static final String GP_NEXT_ORDER_NUMBER_SEED = "order.nextOrderNumberSeed";
+	
+	public static final String GP_ORDER_NUMBER_GENERATOR_BEAN_ID = "order.orderNumberGeneratorBeanId";
+	
+	/**
+	 * Specifies the uuid of the concept set where its members represent the possible drug routes
+	 */
+	public static final String GP_DRUG_ROUTES_CONCEPT_UUID = "order.drugRoutesConceptUuid";
+	
+	public static final String GP_DRUG_DOSING_UNITS_CONCEPT_UUID = "order.drugDosingUnitsConceptUuid";
+	
+	public static final String GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID = "order.drugDispensingUnitsConceptUuid";
+	
+	public static final String GP_DURATION_UNITS_CONCEPT_UUID = "order.durationUnitsConceptUuid";
+	
+	public static final String GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID = "order.testSpecimenSourcesConceptUuid";
+	
+	public static final String GP_UNKNOWN_PROVIDER_UUID = "provider.unknownProviderUuid";
+	
+	/**
+	 * @since 1.11
+	 */
+	public static final String GP_SEARCH_INDEX_VERSION = "search.indexVersion";
+	
+	/**
+	 * Indicates the version of the search index. The index will be rebuilt, if the version changes.
+	 * 
+	 * @since 1.11
+	 */
+	public static final Integer SEARCH_INDEX_VERSION = 3;
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1183,55 +1182,6 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_MAIL_SMTP_STARTTLS_ENABLE, "false",
 		        "Set to true to enable TLS encryption, else set to false"));
-		
-		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
-		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "    </drugComponents>"
-		        + "    <displayName>3TC + d4T(30) + NVP (Triomune-30)</displayName>"
-		        + "    <codeName>standardTri30</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
-		        + "        <drugId>3</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "    </drugComponents>"
-		        + "    <displayName>3TC + d4T(40) + NVP (Triomune-40)</displayName>"
-		        + "    <codeName>standardTri40</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
-		        + "        <drugId>39</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "      <drugSuggestion>" + "        <drugId>22</drugId>"
-		        + "        <dose>200</dose>" + "        <units>mg</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "    </drugComponents>" + "    <displayName>AZT + 3TC + NVP</displayName>"
-		        + "    <codeName>standardAztNvp</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>"
-		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[3]/drugComponents/drugSuggestion\"/>"
-		        + "      <drugSuggestion>" + "        <drugId>11</drugId>" + "        <dose>600</dose>"
-		        + "        <units>mg</units>" + "        <frequency>1/day x 7 days/week</frequency>"
-		        + "        <instructions></instructions>" + "      </drugSuggestion>" + "    </drugComponents>"
-		        + "    <displayName>AZT + 3TC + EFV(600)</displayName>" + "    <codeName>standardAztEfv</codeName>"
-		        + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" + "  </regimenSuggestion>" + "  <regimenSuggestion>"
-		        + "    <drugComponents>" + "      <drugSuggestion>" + "        <drugId>5</drugId>"
-		        + "        <dose>30</dose>" + "        <units>mg</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>" + "      <drugSuggestion>" + "        <drugId>42</drugId>"
-		        + "        <dose>150</dose>" + "        		<units>mg</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>"
-		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[4]/drugComponents/drugSuggestion[2]\"/>"
-		        + "    </drugComponents>" + "    <displayName>d4T(30) + 3TC + EFV(600)</displayName>"
-		        + "    <codeName>standardD4t30Efv</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
-		        + "        <drugId>6</drugId>" + "        <dose>40</dose>" + "        <units>mg</units>"
-		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
-		        + "      </drugSuggestion>"
-		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[5]/drugComponents/drugSuggestion[2]\"/>"
-		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[4]/drugComponents/drugSuggestion[2]\"/>"
-		        + "    </drugComponents>" + "    <displayName>d4T(40) + 3TC + EFV(600)</displayName>"
-		        + "    <codeName>standardD4t40Efv</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
-		        + "  </regimenSuggestion>" + "</list>";
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS, standardRegimens,
-		        "XML description of standard drug regimens, to be shown as shortcuts on the dashboard regimen entry tab"));
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
@@ -1384,7 +1334,7 @@ public final class OpenmrsConstants {
 		                "number",
 		                "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en, es, fr, it, pt",
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en, en_GB, es, fr, it, pt",
 		        "Comma delimited list of locales allowed for use on system"));
 		
 		props
@@ -1393,7 +1343,7 @@ public final class OpenmrsConstants {
 		                "",
 		                "Comma separated list of the RelationshipTypes to show on the new/short patient form.  The list is defined like '3a, 4b, 7a'.  The number is the RelationshipTypeId and the 'a' vs 'b' part is which side of the relationship is filled in by the user."));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "3",
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "2",
 		        "Number of characters user must input before searching is started."));
 		
 		props
@@ -1459,7 +1409,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GP_SEARCH_WIDGET_DELAY_INTERVAL,
-		                "400",
+		                "300",
 		                "Specifies time interval in milliseconds when searching, between keyboard keyup event and triggering the search off, should be higher if most users are slow when typing so as to minimise the load on the server"));
 		
 		props
@@ -1473,9 +1423,6 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
 		                GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_START,
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
-		
-		props.add(new GlobalProperty(GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, ORDER_NUMBER_DEFAULT_PREFIX,
-		        "Specifies the prefix used when creating order numbers"));
 		
 		props.add(new GlobalProperty(GP_ENABLE_CONCEPT_MAP_TYPE_MANAGEMENT, "false",
 		        "Enables or disables management of concept map types", BooleanDatatype.class, null));
@@ -1536,9 +1483,9 @@ public final class OpenmrsConstants {
 		
 		props
 		        .add(new GlobalProperty(
-		                GP_CASE_SENSITIVE_NAMES_IN_CONCEPT_NAME_TABLE,
+		                GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON,
 		                "true",
-		                "Indicates whether names in the concept_name table are case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
+		                "Indicates whether database string comparison is case sensitive or not. Setting this to false for MySQL with a case insensitive collation improves search performance."));
 		props
 		        .add(new GlobalProperty(
 		                GP_DASHBOARD_METADATA_CASE_CONVERSION,
@@ -1554,8 +1501,57 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "false",
 		        "Indicates whether a username must be a valid e-mail or not.", BooleanDatatype.class, null));
 		
+		props.add(new GlobalProperty(GP_SEARCH_INDEX_VERSION, "",
+		        "Indicates the index version. If it is blank, the index needs to be rebuilt."));
+		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_ALLOW_OVERLAPPING_VISITS, "true",
 		        "true/false whether or not to allow visits of a given patient to overlap", BooleanDatatype.class, null));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_FORMS_LOCKED, "false",
+		        "Set to a value of true if you do not want any changes to be made on forms, else set to false."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_DRUG_ORDER_REQUIRE_DRUG, "false",
+		        "Set to value true if you need to specify a formulation(Drug) when creating a drug order."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_ATRIBUTE_TYPES_LOCKED, "false",
+		        "Set to a value of true if you do not want allow editing person attribute types, else set to false."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_TYPES_LOCKED, "false",
+		        "Set to a value of true if you do not want allow editing patient identifier types, else set to false."));
+		
+		props.add(new GlobalProperty(GP_NEXT_ORDER_NUMBER_SEED, "1", "The next order number available for assignment"));
+		
+		props.add(new GlobalProperty(GP_ORDER_NUMBER_GENERATOR_BEAN_ID, "",
+		        "Specifies spring bean id of the order generator to use when assigning order numbers"));
+		
+		props.add(new GlobalProperty(GP_DRUG_ROUTES_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug routes"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DOSING_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug dosing units"));
+		
+		props.add(new GlobalProperty(GP_DRUG_DISPENSING_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible drug dispensing units"));
+		
+		props.add(new GlobalProperty(GP_DURATION_UNITS_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible duration units"));
+		
+		props.add(new GlobalProperty(GP_TEST_SPECIMEN_SOURCES_CONCEPT_UUID, "",
+		        "Specifies the uuid of the concept set where its members represent the possible test specimen sources"));
+		
+		props.add(new GlobalProperty(GP_UNKNOWN_PROVIDER_UUID, "", "Specifies the uuid of the Unknown Provider account"));
+		
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE,
+		                "EXACT",
+		                "Specifies how provider identifiers are matched while searching for providers. Valid values are START,EXACT, END or ANYWHERE"));
+		
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
+		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT,
+		                "Specifies how person attributes are matched while searching person. Valid values are 'ANYWHERE' or 'EXACT'. Defaults to exact if missing or invalid value is present."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
@@ -1797,18 +1793,31 @@ public final class OpenmrsConstants {
 	 * @see org.openmrs.api.PersonService
 	 */
 	public static enum PERSON_TYPE {
-		PERSON, PATIENT, USER
+		PERSON,
+		PATIENT,
+		USER
 	}
 	
 	//Patient Identifier Validators
 	public static final String LUHN_IDENTIFIER_VALIDATOR = LuhnIdentifierValidator.class.getName();
 	
 	// ComplexObsHandler views
+	
+	/**
+	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
+	 * 
+	 * @deprecated complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
+	 */
+	@Deprecated
 	public static final String RAW_VIEW = "RAW_VIEW";
 	
+	/**
+	 * org.openmrs.obs.ComplexObsHandler views are now defined in the interface itself.
+	 * 
+	 * @deprecated complex observation view types are defined in org.openmrs.obs.ComplexObsHandler
+	 */
+	@Deprecated
 	public static final String TEXT_VIEW = "TEXT_VIEW";
-	
-	public static final String ORDER_NUMBER_DEFAULT_PREFIX = "OR:";
 	
 	/** The data type to return on failing to load a custom data type. */
 	public static final String DEFAULT_CUSTOM_DATATYPE = FreeTextDatatype.class.getName();

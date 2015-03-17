@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -19,8 +15,24 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.analysis.LowerCaseFilterFactory;
+import org.apache.solr.analysis.StandardFilterFactory;
+import org.apache.solr.analysis.StandardTokenizerFactory;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Similarity;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.search.ConceptNameSimilarity;
+import org.openmrs.api.db.hibernate.search.bridge.LocaleFieldBridge;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -32,23 +44,33 @@ import org.simpleframework.xml.Root;
  * locale.
  */
 @Root
+@Indexed
+@AnalyzerDef(name = "ConceptNameAnalyzer", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+        @TokenFilterDef(factory = StandardFilterFactory.class), @TokenFilterDef(factory = LowerCaseFilterFactory.class) })
+@Analyzer(definition = "ConceptNameAnalyzer")
+@Similarity(impl = ConceptNameSimilarity.class)
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
-	// Fields
+	@DocumentId
 	private Integer conceptNameId;
 	
+	@IndexedEmbedded
 	private Concept concept;
 	
+	@Field
 	private String name;
 	
+	@Field(index = Index.UN_TOKENIZED)
+	@FieldBridge(impl = LocaleFieldBridge.class)
 	private Locale locale; // ABK: upgraded from a plain string to a full locale object
 	
 	private User creator;
 	
 	private Date dateCreated;
 	
+	@Field
 	private Boolean voided = false;
 	
 	private User voidedBy;
@@ -59,8 +81,10 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	
 	private Collection<ConceptNameTag> tags;
 	
+	@Field
 	private ConceptNameType conceptNameType;
 	
+	@Field
 	private Boolean localePreferred = false;
 	
 	// Constructors
@@ -498,10 +522,9 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *         false
 	 */
 	public Boolean isPreferredInLanguage(String language) {
-		if (!StringUtils.isBlank(language) && this.locale != null) {
-			if (isPreferred() && this.locale.getLanguage().equals(language)) {
-				return true;
-			}
+		if (!StringUtils.isBlank(language) && this.locale != null && isPreferred()
+		        && this.locale.getLanguage().equals(language)) {
+			return true;
 		}
 		
 		return false;
@@ -517,10 +540,9 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 *         false
 	 */
 	public Boolean isPreferredInCountry(String country) {
-		if (!StringUtils.isBlank(country) && this.locale != null) {
-			if (isPreferred() && this.locale.getCountry().equals(country)) {
-				return true;
-			}
+		if (!StringUtils.isBlank(country) && this.locale != null && isPreferred()
+		        && this.locale.getCountry().equals(country)) {
+			return true;
 		}
 		
 		return false;
@@ -619,10 +641,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 */
 	@Deprecated
 	public Boolean isPreferredShortInLanguage(String language) {
-		if (!StringUtils.isBlank(language) && this.locale != null) {
-			if (isShort() && this.locale.getLanguage().equals(language)) {
-				return true;
-			}
+		if (!StringUtils.isBlank(language) && this.locale != null && isShort() && this.locale.getLanguage().equals(language)) {
+			return true;
 		}
 		return false;
 	}
@@ -639,10 +659,8 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 */
 	@Deprecated
 	public Boolean isPreferredShortInCountry(String country) {
-		if (!StringUtils.isBlank(country) && this.locale != null) {
-			if (isShort() && this.locale.getCountry().equals(country)) {
-				return true;
-			}
+		if (!StringUtils.isBlank(country) && this.locale != null && isShort() && this.locale.getCountry().equals(country)) {
+			return true;
 		}
 		return false;
 	}

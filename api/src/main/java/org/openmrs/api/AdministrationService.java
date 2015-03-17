@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -37,8 +33,6 @@ import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.Report;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
@@ -258,94 +252,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @deprecated use {@link org.openmrs.api#deleteConceptDatatype(ConceptDatatype)}
 	 */
 	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException;
-	
-	/**
-	 * Create a new Report
-	 * 
-	 * @param report Report to create
-	 * @throws APIException
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void createReport(Report report) throws APIException;
-	
-	/**
-	 * Update Report
-	 * 
-	 * @param report Report to update
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void updateReport(Report report) throws APIException;
-	
-	/**
-	 * Delete Report
-	 * 
-	 * @param report Report to delete
-	 * @throws APIException
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void deleteReport(Report report) throws APIException;
-	
-	/**
-	 * Create a new Report Object
-	 * 
-	 * @param reportObject Report Object to create
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void createReportObject(AbstractReportObject reportObject) throws APIException;
-	
-	/**
-	 * Update Report Object
-	 * 
-	 * @param reportObject the Report Object to update
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void updateReportObject(AbstractReportObject reportObject) throws APIException;
-	
-	/**
-	 * Delete Report Object
-	 * 
-	 * @param reportObjectId Internal identifier for the Report Object to delete
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void deleteReportObject(Integer reportObjectId) throws APIException;
-	
-	/**
-	 * Iterates over the words in names and synonyms (for each locale) and updates the concept word
-	 * business table
-	 * 
-	 * @param concept
-	 * @throws APIException
-	 * @deprecated moved to {@link org.openmrs.api.ConceptService#updateConceptWord(Concept)}
-	 */
-	public void updateConceptWord(Concept concept) throws APIException;
-	
-	/**
-	 * Iterates over all concepts calling updateConceptWord(concept)
-	 * 
-	 * @throws APIException
-	 * @deprecated moved to {@link org.openmrs.api.ConceptService#updateConceptWords()}
-	 */
-	public void updateConceptWords() throws APIException;
-	
-	/**
-	 * Iterates over all concepts with conceptIds between <code>conceptIdStart</code> and
-	 * <code>conceptIdEnd</code> (inclusive) calling updateConceptWord(concept)
-	 * 
-	 * @throws APIException
-	 * @deprecated moved to
-	 *             {@link org.openmrs.api.ConceptService#updateConceptWords(Integer, Integer)}
-	 */
-	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 	
 	/**
 	 * Create a concept proposal
@@ -682,6 +588,10 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return list of allowed presentation locales TODO change this return type to list?
 	 * @should return at least one locale if no locales defined in database yet
 	 * @should not return more locales than message source service locales
+	 * @should return only country locale if both country locale and language locale are specified in allowed list
+	 * @should return all country locales if language locale and no country locales are specified in allowed list
+	 * @should return language locale if country locale is specified in allowed list but country locale message file is missing
+	 * @should return language locale if it is specified in allowed list and there are no country locale message files available
 	 */
 	public Set<Locale> getPresentationLocales();
 	
@@ -738,4 +648,17 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param implementationHttpClient The implementation http client
 	 */
 	public void setImplementationIdHttpClient(HttpClient implementationHttpClient);
+	
+	/**
+	 * Reads a GP which specifies if database string comparison is case sensitive.
+	 * <p>
+	 * It is an optimisation parameter for MySQL, which can speed up searching if set to <b>false</b>.
+	 * See http://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
+	 * <p>
+	 * It is set to <b>true</b> by default.
+	 * 
+	 * @return true if database string comparison is case sensitive
+	 * @since 1.9.9, 1.10.2, 1.11
+	 */
+	public boolean isDatabaseStringComparisonCaseSensitive();
 }

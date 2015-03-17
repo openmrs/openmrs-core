@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -21,8 +17,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -248,8 +247,10 @@ public class PersonTest extends BaseContextSensitiveTest {
 		assertTrue("There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size(),
 		    p.getAttributes().size() == 2);
 		
-		// (we must change the value here as well, because logic says that there is no
-		// point in adding an attribute that has the same value/type...even if the void
+		// (we must change the value here as well, because logic says that there
+		// is no
+		// point in adding an attribute that has the same value/type...even if
+		// the void
 		// status is different)
 		pa3.setValue(pa1.getValue() + "addition to make sure the value is different");
 		pa3.setVoided(true);
@@ -536,5 +537,232 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAddress(pa2);
 		
 		Assert.assertEquals(1, p.getAddresses().size());
+	}
+	
+	/**
+	 * @see Person#getPersonAddress()
+	 * @verifies get not-voided person address if preferred address does not exist
+	 */
+	@Test
+	public void getPersonAddress_shouldGetNotvoidedPersonAddressIfPreferredAddressDoesNotExist() throws Exception {
+		
+		// addresses
+		PersonAddress voidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(true).build();
+		
+		// addresses
+		PersonAddress notVoidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(false).build();
+		
+		PersonAddress expectedPersonAddress = notVoidedAddress;
+		Set<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress, notVoidedAddress));
+		
+		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
+	}
+	
+	/**
+	 * @see Person#getPersonAddress()
+	 * @verifies get preferred and not-voided person address if exist
+	 */
+	@Test
+	public void getPersonAddress_shouldGetPreferredAndNotvoidedPersonAddressIfExist() throws Exception {
+		
+		// addresses
+		PersonAddress voidedAddress = PersonAddressBuilder.newBuilder().withPreferred(false).withVoided(true).build();
+		
+		PersonAddress preferredNotVoidedAddress = PersonAddressBuilder.newBuilder().withPreferred(true).withVoided(false)
+		        .build();
+		
+		PersonAddress expectedPersonAddress = preferredNotVoidedAddress;
+		HashSet<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress,
+		    preferredNotVoidedAddress));
+		
+		checkGetPersonAddressResultForVoidedPerson(expectedPersonAddress, personAddresses);
+		
+	}
+	
+	/**
+	 * @see Person#getPersonAddress()
+	 * @verifies get voided person address if person is voided and not-voided address does not exist
+	 */
+	@Test
+	public void getPersonAddress_shouldGetVoidedPersonAddressIfPersonIsVoidedAndNotvoidedAddressDoesNotExist()
+	        throws Exception {
+		
+		// addresses
+		PersonAddress voidedAddress1 = PersonAddressBuilder.newBuilder().withVoided(true).build();
+		PersonAddress voidedAddress2 = PersonAddressBuilder.newBuilder().withVoided(true).build();
+		
+		Set<PersonAddress> personAddresses = new HashSet<PersonAddress>(Arrays.asList(voidedAddress1, voidedAddress2));
+		
+		Person person = new Person();
+		person.setVoided(true);
+		person.setAddresses(personAddresses);
+		
+		PersonAddress actualPersonAddress = person.getPersonAddress();
+		
+		assertTrue(actualPersonAddress.isVoided());
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 * @verifies get not-voided person name if preferred address does not exist
+	 */
+	@Test
+	public void getPersonName_shouldGetNotvoidedPersonNameIfPreferredAddressDoesNotExist() throws Exception {
+		
+		PersonName notVoidedName = PersonNameBuilder.newBuilder().withVoided(false).build();
+		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		
+		PersonName expectedPersonName = notVoidedName;
+		
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(notVoidedName,
+		    voidedName)));
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 * @verifies get preferred and not-voided person name if exist
+	 */
+	@Test
+	public void getPersonName_shouldGetPreferredAndNotvoidedPersonNameIfExist() throws Exception {
+		
+		PersonName preferredNotVoidedName = PersonNameBuilder.newBuilder().withPreferred(true).withVoided(false).build();
+		PersonName notVoidedName = PersonNameBuilder.newBuilder().withVoided(false).build();
+		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		
+		PersonName expectedPersonName = preferredNotVoidedName;
+		
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(
+		    preferredNotVoidedName, notVoidedName, voidedName)));
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 * @verifies get voided person address if person is voided and not-voided address does not exist
+	 */
+	@Test
+	public void getPersonName_shouldGetVoidedPersonAddressIfPersonIsVoidedAndNotvoidedAddressDoesNotExist() throws Exception {
+		
+		PersonName voidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		
+		PersonName expectedPersonName = voidedName;
+		
+		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(voidedName)));
+		
+	}
+	
+	/**
+	 * @see Person#getPersonAddress()
+	 * @verifies return null if person is not-voided and have voided address
+	 */
+	@Test
+	public void getPersonAddress_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedAddress() throws Exception {
+		
+		PersonAddress firstPersonAddress = PersonAddressBuilder.newBuilder().withVoided(true).build();
+		PersonAddress secondPersonAddress = PersonAddressBuilder.newBuilder().withVoided(true).build();
+		
+		Person notVoidedPerson = new Person();
+		notVoidedPerson.addAddress(firstPersonAddress);
+		notVoidedPerson.addAddress(secondPersonAddress);
+		
+		Assert.assertNull(notVoidedPerson.getPersonAddress());
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 * @verifies return null if person is not-voided and have voided names
+	 */
+	@Test
+	public void getPersonName_shouldReturnNullIfPersonIsNotvoidedAndHaveVoidedNames() throws Exception {
+		
+		PersonName firstVoidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		PersonName secondVoidedName = PersonNameBuilder.newBuilder().withVoided(true).build();
+		
+		Person notVoidedPerson = new Person();
+		notVoidedPerson.addName(firstVoidedName);
+		notVoidedPerson.addName(secondVoidedName);
+		
+		Assert.assertNull(notVoidedPerson.getPersonName());
+	}
+	
+	private void checkGetPersonAddressResultForVoidedPerson(PersonAddress expectedPersonAddress,
+	        Set<PersonAddress> personAddresses) {
+		
+		Person person = new Person();
+		person.setAddresses(personAddresses);
+		person.setVoided(true);
+		
+		PersonAddress actualPersonAddress = person.getPersonAddress();
+		
+		assertEquals(expectedPersonAddress, actualPersonAddress);
+	}
+	
+	private void checkGetPersonNameResultForVoidedPerson(PersonName expectedPersonAddress, Set<PersonName> personAddresses) {
+		
+		Person person = new Person();
+		person.setVoided(true);
+		
+		for (PersonName personName : personAddresses) {
+			person.addName(personName);
+		}
+		
+		PersonName actualPersonName = person.getPersonName();
+		
+		assertEquals(expectedPersonAddress, actualPersonName);
+	}
+	
+	// helper class
+	private static class PersonNameBuilder {
+		
+		private PersonName personName;
+		
+		private PersonNameBuilder() {
+			personName = new PersonName();
+		}
+		
+		public static PersonNameBuilder newBuilder() {
+			return new PersonNameBuilder();
+		}
+		
+		public PersonNameBuilder withVoided(boolean voided) {
+			personName.setVoided(voided);
+			return this;
+		}
+		
+		public PersonNameBuilder withPreferred(boolean preferred) {
+			personName.setPreferred(preferred);
+			return this;
+		}
+		
+		public PersonName build() {
+			return personName;
+		}
+	}
+	
+	// helper class
+	private static class PersonAddressBuilder {
+		
+		private PersonAddress personAddress;
+		
+		private PersonAddressBuilder() {
+			personAddress = new PersonAddress();
+		}
+		
+		public static PersonAddressBuilder newBuilder() {
+			return new PersonAddressBuilder();
+		}
+		
+		public PersonAddressBuilder withVoided(boolean voided) {
+			personAddress.setVoided(voided);
+			return this;
+		}
+		
+		public PersonAddressBuilder withPreferred(boolean preferred) {
+			personAddress.setPreferred(preferred);
+			return this;
+		}
+		
+		public PersonAddress build() {
+			return personAddress;
+		}
 	}
 }

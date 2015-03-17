@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -62,17 +58,17 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should be invalid if provider is retired and the retired reason is not mentioned
 	 * @should be invalid if person or name is not set
 	 * @should never have both person and name set
+	 * @should pass if both person and name set for existing provider
 	 * @should be valid if only person is set
 	 * @should be valid if only name is set
 	 * @should reject a provider if it has fewer than min occurs of an attribute
 	 * @should reject a provider if it has more than max occurs of an attribute
-	 * @should pass for a duplicate identifier if the existing provider is retired
-	 * @should pass if an identifier for an existing provider is changed to a unique value
-	 * @should fail if an identifier for an existing provider is changed to a duplicate value
-	 * @should reject a duplicate identifier for a new provider
-	 * @should pass if the provider we are validating has a duplicate identifier and is retired
-	 * @should fail for a duplicate identifier if the existing provider is retired
-	 * @should fail if the provider we are validating has a duplicate identifier and is retired
+	 * @should accept duplicate identifier if the existing provider is not retired
+	 * @should accept duplicate identifier if the existing provider is retired
+	 * @should accept a duplicate identifier for a new provider which is not retired
+	 * @should accept a duplicate identifier for a new provider which is retired
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
@@ -89,18 +85,11 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 			errors.rejectValue("name", "Provider.error.personOrName.required");
 		}
 		
-		//if this is a retired existing provider, skip this
-		//check if this provider has a unique identifier
-		boolean isUnique = Context.getProviderService().isProviderIdentifierUnique(provider);
-		if (!isUnique) {
-			errors.rejectValue("identifier", "Provider.error.duplicateIdentifier",
-			    new Object[] { provider.getIdentifier() }, null);
-		}
-		
 		if (provider.isRetired() && StringUtils.isEmpty(provider.getRetireReason())) {
 			errors.rejectValue("retireReason", "Provider.error.retireReason.required");
 		}
 		
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "identifier", "retireReason");
 		super.validateAttributes(provider, errors, Context.getProviderService().getAllProviderAttributeTypes());
 	}
 	

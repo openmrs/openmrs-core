@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
   <concept concept_id="21" retired="false" datatype_id="1" class_id="1" is_set="false" creator="2" date_created="2004-01-01 00:00:00.0" version="" changed_by="2" date_changed="2005-02-16 00:44:07.0" uuid="3ccc7158-26fe-102b-80cb-0017a47871b2"/>
   <concept concept_id="300" retired="false" datatype_id="2" class_id="1" is_set="false" creator="2" date_created="2004-01-01 00:00:00.0" version="" changed_by="2" date_changed="2005-02-16 17:59:57.0" uuid="3ccf4090-26fe-102b-80cb-0017a47871b2"/>
@@ -213,10 +224,6 @@
   <location location_id="36" name="Gasiza" description="Gasiza is one of Ruhengeri ART sites." address1="" city_village="" state_province="NORTH" creator="15887" date_created="2007-06-17 12:28:39.0" county_district="" uuid="a2e19892-26fe-102b-80cb-0017a47871b2" retired="false"/>
   <location location_id="37" name="Ndego" description="Ndego - the new site near Rwinkwavu and Mulindi" address1="" city_village="" state_province="" creator="1128" date_created="2008-01-18 17:29:57.0" county_district="" uuid="a2e19a9a-26fe-102b-80cb-0017a47871b2" retired="false"/>
   <location location_id="38" name="Burera" description="ART site in Nothern Rwanda" address1="" city_village="Butaro" state_province="North" creator="15887" date_created="2008-02-19 15:01:11.0" county_district="Burera" uuid="e43f9620-3362-4134-adcd-cab15afad649" retired="false"/>
-  <order_type order_type_id="1" name="Drug Order" description="Drug information captured from patient historically" creator="2" date_created="2005-08-08 07:06:12.0" uuid="bcf7f8c8-2700-102b-80cb-0017a47871b2" retired="false"/>
-  <order_type order_type_id="2" name="Drug" description="New drug order" creator="2" date_created="2005-08-08 07:07:20.0" uuid="bcf7fb8e-2700-102b-80cb-0017a47871b2" retired="false"/>
-  <order_type order_type_id="3" name="Test" description="New test order" creator="2" date_created="2005-08-08 07:07:53.0" uuid="bcf7fd8c-2700-102b-80cb-0017a47871b2" retired="false"/>
-  <order_type order_type_id="4" name="Lab Order" description="Lab Order" creator="8" date_created="2009-02-15 20:17:46.0" retired="false"/>
 
   <patient_identifier_type patient_identifier_type_id="1" name="HIVEMR-V1" description="Internal patient_id from PIH&apos;s original Rwanda EMR" format="" check_digit="false" creator="1" date_created="2005-09-22 00:00:00.0" required="false" uuid="c147a9b4-2700-102b-80cb-0017a47871b2" retired="false"/>
   <patient_identifier_type patient_identifier_type_id="2" name="Social Security Number" description="Number given out in the United States to track social security benefits and often used as a unique identifier.." check_digit="false" creator="1" date_created="2005-09-22 00:00:00.0" required="false" uuid="c147ac70-2700-102b-80cb-0017a47871b2" retired="false"/>
@@ -803,7 +810,10 @@
   <role_role parent_role="Provider" child_role="Social Worker"/>
   <user_role user_id="8" role="System Developer"/>
   <user_role user_id="16461" role="System Developer"/>
-  <user_role user_id="18804" role="System Developer"/> 
+  <user_role user_id="18804" role="System Developer"/>
+  <orders order_id="13031" order_number="13031" urgency="ROUTINE" concept_id="9" orderer="8" encounter_id="86653" date_activated="2009-02-14 00:00:00.0" creator="8" date_created="2009-02-15 20:40:50.0" voided="false" patient_id="13731" accession_number="354" order_action="NEW" care_setting="1"/>
+  <orders order_id="13032" order_number="13032" urgency="ROUTINE" concept_id="9" orderer="8" encounter_id="86654" date_activated="2009-02-14 00:00:00.0" creator="8" date_created="2009-02-15 20:41:30.0" voided="false" patient_id="13731" accession_number="423" order_action="NEW" care_setting="1"/>
+  <orders order_id="13033" order_number="13033" urgency="ROUTINE" concept_id="1019" orderer="8" encounter_id="86655" date_activated="2009-02-14 00:00:00.0" creator="8" date_created="2009-02-15 20:45:50.0" voided="false" patient_id="13731" accession_number="566" order_action="NEW" care_setting="1"/>
   <encounter encounter_id="20808" encounter_type="2" patient_id="7" location_id="26" form_id="28" encounter_datetime="2006-12-07 00:00:00.0" creator="1959" date_created="2006-12-07 16:09:18.0" voided="false" uuid="4a903934-26fe-102b-80cb-0017a47871b2"/>
   <encounter encounter_id="14943" encounter_type="2" patient_id="14493" location_id="26" form_id="1" encounter_datetime="2006-05-30 00:00:00.0" creator="1138" date_created="2006-09-08 00:00:00.0" voided="false" uuid="49c5cc24-26fe-102b-80cb-0017a47871b2"/>
   <encounter encounter_id="20807" encounter_type="2" patient_id="20447" location_id="26" form_id="28" encounter_datetime="2006-12-07 00:00:00.0" creator="1959" date_created="2006-12-07 16:09:18.0" voided="false" uuid="4a903234-26fe-102b-80cb-0017a47871b2"/>

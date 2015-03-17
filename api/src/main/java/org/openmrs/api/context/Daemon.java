@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.context;
 
@@ -112,14 +108,13 @@ public class Daemon {
 	 * @should not be called from other methods other than TimerSchedulerTask
 	 * @should not throw error if called from a TimerSchedulerTask class
 	 */
-	public static void executeScheduledTask(final Task task) throws Throwable {
+	public static void executeScheduledTask(final Task task) throws Exception {
 		
 		// quick check to make sure we're only being called by ourselves
 		//Class<?> callerClass = Reflection.getCallerClass(0);
 		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
 		if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
-			throw new APIException("This method can only be called from the TimerSchedulerTask class, not "
-			        + callerClass.getName());
+			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
 		}
 		
 		// now create a new thread and execute that task in it
@@ -323,14 +318,14 @@ public class Daemon {
 		/**
 		 * The exception thrown (if any) by the method called in {@link #run()}
 		 */
-		protected Throwable exceptionThrown = null;
+		protected Exception exceptionThrown = null;
 		
 		/**
 		 * Gets the exception thrown (if any) by the method called in {@link #run()}
 		 *
 		 * @return the thrown exception (if any).
 		 */
-		public Throwable getExceptionThrown() {
+		public Exception getExceptionThrown() {
 			return exceptionThrown;
 		}
 	}

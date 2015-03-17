@@ -169,7 +169,31 @@
 
 		$j("#addRelationship").dialog("close");
 		clearAddRelationship();	
-		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, startDateString, refreshRelationships);
+		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, startDateString, createRelationshipCallback);
+	}
+	
+
+	function  createRelationshipCallback(errmsgs)
+	{		
+		if(errmsgs == null)
+		{
+          refreshRelationships();
+          $j("#invalid_start_date").hide();
+          $j("#addRelationship").dialog("close");
+        } 
+        else 
+        {  
+        	for (var k=0; k<errmsgs.length; k++)
+        		{        		
+    			if (errmsgs[k]=='error.date.future')
+    				{    				
+    				$j("#addRelationship").dialog("open"); 	
+    				showDiv('add_rel_details');  			
+                    $j("#invalid_start_date").show(); 
+                    $j('#addRelationship #add_rel_start_date').select();
+        		    }
+        		}
+        }
 	}
 	
 	function clearAddRelationship() {
@@ -177,6 +201,7 @@
 		$j("#add_rel_display_id").val("");
 		$j("#add_relationship_type").val("");
 		$j("#add_rel_start_date").val("");
+		$j("#invalid_start_date").hide();
 		hideDiv('add_rel_details');
 	}
 
@@ -189,22 +214,22 @@
 		$j("#editRelationship").dialog("open");
 	}
 
+    function handleDateResult(validEndDate) {
+        if(validEndDate==true) {
+            refreshRelationships();
+            $j("#relationship_invalid_Date").hide();
+            $j("#editRelationship").dialog("close");
+        } else {
+            $j("#relationship_invalid_Date").show();
+            $j('#editRelationship #edit_rel_end_date').select();
+        }
+    }
+
 	function handleEditRelationship() {
 		var relId = $j("#editRelationship #edit_relationship_id").val();
 		var startDate = $j("#editRelationship #edit_rel_start_date").val();
 		var endDate = $j("#editRelationship #edit_rel_end_date").val();
-
-        if(startDate>endDate)
-		{
-			$j("#relationship_invalid_Date").show();
-			$j('#editRelationship #edit_rel_end_date').select();
-		}
-
-       else
-		{
-		$j("#editRelationship").dialog("close");
-		DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, refreshRelationships);
-		}
+        DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, handleDateResult);
 	}
 	
 	function voidRelationshipDialog(relId) {
@@ -291,6 +316,9 @@
 			<br/>
 			<openmrs:message code="Relationship.startDateQuestion"/>
 			<openmrs_tag:dateField formFieldName="add_rel_start_date" startValue="" />
+			<span id="invalid_start_date" class="error" >
+			<openmrs:message code="error.date.future"/>
+			</span>
 		</span>
 	</div>
 	

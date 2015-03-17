@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.servlet;
 
@@ -40,20 +36,24 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 		
 		try {
 			// Set default values
-			Integer width = new Integer(500);
-			Integer height = new Integer(300);
+			Integer width = Integer.valueOf(500);
+			Integer height = Integer.valueOf(300);
 			String mimeType = PNG_MIME_TYPE;
 			
 			// Retrieve custom values
 			try {
 				width = Integer.parseInt(request.getParameter("width"));
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+				log.error("Error during width parseInt", e);
+			}
 			
 			try {
 				height = Integer.parseInt(request.getParameter("height"));
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+				log.error("Error during height parseInt", e);
+			}
 			
 			if (request.getParameter("mimeType") != null) {
 				mimeType = request.getParameter("mimeType");

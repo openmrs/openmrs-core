@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -60,9 +56,13 @@ public class EncounterValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the patients for the visit and the encounter dont match
 	 * @should fail if patient is not set
+	 * @should fail if encounter type is not set
+	 * @should fail if encounter dateTime is not set
 	 * @should fail if encounter dateTime is after current dateTime
 	 * @should fail if encounter dateTime is before visit startDateTime
 	 * @should fail if encounter dateTime is after visit stopDateTime
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled()) {
@@ -75,7 +75,11 @@ public class EncounterValidator implements Validator {
 		
 		Encounter encounter = (Encounter) obj;
 		
+		ValidationUtils.rejectIfEmpty(errors, "encounterType", "Encounter.error.encounterType.required",
+		    "Encounter type is Required");
+		
 		ValidationUtils.rejectIfEmpty(errors, "patient", "Encounter.error.patient.required", "Patient is required");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "Encounter.datetime.required");
 		if (encounter.getVisit() != null && !ObjectUtils.equals(encounter.getVisit().getPatient(), encounter.getPatient())) {
 			errors.rejectValue("visit", "Encounter.visit.patients.dontMatch",
 			    "The patient for the encounter and visit should be the same");
@@ -100,5 +104,6 @@ public class EncounterValidator implements Validator {
 				    "The encounter datetime should be between the visit start and stop dates.");
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 }

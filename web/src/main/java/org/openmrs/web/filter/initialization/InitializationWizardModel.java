@@ -1,21 +1,18 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.filter.initialization;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
 /**
@@ -43,11 +40,13 @@ public class InitializationWizardModel {
 	// Default OpenMRS admin password set by the simple installation.
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
 	
+	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
+	
 	/**
 	 * Default database name to use unless user specifies another in the wizard or they are creating
 	 * a test installation
 	 */
-	public static final String DEFAULT_DATABASE_NAME = "openmrs";
+	public static final String DEFAULT_DATABASE_NAME = WebConstants.WEBAPP_NAME;
 	
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error

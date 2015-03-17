@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -64,6 +60,8 @@ public class ConceptReferenceTermValidator implements Validator {
 	 * @should fail if termB of a concept reference term map is not set
 	 * @should fail if a term is mapped to itself
 	 * @should fail if a term is mapped multiple times to the same term
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		
@@ -75,14 +73,18 @@ public class ConceptReferenceTermValidator implements Validator {
 		ConceptReferenceTerm conceptReferenceTerm = (ConceptReferenceTerm) obj;
 		
 		String code = conceptReferenceTerm.getCode();
+		boolean hasBlankFields = false;
 		if (!StringUtils.hasText(code)) {
 			errors.rejectValue("code", "ConceptReferenceTerm.error.codeRequired",
 			    "The code property is required for a concept reference term");
-			return;
+			hasBlankFields = true;
 		}
 		if (conceptReferenceTerm.getConceptSource() == null) {
 			errors.rejectValue("conceptSource", "ConceptReferenceTerm.error.sourceRequired",
 			    "The conceptSource property is required for a concept reference term");
+			hasBlankFields = true;
+		}
+		if (hasBlankFields) {
 			return;
 		}
 		
@@ -90,11 +92,10 @@ public class ConceptReferenceTermValidator implements Validator {
 		//Ensure that there are no terms with the same code in the same source
 		ConceptReferenceTerm termWithDuplicateCode = Context.getConceptService().getConceptReferenceTermByCode(code,
 		    conceptReferenceTerm.getConceptSource());
-		if (termWithDuplicateCode != null) {
-			if (!OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getUuid(), conceptReferenceTerm.getUuid())) {
-				errors.rejectValue("code", "ConceptReferenceTerm.duplicate.code",
-				    "Duplicate concept reference term code in its concept source: " + code);
-			}
+		if (termWithDuplicateCode != null
+		        && !OpenmrsUtil.nullSafeEquals(termWithDuplicateCode.getUuid(), conceptReferenceTerm.getUuid())) {
+			errors.rejectValue("code", "ConceptReferenceTerm.duplicate.code",
+			    "Duplicate concept reference term code in its concept source: " + code);
 		}
 		
 		//validate the concept reference term maps
@@ -103,7 +104,7 @@ public class ConceptReferenceTermValidator implements Validator {
 			Set<String> mappedTermUuids = null;
 			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps()) {
 				if (map == null) {
-					throw new APIException("Cannot add a null concept reference term map");
+					throw new APIException("ConceptReferenceTerm.add.null", (Object[]) null);
 				}
 				
 				if (map.getConceptMapType() == null) {
@@ -136,5 +137,6 @@ public class ConceptReferenceTermValidator implements Validator {
 				index++;
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "code", "version", "description", "retireReason");
 	}
 }

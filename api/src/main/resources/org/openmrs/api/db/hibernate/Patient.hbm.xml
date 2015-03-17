@@ -1,4 +1,15 @@
 <?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
@@ -36,8 +47,7 @@
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
 		<!-- list is unsorted due so that its put into a LinkedHashSet which uses .hashcode() instead of .compareTo() -->
 		<set name="identifiers" lazy="true" cascade="all-delete-orphan"
-			table="patient_identifier" inverse="true" sort="unsorted"
-			order-by="voided asc,preferred desc,identifier_type desc,date_created desc">
+			table="patient_identifier" inverse="true" sort="natural">
 			<key not-null="true" column="patient_id" />
 			<one-to-many class="PatientIdentifier" />
 		</set>

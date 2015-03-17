@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -61,12 +57,12 @@ public interface PersonService extends OpenmrsService {
 		 * Attributes to be shown when listing off multiple patients or users
 		 */
 		LISTING,
-
+		
 		/**
 		 * Attributes to be shown when only showing one patient or user
 		 */
 		VIEWING,
-
+		
 		/**
 		 * Attributes to be shown in the header
 		 */
@@ -138,6 +134,9 @@ public interface PersonService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws APIException;
 	
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException;
+	
 	/**
 	 * @deprecated @see #getPeople(...)
 	 */
@@ -171,6 +170,7 @@ public interface PersonService extends OpenmrsService {
 	 * @should set the date created and creator on new
 	 * @should set the date changed and changed by on update
 	 * @should update any global property which reference this type
+	 * @should throw an error when trying to save person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;
@@ -179,6 +179,7 @@ public interface PersonService extends OpenmrsService {
 	 * Retire a Person Attribute Type
 	 * 
 	 * @param attrTypeId, retiredReason
+	 * @should throw an error when trying to retire person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException;
@@ -220,6 +221,7 @@ public interface PersonService extends OpenmrsService {
 	 * @param type type to be purged from the database
 	 * @throws APIException
 	 * @should delete person attribute type from database
+	 * @should throw an error when trying to delete person attribute type while person attribute types are locked
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES })
 	public void purgePersonAttributeType(PersonAttributeType type) throws APIException;
@@ -230,6 +232,7 @@ public interface PersonService extends OpenmrsService {
 	 * @param type type to be restored from the database
 	 * @throws APIException
 	 * @should restore person attribute type from database
+	 * @should throw an error when trying to unretire person attribute type while person attribute types are locked
 	 */
 	
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
@@ -1068,4 +1071,11 @@ public interface PersonService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public PersonAddress savePersonAddress(PersonAddress personAddress);
+	
+	/**
+	 * Check if the person attribute types are locked, and if they are throws an exception during manipulation of a person attribute type
+	 * 
+	 * @throws PersonAttributeTypeLockedException
+	 */
+	public void checkIfPersonAttributeTypesAreLocked() throws PersonAttributeTypeLockedException;
 }

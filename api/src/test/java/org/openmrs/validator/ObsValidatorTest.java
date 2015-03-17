@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -372,5 +368,61 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(obs, "obs");
 		new ObsValidator().validate(obs, errors);
 		Assert.assertFalse(errors.hasFieldErrors());
+	}
+	
+	/**
+	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setObsDatetime(new Date());
+		obs.setValueNumeric(1.0);
+		
+		obs.setAccessionNumber("AccessionNumber");
+		obs.setValueModifier("m");
+		obs.setValueComplex("ValueComplex");
+		obs.setVoidReason("VoidReason");
+		obs.setComment("comment");
+		
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setObsDatetime(new Date());
+		obs.setValueNumeric(1.0);
+		
+		obs
+		        .setAccessionNumber("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs.setValueModifier("too long text");
+		obs
+		        .setValueComplex("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs
+		        .setComment("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("accessionNumber"));
+		Assert.assertTrue(errors.hasFieldErrors("valueModifier"));
+		Assert.assertTrue(errors.hasFieldErrors("valueComplex"));
+		Assert.assertTrue(errors.hasFieldErrors("comment"));
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

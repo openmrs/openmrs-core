@@ -1,0 +1,81 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs.annotation;
+
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.ModuleUtil;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.core.type.filter.TypeFilter;
+
+import java.io.IOException;
+import java.util.Map;
+
+/**
+ * Prevents creating a bean if profile is not matched. It returns true if a bean should not be created.
+ */
+public class OpenmrsProfileExcludeFilter implements TypeFilter {
+	
+	/**
+	 * @param metadataReader
+	 * @param metadataReaderFactory
+	 * @return
+	 * @throws IOException
+	 *
+	 * @should not include bean for openmrs from 1_6 to 1_7
+	 * @should include bean for openmrs 1_10 and later
+	 * @should not include bean for openmrs 1_8 and later if module missing
+	 * @should include bean for openmrs 1_8 and later
+	 */
+	@Override
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
+		Map<String, Object> openmrsProfileAttributes = metadataReader.getAnnotationMetadata().getAnnotationAttributes(
+		    "org.openmrs.annotation.OpenmrsProfile");
+		if (openmrsProfileAttributes != null) {
+			return !matchOpenmrsProfileAttributes(openmrsProfileAttributes);
+		} else {
+			return false; //do not exclude
+		}
+	}
+	
+	public boolean matchOpenmrsProfileAttributes(Map<String, Object> openmrsProfile) {
+		Object openmrsVersion = openmrsProfile.get("openmrsVersion");
+		if (StringUtils.isNotBlank((String) openmrsVersion)
+		        && !ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, (String) openmrsVersion)) {
+			return false;
+		}
+		
+		String[] modules = (String[]) openmrsProfile.get("modules");
+		
+		for (String moduleAndVersion : modules) {
+			String[] splitModuleAndVersion = moduleAndVersion.split(":");
+			String moduleId = splitModuleAndVersion[0];
+			String moduleVersion = splitModuleAndVersion[1];
+			
+			boolean moduleMatched = false;
+			for (Module module : ModuleFactory.getStartedModules()) {
+				if (module.getModuleId().equals(moduleId)
+				        && ModuleUtil.matchRequiredVersions(module.getVersion(), moduleVersion)) {
+					moduleMatched = true;
+					break;
+				}
+			}
+			
+			if (!moduleMatched) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+}

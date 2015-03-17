@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.patient.impl;
 
@@ -70,34 +66,34 @@ public abstract class BaseHyphenatedIdentifierValidator implements IdentifierVal
 			throw new UnallowedIdentifierException("Identifier must have a check digit of length 1.");
 		}
 		
-		if (checkDigit.equalsIgnoreCase("A")) {
+		if ("A".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "0";
 		}
-		if (checkDigit.equalsIgnoreCase("B")) {
+		if ("B".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "1";
 		}
-		if (checkDigit.equalsIgnoreCase("C")) {
+		if ("C".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "2";
 		}
-		if (checkDigit.equalsIgnoreCase("D")) {
+		if ("D".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "3";
 		}
-		if (checkDigit.equalsIgnoreCase("E")) {
+		if ("E".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "4";
 		}
-		if (checkDigit.equalsIgnoreCase("F")) {
+		if ("F".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "5";
 		}
-		if (checkDigit.equalsIgnoreCase("G")) {
+		if ("G".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "6";
 		}
-		if (checkDigit.equalsIgnoreCase("H")) {
+		if ("H".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "7";
 		}
-		if (checkDigit.equalsIgnoreCase("I")) {
+		if ("I".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "8";
 		}
-		if (checkDigit.equalsIgnoreCase("J")) {
+		if ("J".equalsIgnoreCase(checkDigit)) {
 			checkDigit = "9";
 		}
 		

@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <orders order_id="25" order_type_id="1" order_number="1" urgency="ROUTINE" order_action="NEW" concept_id="88" orderer="1" instructions="2x daily" date_activated="2008-08-08 00:00:00.0" date_stopped="2008-08-15 00:00:00.0" creator="1" date_created="2008-08-19 12:20:22.0" voided="false" patient_id="7" uuid="921de0a3-05c4-444a-be03-e01b4c4b9152" care_setting="1" encounter_id="3" />
+    <orders order_id="26" order_type_id="1" previous_order_id="1" order_number="111" urgency="ROUTINE" order_action="DISCONTINUE" concept_id="88" orderer="1" creator="1" date_activated="2008-08-08 00:00:00.0" date_created="2008-08-15 00:00:00.0" voided="false" patient_id="7" uuid="e1f95924-697a-11e3-bd76-0800271c1b55" care_setting="1" encounter_id="3" />
+</dataset>

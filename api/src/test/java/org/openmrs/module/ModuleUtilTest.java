@@ -1,31 +1,13 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.module;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.jar.JarFile;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -38,6 +20,20 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.test.BaseContextMockTest;
 import org.openmrs.test.Verifies;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.jar.JarFile;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
@@ -66,27 +62,6 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		
 		//when
 		ModuleUtil.checkMandatoryModulesStarted();
-		//then exception
-	}
-	
-	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkOpenmrsCoreModulesStarted()}
-	 */
-	@Test(expected = OpenmrsCoreModuleException.class)
-	@Verifies(value = "should throw ModuleException if a core module is not started", method = "checkOpenmrsCoreModulesStarted()")
-	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfACoreModuleIsNotStarted() throws Exception {
-		//given
-		assertThat(ModuleFactory.getStartedModules(), empty());
-		assertThat(ModuleConstants.CORE_MODULES.keySet(), contains("logic"));
-		
-		initialRuntimeProperties = new Properties(Context.getRuntimeProperties());
-		Properties runtimeProperties = Context.getRuntimeProperties();
-		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "false");
-		Context.setRuntimeProperties(runtimeProperties);
-		
-		//when
-		ModuleUtil.checkOpenmrsCoreModulesStarted();
-		
 		//then exception
 	}
 	
@@ -293,6 +268,89 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should match when revision number is below maximum revision number", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldMatchWhenRevisionNumberIsBelowMaximumRevisionNumber() {
+		String openmrsVersion = "1.4.1111";
+		String requiredVersion = "1.4.*";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should not match when revision number is above maximum revision number", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldNotMatchWhenRevisionNumberIsAboveMaximumRevisionNumber() {
+		Long revisionNumber = (long) Integer.MAX_VALUE + 2;
+		String openmrsVersion = "1.4." + revisionNumber;
+		String requiredVersion = "1.4.*";
+		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should not match when version has wild card and is outside boundary", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldNotMatchWhenVersionHasWildCardAndIsOutsideBoundary() {
+		String openmrsVersion = "1.*.4";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should match when version has wild card and is within boundary", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldMatchWhenVersionHasWildCardAndIsWithinBoundary() {
+		String openmrsVersion = "1.4.*";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should not match when version has wild card plus qualifier and is outside boundary", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldNotMatchWhenVersionHasWildPlusQualifierCardAndIsOutsideBoundary() {
+		String openmrsVersion = "1.*.4-SNAPSHOT";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should match when version has wild card plus qualifier and is within boundary", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldMatchWhenVersionHasWildCardPlusQualifierAndIsWithinBoundary() {
+		String openmrsVersion = "1.4.*-SNAPSHOT";
+		String requiredVersion = "1.4.0 - 1.4.10";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should correctly set upper and lower limit for versionRange with qualifiers and wild card", method = "matchRequiredVersions(String version, String versionRange)")
+	public void matchRequiredVersions_shouldCorrectlySetUpperAndLoweLimitForVersionRangeWithQualifiersAndWildCard() {
+		String openmrsVersion = "1.4.11111";
+		String requiredVersion = "1.4.200 - 1.4.*-SNAPSHOT";
+		Long revisionNumber = (long) Integer.MAX_VALUE + 2;
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+		requiredVersion = "1.4.*-SNAPSHOT - 1.4.*";
+		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+		openmrsVersion = "1.4." + revisionNumber;
+		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredVersion));
+	}
+	
+	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#getPathForResource(org.openmrs.module.Module,String)}
 	 */
 	@Test
@@ -452,6 +510,14 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	/**
 	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
 	 */
+	@Test
+	@Verifies(value = "Should handle UUID suffix versions ", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldHandleUuidSuffixVersion() throws Exception {
+		String openMRSVersion = "1.9.9-f4927f";
+		String requiredOpenmrsVersion = "1.9.9-SNAPSHOT";
+		ModuleUtil.checkRequiredVersion(openMRSVersion, requiredOpenmrsVersion);
+	}
+	
 	@Test
 	@Verifies(value = "Should handle ALPHA versions ", method = "checkRequiredVersion(String, String)")
 	public void checkRequiredVersion_shouldHandleAlphaVersion() throws Exception {

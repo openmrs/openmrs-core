@@ -217,7 +217,15 @@
 <h2><openmrs:message code="Obs.title"/></h2>
 
 <spring:hasBindErrors name="obs">
-    <openmrs_tag:errorNotify errors="${errors}" />
+    <div class="error"><openmrs:message code="fix.error"/></div>
+    <c:if test="${errors.globalErrorCount > 0}">
+        <div class="error">
+            <c:forEach items="${errors.globalErrors}" var="error">
+                <openmrs:message code="${error.code}" text="${error.code}"/><br/>
+            </c:forEach>
+        </div>
+    </c:if>
+    <br />
 </spring:hasBindErrors>
 
 <c:if test="${obs.voided}">
@@ -446,7 +454,10 @@
 			<td>
 				${status.value}<br/>
 				<a href="${hyperlinkView}" target="_blank"><openmrs:message code="Obs.viewCurrentComplexValue"/></a><br/>
-				${htmlView}<br/><br/>
+				<a href="${hyperlinkView}&download" target="_blank"><openmrs:message code="Obs.downloadCurrentComplexValue"/></a><br/>
+				<c:if test="${htmlView != null}">
+					${htmlView}<br/><br/>
+				</c:if>
 				<openmrs:message code="Obs.valueComplex.uploadNew"/>
 				<input type="file" name="complexDataFile" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.query;
 
@@ -21,6 +17,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
@@ -103,17 +102,17 @@ public class LocationQueryController {
 			
 			Map<String, Object> attrs = new HashMap<String, Object>();
 			attrs.put("id", loc.getLocationId());
-			attrs.put("name", loc.getName());
+			attrs.put("name", getName(loc));
 			attrs.put("rel", nodeType);
 			
 			Map<String, Object> ret = new LinkedHashMap<String, Object>();
 			ret.put("attributes", attrs);
-			StringBuilder sb = new StringBuilder(loc.getName());
+			StringBuilder sb = new StringBuilder(getName(loc));
 			if (loc.getTags() != null && loc.getTags().size() > 0) {
 				sb.append(" (");
 				for (Iterator<LocationTag> i = loc.getTags().iterator(); i.hasNext();) {
 					LocationTag t = i.next();
-					sb.append(t.getName());
+					sb.append(getName(t));
 					if (i.hasNext()) {
 						sb.append(", ");
 					}
@@ -148,6 +147,17 @@ public class LocationQueryController {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Returns metadata name formatted if retired
+	 * @param metadata
+	 * @return
+	 */
+	private String getName(BaseOpenmrsMetadata metadata) {
+		String name = StringEscapeUtils.escapeHtml(metadata.getName());
+		name = StringEscapeUtils.escapeJavaScript(name);
+		return metadata.isRetired() ? "<strike>" + name + "</strike>" : name;
 	}
 	
 	class HierarchyOptions {

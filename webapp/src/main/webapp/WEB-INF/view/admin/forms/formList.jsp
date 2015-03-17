@@ -7,17 +7,18 @@
 
 <h2><openmrs:message code="Form.manage" /></h2>	
 
-<a href="formEdit.form"><openmrs:message code="Form.add" /></a>
+<openmrs:globalProperty key="forms.locked" var="formsLocked"/>
+<c:if test="${formsLocked != 'true'}"> <a href="formEdit.form"> <openmrs:message code="Form.add" /> </a> </c:if>
 
 <form style="padding: 0px; margin: 0px; display: inline;">
-<openmrs:message code="Form.duplicate.or"/>:
-	<select name="duplicateFormId" id="duplicateFormId">
+<c:if test="${formsLocked != 'true'}"> <openmrs:message code="Form.duplicate.or"/>:</c:if>
+	<select name="duplicateFormId" id="duplicateFormId" <c:if test="${formsLocked == 'true'}"> disabled </c:if>>
 		<option value=""><openmrs:message code="general.choose"/>...</option>
 		<c:forEach var="form" items="${formList}">
 			<option value="${form.formId}"><c:out value="${form.name}"/> (v. ${form.version}.${form.build})</option>
 		</c:forEach>
 	</select>
-	<input type="button" value="<openmrs:message code="Form.duplicate"/>" onclick="return duplicate()" />
+	<input type="button" value="<openmrs:message code="Form.duplicate"/>" onclick="return duplicate()" <c:if test="${formsLocked == 'true'}"> disabled </c:if>/>
 </form>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.forms.formListHeader" type="html">

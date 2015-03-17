@@ -175,8 +175,9 @@
 	}
 	
 	function toggleLocationBox(identifierType,location) {
-		var boxId = 'location' + location.substring(14,18);
-		var naBoxId = 'locationNA' + location.substring(14,18);
+		var idNum = location.match(/\d+$/)[0];
+		var boxId = 'locationBox' + idNum;
+		var naBoxId = 'locationNABox' + idNum;
 		if (identifierType == '') {
 			$j('#'+naBoxId).hide();
 			$j('#'+boxId).hide();
@@ -234,12 +235,6 @@
 </style>
 
 <h2><openmrs:message code="Person.title"/></h2>
-
-<c:if test="${person.personVoided}">
-	<div id="personFormVoided" class="retiredMessage">
-		<div><openmrs:message code="Person.voidedMessage"/></div>
-	</div>
-</c:if>
 
 <c:if test="${person.dead}">
 	<div id="personFormDeceased" class="retiredMessage">

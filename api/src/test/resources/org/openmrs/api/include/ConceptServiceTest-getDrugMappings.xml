@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept_reference_term concept_reference_term_id="100" concept_source_id="2" code="WGT234" name="random" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="ee7693a0-8a55-22e3-8507-1f26fdd6e3f3"/>
+    <drug_reference_map drug_reference_map_id="1" drug_id="2" term_id="1" concept_map_type="1" creator="1" date_created="2014-01-31 00:00:00.0" uuid="fe7693a0-8a55-11e3-8507-1f26fdd6e3f2"/>
+	<drug_reference_map drug_reference_map_id="2" drug_id="3" term_id="2" concept_map_type="2" creator="1" date_created="2014-01-31 00:00:00.0" uuid="e17472ba-8a58-11e3-9d36-1b7d05b63b69"/>
+	<drug_reference_map drug_reference_map_id="3" drug_id="11" term_id="1" concept_map_type="3" creator="1" date_created="2014-01-31 00:00:00.0" uuid="f20a0a36-8a58-11e3-a09a-8f94984ff961"/>
+	<drug_reference_map drug_reference_map_id="4" drug_id="2" term_id="100" concept_map_type="1" creator="1" date_created="2014-01-31 00:00:00.0" uuid="a3c8b976-8ce2-11e3-b6ba-bfe32bfe5b5b"/>
+    <drug_reference_map drug_reference_map_id="5" drug_id="2" term_id="2" concept_map_type="2" creator="1" date_created="2014-01-31 00:00:00.0" uuid="b3c8b976-8ce2-11e3-b6ba-bfe32bfe5b5c"/>
+</dataset>

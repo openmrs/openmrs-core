@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
@@ -29,8 +25,10 @@ import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProviderDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 import java.util.Collection;
 import java.util.List;
@@ -158,6 +156,22 @@ public class HibernateProviderDAO implements ProviderDAO {
 		return providers;
 	}
 	
+	private MatchMode getMatchMode() {
+		String matchMode = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PROVIDER_SEARCH_MATCH_MODE);
+		
+		if (MatchMode.START.toString().equalsIgnoreCase(matchMode)) {
+			return MatchMode.START;
+		}
+		if (MatchMode.ANYWHERE.toString().equalsIgnoreCase(matchMode)) {
+			return MatchMode.ANYWHERE;
+		}
+		if (MatchMode.END.toString().equalsIgnoreCase(matchMode)) {
+			return MatchMode.END;
+		}
+		return MatchMode.EXACT;
+	}
+	
 	/**
 	 * Creates a Provider Criteria based on name
 	 *
@@ -181,7 +195,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 		criteria.createAlias("p.names", "personName", Criteria.LEFT_JOIN);
 		
 		Disjunction or = Restrictions.disjunction();
-		or.add(Restrictions.ilike("identifier", name, MatchMode.ANYWHERE));
+		or.add(Restrictions.ilike("identifier", name, getMatchMode()));
 		or.add(Restrictions.ilike("name", name, MatchMode.ANYWHERE));
 		
 		Conjunction and = Restrictions.conjunction();

@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept_reference_term concept_reference_term_id="12" concept_source_id="2" code="258703001" name="Day(s)" description="Duration unit in day(s)" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="a9e71e68-23c7-4603-be43-aa74e1de2c71"/>
+    <concept concept_id="1000" retired="0" datatype_id="4" class_id="3" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800200c9a76"/>
+    <concept_name concept_name_id="2000" concept_id="1000" name="Paracetamol" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="93f24a00-7869-11e3-981f-0800200c9a67"/>
+    <concept concept_id="1001" retired="0" datatype_id="4" class_id="3" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="865fceb1-ad0c-4102-aead-26ca25c77b09"/>
+    <concept_name concept_name_id="2001" concept_id="1001" name="Day(s)" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="8c2d5e4c-1bd1-11e4-ad81-b2227cce2b54"/>
+    <concept_set concept_set_id="3000" concept_id="1001" concept_set="27" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="937fb8a2-1bcc-11e4-ad81-b2227cce2b54"/>
+    <drug drug_id="3000" concept_id="1000" name="Paracetamol 500mg" dosage_form="1001" combination="false" strength="500mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="e338a9b5-d6a6-419b-a381-1b2461f0d886"/>
+    <concept_reference_map concept_map_id="1000" concept_id="1001" concept_reference_term_id="12" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="937fa63c-1bcc-11e4-ad81-b2227cce2b54"/>
+</dataset>

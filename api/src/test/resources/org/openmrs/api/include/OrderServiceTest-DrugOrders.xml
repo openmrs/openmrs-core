@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept concept_id="1100" retired="0" datatype_id="4" class_id="3" is_set="0" creator="1"
+             date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800123c9a76"/>
+    <concept_name concept_name_id="2001" concept_id="1100" name="Cetirizine" locale="en" creator="1"
+                  date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1"
+                  voided="0" uuid="93f24a00-7869-11e3-123f-0800200c9a67"/>
+    <orders order_id="2000" order_type_id="1" order_number="ORD-2000" urgency="ROUTINE" order_action="NEW"
+            concept_id="1100" orderer="1" date_activated="2014-08-01 09:24:10.0" date_stopped="2014-08-10 00:00:00.0"
+            creator="1" date_created="2008-10-19 09:24:10.0" voided="false" patient_id="2"
+            uuid="56b9196c-bcac-4c2f-b3a2-123464a96439" care_setting="1" encounter_id="6"/>
+    <concept concept_id="1002" retired="0" datatype_id="4" class_id="11" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="6be8113a-f1a3-43bb-b661-a273a1490360"/>
+    <concept_name concept_name_id="2002" concept_id="1002" name="Tablet" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="4a6def87-5766-40f6-80ce-014g73b126df"/>
+    <drug drug_id="3001" concept_id="1100" name="Cetirizine 200mg" dosage_form="1002" combination="false" strength="2ml"
+          creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="865fceb1-ad0c-4102-aead-26ca25c77b09"/>
+    <drug_order order_id="2000" drug_inventory_id="3001" dose="3" dose_units="50" as_needed="false" frequency="1"
+                dosing_type="org.openmrs.SimpleDosingInstructions" route="22" quantity="1.0" quantity_units="51" num_refills="10"
+                dispense_as_written="0"/>
+</dataset>

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -37,7 +33,7 @@ import org.openmrs.validator.PatientIdentifierValidator;
 
 /**
  * Contains methods pertaining to Patients in the system
- *
+ * 
  * <pre>
  * Usage:
  * List&lt;Patient&gt; patients = Context.getPatientService().getAllPatients();
@@ -348,6 +344,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws APIException
 	 * @should create new patient identifier type
 	 * @should update existing patient identifier type
+	 * @should throw error when trying to save a patient identifier type while patient identifier
+	 *         types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
@@ -468,6 +466,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws APIException
 	 * @should retire patient identifier type with given reason
 	 * @should throw error when reason is empty
+	 * @should throw error when trying to retire a patient identifier type while patient identifier
+	 *         types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType retirePatientIdentifierType(PatientIdentifierType patientIdentifierType, String reason)
@@ -479,8 +479,10 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifierType type of patient identifier to be unretired
 	 * @return the unretired type
 	 * @throws APIException
-	 * @should untire patient identifier type
+	 * @should unretire patient identifier type
 	 * @should return unretired patient identifier type
+	 * @should throw error when trying to unretire a patient identifier type while patient
+	 *         identifier types are locked
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType unretirePatientIdentifierType(PatientIdentifierType patientIdentifierType)
@@ -493,6 +495,8 @@ public interface PatientService extends OpenmrsService {
 	 * @throws APIException
 	 * @should delete type from database
 	 * @should delete patient identifier type from database
+	 * @should throw error when trying to delete a patient identifier type while patient identifier
+	 *         types are locked
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_IDENTIFIER_TYPES })
 	public void purgePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
@@ -557,8 +561,8 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Generic search on patients based on the given string and returns a specific number of them
 	 * from the specified starting position. Implementations can use this string to search on name,
-	 * identifier, searchable person attributes etc. Voided patients are not returned in search results.
-	 * If start is 0 and length is not specified, then all matches are returned
+	 * identifier, searchable person attributes etc. Voided patients are not returned in search
+	 * results. If start is 0 and length is not specified, then all matches are returned
 	 * 
 	 * @param query the string to search on
 	 * @param start the starting index
@@ -570,6 +574,18 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;
+	
+	/**
+	 * @param query the string to search on
+	 * @param includeVoided true/false whether or not to included voided patients
+	 * @param start the starting index
+	 * @param length the number of patients to return
+	 * @return a list of matching Patients
+	 * @throws APIException
+	 * @since 1.11
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
+	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException;
 	
 	/**
 	 * @see #getPatientByExample(Patient)
@@ -664,7 +680,6 @@ public interface PatientService extends OpenmrsService {
 	 * @should audit voided relationships
 	 * @should audit created relationships
 	 * @should audit moved independent observations
-	 * @should audit created orders
 	 * @should audit created identifiers
 	 * @should audit created names
 	 * @should audit created addresses
@@ -676,6 +691,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should audit prior date of birth estimated
 	 * @should audit prior gender
 	 * @should not copy over duplicate patient identifiers
+	 * @should fail if not preferred patient has unvoided orders
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException, SerializationException;
@@ -692,11 +708,9 @@ public interface PatientService extends OpenmrsService {
 	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException, SerializationException;
 	
 	/**
-	 * Convenience method to establish that a patient has left the care center. This API call is
-	 * responsible for: 1) Closing workflow statuses 2) Terminating programs 3) Discontinuing orders
-	 * 4) Flagging patient table (if applicable) 5) Creating any relevant observations about the
-	 * patient TODO keep this in the PatientService? Or move to appropriate service?
-	 * 
+	 * @deprecated as of 1.10 and moved to exit from care module. This method is no longer supported
+	 *             because previously the patient's active orders would get discontinued in the
+	 *             process which is no longer happening
 	 * @param patient - the patient who has exited care
 	 * @param dateExited - the declared date/time of the patient's exit
 	 * @param reasonForExit - the concept that corresponds with why the patient has been declared as
@@ -704,13 +718,13 @@ public interface PatientService extends OpenmrsService {
 	 * @throws APIException
 	 * @should save reason for exit observation for given patient
 	 * @should set death date and cause when given reason for exit equals death
-	 * @should discontinue all orders associated with given patient
-	 * @should terminate all program workflows associated with given paitent
+	 * @should terminate all program workflows associated with given patient
 	 * @should throw error when given patient is null
 	 * @should throw error when given date exited is null
 	 * @should throw error when given reason for exist is null
 	 * @should be tested more thoroughly
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) throws APIException;
 	
@@ -965,8 +979,8 @@ public interface PatientService extends OpenmrsService {
 	public void voidAllergy(Allergy allergy, String reason) throws APIException;
 	
 	/**
-	 * Return the number of unvoided patients with names or patient identifiers or searchable person attributes
-	 * starting with or equal to the specified text
+	 * Return the number of unvoided patients with names or patient identifiers or searchable person
+	 * attributes starting with or equal to the specified text
 	 * 
 	 * @param query the string to search on
 	 * @return the number of patients matching the given search phrase
@@ -976,6 +990,14 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public Integer getCountOfPatients(String query);
+	
+	/**
+	 * @param query the string to search on
+	 * @param includeVoided true/false whether or not to included voided patients
+	 * @return the number of patients matching the given search phrase
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
+	public Integer getCountOfPatients(String query, boolean includeVoided);
 	
 	/**
 	 * Get a limited size of patients from a given start index based on given criteria The
@@ -999,4 +1021,12 @@ public interface PatientService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException;
+	
+	/**
+	 * Check if patient identifier types are locked, and if they are, throws an exception during
+	 * manipulation of a patient identifier type
+	 * 
+	 * @throws PatientIdentifierTypeLockedException
+	 */
+	public void checkIfPatientIdentifierTypesAreLocked() throws PatientIdentifierTypeLockedException;
 }

@@ -1,17 +1,12 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
-
 package org.openmrs.validator;
 
 import org.junit.Assert;
@@ -228,26 +223,13 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProviderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail if an identifier for an existing provider is changed to a duplicate value", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfAnIdentifierForAnExistingProviderIsChangedToADuplicateValue() throws Exception {
+	@Verifies(value = "should accept duplicate identifier if the existing provider is not retired", method = "validate(Object,Errors)")
+	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsNotRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(200);
 		
 		Provider existingProviderToEdit = providerService.getProvider(1);
 		existingProviderToEdit.setIdentifier(duplicateProvider.getIdentifier());
-		
-		providerValidator.validate(existingProviderToEdit, errors);
-		Assert.assertTrue(errors.hasFieldErrors("identifier"));
-	}
-	
-	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should pass if an identifier for an existing provider is changed to a unique value", method = "validate(Object,Errors)")
-	public void validate_shouldPassIfAnIdentifierForAnExistingProviderIsChangedToAUniqueValue() throws Exception {
-		Provider existingProviderToEdit = providerService.getProvider(1);
-		existingProviderToEdit.setIdentifier("unique");
 		
 		providerValidator.validate(existingProviderToEdit, errors);
 		Assert.assertFalse(errors.hasErrors());
@@ -257,25 +239,8 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProviderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should reject a duplicate identifier for a new provider", method = "validate(Object,Errors)")
-	public void validate_shouldRejectADuplicateIdentifierForANewProvider() throws Exception {
-		Provider duplicateProvider = providerService.getProvider(1);
-		Assert.assertFalse(duplicateProvider.isRetired());
-		
-		Provider provider = new Provider();
-		provider.setIdentifier(duplicateProvider.getIdentifier());
-		provider.setName("name");
-		
-		providerValidator.validate(provider, errors);
-		Assert.assertTrue(errors.hasFieldErrors("identifier"));
-	}
-	
-	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
-	 */
-	@Test
-	@Verifies(value = "should fail for a duplicate identifier if the existing provider is retired", method = "validate(Object,Errors)")
-	public void validate_shouldFailForADuplicateIdentifierIfTheExistingProviderIsRetired() throws Exception {
+	@Verifies(value = "should accept duplicate identifier if the existing provider is retired", method = "validate(Object,Errors)")
+	public void validate_shouldAcceptDuplicateIdentifierIfTheExistingProviderIsRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateRetiredProvider = providerService.getProvider(201);
 		Assert.assertTrue(duplicateRetiredProvider.isRetired());
@@ -284,15 +249,32 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		provider.setIdentifier(duplicateRetiredProvider.getIdentifier());
 		
 		providerValidator.validate(provider, errors);
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertFalse(errors.hasErrors());
 	}
 	
 	/**
 	 * @see {@link ProviderValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail if the provider we are validating has a duplicate identifier and is retired", method = "validate(Object,Errors)")
-	public void validate_shouldFailIfTheProviderWeAreValidatingHasADuplicateIdentifierAndIsRetired() throws Exception {
+	@Verifies(value = "should accept a duplicate identifier for a new provider which is not retired", method = "validate(Object,Errors)")
+	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsNotRetired() throws Exception {
+		Provider duplicateProvider = providerService.getProvider(1);
+		Assert.assertFalse(duplicateProvider.isRetired());
+		
+		Provider provider = new Provider();
+		provider.setIdentifier(duplicateProvider.getIdentifier());
+		provider.setName("name");
+		
+		providerValidator.validate(provider, errors);
+		Assert.assertFalse(errors.hasFieldErrors("identifier"));
+	}
+	
+	/**
+	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should accept a duplicate identifier for a new provider which is retired", method = "validate(Object,Errors)")
+	public void validate_shouldAcceptADuplicateIdentifierForANewProviderWhichIsRetired() throws Exception {
 		executeDataSet(OTHERS_PROVIDERS_XML);
 		Provider duplicateProvider = providerService.getProvider(1);
 		Assert.assertFalse(duplicateProvider.isRetired());
@@ -302,6 +284,62 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		providerToValidate.setIdentifier(duplicateProvider.getIdentifier());
 		
 		providerValidator.validate(providerToValidate, errors);
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see ProviderValidator#validate(Object,Errors)
+	 * @verifies pass if both person and name set for existing provider
+	 */
+	@Test
+	public void validate_shouldPassIfBothPersonAndNameSetForExistingProvider() throws Exception {
+		
+		Provider existingProvider = Context.getProviderService().getProvider(1);
+		
+		Assert.assertFalse(existingProvider.isRetired());
+		
+		existingProvider.setName("name");
+		existingProvider.setPerson(new Person());
+		
+		providerValidator.validate(existingProvider, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Provider provider = new Provider();
+		provider.setIdentifier("identifier");
+		provider.setName("name");
+		provider.setRetireReason("retireReason");
+		
+		providerValidator.validate(provider, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Provider provider = new Provider();
+		provider
+		        .setIdentifier("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		provider
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		provider
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(provider, "type");
+		providerValidator.validate(provider, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("identifier"));
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

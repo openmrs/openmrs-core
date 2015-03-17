@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.arden.impl;
 
@@ -166,6 +162,8 @@ public class ArdenServiceImpl implements ArdenService {
 			w.write("import java.util.List;\n");
 			w.write("import java.util.Map;\n");
 			w.write("import java.util.Set;\n");
+			w.write("import java.util.Collection;\n");
+			w.write("import java.util.Collections;\n");
 			
 			w.write("import org.apache.commons.logging.Log;\n");
 			w.write("import org.apache.commons.logging.LogFactory;\n");
@@ -412,9 +410,12 @@ public class ArdenServiceImpl implements ArdenService {
 			w.write("\t\t\tif(concept == null){\n");
 			w.write("\t\t\t\tcontinue;\n");
 			w.write("\t\t\t}\n");
-			w.write("\t\tString elementString = ((ConceptName) concept.getNames().toArray()[0]).getName();\n");
-			w.write("\t\tif(keyString.equalsIgnoreCase(elementString)){\n");
-			w.write("\t\t\treturn true;\n");
+			w.write("\t\t\tCollection<ConceptName> cns = concept.getNames();\n");
+			w.write("\t\t\tfor(ConceptName cn:cns) {\n");
+			w.write("\t\t\t\tString elementString = cn.getName();\n");
+			w.write("\t\t\t\tif(keyString.equalsIgnoreCase(elementString)){\n");
+			w.write("\t\t\t\t\treturn true;\n");
+			w.write("\t\t\t\t}\n");
 			w.write("\t\t}\n");
 			w.write("\t\t}\n");
 			w.write("\t\treturn false;\n");
@@ -499,7 +500,7 @@ public class ArdenServiceImpl implements ArdenService {
 			parseFile(inputStream, "ConceptDerived", outputDir);
 		}
 		catch (Exception e) {
-			throw new APIException("Unable to compile the arden arden rule definition");
+			throw new APIException("arden.unable.compile", (Object[]) null);
 		}
 	}
 }

@@ -1,19 +1,25 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.context;
 
+import static org.mockito.Mockito.when;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mockito.InjectMocks;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
+import org.openmrs.Role;
+import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
@@ -25,23 +31,24 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.messagesource.MessageSourceService;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.openmrs.util.RoleConstants;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Helps to mock or spy on services. It can be used with {@link InjectMocks}. See
  * {@link org.openmrs.module.ModuleUtilTest} for example. In general you should always try to refactor code first so
  * that this class is not needed. In practice it is mostly enough to replace calls to
  * Context.get...Service with fields, which are injected through a constructor.
+ * <p>
+ * ContextMockHelper is available in tests extending {@link org.openmrs.test.BaseContextMockTest} and
+ * {@link org.openmrs.test.BaseContextSensitiveTest}.
  *
  * @deprecated Avoid using this by not calling Context.get...Service() in your code.
- * @since 1.10
+ * @since 1.11, 1.10, 1.9.9
  */
 @Deprecated
 public class ContextMockHelper {
@@ -74,8 +81,6 @@ public class ContextMockHelper {
 	
 	ProviderService providerService;
 	
-	ReportService reportService;
-	
 	SerializationService serializationService;
 	
 	UserService userService;
@@ -90,7 +95,34 @@ public class ContextMockHelper {
 	
 	boolean userContextMocked = false;
 	
+	ApplicationContext applicationContext;
+	
+	ApplicationContext realApplicationContext;
+	
+	boolean applicationContextMocked = false;
+	
 	public ContextMockHelper() {
+	}
+	
+	public void authenticateMockUser() {
+		User user = new User();
+		user.setUuid("1010d442-e134-11de-babe-001e378eb67e");
+		user.setUserId(1);
+		user.setUsername("admin");
+		user.addRole(new Role(RoleConstants.SUPERUSER));
+		
+		Person person = new Person();
+		person.setUuid("6adb7c42-cfd2-4301-b53b-ff17c5654ff7");
+		person.setId(1);
+		person.addName(new PersonName("Bob", "", "Smith"));
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(1980, 01, 01);
+		person.setBirthdate(calendar.getTime());
+		person.setGender("M");
+		user.setPerson(person);
+		
+		when(userContext.getAuthenticatedUser()).thenReturn(user);
+		when(userContext.isAuthenticated()).thenReturn(true);
 	}
 	
 	public void revertMocks() {
@@ -100,9 +132,23 @@ public class ContextMockHelper {
 		realServices.clear();
 		
 		if (userContextMocked) {
-			Context.setUserContext(realUserContext);
-			realUserContext = null;
+			if (realUserContext != null) {
+				Context.setUserContext(realUserContext);
+				realUserContext = null;
+			} else {
+				Context.clearUserContext();
+			}
 			userContextMocked = false;
+			userContext = null;
+		}
+		
+		if (applicationContextMocked) {
+			if (realApplicationContext != null) {
+				Context.getServiceContext().setApplicationContext(realApplicationContext);
+				realApplicationContext = null;
+			}
+			applicationContextMocked = false;
+			applicationContext = null;
 		}
 	}
 	
@@ -120,6 +166,16 @@ public class ContextMockHelper {
 		}
 		
 		Context.getServiceContext().setService(type, service);
+	}
+	
+	public void setApplicationContext(ApplicationContext context) {
+		if (!applicationContextMocked) {
+			realApplicationContext = Context.getServiceContext().getApplicationContext();
+			applicationContextMocked = true;
+		}
+		
+		Context.getServiceContext().setApplicationContext(context);
+		this.applicationContext = context;
 	}
 	
 	public void setAdministrationService(AdministrationService administrationService) {
@@ -182,11 +238,6 @@ public class ContextMockHelper {
 		this.providerService = providerService;
 	}
 	
-	public void setReportService(ReportService reportService) {
-		setService(ReportService.class, reportService);
-		this.reportService = reportService;
-	}
-	
 	public void setSerializationService(SerializationService serializationService) {
 		setService(SerializationService.class, serializationService);
 		this.serializationService = serializationService;
@@ -210,11 +261,13 @@ public class ContextMockHelper {
 			catch (Exception e) {
 				//let's not fail if context is not configured
 			}
+			
 			userContextMocked = true;
 		}
 		
 		Context.setUserContext(userContext);
 		this.userContext = userContext;
+		authenticateMockUser();
 	}
 	
 }

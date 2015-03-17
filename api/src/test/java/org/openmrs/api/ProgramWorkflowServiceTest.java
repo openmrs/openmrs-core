@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -344,7 +340,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 		
 		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(4);
-		assertEquals(2, possibleOutcomes.size());
+		assertEquals(4, possibleOutcomes.size());
 	}
 	
 	@Test
@@ -444,6 +440,26 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		
+	}
+	
+	@Test
+	@Verifies(value = "should purge program with patients enrolled", method = "purgeProgram(Program program, boolean cascade)")
+	public void purgeProgram_shouldPurgeProgramWithPatientsEnrolled() {
+		Program program = Context.getProgramWorkflowService().getProgram(2);
+		
+		// program has at least one patient enrolled
+		List<PatientProgram> patientPrograms = Context.getProgramWorkflowService().getPatientPrograms(null, program, null,
+		    null, null, null, true);
+		assertTrue(patientPrograms.size() > 0);
+		
+		Context.getProgramWorkflowService().purgeProgram(program);
+		
+		// should cascade to patient programs
+		for (PatientProgram patientProgram : patientPrograms) {
+			assertNull(Context.getProgramWorkflowService().getPatientProgram(patientProgram.getId()));
+		}
+		// make sure that the program was deleted properly
+		assertNull(Context.getProgramWorkflowService().getProgram(2));
 	}
 	
 	//	/**

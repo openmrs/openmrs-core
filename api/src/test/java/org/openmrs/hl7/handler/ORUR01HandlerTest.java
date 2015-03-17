@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.hl7.handler;
 
@@ -1147,7 +1143,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Integer originalEncounters = encounters.size();
 		
 		// process message
-		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID~d9218f76-6c39-45f4-8efa-4c5c6c199f50^AMRS.ELD.FORMUUID\r"
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID~c156e1a8-6731-4ebd-89ff-d0d1c45eb004^AMRS.ELD.FORMUUID\r"
 		        + "PID|||3^^^^||Beren^John^Bondo||\r"
 		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
 		        + "ORC|RE||||||||20090728165937|1^Super User\r"
@@ -1166,7 +1162,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// check the form uuid
 		Form form = enc.getForm();
-		Assert.assertEquals("d9218f76-6c39-45f4-8efa-4c5c6c199f50", form.getUuid());
+		Assert.assertEquals("c156e1a8-6731-4ebd-89ff-d0d1c45eb004", form.getUuid());
 	}
 	
 	/**
@@ -1257,5 +1253,20 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 			return false;
 		}
 		
+		/**
+		 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
+		 */
+		@Override
+		public String[] getSupportedViews() {
+			return new String[0];
+		}
+		
+		/**
+		 * @see org.openmrs.obs.ComplexObsHandler#supportsView(java.lang.String)
+		 */
+		@Override
+		public boolean supportsView(String view) {
+			return false;
+		}
 	}
 }

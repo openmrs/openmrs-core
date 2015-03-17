@@ -7,13 +7,19 @@
 
 <h2><openmrs:message code="FieldType.edit" /></h2>
 
+<spring:hasBindErrors name="fieldType">
+    <openmrs_tag:errorNotify errors="${errors}" />
+</spring:hasBindErrors>
+
 <form method="post" onSubmit="return validateForm()">
 	<table>
 		<tr>
 			<td><openmrs:message code="general.name" /><span class="required">*</span></td>
 			<td>
+                <spring:bind path="fieldType.name">
 				<input type="text" name="name" id="fieldTypeName" value="${fieldType.name}" size="35" onKeyUp="hideError('nameError');"/>
-				<span class="error" id="nameError"><openmrs:message code="error.name"/></span>
+                <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+                </spring:bind>
 			</td>
 		</tr>
 		<tr>

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.obs;
 
@@ -32,6 +28,10 @@ public class ComplexData implements java.io.Serializable {
 	private Object data;
 	
 	private String title;
+	
+	private String mimeType;
+	
+	private Long length;
 	
 	/**
 	 * Default constructor requires title and data.
@@ -79,6 +79,46 @@ public class ComplexData implements java.io.Serializable {
 	 */
 	public Object getData() {
 		return this.data;
+	}
+	
+	/**
+	 * Set the data MIME type
+	 * 
+	 * @param mimeType
+	 * @since 1.12
+	 */
+	public void setMIMEType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+	
+	/**
+	 * Get the data MIME type
+	 * 
+	 * @return data MIME type
+	 * @since 1.12
+	 */
+	public String getMIMEType() {
+		return this.mimeType;
+	}
+	
+	/**
+	 * Set the data length
+	 *
+	 * @param length
+	 * @since 1.12
+	 */
+	public void setLength(Long length) {
+		this.length = length;
+	}
+	
+	/**
+	 * Get the data length
+	 *
+	 * @return data length
+	 * @since 1.12
+	 */
+	public Long getLength() {
+		return this.length;
 	}
 	
 }

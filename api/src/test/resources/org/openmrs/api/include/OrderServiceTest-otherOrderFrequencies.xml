@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <concept concept_id="1000" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="8e02d1a0-7869-11e3-981f-0800200c9a76"/>
+    <concept concept_id="1001" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="7e02d1a0-7869-11e4-981f-0800200c9a75"/>
+    <concept concept_id="1002" retired="0" datatype_id="4" class_id="1" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="8e02d1a0-7869-11e4-981f-0800200c9a74"/>
+    <concept concept_id="1003" retired="0" datatype_id="4" class_id="19" is_set="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9e02d1a0-7869-11e4-981f-0800200c9a74"/>
+    <concept_name concept_name_id="2000" concept_id="1000" name="Once" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="93f24a00-7869-11e3-981f-0800200c9a67"/>
+    <concept_name concept_name_id="2001" concept_id="1001" name="Twice A Day" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="63f24a00-7869-11e3-981f-0800200c9a68"/>
+    <concept_name concept_name_id="2002" concept_id="1002" name="Once A Week" locale="en_US" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="73f24a00-7869-11e3-981f-0800200c9a67"/>
+    <concept_name concept_name_id="2003" concept_id="1003" name="Thrice A Day" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="0" uuid="83f24a00-7869-11e3-981f-0800200c9a68"/>
+    <order_frequency order_frequency_id="100" concept_id="1000" creator="1" date_created="2008-08-15 13:52:53.0" retired="0" uuid="68090760-7c39-11e3-baa7-0800200c9a66" />
+    <order_frequency order_frequency_id="101" concept_id="1001" creator="1" date_created="2008-08-15 13:52:53.0" retired="0" uuid="78090760-7c39-11e3-baa7-0800200c9a66" />
+    <order_frequency order_frequency_id="102" concept_id="1002" creator="1" date_created="2008-08-15 13:52:53.0" retired="0" uuid="88090760-7c39-11e3-baa7-0800200c9a66" />
+    <order_frequency order_frequency_id="103" concept_id="1003" creator="1" date_created="2008-08-15 13:52:53.0" retired="1" retired_by="1" date_retired="2009-08-15 13:52:53.0" uuid="99090760-7c39-11e3-baa7-0800200c9a66" />
+</dataset>

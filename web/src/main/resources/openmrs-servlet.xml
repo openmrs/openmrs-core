@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 
 <!-- Application context definition for Spring for the OpenMRS web layer.
 -->
@@ -50,7 +61,9 @@
 		</property>
 		<property name="defaultViews">
 			<list>
-				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+					<property name="extractValueFromSingleKeyModel" value="true" />
+				</bean>
 				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
            			<property name="marshaller" ref="xStreamMarshaller"/>
         		</bean>
@@ -130,11 +143,6 @@
 		<property name="order"><value>99</value></property>
 		<property name="mappings">
 			<props>
-				<prop key="/admin/orders/order.list">orderList</prop>
-				<prop key="/admin/orders/orderDrug.list">orderListByPatient</prop>
-				<prop key="/admin/orders/orderDrug.form">orderDrugForm</prop>
-				<prop key="/admin/orders/order.form">orderForm</prop>
-
 				<prop key="admin/patients/patient.form">patientForm</prop>
 				<prop key="admin/patients/mergePatients.form">mergePatientsForm</prop>
 				
@@ -183,7 +191,6 @@
 				<prop key="admin/concepts/conceptProposal.list">conceptProposalList</prop>
 				<prop key="admin/concepts/conceptProposal.form">conceptProposalForm</prop>
 				<prop key="admin/concepts/proposeConcept.form">proposeConceptForm</prop>
-				<prop key="admin/concepts/conceptIndex.form">conceptIndexForm</prop>
 				<prop key="admin/hl7/hl7Source.list">hl7SourceList</prop>
 				<prop key="admin/hl7/hl7Source.form">hl7SourceForm</prop>
 
@@ -226,11 +233,6 @@
 				<prop key="**/nameLayout.portlet">nameLayoutPortletController</prop>
 				<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 				<prop key="**/personRelationships.portlet">personRelationshipsPortletController</prop>
-				<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenCurrent.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenCompleted.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientEncounters.portlet">patientEncountersPortletController</prop>
 				<prop key="**/patientVisits.portlet">patientVisitsPortletController</prop>
 				<prop key="**/personFormEntry.portlet">personFormEntryPortletController</prop>
@@ -257,7 +259,6 @@
 	<bean id="globalPropertyPortletController" class="org.openmrs.web.controller.GlobalPropertyPortletController" />
 	<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController" />
 	<bean id="personRelationshipsPortletController" class="org.openmrs.web.controller.PersonRelationshipsPortletController" />
-	<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController" />
 	<bean id="patientEncountersPortletController" class="org.openmrs.web.controller.PatientEncountersPortletController" />
 	<bean id="patientVisitsPortletController" class="org.openmrs.web.controller.PatientVisitsPortletController" />
 	<bean id="personFormEntryPortletController" class="org.openmrs.web.controller.PersonFormEntryPortletController" />
@@ -310,61 +311,7 @@
 
    	<!-- ====== /Observation Sector ====== -->
 
-	<!-- ========================== -->
-	<!-- ====== Order Sector ====== -->
-	<!-- ========================== -->
-
-	<!-- ** Order Type ** -->
 	<!--this is the optional method of declaring values in the constructor-->
-
-	
-	<!-- ====== /Order Sector ====== -->
-
-
-	<!-- ** Order ** -->
-	<bean id="orderList" class="org.openmrs.web.controller.order.OrderListController">
-		<property name="commandName"><value>orderList</value></property>
-		<property name="formView"><value>/admin/orders/orderList</value></property>
-		<property name="successView"><value>order.list</value></property>
-	</bean>
-
-	<!--  Form Controller for the add/edit order types page -->
-	<bean id="orderForm" class="org.openmrs.web.controller.order.OrderFormController">
-		<property name="commandName"><value>order</value></property>
-		<property name="validator">
-			<ref bean="orderValidator" />
-		</property>
-		<property name="formView"><value>/admin/orders/orderForm</value></property>
-		<property name="successView"><value>order.list</value></property>
-	</bean>
-
-	<bean id="orderDrugList" class="org.openmrs.web.controller.order.OrderDrugListController">
-		<property name="commandName"><value>orderDrugList</value></property>
-		<property name="formView"><value>/admin/orders/orderDrugList</value></property>
-		<property name="successView"><value>orderDrug.list</value></property>
-	</bean>
-
-	<!--  Form Controller for the add/edit order types page -->
-	<bean id="orderDrugForm" class="org.openmrs.web.controller.order.OrderDrugFormController">
-		<property name="commandName"><value>order</value></property>
-		<property name="validator">
-			<ref bean="drugOrderValidator" />
-		</property>
-		<property name="formView"><value>/admin/orders/orderDrugForm</value></property>
-		<property name="successView"><value>../../patientDashboard.form</value></property>
-	</bean>
-	<!-- ** /Order ** -->
-
-	<!-- ** Order Placement ** -->
-	<bean id="orderListByPatient"
-		class="org.openmrs.web.controller.order.OrderListByPatientController">
-		<property name="commandName"><value>orderDrugList</value></property>
-		<property name="formView"><value>/admin/orders/orderListByPatient</value></property>
-		<property name="successView"><value>orderDrug.list</value></property>
-	</bean>
-
-	<!-- ** /Order Placement ** -->
-	<!-- ====== /Order Sector ====== -->
 
 	<!-- ** Patient ** -->
 	<bean id="patientForm" class="org.openmrs.web.controller.patient.PatientFormController">
@@ -651,15 +598,6 @@
 		<property name="successView"><value>conceptDatatype.list</value></property>
 	</bean>
 	<!--  ** /Concept Datatype ** -->
-	<!--  ** ConceptIndex ** -->
-	<bean id="conceptIndexForm"
-		class="org.openmrs.web.controller.concept.ConceptIndexFormController">
-		<property name="commandName"><value>conceptId</value></property>
-		<property name="commandClass"><value>java.lang.String</value></property>
-		<property name="formView"><value>/admin/concepts/conceptIndexForm</value></property>
-		<property name="successView"><value>conceptIndex.form</value></property>
-	</bean>
-	<!-- ** /ConceptIndex ** -->
 	<!--  ** Concept Proposal ** -->
 	<bean id="conceptProposalList"
 		class="org.openmrs.web.controller.concept.ConceptProposalListController">
@@ -694,6 +632,9 @@
 	<bean id="conceptSourceForm"
 		class="org.openmrs.web.controller.concept.ConceptSourceFormController">
 		<property name="commandName"><value>conceptSource</value></property>
+		<property name="validator">
+			<ref bean="conceptSourceValidator" />
+		</property>
 		<property name="formView"><value>/admin/concepts/conceptSourceForm</value></property>
 		<property name="successView"><value>conceptSource.list</value></property>
 	</bean>
@@ -1058,14 +999,8 @@
 				<prop key="org.openmrs.ProgramWorkflow">
 					org.openmrs.web.taglib.fieldgen.ProgramWorkflowHandler
 				</prop>
-				<prop key="org.openmrs.DrugOrder.discontinuedReason">
-					org.openmrs.web.taglib.fieldgen.GenericReasonHandler
-				</prop>
 				<prop key="org.openmrs.Patient.exitReason">
 					org.openmrs.web.taglib.fieldgen.GenericReasonHandler
-				</prop>
-				<prop key="org.openmrs.Orderable">
-					org.openmrs.web.taglib.fieldgen.OrderableHandler
 				</prop>
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 				<prop key="org.openmrs.util.AttributableDate">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
@@ -1081,7 +1016,7 @@
 	
 	<!-- specialTokens ordered so that the subset string 'familyName' is after 'familyName*'
 -->
-	<bean id="nameSupport" class="org.openmrs.layout.web.name.NameSupport">
+	<bean id="nameSupport" class="org.openmrs.layout.name.NameSupport">
 		<property name="defaultLayoutFormat"><value>short</value></property>
 		<property name="layoutTemplates">
 			<list>
@@ -1106,7 +1041,7 @@
 		</property>
 	</bean>
 	
-	<bean id="nameTemplateSpain" class="org.openmrs.layout.web.name.NameTemplate">
+	<bean id="nameTemplateSpain" class="org.openmrs.layout.name.NameTemplate">
 		<property name="displayName"><value>Formato de Nombres en Espana</value></property>
 		<property name="codeName"><value>spain</value></property>
 		<property name="nameMappings">
@@ -1132,7 +1067,7 @@
 		</property>
 	</bean>
 	
-	<bean id="nameTemplateLatinAmerica" class="org.openmrs.layout.web.name.NameTemplate">
+	<bean id="nameTemplateLatinAmerica" class="org.openmrs.layout.name.NameTemplate">
 		<property name="displayName"><value>Formato de Nombres en Latino America</value></property>
 		<property name="codeName"><value>latinamerica</value></property>
 		<property name="nameMappings">
@@ -1161,7 +1096,7 @@
 		</property>
 	</bean>
 	
-	<bean id="nameTemplateGivenFamily" class="org.openmrs.layout.web.name.NameTemplate">
+	<bean id="nameTemplateGivenFamily" class="org.openmrs.layout.name.NameTemplate">
         <property name="displayName"><value>&quot;Given Family&quot; Format</value></property>
         <property name="codeName"><value>givenfamily</value></property>
         <property name="nameMappings">
@@ -1184,7 +1119,7 @@
         </property>
     </bean>
 
-	<bean id="nameTemplateShort" class="org.openmrs.layout.web.name.NameTemplate">
+	<bean id="nameTemplateShort" class="org.openmrs.layout.name.NameTemplate">
 		<property name="displayName"><value>Short Name Format</value></property>
 		<property name="codeName"><value>short</value></property>
 		<property name="nameMappings">
@@ -1210,7 +1145,7 @@
 		</property>
 	</bean>
 	
-	<bean id="nameTemplateLong" class="org.openmrs.layout.web.name.NameTemplate">
+	<bean id="nameTemplateLong" class="org.openmrs.layout.name.NameTemplate">
 		<property name="displayName"><value>Long Name Format</value></property>
 		<property name="codeName"><value>long</value></property>
 		<property name="nameMappings">
@@ -1253,9 +1188,25 @@
         <property name="handlers">
             <map>
                 <entry>
+                    <key><value>BinaryDataHandler</value></key>
+                    <bean class="org.openmrs.web.controller.observation.handler.WebBinaryDataHandler"/>
+                </entry>
+                <entry>
+                    <key><value>BinaryStreamHandler</value></key>
+                    <bean class="org.openmrs.web.controller.observation.handler.WebBinaryStreamHandler"/>
+                </entry>
+                <entry>
                     <key><value>ImageHandler</value></key>
                     <bean class="org.openmrs.web.controller.observation.handler.WebImageHandler"/>
                 </entry>
+                <entry>
+                    <key><value>TextHandler</value></key>
+                    <bean class="org.openmrs.web.controller.observation.handler.WebTextHandler"/>
+                </entry>
+				<entry>
+					<key><value>MediaHandler</value></key>
+					<bean class="org.openmrs.web.controller.observation.handler.WebMediaHandler"/>
+				</entry>
             </map>
         </property>
     </bean>

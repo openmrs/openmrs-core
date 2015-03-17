@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.program;
 
@@ -26,13 +22,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.PatientState;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -99,14 +93,13 @@ public class WorkflowFormController extends SimpleFormController {
 			// get list of states to be deleted
 			String statesToDelete = request.getParameter("deleteStates");
 			Set<Integer> cantBeDeleted = new HashSet<Integer>(); // holds concept ids that cant be deleted
-			if (!statesToDelete.equals("")) {
+			if (!"".equals(statesToDelete)) {
 				// then delete listed states first
 				Map<Integer, ProgramWorkflowState> toRemove = new HashMap<Integer, ProgramWorkflowState>();
 				for (StringTokenizer std = new StringTokenizer(statesToDelete, "|"); std.hasMoreTokens();) {
 					String str = std.nextToken();
 					String[] state = str.split(",");
 					Integer conceptIdDelete = Integer.valueOf(state[0]);
-					ProgramWorkflowState pws = null;
 					
 					for (ProgramWorkflowState s : wf.getStates()) {
 						if (s.getConcept().getConceptId().equals(conceptIdDelete)) {
@@ -141,7 +134,7 @@ public class WorkflowFormController extends SimpleFormController {
 			}
 			// get list of states, and update the command object
 			String statesStr = request.getParameter("newStates");
-			if (!statesStr.equals("")) {
+			if (!"".equals(statesStr)) {
 				// This is a brute-force algorithm, but n will be small.
 				Set<Integer> doneSoFar = new HashSet<Integer>(); // concept ids done so far
 				for (StringTokenizer st = new StringTokenizer(statesStr, "|"); st.hasMoreTokens();) {

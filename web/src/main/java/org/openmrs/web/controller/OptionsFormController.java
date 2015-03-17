@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller;
 
@@ -46,6 +42,8 @@ import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -70,8 +68,8 @@ public class OptionsFormController extends SimpleFormController {
 	        BindException errors) throws Exception {
 		OptionsForm opts = (OptionsForm) object;
 		
-		if (!opts.getOldPassword().equals("")) {
-			if (opts.getNewPassword().equals("")) {
+		if (!"".equals(opts.getOldPassword())) {
+			if ("".equals(opts.getNewPassword())) {
 				errors.rejectValue("newPassword", "error.password.weak");
 			} else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
 				errors.rejectValue("newPassword", "error.password.match");
@@ -79,12 +77,12 @@ public class OptionsFormController extends SimpleFormController {
 			}
 		}
 		
-		if (opts.getSecretQuestionPassword().equals("") && opts.getSecretAnswerNew().isEmpty()
-		        && !opts.getSecretQuestionNew().isEmpty()) {
+		if ("".equals(opts.getSecretQuestionPassword()) && opts.getSecretAnswerNew().isEmpty()
+		        && !opts.getSecretQuestionNew().equals(opts.getSecretQuestionCopy())) {
 			errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 		}
 		
-		if (!opts.getSecretQuestionPassword().equals("")) {
+		if (!"".equals(opts.getSecretQuestionPassword())) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
 				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
 				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
@@ -151,7 +149,7 @@ public class OptionsFormController extends SimpleFormController {
 			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS, opts.getNotificationAddress() == null ? ""
 			        : opts.getNotificationAddress().toString());
 			
-			if (!opts.getOldPassword().equals("")) {
+			if (!"".equals(opts.getOldPassword())) {
 				try {
 					String password = opts.getNewPassword();
 					
@@ -174,7 +172,9 @@ public class OptionsFormController extends SimpleFormController {
 					
 					if (!errors.hasErrors()) {
 						us.changePassword(opts.getOldPassword(), password);
-						opts.setSecretQuestionPassword(password);
+						if (opts.getSecretQuestionPassword().equals(opts.getOldPassword())) {
+							opts.setSecretQuestionPassword(password);
+						}
 						new UserProperties(user.getUserProperties()).setSupposedToChangePassword(false);
 					}
 				}
@@ -184,12 +184,12 @@ public class OptionsFormController extends SimpleFormController {
 			} else {
 				// if they left the old password blank but filled in new
 				// password
-				if (!opts.getNewPassword().equals("")) {
+				if (!"".equals(opts.getNewPassword())) {
 					errors.rejectValue("oldPassword", "error.password.incorrect");
 				}
 			}
 			
-			if (!opts.getSecretQuestionPassword().equals("")) {
+			if (!"".equals(opts.getSecretQuestionPassword())) {
 				if (!errors.hasErrors()) {
 					try {
 						user.setSecretQuestion(opts.getSecretQuestionNew());
@@ -200,20 +200,20 @@ public class OptionsFormController extends SimpleFormController {
 						errors.rejectValue("secretQuestionPassword", "error.password.match");
 					}
 				}
-			} else if (!opts.getSecretAnswerNew().equals("")) {
+			} else if (!"".equals(opts.getSecretAnswerNew())) {
 				// if they left the old password blank but filled in new
 				// password
 				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 			}
 			
 			String notifyType = opts.getNotification();
-			if (notifyType != null) {
-				if (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email")) {
-					if (opts.getNotificationAddress().isEmpty()) {
-						errors.reject("error.options.notificationAddress.empty");
-					} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
-						errors.reject("error.options.notificationAddress.invalid");
-					}
+			if (notifyType != null
+			        && (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType
+			                .equals("email"))) {
+				if (opts.getNotificationAddress().isEmpty()) {
+					errors.reject("error.options.notificationAddress.empty");
+				} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
+					errors.reject("error.options.notificationAddress.invalid");
 				}
 			}
 			
@@ -252,7 +252,14 @@ public class OptionsFormController extends SimpleFormController {
 					user.addName(newPersonName);
 				}
 				
-				ValidateUtil.validate(user, errors);
+				Errors userErrors = new BindException(user, "user");
+				ValidateUtil.validate(user, userErrors);
+				
+				if (userErrors.hasErrors()) {
+					for (ObjectError error : userErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				
 				if (errors.hasErrors()) {
 					return super.processFormSubmission(request, response, opts, errors);
@@ -305,6 +312,7 @@ public class OptionsFormController extends SimpleFormController {
 			opts.setVerbose(new Boolean(props.get(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE)));
 			opts.setUsername(user.getUsername());
 			opts.setSecretQuestionNew(user.getSecretQuestion());
+			opts.setSecretQuestionCopy(user.getSecretQuestion());
 			
 			PersonName personName;
 			if (user.getPersonName() != null) {
@@ -347,13 +355,13 @@ public class OptionsFormController extends SimpleFormController {
 			// set language/locale options
 			map.put("languages", as.getPresentationLocales());
 			
-			String resetPassword = (String) httpSession.getAttribute("resetPassword");
-			if (resetPassword == null) {
-				resetPassword = "";
+			Object resetPasswordAttribute = httpSession.getAttribute("resetPassword");
+			if (resetPasswordAttribute == null) {
+				resetPasswordAttribute = "";
 			} else {
 				httpSession.removeAttribute("resetPassword");
 			}
-			map.put("resetPassword", resetPassword);
+			map.put("resetPassword", resetPasswordAttribute);
 			
 			//generate the password hint depending on the security GP settings
 			ArrayList<String> hints = new ArrayList<String>(5);
@@ -409,10 +417,8 @@ public class OptionsFormController extends SimpleFormController {
 	 * @param message the localized message to add
 	 */
 	private void addHint(ArrayList<String> hints, String gpValue, String message) {
-		if (Boolean.valueOf(gpValue)) {
-			if (!StringUtils.isBlank(message)) {
-				hints.add(message);
-			}
+		if (Boolean.valueOf(gpValue) && !StringUtils.isBlank(message)) {
+			hints.add(message);
 		}
 	}
 }

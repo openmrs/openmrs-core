@@ -18,7 +18,9 @@
 </script>
 
 <h2><openmrs:message code="RelationshipType.title"/></h2>
-
+<spring:hasBindErrors name="relationshipType">
+    <openmrs_tag:errorNotify errors="${errors}" />
+</spring:hasBindErrors>
 <form method="post">
 <fieldset>
 <table>

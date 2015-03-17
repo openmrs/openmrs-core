@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.scheduler;
 
@@ -158,7 +154,7 @@ public class SchedulerUtil {
 	 * the JDK timer will run the task X number of times from the start time until now in order to
 	 * catch up. The assumption is that this is not the desired behavior -- we just want to execute
 	 * the task on its next execution time. For instance, say we had a scheduled task that ran every
-	 * 24 hours at midnight. In the database, the task would likely have a past start date (i.e.
+	 * 24 hours at midnight. In the database, the task would likely have a past start date (e.g.
 	 * 04/01/2006 12:00am). If we scheduled the task using the JDK Timer
 	 * scheduleAtFixedRate(TimerTask task, Date startDate, int interval) method and passed in the
 	 * start date above, the JDK Timer would execute this task once for every day between the start
@@ -186,16 +182,20 @@ public class SchedulerUtil {
 					return firstTime;
 				}
 				
-				// The time between successive runs (i.e. 24 hours)
+				// The time between successive runs (e.g. 24 hours)
 				long repeatInterval = taskDefinition.getRepeatInterval().longValue();
+				if (repeatInterval == 0) {
+					// task is one-shot so just return the start time
+					return firstTime;
+				}
 				
-				// Calculate time between the first time the process was run and right now (i.e. 3 days, 15 hours)
+				// Calculate time between the first time the process was run and right now (e.g. 3 days, 15 hours)
 				long betweenTime = currentTime.getTime() - firstTime.getTime();
 				
-				// Calculate the last time the task was run   (i.e. 15 hours ago)
+				// Calculate the last time the task was run   (e.g. 15 hours ago)
 				long lastTime = (betweenTime % (repeatInterval * 1000));
 				
-				// Calculate the time to add to the current time (i.e. 24 hours - 15 hours = 9 hours)
+				// Calculate the time to add to the current time (e.g. 24 hours - 15 hours = 9 hours)
 				long additional = ((repeatInterval * 1000) - lastTime);
 				
 				nextTime.setTime(new Date(currentTime.getTime() + additional));
@@ -204,7 +204,7 @@ public class SchedulerUtil {
 			}
 		}
 		catch (Exception e) {
-			log.error("Failed to get next execution time for " + taskDefinition.getName());
+			log.error("Failed to get next execution time for " + taskDefinition.getName(), e);
 		}
 		
 		return nextTime.getTime();

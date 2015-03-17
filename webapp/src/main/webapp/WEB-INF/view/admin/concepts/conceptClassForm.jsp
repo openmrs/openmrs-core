@@ -8,7 +8,9 @@
 <h2><openmrs:message code="ConceptClass.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassForm.afterTitle" type="html" parameters="conceptClassId=${conceptClass.conceptClassId}" />
-
+<spring:hasBindErrors name="conceptClass">
+    <openmrs_tag:errorNotify errors="${errors}" />
+</spring:hasBindErrors>
 <form method="post">
 <table>
 	<tr>

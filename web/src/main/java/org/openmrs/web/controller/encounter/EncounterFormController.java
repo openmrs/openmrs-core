@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.encounter;
 
@@ -39,6 +35,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
@@ -112,7 +109,7 @@ public class EncounterFormController extends SimpleFormController {
 				Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				Context.addProxyPrivilege(PrivilegeConstants.VIEW_PATIENTS);
 				
-				if (StringUtils.hasText(request.getParameter("patientId"))) {
+				if (encounter.getEncounterId() == null && StringUtils.hasText(request.getParameter("patientId"))) {
 					encounter.setPatient(Context.getPatientService().getPatient(
 					    Integer.valueOf(request.getParameter("patientId"))));
 				}
@@ -120,8 +117,6 @@ public class EncounterFormController extends SimpleFormController {
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 				}
 				
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "patient", "error.null");
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
 				String[] providerIdsArray = ServletRequestUtils.getStringParameters(request, "providerIds");
 				if (ArrayUtils.isEmpty(providerIdsArray)) {
 					errors.reject("Encounter.provider.atleastOneProviderRequired");
@@ -178,6 +173,8 @@ public class EncounterFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 *
+	 * @should transfer encounter to another patient when encounter patient was changed
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
@@ -194,10 +191,23 @@ public class EncounterFormController extends SimpleFormController {
 			if (Context.isAuthenticated()) {
 				Encounter encounter = (Encounter) obj;
 				
-				// if this is a new encounter, they can specify a patient.  add it
+				Integer patientId = null;
+				
 				if (request.getParameter("patientId") != null) {
-					encounter.setPatient(Context.getPatientService().getPatient(
-					    Integer.valueOf(request.getParameter("patientId"))));
+					patientId = Integer.valueOf(request.getParameter("patientId"));
+				}
+				
+				if (encounter.getEncounterId() == null) {
+					// if this is a new encounter, they can specify a patient.  add it
+					if (patientId != null) {
+						encounter.setPatient(Context.getPatientService().getPatient(patientId));
+					}
+				} else {
+					Patient oldPatient = encounter.getPatient();
+					Patient newPatient = Context.getPatientService().getPatient(patientId);
+					if (newPatient != null && oldPatient != null && !newPatient.equals(oldPatient)) {
+						encounter = Context.getEncounterService().transferEncounter(encounter, newPatient);
+					}
 				}
 				
 				if (encounter.isVoided() && encounter.getVoidedBy() == null) {

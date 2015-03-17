@@ -77,7 +77,7 @@
 		var endDate = parseDate(jQuery('#completionDateElement').val());
 		var locationId = jQuery('#programLocationElement').val();
 		var outcomeId = jQuery('#programOutcomeConceptElement').val();
-        if (!isEmtpy(endDate) && !$j('#editProgramOutcomeRow').is(':hidden')
+        if (!isEmpty(endDate) && !$j('#editProgramOutcomeRow').is(':hidden')
 				&& outcomeId == '') {
 			alert("<openmrs:message code="PatientProgram.error.outcomeRequired" />");
 		} else if (!isEmpty(startDate) && startDate > endDate && !isEmpty(endDate)) {
@@ -457,34 +457,39 @@
 						<td>
 							<table width="100%">
 								<c:forEach var="workflow" items="${program.program.workflows}">
-									<tr>
-										<td style="" valign="top">
-											
-											<small><openmrs:format concept="${workflow.concept}" caseConversion="global"/>:</small>
-											<br/>
-											
-											<c:set var="stateId" value="" />
-											<c:set var="stateStart" value="" />
-											<c:forEach var="state" items="${program.states}">
-												<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
-													<c:set var="stateId" value="${state.state.concept.conceptId}" />
-													<c:set var="stateStart" value="${state.startDate}" />
-												</c:if>
-											</c:forEach>
-											<c:choose>
-												<c:when test="${not empty stateId}">
-													<b><openmrs:format conceptId="${stateId}" caseConversion="global"/></b>
-													<i>(<openmrs:message code="general.since" /> 
-													<openmrs:formatDate date="${stateStart}" type="medium" />)</i>
-												</c:when>
-												<c:otherwise>
-													<i>(<openmrs:message code="general.none" />)</i>
-												</c:otherwise>
-											</c:choose>
+									<c:if test="${!workflow.retired}">
+										<tr>
+											<td valign="top">
 
-											<a href="javascript:showEditWorkflowPopup('<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>', ${program.patientProgramId}, ${workflow.programWorkflowId})">[<openmrs:message code="general.edit"/>]</a>
-										</td>
-									</tr>
+												<small><openmrs:format concept="${workflow.concept}" caseConversion="global"/>:</small>
+												<br/>
+
+												<c:set var="stateId" value="" />
+												<c:set var="stateStart" value="" />
+												<c:set var="retired" value="" />
+												<c:forEach var="state" items="${program.states}">
+													<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
+														<c:set var="stateId" value="${state.state.concept.conceptId}" />
+														<c:set var="stateStart" value="${state.startDate}" />
+														<c:set var="retired" value="${state.state.retired}" />
+													</c:if>
+												</c:forEach>
+												<c:choose>
+													<c:when test="${not empty stateId}">
+														<b <c:if test="${retired}"> class="voided"} </c:if> ><openmrs:format conceptId="${stateId}" caseConversion="global"/></b>
+														<i>(<openmrs:message code="general.since" />
+														<openmrs:formatDate date="${stateStart}" type="medium" />)</i>
+													</c:when>
+													<c:otherwise>
+														<i>(<openmrs:message code="general.none" />)</i>
+													</c:otherwise>
+												</c:choose>
+																					  <c:if test="${program.dateCompleted == null}">
+													<a href="javascript:showEditWorkflowPopup('<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>', ${program.patientProgramId}, ${workflow.programWorkflowId})">[<openmrs:message code="general.edit"/>]</a>
+												</c:if>
+											</td>
+										</tr>
+									</c:if>
 								</c:forEach>
 							</table>
 						</td>
@@ -574,6 +579,10 @@
 				<td><openmrs_tag:dateField formFieldName="dateEnrolled" startValue="" /></td>
 			</tr>
 			<tr>
+				<td nowrap><openmrs:message code="Program.dateCompleted"/>:</td>
+				<td><openmrs_tag:dateField formFieldName="dateCompleted" startValue="" /></td>
+			</tr>
+			<tr>
 				<td nowrap><openmrs:message code="Program.location"/>:</td>
 				<td>
 					<select name="locationId">
@@ -598,19 +607,26 @@
 					<c:forEach items="${model.programs}" var="p">
 						<table id="workflowSection${p.programId}" style="display:none;" class="workflowSection">
 							<c:forEach items="${p.workflows}" var="wf">
-								<tr>
-									<th align="left"><openmrs:format concept="${wf.concept}"/></th>
-									<td>
-										<select name="initialState.${wf.programWorkflowId}">
-											<option value=""></option>
-											<c:forEach items="${wf.sortedStates}" var="wfState">
-												<c:if test="${wfState.initial}">
-													<option value="${wfState.programWorkflowStateId}"><openmrs:format concept="${wfState.concept}"/></option>
-												</c:if>
-											</c:forEach>
-										</select>
-									</td>
-								</tr>
+								<c:if test="${!wf.retired}">
+									<tr>
+										<th align="left"><openmrs:format concept="${wf.concept}"/></th>
+										<td>
+											<select name="initialState.${wf.programWorkflowId}">
+												<option value=""></option>
+												<c:forEach items="${wf.sortedStates}" var="wfState">
+													<c:if test="${wfState.initial && !wfState.retired}">
+														<option value="${wfState.programWorkflowStateId}"><openmrs:format concept="${wfState.concept}"/></option>
+													</c:if>
+												</c:forEach>
+												<c:forEach items="${wf.sortedStates}" var="wfState">
+													<c:if test="${wfState.initial && wfState.retired}">
+														<option class="retired" value="${wfState.programWorkflowStateId}"><openmrs:format concept="${wfState.concept}"/></option>
+													</c:if>
+												</c:forEach>
+											</select>
+										</td>
+									</tr>
+								</c:if>
 							</c:forEach>
 						</table>
 					</c:forEach>

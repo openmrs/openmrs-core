@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.aop;
 
@@ -28,6 +24,7 @@ import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.annotation.DisableHandlers;
+import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.ConceptNameSaveHandler;
@@ -159,8 +156,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			
 			if (methodName.startsWith("void")) {
 				Voidable voidable = (Voidable) args[0];
+				Date dateVoided = voidable.getDateVoided() == null ? new Date() : voidable.getDateVoided();
 				String voidReason = (String) args[1];
-				recursivelyHandle(VoidHandler.class, voidable, voidReason);
+				recursivelyHandle(VoidHandler.class, voidable, Context.getAuthenticatedUser(), dateVoided, voidReason, null);
 				
 			} else if (methodName.startsWith("unvoid")) {
 				Voidable voidable = (Voidable) args[0];
@@ -269,6 +267,12 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		
 		// loop over all child collections of OpenmrsObjects and recursively save on those
 		for (Field field : allInheritedFields) {
+			
+			// skip field if it's declared independent
+			if (field.isAnnotationPresent(Independent.class)) {
+				continue;
+			}
+			
 			if (reflect.isCollectionField(field) && !isHandlerMarkedAsDisabled(handlerType, field)) {
 				
 				// the collection we'll be looping over
@@ -326,19 +330,19 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		}
 		catch (IllegalAccessException e) {
 			if (field.isAnnotationPresent(AllowDirectAccess.class)) {
-				throw new APIException("Unable to get field: " + fieldName + " on " + openmrsObject.getClass());
+				throw new APIException("unable.get.field", new Object[] { fieldName, openmrsObject.getClass() });
 			} else {
-				throw new APIException("Unable to use getter method: " + getterName + " for field: " + fieldName + " on "
-				        + openmrsObject.getClass());
+				throw new APIException("unable.getter.method", new Object[] { "use", getterName, fieldName,
+				        openmrsObject.getClass() });
 			}
 		}
 		catch (InvocationTargetException e) {
-			throw new APIException("Unable to run getter method: " + getterName + " for field: " + fieldName + " on "
-			        + openmrsObject.getClass());
+			throw new APIException("unable.getter.method", new Object[] { "run", getterName, fieldName,
+			        openmrsObject.getClass() });
 		}
 		catch (NoSuchMethodException e) {
-			throw new APIException("Unable to find getter method: " + getterName + " for field: " + fieldName + " on "
-			        + openmrsObject.getClass());
+			throw new APIException("unable.getter.method", new Object[] { "find", getterName, fieldName,
+			        openmrsObject.getClass() });
 		}
 	}
 	

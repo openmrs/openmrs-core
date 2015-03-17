@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.dwr;
 
@@ -26,10 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -42,7 +40,7 @@ public class DWRObsService {
 	
 	/**
 	 * Void the given observation
-	 *
+	 * 
 	 * @param obsId
 	 * @param reason
 	 */
@@ -60,7 +58,7 @@ public class DWRObsService {
 	
 	/**
 	 * Get all observations for the given encounter TODO: rename to getObservationsByEncounter
-	 *
+	 * 
 	 * @param encounterId
 	 * @return
 	 */
@@ -92,7 +90,7 @@ public class DWRObsService {
 	
 	/**
 	 * Auto generated method comment
-	 *
+	 * 
 	 * @param personId
 	 * @param encounterId
 	 * @param conceptId
@@ -106,7 +104,7 @@ public class DWRObsService {
 	
 	/**
 	 * Auto generated method comment
-	 *
+	 * 
 	 * @param personId
 	 * @param encounterId
 	 * @param locationId
@@ -178,6 +176,42 @@ public class DWRObsService {
 				}
 			}
 			obs.setValueDatetime(obsDateValue);
+		} else if ("CWE".equals(hl7DataType)) {
+			if (valueText != null) {
+				Collection<ConceptAnswer> conceptAnswers = concept.getAnswers(false);
+				int conceptIdFromValueTest;
+				try {
+					conceptIdFromValueTest = Integer.parseInt(valueText);
+				}
+				catch (NumberFormatException e) {
+					log.error("Unable to parse given value text to integer while resolving concept id" + valueText, e);
+					throw new Exception("Can't resolve concept id. Please specify valid id" + valueText);
+				}
+				for (ConceptAnswer answer : conceptAnswers) {
+					if (answer.getAnswerConcept().getId() == conceptIdFromValueTest) {
+						obs.setValueCoded(answer.getAnswerConcept());
+					}
+				}
+			}
+		} else if ("BIT".equals(hl7DataType)) {
+			String booleanConceptId = null;
+			AdministrationService administrationService = Context.getAdministrationService();
+			if ("Yes".equalsIgnoreCase(valueText) || "True".equalsIgnoreCase(valueText) || "1".equals(valueText)) {
+				booleanConceptId = administrationService.getGlobalProperty("concept.true");
+			} else if ("No".equalsIgnoreCase(valueText) || "False".equalsIgnoreCase(valueText) || "0".equals(valueText)) {
+				booleanConceptId = administrationService.getGlobalProperty("concept.false");
+			}
+			Concept booleanConcept = null;
+			if (booleanConceptId != null) {
+				try {
+					booleanConcept = Context.getConceptService().getConcept(Integer.parseInt(booleanConceptId));
+				}
+				catch (NumberFormatException e) {
+					log.error("Unable to parse concept id string to integer to resolve concept" + booleanConceptId, e);
+					throw new Exception("No boolean concept found in the system");
+				}
+			}
+			obs.setValueCoded(booleanConcept);
 		} else {
 			obs.setValueText(valueText);
 		}
@@ -233,7 +267,7 @@ public class DWRObsService {
 
 	/**
 	 * Auto generated method comment
-	 *
+	 * 
 	 * @param personId
 	 * @param conceptId
 	 * @param encounterId
@@ -246,7 +280,7 @@ public class DWRObsService {
 		
 		Integer pId = null;
 		try {
-			pId = new Integer(personId);
+			pId = Integer.valueOf(personId);
 		}
 		catch (NumberFormatException nfe) {
 			pId = null;
@@ -254,7 +288,7 @@ public class DWRObsService {
 		
 		Integer eId = null;
 		try {
-			eId = new Integer(encounterId);
+			eId = Integer.valueOf(encounterId);
 		}
 		catch (NumberFormatException nfe) {
 			eId = null;
@@ -300,7 +334,7 @@ public class DWRObsService {
 	
 	/**
 	 * Auto generated method comment
-	 *
+	 * 
 	 * @param obsId
 	 * @return
 	 */

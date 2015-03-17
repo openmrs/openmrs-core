@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -75,35 +71,31 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public Program saveProgram(Program program) throws APIException {
 		// Program
 		if (program.getConcept() == null) {
-			throw new APIException("Program concept is required");
+			throw new APIException("Program.concept.required", (Object[]) null);
 		}
 		
 		// ProgramWorkflow
 		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
 			
 			if (workflow.getConcept() == null) {
-				throw new APIException("ProgramWorkflow concept is required");
+				throw new APIException("ProgramWorkflow.concept.required", (Object[]) null);
 			}
 			if (workflow.getProgram() == null) {
 				workflow.setProgram(program);
 			} else if (!workflow.getProgram().equals(program)) {
-				throw new APIException(
-				        "This Program contains a ProgramWorkflow whose parent Program is already assigned to "
-				                + workflow.getProgram());
+				throw new APIException("Program.error.contains.ProgramWorkflow", new Object[] { workflow.getProgram() });
 			}
 			
 			// ProgramWorkflowState
 			for (ProgramWorkflowState state : workflow.getStates()) {
 				
 				if (state.getConcept() == null || state.getInitial() == null || state.getTerminal() == null) {
-					throw new APIException("ProgramWorkflowState concept, initial, terminal are required");
+					throw new APIException("ProgramWorkflowState.requires", (Object[]) null);
 				}
 				if (state.getProgramWorkflow() == null) {
 					state.setProgramWorkflow(workflow);
 				} else if (!state.getProgramWorkflow().equals(workflow)) {
-					throw new APIException(
-					        "This ProgramWorkflow contains a State whose parent ProgramWorkflow is already assigned to "
-					                + workflow.getProgram());
+					throw new APIException("ProgramWorkflow.error.contains.state", new Object[] { workflow.getProgram() });
 				}
 			}
 		}
@@ -173,7 +165,6 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public void purgeProgram(Program program) throws APIException {
 		Context.getProgramWorkflowService().purgeProgram(program, false);
-		
 	}
 	
 	/**
@@ -181,7 +172,11 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public void purgeProgram(Program program, boolean cascade) throws APIException {
 		if (cascade && !program.getAllWorkflows().isEmpty()) {
-			throw new APIException("Cascade purging of Programs is not implemented yet");
+			throw new APIException("Program.cascade.purging.not.implemented", (Object[]) null);
+		}
+		for (PatientProgram patientProgram : Context.getProgramWorkflowService().getPatientPrograms(null, program, null,
+		    null, null, null, true)) {
+			purgePatientProgram(patientProgram);
 		}
 		dao.deleteProgram(program);
 	}
@@ -266,20 +261,18 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws APIException {
 		
 		if (patientProgram.getPatient() == null || patientProgram.getProgram() == null) {
-			throw new APIException("PatientProgram requires a Patient and a Program");
+			throw new APIException("PatientProgram.requires", (Object[]) null);
 		}
 		
 		// Patient State
 		for (PatientState state : patientProgram.getStates()) {
 			if (state.getState() == null) {
-				throw new APIException("PatientState requires a State");
+				throw new APIException("PatientState.requires", (Object[]) null);
 			}
 			if (state.getPatientProgram() == null) {
 				state.setPatientProgram(patientProgram);
 			} else if (!state.getPatientProgram().equals(patientProgram)) {
-				throw new APIException(
-				        "This PatientProgram contains a ProgramWorkflowState whose parent is already assigned to "
-				                + state.getPatientProgram());
+				throw new APIException("PatientProgram.already.assigned", new Object[] { state.getPatientProgram() });
 			}
 			if (patientProgram.getVoided() || state.getVoided()) {
 				state.setVoided(true);
@@ -338,7 +331,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public void purgePatientProgram(PatientProgram patientProgram, boolean cascade) throws APIException {
 		if (cascade && !patientProgram.getStates().isEmpty()) {
-			throw new APIException("Cascade purging of PatientPrograms is not implemented yet");
+			throw new APIException("PatientProgram.cascade.purging.not.implemented", (Object[]) null);
 		}
 		dao.deletePatientProgram(patientProgram);
 	}
@@ -407,7 +400,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws APIException {
 		if (csc.getConcept() == null || csc.getProgramWorkflow() == null || csc.getProgramWorkflowState() == null) {
-			throw new APIException("ConceptStateConversion requires a Concept, ProgramWorkflow, and ProgramWorkflowState");
+			throw new APIException("ConceptStateConversion.requires", (Object[]) null);
 		}
 		return dao.saveConceptStateConversion(csc);
 	}
@@ -452,13 +445,13 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		
 		// Check input parameters
 		if (patient == null) {
-			throw new APIException("Attempting to convert state of an invalid patient");
+			throw new APIException("convert.state.invalid.patient", (Object[]) null);
 		}
 		if (trigger == null) {
-			throw new APIException("Attempting to convert state for a patient without a valid trigger concept");
+			throw new APIException("convert.state.patient.without.valid.trigger", (Object[]) null);
 		}
 		if (dateConverted == null) {
-			throw new APIException("Invalid date for converting patient state");
+			throw new APIException("convert.state.invalid.date", (Object[]) null);
 		}
 		
 		for (PatientProgram patientProgram : getPatientPrograms(patient, null, null, null, null, null, false)) {
@@ -544,7 +537,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public void updateWorkflow(ProgramWorkflow w) {
 		if (w.getProgram() == null) {
-			throw new APIException("ProgramWorkflow requires a Program");
+			throw new APIException("ProgramWorkflow.requires.program", (Object[]) null);
 		}
 		Context.getProgramWorkflowService().saveProgram(w.getProgram());
 	}

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web;
 
@@ -58,7 +54,6 @@ import org.openmrs.propertyeditor.ConceptNameEditor;
 import org.openmrs.propertyeditor.ConceptNumericEditor;
 import org.openmrs.propertyeditor.ConceptReferenceTermEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
-import org.openmrs.propertyeditor.DataExportReportObjectEditor;
 import org.openmrs.propertyeditor.DateOrDatetimeEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
@@ -77,15 +72,10 @@ import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
 import org.openmrs.propertyeditor.ProviderEditor;
-import org.openmrs.propertyeditor.ReportDefinitionEditor;
-import org.openmrs.propertyeditor.ReportSchemaXmlEditor;
 import org.openmrs.propertyeditor.RoleEditor;
 import org.openmrs.propertyeditor.UserEditor;
 import org.openmrs.propertyeditor.VisitEditor;
 import org.openmrs.propertyeditor.VisitTypeEditor;
-import org.openmrs.report.ReportSchemaXml;
-import org.openmrs.reporting.export.DataExportReportObject;
-import org.openmrs.reporting.report.ReportDefinition;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
@@ -111,7 +101,6 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(ConceptName.class, new ConceptNameEditor());
 		wdb.registerCustomEditor(ConceptNumeric.class, new ConceptNumericEditor());
 		wdb.registerCustomEditor(ConceptSource.class, new ConceptSourceEditor());
-		wdb.registerCustomEditor(DataExportReportObject.class, new DataExportReportObjectEditor());
 		wdb.registerCustomEditor(Drug.class, new DrugEditor());
 		wdb.registerCustomEditor(Encounter.class, new EncounterEditor());
 		wdb.registerCustomEditor(Form.class, new FormEditor());
@@ -129,8 +118,6 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(ProgramWorkflow.class, new ProgramWorkflowEditor());
 		wdb.registerCustomEditor(ProgramWorkflowState.class, new ProgramWorkflowStateEditor());
 		wdb.registerCustomEditor(Provider.class, new ProviderEditor());
-		wdb.registerCustomEditor(ReportDefinition.class, new ReportDefinitionEditor());
-		wdb.registerCustomEditor(ReportSchemaXml.class, new ReportSchemaXmlEditor());
 		wdb.registerCustomEditor(Role.class, new RoleEditor());
 		wdb.registerCustomEditor(User.class, new UserEditor());
 		wdb.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, NumberFormat

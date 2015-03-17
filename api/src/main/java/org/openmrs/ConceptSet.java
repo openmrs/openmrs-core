@@ -1,20 +1,17 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -55,7 +52,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Gets the concept set identifier.
-	 *
+	 * 
 	 * @return the concept set identifier
 	 */
 	public Integer getConceptSetId() {
@@ -64,7 +61,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Sets the concept set identifier.
-	 *
+	 * 
 	 * @param conceptSetId The concept set identifier.
 	 */
 	public void setConceptSetId(Integer conceptSetId) {
@@ -163,7 +160,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used. Always returns null.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#getChangedBy()
 	 */
 	public User getChangedBy() {
@@ -172,7 +169,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used. Always returns null.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#getDateChanged()
 	 */
 	public Date getDateChanged() {
@@ -181,7 +178,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
 	 */
 	public void setChangedBy(User changedBy) {
@@ -189,7 +186,7 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * Not currently used.
-	 *
+	 * 
 	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
 	 */
 	public void setDateChanged(Date dateChanged) {
@@ -199,15 +196,11 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(ConceptSet cs) {
-		if ((getSortWeight() == null) && (cs.getSortWeight() != null)) {
-			return -1;
+		int value = OpenmrsUtil.compareWithNullAsLowest(concept.isRetired(), cs.concept.isRetired());
+		if (value == 0) {
+			value = OpenmrsUtil.compareWithNullAsLowest(this.getSortWeight(), cs.getSortWeight());
 		}
-		if ((getSortWeight() != null) && (cs.getSortWeight() == null)) {
-			return 1;
-		}
-		if ((getSortWeight() == null) && (cs.getSortWeight() == null)) {
-			return 0;
-		}
-		return (getSortWeight() < cs.getSortWeight()) ? -1 : (getSortWeight() > cs.getSortWeight()) ? 1 : 0;
+		return value;
 	}
+	
 }

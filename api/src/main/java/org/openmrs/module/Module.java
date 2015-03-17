@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.module;
 
@@ -24,6 +20,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -71,6 +68,8 @@ public final class Module {
 	
 	private Map<String, String> awareOfModulesMap;
 	
+	private Map<String, String> startBeforeModulesMap;
+	
 	private List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
 	
 	private IdentityHashMap<String, String> extensionNames = new IdentityHashMap<String, String>();
@@ -95,6 +94,8 @@ public final class Module {
 	private Document log4j = null;
 	
 	private boolean mandatory = Boolean.FALSE;
+	
+	private List<ModuleConditionalResource> conditionalResources = new ArrayList<ModuleConditionalResource>();
 	
 	// keep a reference to the file that we got this module from so we can delete
 	// it if necessary
@@ -138,6 +139,11 @@ public final class Module {
 			return getModuleId().equals(mod.getModuleId());
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(getModuleId()).toHashCode();
 	}
 	
 	/**
@@ -326,6 +332,17 @@ public final class Module {
 	}
 	
 	/**
+	 * @param requiredModule the requiredModule to add for this module
+	 * @param version version requiredModule
+	 * @should add module to required modules map
+	 */
+	public void addRequiredModule(String requiredModule, String version) {
+		if (requiredModulesMap != null) {
+			requiredModulesMap.put(requiredModule, version);
+		}
+	}
+	
+	/**
 	 * @param requiredModulesMap <code>Map<String,String></code> of the <code>requiredModule</code>s
 	 *            to set
 	 * @since 1.5
@@ -341,8 +358,33 @@ public final class Module {
 	 *
 	 * @return a map from required module to the version that is required
 	 */
-	public Map<String, String> setRequiredModulesMap() {
+	public Map<String, String> getRequiredModulesMap() {
 		return requiredModulesMap;
+	}
+	
+	/**
+	 * Sets modules that must start after this module
+	 * @param startBeforeModulesMap the startedBefore modules to set
+	 */
+	public void setStartBeforeModulesMap(Map<String, String> startBeforeModulesMap) {
+		this.startBeforeModulesMap = startBeforeModulesMap;
+	}
+	
+	/**
+	 * Gets modules which should start after this
+	 * @return map where key is module name and value is module version
+	 */
+	public Map<String, String> getStartBeforeModulesMap() {
+		return this.startBeforeModulesMap;
+	}
+	
+	/**
+	 * Gets names of modules which should start after this
+	 * @since 1.11
+	 * @return
+	 */
+	public List<String> getStartBeforeModules() {
+		return this.startBeforeModulesMap == null ? null : new ArrayList<String>(this.startBeforeModulesMap.keySet());
 	}
 	
 	/**
@@ -365,6 +407,10 @@ public final class Module {
 	 */
 	public List<String> getAwareOfModules() {
 		return awareOfModulesMap == null ? null : new ArrayList<String>(awareOfModulesMap.keySet());
+	}
+	
+	public String getAwareOfModuleVersion(String awareOfModule) {
+		return awareOfModulesMap == null ? null : awareOfModulesMap.get(awareOfModule);
 	}
 	
 	/**
@@ -652,7 +698,6 @@ public final class Module {
 	
 	/**
 	 * Packages to scan for classes with JPA annotated classes.
-	 *
 	 * @return the set of packages to scan
 	 * @since 1.9.2, 1.10
 	 */
@@ -748,8 +793,9 @@ public final class Module {
 	
 	@Override
 	public String toString() {
-		if (moduleId == null)
+		if (moduleId == null) {
 			return super.toString();
+		}
 		
 		return moduleId;
 	}
@@ -762,5 +808,17 @@ public final class Module {
 		for (AdvicePoint advicePoint : advicePoints) {
 			advicePoint.disposeClassInstance();
 		}
+	}
+	
+	public List<ModuleConditionalResource> getConditionalResources() {
+		return conditionalResources;
+	}
+	
+	public void setConditionalResources(List<ModuleConditionalResource> conditionalResources) {
+		this.conditionalResources = conditionalResources;
+	}
+	
+	public boolean isCore() {
+		return ModuleConstants.CORE_MODULES.containsKey(getModuleId());
 	}
 }

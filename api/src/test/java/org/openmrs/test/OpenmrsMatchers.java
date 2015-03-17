@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.test;
 
@@ -17,6 +13,8 @@ import static org.hamcrest.Matchers.is;
 
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
+import org.openmrs.Concept;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.OpenmrsObject;
 
 /**
@@ -56,6 +54,23 @@ public class OpenmrsMatchers {
 			@Override
 			protected String featureValueOf(final OpenmrsObject actual) {
 				return actual.getUuid();
+			}
+		};
+	}
+	
+	/**
+	 * Matches by concept.
+	 * 
+	 * @param concept
+	 * @return the concept
+	 */
+	public static Matcher<ConceptSearchResult> hasConcept(final Matcher<Concept> concept) {
+		return new FeatureMatcher<ConceptSearchResult, Concept>(
+		                                                        concept, "concept", "concept") {
+			
+			@Override
+			protected Concept featureValueOf(ConceptSearchResult actual) {
+				return actual.getConcept();
 			}
 		};
 	}

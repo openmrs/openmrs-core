@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -181,8 +177,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		
 		if (obsParent.hasGroupMembers()) {
 			for (Obs child : obsParent.getGroupMembers()) {
-				if (child.isVoided() == false) {
-					if (child.isObsGrouping() == false) {
+				if (!child.isVoided()) {
+					if (!child.isObsGrouping()) {
 						leaves.add(child);
 					} else {
 						// recurse if this is a grouping obs
@@ -190,7 +186,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 					}
 				}
 			}
-		} else if (obsParent.isVoided() == false) {
+		} else if (!obsParent.isVoided()) {
 			leaves.add(obsParent);
 		}
 		
@@ -462,6 +458,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return same provider for person if called twice
 	 * @should not return a voided provider
 	 */
+	@Deprecated
 	public Person getProvider() {
 		if (encounterProviders == null || encounterProviders.isEmpty()) {
 			return null;
@@ -480,6 +477,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param provider The provider to set.
 	 * @deprecated use {@link #setProvider(Person)}
 	 */
+	@Deprecated
 	public void setProvider(User provider) {
 		setProvider(provider.getPerson());
 	}
@@ -489,6 +487,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated since 1.9, use {@link #setProvider(EncounterRole, Provider)}
 	 * @should set existing provider for unknown role
 	 */
+	@Deprecated
 	public void setProvider(Person provider) {
 		EncounterRole unknownRole = Context.getEncounterService().getEncounterRoleByUuid(
 		    EncounterRole.UNKNOWN_ENCOUNTER_ROLE_UUID);
@@ -733,4 +732,64 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		}
 	}
 	
+	/**
+	 * Copied encounter will not have visit field copied.
+	 *
+	 * @param patient the Patient that will be assign to copied Encounter
+	 * @return copied encounter
+	 *
+	 * @should copy all Encounter data except visit and assign copied Encounter to given Patient
+	 */
+	public Encounter copyAndAssignToAnotherPatient(Patient patient) {
+		Map<Order, Order> oldNewOrderMap = new HashMap<Order, Order>();
+		Encounter target = new Encounter();
+		
+		target.setChangedBy(getChangedBy());
+		target.setCreator(getCreator());
+		target.setDateChanged(getDateChanged());
+		target.setDateCreated(getDateCreated());
+		target.setDateVoided(getDateVoided());
+		target.setVoided(getVoided());
+		target.setVoidedBy(getVoidedBy());
+		target.setVoidReason(getVoidReason());
+		
+		// Encounter specific data
+		target.setEncounterDatetime(getEncounterDatetime());
+		target.setEncounterType(getEncounterType());
+		target.setForm(getForm());
+		target.setLocation(getLocation());
+		target.setPatient(patient);
+		
+		//encounter providers
+		for (EncounterProvider encounterProvider : getEncounterProviders()) {
+			EncounterProvider encounterProviderCopy = encounterProvider.copy();
+			encounterProviderCopy.setEncounter(target);
+			target.getEncounterProviders().add(encounterProviderCopy);
+		}
+		
+		//orders
+		for (Order order : getOrders()) {
+			Order orderCopy = order.copy();
+			orderCopy.setEncounter(target);
+			orderCopy.setPatient(patient);
+			target.addOrder(orderCopy);
+			oldNewOrderMap.put(order, orderCopy);
+		}
+		
+		Context.getEncounterService().saveEncounter(target);
+		
+		//obs
+		for (Obs obs : getAllObs()) {
+			Obs obsCopy = Obs.newInstance(obs);
+			obsCopy.setEncounter(target);
+			obsCopy.setPerson(patient);
+			//refresh order reference
+			Order oldOrder = obsCopy.getOrder();
+			Order newOrder = oldNewOrderMap.get(oldOrder);
+			obsCopy.setOrder(newOrder);
+			target.addObs(obsCopy);
+		}
+		
+		return target;
+	}
 }

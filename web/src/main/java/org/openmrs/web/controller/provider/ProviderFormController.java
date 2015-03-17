@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.provider;
 
@@ -29,6 +25,7 @@ import org.openmrs.propertyeditor.PersonEditor;
 import org.openmrs.validator.ProviderValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -54,6 +51,7 @@ public class ProviderFormController {
 	public String onSubmit(HttpServletRequest request, @RequestParam(required = false) String saveProviderButton,
 	        @RequestParam(required = false) String retireProviderButton,
 	        @RequestParam(required = false) String unretireProviderButton,
+	        @RequestParam(required = false) String purgeProviderButton,
 	        @RequestParam(required = false) boolean linkToPerson, @ModelAttribute("provider") Provider provider,
 	        BindingResult errors, ModelMap model) throws Exception {
 		
@@ -72,14 +70,24 @@ public class ProviderFormController {
 		List<ProviderAttributeType> attributeTypes = (List<ProviderAttributeType>) model.get("providerAttributeTypes");
 		WebAttributeUtil
 		        .handleSubmittedAttributesForType(provider, errors, ProviderAttribute.class, request, attributeTypes);
-		
-		new ProviderValidator().validate(provider, errors);
-		
-		if (!errors.hasErrors()) {
-			if (Context.isAuthenticated()) {
-				ProviderService service = Context.getProviderService();
-				
-				String message = "Provider.saved";
+		if (Context.isAuthenticated()) {
+			ProviderService service = Context.getProviderService();
+			String message = "Provider.saved";
+			
+			if (purgeProviderButton != null) {
+				try {
+					service.purgeProvider(provider);
+					message = "Provider.purged";
+				}
+				catch (DataIntegrityViolationException e) {
+					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+					return showForm(provider.getId());
+				}
+			} else {
+				new ProviderValidator().validate(provider, errors);
+			}
+			
+			if (!errors.hasErrors()) {
 				if (saveProviderButton != null) {
 					service.saveProvider(provider);
 				} else if (retireProviderButton != null) {
@@ -90,9 +98,10 @@ public class ProviderFormController {
 					message = "Provider.unretired";
 				}
 				
-				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
-				return "redirect:index.htm";
 			}
+			
+			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
+			return "redirect:index.htm";
 		}
 		
 		return showForm();
@@ -101,18 +110,16 @@ public class ProviderFormController {
 	@ModelAttribute("provider")
 	public Provider formBackingObject(@RequestParam(required = false) Integer providerId) throws ServletException {
 		Provider provider = new Provider();
-		if (Context.isAuthenticated()) {
-			if (providerId != null) {
-				ProviderService ps = Context.getProviderService();
-				return ps.getProvider(providerId);
-			}
+		if (Context.isAuthenticated() && providerId != null) {
+			ProviderService ps = Context.getProviderService();
+			return ps.getProvider(providerId);
 		}
 		return provider;
 	}
 	
 	@ModelAttribute("providerAttributeTypes")
 	public List<ProviderAttributeType> getProviderAttributeTypes() throws Exception {
-		return Context.getProviderService().getAllProviderAttributeTypes(false);
+		return Context.getProviderService().getAllProviderAttributeTypes(true);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)

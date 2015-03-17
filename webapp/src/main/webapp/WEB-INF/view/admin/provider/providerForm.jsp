@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="View Providers" otherwise="/login.htm" redirect="/admin/provider/provider.form" />
+<openmrs:require privilege="Manage Providers" otherwise="/login.htm" redirect="/admin/provider/provider.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -10,6 +10,31 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
+$j(document).ready(function(){
+	var msgHolder = $j('#msgHolder');
+	if(!$j.trim(msgHolder.html()))
+		msgHolder.hide();
+
+    var providerName = $j('#providerName');
+    var person = $j('#person_id');
+
+    providerName.on('input', function(){
+        if(providerName.val().length > 0){
+            $j('#personRequired').attr('style', 'display:none');
+        } else {
+            $j('#personRequired').attr('style', 'display:initial');
+        }
+    });
+
+    $j('input').on('input focus blur', function(){
+        if(person.val().length > 0){
+            $j('#providerRequired').attr('style', 'display:none');
+        } else {
+            $j('#providerRequired').attr('style', 'display:initial');
+        }
+    });
+});
+
 function toggleProviderDetails(){
 	
 	$j('.providerDetails').toggle();
@@ -17,9 +42,28 @@ function toggleProviderDetails(){
 	if($j('#providerName').is(":visible"))
 		$j('#linkToPerson').removeAttr('checked');
 	else
-		$j('#linkToPerson').attr('checked', 'checked');
+		$j('#linkToPerson').attr('checked', 'checked');		
 		
-		
+}
+
+function validateForm(){
+	var providerName = $j('#providerName');
+	var person = $j('#person_id');
+	var msg = '<openmrs:message code="Provider.error.personAndName.provided" />';
+	var result = true;
+	if(providerName.val().length > 0 && person.val().length > 0){
+		result = false;
+		$j('#msgHolder').html(msg).show();
+	}
+	return result;
+}
+
+function confirmPurge() {
+	if (confirm('<openmrs:message code="Provider.confirmDelete"/>')) {
+		return true;
+	} else {
+		return false;
+	}
 }
 </script>
 
@@ -48,7 +92,7 @@ function toggleProviderDetails(){
 </b>
 
 <div class="box">
-	<form method="post">
+	<form method="post" onSubmit="return validateForm()">
 		
 		<table cellpadding="3" cellspacing="0">
 			<tr>
@@ -65,7 +109,7 @@ function toggleProviderDetails(){
 			<c:choose>
 			<c:when test="${provider.providerId == null}">
 			<tr>
-				<th><openmrs:message code="Provider.person"/></th>
+				<th><openmrs:message code="Provider.person"/><span id="personRequired" class="required">*</span></th>
 				<td>
 					<spring:bind path="provider.person">
 					<openmrs:fieldGen type="org.openmrs.Person" formFieldName="${status.expression}" val="${status.editor.value}"/>
@@ -73,13 +117,14 @@ function toggleProviderDetails(){
 					</spring:bind>
 				</td>
 				<td>&nbsp;&nbsp;&nbsp;<openmrs:message code="general.or" />&nbsp;&nbsp;&nbsp;</td>
-				<th><openmrs:message code="Provider.name"/></th>
+				<th><openmrs:message code="Provider.name"/><span id="providerRequired" class="required">*</span></th>
 				<td>
 					<spring:bind path="provider.name">			
-						<input type="text" name="${status.expression}" size="25" 
-							   value="${status.value}" />
-					   
-						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+						<input type="text" name="${status.expression}" size="25"
+							   value="${status.value}" id="providerName" />
+					   	<span class="error" id="msgHolder">
+							<c:if test="${status.errorMessage != ''}">${status.errorMessage}</c:if>
+					   	</span> 
 					</spring:bind>
 				</td>
 			</tr>
@@ -152,7 +197,6 @@ function toggleProviderDetails(){
 	</div>
 	
 	<br/>
-    <br/>
 
 	<c:if test="${provider.providerId != null}">
 		<div class="box">
@@ -201,7 +245,23 @@ function toggleProviderDetails(){
 							<td><input type="submit" name="unretireProviderButton"
 								value='<openmrs:message code="Provider.unretire"/>'></td>
 						</tr>
-					</c:if>		
+					</c:if>
+				</table>
+			</form>
+		</div>
+
+		<br/>
+
+		<div class="box">
+			<form method="post" onsubmit="return confirmPurge()">
+				<table cellpadding="3" cellspacing="0">
+					<tr>
+						<th><openmrs:message code="Provider.purge" /></th>
+					</tr>
+					<tr>
+						<td><input type="submit" name="purgeProviderButton"
+						value='<openmrs:message code="Provider.purge"/>'></td>
+					</tr>
 				</table>
 			</form>
 		</div>

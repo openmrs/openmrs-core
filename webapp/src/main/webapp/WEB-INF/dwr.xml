@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <!DOCTYPE dwr PUBLIC
     "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN"
     "http://directwebremoting.org/schema/dwr20.dtd">
@@ -21,15 +32,12 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.EncounterListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.UserListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ObsListItem"/>
-		<convert converter="bean" match="org.openmrs.web.dwr.OrderableListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FormListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.LocationListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.RelationshipListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ListItem"/>
-		<convert converter="bean" match="org.openmrs.web.dwr.DrugOrderListItem"/>
-		<convert converter="bean" match="org.openmrs.web.dwr.DrugSetItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientProgramItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientStateItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
@@ -60,6 +68,7 @@
 			<include method="removeProblem"/>
 			<include method="voidProblem"/>
 			<include method="findCountAndPatients"/>
+			<include method="findCountAndPatientsWithVoided"/>
 			<include method="findBatchOfPatients"/>
 		</create>
 		
@@ -106,6 +115,7 @@
 			<include method="getLocation"/>
 			<include method="findCountAndEncounters"/>
 			<include method="findBatchOfEncounters"/>
+			<include method="findBatchOfEncountersByPatient"/>
 			<include method="findCountAndLocations"/>
 			<include method="findBatchOfLocations"/>
 		</create>
@@ -180,19 +190,6 @@
 			<include method="getRelationshipsToPerson"/>
 			<include method="getRelationshipsFromPerson"/>
 		</create>
-
-		<create creator="new" javascript="DWROrderService">
-			<param name="class" value="org.openmrs.web.dwr.DWROrderService"/>
-			<include method="createDrugOrder"/>
-			<include method="voidOrder"/>
-			<include method="discontinueOrder"/>
-			<include method="getDrugOrdersByPatientId"/>
-			<include method="getCompletedDrugOrdersByPatientId"/>
-			<include method="getUnitsByDrugId"/>
-			<include method="voidCurrentDrugOrders" />
-			<include method="discontinueCurrentDrugOrders" />
-			<include method="getOrderables"/>
-		</create>
 		
 		<create creator="new" javascript="DWRProgramWorkflowService">
 			<param name="class" value="org.openmrs.web.dwr.DWRProgramWorkflowService"/>
@@ -253,7 +250,6 @@
 			import org.openmrs.web.dwr.DWRPatientService;
 			import org.openmrs.web.dwr.DWRUserService;
 			import org.openmrs.web.dwr.DWRObsService;
-			import org.openmrs.web.dwr.DWROrderService;
 			import org.openmrs.web.dwr.DWRProviderService;
 			import org.openmrs.web.dwr.DWRVisitService;
 			import org.openmrs.notification.web.dwr.DWRMessageService;
@@ -275,7 +271,7 @@
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWREncounterService.findEncounters(String phrase, Integer patientId, boolean includeVoided);
 			DWREncounterService.findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length);
-			DWREncounterService.findBatchOfEncounters(String phrase, Integer patientId, boolean includeVoided, Integer start, Integer length);
+			DWREncounterService.findBatchOfEncountersByPatient(String phrase, Integer patientId, boolean includeVoided, Integer start, Integer length);
 			DWREncounterService.findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length, boolean getMatchCount);
 			DWREncounterService.findCountAndLocations(String phrase, boolean includeRetired, Integer start, Integer length, boolean getMatchCount);
 			DWREncounterService.findBatchOfLocations(String searchValue, boolean includeRetired, Integer start, Integer length);
@@ -286,7 +282,6 @@
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.getObservations(Integer encounterId);
 			DWRObsService.createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, Date obsDate);
-			DWROrderService.getOrderables(String phrase);
 			DWRMessageService.sendFeedback(String sender, String subject, String content);
 			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
 			DWRMessageService.sendMessage(String recipients, String sender, String subject, String content);
@@ -302,6 +297,7 @@
 			DWRPatientService.findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length);
 			DWRPatientService.findPatients(String searchValue, boolean includeVoided);
 			DWRPatientService.findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount);
+			DWRPatientService.findCountAndPatientsWithVoided(String searchValue, Integer start, Integer length, boolean getMatchCount, Boolean includeVoided);
 			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId, Integer outcomeId);
 			DWRVisitService.findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided);
 			DWRVisitService.getVisit(Integer visitId);

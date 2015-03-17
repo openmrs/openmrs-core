@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.servlet;
 
@@ -126,7 +122,7 @@ public class SummaryServlet extends HttpServlet {
 		
 		// get patients according to start/end "Return Visit Date"
 		if ((startDateString.length() != 0) || (endDateString.length() != 0)) {
-			Concept c = Context.getConceptService().getConcept(new Integer("5096")); // RETURN VISIT DATE
+			Concept c = Context.getConceptService().getConcept(Integer.valueOf("5096")); // RETURN VISIT DATE
 			Calendar cal = Calendar.getInstance();
 			Date startDate;
 			Date endDate;
@@ -143,7 +139,7 @@ public class SummaryServlet extends HttpServlet {
 			}
 			
 			// if they don't input an end date, assume they meant "this week"
-			if (endDateString.equals("")) {
+			if ("".equals(endDateString)) {
 				while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 					cal.add(Calendar.DAY_OF_MONTH, -1);
 				}

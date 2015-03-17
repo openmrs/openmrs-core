@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
@@ -832,12 +828,6 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
 	public static final String DASHBOARD_VISITS = "Patient Dashboard - View Visits Section";
 	
-	@AddOnStartup(description = "Able to view order sets")
-	public static final String VIEW_ORDER_SETS = "View Order Sets";
-	
-	@AddOnStartup(description = "Able to add/edit/retire order sets")
-	public static final String MANAGE_ORDER_SETS = "Manage Order Sets";
-	
 	/**
 	 * @deprecated Use org.openmrs.util.PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES
 	 */
@@ -876,4 +866,15 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to assign System Developer role")
 	public static final String ASSIGN_SYSTEM_DEVELOPER_ROLE = "Assign System Developer Role";
+	
+	@AddOnStartup(description = "Able to get Order Frequencies")
+	public static final String GET_ORDER_FREQUENCIES = "Get Order Frequencies";
+	
+	@AddOnStartup(description = "Able to add/edit/retire Order Frequencies")
+	public static final String MANAGE_ORDER_FREQUENCIES = "Manage Order Frequencies";
+	
+	public static final String PURGE_ORDER_FREQUENCIES = "Purge Order Frequencies";
+	
+	@AddOnStartup(description = "Able to get Care Settings")
+	public static final String GET_CARE_SETTINGS = "Get Care Settings";
 }

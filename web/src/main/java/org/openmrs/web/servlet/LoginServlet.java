@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.servlet;
 
@@ -17,9 +13,11 @@ import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
@@ -129,20 +128,20 @@ public class LoginServlet extends HttpServlet {
 				Context.authenticate(username, password);
 				
 				if (Context.isAuthenticated()) {
-					
+					regenerateSession(request);
+					httpSession = request.getSession();//get the newly generated session
 					httpSession.setAttribute("loginAttempts", 0);
 					User user = Context.getAuthenticatedUser();
 					
 					// load the user's default locale if possible
-					if (user.getUserProperties() != null) {
-						if (user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
-							String localeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
-							Locale locale = WebUtil.normalizeLocale(localeString);
-							// if locale object is valid we should store it
-							if (locale != null) {
-								OpenmrsCookieLocaleResolver oclr = new OpenmrsCookieLocaleResolver();
-								oclr.setLocale(request, response, locale);
-							}
+					if (user.getUserProperties() != null
+					        && user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
+						String localeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
+						Locale locale = WebUtil.normalizeLocale(localeString);
+						// if locale object is valid we should store it
+						if (locale != null) {
+							OpenmrsCookieLocaleResolver oclr = new OpenmrsCookieLocaleResolver();
+							oclr.setLocale(request, response, locale);
 						}
 					}
 					
@@ -202,7 +201,7 @@ public class LoginServlet extends HttpServlet {
 		String redirect = request.getParameter("redirect");
 		
 		// second option for redirecting is the referrer parameter set at login.jsp
-		if (redirect == null || redirect.equals("")) {
+		if (redirect == null || "".equals(redirect)) {
 			redirect = request.getParameter("refererURL");
 			if (redirect != null && !redirect.startsWith("/")) {
 				// if we have an absolute url, make sure its in our domain
@@ -220,7 +219,7 @@ public class LoginServlet extends HttpServlet {
 		}
 		
 		// third option for redirecting is the main page of the webapp
-		if (redirect == null || redirect.equals("")) {
+		if (StringUtils.isEmpty(redirect)) {
 			redirect = request.getContextPath();
 		}
 
@@ -250,5 +249,35 @@ public class LoginServlet extends HttpServlet {
 		log.debug("Going to use redirect: '" + redirect + "'");
 		
 		return redirect;
+	}
+	
+	/**
+	 * Regenerates session id after each login attempt.
+	 * @param request
+	 */
+	private void regenerateSession(HttpServletRequest request) {
+		
+		HttpSession oldSession = request.getSession();
+		
+		Enumeration attrNames = oldSession.getAttributeNames();
+		Properties props = new Properties();
+		
+		if (attrNames != null) {
+			while (attrNames.hasMoreElements()) {
+				String key = (String) attrNames.nextElement();
+				props.put(key, oldSession.getAttribute(key));
+			}
+			
+			//Invalidating previous session
+			oldSession.invalidate();
+			//Generate new session
+			HttpSession newSession = request.getSession(true);
+			attrNames = props.keys();
+			
+			while (attrNames.hasMoreElements()) {
+				String key = (String) attrNames.nextElement();
+				newSession.setAttribute(key, props.get(key));
+			}
+		}
 	}
 }

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -30,6 +26,8 @@ import org.springframework.validation.Errors;
  * Consists of tests for the PersonAddressValidator
  */
 public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
+	
+	protected static final String PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH = "org/openmrs/include/personAddressValidatorTestDataset.xml";
 	
 	PersonAddressValidator validator = null;
 	
@@ -137,4 +135,111 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(false, errors.hasFieldErrors());
 	}
 	
+	/**
+	 * @see PersonAddressValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	@Verifies(value = "should fail if required fields are empty", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfRequiredFieldsAreEmpty() throws Exception {
+		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
+		PersonAddress personAddress = new PersonAddress();
+		
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
+	/**
+	 * @see PersonAddressValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	@Verifies(value = "should pass if required fields are not empty", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfRequiredFieldsAreNotEmpty() throws Exception {
+		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
+		PersonAddress personAddress = new PersonAddress();
+		personAddress.setAddress1("Address1");
+		
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		PersonAddress personAddress = new PersonAddress();
+		personAddress.setStartDate(null);
+		personAddress.setEndDate(null);
+		personAddress.setAddress1("address1");
+		personAddress.setAddress2("address2");
+		personAddress.setCityVillage("cityVillage");
+		personAddress.setStateProvince("stateProvince");
+		personAddress.setPostalCode("postalCode");
+		personAddress.setCountry("country");
+		personAddress.setLatitude("latitude");
+		personAddress.setLongitude("longitude");
+		personAddress.setVoidReason("voidReason");
+		personAddress.setCountyDistrict("countyDistrict");
+		personAddress.setAddress3("address3");
+		personAddress.setAddress4("address4");
+		personAddress.setAddress5("address5");
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		PersonAddress personAddress = new PersonAddress();
+		personAddress.setStartDate(null);
+		personAddress.setEndDate(null);
+		personAddress
+		        .setAddress1("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setAddress2("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setCityVillage("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setStateProvince("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setPostalCode("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setCountry("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setLatitude("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setLongitude("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setCountyDistrict("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setAddress3("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setAddress4("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		personAddress
+		        .setAddress5("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		Assert.assertEquals(true, errors.hasFieldErrors("address1"));
+		Assert.assertEquals(true, errors.hasFieldErrors("address2"));
+		Assert.assertEquals(true, errors.hasFieldErrors("cityVillage"));
+		Assert.assertEquals(true, errors.hasFieldErrors("stateProvince"));
+		Assert.assertEquals(true, errors.hasFieldErrors("postalCode"));
+		Assert.assertEquals(true, errors.hasFieldErrors("country"));
+		Assert.assertEquals(true, errors.hasFieldErrors("latitude"));
+		Assert.assertEquals(true, errors.hasFieldErrors("longitude"));
+		Assert.assertEquals(true, errors.hasFieldErrors("voidReason"));
+		Assert.assertEquals(true, errors.hasFieldErrors("countyDistrict"));
+		Assert.assertEquals(true, errors.hasFieldErrors("address3"));
+		Assert.assertEquals(true, errors.hasFieldErrors("address4"));
+		Assert.assertEquals(true, errors.hasFieldErrors("address5"));
+	}
 }

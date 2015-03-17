@@ -36,21 +36,27 @@ if (jspContext.getAttribute("initialValue") != null) {
 				</c:if>
 			</c:if>
 			<openmrs:forEachRecord name="locationHierarchy">
-			<c:choose>
-				<c:when test="${record.location.retired=='true'}">
-			
-				<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
-                                    <c:forEach begin="1" end="${record.depth}" >&nbsp;&nbsp;</c:forEach>${record.location.name}+[retired]
-                                </option>
-                                </c:when>
-                    <c:when test="${record.location.retired=='false'}">
-			
-				<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
-                                    <c:forEach begin="1" end="${record.depth}" >&nbsp;&nbsp;</c:forEach>${record.location.name}
-                                </option>
-                                </c:when>
-                               </c:choose> 
+				<c:if test="${!record.location.retired }">
+					<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
+						<c:forEach begin="1" end="${record.depth}">&nbsp;&nbsp;</c:forEach><c:out value="${record.location.name}"/>
+					</option>
+				</c:if>
 			</openmrs:forEachRecord>
+			<c:set var="anyRetired" value="false"/>
+			<openmrs:forEachRecord name="locationHierarchy">
+			<c:if test="${record.location.retired }">
+				<c:if test= "${ !anyRetired }" >
+				 <c:set var="anyRetired" value="true" />
+					<optgroup label="<openmrs:message code="Location.retiredList"/>">
+				</c:if>
+				<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
+					<c:forEach begin="1" end="${record.depth}">&nbsp;&nbsp;</c:forEach><c:out value="${record.location.name}"/>
+				</option>
+			</c:if>
+			</openmrs:forEachRecord>
+			<c:if test= "${anyRetired}" >
+				</optgroup>
+			</c:if>
 		</select>
 	</c:otherwise>
 </c:choose>

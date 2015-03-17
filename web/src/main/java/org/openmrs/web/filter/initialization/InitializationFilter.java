@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.filter.initialization;
 
@@ -38,7 +34,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
-import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.util.*;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
@@ -69,39 +64,39 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * The very first page of wizard, that asks user for select his preferred language
 	 */
-	private final String CHOOSE_LANG = "chooselang.vm";
+	private static final String CHOOSE_LANG = "chooselang.vm";
 	
 	/**
 	 * The second page of the wizard that asks for simple or advanced installation.
 	 */
-	private final String INSTALL_METHOD = "installmethod.vm";
+	private static final String INSTALL_METHOD = "installmethod.vm";
 	
 	/**
 	 * The simple installation setup page.
 	 */
-	private final String SIMPLE_SETUP = "simplesetup.vm";
+	private static final String SIMPLE_SETUP = "simplesetup.vm";
 	
 	/**
 	 * The first page of the advanced installation of the wizard that asks for a current or past
 	 * database
 	 */
-	private final String DATABASE_SETUP = "databasesetup.vm";
+	private static final String DATABASE_SETUP = "databasesetup.vm";
 	
 	/**
 	 * The page from where the user specifies the url to a remote system, username and password
 	 */
-	private final String TESTING_REMOTE_DETAILS_SETUP = "remotedetails.vm";
+	private static final String TESTING_REMOTE_DETAILS_SETUP = "remotedetails.vm";
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
-	private final String DEFAULT_PAGE = CHOOSE_LANG;
+	private static final String DEFAULT_PAGE = CHOOSE_LANG;
 	
 	/**
 	 * This page asks whether database tables/demo data should be inserted and what the
 	 * username/password that will be put into the runtime properties is
 	 */
-	private final String DATABASE_TABLES_AND_USER = "databasetablesanduser.vm";
+	private static final String DATABASE_TABLES_AND_USER = "databasetablesanduser.vm";
 	
 	/**
 	 * This page lets the user define the admin user
@@ -116,7 +111,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * This page asks for settings that will be put into the runtime properties files
 	 */
-	private final String OTHER_RUNTIME_PROPS = "otherruntimeproperties.vm";
+	private static final String OTHER_RUNTIME_PROPS = "otherruntimeproperties.vm";
 	
 	/**
 	 * A page that tells the user that everything is collected and will now be processed
@@ -616,7 +611,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			// throw back if the user didn't put in a password
-			if (wizardModel.adminUserPassword.equals("")) {
+			if ("".equals(wizardModel.adminUserPassword)) {
 				errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSDW_EMPTY, null);
 				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
@@ -950,7 +945,9 @@ public class InitializationFilter extends StartupFilter {
 			// verify connection
 			//Set Database Driver using driver String
 			Class.forName(loadedDriverString).newInstance();
-			DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
+			Connection tempConnection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername,
+			    connectionPassword);
+			tempConnection.close();
 			return true;
 			
 		}
@@ -1133,7 +1130,10 @@ public class InitializationFilter extends StartupFilter {
 			
 			// run the sql statement
 			Statement statement = connection.createStatement();
-			return statement.executeUpdate(replacedSql);
+			
+			int updateDelta = statement.executeUpdate(replacedSql);
+			statement.close();
+			return updateDelta;
 			
 		}
 		catch (SQLException sqlex) {
@@ -1186,7 +1186,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @return true if the value is non-empty
 	 */
 	private boolean checkForEmptyValue(String value, Map<String, Object[]> errors, String errorMessageCode) {
-		if (value != null && !value.equals("")) {
+		if (!StringUtils.isEmpty(value)) {
 			return true;
 		}
 		errors.put(errorMessageCode, null);
@@ -1689,7 +1689,7 @@ public class InitializationFilter extends StartupFilter {
 						
 						Context.openSession();
 						
-						if (!wizardModel.implementationId.equals("")) {
+						if (!"".equals(wizardModel.implementationId)) {
 							try {
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
@@ -1725,7 +1725,6 @@ public class InitializationFilter extends StartupFilter {
 							if (wizardModel.createTables) {
 								Context.authenticate("admin", "test");
 								Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
-								SchedulerConstants.SCHEDULER_DEFAULT_PASSWORD = wizardModel.adminUserPassword;
 								Context.logout();
 							}
 						}

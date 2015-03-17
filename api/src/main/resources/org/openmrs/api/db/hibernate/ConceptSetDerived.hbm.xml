@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptSetDerived" table="concept_set_derived">
+
+		<composite-id>
+			<key-many-to-one name="concept" column="concept_id"
+				class="Concept" />
+			<key-many-to-one name="conceptSet" column="concept_set"
+				class="Concept" />
+		</composite-id>
+		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="38" unique="true" />
+
+		<property name="sortWeight" type="java.lang.Double"
+			column="sort_weight" length="22" />
+
+		<!-- Associations -->
+		<!-- derived association(s) for compound key -->
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="concept" class="Concept"
+			update="false" insert="false">
+			<column name="concept_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="conceptSet" class="Concept"
+			update="false" insert="false">
+			<column name="concept_set" />
+		</many-to-one>
+
+		<!-- end of derived association(s) -->
+
+	</class>
+</hibernate-mapping>

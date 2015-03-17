@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.form;
 
@@ -89,7 +85,7 @@ public class FieldFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	@Test
-	@Ignore("TRUNK-3079: Fails due to foreign key constraint: Referential integrity constraint violation: FKF276DBFEA104846: PUBLIC.FORM_FIELD FOREIGN KEY(FIELD_ID) REFERENCES PUBLIC.FIELD(FIELD_ID); SQL statement: delete from field where field_id=? [23003-135]")
+	@Verifies(value = "should purge field", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldPurgeField() throws Exception {
 		final String FIELD_ID = "1";
 		
@@ -108,6 +104,6 @@ public class FieldFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		controller.handleRequest(request, response);
 		
-		Assert.assertNull(Context.getFormService().getField(new Integer(FIELD_ID)));
+		Assert.assertNull(Context.getFormService().getField(Integer.valueOf(FIELD_ID)));
 	}
 }

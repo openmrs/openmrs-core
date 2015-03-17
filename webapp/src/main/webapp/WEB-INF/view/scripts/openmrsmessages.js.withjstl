@@ -3,7 +3,7 @@
 var omsgs = new Array();
 var gp = new Array();
 var userProperties = new Array();
-omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="3"/>";
+omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="2"/>";
 omsgs.datePattern="<openmrs:datePattern />";
 omsgs.name="<openmrs:message javaScriptEscape="true" code="general.name"/>";
 omsgs.addNewPatient="<openmrs:message javaScriptEscape="true" code="Patient.addNew"/>";
@@ -87,7 +87,7 @@ omsgs.userListingHeaders=new Array();
 
 gp.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
 gp.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
-gp.searchDelay=<openmrs:globalProperty key="searchWidget.searchDelayInterval" defaultValue="400"/>;
+gp.searchDelay=<openmrs:globalProperty key="searchWidget.searchDelayInterval" defaultValue="300"/>;
 gp.maximumResults=<openmrs:globalProperty key="searchWidget.maximumResults" defaultValue="2000"/>;
 gp.weekStart=<openmrs:globalProperty key="datePicker.weekStart" defaultValue="0"/>;
 omsgs.encounterType="<openmrs:message code="Encounter.type" javaScriptEscape="true" />";

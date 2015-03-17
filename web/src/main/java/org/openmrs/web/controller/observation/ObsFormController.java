@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.observation;
 
@@ -37,6 +33,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
@@ -48,6 +45,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -262,13 +260,26 @@ public class ObsFormController extends SimpleFormController {
 				ObsService os = Context.getObsService();
 				Integer obsId = obs.getObsId();
 				if (obsId != null && obs.getConcept().isComplex()) {
-					Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HTML_VIEW);
-					ComplexData complexData = complexObs.getComplexData();
-					map.put("htmlView", complexData.getData());
+					ComplexObsHandler handler = os.getHandler(obs);
 					
-					Obs complexObs2 = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HYPERLINK_VIEW);
-					ComplexData complexData2 = complexObs2.getComplexData();
-					map.put("hyperlinkView", complexData2.getData());
+					// HTML view (i.e. inlining)
+					if (handler.supportsView(ComplexObsHandler.HTML_VIEW)) {
+						Obs complexObs_html = handler.getObs(obs, ComplexObsHandler.HTML_VIEW);
+						
+						Assert.notNull(complexObs_html, "Handler declares HTML view support but fails to deliver");
+						
+						ComplexData complexData = complexObs_html.getComplexData();
+						map.put("htmlView", complexData.getData());
+					}
+					// Hyperlink view (provide URL)
+					if (handler.supportsView(ComplexObsHandler.URI_VIEW)) {
+						Obs complexObs_uri = handler.getObs(obs, ComplexObsHandler.URI_VIEW);
+						
+						Assert.notNull(complexObs_uri, "Handler declares URL view support but fails to deliver");
+						
+						ComplexData complexData = complexObs_uri.getComplexData();
+						map.put("hyperlinkView", complexData.getData());
+					}
 				}
 			}
 			

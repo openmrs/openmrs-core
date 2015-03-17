@@ -1,18 +1,15 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,9 +62,14 @@ public class PatientProgramValidator implements Validator {
 	 * @should fail if a patientState has an invalid work flow state
 	 * @should fail if a patient program has duplicate states in the same work flow
 	 * @should fail if a patient is in multiple states in the same work flow
+	 * @should fail if a enrolled date is in future at the date it set
+	 * @should fail if a completion date is in future at the date it set
+	 * @should fail if a patient program has an enroll date after its completion
 	 * @should pass if a patient is in multiple states in different work flows
 	 * @should pass for a valid program
 	 * @should pass for patient states that have the same start dates in the same work flow
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled()) {
@@ -86,6 +88,23 @@ public class PatientProgramValidator implements Validator {
 		
 		if (errors.hasErrors()) {
 			return;
+		}
+		
+		ValidationUtils.rejectIfEmpty(errors, "dateEnrolled", "error.patientProgram.enrolledDateEmpty");
+		
+		Date today = new Date();
+		if (patientProgram.getDateEnrolled() != null && today.before(patientProgram.getDateEnrolled())) {
+			errors.rejectValue("dateEnrolled", "error.patientProgram.enrolledDateDateCannotBeInFuture");
+		}
+		
+		if (patientProgram.getDateCompleted() != null && today.before(patientProgram.getDateCompleted())) {
+			errors.rejectValue("dateCompleted", "error.patientProgram.completionDateCannotBeInFuture");
+		}
+		
+		// if enrollment or complete date of program is in future or complete date has come before enroll date we should throw error
+		if (patientProgram.getDateEnrolled() != null
+		        && OpenmrsUtil.compareWithNullAsLatest(patientProgram.getDateCompleted(), patientProgram.getDateEnrolled()) < 0) {
+			errors.rejectValue("dateCompleted", "error.patientProgram.enrolledDateShouldBeBeforecompletionDate");
 		}
 		
 		Set<ProgramWorkflow> workFlows = patientProgram.getProgram().getWorkflows();
@@ -195,6 +214,7 @@ public class PatientProgramValidator implements Validator {
 				}
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 		//
 	}
 }

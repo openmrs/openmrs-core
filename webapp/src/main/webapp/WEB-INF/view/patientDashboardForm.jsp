@@ -118,9 +118,6 @@
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
 			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.overview"/></a></li>
 		</openmrs:hasPrivilege>
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">
-			<li><a id="patientRegimenTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><openmrs:message code="patientDashboard.regimens"/></a></li>
-		</openmrs:hasPrivilege>
 		
 		<openmrs:globalProperty key="visits.enabled" defaultValue="true" var="visitsEnabled"/>
 		<c:choose>		
@@ -164,15 +161,6 @@
 			
 			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.OverviewTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 			<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>
-			
-		</div>
-	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">	
-		<div id="patientRegimen" style="display:none;">
-
-			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.RegimenTabHeader" type="html" parameters="patientId=${patient.patientId}" />
-			<openmrs:globalProperty var="displayDrugSetIds" key="dashboard.regimen.displayDrugSetIds" defaultValue="ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS" />
-			<openmrs:portlet url="patientRegimen" id="patientDashboardRegimen" patientId="${patient.patientId}" parameters="displayDrugSetIds=${displayDrugSetIds}" />
 			
 		</div>
 	</openmrs:hasPrivilege>

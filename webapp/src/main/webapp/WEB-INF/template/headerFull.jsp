@@ -26,6 +26,7 @@
 		<link href="<openmrs:contextPath/><spring:theme code='stylesheet' />" type="text/css" rel="stylesheet" />
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
+        <openmrs:htmlInclude file="/scripts/html-sanitizer-min.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
 			<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
@@ -169,7 +170,7 @@
 				<div id="openmrs_msg"><openmrs:message code="${msg}" text="${msg}" arguments="${msgArgs}"  htmlEscape="false" /></div>
 			</c:if>
 			<c:if test="${err != null}">
-				<div id="openmrs_error"><openmrs:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
+				<div id="openmrs_error"><openmrs:message code="${err}" text="${err}" arguments="${errArgs}" htmlEscape="false"/></div>
 			</c:if>
 			<div id="openmrs_dwr_error" style="display:none" class="error">
 				<div id="openmrs_dwr_error_msg"></div>

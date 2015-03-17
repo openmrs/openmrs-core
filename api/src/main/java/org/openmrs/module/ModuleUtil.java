@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.module;
 
@@ -52,6 +48,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
+import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
@@ -230,7 +227,7 @@ public class ModuleUtil {
 	 * </ul>
 	 *
 	 * @param version openmrs version number to be compared
-	 * @param value value in the config file for required openmrs version
+	 * @param versionRange value in the config file for required openmrs version
 	 * @return true if the <code>version</code> is within the <code>value</code>
 	 * @should allow ranged required version
 	 * @should allow ranged required version with wild card
@@ -247,19 +244,72 @@ public class ModuleUtil {
 	 * @should return false when required version with wild card on one end beyond openmrs version
 	 * @should return false when single entry required version beyond openmrs version
 	 * @should allow release type in the version
+	 * @should match when revision number is below maximum revision number
+	 * @should not match when revision number is above maximum revision number
+	 * @should correctly set upper and lower limit for versionRange with qualifiers and wild card
+	 * @should match when version has wild card plus qualifier and is within boundary
+	 * @should not match when version has wild card plus qualifier and is outside boundary
+	 * @should match when version has wild card and is within boundary
+	 * @should not match when version has wild card and is outside boundary
 	 */
-	public static boolean matchRequiredVersions(String version, String value) {
-		try {
-			/*
-			 * If "value" is not within range specified by "version", then a ModuleException will be thrown.
-			 * Otherwise, just return true at last.
-			 */
-			checkRequiredVersion(version, value);
-			return true;
+	public static boolean matchRequiredVersions(String version, String versionRange) {
+		// There is a null check so no risk in keeping the literal on the right side
+		if (StringUtils.isNotEmpty(versionRange)) {
+			String[] ranges = versionRange.split(",");
+			for (String range : ranges) {
+				// need to externalize this string
+				String separator = "-";
+				if (range.indexOf("*") > 0 || range.indexOf(separator) > 0 && (!isVersionWithQualifier(range))) {
+					// if it contains "*" or "-" then we must separate those two
+					// assume it's always going to be two part
+					// assign the upper and lower bound
+					// if there's no "-" to split lower and upper bound
+					// then assign the same value for the lower and upper
+					String lowerBound = range;
+					String upperBound = range;
+					
+					int indexOfSeparator = range.indexOf(separator);
+					while (indexOfSeparator > 0) {
+						lowerBound = range.substring(0, indexOfSeparator);
+						upperBound = range.substring(indexOfSeparator + 1);
+						if (upperBound.matches("^\\s?\\d+.*"))
+							break;
+						indexOfSeparator = range.indexOf(separator, indexOfSeparator + 1);
+					}
+					
+					// only preserve part of the string that match the following format:
+					// - xx.yy.*
+					// - xx.yy.zz*
+					lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+					
+					// if the lower contains "*" then change it to zero
+					if (lowerBound.indexOf("*") > 0)
+						lowerBound = lowerBound.replaceAll("\\*", "0");
+					
+					// if the upper contains "*" then change it to maxRevisionNumber
+					if (upperBound.indexOf("*") > 0)
+						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
+					
+					int lowerReturn = compareVersion(version, lowerBound);
+					
+					int upperReturn = compareVersion(version, upperBound);
+					
+					if (lowerReturn < 0 || upperReturn > 0) {
+						log.debug("Version " + version + " is not between " + lowerBound + " and " + upperBound);
+					} else {
+						return true;
+					}
+				} else {
+					if (compareVersion(version, range) < 0) {
+						log.debug("Version " + version + " is below " + range);
+					} else {
+						return true;
+					}
+				}
+			}
 		}
-		catch (ModuleException e) {
-			return false;
-		}
+		return false;
 	}
 	
 	/**
@@ -277,7 +327,7 @@ public class ModuleUtil {
 	 * <br/>
 	 *
 	 * @param version openmrs version number to be compared
-	 * @param value value in the config file for required openmrs version
+	 * @param versionRange value in the config file for required openmrs version
 	 * @throws ModuleException if the <code>version</code> is not within the <code>value</code>
 	 * @should throw ModuleException if openmrs version beyond wild card range
 	 * @should throw ModuleException if required version beyond openmrs version
@@ -289,63 +339,11 @@ public class ModuleUtil {
 	 * @should handle SNAPSHOT versions
 	 * @should handle ALPHA versions
 	 */
-	public static void checkRequiredVersion(String version, String value) throws ModuleException {
-		// need to externalize this string
-		String separator = "-";
-		
-		if (value != null && !value.equals("")) {
-			if ((value.indexOf("*") > 0 || value.indexOf(separator) > 0) && (!isVersionWithQualifier(value))) {
-				// if it contains "*" or "-" then we must separate those two
-				// assume it's always going to be two part
-				// assign the upper and lower bound
-				// if there's no "-" to split lower and upper bound
-				// then assign the same value for the lower and upper
-				String lowerBound = value;
-				String upperBound = value;
-				
-				int indexOfSeparator = value.indexOf(separator);
-				while (indexOfSeparator > 0) {
-					lowerBound = value.substring(0, indexOfSeparator);
-					upperBound = value.substring(indexOfSeparator + 1);
-					if (upperBound.matches("^\\s?\\d+.*")) {
-						break;
-					}
-					indexOfSeparator = value.indexOf(separator, indexOfSeparator + 1);
-				}
-				
-				// only preserve part of the string that match the following format:
-				// - xx.yy.*
-				// - xx.yy.zz*
-				lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
-				upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
-				
-				// if the lower contains "*" then change it to zero
-				if (lowerBound.indexOf("*") > 0) {
-					lowerBound = lowerBound.replaceAll("\\*", "0");
-				}
-				
-				// if the upper contains "*" then change it to 999
-				// assuming 999 will be the max revision number for openmrs
-				if (upperBound.indexOf("*") > 0) {
-					upperBound = upperBound.replaceAll("\\*", "999");
-				}
-				
-				int lowerReturn = compareVersion(version, lowerBound);
-				
-				int upperReturn = compareVersion(version, upperBound);
-				
-				if (lowerReturn < 0 || upperReturn > 0) {
-					String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.outOfBounds",
-					    new String[] { lowerBound, upperBound, version }, Context.getLocale());
-					throw new ModuleException(ms);
-				}
-			} else {
-				if (compareVersion(version, value) < 0) {
-					String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.belowLowerBound",
-					    new String[] { value, version }, Context.getLocale());
-					throw new ModuleException(ms);
-				}
-			}
+	public static void checkRequiredVersion(String version, String versionRange) throws ModuleException {
+		if (!matchRequiredVersions(version, versionRange)) {
+			String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.outOfBounds",
+			    new String[] { versionRange, version }, Context.getLocale());
+			throw new ModuleException(ms);
 		}
 	}
 	
@@ -398,8 +396,8 @@ public class ModuleUtil {
 			for (int x = 0; x < versions.size(); x++) {
 				String verNum = versions.get(x).trim();
 				String valNum = values.get(x).trim();
-				Integer ver = NumberUtils.toInt(verNum, 0);
-				Integer val = NumberUtils.toInt(valNum, 0);
+				Long ver = NumberUtils.toLong(verNum, 0);
+				Long val = NumberUtils.toLong(valNum, 0);
 				
 				int ret = ver.compareTo(val);
 				if (ret != 0) {
@@ -516,7 +514,7 @@ public class ModuleUtil {
 				if (name == null || jarEntry.getName().startsWith(name)) {
 					String entryName = jarEntry.getName();
 					// trim out the name path from the name of the new file
-					if (keepFullPath == false && name != null) {
+					if (!keepFullPath && name != null) {
 						entryName = entryName.replaceFirst(name, "");
 					}
 					
@@ -528,7 +526,7 @@ public class ModuleUtil {
 						log.debug("Creating parent dirs: " + parent.getAbsolutePath());
 					}
 					// we don't want to "expand" directories or empty names
-					if (entryName.endsWith("/") || entryName.equals("")) {
+					if (entryName.endsWith("/") || "".equals(entryName)) {
 						continue;
 					}
 					input = jarFile.getInputStream(jarEntry);
@@ -653,7 +651,7 @@ public class ModuleUtil {
 					http.disconnect();
 					// Redirection should be allowed only for HTTP and HTTPS
 					// and should be limited to 5 redirections at most.
-					if (target == null || !(target.getProtocol().equals("http") || target.getProtocol().equals("https"))
+					if (target == null || !("http".equals(target.getProtocol()) || "https".equals(target.getProtocol()))
 					        || redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
 					}
@@ -719,7 +717,7 @@ public class ModuleUtil {
 		
 		for (Module mod : ModuleFactory.getLoadedModules()) {
 			String updateURL = mod.getUpdateURL();
-			if (updateURL != null && !updateURL.equals("")) {
+			if (StringUtils.isNotEmpty(updateURL)) {
 				try {
 					// get the contents pointed to by the url
 					URL url = new URL(updateURL);
@@ -730,7 +728,7 @@ public class ModuleUtil {
 					String content = getURL(url);
 					
 					// skip empty or invalid updates
-					if (content.equals("")) {
+					if ("".equals(content)) {
 						continue;
 					}
 					
@@ -814,6 +812,7 @@ public class ModuleUtil {
 		}
 		
 		OpenmrsClassLoader.saveState();
+		SchedulerUtil.shutdown();
 		ServiceContext.destroyInstance();
 		
 		try {
@@ -841,6 +840,7 @@ public class ModuleUtil {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		OpenmrsClassLoader.restoreState();
+		SchedulerUtil.startup(Context.getRuntimeProperties());
 		
 		OpenmrsClassLoader.setThreadsToNewClassLoader();
 		
@@ -1062,7 +1062,7 @@ public class ModuleUtil {
 	 */
 	public static Collection<String> getPackagesFromFile(File file) {
 		
-		// end early if we're given a non jar file
+		// End early if we're given a non jar file
 		if (!file.getName().endsWith(".jar")) {
 			return Collections.<String> emptySet();
 		}
@@ -1077,31 +1077,35 @@ public class ModuleUtil {
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = jarEntries.nextElement();
 				if (jarEntry.isDirectory()) {
-					// skip over directory entries, we only care about dirs with files in it
+					// skip over directory entries, we only care about files
 					continue;
 				}
 				String name = jarEntry.getName();
+				
+				// Skip over some folders in the jar/omod
+				if (name.startsWith("lib") || name.startsWith("META-INF") || name.startsWith("web/module")) {
+					continue;
+				}
+				
 				Integer indexOfLastSlash = name.lastIndexOf("/");
 				if (indexOfLastSlash <= 0) {
 					continue;
 				}
 				String packageName = name.substring(0, indexOfLastSlash);
 				
-				// skip over some folders in the jar/omod
-				if (packageName.equals("lib") || packageName.equals("META-INF") || packageName.startsWith("web/module")) {
-					continue;
-				}
-				
 				packageName = packageName.replaceAll("/", ".");
 				
 				if (packagesProvided.add(packageName)) {
-					log.trace("Adding module's jarentry with package: " + packageName);
+					if (log.isTraceEnabled()) {
+						log.trace("Adding module's jarentry with package: " + packageName);
+					}
 				}
 			}
 			
+			jar.close();
 		}
 		catch (IOException e) {
-			log.error("Unable to open jar from file: " + file.getAbsolutePath(), e);
+			log.error("Error while reading file: " + file.getAbsolutePath(), e);
 		}
 		finally {
 			if (jar != null) {
@@ -1109,31 +1113,10 @@ public class ModuleUtil {
 					jar.close();
 				}
 				catch (IOException e) {
-					// do nothing
+					// Ignore quietly
 				}
 			}
-			
 		}
-		
-		// clean up packages contained within other packages this is
-		// O(n^2), but its better than putting extra packages into the
-		// set and having the classloader continually loop over them
-		Set<String> packagesProvidedCopy = new HashSet<String>();
-		packagesProvidedCopy.addAll(packagesProvided);
-		
-		for (String packageNameOuter : packagesProvidedCopy) {
-			// add the period so that we don't match to ourselves or to
-			// similarly named packages. eg. org.pih and org.pihrwanda
-			// should not match
-			packageNameOuter += ".";
-			for (String packageNameInner : packagesProvidedCopy) {
-				if (packageNameInner.contains(packageNameOuter)) {
-					packagesProvided.remove(packageNameInner);
-				}
-			}
-			
-		}
-		// end cleanup
 		
 		return packagesProvided;
 	}

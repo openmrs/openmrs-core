@@ -1,18 +1,13 @@
-package org.openmrs.web.controller.patient;
-
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
+package org.openmrs.web.controller.patient;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +25,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -58,7 +56,7 @@ public class MergePatientsFormController extends SimpleFormController {
 			log.debug("Error name: " + e.getObjectName());
 			log.debug("Error code: " + e.getCode());
 			log.debug("Error message: " + e.getDefaultMessage());
-			log.debug("Error args: " + e.getArguments());
+			log.debug("Error args: " + Arrays.toString(e.getArguments()));
 			log.debug("Error codes: " + e.getCodes());
 		}
 		
@@ -195,6 +193,18 @@ public class MergePatientsFormController extends SimpleFormController {
 		map.put("patient2", p2);
 		map.put("patientList", patientList);
 		map.put("modalMode", request.getParameter("modalMode"));
+		List<Integer> patientIdsWithUnvoidedOrders = new ArrayList<Integer>();
+		OrderService os = Context.getOrderService();
+		for (Patient pat : patientList) {
+			List<Order> orders = os.getAllOrdersByPatient(pat);
+			for (Order o : orders) {
+				if (!o.isVoided()) {
+					patientIdsWithUnvoidedOrders.add(pat.getId());
+					break;
+				}
+			}
+		}
+		map.put("patientIdsWithUnvoidedOrders", patientIdsWithUnvoidedOrders);
 		
 		return map;
 	}

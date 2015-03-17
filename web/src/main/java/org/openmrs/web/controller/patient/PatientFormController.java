@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.patient;
 
@@ -47,6 +43,7 @@ import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
@@ -131,7 +128,7 @@ public class PatientFormController extends PersonFormController {
 				
 				updatePersonNames(request, patient);
 				
-				updatePersonAddresses(request, patient);
+				updatePersonAddresses(request, patient, errors);
 				
 				updatePersonAttributes(request, errors, patient);
 				
@@ -151,7 +148,7 @@ public class PatientFormController extends PersonFormController {
 				if (ids != null) {
 					for (int i = 0; i < ids.length; i++) {
 						String id = ids[i].trim();
-						if (!id.equals("") && !idTypes[i].equals("")) { //skips invalid and blank identifiers/identifierTypes
+						if (!"".equals(id) && !"".equals(idTypes[i])) { //skips invalid and blank identifiers/identifierTypes
 							PatientIdentifier pi = new PatientIdentifier();
 							pi.setIdentifier(id);
 							pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
@@ -200,19 +197,15 @@ public class PatientFormController extends PersonFormController {
 					if (format == null) {
 						formatStr = "";
 					}
-					if (formatDescription != null) {
-						if (formatDescription.length() > 0) {
-							formatStr = formatDescription;
-						}
+					if (formatDescription != null && formatDescription.length() > 0) {
+						formatStr = formatDescription;
 					}
 					String[] args = { identifier, formatStr };
 					try {
-						if (format != null) {
-							if (format.length() > 0 && !identifier.matches(format)) {
-								log.error("Identifier format is not valid: (" + format + ") " + identifier);
-								String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
-								errors.rejectValue("identifiers", msg);
-							}
+						if (format != null && format.length() > 0 && !identifier.matches(format)) {
+							log.error("Identifier format is not valid: (" + format + ") " + identifier);
+							String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
+							errors.rejectValue("identifiers", msg);
 						}
 					}
 					catch (Exception e) {
@@ -240,6 +233,8 @@ public class PatientFormController extends PersonFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should void patient when void reason is not empty
+	 * @should not void patient when void reason is empty
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
@@ -270,11 +265,11 @@ public class PatientFormController extends PersonFormController {
 			} else if (action.equals(msa.getMessage("Patient.void"))) {
 				String voidReason = request.getParameter("voidReason");
 				if (StringUtils.isBlank(voidReason)) {
-					voidReason = msa.getMessage("PatientForm.default.voidReason", null, "Voided from patient form", Context
-					        .getLocale());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.error.void.reasonEmpty");
+				} else {
+					ps.voidPatient(patient, voidReason);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
 				}
-				ps.voidPatient(patient, voidReason);
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
 				return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId()));
 			} else if (action.equals(msa.getMessage("Patient.unvoid"))) {
 				ps.unvoidPatient(patient);
@@ -286,6 +281,11 @@ public class PatientFormController extends PersonFormController {
 				
 				try {
 					Context.getPatientService().savePatient(patient);
+				}
+				catch (ValidationException ve) {
+					log.error(ve);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, ve.getMessage());
+					isError = true;
 				}
 				catch (InvalidIdentifierFormatException iife) {
 					log.error(iife);
@@ -394,7 +394,7 @@ public class PatientFormController extends PersonFormController {
 											obsDeath.setValueText(otherInfo);
 										} else {
 											// non empty text value implies concept changed from OTHER NON CODED to NONE
-											deathReasonChanged = !otherInfo.equals("");
+											deathReasonChanged = !"".equals(otherInfo);
 											log.debug("New concept is NOT the OTHER concept, so setting to blank");
 											obsDeath.setValueText("");
 										}
@@ -456,7 +456,10 @@ public class PatientFormController extends PersonFormController {
 					id = Integer.valueOf(patientId);
 					patient = ps.getPatientOrPromotePerson(id);
 					if (patient == null) {
-						throw new ServletException("There is no patient or person with id: '" + patientId + "'");
+						HttpSession session = request.getSession();
+						session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "patientDashboard.noPatientWithId");
+						session.setAttribute(WebConstants.OPENMRS_ERROR_ARGS, patientId);
+						return new Patient();
 					}
 				}
 				catch (NumberFormatException numberError) {

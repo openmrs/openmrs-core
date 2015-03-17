@@ -84,7 +84,7 @@
         	<td width="100px"><div class="logo"></div></td>
         	<td>
             	<div class="bar-round">
-        			<div class="bar">$l10n.get("install.header.caption")</div>
+        			<div class="bar">$l10n.get("install.header.caption").insert(${OPENMRS_VERSION})</div>
         		</div>
             </td>
         </tr>

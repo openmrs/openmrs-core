@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
   <person_attribute_type person_attribute_type_id="16" name="Credit Card" description="Credit card number of the person" format="java.lang.String" searchable="false" creator="1" date_created="2009-05-17 09:59:23.0" retired="true" retired_by="1" date_retired="2009-05-17 10:00:00.0" retire_reason="test" sort_weight="16" uuid="b3ghd540-a32e-44c7-91b3-292d97667518"/>
   <person_attribute_type person_attribute_type_id="17" name="Credit Card Expiration Date" description="Expiration date of the person's credit card" format="java.lang.String" searchable="false" creator="1" date_created="2009-05-17 09:59:23.0" retired="true" retired_by="1" date_retired="2009-05-17 10:00:00.0" sort_weight="17" uuid="54gh8400-1683-4d71-a1ac-98d40836ff7c"/>

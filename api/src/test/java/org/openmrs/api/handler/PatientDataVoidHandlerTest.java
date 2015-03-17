@@ -1,20 +1,13 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.handler;
-
-import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
@@ -27,6 +20,9 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Contains the tests for the {@link PatientDataVoidHandler}
@@ -44,7 +40,7 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		List<Obs> observations = Context.getObsService().getObservationsByPerson(patient);
-		List<Order> orders = Context.getOrderService().getOrdersByPatient(patient);
+		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(patient);
 		
 		//we should have some unvoided encounters, obs and orders for the test to be concrete
 		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
@@ -95,10 +91,8 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		//refresh the lists and check that all encounters, obs and orders were voided
 		encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		observations = Context.getObsService().getObservationsByPerson(patient);
-		orders = Context.getOrderService().getOrdersByPatient(patient);
 		
 		Assert.assertTrue(CollectionUtils.isEmpty(encounters));
 		Assert.assertTrue(CollectionUtils.isEmpty(observations));
-		Assert.assertTrue(CollectionUtils.isEmpty(orders));
 	}
 }

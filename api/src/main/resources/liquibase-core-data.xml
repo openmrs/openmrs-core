@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1356,18 +1367,6 @@
 		</customChange>
    </changeSet>
 
-	<changeSet author="ben (generated)" id="1226412230538-33">
-		<insert tableName="order_type">
-			<column name="order_type_id" valueNumeric="1" />
-			<column name="name" value="Lab test" />
-			<column name="description" value="An order by a clinician for a laboratory test" />
-			<column name="creator" valueNumeric="1" />
-			<column name="date_created" valueDate="2008-08-15" />
-			<column name="retired" valueBoolean="false" />
-			<column name="uuid" value="AABBCCf4-15f5-102d-96e4-000c29c2aaaa" />
-		</insert>
-	</changeSet>
-
    <changeSet author="sunbiz" id="function-enable-sqlserver" runAlways="true" dbms="mssql">
         <sql>
             EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all";
@@ -1382,5 +1381,4 @@
     <changeSet author="ben" id="enable-foreign-key-checks" runAlways="true" dbms="mysql">
 	<sql>SET FOREIGN_KEY_CHECKS=1</sql>
     </changeSet>
-    
 </databaseChangeLog>

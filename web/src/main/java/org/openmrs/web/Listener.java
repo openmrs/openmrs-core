@@ -1,17 +1,36 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +53,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
@@ -44,27 +62,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Our Listener class performs the basic starting functions for our webapp. Basic needs for starting
@@ -212,7 +209,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		try {
 			Context.openSession();
 			PersonName.setFormat(Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT));
+			    OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, OpenmrsConstants.PERSON_NAME_FORMAT_SHORT));
 			// load bundled modules that are packaged into the webapp
 			Listener.loadBundledModules(servletContext);
 			
@@ -243,7 +240,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// start the scheduled tasks
 			SchedulerUtil.startup(getRuntimeProperties());
 		}
-		catch (Throwable t) {
+		catch (Exception t) {
 			Context.shutdown();
 			WebModuleUtil.shutdownModules(servletContext);
 			throw new ServletException(t);
@@ -266,7 +263,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// "application_data_directory" runtime property is set
 		String appDataDir = servletContext.getInitParameter("application.data.directory");
 		if (StringUtils.hasLength(appDataDir)) {
-			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = appDataDir;
+			OpenmrsUtil.setApplicationDataDirectory(appDataDir);
+		} else if (!"openmrs".equalsIgnoreCase(WebConstants.WEBAPP_NAME)) {
+			OpenmrsUtil.setApplicationDataDirectory(OpenmrsUtil.getApplicationDataDirectory() + File.separator
+			        + WebConstants.WEBAPP_NAME);
 		}
 	}
 	
@@ -558,7 +558,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				}
 			}
 		}
-		catch (Throwable e) {
+		catch (Exception e) {
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
 			e.printStackTrace();
 		}
@@ -592,11 +592,16 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @throws ModuleMustStartException if the context cannot restart due to a
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Throwable {
-		Log log = LogFactory.getLog(Listener.class);
-		
+	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Exception {
 		List<Module> startedModules = new ArrayList<Module>();
 		startedModules.addAll(ModuleFactory.getStartedModules());
+		performWebStartOfModules(startedModules, servletContext);
+	}
+	
+	public static void performWebStartOfModules(Collection<Module> startedModules, ServletContext servletContext)
+	        throws ModuleMustStartException, Exception {
+		Log log = LogFactory.getLog(Listener.class);
+		
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
 			try {
@@ -632,7 +637,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 							try {
 								ModuleFactory.stopModule(mod, true, true);
 							}
-							catch (Throwable t3) {
+							catch (Exception t3) {
 								// just keep going if we get an error shutting down.  was probably caused by the module 
 								// that actually got us to this point!
 								log.trace("Unable to shutdown module:" + mod, t3);
@@ -646,7 +651,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 					throw new MandatoryModuleException(ex.getModuleId(), "Got an error while starting a mandatory module: "
 					        + e.getMessage() + ". Check the server logs for more information");
 				}
-				catch (Throwable t2) {
+				catch (Exception t2) {
 					// a mandatory or core module is causing spring to fail to start up.  We don't want those
 					// stopped so we must report this error to the higher authorities
 					log.warn("caught another error: ", t2);

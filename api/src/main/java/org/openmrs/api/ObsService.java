@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -377,6 +373,40 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.VIEW_OBS)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+	        throws APIException;
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
+	 *
+	 * This method works exactly the same; it only adds accession number search criteria.
+	 * It effectively surpasses the above method; the old one is however kept for backward
+	 * compatibility reasons.
+	 *
+	 * @param whom List<Person> to restrict obs to (optional)
+	 * @param encounters List<Encounter> to restrict obs to (optional)
+	 * @param questions List<Concept> to restrict the obs to (optional)
+	 * @param answers List<Concept> to restrict the valueCoded to (optional)
+	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
+	 *            <code>whom</code> is an empty list (optional)
+	 * @param locations The org.openmrs.Location objects to restrict to (optional)
+	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
+	 *            obsDatetime (optional)
+	 * @param mostRecentN restrict the number of obs returned to this size (optional)
+	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
+	 * @param fromDate the earliest Obs date to get (optional)
+	 * @param toDate the latest Obs date to get (optional)
+	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
+	 * @param accessionNumber accession number (optional)
+	 * @return list of Observations that match all of the criteria given in the arguments
+	 * @since 1.12
+	 * @throws APIException
 	 * @should compare dates using lte and gte
 	 * @should get all obs assigned to given encounters
 	 * @should get all obs with question concept in given questions parameter
@@ -391,12 +421,13 @@ public interface ObsService extends OpenmrsService {
 	 * @should return obs whose groupId is given obsGroupId
 	 * @should not include voided obs
 	 * @should include voided obs if includeVoidedObs is true
+	 * @should only return observations with matching accession number
 	 */
 	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
-	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
-	        throws APIException;
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
+	        String accessionNumber) throws APIException;
 	
 	/**
 	 * This method fetches the count of observations according to the criteria in the given
@@ -426,6 +457,37 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.VIEW_OBS)
+	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
+	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException;
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.util.Date, java.util.Date, boolean)
+	 *
+	 * This method works exactly the same; it only adds accession number search criteria.
+	 * It effectively surpasses the above method; the old one is however kept for backward
+	 * compatibility reasons.
+	 *
+	 * @param whom List<Person> to restrict obs to (optional)
+	 * @param encounters List<Encounter> to restrict obs to (optional)
+	 * @param questions List<Concept> to restrict the obs to (optional)
+	 * @param answers List<Concept> to restrict the valueCoded to (optional)
+	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
+	 *            <code>whom</code> is an empty list (optional)
+	 * @param locations The org.openmrs.Location objects to restrict to (optional) obsDatetime
+	 *            (optional)
+	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
+	 * @param fromDate the earliest Obs date to get (optional)
+	 * @param toDate the latest Obs date to get (optional)
+	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
+	 * @param accessionNumber accession number (optional)
+	 * @return list of Observations that match all of the criteria given in the arguments
+	 * @since 1.12
+	 * @throws APIException
 	 * @should compare dates using lte and gte
 	 * @should get the count of all obs assigned to given encounters
 	 * @should get the count of all obs with question concept in given questions parameter
@@ -437,11 +499,12 @@ public interface ObsService extends OpenmrsService {
 	 * @should return the count of obs whose groupId is given obsGroupId
 	 * @should not include count of voided obs
 	 * @should include count of voided obs if includeVoidedObs is true
+	 * @should return count of obs with matching accession number
 	 */
 	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
-	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException;
+	        Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber) throws APIException;
 	
 	/**
 	 * This method searches the obs table based on the given <code>searchString</code>.
@@ -611,11 +674,24 @@ public interface ObsService extends OpenmrsService {
 	public ComplexObsHandler getHandler(String key) throws APIException;
 	
 	/**
+	 * Get the ComplexObsHandler associated with a complex observation
+	 * Returns the ComplexObsHandler.
+	 * Returns null if the Obs.isComplexObs() is false or there is an error
+	 * instantiating the handler class.
+	 *
+	 * @param obs A complex Obs.
+	 * @return ComplexObsHandler for the complex Obs. or null on error.
+	 * @since 1.12
+	 * @should get handler associated with complex observation
+	 */
+	public ComplexObsHandler getHandler(Obs obs) throws APIException;
+	
+	/**
 	 * <u>Add</u> the given map to this service's handlers. This method registers each
 	 * ComplexObsHandler to this service. If the given String key exists, that handler is
 	 * overwritten with the given handler For most situations, this map is set via spring, see the
 	 * applicationContext-service.xml file to add more handlers.
-	 * 
+	 *
 	 * @param handlers Map of class to handler object
 	 * @throws APIException
 	 * @since 1.5
@@ -626,7 +702,7 @@ public interface ObsService extends OpenmrsService {
 	
 	/**
 	 * Gets the handlers map registered
-	 * 
+	 *
 	 * @return map of keys to handlers
 	 * @since 1.5
 	 * @throws APIException
@@ -637,7 +713,7 @@ public interface ObsService extends OpenmrsService {
 	/**
 	 * Registers the given handler with the given key If the given String key exists, that handler
 	 * is overwritten with the given handler
-	 * 
+	 *
 	 * @param key the key name to use for this handler
 	 * @param handler the class to register with this key
 	 * @throws APIException

@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
     <!--
         People with short names for testing org.openmrs.api.db.hibernate.PatientSearchCriteria#getCriterionForShortName
@@ -115,5 +126,22 @@
 
     <patient patient_id="81" creator="1" date_created="2014-01-11 00:00:00.0" changed_by="1" voided="false" void_reason=""/>
 
+    <!--
+        People for testing org.openmrs.api.db.hibernate.HibernatePatientDAO#getPatients
+    -->
+    <person person_id="82" gender="M" birthdate="2014-08-28 15:54:48.0" birthdate_estimated="0" dead="false" creator="1" date_created="2014-08-28 15:54:48.0" voided="false" uuid="63cafe66-924c-4868-aaa5-d2d77bf26789"/>
+    <person person_id="83" gender="M" birthdate="2014-08-28 15:54:48.0" birthdate_estimated="0" dead="false" creator="1" date_created="2014-08-28 15:54:48.0" voided="false" uuid="23261000-4665-4416-bbd1-6b904a9057fb"/>
+    <person person_id="84" gender="M" birthdate="2014-08-28 15:54:48.0" birthdate_estimated="0" dead="false" creator="1" date_created="2014-08-28 15:54:48.0" voided="false" uuid="0a7a79c8-c493-4e0d-93dd-8071a3210f2f"/>
+    <person person_id="85" gender="M" birthdate="2014-08-28 15:54:48.0" birthdate_estimated="0" dead="false" creator="1" date_created="2014-08-28 15:54:48.0" voided="false" uuid="40c8473a-ec0b-42f8-9e03-662241966de3"/>
+
+    <person_name person_name_id="82" preferred="true" person_id="82" prefix="Mr." given_name="Adam"     middle_name="Benedict" family_name="Franklin" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="adbb3485-cbaa-4311-a7b4-d2defa4b9ad1"/>
+    <person_name person_name_id="83" preferred="true" person_id="83" prefix="Mr." given_name="Alan"     middle_name="Ben"      family_name="Franklin" family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="32a30df7-8fec-4a4d-b070-6a7e50610af3"/>
+    <person_name person_name_id="84" preferred="true" person_id="84" prefix="Mr." given_name="Ben"      middle_name="Frank"    family_name="Benet"    family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="99e99cc8-bf0e-4df2-9a52-b8d12bf4ee16"/>
+    <person_name person_name_id="85" preferred="true" person_id="85" prefix="Mr." given_name="Benedict" middle_name="Frank"    family_name="Took"     family_name2="" creator="1" date_created="2014-01-09 00:00:00.0" voided="false" void_reason="" uuid="71abaa07-48a7-4104-b458-17233ff4b77c"/>
+
+    <patient patient_id="82" creator="1" date_created="2014-08-28 15:54:48.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="83" creator="1" date_created="2014-08-28 15:54:48.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="84" creator="1" date_created="2014-08-28 15:54:48.0" changed_by="1" voided="false" void_reason=""/>
+    <patient patient_id="85" creator="1" date_created="2014-08-28 15:54:48.0" changed_by="1" voided="false" void_reason=""/>
 
 </dataset>

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.form;
 
@@ -34,6 +30,7 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
+import org.openmrs.api.FormsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.util.FormUtil;
@@ -82,66 +79,74 @@ public class FormFormController extends SimpleFormController {
 			Form form = (Form) obj;
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
-			if (action == null) {
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
-			} else {
-				if (action.equals(msa.getMessage("Form.save"))) {
-					try {
-						// save form
-						form = Context.getFormService().saveForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
-					}
-					catch (Exception e) {
-						log.error("Error while saving form " + form.getFormId(), e);
-						errors.reject(e.getMessage());
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
-						return showForm(request, response, errors);
-					}
-				} else if (action.equals(msa.getMessage("Form.delete"))) {
-					try {
-						Context.getFormService().purgeForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
-					}
-					catch (DataIntegrityViolationException e) {
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
-						return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
-					}
-					catch (Exception e) {
-						log.error("Error while deleting form " + form.getFormId(), e);
-						errors.reject(e.getMessage());
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
-						return showForm(request, response, errors);
-						//return new ModelAndView(new RedirectView(getSuccessView()));
-					}
-				} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
-					
-					FormService fs = Context.getFormService();
-					
-					TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
-					for (Map.Entry<Integer, TreeSet<FormField>> entry : treeMap.entrySet()) {
-						Integer parentFormFieldId = entry.getKey();
-						float sortWeight = 0;
-						for (FormField formField : entry.getValue()) {
-							formField.setSortWeight(sortWeight);
-							fs.saveFormField(formField);
-							sortWeight += 50;
+			try {
+				if (action == null) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
+				} else {
+					if (action.equals(msa.getMessage("Form.save"))) {
+						try {
+							// save form
+							form = Context.getFormService().saveForm(form);
+							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
+						}
+						catch (Exception e) {
+							log.error("Error while saving form " + form.getFormId(), e);
+							errors.reject(e.getMessage());
+							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
+							return showForm(request, response, errors);
+						}
+					} else if (action.equals(msa.getMessage("Form.delete"))) {
+						try {
+							Context.getFormService().purgeForm(form);
+							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
+						}
+						catch (DataIntegrityViolationException e) {
+							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
+							return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
+						}
+						catch (Exception e) {
+							log.error("Error while deleting form " + form.getFormId(), e);
+							errors.reject(e.getMessage());
+							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
+							return showForm(request, response, errors);
+							//return new ModelAndView(new RedirectView(getSuccessView()));
+						}
+					} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
+						
+						FormService fs = Context.getFormService();
+						
+						TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
+						for (Map.Entry<Integer, TreeSet<FormField>> entry : treeMap.entrySet()) {
+							float sortWeight = 0;
+							for (FormField formField : entry.getValue()) {
+								formField.setSortWeight(sortWeight);
+								fs.saveFormField(formField);
+								sortWeight += 50;
+							}
+						}
+						
+					} else {
+						try {
+							Context.getFormService().duplicateForm(form);
+							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.duplicated");
+						}
+						catch (Exception e) {
+							log.error("Error while duplicating form " + form.getFormId(), e);
+							errors.reject(e.getMessage());
+							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.duplicate");
+							return showForm(request, response, errors);
 						}
 					}
 					
-				} else {
-					try {
-						Context.getFormService().duplicateForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.duplicated");
-					}
-					catch (Exception e) {
-						log.error("Error while duplicating form " + form.getFormId(), e);
-						errors.reject(e.getMessage());
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.duplicate");
-						return showForm(request, response, errors);
-					}
+					view = getSuccessView();
 				}
-				
-				view = getSuccessView();
+			}
+			catch (FormsLockedException e) {
+				log.error("forms.locked", e);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "forms.locked");
+				if (form.getFormId() != null) {
+					view = "formEdit.form?formId=" + form.getFormId();
+				}
 			}
 		}
 		
@@ -198,7 +203,7 @@ public class FormFormController extends SimpleFormController {
 					form = fs.getForm(Integer.valueOf(formId));
 				}
 				catch (NumberFormatException e) {
-					;
+
 				} //If formId has no readable value defaults to the case where form==null
 			}
 		}
