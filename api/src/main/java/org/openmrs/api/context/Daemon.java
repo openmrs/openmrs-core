@@ -29,9 +29,10 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * module startup when there is no user to authenticate as.
  */
 public class Daemon {
-
-    protected static final Log log = LogFactory.getLog(Daemon.class);
-    /**
+	
+	protected static final Log log = LogFactory.getLog(Daemon.class);
+	
+	/**
 	 * The uuid defined for the daemon user object
 	 */
 	protected static final String DAEMON_USER_UUID = "A4F30A1B-5EB9-11DF-A648-37A07F9C90FB";

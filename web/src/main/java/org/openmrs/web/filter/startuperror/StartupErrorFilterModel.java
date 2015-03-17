@@ -12,6 +12,7 @@ package org.openmrs.web.filter.startuperror;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.web.filter.StartupFilter;
@@ -41,12 +42,7 @@ public class StartupErrorFilterModel {
 	 */
 	public StartupErrorFilterModel(Throwable t) {
 		errorAtStartup = t;
-		
-		StringWriter sw = new StringWriter();
-		//		PrintWriter pw = new PrintWriter(sw);
-		//        t.printStackTrace(pw);
-		log.error(t);
-		stacktrace = sw.toString();
+		stacktrace = ExceptionUtils.getStackTrace(t);
 	}
 	
 }

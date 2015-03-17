@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -901,13 +901,8 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		if (cause == null) {
 			hl7InError.setErrorDetails("");
 		} else {
-			StringWriter sw = new StringWriter();
-			//			PrintWriter pw = new PrintWriter(sw, true);
-			//			cause.printStackTrace(pw);
 			log.error(cause);
-			//			pw.flush();
-			sw.flush();
-			hl7InError.setErrorDetails(OpenmrsUtil.shortenedStackTrace(sw.toString()));
+			hl7InError.setErrorDetails(ExceptionUtils.getStackTrace(cause));
 		}
 		Context.getHL7Service().saveHL7InError(hl7InError);
 		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
