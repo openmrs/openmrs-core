@@ -563,7 +563,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 									}
 								}
 							}
-							catch (Throwable t) {
+							catch (Exception t) {
 								if (log.isDebugEnabled()) {
 									log.debug("Could not set field " + field.getName() + " to null in class "
 									        + clazz.getName(), t);
@@ -572,7 +572,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 						}
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception t) {
 					if (log.isDebugEnabled()) {
 						log.debug("Could not clean fields for class " + clazz.getName(), t);
 					}
@@ -665,7 +665,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			if (!Context.isRefreshingContext())
 				mementos.put(key, Context.getSchedulerService().saveToMemento());
 		}
-		catch (Throwable t) {
+		catch (Exception t) {
 			// pass
 		}
 	}
