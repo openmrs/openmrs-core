@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -34,13 +35,21 @@ public class GZIPFilter extends OncePerRequestFilter {
 	
 	private Boolean cachedGZipEnabledFlag = null;
 	
+	private String cachedGZipCompressedRequestForPathAccepted = null;
+	
 	/**
 	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
 	 */
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 	        throws IOException, ServletException {
-		
+		try {
+			request = performGZIPRequest(request);
+		}
+		catch (APIException e) {
+			response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
+			return;
+		}
 		if (isGZIPSupported(request) && isGZIPEnabled()) {
 			log.debug("GZIP supported and enabled, compressing response");
 			
@@ -53,6 +62,33 @@ public class GZIPFilter extends OncePerRequestFilter {
 		}
 		
 		chain.doFilter(request, response);
+	}
+	
+	/**
+	 * Supports GZIP requests
+	 * @param req request
+	 * @return gzipped request
+	 */
+	public HttpServletRequest performGZIPRequest(HttpServletRequest req) {
+		String contentEncoding = req.getHeader("Content-encoding");
+		if (contentEncoding != null && contentEncoding.contains("gzip")) {
+			if (!isCompressedRequestForPathAccepted(req.getRequestURI())) {
+				throw new APIException("Unsupported Media Type");
+			}
+			log.debug("GZIP supported and enabled, decompressing request");
+			try {
+				GZIPRequestWrapper wrapperRequest = new GZIPRequestWrapper(req);
+				log.debug("request wrapped successfully");
+				return wrapperRequest;
+			}
+			catch (IOException e) {
+				log.error("Error during wrapping request " + e);
+				return req;
+			}
+		} else {
+			return req;
+		}
+		
 	}
 	
 	/**
@@ -94,7 +130,32 @@ public class GZIPFilter extends OncePerRequestFilter {
 		}
 		catch (Throwable t) {
 			log.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, t);
-			// not caching the enabled flag here in case it becomes available 
+			// not caching the enabled flag here in case it becomes available
+			// before the next request
+			
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns true if path matches pattern in gzip.acceptCompressedRequestsForPaths property
+	 */
+	private boolean isCompressedRequestForPathAccepted(String path) {
+		
+		try {
+			cachedGZipCompressedRequestForPathAccepted = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, "");
+			for (String acceptPath : cachedGZipCompressedRequestForPathAccepted.split(",")) {
+				if (path.matches(acceptPath)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		catch (Throwable t) {
+			log.warn("Unable to get the global property: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, t);
+			// not caching the enabled flag here in case it becomes available
 			// before the next request
 			
 			return false;
