@@ -71,4 +71,5 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	public void isSuperUser_shouldReturnFalseIfGivenUserDoesNotHaveTheSuperUserRole() throws Exception {
 		Assert.assertFalse(new UpdateFilter().isSuperUser(getConnection(), 502));
 	}
+	
 }
