@@ -10,12 +10,15 @@
 package org.openmrs.web.controller.form;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.jfree.util.Log;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -81,7 +84,14 @@ public class FormResourceController {
 		if (errors.hasErrors()) {
 			throw new RuntimeException("Error handling not yet implemented");
 		} else {
-			Context.getFormService().saveFormResource(resource);
+			try {
+				Context.getFormService().saveFormResource(resource);
+			}
+			catch (Exception ex) {
+				HttpSession httpSession = request.getSession();
+				Log.error("Error while adding form resource", ex);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "form.resource.add.failure");
+			}
 			return "redirect:formResources.form?formId=" + resource.getForm().getId();
 		}
 	}
