@@ -10,12 +10,17 @@
 package org.openmrs.web.controller.form;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.InvalidCustomValueException;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +35,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class FormResourceController {
+	
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	@RequestMapping(method = RequestMethod.GET, value = "admin/forms/formResources")
 	public void manageFormResources(@RequestParam("formId") Form form, Model model) {
@@ -74,6 +81,12 @@ public class FormResourceController {
 		try {
 			Object value = WebAttributeUtil.getValue(request, resource, "resourceValue");
 			resource.setValue(value);
+		}
+		catch (InvalidCustomValueException ex) {
+			HttpSession httpSession = request.getSession();
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, ex.getMessage());
+			log.error("Error while adding form resource", ex);
+			return "redirect:formResources.form?formId=" + resource.getForm().getId();
 		}
 		catch (Exception ex) {
 			errors.rejectValue("value", "error.general");
