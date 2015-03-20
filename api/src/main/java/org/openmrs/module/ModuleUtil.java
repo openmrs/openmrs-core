@@ -340,7 +340,9 @@ public class ModuleUtil {
 	 * @should handle ALPHA versions
 	 */
 	public static void checkRequiredVersion(String version, String versionRange) throws ModuleException {
-		if (!matchRequiredVersions(version, versionRange)) {
+		// Check if the version number is in proper range
+		// Additionally, prevent SNAPSHOT versions from being uploaded
+		if (!matchRequiredVersions(version, versionRange) || version.toLowerCase().contains("snapshot")) {
 			String ms = Context.getMessageSourceService().getMessage("Module.requireVersion.outOfBounds",
 			    new String[] { versionRange, version }, Context.getLocale());
 			throw new ModuleException(ms);
