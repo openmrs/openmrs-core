@@ -16,6 +16,7 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -78,10 +79,7 @@ public class Format {
 	}
 	
 	public static String format(Throwable t) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		t.printStackTrace(pw);
-		return t + "\n" + sw.toString();
+		return t + "\n" + ExceptionUtils.getStackTrace(t);
 	}
 	
 }

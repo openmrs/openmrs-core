@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.context;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -27,6 +29,8 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * module startup when there is no user to authenticate as.
  */
 public class Daemon {
+	
+	protected static final Log log = LogFactory.getLog(Daemon.class);
 	
 	/**
 	 * The uuid defined for the daemon user object
@@ -241,7 +245,7 @@ public class Daemon {
 		}
 		catch (InterruptedException e) {
 			// ignore
-			e.printStackTrace();
+			log.error(e);
 		}
 		
 		if (onStartupThread.exceptionThrown != null) {
