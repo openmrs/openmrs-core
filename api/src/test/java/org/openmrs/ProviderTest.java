@@ -21,35 +21,14 @@ import org.openmrs.test.Verifies;
 public class ProviderTest {
 	
 	/**
-	 * @see {@link Provider#setPerson(Person)}
-	 */
-	@Test
-	@Verifies(value = "should blank out name if set to non null person", method = "setPerson(Person)")
-	public void setPerson_shouldBlankOutNameIfSetToNonNullPerson() throws Exception {
-		final String providerName = "Provider Name";
-		final String nameField = "name";
-		
-		Provider provider = new Provider();
-		provider.setName(providerName);
-		Assert.assertEquals(providerName, FieldUtils.readField(provider, nameField, true));
-		
-		Person person = new Person(1);
-		person.addName(new PersonName("givenName", "middleName", "familyName"));
-		provider.setPerson(person);
-		Assert.assertNull(FieldUtils.readField(provider, nameField, true));
-	}
-	
-	/**
 	 * @see {@link Provider#getName()}
 	 */
 	@Test
-	@Verifies(value = "return person full name if person is not null", method = "getName()")
+	@Verifies(value = "return person full name if person is not null or null otherwise", method = "getName()")
 	public void getName_shouldReturnPersonFullNameIfPersonIsNotNull() throws Exception {
-		final String providerName = "Provider Name";
-		
+
 		Provider provider = new Provider();
-		provider.setName(providerName);
-		Assert.assertEquals(providerName, provider.getName());
+		Assert.assertNull(provider.getName());
 		
 		Person person = new Person(1);
 		person.addName(new PersonName("givenName", "middleName", "familyName"));
@@ -63,10 +42,8 @@ public class ProviderTest {
 	@Test
 	@Verifies(value = "return person all names of person with specific format", method = "toString()")
 	public void toString_shouldReturnPersonAllNamesWithSpecificFormat() throws Exception {
-		final String providerName = "Provider Name";
-		
+
 		Provider provider = new Provider();
-		provider.setName(providerName);
 		provider.setProviderId(1);
 		
 		Person person = new Person(1);
