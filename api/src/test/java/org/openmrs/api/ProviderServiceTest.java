@@ -119,7 +119,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProvider_shouldGetProviderGivenID() throws Exception {
 		Provider provider = service.getProvider(1);
-		assertEquals("RobertClive", provider.getName());
 		assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", provider.getUuid());
 	}
 	
@@ -130,7 +129,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviderAttribute_shouldGetProviderAttributeGivenID() throws Exception {
 		ProviderAttribute providerAttribute = service.getProviderAttribute(1);
-		assertEquals("RobertClive", providerAttribute.getProvider().getName());
 		assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", providerAttribute.getProvider().getUuid());
 	}
 	
@@ -142,7 +140,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviderAttributeByUuid_shouldGetProviderAttributeGivenUuid() throws Exception {
 		ProviderAttribute providerAttribute = service.getProviderAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e");
-		assertEquals("RobertClive", providerAttribute.getProvider().getName());
 		assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", providerAttribute.getProvider().getUuid());
 	}
 	
@@ -175,8 +172,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getProviderByUuid_shouldGetProviderGivenUuid() throws Exception {
 		Provider provider = service.getProviderByUuid("a2c3868a-6b90-11e0-93c3-18a905e044dc");
-		Assert.assertNotNull(provider);
-		assertEquals("RobertClive", provider.getName());
+		assertNotNull(provider);
 	}
 	
 	/**
