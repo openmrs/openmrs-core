@@ -967,11 +967,9 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (this == requestor) {
 			return true;
 		}
-		@SuppressWarnings("unused")
-		URL lib;
 		try {
 			String file = url.getFile();
-			lib = new URL(url.getProtocol(), url.getHost(), file.substring(0, file.length() - name.length()));
+			new URL(url.getProtocol(), url.getHost(), file.substring(0, file.length() - name.length()));
 		}
 		catch (MalformedURLException mue) {
 			log.error("can't get resource library URL", mue);
