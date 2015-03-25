@@ -10,12 +10,15 @@
 package org.openmrs;
 
 import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	
@@ -45,7 +48,15 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	        throws Exception {
 		Provider provider = new Provider();
 		provider.setIdentifier("test");
-		provider.setName("test provider");
+		
+		Person person = new Person();
+		Set<PersonName> personNames = new TreeSet<PersonName>();
+		PersonName personName = new PersonName();
+		personName.setFamilyName("name");
+		personNames.add(personName);
+		person.setNames(personNames);
+		provider.setPerson(person);
+		
 		ProviderAttributeType place = service.getProviderAttributeType(3);
 		provider.setAttribute(buildProviderAttribute(place, "bangalore"));
 		provider.setAttribute(buildProviderAttribute(place, "chennai"));
@@ -69,7 +80,15 @@ public class BaseCustomizableMetadataTest extends BaseContextSensitiveTest {
 	public void setAttribute_shouldWorkForAttriubutesWithDatatypesWhoseValuesAreStoredInOtherTables() throws Exception {
 		Provider provider = new Provider();
 		provider.setIdentifier("test");
-		provider.setName("test provider");
+		
+		Person person = new Person();
+		Set<PersonName> personNames = new TreeSet<PersonName>();
+		PersonName personName = new PersonName();
+		personName.setFamilyName("name");
+		personNames.add(personName);
+		person.setNames(personNames);
+		provider.setPerson(person);
+		
 		ProviderAttributeType cv = service.getProviderAttributeType(4);
 		provider.setAttribute(buildProviderAttribute(cv, "Worked lots of places..."));
 		
