@@ -35,9 +35,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	
 	private Integer locationId;
 	
-	private String address1;
-	
-	private String address2;
+	private String addresses[] = new String[6];
 	
 	private String cityVillage;
 	
@@ -52,14 +50,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	private String longitude;
 	
 	private String countyDistrict;
-	
-	private String address3;
-	
-	private String address4;
-	
-	private String address6;
-	
-	private String address5;
 	
 	private Location parentLocation;
 	
@@ -85,28 +75,28 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @return Returns the address1.
 	 */
 	public String getAddress1() {
-		return address1;
+		return addresses[0];
 	}
 	
 	/**
 	 * @param address1 The address1 to set.
 	 */
 	public void setAddress1(String address1) {
-		this.address1 = address1;
+		this.addresses[0] = address1;
 	}
 	
 	/**
 	 * @return Returns the address2.
 	 */
 	public String getAddress2() {
-		return address2;
+		return addresses[1];
 	}
 	
 	/**
 	 * @param address2 The address2 to set.
 	 */
 	public void setAddress2(String address2) {
-		this.address2 = address2;
+		this.addresses[1] = address2;
 	}
 	
 	/**
@@ -573,7 +563,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @return the address3
 	 */
 	public String getAddress3() {
-		return address3;
+		return addresses[2];
 	}
 	
 	/**
@@ -581,7 +571,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param address3 the address3 to set
 	 */
 	public void setAddress3(String address3) {
-		this.address3 = address3;
+		this.addresses[2] = address3;
 	}
 	
 	/**
@@ -589,7 +579,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @return the address4
 	 */
 	public String getAddress4() {
-		return address4;
+		return addresses[3];
 	}
 	
 	/**
@@ -597,7 +587,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param address4 the address4 to set
 	 */
 	public void setAddress4(String address4) {
-		this.address4 = address4;
+		this.addresses[3] = address4;
 	}
 	
 	/**
@@ -605,7 +595,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @return the address6
 	 */
 	public String getAddress6() {
-		return address6;
+		return addresses[5];
 	}
 	
 	/**
@@ -613,7 +603,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param address6 the address6 to set
 	 */
 	public void setAddress6(String address6) {
-		this.address6 = address6;
+		this.addresses[5] = address6;
 	}
 	
 	/**
@@ -621,7 +611,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @return the address5
 	 */
 	public String getAddress5() {
-		return address5;
+		return addresses[4];
 	}
 	
 	/**
@@ -629,7 +619,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param address5 the address5 to set
 	 */
 	public void setAddress5(String address5) {
-		this.address5 = address5;
+		this.addresses[4] = address5;
 	}
 	
 	/**
@@ -639,6 +629,24 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	public Integer getId() {
 		
 		return getLocationId();
+	}
+	
+	/**
+	 * @since 1.11
+	 * @return return all the addresses in single array
+	 */
+	public String[] getAddresses() {
+		return this.addresses;
+	}
+	
+	/**
+	 * @since 1.11
+	 * @param addresses array of 6 addresses strings
+	 */
+	public void setAddresses(String[] addresses) {
+		if (this.addresses.length == addresses.length) {
+			this.addresses = addresses;
+		}
 	}
 	
 	/**
