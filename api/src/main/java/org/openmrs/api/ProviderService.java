@@ -90,10 +90,8 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * @param provider
 	 * @return the Provider object after saving it in the database
-	 * @should save a Provider with provider name alone
 	 * @should save a Provider with Person alone
-	 * @should not save a Provider with both name and person
-	 * @should not save a Provider with both name and person being null
+	 * @should not save a Provider person being null
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
 	public Provider saveProvider(Provider provider);

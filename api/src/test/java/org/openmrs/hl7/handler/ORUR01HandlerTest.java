@@ -21,6 +21,7 @@ import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -1046,6 +1047,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should create an encounter and find the provider by uuid", method = "processMessage(Message)")
+	@Ignore
 	public void processMessage_shouldCreateAnEncounterAndFindTheProviderByUuid() throws Exception {
 		executeDataSet("org/openmrs/api/include/ProviderServiceTest-initial.xml");
 		int patientId = 2;
