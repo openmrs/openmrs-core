@@ -129,14 +129,19 @@ public class PatientProgramItem {
 		this.patientProgramId = patientProgramId;
 	}
 	
-	static DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
+	static ThreadLocal<DateFormat> ymdDf = new ThreadLocal<DateFormat>() { // Made DateFormat Threadsafe using ThreadLocal		
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd");
+		}
+	};
 	
 	public String getDateEnrolledAsYmd() {
-		return dateEnrolled == null ? null : ymdDf.format(dateEnrolled);
+		return dateEnrolled == null ? null : ymdDf.get().format(dateEnrolled);
 	}
 	
 	public String getDateCompletedAsYmd() {
-		return dateCompleted == null ? null : ymdDf.format(dateCompleted);
+		return dateCompleted == null ? null : ymdDf.get().format(dateCompleted);
 	}
 	
 	/**
