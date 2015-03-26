@@ -330,11 +330,12 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	protected boolean authenticateAsSuperUser(String usernameOrSystemId, String password) throws ServletException {
 		Connection connection = null;
+		PreparedStatement statement = null;
 		try {
 			connection = DatabaseUpdater.getConnection();
 			
 			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = '0'";
-			PreparedStatement statement = connection.prepareStatement(select);
+			statement = connection.prepareStatement(select);
 			statement.setString(1, usernameOrSystemId);
 			statement.setString(2, usernameOrSystemId);
 			
@@ -364,7 +365,7 @@ public class UpdateFilter extends StartupFilter {
 			// again the old way
 			try {
 				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
-				PreparedStatement statement = connection.prepareStatement(select);
+				statement = connection.prepareStatement(select);
 				statement.setString(1, usernameOrSystemId);
 				statement.setString(2, usernameOrSystemId);
 				
@@ -385,6 +386,14 @@ public class UpdateFilter extends StartupFilter {
 			}
 		}
 		finally {
+			try {
+				if (statement != null && !statement.isClosed()) {
+					statement.close();
+				}
+			}
+			catch (SQLException e) {
+				log.warn("Error while closing statement");
+			}
 			if (connection != null) {
 				try {
 					connection.close();
