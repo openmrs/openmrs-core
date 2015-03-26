@@ -49,6 +49,7 @@ public class FilterUtil {
 	public static String restoreLocale(String username) {
 		String currentLocale = null;
 		if (StringUtils.isNotBlank(username)) {
+			PreparedStatement statement = null;
 			Connection connection = null;
 			try {
 				connection = DatabaseUpdater.getConnection();
@@ -58,7 +59,7 @@ public class FilterUtil {
 				
 				if (userId != null) {
 					String select = "select property_value from user_property where user_id = ? and property = ?";
-					PreparedStatement statement = connection.prepareStatement(select);
+					statement = connection.prepareStatement(select);
 					statement.setInt(1, userId);
 					statement.setString(2, OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 					if (statement.execute()) {
@@ -81,6 +82,15 @@ public class FilterUtil {
 				log.error("Error while retriving locale property", e);
 			}
 			finally {
+				try {
+					if (statement != null && !statement.isClosed()) {
+						statement.close();
+					}
+				}
+				catch (SQLException e) {
+					log.warn("Error while closing statement");
+				}
+				
 				if (connection != null) {
 					try {
 						connection.close();
