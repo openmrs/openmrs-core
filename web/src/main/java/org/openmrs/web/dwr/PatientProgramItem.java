@@ -130,6 +130,7 @@ public class PatientProgramItem {
 	}
 	
 	static ThreadLocal<DateFormat> ymdDf = new ThreadLocal<DateFormat>() { // Made DateFormat Threadsafe using ThreadLocal		
+		
 		@Override
 		protected DateFormat initialValue() {
 			return new SimpleDateFormat("yyyy-MM-dd");

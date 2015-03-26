@@ -65,6 +65,7 @@ public class MigrationHelper {
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	
 	static ThreadLocal<DateFormat> df = new ThreadLocal<DateFormat>() { // Made DateFormat Threadsafe using ThreadLocal			
+		
 		@Override
 		protected DateFormat initialValue() {
 			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
