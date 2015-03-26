@@ -80,7 +80,7 @@ public class LocationListController extends SimpleFormController {
 					//TODO convenience method deleteLocation(Integer) ??
 					try {
 						ls.purgeLocation(ls.getLocation(Integer.valueOf(p)));
-						if (!"".equals(success)) {
+						if (!"".equals(success.toString())) {
 							success.append("<br/>");
 						}
 						success.append(p).append(" ").append(deleted);
@@ -97,7 +97,7 @@ public class LocationListController extends SimpleFormController {
 			}
 			
 			view = getSuccessView();
-			if (!"".equals(success)) {
+			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
 			if (!"".equals(error)) {
