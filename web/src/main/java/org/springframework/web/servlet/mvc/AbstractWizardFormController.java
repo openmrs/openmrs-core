@@ -335,7 +335,7 @@ public abstract class AbstractWizardFormController extends AbstractFormControlle
 			}
 			
 			// Set page session attribute, expose overriding request attribute.
-			Integer pageInteger = new Integer(page);
+			Integer pageInteger = Integer.valueOf(page);
 			String pageAttrName = getPageSessionAttributeName(request);
 			if (isSessionForm()) {
 				if (logger.isDebugEnabled()) {
@@ -475,7 +475,7 @@ public abstract class AbstractWizardFormController extends AbstractFormControlle
 			}
 			request.getSession().removeAttribute(pageAttrName);
 		}
-		request.setAttribute(pageAttrName, new Integer(currentPage));
+		request.setAttribute(pageAttrName, Integer.valueOf(currentPage));
 		
 		// cancel?
 		if (isCancelRequest(request)) {
