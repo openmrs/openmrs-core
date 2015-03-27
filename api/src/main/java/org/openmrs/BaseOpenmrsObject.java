@@ -14,12 +14,17 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Column;
+
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br/>
  * It implements the uuid variable that all objects are expected to have.
  */
+@MappedSuperclass
 public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	
+	@Column(name = "uuid", unique = true, nullable = false, length = 38)
 	private String uuid = UUID.randomUUID().toString();
 	
 	/**
