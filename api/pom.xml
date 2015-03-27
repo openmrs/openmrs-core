@@ -228,7 +228,12 @@
 			<artifactId>groovy-all</artifactId>
 			<version>1.7.6</version>
 			<type>jar</type>
-		</dependency>
+       </dependency>
+       <dependency>
+	 ss<groupId>org.jboss</groupId>
+	 <artifactId>jboss-common</artifactId>
+	 <version>4.2.2.GA</version>
+       </dependency>
    </dependencies>
    <build>
      <resources>
