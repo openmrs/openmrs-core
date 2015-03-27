@@ -7,6 +7,8 @@ Read more at http://openmrs.org/about
 
 Find documentation on our wiki: http://wiki.openmrs.org
 
+This is just a temporary test for working with the git repos of OpenMRS
+
 The project tree is set up as follows:
 
 <table>
