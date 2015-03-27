@@ -58,11 +58,8 @@ public class ProviderFormController {
 		if (saveProviderButton != null) {
 			//For existing providers, switch between linking to person or use name
 			if (provider.getProviderId() != null) {
-				if (linkToPerson) {
-					provider.setName(null);
-				} else {
+				if (!linkToPerson)
 					provider.setPerson(null);
-				}
 			}
 		}
 		
