@@ -32,6 +32,7 @@ import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
@@ -263,17 +264,18 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		
 		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
-			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
+			throw new APIException("Couldn't find a class in the hibernate configuration named: " + aClass.getName());
+		} else {
+			int fieldLength;
+			try {
+				fieldLength = ((Column) persistentClass.getProperty(fieldName).getColumnIterator().next()).getLength();
+			}
+			catch (Exception e) {
+				log.debug("Could not determine maximum length", e);
+				return -1;
+			}
+			return fieldLength;
 		}
-		int fieldLength;
-		try {
-			fieldLength = ((Column) persistentClass.getProperty(fieldName).getColumnIterator().next()).getLength();
-		}
-		catch (Exception e) {
-			log.debug("Could not determine maximum length", e);
-			return -1;
-		}
-		return fieldLength;
 	}
 	
 	@Override
