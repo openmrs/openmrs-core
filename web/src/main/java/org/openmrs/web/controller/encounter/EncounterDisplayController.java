@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -384,6 +385,23 @@ public class EncounterDisplayController implements Controller {
 				        .compareWithNullAsGreatest(formField.getSortWeight(), other.getFormField().getSortWeight());
 			}
 			return temp;
+		}
+		
+		/**
+		 * Indicates whether some other object is "equal to" this one.
+		 *
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		public boolean equals(FieldHolder other) {
+			return compareTo(other) == 0;
+		} //
+		
+		/**
+		 * Returns a hash code based on the formField.getPageNumber field used in comparing.
+		 * @see java.lang.Object#hashCode()
+		 */
+		public int hashCode() {
+			return new HashCodeBuilder().append(formField.getPageNumber()).build();
 		}
 		
 		/**
