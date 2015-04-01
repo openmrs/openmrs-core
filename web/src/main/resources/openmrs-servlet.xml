@@ -1182,6 +1182,28 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="nameSupportWeb" class="org.openmrs.layout.web.name.NameSupport" parent="nameSupport">
+			<property name="layoutTemplates">
+			<list>
+				<ref bean="nameTemplateSpainWeb" />
+				<ref bean="nameTemplateLatinAmericaWeb" />
+				<ref bean="nameTemplateGivenFamilyWeb" />
+				<ref bean="nameTemplateShortWeb" />
+				<ref bean="nameTemplateLongWeb" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="nameTemplateSpainWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateSpain" />
+	
+	<bean id="nameTemplateLatinAmericaWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateLatinAmerica" />
+	
+	<bean id="nameTemplateGivenFamilyWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateGivenFamily" />
+	
+	<bean id="nameTemplateShortWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateShort" />
+	
+	<bean id="nameTemplateLongWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateLong" />
 
     <!--  COMPLEX OBS HANDLER SECTION -->
     <bean parent="obsServiceTarget" >
