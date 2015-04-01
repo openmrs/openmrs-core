@@ -274,6 +274,9 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
+                <additionalClasspathElements>
+                    <additionalClasspathElement>${basedir}/webapp/src/main/webapp</additionalClasspathElement>
+                </additionalClasspathElements>
                <excludes>
                   <exclude>org/openmrs/test/*</exclude>
                   <!-- Exclude mail test, slows build, breaks portability with requirements on port 25 -->
