@@ -56,7 +56,7 @@ public class HttpClientTest {
 		verify(connection).setRequestProperty("Content-Length", String.valueOf(16));
 		verify(connection).setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		
-		assertThat(stream.toString(), is("&one=one&two=two"));
+		assertThat(stream.toString(), is("&two=two&one=one"));
 		assertThat(response, containsString("response"));
 	}
 }
