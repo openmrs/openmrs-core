@@ -33,6 +33,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.apache.commons.lang.StringUtils;
 
 public class AddPersonController extends SimpleFormController {
 	
@@ -54,19 +55,19 @@ public class AddPersonController extends SimpleFormController {
 	/** Keys for this class */
 	private static final String NAME = "name";
 	
-	private static final String BIRTHDATE = "birthdate";
+	private static final String BIRTH_DATE = "birthdate";
 	
 	private static final String AGE = "age";
 	
 	private static final String GENDER = "gender";
 	
-	private static final String PERSONTYPE = "personType";
+	private static final String PERSON_TYPE = "personType";
 	
-	private static final String PERSONID = "personId";
+	private static final String PERSON_ID = "personId";
 	
-	private static final String VIEWTYPE = "viewType";
+	private static final String VIEW_TYPE = "viewType";
 	
-	private boolean invalidAgeFormat = false;
+	private static boolean invalidAgeFormat = false;
 	
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
@@ -79,12 +80,12 @@ public class AddPersonController extends SimpleFormController {
 		
 		HashMap<String, String> person = getParametersFromRequest(request);
 		
-		String personId = person.get("personId");
-		String viewType = person.get("viewType");
-		String personType = person.get("personType");
+		String personId = person.get(PERSON_ID);
+		String viewType = person.get(VIEW_TYPE);
+		String personType = person.get(PERSON_TYPE);
 		
-		if ("".equals(personId)) {
-			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
+		if (StringUtils.isEmpty(personId)) {
+			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requested)
 			if ("view".equals(viewType) || "shortEdit".equals(viewType)) {
 				viewType = "shortEdit";
 			} else {
@@ -140,12 +141,13 @@ public class AddPersonController extends SimpleFormController {
 			
 			String gender = person.get(GENDER);
 			String name = person.get(NAME);
-			String birthdate = person.get(BIRTHDATE);
+			String birthdate = person.get(BIRTH_DATE);
 			String age = person.get(AGE);
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
-			if (!"".equals(name) || !"".equals(birthdate) || !"".equals(age) || !"".equals(gender)) {
+			if (StringUtils.isNotEmpty(name) || StringUtils.isNotEmpty(birthdate) ||
+                    StringUtils.isNotEmpty(age) || StringUtils.isNotEmpty(gender)) {
 				
 				log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
 				
@@ -157,7 +159,7 @@ public class AddPersonController extends SimpleFormController {
 				try {
 					//Do these if there's a value in the birthdate string
 					if (birthdate.length() > 0) {
-						Date birthdateFormatted = (Date) Context.getDateFormat().parse(birthdate);
+						Date birthdateFormatted = Context.getDateFormat().parse(birthdate);
 						Calendar calender = Calendar.getInstance();
 						calender.setTime(birthdateFormatted);
 						birthyear = calender.get(Calendar.YEAR);
@@ -174,7 +176,7 @@ public class AddPersonController extends SimpleFormController {
 				
 				// -1 means the birth-year has not defined.
 				if (birthyear != -1) {
-					d = Integer.valueOf(birthyear);
+					d = birthyear;
 				} else if (age.length() > 0) {
 					Calendar c = Calendar.getInstance();
 					c.setTime(new Date());
@@ -233,11 +235,11 @@ public class AddPersonController extends SimpleFormController {
 			HashMap<String, String> person = getParametersFromRequest(request);
 			
 			String name = person.get(NAME);
-			String birthdate = person.get(BIRTHDATE);
+			String birthdate = person.get(BIRTH_DATE);
 			String age = person.get(AGE);
 			String gender = person.get(GENDER);
-			String viewType = person.get(VIEWTYPE);
-			String personType = person.get(PERSONTYPE);
+			String viewType = person.get(VIEW_TYPE);
+			String personType = person.get(PERSON_TYPE);
 			
 			if (viewType == null) {
 				viewType = "edit";
@@ -245,7 +247,8 @@ public class AddPersonController extends SimpleFormController {
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
-			if (!"".equals(name) || !"".equals(birthdate) || !"".equals(age) || !"".equals(gender)) {
+			if (StringUtils.isNotEmpty(name) || StringUtils.isNotEmpty(birthdate)
+                    || StringUtils.isNotEmpty(age) || StringUtils.isNotEmpty(gender)) {
 				mav.clear();
 				mav.setView(new RedirectView(getPersonURL("", personType, viewType, request)));
 			}
@@ -304,16 +307,16 @@ public class AddPersonController extends SimpleFormController {
 	 */
 	private String getParametersForURL(HashMap<String, String> person) throws UnsupportedEncodingException {
 		
-		if ("".equals(person.get(PERSONID))) {
-			return "?addName=" + URLEncoder.encode(person.get(NAME), "UTF-8") + "&addBirthdate=" + person.get(BIRTHDATE)
+		if (StringUtils.isEmpty(person.get(PERSON_ID))) {
+			return "?addName=" + URLEncoder.encode(person.get(NAME), "UTF-8") + "&addBirthdate=" + person.get(BIRTH_DATE)
 			        + "&addAge=" + person.get(AGE) + "&addGender=" + person.get(GENDER);
 		} else {
-			if ("patient".equals(person.get(PERSONTYPE))) {
-				return "?patientId=" + person.get(PERSONID);
-			} else if ("user".equals(person.get(PERSONTYPE))) {
-				return "?userId=" + person.get(PERSONID);
+			if ("patient".equals(person.get(PERSON_TYPE))) {
+				return "?patientId=" + person.get(PERSON_ID);
+			} else if ("user".equals(person.get(PERSON_TYPE))) {
+				return "?userId=" + person.get(PERSON_ID);
 			} else {
-				return "?personId=" + person.get(PERSONID);
+				return "?personId=" + person.get(PERSON_ID);
 			}
 		}
 	}
@@ -324,12 +327,12 @@ public class AddPersonController extends SimpleFormController {
 	private HashMap<String, String> getParametersFromRequest(HttpServletRequest request) {
 		HashMap<String, String> person = new HashMap<String, String>();
 		person.put(NAME, ServletRequestUtils.getStringParameter(request, "addName", ""));
-		person.put(BIRTHDATE, ServletRequestUtils.getStringParameter(request, "addBirthdate", ""));
+		person.put(BIRTH_DATE, ServletRequestUtils.getStringParameter(request, "addBirthdate", ""));
 		person.put(AGE, ServletRequestUtils.getStringParameter(request, "addAge", ""));
 		person.put(GENDER, ServletRequestUtils.getStringParameter(request, "addGender", ""));
-		person.put(PERSONTYPE, ServletRequestUtils.getStringParameter(request, "personType", "patient"));
-		person.put(PERSONID, ServletRequestUtils.getStringParameter(request, "personId", ""));
-		person.put(VIEWTYPE, ServletRequestUtils.getStringParameter(request, "viewType", ""));
+		person.put(PERSON_TYPE, ServletRequestUtils.getStringParameter(request, "personType", "patient"));
+		person.put(PERSON_ID, ServletRequestUtils.getStringParameter(request, "personId", ""));
+		person.put(VIEW_TYPE, ServletRequestUtils.getStringParameter(request, "viewType", ""));
 		
 		return person;
 	}
