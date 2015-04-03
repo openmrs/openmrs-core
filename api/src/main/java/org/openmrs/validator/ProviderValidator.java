@@ -56,11 +56,8 @@ public class ProviderValidator extends BaseCustomizableValidator implements Vali
 	 * @should be valid if identifier is not set
 	 * @should be valid if identifier is set
 	 * @should be invalid if provider is retired and the retired reason is not mentioned
-	 * @should be invalid if person or name is not set
-	 * @should never have both person and name set
-	 * @should pass if both person and name set for existing provider
+	 * @should be invalid if person is not set
 	 * @should be valid if only person is set
-	 * @should be valid if only name is set
 	 * @should reject a provider if it has fewer than min occurs of an attribute
 	 * @should reject a provider if it has more than max occurs of an attribute
 	 * @should accept duplicate identifier if the existing provider is not retired

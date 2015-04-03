@@ -9,10 +9,6 @@
  */
 package org.openmrs.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
@@ -20,6 +16,10 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This service contains methods relating to providers.
@@ -90,10 +90,8 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * @param provider
 	 * @return the Provider object after saving it in the database
-	 * @should save a Provider with provider name alone
 	 * @should save a Provider with Person alone
-	 * @should not save a Provider with both name and person
-	 * @should not save a Provider with both name and person being null
+	 * @should not save a Provider person being null
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
 	public Provider saveProvider(Provider provider);
