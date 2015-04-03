@@ -9,11 +9,6 @@
  */
 package org.openmrs.web.controller.provider;
 
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Provider;
@@ -36,6 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin/provider/provider.form")
 public class ProviderFormController {
@@ -51,20 +50,8 @@ public class ProviderFormController {
 	public String onSubmit(HttpServletRequest request, @RequestParam(required = false) String saveProviderButton,
 	        @RequestParam(required = false) String retireProviderButton,
 	        @RequestParam(required = false) String unretireProviderButton,
-	        @RequestParam(required = false) String purgeProviderButton,
-	        @RequestParam(required = false) boolean linkToPerson, @ModelAttribute("provider") Provider provider,
+	        @RequestParam(required = false) String purgeProviderButton, @ModelAttribute("provider") Provider provider,
 	        BindingResult errors, ModelMap model) throws Exception {
-		
-		if (saveProviderButton != null) {
-			//For existing providers, switch between linking to person or use name
-			if (provider.getProviderId() != null) {
-				if (linkToPerson) {
-					provider.setName(null);
-				} else {
-					provider.setPerson(null);
-				}
-			}
-		}
 		
 		// manually handle the attribute parameters
 		List<ProviderAttributeType> attributeTypes = (List<ProviderAttributeType>) model.get("providerAttributeTypes");
