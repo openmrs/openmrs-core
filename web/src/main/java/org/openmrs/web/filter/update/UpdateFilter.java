@@ -330,70 +330,112 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	protected boolean authenticateAsSuperUser(String usernameOrSystemId, String password) throws ServletException {
 		Connection connection = null;
-		PreparedStatement statement = null;
 		try {
 			connection = DatabaseUpdater.getConnection();
 			
 			String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and retired = '0'";
-			statement = connection.prepareStatement(select);
-			statement.setString(1, usernameOrSystemId);
-			statement.setString(2, usernameOrSystemId);
-			
-			if (statement.execute()) {
-				ResultSet results = statement.getResultSet();
-				if (results.next()) {
-					Integer userId = results.getInt(1);
-					DatabaseUpdater.setAuthenticatedUserId(userId);
-					String storedPassword = results.getString(2);
-					String salt = results.getString(3);
-					String passwordToHash = password + salt;
-					boolean result = Security.hashMatches(storedPassword, passwordToHash) && isSuperUser(connection, userId);
-					statement.close();
-					return result;
-				}
-			}
-			// Close statement
-			statement.close();
-		}
-		catch (Exception e) {
-			log
-			        .error(
-			            "Error while trying to authenticate as super user. Ignore this if you are upgrading from OpenMRS 1.5 to 1.6",
-			            e);
-			
-			// we may not have upgraded User to have retired instead of voided yet, so if the query above fails, we try
-			// again the old way
+			PreparedStatement statement = null;
 			try {
-				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
 				statement = connection.prepareStatement(select);
 				statement.setString(1, usernameOrSystemId);
 				statement.setString(2, usernameOrSystemId);
-				
+
 				if (statement.execute()) {
-					ResultSet results = statement.getResultSet();
-					if (results.next()) {
-						Integer userId = results.getInt(1);
-						DatabaseUpdater.setAuthenticatedUserId(userId);
-						String storedPassword = results.getString(2);
-						String salt = results.getString(3);
-						String passwordToHash = password + salt;
-						return Security.hashMatches(storedPassword, passwordToHash) && isSuperUser(connection, userId);
+					ResultSet results = null;
+					try {
+						results = statement.getResultSet();
+						if (results.next()) {
+							Integer userId = results.getInt(1);
+							DatabaseUpdater.setAuthenticatedUserId(userId);
+							String storedPassword = results.getString(2);
+							String salt = results.getString(3);
+							String passwordToHash = password + salt;
+							boolean result = Security.hashMatches(storedPassword, passwordToHash)
+							        && isSuperUser(connection, userId);
+							return result;
+						}
+					}
+					finally {
+						if (results != null) {
+							try {
+								results.close();
+							}
+							catch (Exception resultsCloseEx) {
+								log.error("Failed to quietly close ResultSet", resultsCloseEx);
+							}
+						}
 					}
 				}
 			}
-			catch (Exception t2) {
-				log.error("Error while trying to authenticate as super user (voided version)", e);
+			finally {
+				if (statement != null) {
+					try {
+						statement.close();
+					}
+					catch (Exception statementCloseEx) {
+						log.error("Failed to quietly close Statement", statementCloseEx);
+					}
+				}
+			}
+		}
+		catch (Exception connectionEx) {
+			log
+			        .error(
+			            "Error while trying to authenticate as super user. Ignore this if you are upgrading from OpenMRS 1.5 to 1.6",
+			            connectionEx);
+			
+			// we may not have upgraded User to have retired instead of voided yet, so if the query above fails, we try
+			// again the old way
+			if (connection != null) {
+				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
+				PreparedStatement statement = null;
+				try {
+					statement = connection.prepareStatement(select);
+					statement.setString(1, usernameOrSystemId);
+					statement.setString(2, usernameOrSystemId);
+					if (statement.execute()) {
+						ResultSet results = null;
+						try {
+							results = statement.getResultSet();
+							if (results.next()) {
+								Integer userId = results.getInt(1);
+								DatabaseUpdater.setAuthenticatedUserId(userId);
+								String storedPassword = results.getString(2);
+								String salt = results.getString(3);
+								String passwordToHash = password + salt;
+								boolean result = Security.hashMatches(storedPassword, passwordToHash)
+								        && isSuperUser(connection, userId);
+								return result;
+							}
+						}
+						finally {
+							if (results != null) {
+								try {
+									results.close();
+								}
+								catch (Exception resultsCloseEx) {
+									log.error("Failed to quietly close ResultSet", resultsCloseEx);
+								}
+							}
+						}
+					}
+				}
+				catch (Exception unhandeledEx) {
+					log.error("Error while trying to authenticate as super user (voided version)", unhandeledEx);
+				}
+				finally {
+					if (statement != null) {
+						try {
+							statement.close();
+						}
+						catch (Exception statementCloseEx) {
+							log.error("Failed to quietly close Statement", statementCloseEx);
+						}
+					}
+				}
 			}
 		}
 		finally {
-			try {
-				if (statement != null && !statement.isClosed()) {
-					statement.close();
-				}
-			}
-			catch (SQLException e) {
-				log.warn("Error while closing statement");
-			}
 			if (connection != null) {
 				try {
 					connection.close();
