@@ -84,6 +84,15 @@
          <artifactId>spring-jdbc</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.springframework.data</groupId>
+         <artifactId>spring-data-jpa</artifactId>
+         <version>1.5.0.RELEASE</version>
+      </dependency><dependency>
+         <groupId>javax.inject</groupId>
+         <artifactId>javax.inject</artifactId>
+         <version>1</version>
+      </dependency>
+      <dependency>
          <groupId>org.antlr</groupId>
          <artifactId>antlr-runtime</artifactId>
       </dependency>
@@ -146,6 +155,10 @@
       <dependency>
          <groupId>org.apache.lucene</groupId>
          <artifactId>lucene-queryparser</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-entitymanager</artifactId>
       </dependency>
       <dependency>
          <groupId>org.apache.lucene</groupId>
