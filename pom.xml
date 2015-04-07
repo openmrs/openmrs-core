@@ -300,6 +300,11 @@
 				<version>${hibernateVersion}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>${hibernateVersion}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queries</artifactId>
 				<version>4.10.4</version>
