@@ -311,7 +311,7 @@ public class ForgotPasswordFormControllerTest extends BaseWebContextSensitiveTes
 	@Test
 	public void shouldRetrieveDummyQuestionsOfForgotPasswordFormController() throws Exception {
 		ForgotPasswordFormController obj = new ForgotPasswordFormController();
-
+		
 		List<String> result = obj.getSecurityQuestions();
 		assertNotNull(result);
 		assertEquals(false, result.isEmpty());
