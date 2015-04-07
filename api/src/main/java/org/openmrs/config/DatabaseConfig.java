@@ -106,7 +106,6 @@ public class DatabaseConfig {
 
 		dataSource.setUsername("root");
 		dataSource.setPassword("root");
-
 		return dataSource;
 	}
 	

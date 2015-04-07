@@ -79,7 +79,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 	@Inject
 	private EncounterTypeDaoJpa encounterTypeDaoJpa;
-	
 	/**
 	 * @see org.openmrs.api.EncounterService#setEncounterDAO(org.openmrs.api.db.EncounterDAO)
 	 */
