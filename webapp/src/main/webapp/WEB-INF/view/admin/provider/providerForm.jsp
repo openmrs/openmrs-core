@@ -49,9 +49,10 @@ function toggleProviderDetails(){
 function validateForm(){
 	var providerName = $j('#providerName');
 	var person = $j('#person_id');
+	var provider = "${provider.providerId}";
 	var msg = '<openmrs:message code="Provider.error.personAndName.provided" />';
 	var result = true;
-	if(providerName.val().length > 0 && person.val().length > 0){
+	if(providerName.val().length > 0 && (person.val().length > 0 && provider.length == 0)){
 		result = false;
 		$j('#msgHolder').html(msg).show();
 	}
