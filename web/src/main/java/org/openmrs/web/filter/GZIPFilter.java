@@ -75,14 +75,20 @@ public class GZIPFilter extends OncePerRequestFilter {
 			if (!isCompressedRequestForPathAccepted(req.getRequestURI())) {
 				throw new APIException("Unsupported Media Type");
 			}
-			log.debug("GZIP supported and enabled, decompressing request");
+			
+			if (log.isDebugEnabled()) {
+				log.debug("GZIP request supported");
+			}
+			
 			try {
 				GZIPRequestWrapper wrapperRequest = new GZIPRequestWrapper(req);
-				log.debug("request wrapped successfully");
+				if (log.isDebugEnabled()) {
+					log.debug("GZIP request wrapped successfully");
+				}
 				return wrapperRequest;
 			}
 			catch (IOException e) {
-				log.error("Error during wrapping request " + e);
+				log.error("Error during wrapping GZIP request " + e);
 				return req;
 			}
 		} else {
@@ -98,7 +104,6 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 * @return boolean indicating GZIP support
 	 */
 	private boolean isGZIPSupported(HttpServletRequest req) {
-		
 		String browserEncodings = req.getHeader("accept-encoding");
 		boolean supported = ((browserEncodings != null) && (browserEncodings.indexOf("gzip") != -1));
 		
@@ -128,7 +133,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 			cachedGZipEnabledFlag = isEnabled;
 			return cachedGZipEnabledFlag;
 		}
-		catch (Throwable t) {
+		catch (Exception t) {
 			log.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, t);
 			// not caching the enabled flag here in case it becomes available
 			// before the next request
@@ -141,23 +146,23 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 * Returns true if path matches pattern in gzip.acceptCompressedRequestsForPaths property
 	 */
 	private boolean isCompressedRequestForPathAccepted(String path) {
-		
 		try {
-			cachedGZipCompressedRequestForPathAccepted = Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, "");
+			if (cachedGZipCompressedRequestForPathAccepted == null) {
+				cachedGZipCompressedRequestForPathAccepted = Context.getAdministrationService().getGlobalProperty(
+				    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, "");
+			}
+			
 			for (String acceptPath : cachedGZipCompressedRequestForPathAccepted.split(",")) {
 				if (path.matches(acceptPath)) {
 					return true;
 				}
 			}
+			
 			return false;
 		}
-		catch (Throwable t) {
-			log.warn("Unable to get the global property: "
-			        + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, t);
-			// not caching the enabled flag here in case it becomes available
-			// before the next request
-			
+		catch (Exception e) {
+			log.warn("Unable to process the global property: "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS, e);
 			return false;
 		}
 	}

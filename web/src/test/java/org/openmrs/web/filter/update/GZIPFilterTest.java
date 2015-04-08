@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.zip.GZIPOutputStream;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -75,7 +76,8 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 			InputStreamReader iReader = new InputStreamReader(iStream);
 			BufferedReader bufReader = new BufferedReader(iReader);
 			String outputMessage = bufReader.readLine();
-			Assert.assertEquals(outputMessage.equals("message string"), true);
+			
+			Assert.assertThat(outputMessage, is("message string"));
 		}
 		catch (IOException e) {
 			throw new RuntimeException();
