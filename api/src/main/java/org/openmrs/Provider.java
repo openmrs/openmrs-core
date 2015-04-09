@@ -124,6 +124,6 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	@Deprecated
 	@Override
 	public void setName(String name) {
-		throw new APIException("");
+		throw new APIException("We no longer support providers who are not linked to person. Set the name on the linked person");
 	}
 }
