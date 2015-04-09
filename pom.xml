@@ -620,7 +620,7 @@
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
 				<artifactId>sonar-jacoco-listeners</artifactId>
-				<version>1.2</version>
+				<version>3.1</version>
 			</dependency>
         </dependencies>
 	</dependencyManagement>
@@ -852,12 +852,12 @@
 				<plugin>
 					<groupId>org.codehaus.sonar</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>4.3.2</version>
+					<version>4.5.4</version>
 				</plugin>	
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.7.1.201405082137</version>
+					<version>0.7.4.201502262128</version>
 				</plugin>	
 			</plugins>
 		</pluginManagement>

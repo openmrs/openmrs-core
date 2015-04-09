@@ -146,8 +146,8 @@ public class AddPersonController extends SimpleFormController {
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
-			if (StringUtils.isNotEmpty(name) || StringUtils.isNotEmpty(birthdate) ||
-                    StringUtils.isNotEmpty(age) || StringUtils.isNotEmpty(gender)) {
+			if (StringUtils.isNotEmpty(name) || StringUtils.isNotEmpty(birthdate) || StringUtils.isNotEmpty(age)
+			        || StringUtils.isNotEmpty(gender)) {
 				
 				log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
 				
@@ -247,8 +247,8 @@ public class AddPersonController extends SimpleFormController {
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
-			if (StringUtils.isNotEmpty(name) || StringUtils.isNotEmpty(birthdate)
-                    || StringUtils.isNotEmpty(age) || StringUtils.isNotEmpty(gender)) {
+			if (StringUtils.isNotEmpty(name) || StringUtils.isNotEmpty(birthdate) || StringUtils.isNotEmpty(age)
+			        || StringUtils.isNotEmpty(gender)) {
 				mav.clear();
 				mav.setView(new RedirectView(getPersonURL("", personType, viewType, request)));
 			}
