@@ -392,16 +392,21 @@ public class EncounterDisplayController implements Controller {
 		 *
 		 * @see java.lang.Object#equals(java.lang.Object)
 		 */
-		public boolean equals(FieldHolder other) {
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (!(obj instanceof FieldHolder)) {
+				return false;
+			}
+			FieldHolder other = (FieldHolder) obj;
 			return compareTo(other) == 0;
-		} //
+		}
 		
-		/**
-		 * Returns a hash code based on the formField.getPageNumber field used in comparing.
-		 * @see java.lang.Object#hashCode()
-		 */
+		@Override
 		public int hashCode() {
-			return new HashCodeBuilder().append(formField.getPageNumber()).build();
+			return new HashCodeBuilder().append(getPageNumber()).build();
 		}
 		
 		/**
