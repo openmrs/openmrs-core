@@ -9,9 +9,9 @@
  */
 package org.openmrs;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 
 /**
  * Represents a person who may provide care to a patient during an encounter
@@ -67,15 +67,9 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	/**
 	 * @param person the person to set
-	 * @should blank out name if set to non null person
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
-		
-		//blank out name so that there isn't double data sitting in the provider table.
-		if (person != null) {
-			setName(null);
-		}
 	}
 	
 	/**
@@ -110,27 +104,26 @@ public class Provider extends BaseCustomizableMetadata<ProviderAttribute> {
 	
 	/**
 	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
-	 * @should return person full name if person is not null
+	 * @should return person full name if person is not null or null otherwise
 	 */
+	
 	@Override
 	public String getName() {
 		if (getPerson() != null && getPerson().getPersonName() != null) {
 			return getPerson().getPersonName().getFullName();
 		} else {
-			return super.getName();
+			log.warn("We no longer support providers who are not linked to person. Set the name on the linked person");
+			return null;
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.BaseOpenmrsMetadata#setName(java.lang.String)
+	 * @deprecated as of 1.12, replaced by setPerson(Person)
 	 */
+	@Deprecated
 	@Override
 	public void setName(String name) {
-		super.setName(name);
-		
-		//Trace message if we are setting a name when already attached to a person.
-		if (getPerson() != null && !StringUtils.isBlank(super.getName())) {
-			log.trace("Setting name for a provider who is already attached to a person");
-		}
+		throw new APIException("We no longer support providers who are not linked to person. Set the name on the linked person");
 	}
 }
