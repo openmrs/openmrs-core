@@ -67,7 +67,7 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @Depracated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
-	@SuppressWarnings("squid:3AS1210")
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(FormField f) {
 		DefaultComparator ffDComparator = new DefaultComparator();
 		return ffDComparator.compare(this, f);
