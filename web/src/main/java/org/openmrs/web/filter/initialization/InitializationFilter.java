@@ -1497,7 +1497,9 @@ public class InitializationFilter extends StartupFilter {
 								setMessage(message + " (" + i++ + "/" + numChangeSetsToRun + "): Author: "
 								        + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
 								        + changeSet.getDescription());
-								setCompletedPercentage(Math.round(i * 100 / numChangeSetsToRun));
+								float numChangeSetsToRunFloat = (float) numChangeSetsToRun;
+								float j = (float) i;
+								setCompletedPercentage(Math.round(j * 100 / numChangeSetsToRunFloat));
 							}
 							
 						}
