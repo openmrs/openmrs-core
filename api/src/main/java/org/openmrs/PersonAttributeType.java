@@ -183,7 +183,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	@Override
-	@SuppressWarnings("squid:3AS1210")
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonAttributeType other) {
 		DefaultComparator patDefaultComparator = new DefaultComparator();
 		return patDefaultComparator.compare(this, other);

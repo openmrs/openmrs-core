@@ -534,7 +534,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @Depracated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
-	@SuppressWarnings("squid:3AS1210")
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonName other) {
 		DefaultComparator pnDefaultComparator = new DefaultComparator();
 		return pnDefaultComparator.compare(this, other);
