@@ -513,6 +513,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *
 	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(javax.servlet.ServletContextEvent)
 	 */
+	@SuppressWarnings("squid:S1215")
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
 		
@@ -573,6 +574,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		LogManager.shutdown();
 		
 		// just to make things nice and clean.
+		// Suppressing sonar issue squid:S1215
 		System.gc();
 		System.gc();
 	}
