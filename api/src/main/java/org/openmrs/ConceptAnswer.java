@@ -234,7 +234,9 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(ConceptAnswer ca) {
 		if ((getSortWeight() == null) && (ca.getSortWeight() != null)) {
 			return -1;
