@@ -690,6 +690,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return loose match given exact equals false
 	 * @should return null if no names are found in locale given exact equals true
 	 * @should return any name if no locale match given exact equals false
+	 * @should return name in broader locale incase none is found in specific one
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
 		
