@@ -123,7 +123,9 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	@Override
 	public int compareTo(Problem item) {
 		Double mySW = this.sortWeight;

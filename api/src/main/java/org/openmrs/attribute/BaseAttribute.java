@@ -126,7 +126,9 @@ public abstract class BaseAttribute<AT extends AttributeType, OwningType extends
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	@Override
 	public int compareTo(Attribute other) {
 		if (other == null) {
