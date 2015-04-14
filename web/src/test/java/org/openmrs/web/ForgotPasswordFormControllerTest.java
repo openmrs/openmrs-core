@@ -9,6 +9,11 @@
  */
 package org.openmrs.web;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
@@ -278,6 +283,49 @@ public class ForgotPasswordFormControllerTest extends BaseWebContextSensitiveTes
 		controller.handleRequest(request7, new MockHttpServletResponse());
 		
 		Assert.assertTrue(Context.isAuthenticated());
+	}
+	
+	@Test
+	public void shouldAuthenticateWithInValidSecretQuestionIfUserIsNull() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("POST");
+		request.addParameter("uname", "");
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		Assert.assertNotNull(request.getAttribute("secretQuestion"));
+	}
+	
+	@Test
+	public void shouldExamineGetDummyQuestionsOfForgotPasswordFormController() throws Exception {
+		ForgotPasswordFormController obj = new ForgotPasswordFormController();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("POST");
+		request.addParameter("uname", "");
+		HttpServletResponse response = new MockHttpServletResponse();
+		obj.handleRequest(request, response);
+		String output = obj.getDummySecurityQuestion("255.0.0.1");
+		Assert.assertNotNull(output);
+	}
+	
+	@Test
+	public void shouldRetrieveDummyQuestionsOfForgotPasswordFormController() throws Exception {
+		ForgotPasswordFormController obj = new ForgotPasswordFormController();
+		
+		List<String> result = obj.getSecurityQuestions();
+		assertNotNull(result);
+		assertEquals(false, result.isEmpty());
+		
+		String questionA = obj.getDummySecurityQuestion("255.0.0.1");
+		String questionB = obj.getDummySecurityQuestion("255.0.0.1");
+		String questionC = obj.getDummySecurityQuestion("123.4.56.78");
+		
+		assertNotNull(questionA);
+		assertNotNull(questionB);
+		assertNotNull(questionC);
+		
+		assertEquals(questionA, questionB);
+		assertEquals(false, questionA.equalsIgnoreCase(questionC));
 	}
 	
 }
