@@ -250,7 +250,7 @@
         </property>
 	</bean>
 	<bean id="encounterServiceTarget" class="org.openmrs.api.impl.EncounterServiceImpl">
-		<property name="encounterDAO"><ref bean="encounterDAO"/></property>	
+		<property name="encounterDAO"><ref bean="encounterDAO"/></property>
 	</bean>
 	<bean id="locationServiceTarget" class="org.openmrs.api.impl.LocationServiceImpl">
 		<property name="locationDAO"><ref bean="locationDAO"/></property>	
