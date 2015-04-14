@@ -12,23 +12,33 @@ package org.openmrs.attribute;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.customdatatype.Customizable;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+
 /**
  * Abstract base implementation of {@link AttributeType}. Actual implementations (e.g. VisitAttributeType,
  * ProviderAttributeType) should be able to extend this and provide very little of their own code.
  * @since 1.9
  */
+@MappedSuperclass
 public abstract class BaseAttributeType<OwningType extends Customizable<?>> extends BaseOpenmrsMetadata implements AttributeType<OwningType> {
 	
+	@Column(name = "min_occurs", nullable = false, length = 11)
 	private Integer minOccurs = 0;
 	
+	@Column(name = "max_occurs", length = 11)
 	private Integer maxOccurs = null;
 	
+	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
 	
+	@Column(name = "datatype_config", length = 65535)
 	private String datatypeConfig;
 	
+	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 	
+	@Column(name = "handler_config", length = 65535)
 	private String handlerConfig;
 	
 	/**
