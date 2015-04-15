@@ -365,19 +365,21 @@ public class UpdateFilter extends StartupFilter {
 			// again the old way
 			try {
 				String select = "select user_id, password, salt from users where (username = ? or system_id = ?) and voided = '0'";
-				statement = connection.prepareStatement(select);
-				statement.setString(1, usernameOrSystemId);
-				statement.setString(2, usernameOrSystemId);
-				
-				if (statement.execute()) {
-					ResultSet results = statement.getResultSet();
-					if (results.next()) {
-						Integer userId = results.getInt(1);
-						DatabaseUpdater.setAuthenticatedUserId(userId);
-						String storedPassword = results.getString(2);
-						String salt = results.getString(3);
-						String passwordToHash = password + salt;
-						return Security.hashMatches(storedPassword, passwordToHash) && isSuperUser(connection, userId);
+				if (connection != null) {
+					statement = connection.prepareStatement(select);
+					statement.setString(1, usernameOrSystemId);
+					statement.setString(2, usernameOrSystemId);
+					
+					if (statement.execute()) {
+						ResultSet results = statement.getResultSet();
+						if (results.next()) {
+							Integer userId = results.getInt(1);
+							DatabaseUpdater.setAuthenticatedUserId(userId);
+							String storedPassword = results.getString(2);
+							String salt = results.getString(3);
+							String passwordToHash = password + salt;
+							return Security.hashMatches(storedPassword, passwordToHash) && isSuperUser(connection, userId);
+						}
 					}
 				}
 			}
