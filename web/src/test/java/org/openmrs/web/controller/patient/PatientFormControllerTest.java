@@ -46,7 +46,7 @@ public class PatientFormControllerTest extends BaseWebContextSensitiveTest {
 		controller.setApplicationContext(applicationContext);
 		
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("action", "Patient.void");
+		request.setParameter("action", Context.getMessageSourceService().getMessage("Patient.void"));
 		request.setParameter("voidReason", "some reason");
 		BindException errors = new BindException(p, "patient");
 		ModelAndView modelAndview = controller.onSubmit(request, response, p, errors);
@@ -68,7 +68,7 @@ public class PatientFormControllerTest extends BaseWebContextSensitiveTest {
 		controller.setApplicationContext(applicationContext);
 		
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("action", "Patient.void");
+		request.setParameter("action", Context.getMessageSourceService().getMessage("Patient.void"));
 		request.setParameter("voidReason", "");
 		BindException errors = new BindException(p, "patient");
 		ModelAndView modelAndview = controller.onSubmit(request, response, p, errors);

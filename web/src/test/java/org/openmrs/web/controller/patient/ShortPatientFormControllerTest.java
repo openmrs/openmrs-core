@@ -78,8 +78,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		    WebRequest.SCOPE_SESSION), errors);
 		
 		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
-		    WebRequest.SCOPE_SESSION));
+		Assert.assertEquals(Context.getMessageSourceService().getMessage("Patient.saved"), mockWebRequest.getAttribute(
+		    WebConstants.OPENMRS_MSG_ATTR, WebRequest.SCOPE_SESSION));
 		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 	}
 	
@@ -117,8 +117,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		Assert.assertNotNull(p.getPersonName().getId());// the name was create
 		// and added
 		Assert.assertEquals(patientCount + 1, Context.getPatientService().getAllPatients().size());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
-		    WebRequest.SCOPE_SESSION));
+		Assert.assertEquals(Context.getMessageSourceService().getMessage("Patient.saved"), mockWebRequest.getAttribute(
+		    WebConstants.OPENMRS_MSG_ATTR, WebRequest.SCOPE_SESSION));
 		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 	}
 	
@@ -352,8 +352,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		    WebRequest.SCOPE_SESSION), errors);
 		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
 		
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
-		    WebRequest.SCOPE_SESSION));
+		Assert.assertEquals(Context.getMessageSourceService().getMessage("Patient.saved"), mockWebRequest.getAttribute(
+		    WebConstants.OPENMRS_MSG_ATTR, WebRequest.SCOPE_SESSION));
 		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 		//The new person attribute should have been added and saved
 		Assert.assertNotNull(p.getAttribute(2).getPersonAttributeId());
@@ -388,8 +388,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		    WebRequest.SCOPE_SESSION), errors);
 		
 		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
-		    WebRequest.SCOPE_SESSION));
+		Assert.assertEquals(Context.getMessageSourceService().getMessage("Patient.saved"), mockWebRequest.getAttribute(
+		    WebConstants.OPENMRS_MSG_ATTR, WebRequest.SCOPE_SESSION));
 		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 		//The new blank person attribute should have been ignored
 		Assert.assertEquals(originalAttributeCount, p.getAttributes().size());
@@ -446,8 +446,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		    WebRequest.SCOPE_SESSION), errors);
 		
 		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
-		    WebRequest.SCOPE_SESSION));
+		Assert.assertEquals(Context.getMessageSourceService().getMessage("Patient.saved"), mockWebRequest.getAttribute(
+		    WebConstants.OPENMRS_MSG_ATTR, WebRequest.SCOPE_SESSION));
 		
 		//the attribute should have been voided
 		Assert.assertEquals(originalActiveAttributeCount - 1, p.getActiveAttributes().size());
@@ -504,8 +504,8 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		    WebRequest.SCOPE_SESSION), errors);
 		
 		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
-		    WebRequest.SCOPE_SESSION));
+		Assert.assertEquals(Context.getMessageSourceService().getMessage("Patient.saved"), mockWebRequest.getAttribute(
+		    WebConstants.OPENMRS_MSG_ATTR, WebRequest.SCOPE_SESSION));
 		
 		//a new replacement attribute should have been created with the new value
 		PersonAttribute newAttribute = p.getAttribute(attributeTypeId);

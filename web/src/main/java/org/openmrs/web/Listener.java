@@ -11,13 +11,17 @@ package org.openmrs.web;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -25,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.core.io.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -32,6 +37,7 @@ import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
@@ -53,6 +59,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
@@ -371,7 +378,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *
 	 * @param servletContext
 	 */
-	private void copyCustomizationIntoWebapp(ServletContext servletContext, Properties props) {
+	private void copyCustomizationIntoWebapp(ServletContext servletContext, Properties props) throws IOException {
 		Log log = LogFactory.getLog(Listener.class);
 		
 		String realPath = servletContext.getRealPath("");
@@ -423,8 +430,29 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						}
 					}
 				}
+				PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
+				Resource[] localResources = patternResolver.getResources("classpath*:messages*.properties");
+				for (Resource localeResource : localResources) {
+					InputStream resourceStream = null;
+					OutputStream fileStream = null;
+					try {
+						resourceStream = localeResource.getInputStream();
+						fileStream = new FileOutputStream(new File(realPath + "/WEB-INF/" + localeResource.getFilename()));
+						IOUtils.copy(resourceStream, fileStream);
+						fileStream.close();
+						resourceStream.close();
+					}
+					catch (IOException e) {
+						log.error("Failed to copy messages from classpath to WEB-INF: ", e);
+					}
+					finally {
+						IOUtils.closeQuietly(resourceStream);
+						IOUtils.closeQuietly(fileStream);
+						
+					}
+				}
+				
 			}
-			
 		}
 	}
 	
@@ -642,7 +670,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 								ModuleFactory.stopModule(mod, true, true);
 							}
 							catch (Exception t3) {
-								// just keep going if we get an error shutting down.  was probably caused by the module 
+								// just keep going if we get an error shutting down.  was probably caused by the module
 								// that actually got us to this point!
 								log.trace("Unable to shutdown module:" + mod, t3);
 							}
