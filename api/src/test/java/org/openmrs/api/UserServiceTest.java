@@ -60,7 +60,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Methods in this class might authenticate with a different user, so log that user out after
-	 * this whole junit class is done.
+	 * this whole junit class is done.N
 	 */
 	@AfterClass
 	public static void logOutAfterThisTest() {
@@ -1252,7 +1252,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 		
 		expectedException.expect(APIAuthenticationException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired"));
+		expectedException.expectMessage("Privileges required: Edit User Passwords");
 		userService.changePassword(user6001, wrongPassword, newPassword);
 	}
 	
@@ -1274,7 +1274,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired"));
+		expectedException.expectMessage("Privileges required: Edit User Passwords");
 		userService.changePassword(user6001, oldPassword, newPassword);
 	}
 	
@@ -1291,7 +1291,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String oldPassword = "userServiceTest";
 		String weakPassword = "weak";
 		
-		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length"));
+		expectedException.expectMessage("Please choose a password that is at least 8 characters long");
 		userService.changePassword(user6001, oldPassword, weakPassword);
 	}
 	
@@ -1307,7 +1307,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		String anyString = "anyString";
 		
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("user.must.exist");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("user.must.exist"));
 		userService.changePassword(notExistingUser, anyString, anyString);
 	}
 }

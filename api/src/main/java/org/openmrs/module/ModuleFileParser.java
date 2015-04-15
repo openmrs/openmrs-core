@@ -260,8 +260,6 @@ public class ModuleFileParser {
 			module.setPrivileges(getPrivileges(rootNode, configVersion));
 			module.setGlobalProperties(getGlobalProperties(rootNode, configVersion));
 			
-			module.setMessages(getMessages(rootNode, configVersion, jarfile, moduleId, version));
-			
 			module.setMappingFiles(getMappingFiles(rootNode, configVersion, jarfile));
 			module.setPackagesWithMappedClasses(getPackagesWithMappedClasses(rootNode, configVersion));
 			
@@ -533,72 +531,6 @@ public class ModuleFileParser {
 		
 		return extensions;
 		
-	}
-	
-	/**
-	 * load in messages
-	 *
-	 * @param root
-	 * @param configVersion
-	 * @return
-	 */
-	private Map<String, Properties> getMessages(Element root, String configVersion, JarFile jarfile, String moduleId,
-	        String version) {
-		
-		Map<String, Properties> messages = new HashMap<String, Properties>();
-		
-		NodeList messageNodes = root.getElementsByTagName("messages");
-		if (messageNodes.getLength() > 0) {
-			log.debug("# message nodes: " + messageNodes.getLength());
-			int i = 0;
-			while (i < messageNodes.getLength()) {
-				Node node = messageNodes.item(i);
-				NodeList nodes = node.getChildNodes();
-				int x = 0;
-				String lang = "", file = "";
-				while (x < nodes.getLength()) {
-					Node childNode = nodes.item(x);
-					if ("lang".equals(childNode.getNodeName())) {
-						lang = childNode.getTextContent().trim();
-					} else if ("file".equals(childNode.getNodeName())) {
-						file = childNode.getTextContent().trim();
-					}
-					x++;
-				}
-				log.debug("lang: " + lang + " file: " + file);
-				
-				// lang and file are required
-				if (lang.length() > 0 && file.length() > 0) {
-					InputStream inStream = null;
-					try {
-						inStream = ModuleUtil.getResourceFromApi(jarfile, moduleId, version, file);
-						if (inStream == null) {
-							// Try the old way. Loading from the root of the omod
-							ZipEntry entry = jarfile.getEntry(file);
-							if (entry == null) {
-								throw new ModuleException(Context.getMessageSourceService().getMessage(
-								    "Module.error.noMessagePropsFile", new Object[] { file, lang }, Context.getLocale()));
-							}
-							inStream = jarfile.getInputStream(entry);
-						}
-						Properties props = new Properties();
-						OpenmrsUtil.loadProperties(props, inStream);
-						messages.put(lang, props);
-					}
-					catch (IOException e) {
-						log.warn("Unable to load properties: " + file);
-					}
-					finally {
-						IOUtils.closeQuietly(inStream);
-					}
-				} else {
-					log.warn("'lang' and 'file' are required for extensions. Given '" + lang + "' and '" + file + "'");
-				}
-				i++;
-			}
-		}
-		
-		return messages;
 	}
 	
 	/**

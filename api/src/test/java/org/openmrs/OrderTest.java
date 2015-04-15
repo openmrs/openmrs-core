@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.Reflect;
@@ -492,7 +493,8 @@ public class OrderTest extends BaseContextSensitiveTest {
 		order.setAutoExpireDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
 		OrderUtilTest.setDateStopped(order, DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT));
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Order.error.invalidDateStoppedAndAutoExpireDate");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage(
+		    "Order.error.invalidDateStoppedAndAutoExpireDate"));
 		order.isDiscontinued(DateUtils.parseDate("2014-11-01 11:11:13", DATE_FORMAT));
 	}
 	
@@ -626,7 +628,8 @@ public class OrderTest extends BaseContextSensitiveTest {
 		order.setAutoExpireDate(DateUtils.parseDate("2014-11-01 11:11:11", DATE_FORMAT));
 		OrderUtilTest.setDateStopped(order, DateUtils.parseDate("2014-11-01 11:11:12", DATE_FORMAT));
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("Order.error.invalidDateStoppedAndAutoExpireDate");
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage(
+		    "Order.error.invalidDateStoppedAndAutoExpireDate"));
 		order.isExpired(DateUtils.parseDate("2014-11-01 11:11:13", DATE_FORMAT));
 	}
 	

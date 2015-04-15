@@ -47,7 +47,7 @@ public class DWRProviderServiceTest extends BaseWebContextSensitiveTest {
 	public void findProvider_shouldReturnAMessageWithNoMatchesFoundWhenNoProvidersAreFound() throws Exception {
 		Vector<Object> providers = service.findProvider("noProvider", false, 0, 1);
 		
-		Assert.assertEquals("Provider.noMatchesFound", ((String) providers.get(0)));
+		Assert.assertEquals("No matches found for <b>noProvider</b>", ((String) providers.get(0)));
 	}
 	
 	/**

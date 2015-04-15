@@ -155,9 +155,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return all registered identifier validators", method = "getAllIdentifierValidators()")
 	public void getAllIdentifierValidators_shouldReturnAllRegisteredIdentifierValidators() throws Exception {
 		Collection<IdentifierValidator> expectedValidators = new HashSet<IdentifierValidator>();
-		expectedValidators.add(patientService.getIdentifierValidator("org.openmrs.patient.impl.LuhnIdentifierValidator"));
-		expectedValidators
-		        .add(patientService.getIdentifierValidator("org.openmrs.patient.impl.VerhoeffIdentifierValidator"));
+		expectedValidators.add(patientService.getIdentifierValidator(Context.getMessageSourceService().getMessage(
+		    "org.openmrs.patient.impl.LuhnIdentifierValidator")));
+		expectedValidators.add(patientService.getIdentifierValidator(Context.getMessageSourceService().getMessage(
+		    "org.openmrs.patient.impl.VerhoeffIdentifierValidator")));
 		Assert.assertEquals(2, patientService.getAllIdentifierValidators().size());
 		assertCollectionContentsEquals(expectedValidators, patientService.getAllIdentifierValidators());
 	}
@@ -291,7 +292,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		catch (InvalidCheckDigitException ex) {}
 		catch (APIException e) {
 			if (!(e.getMessage() != null && e.getMessage().contains(
-			    "failed to validate with reason: PatientIdentifier.error.checkDigitWithParameter"))) {
+			    "failed to validate with reason: Invalid check digit for identifier: " + ident1.getIdentifier()))) {
 				fail("Patient creation should have failed with identifier " + ident1.getIdentifier());
 			}
 		}
@@ -307,7 +308,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		catch (InvalidCheckDigitException ex) {}
 		catch (APIException e) {
 			if (!(e.getMessage() != null && e.getMessage().contains(
-			    "failed to validate with reason: PatientIdentifier.error.unallowedIdentifier"))) {
+			    "failed to validate with reason: Identifier " + ident2.getIdentifier()
+			            + " is not appropriate for validation scheme Luhn CheckDigit Validator"))) {
 				fail("Patient creation should have failed with identifier " + ident1.getIdentifier());
 			}
 		}
@@ -3546,7 +3548,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void mergePatients_shouldFailIfNotPreferredPatientHasUnvoidedOrders() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Patient.cannot.merge"));
+		expectedException.expectMessage(Matchers.is(Context.getMessageSourceService().getMessage("Patient.cannot.merge")));
 		Patient preferredPatient = patientService.getPatient(8);
 		Patient notPreferredPatient = patientService.getPatient(7);
 		patientService.mergePatients(preferredPatient, notPreferredPatient);

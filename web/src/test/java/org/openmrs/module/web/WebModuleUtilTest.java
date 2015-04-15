@@ -116,7 +116,7 @@ public class WebModuleUtilTest {
 	 */
 	@Test
 	public void startModule_shouldCreateDwrModulesXmlIfNotExists() throws Exception {
-		partialMockWebModuleUtilForMessagesTests();
+		//		partialMockWebModuleUtilForMessagesTests();
 		
 		// create dummy module and start it
 		Module mod = buildModuleForMessageTest();
@@ -144,7 +144,7 @@ public class WebModuleUtilTest {
 	 */
 	@Test
 	public void startModule_dwrModuleXmlshouldContainModuleInfo() throws Exception {
-		partialMockWebModuleUtilForMessagesTests();
+		//		partialMockWebModuleUtilForMessagesTests();
 		
 		// create dummy module and start it
 		Module mod = buildModuleForMessageTest();
@@ -172,40 +172,6 @@ public class WebModuleUtilTest {
 			scanner.close();
 		
 		assertTrue(found);
-	}
-	
-	/**
-	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
-	 * @verifies prefix messages with module id
-	 */
-	@Test
-	public void copyModuleMessagesIntoWebapp_shouldPrefixMessagesWithModuleId() throws Exception {
-		Module mod = buildModuleForMessageTest();
-		partialMockWebModuleUtilForMessagesTests();
-		WebModuleUtil.copyModuleMessagesIntoWebapp(mod, "unused/real/path");
-		
-		assertThat(propertiesWritten.getProperty("mymodule.title"), is("My Module"));
-		assertThat(propertiesWritten.getProperty("mymodule.withoutPrefix"), is("Without prefix"));
-		assertNull(propertiesWritten.getProperty("withoutPrefix"));
-	}
-	
-	/**
-	 * @see WebModuleUtil#copyModuleMessagesIntoWebapp(org.openmrs.module.Module, String)
-	 * @verifies not prefix messages with module id if override setting is specified
-	 */
-	@Test
-	public void copyModuleMessagesIntoWebapp_shouldNotPrefixMessagesWithModuleIdIfOverrideSettingIsSpecified()
-	        throws Exception {
-		Module mod = buildModuleForMessageTest();
-		mod.getMessages().get("en").setProperty(ModuleConstants.MESSAGE_PROPERTY_ALLOW_KEYS_OUTSIDE_OF_MODULE_NAMESPACE,
-		    "true");
-		
-		partialMockWebModuleUtilForMessagesTests();
-		WebModuleUtil.copyModuleMessagesIntoWebapp(mod, "unused/real/path");
-		
-		assertThat(propertiesWritten.getProperty("mymodule.title"), is("My Module"));
-		assertThat(propertiesWritten.getProperty("withoutPrefix"), is("Without prefix"));
-		assertNull(propertiesWritten.getProperty("mymodule.withoutPrefix"));
 	}
 	
 	private void partialMockWebModuleUtilForMessagesTests() throws Exception {

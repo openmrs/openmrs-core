@@ -295,7 +295,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertFalse(encounter.getOrders().isEmpty());
 		encounter.getOrders().iterator().next().setInstructions("new");
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("editing.fields.not.allowed"));
+		expectedException.expectMessage(Matchers.is("Editing some fields on Order is not allowed"));
 		encounterService.saveEncounter(encounter);
 		Context.flushSession();
 	}
