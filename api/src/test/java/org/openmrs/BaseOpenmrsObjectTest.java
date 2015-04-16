@@ -11,6 +11,9 @@ package org.openmrs;
 
 import static junit.framework.Assert.assertEquals;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.Hibernate;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -184,5 +187,142 @@ public class BaseOpenmrsObjectTest {
 		//then
 		assertEquals("BaseOpenmrsObjectTest.BaseOpenmrsObjectMock[hashCode=" + Integer.toHexString(o.hashCode())
 		        + ",uuid=<null>]", o.toString());
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#equals(Object)
+	 * @verifies return true If Given Object Is Instance of Super or ExtendingClass
+	 */
+	@Test
+	public void equals_shouldReturnTrueIfGivenObjectIsInstanceOfSuperOrExtendingClass() throws Exception {
+		Concept concept = new Concept(5);
+		Concept numeric = new ConceptNumeric();
+		numeric.setUuid(concept.getUuid());
+		Assert.assertTrue(numeric.equals(concept));
+		Assert.assertTrue(concept.equals(numeric));
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#equals(Object)
+	 * @verifies return False If Given Object Is Not Instance of Super or ExtendingClass
+	 */
+	@Test
+	public void equals_shouldReturnFalseIfGivenObjIsNotInstanceOfSuperOrExtendingClass() throws Exception {
+		Encounter encounter = new Encounter();
+		Concept concept = new Concept(5);
+		concept.setUuid(encounter.getUuid());
+		Assert.assertFalse(encounter.equals(concept));
+		Assert.assertFalse(concept.equals(encounter));
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#equals(Object)
+	 * @verifies return True If Given Object is Subclass of Super or ExtendingClass
+	 */
+	@Test
+	public void equals_shouldReturnTrueIfGivenObjectIsSubclassOfSuperOrExtendingClass() throws Exception {
+		Order order = new Order(21);
+		DrugOrder type = new DrugOrder(21);
+		type.setUuid(order.getUuid());
+		Assert.assertTrue(type.equals(order));
+		Assert.assertTrue(order.equals(type));
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#equals(Object)
+	 * @verifies return False If Given Object is Not Subclass of Super or ExtendingClass
+	 */
+	@Test
+	public void equals_shouldReturnFalseIfGivenObjectIsNotSubclassOfSuperOrExtendingClass() throws Exception {
+		Order order = new Order(21);
+		OrderFrequency type = new OrderFrequency();
+		type.setUuid(order.getUuid());
+		Assert.assertFalse(type.equals(order));
+		Assert.assertFalse(order.equals(type));
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#equals(Object)
+	 * @verifies return False IfHibernateProxy Of OneThing Is Compared to HibernateProxy of Something
+	 */
+	@Test
+	public void equals_shouldReturnfalseIfHibernateProxyOfOneThingIsComparedtoHibernateProxyofSomething() throws Exception {
+		Object obj = new Concept();
+		String uuid = ((BaseOpenmrsObject) obj).getUuid();
+		Class<?> thisClass = Hibernate.getClass(obj);
+		Object obj1 = new Order();
+		((BaseOpenmrsObject) obj1).setUuid(uuid);
+		Class<?> objClass = Hibernate.getClass(obj1);
+		Assert.assertNotEquals(thisClass, objClass);
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#equals(Object)
+	 * @verifies return False IfHibernateProxy Of OneThing Is Compared to Non-HibernateProxy of Something
+	 */
+	@Test
+	public void equals_shouldReturnFalseIfHibernateProxyOfOneThingIsComparedtoNonHibernateProxyofSomething()
+	        throws Exception {
+		Object obj = new Concept();
+		String uuid = ((BaseOpenmrsObject) obj).getUuid();
+		Class<?> thisClass = Hibernate.getClass(obj);
+		ConceptSet obj1 = new ConceptSet();
+		((BaseOpenmrsObject) obj1).setUuid(uuid);
+		Assert.assertNotEquals(thisClass, obj1);
+	}
+	
+	/**
+	 * @see BaseOpenmrsObject#equals(Object)
+	 * @verifies should Work On NonHibernate managed Classes
+	 */
+	@Test
+	public void equals_shouldWorkOnNonHibernateManagedClasses() throws Exception {
+		class TestClass extends BaseOpenmrsObject {
+			
+			private Integer id;
+			
+			TestClass() {
+			}
+			
+			public Integer getId() {
+				return id;
+			}
+			
+			public void setId(Integer id) {
+				this.setId(id);
+			}
+			
+			public int hashCode() {
+				if (getUuid() == null) {
+					return super.hashCode();
+				}
+				return getUuid().hashCode();
+			}
+			
+			public boolean equals(Object obj) {
+				if (this == obj) {
+					return true;
+				}
+				if (!(obj instanceof TestClass)) {
+					return false;
+				}
+				TestClass other = (TestClass) obj;
+				if (getUuid() == null) {
+					return false;
+				}
+				return getUuid().equals(other.getUuid());
+			}
+			
+			public String toString() {
+				return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("hashCode",
+				    Integer.toHexString(hashCode())).append("uuid", getUuid()).build();
+			}
+			
+		}
+		TestClass obj = new TestClass();
+		String uuid = obj.getUuid();
+		Class<?> thisClass = Hibernate.getClass(obj);
+		obj.setUuid(uuid);
+		Assert.assertNotEquals(thisClass, obj);
 	}
 }
