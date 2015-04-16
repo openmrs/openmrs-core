@@ -63,7 +63,11 @@ public class RoleValidator implements Validator {
 				errors.rejectValue("role", "error.trailingSpaces");
 			}
 		}
-		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "role", "description");
+		if (obj == null) {
+			throw new IllegalArgumentException("validated role object should not be null");
+		} else {
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "role", "description");
+		}
 	}
 	
 }
