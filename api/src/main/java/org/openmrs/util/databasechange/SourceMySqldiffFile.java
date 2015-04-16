@@ -93,7 +93,12 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			OpenmrsUtil.copyFile(sqlFileInputStream, outputStream);
 		}
 		catch (IOException e) {
-			throw new CustomChangeException("Unable to copy " + sqlFile + " to file: " + tmpOutputFile.getAbsolutePath(), e);
+			if (tmpOutputFile != null) {
+				throw new CustomChangeException(
+				        "Unable to copy " + sqlFile + " to file: " + tmpOutputFile.getAbsolutePath(), e);
+			} else {
+				throw new CustomChangeException("Unable to copy " + sqlFile, e);
+			}
 		}
 		
 		// build the mysql command line string

@@ -93,11 +93,15 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		
 		//willStop() and stopped() should have been called in the right order
 		//which is the reverse of the startup. that is module3, module2, module1
-		assertThat(moduleTestData.getWillStopCallTime(MODULE3_ID), lessThanOrEqualTo(moduleTestData.getWillStopCallTime(MODULE2_ID)));
-		assertThat(moduleTestData.getWillStopCallTime(MODULE2_ID), lessThanOrEqualTo(moduleTestData.getWillStopCallTime(MODULE1_ID)));
+		assertThat(moduleTestData.getWillStopCallTime(MODULE3_ID), lessThanOrEqualTo(moduleTestData
+		        .getWillStopCallTime(MODULE2_ID)));
+		assertThat(moduleTestData.getWillStopCallTime(MODULE2_ID), lessThanOrEqualTo(moduleTestData
+		        .getWillStopCallTime(MODULE1_ID)));
 		
-		assertThat(moduleTestData.getStoppedCallTime(MODULE3_ID), lessThanOrEqualTo(moduleTestData.getStoppedCallTime(MODULE2_ID)));
-		assertThat(moduleTestData.getStoppedCallTime(MODULE2_ID), lessThanOrEqualTo(moduleTestData.getStoppedCallTime(MODULE1_ID)));
+		assertThat(moduleTestData.getStoppedCallTime(MODULE3_ID), lessThanOrEqualTo(moduleTestData
+		        .getStoppedCallTime(MODULE2_ID)));
+		assertThat(moduleTestData.getStoppedCallTime(MODULE2_ID), lessThanOrEqualTo(moduleTestData
+		        .getStoppedCallTime(MODULE1_ID)));
 	}
 	
 	@Test

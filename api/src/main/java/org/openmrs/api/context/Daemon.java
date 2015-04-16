@@ -185,7 +185,7 @@ public class Daemon {
 					Context.openSession();
 					//Suppressing sonar issue "squid:S1217"
 					//We intentionally do not start a new thread yet, rather wrap the run call in a session.
-					runnable.run(); 
+					runnable.run();
 				}
 				finally {
 					Context.closeSession();
