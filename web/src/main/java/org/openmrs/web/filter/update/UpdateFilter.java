@@ -339,7 +339,7 @@ public class UpdateFilter extends StartupFilter {
 				statement = connection.prepareStatement(select);
 				statement.setString(1, usernameOrSystemId);
 				statement.setString(2, usernameOrSystemId);
-
+				
 				if (statement.execute()) {
 					ResultSet results = null;
 					try {
