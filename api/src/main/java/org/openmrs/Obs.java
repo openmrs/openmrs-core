@@ -1012,7 +1012,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 					}
 				}
 			} else if ("DT".equals(abbrev)) {
-				return (getValueDatetime() == null ? "" : dateFormat.format(getValueDatetime()));
+				return (getValueDatetime() == null ? "" : dateFormat.get().format(getValueDatetime()));
 			} else if ("TM".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIME));
 			} else if ("TS".equals(abbrev)) {
@@ -1076,11 +1076,29 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		return "";
 	}
 	
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>() { // Made DateFormat Threadsafe using ThreadLocal			
+		
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd");
+		}
+	};
 	
-	private static DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+	private static ThreadLocal<DateFormat> timeFormat = new ThreadLocal<DateFormat>() {
+		
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("HH:mm");
+		}
+	};
 	
-	private static DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static ThreadLocal<DateFormat> datetimeFormat = new ThreadLocal<DateFormat>() {
+		
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		}
+	};
 	
 	/**
 	 * Sets the value for the obs from a string depending on the datatype of the question concept
@@ -1104,11 +1122,11 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				setValueNumeric(Double.valueOf(s));
 			} else if ("DT".equals(abbrev)) {
-				setValueDatetime(dateFormat.parse(s));
+				setValueDatetime(dateFormat.get().parse(s));
 			} else if ("TM".equals(abbrev)) {
-				setValueDatetime(timeFormat.parse(s));
+				setValueDatetime(timeFormat.get().parse(s));
 			} else if ("TS".equals(abbrev)) {
-				setValueDatetime(datetimeFormat.parse(s));
+				setValueDatetime(datetimeFormat.get().parse(s));
 			} else if ("ST".equals(abbrev)) {
 				setValueText(s);
 			} else {
