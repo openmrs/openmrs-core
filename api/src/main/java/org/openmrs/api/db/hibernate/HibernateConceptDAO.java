@@ -144,125 +144,76 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @param concept the concept that will be inserted
 	 */
 	private void insertRowIntoSubclassIfNecessary(Concept concept) {
-		Connection connection = sessionFactory.getCurrentSession().connection();
-		
-		PreparedStatement ps = null;
-		PreparedStatement ps2 = null;
 		
 		// check the concept_numeric table
 		if (concept instanceof ConceptNumeric) {
 			
-			try {
-				ps = connection
-				        .prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_numeric WHERE concept_id = ?)");
-				ps.setInt(1, concept.getConceptId());
-				ps.setInt(2, concept.getConceptId());
-				ps.execute();
-				
-				// Converting to concept numeric:  A single concept row exists, but concept numeric has not been populated yet.
-				if (ps.getResultSet().next()) {
-					// we have to evict the current concept out of the session because
-					// the user probably had to change the class of this object to get it
-					// to now be a numeric
-					// (must be done before the "insert into...")
-					sessionFactory.getCurrentSession().clear();
-					
-					ps2 = connection.prepareStatement("INSERT INTO concept_numeric (concept_id, precise) VALUES (?, false)");
-					ps2.setInt(1, concept.getConceptId());
-					ps2.executeUpdate();
-				}
+			String select = "SELECT 1 from concept_numeric WHERE concept_id = :conceptId";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(select);
+			query.setInteger("conceptId", concept.getConceptId());
+			
+			// Converting to concept numeric:  A single concept row exists, but concept numeric has not been populated yet.
+			if (query.uniqueResult() == null) {
+				// we have to evict the current concept out of the session because
+				// the user probably had to change the class of this object to get it
+				// to now be a numeric
+				// (must be done before the "insert into...")
+				sessionFactory.getCurrentSession().clear();
+
+				String insert = "INSERT INTO concept_numeric (concept_id, precise) VALUES (:conceptId, false)";
+				query = sessionFactory.getCurrentSession().createSQLQuery(insert);
+				query.setInteger("conceptId", concept.getConceptId());
+				query.executeUpdate();
+			
+			} else {
 				// Converting from concept numeric:  The concept and concept numeric rows both exist, so we need to delete concept_numeric.
-				else {
-					//concept is changed from numeric to something else
-					// hence row should be deleted from the concept_numeric
-					if (!concept.isNumeric()) {
-						ps2 = connection.prepareStatement("DELETE FROM concept_numeric WHERE concept_id = ?");
-						ps2.setInt(1, concept.getConceptId());
-						ps2.executeUpdate();
-					} else {
-						// it is indeed numeric now... don't delete
-					}
-				}
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this ConceptNumeric is in the concept_numeric table already", e);
-			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-				if (ps2 != null) {
-					try {
-						ps2.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
+
+				// concept is changed from numeric to something else
+				// hence row should be deleted from the concept_numeric
+				if (!concept.isNumeric()) {
+					String delete = "DELETE FROM concept_numeric WHERE concept_id = :conceptId";
+					query = sessionFactory.getCurrentSession().createSQLQuery(delete);
+					query.setInteger("conceptId", concept.getConceptId());
+					query.executeUpdate();
+				} else {
+					// it is indeed numeric now... don't delete
 				}
 			}
 		}
 		// check the concept complex table
 		else if (concept instanceof ConceptComplex) {
 			
-			try {
-				ps = connection
-				        .prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_complex WHERE concept_id = ?)");
-				ps.setInt(1, concept.getConceptId());
-				ps.setInt(2, concept.getConceptId());
-				ps.execute();
+			String select = "SELECT 1 FROM concept_complex WHERE concept_id = :conceptId";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(select);
+			query.setInteger("conceptId", concept.getConceptId());
+			
+			// Converting to concept complex:  A single concept row exists, but concept complex has not been populated yet.
+			if (query.uniqueResult() == null) {
+				// we have to evict the current concept out of the session because
+				// the user probably had to change the class of this object to get it
+				// to now be a ConceptComplex
+				// (must be done before the "insert into...")
+				sessionFactory.getCurrentSession().clear();
 				
-				// Converting to concept complex:  A single concept row exists, but concept complex has not been populated yet.
-				if (ps.getResultSet().next()) {
-					// we have to evict the current concept out of the session because
-					// the user probably had to change the class of this object to get it
-					// to now be a ConceptComplex
-					// (must be done before the "insert into...")
-					sessionFactory.getCurrentSession().clear();
-					
-					// Add an empty row into the concept_complex table
-					ps2 = connection.prepareStatement("INSERT INTO concept_complex (concept_id) VALUES (?)");
-					ps2.setInt(1, concept.getConceptId());
-					ps2.executeUpdate();
-				}
+				// Add an empty row into the concept_complex table
+				String insert = "INSERT INTO concept_complex (concept_id) VALUES (:conceptId)";
+				query = sessionFactory.getCurrentSession().createSQLQuery(insert);
+				query.setInteger("conceptId", concept.getConceptId());
+				query.executeUpdate();
+				
+			} else {
 				// Converting from concept complex:  The concept and concept complex rows both exist, so we need to delete the concept_complex row.
 				// no stub insert is needed because either a concept row doesn't exist OR a concept_complex row does exist
-				else {
-					// concept is changed from complex to something else
-					// hence row should be deleted from the concept_complex
-					if (!concept.isComplex()) {
-						ps2 = connection.prepareStatement("DELETE FROM concept_complex WHERE concept_id = ?");
-						ps2.setInt(1, concept.getConceptId());
-						ps2.executeUpdate();
-					} else {
-						// it is indeed numeric now... don't delete
-					}
-					
-				}
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this ConceptComplex is in the concept_complex table already", e);
-			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-				if (ps2 != null) {
-					try {
-						ps2.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
+			
+				// concept is changed from complex to something else
+				// hence row should be deleted from the concept_complex
+				if (!concept.isComplex()) {
+					String delete = "DELETE FROM concept_complex WHERE concept_id = :conceptId";
+					query = sessionFactory.getCurrentSession().createSQLQuery(delete);
+					query.setInteger("conceptId", concept.getConceptId());
+					query.executeUpdate();
+				} else {
+					// it is indeed numeric now... don't delete
 				}
 			}
 		}
