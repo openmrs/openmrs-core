@@ -165,6 +165,7 @@ public interface FormService extends OpenmrsService {
 	 * @should return retired forms when retired equals true
 	 * @should return all forms including retired and unretired when retired is null
 	 * @should return forms containing all form fields in containingAllFormFields
+	 * @should return forms that have any matching formFields in containingAnyFormField
 	 */
 	@Authorized(PrivilegeConstants.GET_FORMS)
 	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
