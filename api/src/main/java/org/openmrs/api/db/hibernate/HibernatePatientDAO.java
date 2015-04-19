@@ -14,9 +14,6 @@
 package org.openmrs.api.db.hibernate;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -113,69 +110,33 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @param patient
 	 */
 	private void insertPatientStubIfNeeded(Patient patient) {
-		Connection connection = sessionFactory.getCurrentSession().connection();
 		
 		boolean stubInsertNeeded = false;
 		
-		PreparedStatement ps = null;
-		
 		if (patient.getPatientId() != null) {
 			// check if there is a row with a matching patient.patient_id
-			try {
-				ps = connection.prepareStatement("SELECT * FROM patient WHERE patient_id = ?");
-				ps.setInt(1, patient.getPatientId());
-				ps.execute();
-				
-				if (ps.getResultSet().next()) {
-					stubInsertNeeded = false;
-				} else {
-					stubInsertNeeded = true;
-				}
-				
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this person is a patient already", e);
-			}
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
+			String sql = "SELECT 1 FROM patient WHERE patient_id = :patientId";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+			query.setInteger("patientId", patient.getPatientId());
+			
+			stubInsertNeeded = (query.uniqueResult() == null);
 		}
 		
 		if (stubInsertNeeded) {
-			try {
-				ps = connection
-				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
-				
-				ps.setInt(1, patient.getPatientId());
-				if (patient.getCreator() == null) { //If not yet persisted
-					patient.setCreator(Context.getAuthenticatedUser());
-				}
-				ps.setInt(2, patient.getCreator().getUserId());
-				if (patient.getDateCreated() == null) { //If not yet persisted
-					patient.setDateCreated(new java.sql.Date(new Date().getTime()));
-				}
-				ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
-				
-				ps.executeUpdate();
+			if (patient.getCreator() == null) { //If not yet persisted
+				patient.setCreator(Context.getAuthenticatedUser());
 			}
-			catch (SQLException e) {
-				log.warn("SQL Exception while trying to create a patient stub", e);
-			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-			}
+			if (patient.getDateCreated() == null) { //If not yet persisted
+				patient.setDateCreated(new Date());
+			}		
+			
+			String insert = "INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (:patientId, :creator, 0, :dateCreated)";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(insert);
+			query.setInteger("patientId", patient.getPatientId());
+			query.setInteger("creator", patient.getCreator().getUserId());
+			query.setDate("dateCreated", patient.getDateCreated());
+			
+			query.executeUpdate();
 			
 			//Without evicting person, you will get this error when promoting person to patient
 			//org.hibernate.NonUniqueObjectException: a different object with the same identifier
@@ -408,7 +369,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getDuplicatePatientsByAttributes(java.util.List)
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) {
 		List<Patient> patients = new Vector<Patient>();
 		
@@ -417,28 +377,28 @@ public class HibernatePatientDAO implements PatientDAO {
 			String where = " where p1 <> p2 ";
 			String orderBy = " order by ";
 			
-			Class patient = Patient.class;
+			Class<Patient> patient = Patient.class;
 			Set<String> patientFieldNames = new HashSet<String>(patient.getDeclaredFields().length);
 			for (Field f : patient.getDeclaredFields()) {
 				patientFieldNames.add(f.getName());
 				log.debug(f.getName());
 			}
 			
-			Class person = Person.class;
+			Class<Person> person = Person.class;
 			Set<String> personFieldNames = new HashSet<String>(person.getDeclaredFields().length);
 			for (Field f : person.getDeclaredFields()) {
 				personFieldNames.add(f.getName());
 				log.debug(f.getName());
 			}
 			
-			Class personName = PersonName.class;
+			Class<PersonName> personName = PersonName.class;
 			Set<String> personNameFieldNames = new HashSet<String>(personName.getDeclaredFields().length);
 			for (Field f : personName.getDeclaredFields()) {
 				personNameFieldNames.add(f.getName());
 				log.debug(f.getName());
 			}
 			
-			Class identifier = PatientIdentifier.class;
+			Class<PatientIdentifier> identifier = PatientIdentifier.class;
 			Set<String> identifierFieldNames = new HashSet<String>(identifier.getDeclaredFields().length);
 			for (Field f : identifier.getDeclaredFields()) {
 				identifierFieldNames.add(f.getName());
