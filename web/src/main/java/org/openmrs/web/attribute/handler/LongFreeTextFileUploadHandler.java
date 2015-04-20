@@ -78,6 +78,10 @@ public class LongFreeTextFileUploadHandler implements WebDatatypeHandler<LongFre
 	        throws InvalidCustomValueException {
 		if (request instanceof MultipartRequest) {
 			MultipartFile file = ((MultipartRequest) request).getFile(formFieldName);
+			String contentType = file.getContentType();
+			if(contentType == null || !contentType.startsWith("text/")) {
+				throw new InvalidCustomValueException("Please upload a text file.");
+			}
 			try {
 				return new String(file.getBytes());
 			}
