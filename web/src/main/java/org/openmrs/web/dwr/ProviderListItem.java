@@ -54,7 +54,6 @@ public class ProviderListItem {
 	/**
 	 * @return the display name for the provider
 	 * @should return a display name based on whether provider has a person associated
-	 * @should return a display name based on provider name when person is not associated
 	 */
 	public String getDisplayName() {
 		return displayName;
