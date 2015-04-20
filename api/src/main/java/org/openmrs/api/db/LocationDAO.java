@@ -186,4 +186,5 @@ public interface LocationDAO {
 	 */
 	public LocationAttribute getLocationAttributeByUuid(String uuid);
 	
+	List<Location> getAllLocationsByLocationTag(List<Integer> locationTagIdList);
 }
