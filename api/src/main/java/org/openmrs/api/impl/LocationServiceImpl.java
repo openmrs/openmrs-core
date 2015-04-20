@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Address;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
@@ -183,10 +184,18 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException {
 		List<Location> locations = new ArrayList<Location>();
-		
-		for (Location loc : dao.getAllLocations(false))
+		List<Integer> locationTagIdList = new ArrayList<Integer>();
+		if (CollectionUtils.isEmpty(tags)) {
+			return getAllLocations(false);
+		} else {
+			for (LocationTag locationTag : tags) {
+				locationTagIdList.add(locationTag.getLocationTagId());
+			}
+		}
+		for (Location loc : dao.getAllLocationsByLocationTag(locationTagIdList)) {
 			if (loc.getTags().containsAll(tags))
 				locations.add(loc);
+		}
 		
 		return locations;
 	}

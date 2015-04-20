@@ -304,4 +304,14 @@ public class HibernateLocationDAO implements LocationDAO {
 		return (LocationAttribute) sessionFactory.getCurrentSession().createCriteria(LocationAttribute.class).add(
 		    Restrictions.eq("uuid", uuid)).uniqueResult();
 	}
+	
+	@Override
+	public List<Location> getAllLocationsByLocationTag(List<Integer> locationTagIdList) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class, "location");
+		criteria.createAlias("location.tags", "locationTag");
+		criteria.add(Restrictions.in("locationTag.locationTagId", locationTagIdList));
+		criteria.addOrder(Order.asc("name"));
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		return criteria.list();
+	}
 }
