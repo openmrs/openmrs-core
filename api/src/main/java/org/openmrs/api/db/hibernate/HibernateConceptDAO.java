@@ -156,6 +156,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// (must be done before the "insert into...")
 				sessionFactory.getCurrentSession().clear();
 				
+				//Just in case this was changed from concept_complex to numeric
+				//We need to add a delete line for each concept sub class that is not concept_numeric
+				deleteSubclassConcept("concept_complex", concept.getConceptId());
+				
 				String insert = "INSERT INTO concept_numeric (concept_id, precise) VALUES (:conceptId, false)";
 				query = sessionFactory.getCurrentSession().createSQLQuery(insert);
 				query.setInteger("conceptId", concept.getConceptId());
@@ -167,10 +171,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// concept is changed from numeric to something else
 				// hence row should be deleted from the concept_numeric
 				if (!concept.isNumeric()) {
-					String delete = "DELETE FROM concept_numeric WHERE concept_id = :conceptId";
-					query = sessionFactory.getCurrentSession().createSQLQuery(delete);
-					query.setInteger("conceptId", concept.getConceptId());
-					query.executeUpdate();
+					deleteSubclassConcept("concept_numeric", concept.getConceptId());
 				} else {
 					// it is indeed numeric now... don't delete
 				}
@@ -191,6 +192,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// (must be done before the "insert into...")
 				sessionFactory.getCurrentSession().clear();
 				
+				//Just in case this was changed from concept_numeric to complex
+				//We need to add a delete line for each concept sub class that is not concept_complex
+				deleteSubclassConcept("concept_numeric", concept.getConceptId());
+				
 				// Add an empty row into the concept_complex table
 				String insert = "INSERT INTO concept_complex (concept_id) VALUES (:conceptId)";
 				query = sessionFactory.getCurrentSession().createSQLQuery(insert);
@@ -204,15 +209,25 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// concept is changed from complex to something else
 				// hence row should be deleted from the concept_complex
 				if (!concept.isComplex()) {
-					String delete = "DELETE FROM concept_complex WHERE concept_id = :conceptId";
-					query = sessionFactory.getCurrentSession().createSQLQuery(delete);
-					query.setInteger("conceptId", concept.getConceptId());
-					query.executeUpdate();
+					deleteSubclassConcept("concept_complex", concept.getConceptId());
 				} else {
 					// it is indeed numeric now... don't delete
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Deletes a concept from a sub class table
+	 * 
+	 * @param tableName the sub class table name
+	 * @param conceptId the concept id
+	 */
+	private void deleteSubclassConcept(String tableName, Integer conceptId) {
+		String delete = "DELETE FROM " + tableName + " WHERE concept_id = :conceptId";
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(delete);
+		query.setInteger("conceptId", conceptId);
+		query.executeUpdate();
 	}
 	
 	/**

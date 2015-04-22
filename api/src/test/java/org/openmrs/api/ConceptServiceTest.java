@@ -271,6 +271,73 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "save changes between concept numeric and complex", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveChangesBetweenConceptNumericAndComplex() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		//save a concept numeric
+		ConceptNumeric cn = new ConceptNumeric(1);
+		cn.setDatatype(new ConceptDatatype(1));
+		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.setHiAbsolute(20.0);
+		conceptService.saveConcept(cn);
+		
+		//confirm that we saved a concept numeric
+		Concept firstConcept = conceptService.getConceptNumeric(1);
+		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptNumeric);
+		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
+		
+		//change to concept complex
+		ConceptComplex cn2 = new ConceptComplex(1);
+		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.setHandler("SomeHandler");
+		conceptService.saveConcept(cn2);
+		
+		//confirm that we saved a concept complex
+		firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		ConceptComplex firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+		
+		//change to concept numeric
+		cn = new ConceptNumeric(1);
+		ConceptDatatype dt = new ConceptDatatype(1);
+		dt.setName("Numeric");
+		cn.setDatatype(dt);
+		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.setHiAbsolute(20.0);
+		conceptService.saveConcept(cn);
+		
+		//confirm that we saved a concept numeric
+		firstConcept = conceptService.getConceptNumeric(1);
+		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptNumeric);
+		firstConceptNumeric = (ConceptNumeric) firstConcept;
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
+		
+		//change to concept complex
+		cn2 = new ConceptComplex(1);
+		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.setHandler("SomeHandler");
+		conceptService.saveConcept(cn2);
+		
+		//confirm we saved a concept complex
+		firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptComplex(Integer)}
 	 */
 	@Test

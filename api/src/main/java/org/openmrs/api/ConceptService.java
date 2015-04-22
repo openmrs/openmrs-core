@@ -172,6 +172,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should keep id for new concept if one is specified
 	 * @should save non ConceptNumeric object as conceptNumeric
 	 * @should save non ConceptComplex object as conceptComplex
+	 * @should save changes between concept numeric and complex
 	 * @should save a ConceptNumeric as a concept
 	 * @should save a new ConceptNumeric
 	 * @should void the conceptName if the text of the name has changed
