@@ -246,6 +246,31 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should save non ConceptComplex object as conceptComplex", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveNonConceptComplexObjectAsConceptComplex() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// this tests saving a current concept as a newly changed conceptComplex
+		// assumes there is already a concept in the database
+		// with a concept id of #1
+		ConceptComplex cn = new ConceptComplex(1);
+		cn.setDatatype(new ConceptDatatype(13));
+		cn.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn.setHandler("SomeHandler");
+		conceptService.saveConcept(cn);
+		
+		Concept firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		ConceptComplex firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+		
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptComplex(Integer)}
 	 */
 	@Test
