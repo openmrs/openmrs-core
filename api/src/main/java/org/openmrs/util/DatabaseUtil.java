@@ -14,13 +14,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
 import org.openmrs.api.db.DAOException;
 import org.springframework.util.StringUtils;
 
@@ -94,9 +93,80 @@ public class DatabaseUtil {
 	}
 	
 	/**
-	 * Executes the passed SQL query, enforcing select only if that parameter is set
+	 * Executes the passed SQL query, enforcing select only if that parameter is set for given Session
 	 */
-	public static List<List<Object>> executeSQL(Connection conn, String sql, boolean selectOnly) throws DAOException {
+	public static List<List<Object>> executeSQLWithSession(Session session, String sql, boolean selectOnly)
+	        throws DAOException {
+		sql = sql.trim();
+		boolean dataManipulation = false;
+		
+		String sqlLower = sql.toLowerCase();
+		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || sqlLower.startsWith("delete")
+		        || sqlLower.startsWith("alter") || sqlLower.startsWith("drop") || sqlLower.startsWith("create")
+		        || sqlLower.startsWith("rename")) {
+			dataManipulation = true;
+		}
+		
+		if (selectOnly && dataManipulation) {
+			throw new IllegalArgumentException("Illegal command(s) found in query string");
+		}
+		
+		final List<List<Object>> result = new ArrayList<List<Object>>();
+		final String query = sql;
+		final boolean sessionDataManipulation = dataManipulation;
+		
+		//todo replace with lambdas after moving on to Java 8
+		session.doWork(new Work() {
+			
+			@Override
+			public void execute(Connection conn) {
+				PreparedStatement ps = null;
+				try {
+					ps = conn.prepareStatement(query);
+					if (sessionDataManipulation) {
+						Integer i = ps.executeUpdate();
+						List<Object> row = new Vector<Object>();
+						row.add(i);
+						result.add(row);
+					} else {
+						ResultSet resultSet = ps.executeQuery();
+						
+						ResultSetMetaData rmd = resultSet.getMetaData();
+						int columnCount = rmd.getColumnCount();
+						
+						while (resultSet.next()) {
+							List<Object> rowObjects = new Vector<Object>();
+							for (int x = 1; x <= columnCount; x++) {
+								rowObjects.add(resultSet.getObject(x));
+							}
+							result.add(rowObjects);
+						}
+					}
+				}
+				catch (SQLException e) {
+					log.debug("Error while running sql: " + query, e);
+					throw new DAOException("Error while running sql: " + query + " . Message: " + e.getMessage(), e);
+				}
+				finally {
+					try {
+						ps.close();
+					}
+					catch (SQLException e) {
+						log.error("Error generated while closing statement", e);
+					}
+				}
+				
+			}
+		});
+		
+		return result;
+	}
+	
+	/**
+	 * Executes the passed SQL query, enforcing select only if that parameter is set for given Connection
+	 */
+	public static List<List<Object>> executeSQLWithConnection(Connection conn, String sql, boolean selectOnly)
+	        throws DAOException {
 		sql = sql.trim();
 		boolean dataManipulation = false;
 		
@@ -170,7 +240,7 @@ public class DatabaseUtil {
 		final String alias = "unique_values";
 		String select = "SELECT DISTINCT " + columnName + " AS " + alias + " FROM " + tableName + " WHERE " + columnName
 		        + " IS NOT NULL";
-		List<List<Object>> rows = DatabaseUtil.executeSQL(connection, select, true);
+		List<List<Object>> rows = DatabaseUtil.executeSQLWithConnection(connection, select, true);
 		for (List<Object> row : rows) {
 			//There can only be one column since we are selecting one
 			uniqueValues.add((T) row.get(0));

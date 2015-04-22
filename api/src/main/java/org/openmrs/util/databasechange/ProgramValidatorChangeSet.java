@@ -61,7 +61,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		query.append(" from 	program_workflow_state s, concept_name n ");
 		query.append(" where 	s.concept_id = n.concept_id and initial = '1' and terminal = '1' ");
 		query.append(" group by s.concept_id ");
-		List<List<Object>> results = DatabaseUtil.executeSQL(conn, query.toString(), true);
+		List<List<Object>> results = DatabaseUtil.executeSQLWithConnection(conn, query.toString(), true);
 		if (results.isEmpty()) {
 			message.append("None found.");
 		} else {
@@ -78,7 +78,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		query.append(" where		w.program_workflow_id = s.program_workflow_id ");
 		query.append(" group by 	w.concept_id, s.initial ");
 		
-		results = DatabaseUtil.executeSQL(conn, query.toString(), true);
+		results = DatabaseUtil.executeSQLWithConnection(conn, query.toString(), true);
 		List<Integer> missingInitial = new ArrayList<Integer>();
 		for (List<Object> row : results) {
 			missingInitial.add(Integer.valueOf(row.get(0).toString()));
@@ -96,7 +96,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		} else {
 			for (Integer conceptId : missingInitial) {
 				String sql = "select min(name) from concept_name where concept_id = " + conceptId;
-				String name = DatabaseUtil.executeSQL(conn, sql, true).get(0).get(0).toString();
+				String name = DatabaseUtil.executeSQLWithConnection(conn, sql, true).get(0).get(0).toString();
 				message.append(name).append("<br/>");
 			}
 		}

@@ -116,7 +116,7 @@ public class DuplicateLocationAttributeTypeNameChangeSet implements CustomTaskCh
 					Connection con = DatabaseUpdater.getConnection();
 					do {
 						String sqlValidatorString = "select * from location_attribute_type where name = '" + newName + "'";
-						duplicateResult = DatabaseUtil.executeSQL(con, sqlValidatorString, true);
+						duplicateResult = DatabaseUtil.executeSQLWithConnection(con, sqlValidatorString, true);
 						if (!duplicateResult.isEmpty()) {
 							duplicateNameId += 1;
 							newName = pairs.getKey() + "_" + duplicateNameId;

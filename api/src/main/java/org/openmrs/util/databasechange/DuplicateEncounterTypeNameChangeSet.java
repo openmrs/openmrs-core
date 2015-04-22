@@ -26,7 +26,6 @@ import java.sql.PreparedStatement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.db.DAOException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
 
@@ -125,7 +124,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					
 					do {
 						String sqlValidatorString = "select * from encounter_type where name = '" + newName + "'";
-						duplicateResult = DatabaseUtil.executeSQL(con, sqlValidatorString, true);
+						duplicateResult = DatabaseUtil.executeSQLWithConnection(con, sqlValidatorString, true);
 						
 						if (!duplicateResult.isEmpty()) {
 							duplicateNameId += 1;

@@ -36,7 +36,6 @@ import liquibase.resource.ResourceAccessor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.db.DAOException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
 
@@ -125,7 +124,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 					Connection con = DatabaseUpdater.getConnection();
 					do {
 						String sqlValidatorString = "select * from encounter_role where name = '" + newName + "'";
-						duplicateResult = DatabaseUtil.executeSQL(con, sqlValidatorString, true);
+						duplicateResult = DatabaseUtil.executeSQLWithConnection(con, sqlValidatorString, true);
 						
 						if (!duplicateResult.isEmpty()) {
 							

@@ -250,7 +250,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		if (HibernateUtil.isHSQLDialect(sessionFactory)) {
 			sql = sql.replace("`", "");
 		}
-		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), sql, selectOnly);
+		return DatabaseUtil.executeSQLWithSession(sessionFactory.getCurrentSession(), sql, selectOnly);
 	}
 	
 	@Override
