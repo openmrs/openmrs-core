@@ -155,15 +155,15 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// to now be a numeric
 				// (must be done before the "insert into...")
 				sessionFactory.getCurrentSession().clear();
-
+				
 				String insert = "INSERT INTO concept_numeric (concept_id, precise) VALUES (:conceptId, false)";
 				query = sessionFactory.getCurrentSession().createSQLQuery(insert);
 				query.setInteger("conceptId", concept.getConceptId());
 				query.executeUpdate();
-			
+				
 			} else {
 				// Converting from concept numeric:  The concept and concept numeric rows both exist, so we need to delete concept_numeric.
-
+				
 				// concept is changed from numeric to something else
 				// hence row should be deleted from the concept_numeric
 				if (!concept.isNumeric()) {
@@ -200,7 +200,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			} else {
 				// Converting from concept complex:  The concept and concept complex rows both exist, so we need to delete the concept_complex row.
 				// no stub insert is needed because either a concept row doesn't exist OR a concept_complex row does exist
-			
+				
 				// concept is changed from complex to something else
 				// hence row should be deleted from the concept_complex
 				if (!concept.isComplex()) {
