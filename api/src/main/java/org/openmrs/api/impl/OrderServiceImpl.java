@@ -164,19 +164,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
 			boolean isPreviousDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
-			List<List<Object>> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
-			List<Object> rowData = rows.get(0);
-			if (!rowData.get(0).equals(previousOrder.getPatient().getPatientId())) {
+			List<Object[]> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
+			Object[] rowData = rows.get(0);
+			if (!rowData[0].equals(previousOrder.getPatient().getPatientId())) {
 				throw new APIException("Order.cannot.change.patient", (Object[]) null);
-			} else if (!rowData.get(1).equals(previousOrder.getCareSetting().getCareSettingId())) {
+			} else if (!rowData[1].equals(previousOrder.getCareSetting().getCareSettingId())) {
 				throw new APIException("Order.cannot.change.careSetting", (Object[]) null);
-			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
+			} else if (!rowData[2].equals(previousOrder.getConcept().getConceptId())) {
 				throw new APIException("Order.cannot.change.concept", (Object[]) null);
 			} else if (isPreviousDrugOrder) {
 				Drug previousDrug = ((DrugOrder) previousOrder).getDrug();
-				if (previousDrug == null && rowData.get(3) != null) {
+				if (previousDrug == null && rowData[3] != null) {
 					throw new APIException("Order.cannot.change.drug", (Object[]) null);
-				} else if (previousDrug != null && !OpenmrsUtil.nullSafeEquals(rowData.get(3), previousDrug.getDrugId())) {
+				} else if (previousDrug != null && !OpenmrsUtil.nullSafeEquals(rowData[3], previousDrug.getDrugId())) {
 					throw new APIException("Order.cannot.change.drug", (Object[]) null);
 				}
 			}

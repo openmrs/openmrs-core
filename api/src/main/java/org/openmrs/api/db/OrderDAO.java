@@ -234,5 +234,5 @@ public interface OrderDAO {
 	 * @param isOrderADrugOrder is the order a previous order
 	 * @return a list of orders from the database
 	 */
-	public List<List<Object>> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException;
+	public List<Object[]> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException;
 }

@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.LockOptions;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
@@ -42,7 +43,6 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -184,16 +184,17 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	@Override
-	public List<List<Object>> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException {
-		String query = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id =";
+	public List<Object[]> getOrderFromDatabase(Order order, boolean isOrderADrugOrder) throws APIException {
+		String sql = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = :orderId";
 		
 		if (isOrderADrugOrder) {
-			query = "SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
-			        + "FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id =";
+			sql = " SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id " + 
+				  " FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id = :orderId";
 		}
-		List<List<Object>> lists = DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), query
-		        + order.getOrderId(), true);
-		return lists;
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setParameter("orderId", order.getOrderId());
+		
+		return query.list();
 	}
 	
 	/**
