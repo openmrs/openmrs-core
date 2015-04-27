@@ -25,7 +25,6 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.tags.MessageTag;
-import org.springframework.web.util.ExpressionEvaluationUtils;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.TagUtils;
@@ -169,7 +168,7 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 	 * Set JavaScript escaping for this tag, as boolean value. Default is "false".
 	 */
 	public void setJavaScriptEscape(String javaScriptEscape) throws JspException {
-		this.javaScriptEscape = ExpressionEvaluationUtils.evaluateBoolean("javaScriptEscape", javaScriptEscape, pageContext);
+		this.javaScriptEscape = Boolean.valueOf(javaScriptEscape);
 	}
 	
 	/**
@@ -194,9 +193,9 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 			msg = this.javaScriptEscape ? JavaScriptUtils.javaScriptEscape(msg) : msg;
 			
 			// Expose as variable, if demanded, else write to the page.
-			String resolvedVar = ExpressionEvaluationUtils.evaluateString("var", this.var, pageContext);
+			String resolvedVar = this.var;
 			if (resolvedVar != null) {
-				String resolvedScope = ExpressionEvaluationUtils.evaluateString("scope", this.scope, pageContext);
+				String resolvedScope = this.scope;
 				pageContext.setAttribute(resolvedVar, msg, TagUtils.getScope(resolvedScope));
 			} else {
 				writeMessage(msg);
@@ -225,8 +224,8 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 			resolvedMessage = (MessageSourceResolvable) this.message;
 		} else if (this.message != null) {
 			String expr = this.message.toString();
-			resolvedMessage = (MessageSourceResolvable) ExpressionEvaluationUtils.evaluate("message", expr,
-			    MessageSourceResolvable.class, pageContext);
+			throw new JspException("Attribute value \"" + expr + "\" is not "
+			        + "assignable to result class [" + MessageSourceResolvable.class.getName() + "]");
 		}
 		
 		if (resolvedMessage != null) {
@@ -234,13 +233,13 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 			return messageSource.getMessage(resolvedMessage, getRequestContext().getLocale());
 		}
 		
-		String resolvedCode = ExpressionEvaluationUtils.evaluateString("code", this.code, pageContext);
+		String resolvedCode = this.code;
 		String bodyText = null;
 		String resolvedText = null;
 		// if locale specified with tag attribute is the same as context locale
 		if (OpenmrsUtil.nullSafeEquals(this.locale, Context.getLocale().getLanguage())) {
 			// we need to evaluate fallback values in this case
-			resolvedText = ExpressionEvaluationUtils.evaluateString("text", this.text, pageContext);
+			resolvedText = this.text;
 			if (getBodyContent() != null) {
 				bodyText = getBodyContent().getString();
 			}
@@ -279,7 +278,7 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 		if (arguments instanceof String) {
 			String[] stringArray = StringUtils.delimitedListToStringArray((String) arguments, this.argumentSeparator);
 			if (stringArray.length == 1) {
-				Object argument = ExpressionEvaluationUtils.evaluate("argument", stringArray[0], pageContext);
+				Object argument = stringArray[0];
 				if (argument != null && argument.getClass().isArray()) {
 					return ObjectUtils.toObjectArray(argument);
 				} else {
@@ -288,8 +287,7 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 			} else {
 				Object[] argumentsArray = new Object[stringArray.length];
 				for (int i = 0; i < stringArray.length; i++) {
-					argumentsArray[i] = ExpressionEvaluationUtils.evaluate("argument[" + i + "]", stringArray[i],
-					    pageContext);
+					argumentsArray[i] = stringArray[i];
 				}
 				return argumentsArray;
 			}

@@ -28,7 +28,6 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.tags.NestedPathTag;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
-import org.springframework.web.util.ExpressionEvaluationUtils;
 
 /**
  * Formats a date object in the desired type:<br/>
@@ -74,7 +73,7 @@ public class FormatDateTag extends TagSupport {
 		if (date == null && getPath() != null) {
 			try {
 				// get the "path" object from the pageContext
-				String resolvedPath = ExpressionEvaluationUtils.evaluateString("path", getPath(), pageContext);
+				String resolvedPath = getPath();
 				String nestedPath = (String) pageContext.getAttribute(NestedPathTag.NESTED_PATH_VARIABLE_NAME,
 				    PageContext.REQUEST_SCOPE);
 				if (nestedPath != null) {
