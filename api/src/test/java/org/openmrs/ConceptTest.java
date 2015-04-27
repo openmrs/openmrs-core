@@ -1075,4 +1075,18 @@ public class ConceptTest {
 		
 		return mockConceptName;
 	}
+	
+	/**
+	 * @see Concept#getName()
+	 * @verifies return name in broader locale incase none is found in specific one
+	 */
+	@Test
+	public void getName_shouldReturnNameInBroaderLocaleIncaseNoneIsFoundInSpecificOne() throws Exception {
+		Locale locale = new Locale("en");
+		Locale localeToSearch = new Locale("en", "UK");
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Test Concept", locale));
+		Assert.assertEquals((concept.getName(locale, false).toString()), (concept.getName(localeToSearch, false).toString()));
+	}
+	
 }
