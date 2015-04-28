@@ -101,6 +101,7 @@ public class HibernateEnumType implements UserType, ParameterizedType {
 		return x.hashCode();
 	}
 	
+	@SuppressWarnings("squid:S1201")
 	public boolean equals(Object x, Object y) throws HibernateException {
 		if (x == y) {
 			return true;

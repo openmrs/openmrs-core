@@ -80,7 +80,7 @@ public class PrivilegeListController extends SimpleFormController {
 					//TODO convenience method deletePrivilege(String) ??
 					try {
 						us.purgePrivilege(us.getPrivilege(p));
-						if (!"".equals(success)) {
+						if (!"".equals(success.toString())) {
 							success.append("<br/>");
 						}
 						success.append(p).append(" ").append(deleted);
@@ -97,7 +97,7 @@ public class PrivilegeListController extends SimpleFormController {
 			}
 			
 			view = getSuccessView();
-			if (!"".equals(success)) {
+			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
 			if (!"".equals(error)) {

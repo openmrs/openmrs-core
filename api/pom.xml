@@ -123,9 +123,9 @@
          <groupId>stax</groupId>
          <artifactId>stax-api</artifactId>
       </dependency>
-      <dependency>
-        <groupId>javassist</groupId>
-        <artifactId>javassist</artifactId>
+       <dependency>
+         <groupId>org.javassist</groupId>
+         <artifactId>javassist</artifactId>
       </dependency>
       <dependency>
          <groupId>org.openmrs.hibernate</groupId>

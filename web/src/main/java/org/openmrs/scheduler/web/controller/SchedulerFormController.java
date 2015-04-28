@@ -45,8 +45,6 @@ public class SchedulerFormController extends SimpleFormController {
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
 	
-	public static DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
-	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
 	 * expected
@@ -59,7 +57,8 @@ public class SchedulerFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(java.lang.Long.class, new CustomNumberEditor(java.lang.Long.class, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(DEFAULT_DATE_FORMAT, true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(new SimpleDateFormat(DEFAULT_DATE_PATTERN),
+		        true));
 	}
 	
 	/**

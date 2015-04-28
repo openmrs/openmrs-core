@@ -357,7 +357,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			rootGroup = parent;
 		}
 		
-		log.error("this classloader hashcode: " + OpenmrsClassLoaderHolder.INSTANCE.hashCode());
+		log.info("this classloader hashcode: " + OpenmrsClassLoaderHolder.INSTANCE.hashCode());
 		
 		//		List<Thread> threads = listThreads(rootGroup, "");
 		//		for (Thread thread : threads) {

@@ -87,9 +87,9 @@ public class LocationValidator extends BaseCustomizableValidator implements Vali
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "address1", "address2",
 			    "cityVillage", "stateProvince", "country", "postalCode", "latitude", "longitude", "countyDistrict",
 			    "address3", "address4", "address5", "address6", "retireReason");
+			super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
 		}
 		
-		super.validateAttributes(location, errors, Context.getLocationService().getAllLocationAttributeTypes());
 	}
 	
 }

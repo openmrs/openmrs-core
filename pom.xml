@@ -265,9 +265,9 @@
 				<version>2.2</version>
 			</dependency>
 			<dependency>
-				<groupId>javassist</groupId>
-				<artifactId>javassist</artifactId>
-				<version>3.12.1.GA</version>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.19.0-GA</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openmrs.hibernate</groupId>
@@ -620,7 +620,7 @@
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
 				<artifactId>sonar-jacoco-listeners</artifactId>
-				<version>1.2</version>
+				<version>3.1</version>
 			</dependency>
         </dependencies>
 	</dependencyManagement>
@@ -852,12 +852,12 @@
 				<plugin>
 					<groupId>org.codehaus.sonar</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>4.3.2</version>
+					<version>4.5.4</version>
 				</plugin>	
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.7.1.201405082137</version>
+					<version>0.7.4.201502262128</version>
 				</plugin>	
 			</plugins>
 		</pluginManagement>
@@ -1164,6 +1164,7 @@
 		
 		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
+		<sonar.issuesReport.lightModeOnly>true</sonar.issuesReport.lightModeOnly>
 		<sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
 		<sonar.analysis.mode>incremental</sonar.analysis.mode>
 		

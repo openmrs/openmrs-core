@@ -1488,12 +1488,22 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public void setIdentifierValidators(Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
 		if (identifierValidators == null) {
-			PatientServiceImpl.identifierValidators = null;
+			PatientServiceImpl.setStaticIdentifierValidators(null);
 			return;
 		}
 		for (Map.Entry<Class<? extends IdentifierValidator>, IdentifierValidator> entry : identifierValidators.entrySet()) {
 			getIdentifierValidators().put(entry.getKey(), entry.getValue());
 		}
+	}
+	
+	/**
+	 * Sets identifierValidators using static method
+	 *
+	 * @param currentIdentifierValidators
+	 */
+	private static void setStaticIdentifierValidators(
+	        Map<Class<? extends IdentifierValidator>, IdentifierValidator> currentIdentifierValidators) {
+		PatientServiceImpl.identifierValidators = currentIdentifierValidators;
 	}
 	
 	/**
@@ -1708,7 +1718,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (StringUtils.isBlank(query)) {
 			return count;
 		}
-		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
 		
 		return OpenmrsUtil.convertToInteger(dao.getCountOfPatients(query, includeVoided));
 	}

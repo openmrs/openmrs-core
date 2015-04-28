@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -139,12 +140,7 @@ public class SchedulerUtil {
 	 * @return <code>String</code> representation of the given exception
 	 */
 	public static String getExceptionAsString(Throwable t) {
-		StringWriter stringWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(stringWriter, true);
-		t.printStackTrace(printWriter);
-		printWriter.flush();
-		stringWriter.flush();
-		return stringWriter.toString();
+		return ExceptionUtils.getStackTrace(t);
 	}
 	
 	/**

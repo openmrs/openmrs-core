@@ -35,23 +35,13 @@ $j(document).ready(function(){
     });
 });
 
-function toggleProviderDetails(){
-	
-	$j('.providerDetails').toggle();
-	
-	if($j('#providerName').is(":visible"))
-		$j('#linkToPerson').removeAttr('checked');
-	else
-		$j('#linkToPerson').attr('checked', 'checked');		
-		
-}
-
 function validateForm(){
 	var providerName = $j('#providerName');
 	var person = $j('#person_id');
+	var provider = "${provider.providerId}";
 	var msg = '<openmrs:message code="Provider.error.personAndName.provided" />';
 	var result = true;
-	if(providerName.val().length > 0 && person.val().length > 0){
+	if(providerName.val().length > 0 && (person.val().length > 0 && provider.length == 0)){
 		result = false;
 		$j('#msgHolder').html(msg).show();
 	}
@@ -116,28 +106,13 @@ function confirmPurge() {
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 					</spring:bind>
 				</td>
-				<td>&nbsp;&nbsp;&nbsp;<openmrs:message code="general.or" />&nbsp;&nbsp;&nbsp;</td>
-				<th><openmrs:message code="Provider.name"/><span id="providerRequired" class="required">*</span></th>
-				<td>
-					<spring:bind path="provider.name">			
-						<input type="text" name="${status.expression}" size="25"
-							   value="${status.value}" id="providerName" />
-					   	<span class="error" id="msgHolder">
-							<c:if test="${status.errorMessage != ''}">${status.errorMessage}</c:if>
-					   	</span> 
-					</spring:bind>
-				</td>
 			</tr>
 			</c:when>
 			<c:otherwise>
 			<tr>
-				<th><openmrs:message code="Provider.name"/></th>
+				<th><openmrs:message code="Provider.person"/></th>
 				<td>
-					<div class="providerDetails" <c:if test="${provider.person != null}">style="display:none"</c:if>>
-						<form:input id="providerName" path="provider.name" /> <form:errors path="provider.name" cssClass="error" /> <openmrs:message code="general.or" /> 
-						<a href="javascript:void(0)" onclick="toggleProviderDetails()"> <openmrs:message code="Provider.linkToPerson"/></a>
-					</div>
-					<div class="providerDetails" <c:if test="${provider.person == null}">style="display:none"</c:if>>
+					<div class="providerDetails">
 						<c:out value="${provider.person.personName}" />
 						<span <c:if test="${provider.person != null}">style="display:none"</c:if>>
 						<spring:bind path="provider.person">
@@ -145,10 +120,7 @@ function confirmPurge() {
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>	
 						</spring:bind>
 						</span>
-						<a href="javascript:void(0)" onclick="toggleProviderDetails()">(<openmrs:message code="Provider.unLinkFromPerson"/>)</a>
 					 </div>
-					 <input id="linkToPerson" name="linkToPerson" type="checkbox" value="true" style="display:none" 
-					 	<c:if test="${provider.person != null}">checked="checked"</c:if> />
 				</td>
 			</tr>
 			</c:otherwise>
