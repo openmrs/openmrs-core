@@ -74,15 +74,14 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			}
 			
 			obs.setComplexData(complexData);
-		}
-		// No other view supported
-		// NOTE: if adding support for another view, don't forget to update supportedViews list above
-		else {
+		} else {
+			// No other view supported
+			// NOTE: if adding support for another view, don't forget to update supportedViews list above
 			return null;
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");
-		complexData.setMIMEType("application/octet-stream");
+		complexData.setMimeType("application/octet-stream");
 		obs.setComplexData(complexData);
 		
 		return obs;

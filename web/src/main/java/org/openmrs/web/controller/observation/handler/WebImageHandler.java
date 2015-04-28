@@ -30,7 +30,7 @@ import org.openmrs.web.controller.observation.handler.WebHandlerUtils;
 public class WebImageHandler extends ImageHandler {
 	
 	/** Views supported by this handler */
-	private static final String[] supportedViews = { ComplexObsHandler.URI_VIEW, ComplexObsHandler.HTML_VIEW, };
+	private static final String[] supportedViews = { ComplexObsHandler.URI_VIEW, ComplexObsHandler.HTML_VIEW };
 	
 	/**
 	 * Default Constructor
@@ -79,10 +79,10 @@ public class WebImageHandler extends ImageHandler {
 	 */
 	@Override
 	public String[] getSupportedViews() {
-		List view_list = new ArrayList(Arrays.asList(supportedViews));
-		view_list.addAll(Arrays.asList(super.getSupportedViews()));
-		String[] views = new String[view_list.size()];
-		view_list.toArray(views);
+		List viewList = new ArrayList(Arrays.asList(supportedViews));
+		viewList.addAll(Arrays.asList(super.getSupportedViews()));
+		String[] views = new String[viewList.size()];
+		viewList.toArray(views);
 		return views;
 	}
 	

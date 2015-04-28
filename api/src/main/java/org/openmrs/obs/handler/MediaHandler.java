@@ -60,7 +60,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 				FileInputStream mediaStream = new FileInputStream(file);
 				ComplexData complexData = new ComplexData(originalFilename, mediaStream);
 				
-				complexData.setMIMEType(OpenmrsUtil.getFileMimeType(file));
+				complexData.setMimeType(OpenmrsUtil.getFileMimeType(file));
 				
 				complexData.setLength(file.length());
 				
