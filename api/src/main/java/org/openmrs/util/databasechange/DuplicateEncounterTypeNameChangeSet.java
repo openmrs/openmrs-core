@@ -124,7 +124,7 @@ public class DuplicateEncounterTypeNameChangeSet implements CustomTaskChange {
 					
 					do {
 						String sqlValidatorString = "select * from encounter_type where name = '" + newName + "'";
-						duplicateResult = DatabaseUtil.executeSQLWithConnection(con, sqlValidatorString, true);
+						duplicateResult = DatabaseUtil.executeSQL(con, sqlValidatorString, true);
 						
 						if (!duplicateResult.isEmpty()) {
 							duplicateNameId += 1;

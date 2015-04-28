@@ -49,7 +49,7 @@ public class ConvertOrderersToProviders implements CustomTaskChange {
 		final String query = "SELECT u.user_id AS userId, p.provider_id AS providerId FROM users u, provider p"
 		        + " WHERE u.person_id = p.person_id AND u.user_id IN (select orderer from orders)";
 		
-		return DatabaseUtil.executeSQLWithConnection(connection.getUnderlyingConnection(), query, true);
+		return DatabaseUtil.executeSQL(connection.getUnderlyingConnection(), query, true);
 	}
 	
 	private void convertOrdererToProvider(JdbcConnection connection, List<List<Object>> usersAndProviders)

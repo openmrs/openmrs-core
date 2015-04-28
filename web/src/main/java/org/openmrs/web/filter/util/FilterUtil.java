@@ -238,7 +238,7 @@ public class FilterUtil {
 		
 		try {
 			connection = DatabaseUpdater.getConnection();
-			List<List<Object>> results = DatabaseUtil.executeSQLWithConnection(connection,
+			List<List<Object>> results = DatabaseUtil.executeSQL(connection,
 			    "select property_value from global_property where property = '" + globalPropertyName + "'", true);
 			if (results.size() == 1 && results.get(0).size() == 1) {
 				propertyValue = results.get(0).get(0).toString();

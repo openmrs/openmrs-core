@@ -124,7 +124,7 @@ public class DuplicateEncounterRoleNameChangeSet implements CustomTaskChange {
 					Connection con = DatabaseUpdater.getConnection();
 					do {
 						String sqlValidatorString = "select * from encounter_role where name = '" + newName + "'";
-						duplicateResult = DatabaseUtil.executeSQLWithConnection(con, sqlValidatorString, true);
+						duplicateResult = DatabaseUtil.executeSQL(con, sqlValidatorString, true);
 						
 						if (!duplicateResult.isEmpty()) {
 							

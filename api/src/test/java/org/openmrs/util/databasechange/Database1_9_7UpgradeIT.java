@@ -276,13 +276,13 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		
 		//Check that we have some orders with no orderers
-		List<List<Object>> rows = DatabaseUtil.executeSQLWithConnection(upgradeTestUtil.getConnection(),
+		List<List<Object>> rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "select order_id from orders where orderer is null", true);
 		Assert.assertEquals(2, rows.size());
 		List<Integer> orderIdsWithNoOrderer = Arrays.asList((Integer) rows.get(0).get(0), (Integer) rows.get(1).get(0));
 		
 		//Sanity check that we have orders with orderer column set
-		rows = DatabaseUtil.executeSQLWithConnection(upgradeTestUtil.getConnection(),
+		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "select order_id, orderer from orders where orderer is not null", true);
 		List<OrderAndPerson> ordersAndOrderersWithAProviderAccount = new ArrayList<OrderAndPerson>();
 		for (List<Object> row : rows) {
@@ -300,7 +300,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		//That correct providers were set for each order, i.e the person record for the provider
 		//should match the that of the user account before upgrade
 		for (OrderAndPerson op : ordersAndOrderersWithAProviderAccount) {
-			rows = DatabaseUtil.executeSQLWithConnection(upgradeTestUtil.getConnection(),
+			rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 			    "select p.provider_id, p.person_id from provider p join orders o on p.provider_id = o.orderer where order_id = "
 			            + op.getOrderId(), true);
 			Assert.assertEquals(op.getPersonId(), rows.get(0).get(1));
@@ -309,7 +309,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		}
 		
 		//The orderer column for orders with null orderers previously should be set to Unknown Provider
-		rows = DatabaseUtil.executeSQLWithConnection(upgradeTestUtil.getConnection(),
+		rows = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "select order_id from orders where orderer = (Select provider_id from provider where uuid ="
 		            + "(select property_value from global_property where property = '"
 		            + OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID + "'))", true);
@@ -394,23 +394,22 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
 		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
-		List<List<Object>> discontinuedOrders = DatabaseUtil.executeSQLWithConnection(upgradeTestUtil.getConnection(),
+		List<List<Object>> discontinuedOrders = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "SELECT count(*) order_id FROM orders WHERE discontinued = true", true);
 		long discontinuedOrdersCount = (Long) discontinuedOrders.get(0).get(0);
 		assertEquals(3, discontinuedOrdersCount);
 		
 		upgradeTestUtil.upgrade();
-		List<List<Object>> discontinuationOrders = DatabaseUtil.executeSQLWithConnection(upgradeTestUtil.getConnection(),
+		List<List<Object>> discontinuationOrders = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE'", true);
 		assertEquals(discontinuedOrdersCount, discontinuationOrders.get(0).get(0));
 		
 		//There should be no DC order with a null stop date
-		List<List<Object>> discontinuationOrdersWithNotStartDate = DatabaseUtil.executeSQLWithConnection(upgradeTestUtil
-		        .getConnection(),
+		List<List<Object>> discontinuationOrdersWithNotStartDate = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE' AND auto_expire_date IS NULL", true);
 		assertEquals(0L, discontinuationOrdersWithNotStartDate.get(0).get(0));
 		
-		List<List<Object>> newer = DatabaseUtil.executeSQLWithConnection(upgradeTestUtil.getConnection(),
+		List<List<Object>> newer = DatabaseUtil.executeSQL(upgradeTestUtil.getConnection(),
 		    "SELECT count(*) FROM orders WHERE order_action = 'DISCONTINUE' AND "
 		            + "(date_activated IS NULL OR orderer IS NULL OR encounter_id IS NULL OR previous_order_id IS NULL)",
 		    true);
