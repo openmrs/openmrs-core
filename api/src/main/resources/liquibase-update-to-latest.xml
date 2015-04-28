@@ -7612,18 +7612,6 @@
         </ext:modifyColumn>
     </changeSet>
 
-    <changeSet id="201403011348" author="alexisduque">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="orders" columnName="orderer" />
-        </preConditions>
-        <comment>Make orders.orderer not NULLable</comment>
-        <ext:modifyColumn tableName="orders">
-            <column name="orderer" type="int">
-                <constraints nullable="false" />
-            </column>
-        </ext:modifyColumn>
-    </changeSet>
-
     <changeSet id="201311041510" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="as_needed" /></not>
@@ -8305,6 +8293,19 @@
         <comment>Adding foreign key constraint to orders.orderer column</comment>
         <addForeignKeyConstraint constraintName="fk_orderer_provider" baseTableName="orders" baseColumnNames="orderer"
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
+    </changeSet>
+
+    <!-- TRUNK-4690: Orders.orderer column cannot be set to NOT NULL until after user to provider migration occurs -->
+    <changeSet id="201403011348" author="alexisduque">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="orderer" />
+        </preConditions>
+        <comment>Make orders.orderer not NULLable</comment>
+        <ext:modifyColumn tableName="orders">
+            <column name="orderer" type="int">
+                <constraints nullable="false" />
+            </column>
+        </ext:modifyColumn>
     </changeSet>
 
     <changeSet id="201403061758-TRUNK-4284" author="Banka, Vinay">
