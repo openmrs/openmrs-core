@@ -64,14 +64,14 @@ public class ModuleFactory {
 	
 	private static Log log = LogFactory.getLog(ModuleFactory.class);
 	
-	protected static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
+	protected static volatile Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
 	
-	protected static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
+	protected static volatile Map<String, Module> startedModules = new WeakHashMap<String, Module>();
 	
-	protected static Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
+	protected static volatile Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
 	
 	// maps to keep track of the memory and objects to free/close
-	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	protected static volatile Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
 	
 	private static Map<String, Set<ModuleClassLoader>> providedPackages = new ConcurrentHashMap<String, Set<ModuleClassLoader>>();
 	
@@ -80,7 +80,7 @@ public class ModuleFactory {
 	
 	private static final Map<String, DaemonToken> daemonTokens = new WeakHashMap<String, DaemonToken>();
 	
-	private static Set<String> actualStartupOrder;
+	private static volatile Set<String> actualStartupOrder;
 	
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an
@@ -1093,7 +1093,7 @@ public class ModuleFactory {
 				if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
 					mod.getModuleActivator().willStop();
 			}
-			catch (Throwable t) {
+			catch (Exception t) {
 				log.warn("Unable to call module's Activator.willStop() method", t);
 			}
 			
@@ -1154,12 +1154,12 @@ public class ModuleFactory {
 								Context.removeAdvice(cls, (Advice) aopObject);
 							}
 						}
-						catch (Throwable t) {
+						catch (Exception t) {
 							log.warn("Could not remove advice point: " + advice.getPoint(), t);
 						}
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception t) {
 					log.warn("Error while getting advicePoints from module: " + moduleId, t);
 				}
 				
@@ -1180,7 +1180,7 @@ public class ModuleFactory {
 						}
 					}
 				}
-				catch (Throwable t) {
+				catch (Exception t) {
 					log.warn("Error while getting extensions from module: " + moduleId, t);
 				}
 			}
@@ -1199,7 +1199,7 @@ public class ModuleFactory {
 				else
 					mod.getActivator().shutdown();//implements old  Activator interface
 			}
-			catch (Throwable t) {
+			catch (Exception t) {
 				log.warn("Unable to call module's Activator.shutdown() method", t);
 			}
 			

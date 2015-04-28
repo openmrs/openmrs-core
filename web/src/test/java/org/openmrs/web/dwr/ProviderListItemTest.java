@@ -9,14 +9,14 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.HashSet;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
+
+import java.util.HashSet;
 
 public class ProviderListItemTest {
 	
@@ -63,19 +63,6 @@ public class ProviderListItemTest {
 	}
 	
 	/**
-	 * @see ProviderListItem#getDisplayName()
-	 * @verifies return a display name based on provider name when person is not associated
-	 */
-	@Test
-	public void getDisplayName_shouldReturnADisplayNameBasedOnProviderNameWhenPersonIsNotAssociated() throws Exception {
-		Provider provider = new Provider();
-		provider.setName("providerName");
-		
-		ProviderListItem providerListItem = new ProviderListItem(provider);
-		Assert.assertEquals("providerName", providerListItem.getDisplayName());
-	}
-	
-	/**
 	 * @see ProviderListItem#getIdentifier()
 	 * @verifies return the identifier that is mentioned for the provider when a person is not
 	 *           specified
@@ -84,7 +71,6 @@ public class ProviderListItemTest {
 	public void getIdentifier_shouldReturnTheIdentifierThatIsMentionedForTheProviderWhenAPersonIsNotSpecified()
 	        throws Exception {
 		Provider provider = new Provider();
-		provider.setName("providerName");
 		provider.setIdentifier("identifier");
 		ProviderListItem providerListItem = new ProviderListItem(provider);
 		Assert.assertEquals("identifier", providerListItem.getIdentifier());

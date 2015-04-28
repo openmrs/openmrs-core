@@ -29,6 +29,8 @@ import org.openmrs.util.OpenmrsConstants;
 @Deprecated
 public class AddressSupport extends LayoutSupport<AddressTemplate> implements GlobalPropertyListener {
 	
+	private static final String NEW_ADDRESS_TEMPLATE_CLASSNAME = "org.openmrs.layout.address.AddressTemplate";
+	
 	private static AddressSupport singleton;
 	
 	private boolean initialized = false;
@@ -143,7 +145,10 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	private void setAddressTemplate(String xml) {
 		AddressTemplate addressTemplate;
 		try {
-			
+			//Retrieve the addressTemplate from the database. Since we are about to cast it to 
+			//an org.openmrs.layout.web.address.AddressTemplate, if the classname has been updated
+			//in the database, change it back
+			xml = xml.replace(NEW_ADDRESS_TEMPLATE_CLASSNAME, AddressTemplate.class.getName());
 			addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
 			    AddressTemplate.class);
 		}

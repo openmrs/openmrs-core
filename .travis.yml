@@ -13,6 +13,10 @@ notifications:
   email: false
   irc:
     channels:
-      - "irc.freenode.org#OpenMRS"
+      - "irc.freenode.org#openmrs"
     template:
-      - "[%{repository}] [%{commit}] [%{author}] %{message} - %{build_url}"
+      - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}"
+      - "Change view : %{compare_url}"
+      - "Build details : %{build_url}"
+    use_notice: true
+    skip_join: true

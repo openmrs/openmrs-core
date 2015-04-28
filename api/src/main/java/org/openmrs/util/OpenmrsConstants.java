@@ -796,6 +796,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_GZIP_ENABLED = "gzip.enabled";
 	
+	public static final String GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS = "gzip.acceptCompressedRequestsForPaths";
+	
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 	
 	public static final String GLOBAL_PROPERTY_PROBLEM_LIST = "concept.problemList";
@@ -1272,7 +1274,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_PATIENT_NAME_REGEX,
-		                "^[a-zA-Z \\-]+$",
+		                "",
 		                "Names of the patients must pass this regex. Eg : ^[a-zA-Z \\-]+$ contains only english alphabet letters, spaces, and hyphens. A value of .* or the empty string means no validation is done."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, String
