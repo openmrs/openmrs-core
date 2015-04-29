@@ -25,8 +25,6 @@
 			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
 		</id>
 
-		<discriminator column="concept_id" insert="false" />
-		
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 

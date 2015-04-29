@@ -32,7 +32,7 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	@ContainedIn
 	private Drug drug;
 	
-	@IndexedEmbedded
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private ConceptReferenceTerm conceptReferenceTerm;
 	
 	private ConceptMapType conceptMapType;

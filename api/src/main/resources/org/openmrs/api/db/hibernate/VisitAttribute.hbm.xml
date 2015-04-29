@@ -24,7 +24,7 @@
 			</generator>
 		</id>
 
-        <discriminator column="visit_attribute_id" insert="false" />
+        
         
         <many-to-one name="visit" class="Visit" not-null="true" column="visit_id" />
         

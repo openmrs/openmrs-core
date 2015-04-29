@@ -170,7 +170,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	@Override
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		if (configuration == null) {
-			LocalSessionFactoryBean sessionFactoryBean = (LocalSessionFactoryBean) applicationContext
+			HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
 			        .getBean("&sessionFactory");
 			configuration = sessionFactoryBean.getConfiguration();
 		}

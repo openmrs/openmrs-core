@@ -233,12 +233,6 @@
 				<artifactId>spring-oxm</artifactId>
 				<version>${springVersion}</version>
 			</dependency>
-
-			<!-- For the upgrade to Spring 3.0, antlr-runtime-3.2.jar is required.
-				However, Hibernate 3.25 needs antlr_2.7.6.jar and they can both exist because
-				their packaging is different. The earlier version, 2.7.6, is antlr.* whereas
-				3.2 is org.antlr.*, so they can co-habitate here just fine. For more information,
-				see this article: http://blog.newsplore.com/2009/03/07/upgrading-to-spring-30 -->
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr-runtime</artifactId>
@@ -270,47 +264,40 @@
                 <version>3.19.0-GA</version>
 			</dependency>
 			<dependency>
-				<groupId>org.openmrs.hibernate</groupId>
+				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>${hibernateVersion}-mod</version>
+				<version>${hibernateVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-c3p0</artifactId>
 				<version>${hibernateVersion}</version>
-				<exclusions>
-                    <exclusion>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-core</artifactId>
-                    </exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-ehcache</artifactId>
 				<version>${hibernateVersion}</version>
 				<exclusions>
-                    <exclusion>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-core</artifactId>
-                    </exclusion>
+					<exclusion>
+						<groupId>net.sf.ehcache</groupId>
+						<artifactId>ehcache-core</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-search</artifactId>
-				<version>3.4.2.Final</version>
-				<exclusions>
-                    <exclusion>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-core</artifactId>
-                    </exclusion>
-				</exclusions>
+				<artifactId>hibernate-search-orm</artifactId>
+				<version>5.1.2.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queryparser</artifactId>
+				<version>4.10.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-queries</artifactId>
-				<version>3.1.0</version>
+				<version>4.10.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
@@ -568,7 +555,7 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.183</version>
+				<version>1.4.187</version>
 			</dependency>
 			<dependency>
 				<groupId>org.dbunit</groupId>
@@ -592,10 +579,9 @@
 			</dependency>
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache-core</artifactId>
-				<version>2.2.0</version>
+				<artifactId>ehcache</artifactId>
+				<version>2.10.0</version>
 			</dependency>
-
             <dependency>
                 <groupId>com.googlecode.lambdaj</groupId>
                 <artifactId>lambdaj</artifactId>
@@ -1159,7 +1145,7 @@
         <openmrs.version>${project.version}</openmrs.version>
 
 		<springVersion>4.1.4.RELEASE</springVersion>
-		<hibernateVersion>3.6.5.Final</hibernateVersion>
+		<hibernateVersion>4.3.9.FINAL</hibernateVersion>
 		<customArgLineForTesting />
 		
 		<sonar.host.url>https://ci.openmrs.org/sonar</sonar.host.url>
