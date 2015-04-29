@@ -191,8 +191,8 @@ public class HibernateOrderDAO implements OrderDAO {
 			query = "SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
 			        + "FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id =";
 		}
-		List<List<Object>> lists = DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), query
-		        + order.getOrderId(), true);
+		List<List<Object>> lists = DatabaseUtil.executeSQL(sessionFactory.getCurrentSession(), query + order.getOrderId(),
+		    true);
 		return lists;
 	}
 	
