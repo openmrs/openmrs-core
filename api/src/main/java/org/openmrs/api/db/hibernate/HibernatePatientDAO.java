@@ -127,7 +127,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 			if (patient.getDateCreated() == null) { //If not yet persisted
 				patient.setDateCreated(new Date());
-			}		
+			}
 			
 			String insert = "INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (:patientId, :creator, 0, :dateCreated)";
 			Query query = sessionFactory.getCurrentSession().createSQLQuery(insert);
