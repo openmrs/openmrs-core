@@ -111,7 +111,7 @@ public class DatabaseUtil {
 			
 			@Override
 			public void execute(Connection conn) {
-				getResultFromSQLQuery(conn, query, sessionDataManipulation, result);
+				populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result);
 			}
 		});
 		
@@ -125,7 +125,7 @@ public class DatabaseUtil {
 		sql = sql.trim();
 		boolean dataManipulation = checkQueryForManipulationCommands(sql, selectOnly);
 		List<List<Object>> result = new ArrayList<List<Object>>();
-		getResultFromSQLQuery(conn, sql, dataManipulation, result);
+		populateResultsFromSQLQuery(conn, sql, dataManipulation, result);
 		return result;
 	}
 	
@@ -145,8 +145,8 @@ public class DatabaseUtil {
 		return dataManipulation;
 	}
 	
-	private static void getResultFromSQLQuery(Connection conn, String sql, boolean dataManipulation,
-                                              List<List<Object>> results) {
+	private static void populateResultsFromSQLQuery(Connection conn, String sql, boolean dataManipulation,
+	        List<List<Object>> results) {
 		PreparedStatement ps = null;
 		try {
 			ps = conn.prepareStatement(sql);
