@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
+import org.hibernate.FlushMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -193,6 +194,9 @@ public class HibernateOrderDAO implements OrderDAO {
 		}
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setParameter("orderId", order.getOrderId());
+		
+		//prevent hibernate from flushing before fetching the list
+		query.setFlushMode(FlushMode.MANUAL);
 		
 		return query.list();
 	}
