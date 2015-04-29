@@ -9,28 +9,27 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
-import org.openmrs.attribute.AttributeType;
 
 /**
  * Hibernate location-related database functions
@@ -52,7 +51,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public Location saveLocation(Location location) {
 		if (location.getChildLocations() != null && location.getLocationId() != null) {
 			// hibernate has a problem updating child collections
-			// if the parent object was already saved so we do it 
+			// if the parent object was already saved so we do it
 			// explicitly here
 			for (Location child : location.getChildLocations())
 				if (child.getLocationId() == null)
@@ -303,5 +302,34 @@ public class HibernateLocationDAO implements LocationDAO {
 	public LocationAttribute getLocationAttributeByUuid(String uuid) {
 		return (LocationAttribute) sessionFactory.getCurrentSession().createCriteria(LocationAttribute.class).add(
 		    Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationsHavingAllTags(java.util.List)
+	 */
+	@Override
+	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) {
+        tags.removeAll(Collections.singleton(null));
+
+		DetachedCriteria numberOfMatchingTags = DetachedCriteria.forClass(Location.class, "alias").createAlias("alias.tags",
+                "locationTag").add(Restrictions.in("locationTag.locationTagId", getLocationTagIds(tags))).setProjection(
+                Projections.rowCount()).add(Restrictions.eqProperty("alias.locationId", "outer.locationId"));
+		
+		return sessionFactory.getCurrentSession().createCriteria(Location.class, "outer").add(
+                Restrictions.eq("retired", false)).add(Subqueries.eq(new Long(tags.size()), numberOfMatchingTags)).list();
+	}
+	
+	/**
+	 * Extract locationTagIds from the list of LocationTag objects provided.
+	 *
+	 * @param tags
+	 * @return
+	 */
+	private List<Integer> getLocationTagIds(List<LocationTag> tags) {
+		List<Integer> locationTagIds = new ArrayList<Integer>();
+		for (LocationTag tag : tags) {
+			locationTagIds.add(tag.getLocationTagId());
+		}
+		return locationTagIds;
 	}
 }
