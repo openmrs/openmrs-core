@@ -69,7 +69,7 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 		String[] currentState = new String[] { "new" };
 		ImmutableEntityInterceptor interceptor = new SomeImmutableEntityInterceptor();
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(is("editing.fields.not.allowed"));
+		expectedException.expectMessage(is("Editing some fields on Order is not allowed"));
 		interceptor.onFlushDirty(new Order(), null, currentState, previousState, propertyNames, null);
 	}
 	
@@ -99,7 +99,7 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 		String[] currentState = new String[] { "new" };
 		ImmutableEntityInterceptor interceptor = new SomeImmutableEntityInterceptor();
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(is("editing.fields.not.allowed"));
+		expectedException.expectMessage(is("Editing some fields on Order is not allowed"));
 		Order order = new Order();
 		order.setVoided(true);
 		interceptor.onFlushDirty(order, null, currentState, previousState, propertyNames, null);

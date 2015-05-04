@@ -626,7 +626,9 @@ public final class Module {
 	 * a string containing language and country codes.
 	 *
 	 * @return mapping from locales to properties
+	 * @deprecated since 1.12, messages are loaded from classpath
 	 */
+	@Deprecated
 	public Map<String, Properties> getMessages() {
 		return messages;
 	}
@@ -635,7 +637,9 @@ public final class Module {
 	 * Sets the map from locale to properties used by this module.
 	 *
 	 * @param messages map of locale to properties for that locale
+	 * @deprecated since 1.12, does nothing, messages are loaded from classpath
 	 */
+	@Deprecated
 	public void setMessages(Map<String, Properties> messages) {
 		this.messages = messages;
 	}

@@ -21,7 +21,9 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should add an alert with message of length equals Text Max Length", method = "notifySuperUsers(String,Exception,null)")
 	public void notifySuperUsers_shouldAddAnAlertWithMessageOfLengthEqualsTextMaxLength() {
-		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", new Exception(), "test");
+		Context.getAlertService().notifySuperUsers(
+		    Context.getMessageSourceService().getMessage("Module.startupError.notification.message"), new Exception(),
+		    "test");
 		
 		Alert lastAlert = Context.getAlertService().getAlertsByUser(null).iterator().next();
 		
@@ -32,7 +34,8 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should add an alert with message text if cause is null", method = "notifySuperUsers(String,Exception,null)")
 	public void notifySuperUsers_shouldAddAnAlertWithMessageTextIfCauseIsNull() {
 		
-		Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, "test");
+		Context.getAlertService().notifySuperUsers(
+		    Context.getMessageSourceService().getMessage("Module.startupError.notification.message"), null, "test");
 		
 		Alert lastAlert = Context.getAlertService().getAlertsByUser(null).iterator().next();
 		
@@ -54,7 +57,8 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		
 		//Call the method to be tested
 		AlertServiceImpl alert = new AlertServiceImpl();
-		alert.notifySuperUsers("Module.startupError.notification.message", null, "test");
+		alert.notifySuperUsers(Context.getMessageSourceService().getMessage("Module.startupError.notification.message"),
+		    null, "test");
 		
 		// Check that there is exactly one alert after the message is called
 		Assert.assertEquals(1, Context.getAlertService().getAlertsByUser(null).size());
@@ -63,6 +67,6 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		Alert alertOne = Context.getAlertService().getAlertsByUser(null).iterator().next();
 		
 		//Test that alert contains the expected content
-		Assert.assertTrue(alertOne.getText().equals("Module.startupError.notification.message"));
+		Assert.assertTrue(alertOne.getText().equals("There was an error starting the module: test"));
 	}
 }
