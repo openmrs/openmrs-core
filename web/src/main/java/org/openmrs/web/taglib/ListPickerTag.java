@@ -20,19 +20,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class ListPickerTag extends TagSupport {
-	
+
 	public static final long serialVersionUID = 1122112233L;
-	
+
 	private final Log log = LogFactory.getLog(getClass());
-	
+
 	private String name;
-	
+
 	private Collection<Object> allItems;
-	
+
 	private Collection<Object> currentItems;
-	
+
 	private Collection<Object> inheritedItems;
-	
+
+	private Collection<Object> descendantItems;
+
 	public int doStartTag() {
 		Random gen = new Random();
 		if (name == null) {
@@ -44,13 +46,18 @@ public class ListPickerTag extends TagSupport {
 		if (inheritedItems == null) {
 			inheritedItems = new Vector<Object>();
 		}
+		if (descendantItems == null) {
+			descendantItems = new Vector<Object>();
+		}
 		if (allItems == null) {
 			allItems = new Vector<Object>();
 		}
-		
 		String str = "\n<div id='" + name + "' class='listItemBox'>";
-		
+
 		for (Object item : allItems) {
+			if (descendantItems.contains(item)) {
+				continue;
+			}
 			boolean checked = false;
 			boolean inherited = false;
 			if (currentItems.contains(item)) {
@@ -79,49 +86,57 @@ public class ListPickerTag extends TagSupport {
 			str += " /><label for='" + id + "'>" + item + "</label>";
 			str += "</span>\n";
 		}
-		
+
 		str += "</div>\n\n";
-		
+
 		try {
 			pageContext.getOut().write(str);
 		}
 		catch (IOException e) {
 			log.error(e);
 		}
-		
+
 		return SKIP_BODY;
 	}
-	
+
 	public Collection<Object> getAllItems() {
 		return allItems;
 	}
-	
+
 	public void setAllItems(Collection<Object> allItems) {
 		this.allItems = allItems;
 	}
-	
+
 	public Collection<Object> getCurrentItems() {
 		return currentItems;
 	}
-	
+
 	public void setCurrentItems(Collection<Object> currentItems) {
 		this.currentItems = currentItems;
 	}
-	
+
 	public Collection<Object> getInheritedItems() {
 		return currentItems;
 	}
-	
+
 	public void setInheritedItems(Collection<Object> inheritedItems) {
 		this.inheritedItems = inheritedItems;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	public Collection<Object> getDescendantItems() {
+		return descendantItems;
+	}
+
+	public void setDescendantItems(Collection<Object> descendantItems) {
+		this.descendantItems = descendantItems;
+	}
+
 }
