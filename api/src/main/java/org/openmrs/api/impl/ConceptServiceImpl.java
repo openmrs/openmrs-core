@@ -282,9 +282,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
-		// add/remove entries in the concept_word table (used for searching)
-		this.updateConceptIndex(conceptToReturn);
-		
 		return conceptToReturn;
 	}
 	

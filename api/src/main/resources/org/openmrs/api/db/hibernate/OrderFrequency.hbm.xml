@@ -22,7 +22,7 @@
 			</generator>
 		</id>
 
-		<discriminator column="order_frequency_id" insert="false" />
+		
 
 		<many-to-one name="concept" class="org.openmrs.Concept"
 			not-null="true" column="concept_id" unique="true" />

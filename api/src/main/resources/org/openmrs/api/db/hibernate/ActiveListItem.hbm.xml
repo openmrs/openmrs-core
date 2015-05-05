@@ -25,8 +25,6 @@
 			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator"/>
 		</id>
 
-		<discriminator column="active_list_id" insert="false"/>
-		
 		<property name="startDate" type="java.util.Date" column="start_date" not-null="true"/>
 		
 		<property name="endDate" type="java.util.Date" column="end_date"/>

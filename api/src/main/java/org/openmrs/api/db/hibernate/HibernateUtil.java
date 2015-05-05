@@ -26,7 +26,8 @@ import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
-import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.jdbc.ReturningWork;
 import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.Location;
 import org.openmrs.attribute.AttributeType;
@@ -85,8 +86,15 @@ public class HibernateUtil {
 	/**
 	 * @see HibernateUtil#escapeSqlWildcards(String, Connection)
 	 */
-	public static String escapeSqlWildcards(String oldString, SessionFactory sessionFactory) {
-		return escapeSqlWildcards(oldString, sessionFactory.getCurrentSession().connection());
+	public static String escapeSqlWildcards(final String oldString, SessionFactory sessionFactory) {
+		return sessionFactory.getCurrentSession().doReturningWork(new ReturningWork<String>() {
+			
+			@Override
+			public String execute(Connection connection) throws SQLException {
+				return escapeSqlWildcards(oldString, connection);
+			}
+		});
+		
 	}
 	
 	/**
@@ -121,6 +129,7 @@ public class HibernateUtil {
 	
 	/**
 	 * Adds attribute value criteria to the given criteria query
+	 * 
 	 * @param criteria the criteria
 	 * @param serializedAttributeValues the serialized attribute values
 	 * @param <AT> the attribute type

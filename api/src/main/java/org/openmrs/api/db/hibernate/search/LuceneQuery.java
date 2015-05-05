@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate.search;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -16,13 +17,12 @@ import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queries.TermsFilter;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermsFilter;
-import org.apache.lucene.util.Version;
 import org.hibernate.Session;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
@@ -207,7 +207,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 */
 	protected QueryParser newQueryParser() {
 		Analyzer analyzer = getFullTextSession().getSearchFactory().getAnalyzer(getType());
-		QueryParser queryParser = new QueryParser(Version.LUCENE_31, null, analyzer);
+		QueryParser queryParser = new QueryParser(null, analyzer);
 		queryParser.setDefaultOperator(Operator.AND);
 		return queryParser;
 	}
@@ -237,17 +237,24 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 		
 		List<Object> documents = listProjection(idPropertyName, field);
 		
-		Set<Object> uniqueFieldValues = new HashSet<Object>();
-		TermsFilter termsFilter = new TermsFilter();
-		for (Object document : documents) {
-			Object[] row = (Object[]) document;
-			if (uniqueFieldValues.add(row[1])) {
-				termsFilter.addTerm(new Term(idPropertyName, row[0].toString()));
+		TermsFilter termsFilter = null;
+		if (!documents.isEmpty()) {
+			Set<Object> uniqueFieldValues = new HashSet<Object>();
+			List<Term> terms = new ArrayList<Term>();
+			for (Object document : documents) {
+				Object[] row = (Object[]) document;
+				if (uniqueFieldValues.add(row[1])) {
+					terms.add(new Term(idPropertyName, row[0].toString()));
+				}
 			}
+			termsFilter = new TermsFilter(terms);
 		}
 		
 		buildQuery();
-		fullTextQuery.setFilter(termsFilter);
+		
+		if (termsFilter != null) {
+			fullTextQuery.setFilter(termsFilter);
+		}
 		
 		return this;
 	}

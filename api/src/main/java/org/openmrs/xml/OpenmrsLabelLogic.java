@@ -13,7 +13,7 @@ import java.beans.Introspector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.collection.PersistentCollection;
+import org.hibernate.collection.spi.PersistentCollection;
 import org.simpleframework.xml.graph.LabelLogic;
 import org.simpleframework.xml.stream.NodeMap;
 
