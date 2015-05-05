@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
@@ -54,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -448,7 +445,7 @@ public class OpenmrsUtil {
 		Set<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
 		
 		for (Class cls : classes) {
-			Field flds[] = cls.getDeclaredFields();
+			Field[] flds = cls.getDeclaredFields();
 			for (Field fld : flds) {
 				String fieldValue = null;
 				
@@ -487,7 +484,7 @@ public class OpenmrsUtil {
 	public static Map<String, String> getCoreRoles() {
 		Map<String, String> roles = new HashMap<String, String>();
 		
-		Field flds[] = RoleConstants.class.getDeclaredFields();
+		Field[] flds = RoleConstants.class.getDeclaredFields();
 		for (Field fld : flds) {
 			String fieldValue = null;
 			
@@ -651,7 +648,7 @@ public class OpenmrsUtil {
 		if (logLevel != null) {
 			
 			// the default log level is org.openmrs
-			if (logClass == null || "".equals(logClass)) {
+			if (StringUtils.isEmpty(logClass)) {
 				logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
 			}
 			
@@ -1797,7 +1794,7 @@ public class OpenmrsUtil {
 	 * @return file new file that is able to be written to
 	 */
 	public static File getOutFile(File dir, Date date, User user) {
-		
+		Random gen = new Random();
 		File outFile;
 		do {
 			// format to print date in filenmae
@@ -1821,7 +1818,7 @@ public class OpenmrsUtil {
 			}
 			
 			// the end of the filename is a randome number between 0 and 10000
-			filename.append((int) (Math.random() * 10000));
+			filename.append(gen.nextInt() * 10000);
 			filename.append(".xml");
 			
 			outFile = new File(dir, filename.toString());
@@ -1840,9 +1837,10 @@ public class OpenmrsUtil {
 	 * @return unique string
 	 */
 	public static String generateUid(Integer size) {
+		Random gen = new Random();
 		StringBuffer sb = new StringBuffer(size);
 		for (int i = 0; i < size; i++) {
-			int ch = (int) (Math.random() * 62);
+			int ch = gen.nextInt() * 62;
 			if (ch < 10) {
 				// 0-9
 				sb.append(ch);
@@ -2016,6 +2014,7 @@ public class OpenmrsUtil {
 	 * @param props the properties object to write into
 	 * @param input the input stream to read from
 	 */
+	@Deprecated
 	public static void loadProperties(Properties props, InputStream input) {
 		try {
 			InputStreamReader reader = new InputStreamReader(input, "UTF-8");
@@ -2037,10 +2036,10 @@ public class OpenmrsUtil {
 	 * @param propertyFile the properties file to read
 	 */
 	public static void loadProperties(Properties props, File propertyFile) {
-		InputStream inputStream = null;
+		InputStreamReader reader = null;
 		try {
-			inputStream = new FileInputStream(propertyFile);
-			InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8");
+			InputStream inputStream = new FileInputStream(propertyFile);
+			reader = new InputStreamReader(inputStream, "UTF-8");
 			props.load(reader);
 		}
 		catch (FileNotFoundException fnfe) {
@@ -2054,8 +2053,8 @@ public class OpenmrsUtil {
 		}
 		finally {
 			try {
-				if (inputStream != null) {
-					inputStream.close();
+				if (reader != null) {
+					reader.close();
 				}
 			}
 			catch (IOException ioe) {

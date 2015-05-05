@@ -1,27 +1,20 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -116,69 +109,33 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @param patient
 	 */
 	private void insertPatientStubIfNeeded(Patient patient) {
-		Connection connection = sessionFactory.getCurrentSession().connection();
 		
 		boolean stubInsertNeeded = false;
 		
-		PreparedStatement ps = null;
-		
 		if (patient.getPatientId() != null) {
 			// check if there is a row with a matching patient.patient_id
-			try {
-				ps = connection.prepareStatement("SELECT * FROM patient WHERE patient_id = ?");
-				ps.setInt(1, patient.getPatientId());
-				ps.execute();
-				
-				if (ps.getResultSet().next()) {
-					stubInsertNeeded = false;
-				} else {
-					stubInsertNeeded = true;
-				}
-				
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this person is a patient already", e);
-			}
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
+			String sql = "SELECT 1 FROM patient WHERE patient_id = :patientId";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+			query.setInteger("patientId", patient.getPatientId());
+			
+			stubInsertNeeded = (query.uniqueResult() == null);
 		}
 		
 		if (stubInsertNeeded) {
-			try {
-				ps = connection
-				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
-				
-				ps.setInt(1, patient.getPatientId());
-				if (patient.getCreator() == null) { //If not yet persisted
-					patient.setCreator(Context.getAuthenticatedUser());
-				}
-				ps.setInt(2, patient.getCreator().getUserId());
-				if (patient.getDateCreated() == null) { //If not yet persisted
-					patient.setDateCreated(new java.sql.Date(new Date().getTime()));
-				}
-				ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
-				
-				ps.executeUpdate();
+			if (patient.getCreator() == null) { //If not yet persisted
+				patient.setCreator(Context.getAuthenticatedUser());
 			}
-			catch (SQLException e) {
-				log.warn("SQL Exception while trying to create a patient stub", e);
+			if (patient.getDateCreated() == null) { //If not yet persisted
+				patient.setDateCreated(new Date());
 			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-			}
+			
+			String insert = "INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (:patientId, :creator, 0, :dateCreated)";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(insert);
+			query.setInteger("patientId", patient.getPatientId());
+			query.setInteger("creator", patient.getCreator().getUserId());
+			query.setDate("dateCreated", patient.getDateCreated());
+			
+			query.executeUpdate();
 			
 			//Without evicting person, you will get this error when promoting person to patient
 			//org.hibernate.NonUniqueObjectException: a different object with the same identifier
@@ -188,8 +145,6 @@ public class HibernatePatientDAO implements PatientDAO {
 			sessionFactory.getCurrentSession().evict(person);
 		}
 		
-		// commenting this out to get the save patient as a user option to work correctly
-		//sessionFactory.getCurrentSession().flush();
 	}
 	
 	/**

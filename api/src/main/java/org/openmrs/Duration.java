@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -78,20 +74,27 @@ public class Duration {
 	 * @return date which is startDate plus duration
 	 */
 	public Date addToDate(Date startDate, OrderFrequency frequency) {
-		if (SNOMED_CT_SECONDS_CODE.equals(code))
+		if (SNOMED_CT_SECONDS_CODE.equals(code)) {
 			return addSeconds(startDate, this.duration);
-		if (SNOMED_CT_MINUTES_CODE.equals(code))
+		}
+		if (SNOMED_CT_MINUTES_CODE.equals(code)) {
 			return addMinutes(startDate, this.duration);
-		if (SNOMED_CT_HOURS_CODE.equals(code))
+		}
+		if (SNOMED_CT_HOURS_CODE.equals(code)) {
 			return addHours(startDate, this.duration);
-		if (SNOMED_CT_DAYS_CODE.equals(code))
+		}
+		if (SNOMED_CT_DAYS_CODE.equals(code)) {
 			return addDays(startDate, this.duration);
-		if (SNOMED_CT_WEEKS_CODE.equals(code))
+		}
+		if (SNOMED_CT_WEEKS_CODE.equals(code)) {
 			return addWeeks(startDate, this.duration);
-		if (SNOMED_CT_MONTHS_CODE.equals(code))
+		}
+		if (SNOMED_CT_MONTHS_CODE.equals(code)) {
 			return addMonths(startDate, this.duration);
-		if (SNOMED_CT_YEARS_CODE.equals(code))
+		}
+		if (SNOMED_CT_YEARS_CODE.equals(code)) {
 			return addYears(startDate, this.duration);
+		}
 		if (SNOMED_CT_RECURRING_INTERVAL_CODE.equals(code)) {
 			if (frequency == null)
 				throw new APIException("Duration.error.frequency.null", (Object[]) null);

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -132,6 +128,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Gets the dose strength of this drug
 	 *
 	 * @return Double
+	 * @deprecated
 	 */
 	@Deprecated
 	public Double getDoseStrength() {
@@ -142,6 +139,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Sets the dose strength
 	 *
 	 * @param doseStrength
+	 * @deprecated
 	 */
 	@Deprecated
 	public void setDoseStrength(Double doseStrength) {
@@ -152,6 +150,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Gets the units
 	 *
 	 * @return String
+	 * @deprecated
 	 */
 	@Deprecated
 	public String getUnits() {
@@ -162,6 +161,7 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Sets the units
 	 *
 	 * @param units
+	 * @deprecated
 	 */
 	@Deprecated
 	public void setUnits(String units) {

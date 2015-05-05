@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
@@ -18,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -218,7 +215,7 @@ public class HibernateFormDAO implements FormDAO {
 		// if we ended up removing all of the formfields, check to see if we're
 		// in a "force" situation
 		if (formFields.size() < 1) {
-			if (force == false) {
+			if (!force) {
 				return backupPlan;
 			} else {
 				log.debug(err);
@@ -417,7 +414,7 @@ public class HibernateFormDAO implements FormDAO {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
-		if (partialName != null && !"".equals(partialName)) {
+		if (StringUtils.isNotEmpty(partialName)) {
 			crit.add(Restrictions.or(Restrictions.like("name", partialName, MatchMode.START), Restrictions.like("name", " "
 			        + partialName, MatchMode.ANYWHERE)));
 		}
@@ -442,11 +439,9 @@ public class HibernateFormDAO implements FormDAO {
 			}
 			
 			DetachedCriteria subquery = DetachedCriteria.forClass(FormField.class, "ff");
-			subquery.setProjection(Projections.count("ff.formFieldId"));
-			subquery.add(Restrictions.eqProperty("ff.form", "form"));
+			subquery.setProjection(Projections.property("ff.form.formId"));
 			subquery.add(Restrictions.in("ff.formFieldId", anyFormFieldIds));
-			
-			crit.add(Subqueries.lt(0L, subquery));
+			crit.add(Subqueries.propertyIn("form.formId", subquery));
 		}
 		
 		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);

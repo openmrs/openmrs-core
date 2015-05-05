@@ -1,22 +1,13 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.provider;
-
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin/provider/provider.form")
 public class ProviderFormController {
@@ -55,26 +50,13 @@ public class ProviderFormController {
 	public String onSubmit(HttpServletRequest request, @RequestParam(required = false) String saveProviderButton,
 	        @RequestParam(required = false) String retireProviderButton,
 	        @RequestParam(required = false) String unretireProviderButton,
-	        @RequestParam(required = false) String purgeProviderButton,
-	        @RequestParam(required = false) boolean linkToPerson, @ModelAttribute("provider") Provider provider,
+	        @RequestParam(required = false) String purgeProviderButton, @ModelAttribute("provider") Provider provider,
 	        BindingResult errors, ModelMap model) throws Exception {
-		
-		if (saveProviderButton != null) {
-			//For existing providers, switch between linking to person or use name
-			if (provider.getProviderId() != null) {
-				if (linkToPerson) {
-					provider.setName(null);
-				} else {
-					provider.setPerson(null);
-				}
-			}
-		}
 		
 		// manually handle the attribute parameters
 		List<ProviderAttributeType> attributeTypes = (List<ProviderAttributeType>) model.get("providerAttributeTypes");
 		WebAttributeUtil
 		        .handleSubmittedAttributesForType(provider, errors, ProviderAttribute.class, request, attributeTypes);
-		
 		if (Context.isAuthenticated()) {
 			ProviderService service = Context.getProviderService();
 			String message = "Provider.saved";
@@ -103,9 +85,10 @@ public class ProviderFormController {
 					message = "Provider.unretired";
 				}
 				
-				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
-				return "redirect:index.htm";
 			}
+			
+			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, message);
+			return "redirect:index.htm";
 		}
 		
 		return showForm();
@@ -114,11 +97,9 @@ public class ProviderFormController {
 	@ModelAttribute("provider")
 	public Provider formBackingObject(@RequestParam(required = false) Integer providerId) throws ServletException {
 		Provider provider = new Provider();
-		if (Context.isAuthenticated()) {
-			if (providerId != null) {
-				ProviderService ps = Context.getProviderService();
-				return ps.getProvider(providerId);
-			}
+		if (Context.isAuthenticated() && providerId != null) {
+			ProviderService ps = Context.getProviderService();
+			return ps.getProvider(providerId);
 		}
 		return provider;
 	}

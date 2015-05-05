@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.layout;
 
@@ -26,7 +22,7 @@ import java.util.Vector;
  */
 public abstract class LayoutTemplate {
 	
-	protected final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
+	protected static final String LAYOUT_TOKEN = "<!-- openmrsToken -->";
 	
 	protected String displayName;
 	
@@ -148,29 +144,27 @@ public abstract class LayoutTemplate {
 					}
 				}
 			}
-		} else if (line != null) {
-			if (line.length() > 0) {
-				// looks like we have a single token on a line by itself
-				if (ret == null) {
-					ret = new Vector<Map<String, String>>();
-				}
-				Map<String, String> currToken = new HashMap<String, String>();
-				
-				// adding a nontoken to match the code that does "more than a single token on a line"
-				Map<String, String> currNonToken = new HashMap<String, String>();
-				currNonToken.put("isToken", getNonLayoutToken());
-				currNonToken.put("displayText", "");
-				ret.add(currNonToken);
-				
-				currToken.put("isToken", getLayoutToken());
-				String realToken = line;
-				currToken.put("displayText", this.getNameMappings().get(realToken));
-				currToken.put("displaySize", this.getSizeMappings().get(realToken));
-				currToken.put("codeName", realToken);
-				//numTokens++;
-				
-				ret.add(currToken);
+		} else if (line != null && line.length() > 0) {
+			// looks like we have a single token on a line by itself
+			if (ret == null) {
+				ret = new Vector<Map<String, String>>();
 			}
+			Map<String, String> currToken = new HashMap<String, String>();
+			
+			// adding a nontoken to match the code that does "more than a single token on a line"
+			Map<String, String> currNonToken = new HashMap<String, String>();
+			currNonToken.put("isToken", getNonLayoutToken());
+			currNonToken.put("displayText", "");
+			ret.add(currNonToken);
+			
+			currToken.put("isToken", getLayoutToken());
+			String realToken = line;
+			currToken.put("displayText", this.getNameMappings().get(realToken));
+			currToken.put("displaySize", this.getSizeMappings().get(realToken));
+			currToken.put("codeName", realToken);
+			//numTokens++;
+			
+			ret.add(currToken);
 		}
 		
 		if (ret != null && this.maxTokens < ret.size()) {

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -21,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -48,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the Observation Service
- *
+ * 
  * @see org.openmrs.api.ObsService
  */
 @Transactional
@@ -81,7 +78,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
 	 * space.
-	 *
+	 * 
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	@Override
@@ -184,7 +181,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * Voids an Obs If the Obs argument is an obsGroup, all group members will be voided.
-	 *
+	 * 
 	 * @see org.openmrs.api.ObsService#voidObs(org.openmrs.Obs, java.lang.String)
 	 * @param obs the Obs to void
 	 * @param reason the void reason
@@ -199,7 +196,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * <p>
 	 * If the Obs argument is an obsGroup, all group members with the same dateVoided will also be
 	 * unvoided.
-	 *
+	 * 
 	 * @see org.openmrs.api.ObsService#unvoidObs(org.openmrs.Obs)
 	 * @param obs the Obs to unvoid
 	 * @return the unvoided Obs
@@ -213,7 +210,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs, boolean)
 	 */
 	public void purgeObs(Obs obs, boolean cascade) throws APIException {
-		if (purgeComplexData(obs) == false) {
+		if (!purgeComplexData(obs)) {
 			throw new APIException("Obs.error.unable.purge.complex.data", new Object[] { obs });
 		}
 		
@@ -374,7 +371,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * This implementation queries the obs table comparing the given <code>searchString</code> with
 	 * the patient's identifier, encounterId, and obsId
-	 *
+	 * 
 	 * @see org.openmrs.api.ObsService#getObservations(java.lang.String)
 	 */
 	@Transactional(readOnly = true)
@@ -431,16 +428,16 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * Correct use case:
-	 *
+	 * 
 	 * <pre>
 	 * Obs parent = new Obs();
 	 * Obs child1 = new Obs();
 	 * Obs child2 = new Obs();
-	 *
+	 * 
 	 * parent.addGroupMember(child1);
 	 * parent.addGroupMember(child2);
 	 * </pre>
-	 *
+	 * 
 	 * @deprecated This method should no longer need to be called on the api. This was meant as
 	 *             temporary until we created a true ObsGroup pojo.
 	 * @see org.openmrs.api.ObsService#createObsGroup(org.openmrs.Obs[])
@@ -504,7 +501,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Deprecated
 	@Transactional(readOnly = true)
 	public Set<Obs> getObservations(Person who, boolean includeVoided) {
-		if (includeVoided == true) {
+		if (includeVoided) {
 			throw new APIException("Obs.error.voided.no.longer.allowed", (Object[]) null);
 		}
 		
@@ -537,13 +534,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * Convenience method for turning a string like "location.locationId asc, obs.valueDatetime
 	 * desc" into a list of strings to sort on
-	 *
+	 * 
 	 * @param sort string
 	 * @return simple list of strings to sort on without asc/desc
 	 */
 	private List<String> makeSortList(String sort) {
 		List<String> sortList = new Vector<String>();
-		if (sort != null && !"".equals(sort)) {
+		if (StringUtils.isNotEmpty(sort)) {
 			for (String sortPart : sort.split(",")) {
 				
 				sortPart = sortPart.trim();
@@ -567,7 +564,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * This method should be removed when all methods using an Integer personType are removed. This
 	 * method does a bitwise compare on <code>personType</code> and returns a list of PERSON_TYPEs
 	 * that are comparable
-	 *
+	 * 
 	 * @param personType Integer corresponding to {@link ObsService#PERSON}, {@link ObsService#USER}
 	 *            , or {@link ObsService#PATIENT},
 	 * @return the enumeration that corresponds to the given integer (old way of doing it)
@@ -858,9 +855,22 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see #registerHandler(String, ComplexObsHandler)
 	 */
 	public void setHandlers(Map<String, ComplexObsHandler> newHandlers) throws APIException {
+		if (newHandlers == null) {
+			ObsServiceImpl.setStaticHandlers(null);
+			return;
+		}
 		for (Map.Entry<String, ComplexObsHandler> entry : newHandlers.entrySet()) {
 			registerHandler(entry.getKey(), entry.getValue());
 		}
+	}
+	
+	/**
+	 * Sets handlers using static method
+	 *
+	 * @param currentHandlers
+	 */
+	private static void setStaticHandlers(Map<String, ComplexObsHandler> currentHandlers) {
+		ObsServiceImpl.handlers = currentHandlers;
 	}
 	
 	/**

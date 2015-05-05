@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
@@ -3497,35 +3508,73 @@
 			<where>concept_name_tag_id = 2</where>
 		</delete>
 	</changeSet>
-
+	
 	<changeSet id="20100607-1550f" author="wyclif">
 		<validCheckSum><comment>After changing to boolean</comment>3:b57c0f651ed477457fd16e503eaf51a4</validCheckSum>
 		<validCheckSum>3:002108aacdf55731f4fd472d5308c5c8</validCheckSum>
         <validCheckSum>3:6a72bbb390155596e52da4e8d065d1a2</validCheckSum>
+        <validCheckSum><comment>Fixing TRUNK-4040</comment>3:74026cd4543ebbf561999a81c276224d</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
-					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred%'
+					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred\___' OR concept_name_tag_id = 4
 				</sqlCheck>
 			</not>
 		</preConditions>
 		<comment>
-			Converting concept names with preferred concept name tags to preferred and fully specified names
+			Converting concept names with 'preferred' and 'preferred_XX' concept name tags to preferred names
 		</comment>    	
 		<update tableName="concept_name">
-            <column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<column name="locale_preferred" valueBoolean="true"/>
+			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<where>
 				concept_name_id IN (SELECT concept_name_id FROM concept_name_tag cnt, concept_name_tag_map cntm 
-				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred%')
+				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND (cnt.tag like 'preferred\___' OR cnt.concept_name_tag_id = 4))
 			</where>
 		</update>
 		<delete tableName="concept_name_tag_map">
 			<where>
-				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred%')
+				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred\___') OR concept_name_tag_id = 4
 			</where>
 		</delete>
-		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred%'</where></delete>
+		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred\___' OR concept_name_tag_id = 4</where></delete>
+	</changeSet>
+	
+	<changeSet id="20150122-1414" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 1
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Reverting concept name type to NULL for concepts having names tagged as default</comment>
+		<update tableName="concept_name">
+			<column name="concept_name_type" />
+			<where>concept_id IN (SELECT concept_id FROM (SELECT concept_id FROM concept_name LEFT JOIN concept_name_tag_map 
+			ON concept_name.concept_name_id = concept_name_tag_map.concept_name_id WHERE concept_name_tag_id = 1) AS x)</where>
+		</update>
+	</changeSet>
+	
+	<changeSet id="20150122-1420" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 1
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Setting concept name type to fully specified for names tagged as default</comment>
+		<update tableName="concept_name">
+			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
+			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 1)</where>
+		</update>
+		<delete tableName="concept_name_tag_map">
+			<where>concept_name_tag_id = 1</where>
+		</delete>	
+		<delete tableName="concept_name_tag">
+			<where>concept_name_tag_id = 1</where>
+		</delete>
 	</changeSet>
 
 	<changeSet id="20100607-1550g" author="wyclif">
@@ -7563,18 +7612,6 @@
         </ext:modifyColumn>
     </changeSet>
 
-    <changeSet id="201403011348" author="alexisduque">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="orders" columnName="orderer" />
-        </preConditions>
-        <comment>Make orders.orderer not NULLable</comment>
-        <ext:modifyColumn tableName="orders">
-            <column name="orderer" type="int">
-                <constraints nullable="false" />
-            </column>
-        </ext:modifyColumn>
-    </changeSet>
-
     <changeSet id="201311041510" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="as_needed" /></not>
@@ -8258,6 +8295,19 @@
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
     </changeSet>
 
+    <!-- TRUNK-4690: Orders.orderer column cannot be set to NOT NULL until after user to provider migration occurs -->
+    <changeSet id="201403011348" author="alexisduque">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="orderer" />
+        </preConditions>
+        <comment>Make orders.orderer not NULLable</comment>
+        <ext:modifyColumn tableName="orders">
+            <column name="orderer" type="int">
+                <constraints nullable="false" />
+            </column>
+        </ext:modifyColumn>
+    </changeSet>
+
     <changeSet id="201403061758-TRUNK-4284" author="Banka, Vinay">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">select count(*) from concept_class where uuid = '8e071bfe-520c-44c0-a89b-538e9129b42a'</sqlCheck>
@@ -8340,14 +8390,6 @@
         <addColumn tableName="order_type">
             <column name="date_changed" type="datetime" />
         </addColumn>
-    </changeSet>
-
-    <changeSet id="201406152043" author="harsz89">
-        <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent"/></not>
-        </preConditions>
-        <comment>Adding foreign key constraint from order_type.parent column to orders.order_id column</comment>
-        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent" referencedTableName="orders" referencedColumnNames="order_id"/>
     </changeSet>
 
     <changeSet id="201406201443" author="wyclif">
@@ -8453,6 +8495,22 @@
         </preConditions>
         <comment>Changing duration column of drug_order to int</comment>
         <modifyDataType tableName="drug_order" columnName="duration" newDataType="int"/>
+    </changeSet>
+
+    <changeSet id="20150428-TRUNK-4693-1" author="mseaton">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="order_type_parent"/>
+        </preConditions>
+        <comment>Removing invalid foreign key constraint from order_type.parent column to order.order_id column</comment>
+        <dropForeignKeyConstraint baseTableName="order_type" constraintName="order_type_parent"/>
+    </changeSet>
+
+    <changeSet id="20150428-TRUNK-4693-2" author="mseaton">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent_order_type"/></not>
+        </preConditions>
+        <comment>Adding foreign key constraint from order_type.parent column to order_type.order_type_id column</comment>
+        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent_order_type" referencedTableName="order_type" referencedColumnNames="order_type_id"/>
     </changeSet>
     
     <changeSet id="201409230113-TRUNK-3484" author="k-joseph">
@@ -8632,5 +8690,13 @@
         <addForeignKeyConstraint constraintName="privilege_definitions" baseTableName="role_privilege" baseColumnNames="privilege"
                                  referencedTableName="privilege" referencedColumnNames="privilege" />
     </changeSet>
+    <changeSet id="20150221-1644" author="sandeepraparthi">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="patient_id" tableName="patient_identifier" />
+            <not><foreignKeyConstraintExists foreignKeyName="fk_patient_id_patient_identifier"/></not>
+        </preConditions>
+         <comment>Adding foreign key on patient_identifier.patient_id column</comment>
+        <addForeignKeyConstraint constraintName="fk_patient_id_patient_identifier" baseTableName="patient_identifier" baseColumnNames="patient_id"	referencedTableName="patient" referencedColumnNames="patient_id" /> 
+ 	</changeSet>
 
 </databaseChangeLog>

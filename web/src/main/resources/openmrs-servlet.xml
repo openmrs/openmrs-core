@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 
 <!-- Application context definition for Spring for the OpenMRS web layer.
 -->
@@ -50,7 +61,9 @@
 		</property>
 		<property name="defaultViews">
 			<list>
-				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+					<property name="extractValueFromSingleKeyModel" value="true" />
+				</bean>
 				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
            			<property name="marshaller" ref="xStreamMarshaller"/>
         		</bean>
@@ -1169,6 +1182,28 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="nameSupportWeb" class="org.openmrs.layout.web.name.NameSupport" parent="nameSupport">
+			<property name="layoutTemplates">
+			<list>
+				<ref bean="nameTemplateSpainWeb" />
+				<ref bean="nameTemplateLatinAmericaWeb" />
+				<ref bean="nameTemplateGivenFamilyWeb" />
+				<ref bean="nameTemplateShortWeb" />
+				<ref bean="nameTemplateLongWeb" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="nameTemplateSpainWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateSpain" />
+	
+	<bean id="nameTemplateLatinAmericaWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateLatinAmerica" />
+	
+	<bean id="nameTemplateGivenFamilyWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateGivenFamily" />
+	
+	<bean id="nameTemplateShortWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateShort" />
+	
+	<bean id="nameTemplateLongWeb" class="org.openmrs.layout.web.name.NameTemplate" parent="nameTemplateLong" />
 
     <!--  COMPLEX OBS HANDLER SECTION -->
     <bean parent="obsServiceTarget" >

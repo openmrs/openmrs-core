@@ -1,25 +1,18 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import org.apache.commons.lang.builder.EqualsBuilder;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 import org.apache.commons.logging.Log;
@@ -127,31 +120,31 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		}
 		PersonName newName = new PersonName(Integer.valueOf(pn.getPersonNameId()));
 		if (pn.getGivenName() != null) {
-			newName.setGivenName(new String(pn.getGivenName()));
+			newName.setGivenName(String.valueOf(pn.getGivenName()));
 		}
 		if (pn.getMiddleName() != null) {
-			newName.setMiddleName(new String(pn.getMiddleName()));
+			newName.setMiddleName(String.valueOf(pn.getMiddleName()));
 		}
 		if (pn.getFamilyName() != null) {
-			newName.setFamilyName(new String(pn.getFamilyName()));
+			newName.setFamilyName(String.valueOf(pn.getFamilyName()));
 		}
 		if (pn.getFamilyName2() != null) {
-			newName.setFamilyName2(new String(pn.getFamilyName2()));
+			newName.setFamilyName2(String.valueOf(pn.getFamilyName2()));
 		}
 		if (pn.getFamilyNamePrefix() != null) {
-			newName.setFamilyNamePrefix(new String(pn.getFamilyNamePrefix()));
+			newName.setFamilyNamePrefix(String.valueOf(pn.getFamilyNamePrefix()));
 		}
 		if (pn.getFamilyNameSuffix() != null) {
-			newName.setFamilyNameSuffix(new String(pn.getFamilyNameSuffix()));
+			newName.setFamilyNameSuffix(String.valueOf(pn.getFamilyNameSuffix()));
 		}
 		if (pn.getPrefix() != null) {
-			newName.setPrefix(new String(pn.getPrefix()));
+			newName.setPrefix(String.valueOf(pn.getPrefix()));
 		}
 		if (pn.getDegree() != null) {
-			newName.setDegree(new String(pn.getDegree()));
+			newName.setDegree(String.valueOf(pn.getDegree()));
 		}
 		if (pn.getVoidReason() != null) {
-			newName.setVoidReason(new String(pn.getVoidReason()));
+			newName.setVoidReason(String.valueOf(pn.getVoidReason()));
 		}
 		
 		if (pn.getDateChanged() != null) {
@@ -538,42 +531,13 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should return negative if other familynamePrefix is greater
 	 * @should return negative if other familyNameSuffix is greater
 	 * @should return negative if other dateCreated is greater
+	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonName other) {
-		int ret = isVoided().compareTo(other.isVoided());
-		if (ret == 0) {
-			ret = other.isPreferred().compareTo(isPreferred());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName(), other.getFamilyName());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName2(), other.getFamilyName2());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getGivenName(), other.getGivenName());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getMiddleName(), other.getMiddleName());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNamePrefix(), other.getFamilyNamePrefix());
-		}
-		if (ret == 0) {
-			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNameSuffix(), other.getFamilyNameSuffix());
-		}
-		if (ret == 0 && getDateCreated() != null) {
-			ret = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-		}
-		
-		// if we've gotten this far, just check all name values. If they are
-		// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
-		// and return that (they are not equal).
-		if (ret == 0 && !equalsContent(other)) {
-			ret = 1;
-		}
-		
-		return ret;
+		DefaultComparator pnDefaultComparator = new DefaultComparator();
+		return pnDefaultComparator.compare(this, other);
 	}
 	
 	/**
@@ -594,13 +558,59 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	public static void setFormat(String format) {
-		if (StringUtils.isEmpty(format))
+		if (StringUtils.isEmpty(format)) {
 			PersonName.format = OpenmrsConstants.PERSON_NAME_FORMAT_SHORT;
-		else
+		} else {
 			PersonName.format = format;
+		}
 	}
 	
 	public static String getFormat() {
 		return PersonName.format;
 	}
+	
+	/**
+	 Provides a default comparator.
+	 @since 1.12
+	 **/
+	public static class DefaultComparator implements Comparator<PersonName> {
+		
+		public int compare(PersonName pn1, PersonName pn2) {
+			int ret = pn1.isVoided().compareTo(pn2.isVoided());
+			if (ret == 0) {
+				ret = pn2.isPreferred().compareTo(pn1.isPreferred());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyName(), pn2.getFamilyName());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyName2(), pn2.getFamilyName2());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getGivenName(), pn2.getGivenName());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getMiddleName(), pn2.getMiddleName());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyNamePrefix(), pn2.getFamilyNamePrefix());
+			}
+			if (ret == 0) {
+				ret = OpenmrsUtil.compareWithNullAsGreatest(pn1.getFamilyNameSuffix(), pn2.getFamilyNameSuffix());
+			}
+			if (ret == 0 && pn1.getDateCreated() != null) {
+				ret = OpenmrsUtil.compareWithNullAsLatest(pn1.getDateCreated(), pn2.getDateCreated());
+			}
+			
+			// if we've gotten this far, just check all name values. If they are
+			// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
+			// and return that (they are not equal).
+			if (ret == 0 && !pn1.equalsContent(pn2)) {
+				ret = 1;
+			}
+			
+			return ret;
+		}
+	}
+	
 }

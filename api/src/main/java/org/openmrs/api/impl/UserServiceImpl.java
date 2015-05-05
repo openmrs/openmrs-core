@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -39,18 +35,16 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
  * OpenMRS implementation should be fetched from the Context
- *
+ * 
  * @see org.openmrs.api.UserService
  * @see org.openmrs.api.context.Context
  */
@@ -84,7 +78,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
 	 * @deprecated replaced by {@link #createUser(User, String)}
 	 */
-	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public User saveUser(User user, String password) throws APIException {
 		if (user.getUserId() == null) {
 			Context.requirePrivilege(PrivilegeConstants.ADD_USERS);
@@ -458,7 +451,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	/**
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
-	 *
+	 * 
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(User user) {
@@ -541,7 +534,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	/**
 	 * Generates system ids based on the following algorithm scheme: user_id-check digit
-	 *
+	 * 
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	@Transactional(readOnly = true)
@@ -583,7 +576,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User, boolean)
 	 */
 	public void purgeUser(User user, boolean cascade) throws APIException {
-		if (cascade == true) {
+		if (cascade) {
 			throw new APIException("cascade.do.not.think", (Object[]) null);
 		}
 		
@@ -593,7 +586,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * Convenience method to check if the authenticated user has all privileges they are giving out
 	 * to the new role
-	 *
+	 * 
 	 * @param new user that has privileges
 	 */
 	private void checkPrivileges(Role role) {

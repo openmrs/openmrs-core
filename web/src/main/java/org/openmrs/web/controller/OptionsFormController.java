@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller;
 
@@ -176,8 +172,9 @@ public class OptionsFormController extends SimpleFormController {
 					
 					if (!errors.hasErrors()) {
 						us.changePassword(opts.getOldPassword(), password);
-						if (opts.getSecretQuestionPassword().equals(opts.getOldPassword()))
+						if (opts.getSecretQuestionPassword().equals(opts.getOldPassword())) {
 							opts.setSecretQuestionPassword(password);
+						}
 						new UserProperties(user.getUserProperties()).setSupposedToChangePassword(false);
 					}
 				}
@@ -210,13 +207,13 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			String notifyType = opts.getNotification();
-			if (notifyType != null) {
-				if (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType.equals("email")) {
-					if (opts.getNotificationAddress().isEmpty()) {
-						errors.reject("error.options.notificationAddress.empty");
-					} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
-						errors.reject("error.options.notificationAddress.invalid");
-					}
+			if (notifyType != null
+			        && (notifyType.equals("internal") || notifyType.equals("internalProtected") || notifyType
+			                .equals("email"))) {
+				if (opts.getNotificationAddress().isEmpty()) {
+					errors.reject("error.options.notificationAddress.empty");
+				} else if (!EmailValidator.getInstance().isValid(opts.getNotificationAddress())) {
+					errors.reject("error.options.notificationAddress.invalid");
 				}
 			}
 			
@@ -420,10 +417,8 @@ public class OptionsFormController extends SimpleFormController {
 	 * @param message the localized message to add
 	 */
 	private void addHint(ArrayList<String> hints, String gpValue, String message) {
-		if (Boolean.valueOf(gpValue)) {
-			if (!StringUtils.isBlank(message)) {
-				hints.add(message);
-			}
+		if (Boolean.valueOf(gpValue) && !StringUtils.isBlank(message)) {
+			hints.add(message);
 		}
 	}
 }

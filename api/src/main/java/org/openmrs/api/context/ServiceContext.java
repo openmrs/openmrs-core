@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.context;
 
@@ -79,7 +75,7 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	private static final Log log = LogFactory.getLog(ServiceContext.class);
 	
-	private static ServiceContext instance;
+	private static volatile ServiceContext instance;
 	
 	private ApplicationContext applicationContext;
 	
@@ -627,7 +623,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private Set<Advisor> getAddedAdvisors(Class cls) {
 		Set<Advisor> result = addedAdvisors.get(cls);
-		return result == null ? Collections.EMPTY_SET : result;
+		return (Set<Advisor>) (result == null ? Collections.emptySet() : result);
 	}
 	
 	/**
@@ -655,7 +651,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private Set<Advice> getAddedAdvice(Class cls) {
 		Set<Advice> result = addedAdvice.get(cls);
-		return result == null ? Collections.EMPTY_SET : result;
+		return (Set<Advice>) (result == null ? Collections.emptySet() : result);
 	}
 	
 	/**
@@ -773,7 +769,7 @@ public class ServiceContext implements ApplicationContextAware {
 		// loader or the system class loader depending on if we're in a testing
 		// environment or not (system == testing, openmrs == normal)
 		try {
-			if (useSystemClassLoader == false) {
+			if (!useSystemClassLoader) {
 				cls = OpenmrsClassLoader.getInstance().loadClass(classString);
 				
 				if (cls != null && log.isDebugEnabled()) {
@@ -783,7 +779,7 @@ public class ServiceContext implements ApplicationContextAware {
 					}
 					catch (Exception e) { /*pass*/}
 				}
-			} else if (useSystemClassLoader == true) {
+			} else if (useSystemClassLoader) {
 				try {
 					cls = Class.forName(classString);
 					if (log.isDebugEnabled()) {

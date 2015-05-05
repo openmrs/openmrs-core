@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web;
 
@@ -43,11 +39,9 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		
 		// if a user clicks on the locale change links 
 		// AND their current default locale is different (so the msg isn't repeated)
-		if (request.getParameter("lang") != null) {
-			if (Context.isAuthenticated() && !Context.getLocale().equals(locale)) {
-				session.setAttribute(WebConstants.OPENMRS_MSG_ARGS, request.getContextPath());
-				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.localeChangeHint");
-			}
+		if (request.getParameter("lang") != null && Context.isAuthenticated() && !Context.getLocale().equals(locale)) {
+			session.setAttribute(WebConstants.OPENMRS_MSG_ARGS, request.getContextPath());
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.localeChangeHint");
 		}
 		
 		Context.setLocale(locale);

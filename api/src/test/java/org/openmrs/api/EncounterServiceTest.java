@@ -1,35 +1,13 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,6 +24,8 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.Role;
@@ -62,6 +42,26 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -1669,13 +1669,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = Context.getEncounterService().saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		Provider provider2 = new Provider();
-		provider2.setName("provider2");
 		provider2.setIdentifier("id2");
+		provider2.setPerson(newPerson("name2"));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -1721,13 +1721,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role2 = Context.getEncounterService().saveEncounterRole(role2);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name1"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		Provider provider2 = new Provider();
-		provider2.setName("provider2");
 		provider2.setIdentifier("id2");
+		
+		provider2.setPerson(newPerson("name2"));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -1992,8 +1993,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2031,8 +2032,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2081,8 +2083,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2751,5 +2753,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
 		Visit visit = Context.getVisitService().getVisit(200);
 		Assert.assertTrue(visit.isVoided());
+	}
+	
+	private Person newPerson(String name) {
+		Person person = new Person();
+		Set<PersonName> personNames = new TreeSet<PersonName>();
+		PersonName personName = new PersonName();
+		personName.setFamilyName(name);
+		personNames.add(personName);
+		person.setNames(personNames);
+		return person;
 	}
 }

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -200,6 +196,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * 
 	 * @param locale
 	 * @return the answers for this concept sorted according to ConceptAnswerComparator
+	 * @deprecated
 	 */
 	@Deprecated
 	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
@@ -693,6 +690,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return loose match given exact equals false
 	 * @should return null if no names are found in locale given exact equals true
 	 * @should return any name if no locale match given exact equals false
+	 * @should return name in broader locale incase none is found in specific one
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
 		
@@ -714,7 +712,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			return exactName;
 		}
 		
-		if (exact == false) {
+		if (!exact) {
 			Locale broaderLocale = new Locale(locale.getLanguage());
 			ConceptName name = getNameInLocale(broaderLocale);
 			return name;
@@ -973,11 +971,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				oldShortName.setConceptNameType(null);
 			}
 			shortName.setConceptNameType(ConceptNameType.SHORT);
-			if (StringUtils.isNotBlank(shortName.getName())) {
+			if (StringUtils.isNotBlank(shortName.getName())
+			        && (shortName.getConceptNameId() == null || !getNames().contains(shortName))) {
 				//add this name, if it is new or not among this concept's names
-				if (shortName.getConceptNameId() == null || !getNames().contains(shortName)) {
-					addName(shortName);
-				}
+				addName(shortName);
 			}
 		} else {
 			throw new APIException("Concept.error.shortName.null", (Object[]) null);
@@ -1124,11 +1121,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (locale != null) {
 			for (ConceptName possibleName : getNames()) {
-				if (possibleName.getLocale().equals(locale)) {
-					if ((shortestNameForLocale == null)
-					        || (possibleName.getName().length() < shortestNameForLocale.getName().length())) {
-						shortestNameForLocale = possibleName;
-					}
+				if (possibleName.getLocale().equals(locale)
+				        && ((shortestNameForLocale == null) || (possibleName.getName().length() < shortestNameForLocale
+				                .getName().length()))) {
+					shortestNameForLocale = possibleName;
 				}
 				if ((shortestNameForConcept == null)
 				        || (possibleName.getName().length() < shortestNameForConcept.getName().length())) {

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -266,7 +262,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			ConceptName possiblePreferredName = concept.getPreferredName(locale);
 			
 			if (possiblePreferredName != null) {
-				; //do nothing yet, but stick around to setLocalePreferred(true)
+				//do nothing yet, but stick around to setLocalePreferred(true)
 			} else if (concept.getFullySpecifiedName(locale) != null) {
 				possiblePreferredName = concept.getFullySpecifiedName(locale);
 			} else if (!CollectionUtils.isEmpty(concept.getSynonyms(locale))) {
@@ -328,7 +324,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		// only do this if the concept isn't retired already
-		if (concept.isRetired() == false) {
+		if (!concept.isRetired()) {
 			checkIfLocked();
 			
 			concept.setRetired(true);
@@ -600,7 +596,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> getDrugs(Concept concept, boolean includeRetired) {
-		if (includeRetired == true) {
+		if (includeRetired) {
 			throw new APIException("ConceptDrug.retired.getting", (Object[]) null);
 		}
 		
@@ -624,7 +620,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Drug> findDrugs(String phrase, boolean includeRetired) {
-		if (includeRetired == true) {
+		if (includeRetired) {
 			throw new APIException("ConceptDrug.retired.getting", (Object[]) null);
 		}
 		
@@ -1176,6 +1172,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getAllConceptSources()
+	 * @deprecated
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
@@ -1413,9 +1410,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Concept getUnknownConcept() {
 		if (unknownConcept == null) {
 			try {
-				unknownConcept = Context.getConceptService().getConcept(
+				ConceptServiceImpl.setStaticUnknownConcept(Context.getConceptService().getConcept(
 				    Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT)));
+				        OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT))));
 			}
 			catch (NumberFormatException e) {
 				log.warn("Concept id for unknown concept should be a number");
@@ -1423,6 +1420,15 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		return unknownConcept;
+	}
+	
+	/**
+	 * Sets unknownConcept using static method
+	 *
+	 * @param currentUnknownConcept
+	 */
+	private static void setStaticUnknownConcept(Concept currentUnknownConcept) {
+		ConceptServiceImpl.unknownConcept = currentUnknownConcept;
 	}
 	
 	/**
@@ -1470,15 +1476,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @throws ConceptInUseException
 	 */
 	private void checkIfDatatypeCanBeChanged(Concept concept) {
-		if (concept.getId() != null) {
-			if (hasAnyObservation(concept) && hasDatatypeChanged(concept)) {
-				// allow boolean concepts to be converted to coded
-				if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
-					throw new ConceptInUseException();
-				}
-				if (log.isDebugEnabled()) {
-					log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
-				}
+		if (concept.getId() != null && hasAnyObservation(concept) && hasDatatypeChanged(concept)) {
+			// allow boolean concepts to be converted to coded
+			if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded())) {
+				throw new ConceptInUseException();
+			}
+			if (log.isDebugEnabled()) {
+				log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
 			}
 		}
 	}
@@ -2054,7 +2058,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			throw new APIException("ConceptSource.is.required", (Object[]) null);
 		}
 		if (withAnyOfTheseTypes == null) {
-			withAnyOfTheseTypes = Collections.EMPTY_LIST;
+			withAnyOfTheseTypes = Collections.emptyList();
 		}
 		return dao.getDrugsByMapping(code, conceptSource, withAnyOfTheseTypes, includeRetired);
 	}
@@ -2071,7 +2075,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			throw new APIException("ConceptSource.is.required", (Object[]) null);
 		}
 		if (withAnyOfTheseTypesOrOrderOfPreference == null) {
-			withAnyOfTheseTypesOrOrderOfPreference = Collections.EMPTY_LIST;
+			withAnyOfTheseTypesOrOrderOfPreference = Collections.emptyList();
 		}
 		return dao.getDrugByMapping(code, conceptSource, withAnyOfTheseTypesOrOrderOfPreference);
 	}
@@ -2086,14 +2090,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	        Integer start, Integer length) {
 		List<ConceptClass> mappedClasses = getConceptClassesOfOrderTypes();
 		if (mappedClasses.isEmpty()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		if (locales == null) {
 			locales = new ArrayList<Locale>();
 			locales.add(Context.getLocale());
 		}
-		return dao.getConcepts(phrase, locales, false, mappedClasses, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
-		    Collections.EMPTY_LIST, null, start, length);
+		return dao.getConcepts(phrase, locales, false, mappedClasses, (List) Collections.emptyList(), (List) Collections
+		        .emptyList(), (List) Collections.emptyList(), null, start, length);
 	}
 	
 	private List<ConceptClass> getConceptClassesOfOrderTypes() {

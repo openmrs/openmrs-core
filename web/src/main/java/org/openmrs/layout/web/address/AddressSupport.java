@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.layout.web.address;
 
@@ -32,6 +28,8 @@ import org.openmrs.util.OpenmrsConstants;
  */
 @Deprecated
 public class AddressSupport extends LayoutSupport<AddressTemplate> implements GlobalPropertyListener {
+	
+	private static final String NEW_ADDRESS_TEMPLATE_CLASSNAME = "org.openmrs.layout.address.AddressTemplate";
 	
 	private static AddressSupport singleton;
 	
@@ -147,7 +145,10 @@ public class AddressSupport extends LayoutSupport<AddressTemplate> implements Gl
 	private void setAddressTemplate(String xml) {
 		AddressTemplate addressTemplate;
 		try {
-			
+			//Retrieve the addressTemplate from the database. Since we are about to cast it to 
+			//an org.openmrs.layout.web.address.AddressTemplate, if the classname has been updated
+			//in the database, change it back
+			xml = xml.replace(NEW_ADDRESS_TEMPLATE_CLASSNAME, AddressTemplate.class.getName());
 			addressTemplate = Context.getSerializationService().getDefaultSerializer().deserialize(xml,
 			    AddressTemplate.class);
 		}

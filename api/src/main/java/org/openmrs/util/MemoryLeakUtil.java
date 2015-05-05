@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
@@ -20,9 +16,6 @@ import java.util.Timer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.impl.SessionFactoryObjectFactory;
-
-import sun.net.www.http.HttpClient;
-import sun.net.www.http.KeepAliveCache;
 
 /**
  * Utility functions to clean up causes of memory leakages.
@@ -68,23 +61,16 @@ public class MemoryLeakUtil {
 	
 	public static void shutdownKeepAliveTimer() {
 		try {
-			final Field kac = HttpClient.class.getDeclaredField("kac");
-			if (kac == null) {
-				return;
-			}
+			Class<?> httpClientClass = Class.forName("sun.net.www.http.HttpClient");
+			Class<?> keepAliveCacheClass = Class.forName("sun.net.www.http.KeepAliveCache");
 			
+			final Field kac = httpClientClass.getDeclaredField("kac");
 			kac.setAccessible(true);
-			final Field keepAliveTimer = KeepAliveCache.class.getDeclaredField("keepAliveTimer");
-			if (keepAliveTimer == null) {
-				return;
-			}
 			
+			final Field keepAliveTimer = keepAliveCacheClass.getDeclaredField("keepAliveTimer");
 			keepAliveTimer.setAccessible(true);
 			
 			final Thread thread = (Thread) keepAliveTimer.get(kac.get(null));
-			if (thread == null) {
-				return;
-			}
 			
 			if (thread.getContextClassLoader() == OpenmrsClassLoader.getInstance()) {
 				//Set to system class loader such that we can be garbage collected.

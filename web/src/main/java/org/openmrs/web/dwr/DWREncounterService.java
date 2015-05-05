@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.dwr;
 
@@ -35,7 +31,7 @@ public class DWREncounterService {
 	/**
 	 * Returns a list of encounters for patients with a matching name, identifier or encounterId if
 	 * phrase is a number.
-	 *
+	 * 
 	 * @param phrase patient name or identifier
 	 * @param includeVoided Specifies if voided encounters should be included or not
 	 * @return list of the matching encounters
@@ -50,7 +46,7 @@ public class DWREncounterService {
 	 * Returns a list of matching encounters (depending on values of start and length parameters) if
 	 * the length parameter is not specified, then all matches will be returned from the start index
 	 * if specified.
-	 *
+	 * 
 	 * @param phrase patient name or identifier
 	 * @param includeVoided Specifies if voided encounters should be included or not
 	 * @param start the beginning index
@@ -68,7 +64,7 @@ public class DWREncounterService {
 	 * Returns a list of matching encounters (depending on values of start and length parameters) if
 	 * the length parameter is not specified, then all matches will be returned from the start index
 	 * if specified.
-	 *
+	 * 
 	 * @param phrase encounter id, provider identifier, location, encounter type, provider, form or
 	 *            provider name
 	 * @param patientId the patient id
@@ -100,8 +96,9 @@ public class DWREncounterService {
 			if (phrase.matches("\\d+")) {
 				// user searched on a number.  Insert concept with corresponding encounterId
 				Encounter e = es.getEncounter(Integer.valueOf(phrase));
+				
 				if (e != null && (patientId == null || patientId.equals(e.getPatient().getPatientId()))) {
-					if (!e.isVoided() || includeVoided == true) {
+					if (!e.isVoided() || includeVoided) {
 						encs.add(e);
 					}
 				}
@@ -134,7 +131,7 @@ public class DWREncounterService {
 	 * matching encounters (depending on values of start and length parameters) while the keys are
 	 * are 'count' and 'objectList' respectively, if the length parameter is not specified, then all
 	 * matches will be returned from the start index if specified.
-	 *
+	 * 
 	 * @param phrase patient name or identifier
 	 * @param includeVoided Specifies if voided encounters should be included or not
 	 * @param start the beginning index
@@ -157,22 +154,23 @@ public class DWREncounterService {
 				if (phrase.matches("\\d+")) {
 					// user searched on a number
 					Encounter e = es.getEncounter(Integer.valueOf(phrase));
+					
 					if (e != null) {
-						if (!e.isVoided() || includeVoided == true) {
+						if (!e.isVoided() || includeVoided) {
 							encounterCount++;
 						}
 					}
 				}
+				
+				//If we have any matches, load them or if this is not the first ajax call
+				//for displaying the results on the first page, the getMatchCount is expected to be zero
+				if (encounterCount > 0 || !getMatchCount) {
+					objectList = findBatchOfEncounters(phrase, includeVoided, start, length);
+				}
+				
+				resultsMap.put("count", encounterCount);
+				resultsMap.put("objectList", objectList);
 			}
-			
-			//If we have any matches, load them or if this is not the first ajax call
-			//for displaying the results on the first page, the getMatchCount is expected to be zero
-			if (encounterCount > 0 || !getMatchCount) {
-				objectList = findBatchOfEncounters(phrase, includeVoided, start, length);
-			}
-			
-			resultsMap.put("count", encounterCount);
-			resultsMap.put("objectList", objectList);
 		}
 		catch (Exception e) {
 			log.error("Error while searching for encounters", e);
@@ -200,7 +198,7 @@ public class DWREncounterService {
 	 * Returns a list of matching locations (depending on values of start and length parameters) if
 	 * the length parameter is not specified, then all matches will be returned from the start index
 	 * if specified.
-	 *
+	 * 
 	 * @param searchValue is the string used to search for locations
 	 * @param includeRetired Specifies if retired locations should be returned
 	 * @param start the beginning index
@@ -271,7 +269,7 @@ public class DWREncounterService {
 	 * matching locations (depending on values of start and length parameters) while the keys are
 	 * are 'count' and 'objectList' respectively, if the length parameter is not specified, then all
 	 * matches will be returned from the start index if specified.
-	 *
+	 * 
 	 * @param searchValue is the string used to search for locations
 	 * @param includeRetired Specifies if retired locations should be returned
 	 * @param start the beginning index

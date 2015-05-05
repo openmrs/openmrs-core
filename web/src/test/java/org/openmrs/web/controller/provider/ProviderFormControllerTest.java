@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
- * <p/>
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- * <p/>
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.provider;
 
@@ -40,7 +36,7 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 	/**
 	 * @verifies not void or change attributeList if the attribute values are same
 	 * @see org.openmrs.web.controller.provider.ProviderFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      String, String, String, String, boolean, org.openmrs.Provider,
+	 *      String, String, String, String, org.openmrs.Provider,
 	 *      org.springframework.validation.BindingResult, org.springframework.ui.ModelMap)
 	 */
 	@Test
@@ -54,7 +50,7 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 		BindException errors = new BindException(provider, "provider");
 		ProviderFormController providerFormController = (ProviderFormController) applicationContext
 		        .getBean("providerFormController");
-		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, null, true, provider, errors,
+		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, null, provider, errors,
 		    createModelMap(providerAttributeType));
 		Assert.assertFalse(((ProviderAttribute) (provider.getAttributes().toArray()[0])).getVoided());
 		Assert.assertEquals(1, provider.getAttributes().size());
@@ -64,7 +60,7 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 	/**
 	 * @verifies set attributes to void if the values is not set
 	 * @see org.openmrs.web.controller.provider.ProviderFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      String, String, String, String, boolean, org.openmrs.Provider,
+	 *      String, String, String, String, org.openmrs.Provider,
 	 *      org.springframework.validation.BindingResult, org.springframework.ui.ModelMap)
 	 */
 	@Test
@@ -79,7 +75,7 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 		BindException errors = new BindException(provider, "provider");
 		ProviderFormController providerFormController = (ProviderFormController) applicationContext
 		        .getBean("providerFormController");
-		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, null, true, provider, errors,
+		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, null, provider, errors,
 		    createModelMap(providerAttributeType));
 		Assert.assertEquals(1, provider.getAttributes().size());
 		Assert.assertTrue(((ProviderAttribute) (provider.getAttributes().toArray()[0])).isVoided());
@@ -89,7 +85,7 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 	/**
 	 * @verifies should purge the provider
 	 * @see org.openmrs.web.controller.provider.ProviderFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      String, String, String, String, boolean, org.openmrs.Provider,
+	 *      String, String, String, String, org.openmrs.Provider,
 	 *      org.springframework.validation.BindingResult, org.springframework.ui.ModelMap)
 	 */
 	@Test(expected = ObjectNotFoundException.class)
@@ -102,7 +98,7 @@ public class ProviderFormControllerTest extends BaseWebContextSensitiveTest {
 		BindException errors = new BindException(provider, "provider");
 		ProviderFormController providerFormController = (ProviderFormController) applicationContext
 		        .getBean("providerFormController");
-		providerFormController.onSubmit(mockHttpServletRequest, null, null, null, "purge", true, provider, errors,
+		providerFormController.onSubmit(mockHttpServletRequest, null, null, null, "purge", provider, errors,
 		    createModelMap(providerAttributeType));
 		Context.flushSession();
 		Assert.assertNull(Context.getProviderService().getProvider(2));

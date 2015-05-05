@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller;
 
@@ -42,6 +38,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.ConceptSource;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
@@ -54,6 +51,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -1115,4 +1113,43 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNull(concept.getDescription());
 	}
 	
+	/**
+	 * @see ConceptFormBackingObject#getConceptFromFormData()
+	 */
+	@Test
+	@Verifies(value = "should set concept on concept answers", method = "getConceptFromFormData()")
+	public void getConceptFromFormData_shouldSetConceptOnConceptAnswers() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		int conceptId = 21;
+		
+		Concept concept = cs.getConcept(conceptId);
+		assertNotNull(concept);
+		
+		int initialCount = concept.getAnswers().size();
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "Save Concept");
+		mockRequest.setParameter("conceptId", "21");
+		mockRequest.setParameter("namesByLocale[en].name", concept.getName().getName());
+		mockRequest.setParameter("concept.datatype", "2");
+		mockRequest.setParameter("concept.answers", "7 8 22 5089");
+		
+		ConceptFormBackingObject cb = conceptFormController.formBackingObject(mockRequest);
+		
+		// Bind the request parameters
+		ServletRequestDataBinder srdb = new ServletRequestDataBinder(cb);
+		conceptFormController.initBinder(mockRequest, srdb);
+		srdb.bind(mockRequest);
+		
+		Concept parsedConcept = cb.getConceptFromFormData();
+		
+		assertEquals(initialCount + 1, parsedConcept.getAnswers().size());
+		for (ConceptAnswer ca : parsedConcept.getAnswers()) {
+			assertNotNull(ca.getConcept());
+		}
+	}
 }

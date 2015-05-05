@@ -1,34 +1,15 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -43,6 +24,21 @@ import org.openmrs.customdatatype.datatype.FreeTextDatatype;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
+
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This test class (should) contain tests for all of the ProviderService
@@ -122,9 +118,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProvider_shouldGetProviderGivenID() throws Exception {
-		Provider provider = service.getProvider(1);
-		assertEquals("RobertClive", provider.getName());
-		assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", provider.getUuid());
+		Provider provider = service.getProvider(2);
+		assertEquals("Mr. Horatio Test Hornblower", provider.getName());
 	}
 	
 	/**
@@ -133,9 +128,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviderAttribute_shouldGetProviderAttributeGivenID() throws Exception {
-		ProviderAttribute providerAttribute = service.getProviderAttribute(1);
-		assertEquals("RobertClive", providerAttribute.getProvider().getName());
-		assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", providerAttribute.getProvider().getUuid());
+		ProviderAttribute providerAttribute = service.getProviderAttribute(321);
+		assertEquals("Mr. Horatio Test Hornblower", providerAttribute.getProvider().getName());
 	}
 	
 	/**
@@ -145,9 +139,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void getProviderAttributeByUuid_shouldGetProviderAttributeGivenUuid() throws Exception {
-		ProviderAttribute providerAttribute = service.getProviderAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e");
-		assertEquals("RobertClive", providerAttribute.getProvider().getName());
-		assertEquals("a2c3868a-6b90-11e0-93c3-18a905e044dc", providerAttribute.getProvider().getUuid());
+		ProviderAttribute providerAttribute = service.getProviderAttributeByUuid("823382cd-5faa-4b57-8b34-fed33b9c8c65");
+		assertEquals("Mr. Horatio Test Hornblower", providerAttribute.getProvider().getName());
 	}
 	
 	/**
@@ -178,9 +171,9 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviderByUuid_shouldGetProviderGivenUuid() throws Exception {
-		Provider provider = service.getProviderByUuid("a2c3868a-6b90-11e0-93c3-18a905e044dc");
-		Assert.assertNotNull(provider);
-		assertEquals("RobertClive", provider.getName());
+		Provider provider = service.getProviderByUuid("ba4781f4-6b94-11e0-93c3-18a905e044dc");
+		assertEquals("Collet Test Chebaskwony", provider.getName());
+		assertNotNull(provider);
 	}
 	
 	/**
@@ -189,11 +182,8 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getProviders_shouldFetchProviderWithGivenNameWithCaseInSensitive() throws Exception {
-		Provider provider = new Provider();
-		provider.setIdentifier("unique");
-		provider.setName("Catherin");
-		service.saveProvider(provider);
-		assertEquals(1, service.getProviders("Cath", 0, null, null).size());
+		List<Provider> providers = service.getProviders("colle", 0, null, null);
+		assertEquals(1, providers.size());
 	}
 	
 	/**
@@ -285,23 +275,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		assertTrue(providerAttributeType.isRetired());
 		assertEquals("retire reason", providerAttributeType.getRetireReason());
 		assertEquals(1, service.getAllProviderAttributeTypes(false).size());
-	}
-	
-	/**
-	 * @see ProviderService#saveProvider(Provider)
-	 * @verifies save a Provider with provider name alone
-	 */
-	@Test
-	public void saveProvider_shouldSaveAProviderWithProviderNameAlone() throws Exception {
-		Provider provider = new Provider();
-		provider.setIdentifier("unique");
-		provider.setName("Provider9");
-		service.saveProvider(provider);
-		Assert.assertNotNull(provider.getId());
-		Assert.assertNotNull(provider.getUuid());
-		Assert.assertNotNull(provider.getCreator());
-		Assert.assertNotNull(provider.getDateCreated());
-		Assert.assertEquals("Provider9", provider.getName());
 	}
 	
 	/**
@@ -470,7 +443,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 		Provider duplicateProvider = service.getProvider(200);
 		
 		Provider existingProviderToEdit = service.getProvider(1);
-		existingProviderToEdit.setName("name");
 		existingProviderToEdit.setIdentifier(duplicateProvider.getIdentifier());
 		Assert.assertFalse(service.isProviderIdentifierUnique(existingProviderToEdit));
 	}
@@ -509,7 +481,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return true if the identifier is null", method = "isProviderIdentifierUnique(Provider)")
 	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsNull() throws Exception {
 		Provider provider = new Provider();
-		provider.setName("new developer");
 		Assert.assertTrue(service.isProviderIdentifierUnique(provider));
 	}
 	
@@ -520,7 +491,6 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return true if the identifier is a blank string", method = "isProviderIdentifierUnique(Provider)")
 	public void isProviderIdentifierUnique_shouldReturnTrueIfTheIdentifierIsABlankString() throws Exception {
 		Provider provider = new Provider();
-		provider.setName("new developer");
 		provider.setIdentifier("");
 		Assert.assertTrue(service.isProviderIdentifierUnique(provider));
 	}
@@ -573,11 +543,24 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getUnknownProvider_shouldGetTheUnknownProviderAccount() throws Exception {
 		Provider provider = new Provider();
-		provider.setName("Unknown Provider");
+		
+		provider.setPerson(newPerson("Unknown Provider"));
+		
 		provider.setIdentifier("Test Unknown Provider");
 		provider = service.saveProvider(provider);
 		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GP_UNKNOWN_PROVIDER_UUID, provider.getUuid(), null);
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		assertEquals(provider, service.getUnknownProvider());
 	}
+	
+	private Person newPerson(String name) {
+		Person person = new Person();
+		Set<PersonName> personNames = new TreeSet<PersonName>();
+		PersonName personName = new PersonName();
+		personName.setFamilyName(name);
+		personNames.add(personName);
+		person.setNames(personNames);
+		return person;
+	}
+	
 }

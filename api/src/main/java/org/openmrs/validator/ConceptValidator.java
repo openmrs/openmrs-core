@@ -1,21 +1,16 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -187,12 +182,9 @@ public class ConceptValidator implements Validator {
 				
 				//No duplicate names allowed for the same locale and concept, keep the case the same
 				//except for short names
-				if (!nameInLocale.isShort()) {
-					if (!validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase())) {
-						throw new DuplicateConceptNameException("'" + nameInLocale.getName()
-						        + "' is a duplicate name in locale '" + conceptNameLocale.toString()
-						        + "' for the same concept");
-					}
+				if (!nameInLocale.isShort() && !validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase())) {
+					throw new DuplicateConceptNameException("'" + nameInLocale.getName()
+					        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "' for the same concept");
 				}
 				
 				if (log.isDebugEnabled()) {
@@ -240,11 +232,10 @@ public class ConceptValidator implements Validator {
 				}
 				
 				//if we already have a mapping to this term, reject it this map
-				if (map.getConceptReferenceTerm().getId() != null) {
-					if (!mappedTermIds.add(map.getConceptReferenceTerm().getId())) {
-						errors.rejectValue("conceptMappings[" + index + "]", "ConceptReferenceTerm.term.alreadyMapped",
-						    "Cannot map a reference term multiple times to the same concept");
-					}
+				if (map.getConceptReferenceTerm().getId() != null
+				        && !mappedTermIds.add(map.getConceptReferenceTerm().getId())) {
+					errors.rejectValue("conceptMappings[" + index + "]", "ConceptReferenceTerm.term.alreadyMapped",
+					    "Cannot map a reference term multiple times to the same concept");
 				}
 				
 				index++;

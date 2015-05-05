@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -247,6 +243,98 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
 		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
 		
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should save non ConceptComplex object as conceptComplex", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveNonConceptComplexObjectAsConceptComplex() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// this tests saving a current concept as a newly changed conceptComplex
+		// assumes there is already a concept in the database
+		// with a concept id of #1
+		ConceptComplex cn = new ConceptComplex(1);
+		cn.setDatatype(new ConceptDatatype(13));
+		cn.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn.setHandler("SomeHandler");
+		conceptService.saveConcept(cn);
+		
+		Concept firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		ConceptComplex firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+		
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "save changes between concept numeric and complex", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveChangesBetweenConceptNumericAndComplex() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		//save a concept numeric
+		ConceptNumeric cn = new ConceptNumeric(1);
+		cn.setDatatype(new ConceptDatatype(1));
+		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.setHiAbsolute(20.0);
+		conceptService.saveConcept(cn);
+		
+		//confirm that we saved a concept numeric
+		Concept firstConcept = conceptService.getConceptNumeric(1);
+		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptNumeric);
+		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
+		
+		//change to concept complex
+		ConceptComplex cn2 = new ConceptComplex(1);
+		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.setHandler("SomeHandler");
+		conceptService.saveConcept(cn2);
+		
+		//confirm that we saved a concept complex
+		firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		ConceptComplex firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+		
+		//change to concept numeric
+		cn = new ConceptNumeric(1);
+		ConceptDatatype dt = new ConceptDatatype(1);
+		dt.setName("Numeric");
+		cn.setDatatype(dt);
+		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.setHiAbsolute(20.0);
+		conceptService.saveConcept(cn);
+		
+		//confirm that we saved a concept numeric
+		firstConcept = conceptService.getConceptNumeric(1);
+		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptNumeric);
+		firstConceptNumeric = (ConceptNumeric) firstConcept;
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
+		
+		//change to concept complex
+		cn2 = new ConceptComplex(1);
+		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.setHandler("SomeHandler");
+		conceptService.saveConcept(cn2);
+		
+		//confirm we saved a concept complex
+		firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
 	}
 	
 	/**

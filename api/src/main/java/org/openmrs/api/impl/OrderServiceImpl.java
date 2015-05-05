@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -168,19 +164,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
 			boolean isPreviousDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
-			List<List<Object>> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
-			List<Object> rowData = rows.get(0);
-			if (!rowData.get(0).equals(previousOrder.getPatient().getPatientId())) {
+			List<Object[]> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
+			Object[] rowData = rows.get(0);
+			if (!rowData[0].equals(previousOrder.getPatient().getPatientId())) {
 				throw new APIException("Order.cannot.change.patient", (Object[]) null);
-			} else if (!rowData.get(1).equals(previousOrder.getCareSetting().getCareSettingId())) {
+			} else if (!rowData[1].equals(previousOrder.getCareSetting().getCareSettingId())) {
 				throw new APIException("Order.cannot.change.careSetting", (Object[]) null);
-			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
+			} else if (!rowData[2].equals(previousOrder.getConcept().getConceptId())) {
 				throw new APIException("Order.cannot.change.concept", (Object[]) null);
 			} else if (isPreviousDrugOrder) {
 				Drug previousDrug = ((DrugOrder) previousOrder).getDrug();
-				if (previousDrug == null && rowData.get(3) != null) {
+				if (previousDrug == null && rowData[3] != null) {
 					throw new APIException("Order.cannot.change.drug", (Object[]) null);
-				} else if (previousDrug != null && !OpenmrsUtil.nullSafeEquals(rowData.get(3), previousDrug.getDrugId())) {
+				} else if (previousDrug != null && !OpenmrsUtil.nullSafeEquals(rowData[3], previousDrug.getDrugId())) {
 					throw new APIException("Order.cannot.change.drug", (Object[]) null);
 				}
 			}
@@ -708,7 +704,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException {
-		
 		if (orderFrequency.getOrderFrequencyId() != null) {
 			if (dao.isOrderFrequencyInUse(orderFrequency)) {
 				throw new APIException("Order.frequency.cannot.edit", (Object[]) null);
@@ -770,7 +765,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		orderNumberGenerator = null;
+		setOrderNumberGenerator(null);
 	}
 	
 	/**
@@ -778,7 +773,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void globalPropertyDeleted(String propertyName) {
-		orderNumberGenerator = null;
+		setOrderNumberGenerator(null);
+	}
+	
+	/**
+	 * Helper method to deter instance methods from setting static fields
+	 */
+	private static void setOrderNumberGenerator(OrderNumberGenerator orderNumberGenerator) {
+		OrderServiceImpl.orderNumberGenerator = orderNumberGenerator;
 	}
 	
 	/**

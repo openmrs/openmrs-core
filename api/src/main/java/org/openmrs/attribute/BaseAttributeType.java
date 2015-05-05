@@ -1,38 +1,44 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.attribute;
 
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.customdatatype.Customizable;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+
 /**
  * Abstract base implementation of {@link AttributeType}. Actual implementations (e.g. VisitAttributeType,
  * ProviderAttributeType) should be able to extend this and provide very little of their own code.
  * @since 1.9
  */
+@MappedSuperclass
 public abstract class BaseAttributeType<OwningType extends Customizable<?>> extends BaseOpenmrsMetadata implements AttributeType<OwningType> {
 	
+	@Column(name = "min_occurs", nullable = false, length = 11)
 	private Integer minOccurs = 0;
 	
+	@Column(name = "max_occurs", length = 11)
 	private Integer maxOccurs = null;
 	
+	@Column(name = "datatype", length = 255)
 	private String datatypeClassname;
 	
+	@Column(name = "datatype_config", length = 65535)
 	private String datatypeConfig;
 	
+	@Column(name = "preferred_handler", length = 255)
 	private String preferredHandlerClassname;
 	
+	@Column(name = "handler_config", length = 65535)
 	private String handlerConfig;
 	
 	/**

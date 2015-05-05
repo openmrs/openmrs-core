@@ -1,3 +1,14 @@
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <parent>
       <groupId>org.openmrs</groupId>
@@ -92,10 +103,10 @@
             </configuration>
          </plugin>
          <plugin>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>maven-jetty-plugin</artifactId>
-            <version>6.1.26</version>
-            <configuration>
+             <groupId>org.mortbay.jetty</groupId>
+             <artifactId>jetty-maven-plugin</artifactId>
+             <version>8.1.16.v20140903</version>
+             <configuration>
                <webXml>${project.build.directory}/jetty/WEB-INF/web.xml</webXml>
                <webAppConfig>
                   <contextPath>/${webapp.name}</contextPath>
@@ -144,10 +155,10 @@
          <build>
             <plugins>
                <plugin>
-                  <groupId>org.mortbay.jetty</groupId>
-                  <artifactId>maven-jetty-plugin</artifactId>
-                  <version>6.1.10</version>
-                  <configuration>
+                   <groupId>org.mortbay.jetty</groupId>
+                   <artifactId>jetty-maven-plugin</artifactId>
+                   <version>8.1.16.v20140903</version>
+                   <configuration>
                      <webXml>${project.build.directory}/jetty/WEB-INF/web.xml</webXml>
                      <webAppConfig>
                         <contextPath>/${webapp.name}</contextPath>

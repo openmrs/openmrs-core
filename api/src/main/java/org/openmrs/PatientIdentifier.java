@@ -1,20 +1,17 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -199,43 +196,13 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(PatientIdentifier other) {
-		int retValue = 0;
-		if (other != null) {
-			retValue = isVoided().compareTo(other.isVoided());
-			if (retValue == 0) {
-				retValue = other.isPreferred().compareTo(isPreferred());
-			}
-			if (retValue == 0) {
-				retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-			}
-			if (getIdentifierType() == null && other.getIdentifierType() == null) {
-				return 0;
-			}
-			if (getIdentifierType() == null && other.getIdentifierType() != null) {
-				retValue = 1;
-			}
-			if (other.getIdentifierType() == null && getIdentifierType() != null) {
-				retValue = -1;
-			}
-			if (retValue == 0) {
-				retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifierType().getPatientIdentifierTypeId(), other
-				        .getIdentifierType().getPatientIdentifierTypeId());
-			}
-			if (retValue == 0) {
-				retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifier(), other.getIdentifier());
-			}
-			
-			// if we've gotten this far, just check all identifier values.  If they are
-			// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1
-			// and return that (they are not equal).
-			if (retValue == 0 && !equalsContent(other)) {
-				retValue = 1;
-			}
-		}
-		
-		return retValue;
+		DefaultComparator piDefaultComparator = new DefaultComparator();
+		return piDefaultComparator.compare(this, other);
 	}
 	
 	/**
@@ -268,5 +235,50 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 */
 	public void setPatientIdentifierId(Integer patientIdentifierId) {
 		this.patientIdentifierId = patientIdentifierId;
+	}
+	
+	/**
+	 Provides a default comparator.
+	 @since 1.12
+	 **/
+	public static class DefaultComparator implements Comparator<PatientIdentifier> {
+		
+		public int compare(PatientIdentifier pi1, PatientIdentifier pi2) {
+			int retValue = 0;
+			if (pi2 != null) {
+				retValue = pi1.isVoided().compareTo(pi2.isVoided());
+				if (retValue == 0) {
+					retValue = pi1.isPreferred().compareTo(pi2.isPreferred());
+				}
+				if (retValue == 0) {
+					retValue = OpenmrsUtil.compareWithNullAsLatest(pi1.getDateCreated(), pi2.getDateCreated());
+				}
+				if (pi1.getIdentifierType() == null && pi2.getIdentifierType() == null) {
+					return 0;
+				}
+				if (pi1.getIdentifierType() == null && pi2.getIdentifierType() != null) {
+					retValue = 1;
+				}
+				if (pi1.getIdentifierType() == null && pi2.getIdentifierType() != null) {
+					retValue = -1;
+				}
+				if (retValue == 0) {
+					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifierType().getPatientIdentifierTypeId(),
+					    pi2.getIdentifierType().getPatientIdentifierTypeId());
+				}
+				if (retValue == 0) {
+					retValue = OpenmrsUtil.compareWithNullAsGreatest(pi1.getIdentifier(), pi2.getIdentifier());
+				}
+				
+				// if we've gotten this far, just check all identifier values.  If they are
+				// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1
+				// and return that (they are not equal).
+				if (retValue == 0 && !pi1.equalsContent(pi2)) {
+					retValue = 1;
+				}
+			}
+			
+			return retValue;
+		}
 	}
 }

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -323,6 +319,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated The {@link #getObsGroup()} method should be used
 	 * @see #getObsGroup()
 	 */
+	@Deprecated
 	public Integer getObsGroupId() {
 		if (getObsGroup() == null) {
 			return null;
@@ -336,6 +333,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated This method should not be used. The #setObsGroup() method should be used instead
 	 * @see #setObsGroup(Obs)
 	 */
+	@Deprecated
 	public void setObsGroupId(Integer obsGroupId) {
 		throw new APIException("Obs.error.setObsGroupId", (Object[]) null);
 	}
@@ -577,6 +575,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use getPerson()
 	 * @return Returns the patient.
 	 */
+	@Deprecated
 	public Patient getPatient() {
 		return (Patient) getPerson();
 	}
@@ -587,6 +586,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use setPerson(org.openmrs.Person)
 	 * @param patient
 	 */
+	@Deprecated
 	public void setPatient(Patient patient) {
 		setPerson(patient);
 	}
@@ -920,6 +920,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * 
 	 * 
+	 * 
 	 * Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
 	 * </pre>
 	 * 
@@ -1001,7 +1002,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 				} else {
 					if (getConcept() instanceof ConceptNumeric) {
 						ConceptNumeric cn = (ConceptNumeric) getConcept();
-						if (cn.isPrecise() != true) {
+						if (!cn.isPrecise()) {
 							double d = getValueNumeric();
 							int i = (int) d;
 							return Integer.toString(i);
@@ -1021,7 +1022,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			} else if ("ED".equals(abbrev) && getValueComplex() != null) {
 				String[] valueComplex = getValueComplex().split("\\|");
 				for (int i = 0; i < valueComplex.length; i++) {
-					if (!"".equals(valueComplex[i])) {
+					if (StringUtils.isNotEmpty(valueComplex[i])) {
 						return valueComplex[i].trim();
 					}
 				}
@@ -1066,7 +1067,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		if (getValueComplex() != null) {
 			String[] valueComplex = getValueComplex().split("\\|");
 			for (int i = 0; i < valueComplex.length; i++) {
-				if (!"".equals(valueComplex[i])) {
+				if (StringUtils.isNotEmpty(valueComplex[i])) {
 					return valueComplex[i].trim();
 				}
 			}
@@ -1128,6 +1129,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @deprecated
 	 */
+	@Deprecated
 	public Map<Locale, String> getValueAsString() {
 		Map<Locale, String> localeMap = new HashMap<Locale, String>();
 		Locale[] locales = Locale.getAvailableLocales(); // ABKTODO: get actual available locales
@@ -1246,8 +1248,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should reject a namepace and path combination longer than the max length
 	 */
 	public void setFormField(String namespace, String formFieldPath) {
-		if (namespace == null && formFieldPath == null)
+		if (namespace == null && formFieldPath == null) {
 			return;
+		}
 		
 		String nsAndPathTemp = "";
 		if (StringUtils.isNotBlank(namespace) && StringUtils.isNotBlank(formFieldPath)) {
