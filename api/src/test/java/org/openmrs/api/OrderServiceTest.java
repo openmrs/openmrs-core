@@ -2900,4 +2900,40 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		assertNotNull(revisedOrder.getAutoExpireDate());
 	}
+	
+	/**
+	 * @see OrderServiceImpl#discontinueExistingOrdersIfNecessary()
+	 * @verifies check if there are two ambiguous orders which have same drugs
+	 */
+	@Test
+	public void saveOrder_shouldDiscontinueFirstDrugOrderwithMatchedDrug() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setAction(Order.Action.DISCONTINUE);
+		order.setOrderReasonNonCoded("Discontinue this");
+		order.setDrug(conceptService.getDrug(3));
+		order.setEncounter(encounterService.getEncounter(5));
+		order.setPatient(patientService.getPatient(7));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order = (DrugOrder) orderService.saveOrder(order, null);
+		Assert.assertNotNull("Order should be discontinued", order.getPreviousOrder().getDateStopped());
+	}
+	
+	/**
+	 * @see OrderServiceImpl#discontinueExistingOrdersIfNecessary()
+	 * @verifies throw AmbiguousOrderException if disconnecting multiple active orders for the given concepts
+	 */
+	@Test(expected = AmbiguousOrderException.class)
+	public void saveOrder_shouldThrowAmbiguousOrderExceptionIfDisconnectingMultipleActiveOrdersForTheGivenConcepts() throws Exception {
+		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueAmbiguousOrderByConcept.xml");
+		DrugOrder order = new DrugOrder();
+		order.setAction(Order.Action.DISCONTINUE);
+		order.setOrderReasonNonCoded("Discontinue this");
+		order.setConcept(conceptService.getConcept(88));
+		order.setEncounter(encounterService.getEncounter(7));
+		order.setPatient(patientService.getPatient(9));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order = (DrugOrder) orderService.saveOrder(order, null);
+	}
 }

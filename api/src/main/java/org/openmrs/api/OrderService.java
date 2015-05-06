@@ -91,6 +91,8 @@ public interface OrderService extends OpenmrsService {
 	 * @should pass for revision order if an active test order for the same concept and care settings exists
 	 * @should roll the autoExpireDate to the end of the day if it has no time component
 	 * @should not change the autoExpireDate if it has a time component
+	 * @should discontinue first Drug Order with matched Drug
+	 * @should throw AmbiguousOrderException if disconnecting multiple active orders for the given concept
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;

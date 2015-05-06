@@ -40,6 +40,7 @@ import org.openmrs.Provider;
 import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.OrderContext;
 import org.openmrs.api.OrderNumberGenerator;
@@ -307,8 +308,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * 
 	 * @param order
 	 */
-	private void discontinueExistingOrdersIfNecessary(Order order) {
 		//Ignore and return if this is not an order to discontinue
+	private void discontinueExistingOrdersIfNecessary(Order order) {
 		if (DISCONTINUE != order.getAction()) {
 			return;
 		}
@@ -325,27 +326,36 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		    null);
 		boolean isDrugOrderAndHasADrug = DrugOrder.class.isAssignableFrom(getActualType(order))
 		        && ((DrugOrder) order).getDrug() != null;
+		Order orderToBeDiscontinued = null;
 		for (Order activeOrder : orders) {
 			if (!getActualType(order).equals(getActualType(activeOrder))) {
 				continue;
 			}
-			boolean shouldMarkAsDiscontinued = false;
 			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {
-				DrugOrder drugOrder1 = (DrugOrder) order;
-				DrugOrder drugOrder2 = (DrugOrder) activeOrder;
-				if (OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
-					shouldMarkAsDiscontinued = true;
-				}
+				if(orderToBeDiscontinued==null){
+					orderToBeDiscontinued = checkDrugOrdersForDiscontinuing((DrugOrder) order, (DrugOrder) activeOrder);
+				}	
 			} else if (activeOrder.getConcept().equals(order.getConcept())) {
-				shouldMarkAsDiscontinued = true;
+				if(orderToBeDiscontinued==null){
+					orderToBeDiscontinued = activeOrder;
+				}else{
+					throw new AmbiguousOrderException();
+				}
 			}
-			
-			if (shouldMarkAsDiscontinued) {
-				order.setPreviousOrder(activeOrder);
-				stopOrder(activeOrder, aMomentBefore(order.getDateActivated()));
-				break;
-			}
+		}
+		if(orderToBeDiscontinued!=null){
+			order.setPreviousOrder(orderToBeDiscontinued);
+			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()));
+		}
+	}
+	
+	
+	private DrugOrder checkDrugOrdersForDiscontinuing(DrugOrder drugOrder1, DrugOrder drugOrder2){
+		if (OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
+			return drugOrder2;
+		}else{
+			return null;
 		}
 	}
 	
