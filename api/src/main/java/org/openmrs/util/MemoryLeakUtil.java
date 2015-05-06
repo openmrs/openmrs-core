@@ -61,10 +61,10 @@ public class MemoryLeakUtil {
 		try {
 			Class<?> httpClientClass = Class.forName("sun.net.www.http.HttpClient");
 			Class<?> keepAliveCacheClass = Class.forName("sun.net.www.http.KeepAliveCache");
-			
+
 			final Field kac = httpClientClass.getDeclaredField("kac");
 			kac.setAccessible(true);
-			
+
 			final Field keepAliveTimer = keepAliveCacheClass.getDeclaredField("keepAliveTimer");
 			keepAliveTimer.setAccessible(true);
 			
