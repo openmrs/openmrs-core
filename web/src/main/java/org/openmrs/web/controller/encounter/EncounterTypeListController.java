@@ -62,5 +62,4 @@ public class EncounterTypeListController extends SimpleFormController {
 		
 		return encounterTypeList;
 	}
-	
 }

@@ -118,5 +118,4 @@ public class StateConversionListController extends SimpleFormController {
 		
 		return conversionList;
 	}
-	
 }

@@ -61,5 +61,4 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 			}
 		}
 	}
-	
 }

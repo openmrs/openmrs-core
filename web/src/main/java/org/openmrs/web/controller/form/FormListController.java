@@ -115,5 +115,4 @@ public class FormListController extends SimpleFormController {
 		
 		return formList;
 	}
-	
 }
