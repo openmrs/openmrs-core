@@ -7612,18 +7612,6 @@
         </ext:modifyColumn>
     </changeSet>
 
-    <changeSet id="201403011348" author="alexisduque">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="orders" columnName="orderer" />
-        </preConditions>
-        <comment>Make orders.orderer not NULLable</comment>
-        <ext:modifyColumn tableName="orders">
-            <column name="orderer" type="int">
-                <constraints nullable="false" />
-            </column>
-        </ext:modifyColumn>
-    </changeSet>
-
     <changeSet id="201311041510" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="as_needed" /></not>
@@ -8307,6 +8295,19 @@
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
     </changeSet>
 
+    <!-- TRUNK-4690: Orders.orderer column cannot be set to NOT NULL until after user to provider migration occurs -->
+    <changeSet id="201403011348" author="alexisduque">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="orderer" />
+        </preConditions>
+        <comment>Make orders.orderer not NULLable</comment>
+        <ext:modifyColumn tableName="orders">
+            <column name="orderer" type="int">
+                <constraints nullable="false" />
+            </column>
+        </ext:modifyColumn>
+    </changeSet>
+
     <changeSet id="201403061758-TRUNK-4284" author="Banka, Vinay">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">select count(*) from concept_class where uuid = '8e071bfe-520c-44c0-a89b-538e9129b42a'</sqlCheck>
@@ -8389,14 +8390,6 @@
         <addColumn tableName="order_type">
             <column name="date_changed" type="datetime" />
         </addColumn>
-    </changeSet>
-
-    <changeSet id="201406152043" author="harsz89">
-        <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent"/></not>
-        </preConditions>
-        <comment>Adding foreign key constraint from order_type.parent column to orders.order_id column</comment>
-        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent" referencedTableName="orders" referencedColumnNames="order_id"/>
     </changeSet>
 
     <changeSet id="201406201443" author="wyclif">
@@ -8502,6 +8495,22 @@
         </preConditions>
         <comment>Changing duration column of drug_order to int</comment>
         <modifyDataType tableName="drug_order" columnName="duration" newDataType="int"/>
+    </changeSet>
+
+    <changeSet id="20150428-TRUNK-4693-1" author="mseaton">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="order_type_parent"/>
+        </preConditions>
+        <comment>Removing invalid foreign key constraint from order_type.parent column to order.order_id column</comment>
+        <dropForeignKeyConstraint baseTableName="order_type" constraintName="order_type_parent"/>
+    </changeSet>
+
+    <changeSet id="20150428-TRUNK-4693-2" author="mseaton">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent_order_type"/></not>
+        </preConditions>
+        <comment>Adding foreign key constraint from order_type.parent column to order_type.order_type_id column</comment>
+        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent_order_type" referencedTableName="order_type" referencedColumnNames="order_type_id"/>
     </changeSet>
     
     <changeSet id="201409230113-TRUNK-3484" author="k-joseph">

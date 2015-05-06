@@ -69,7 +69,7 @@ public class ComplexObsServlet extends HttpServlet {
 			response.setHeader("Pragma", "no-cache");
 		}
 		
-		String mimeType = cd.getMIMEType();
+		String mimeType = cd.getMimeType();
 		
 		if (null != mimeType) {
 			response.setHeader("Content-Type", mimeType);
