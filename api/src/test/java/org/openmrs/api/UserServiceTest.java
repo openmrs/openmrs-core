@@ -1032,14 +1032,22 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should throw error if role inherits from itself", method = "saveRole(Role)")
 	public void saveRole_shouldThrowErrorIfRoleInheritsFromItself() throws Exception {
-		//		Role role = new Role();
-		//		Set<Role> inheritedRoles = new HashSet<Role>();
-		//		inheritedRoles.add(role);
-		//		role.setInheritedRoles(inheritedRoles);
-		//		
-		//		Context.getUserService().saveRole(role);
+		Role parentRole = new Role("parent role");
 		
-		// stack overflow error getting thrown in handlers 
+		// Have child inherit parent role
+		Role childRole = new Role("child role");
+		Set<Role> inheritsFromParent = new HashSet<Role>();
+		inheritsFromParent.add(parentRole);
+		childRole.setInheritedRoles(inheritsFromParent);
+		
+		// Now have parent try to inherit the child role.
+		Set<Role> inheritsFromChild = new HashSet<Role>();
+		inheritsFromChild.add(childRole);
+		parentRole.setInheritedRoles(inheritsFromChild);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Role.cannot.inherit.descendant"));
+		Context.getUserService().saveRole(parentRole);
 	}
 	
 	/**
