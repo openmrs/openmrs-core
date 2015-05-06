@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -48,7 +49,6 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EventListeners;
@@ -63,9 +63,7 @@ import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 /**
@@ -433,34 +431,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Deprecated
 	public void rejectConceptProposal(ConceptProposal cp) {
 		Context.getConceptService().rejectConceptProposal(cp);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,
-	 *      java.lang.Integer, java.lang.Integer)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void mrnGeneratorLog(String site, Integer start, Integer count) throws APIException {
-		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS)) {
-			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.EDIT_PATIENTS);
-		}
-		
-		dao.mrnGeneratorLog(site, start, count);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Collection<?> getMRNGeneratorLog() throws APIException {
-		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS)) {
-			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.EDIT_PATIENTS);
-		}
-		
-		return dao.getMRNGeneratorLog();
 	}
 	
 	/**

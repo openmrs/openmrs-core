@@ -2716,10 +2716,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not fail with null Classes and Datatypes", method = "getConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)")
 	public void getConcepts_shouldNotFailWithNullClassesAndDatatypes() throws Exception {
-		
 		ConceptService conceptService = Context.getConceptService();
-		Concept concept = conceptService.getConcept(7);
-		conceptService.updateConceptIndex(concept);
 		Assert.assertNotNull(conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
 		    null, null, null, null, null, null));
 	}
@@ -2734,8 +2731,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not fail with null Classes and Datatypes", method = "getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept)")
 	public void getCountOfConcepts_shouldNotFailWithNullClassesAndDatatypes() throws Exception {
 		ConceptService conceptService = Context.getConceptService();
-		Concept concept = conceptService.getConcept(7);
-		conceptService.updateConceptIndex(concept);
 		Assert.assertNotNull(conceptService.getCountOfConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false,
 		    null, null, null, null, null));
 	}
@@ -3319,6 +3314,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		c2.setConceptClass(cc3);
 		c2.setDatatype(dt);
 		cs.saveConcept(c2);
+		
+		updateSearchIndex();
 		
 		List<ConceptSearchResult> conceptSearchResultList = Context.getConceptService().getOrderableConcepts("one",
 		    Collections.singletonList(locale), true, null, null);

@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.EntityMode;
 import org.hibernate.FlushMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
@@ -189,8 +188,8 @@ public class HibernateOrderDAO implements OrderDAO {
 		String sql = "SELECT patient_id, care_setting, concept_id FROM orders WHERE order_id = :orderId";
 		
 		if (isOrderADrugOrder) {
-			sql = " SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id " + 
-				  " FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id = :orderId";
+			sql = " SELECT o.patient_id, o.care_setting, o.concept_id, d.drug_inventory_id "
+			        + " FROM orders o, drug_order d WHERE o.order_id = d.order_id AND o.order_id = :orderId";
 		}
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setParameter("orderId", order.getOrderId());
@@ -447,7 +446,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		Map<String, ClassMetadata> metadata = sessionFactory.getAllClassMetadata();
 		for (Iterator<ClassMetadata> i = metadata.values().iterator(); i.hasNext();) {
 			ClassMetadata classMetadata = i.next();
-			Class<?> entityClass = classMetadata.getMappedClass(EntityMode.POJO);
+			Class<?> entityClass = classMetadata.getMappedClass();
 			if (Order.class.equals(entityClass)) {
 				continue; //ignore the org.openmrs.Order class itself
 			}

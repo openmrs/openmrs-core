@@ -145,7 +145,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)")
 	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
 		Concept concept = dao.getConcept(7);
-		Context.getConceptService().updateConceptIndex(concept);
+		updateSearchIndex();
 		List<Concept> concepts = dao.getConcepts("VOIDED", null, false, new ArrayList<ConceptClass>(),
 		    new ArrayList<ConceptDatatype>());
 		Assert.assertEquals(0, concepts.size());
@@ -227,6 +227,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		c2.setConceptClass(cc);
 		c2.setDatatype(dt);
 		cs.saveConcept(c2);
+		
+		updateSearchIndex();
 		
 		List<ConceptSearchResult> searchResults1 = dao
 		        .getConcepts("one", Collections.singletonList(locale), false, Collections.EMPTY_LIST,

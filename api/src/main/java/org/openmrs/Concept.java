@@ -31,7 +31,6 @@ import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FullTextFilterDef;
 import org.hibernate.search.annotations.FullTextFilterDefs;
-import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
@@ -70,7 +69,6 @@ import org.springframework.util.ObjectUtils;
  * @see ConceptService
  */
 @Root
-@Indexed
 @FullTextFilterDefs( { @FullTextFilterDef(name = "termsFilterFactory", impl = TermsFilterFactory.class) })
 public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, java.io.Serializable, Attributable<Concept> {
 	
@@ -79,7 +77,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	private static final Log log = LogFactory.getLog(Concept.class);
 	
 	// Fields
-	
 	@DocumentId
 	private Integer conceptId;
 	
@@ -92,10 +89,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	private String retireReason;
 	
-	@IndexedEmbedded
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private ConceptDatatype datatype;
 	
-	@IndexedEmbedded
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private ConceptClass conceptClass;
 	
 	private Boolean set = false;
@@ -121,7 +118,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	private Collection<ConceptDescription> descriptions;
 	
-	@IndexedEmbedded
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Collection<ConceptMap> conceptMappings;
 	
 	/**

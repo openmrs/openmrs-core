@@ -2186,7 +2186,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//an infinite loop as another flush happens during the above process of 
 		//Context.getLocale(), leading to ImmutableEntityInterceptor being called infinitely.
 		Locale locale = Context.getLocale();
-				
+		
 		order.getPreviousOrder().setConcept(newConcept);
 		
 		expectedException.expect(APIException.class);

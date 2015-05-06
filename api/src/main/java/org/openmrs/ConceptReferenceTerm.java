@@ -12,10 +12,9 @@ package org.openmrs;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
-import org.hibernate.search.annotations.Indexed;
 
 /**
  * A concept reference term is typically name for a concept by which it is referred in another
@@ -24,7 +23,6 @@ import org.hibernate.search.annotations.Indexed;
  *
  * @since 1.9
  */
-@Indexed
 public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -35,7 +33,7 @@ public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io
 	private ConceptSource conceptSource;
 	
 	//The unique code used to identify the reference term in it's reference terminology
-	@Field(index = Index.UN_TOKENIZED)
+	@Field(analyze = Analyze.NO)
 	private String code;
 	
 	private String version;

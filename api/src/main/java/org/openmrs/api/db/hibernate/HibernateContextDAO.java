@@ -38,8 +38,8 @@ import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.SessionHolder;
+import org.springframework.orm.hibernate4.SessionFactoryUtils;
+import org.springframework.orm.hibernate4.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -263,7 +263,7 @@ public class HibernateContextDAO implements ContextDAO {
 			if (log.isDebugEnabled()) {
 				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
 			}
-			Session session = SessionFactoryUtils.getSession(sessionFactory, true);
+			Session session = sessionFactory.openSession();
 			session.setFlushMode(FlushMode.MANUAL);
 			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
 		}
@@ -282,7 +282,7 @@ public class HibernateContextDAO implements ContextDAO {
 				try {
 					if (value instanceof SessionHolder) {
 						Session session = ((SessionHolder) value).getSession();
-						SessionFactoryUtils.releaseSession(session, sessionFactory);
+						SessionFactoryUtils.closeSession(session);
 					}
 				}
 				catch (RuntimeException e) {

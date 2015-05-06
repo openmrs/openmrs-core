@@ -24,7 +24,7 @@
 			<generator class="native" />
 		</id>
 
-		<discriminator column="form_resource_id" insert="false" />
+		
 		
 		<many-to-one name="form" class="Form" not-null="true" column="form_id" />
 

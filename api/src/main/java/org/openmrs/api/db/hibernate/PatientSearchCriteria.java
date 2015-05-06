@@ -18,7 +18,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -28,6 +27,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
+import org.hibernate.type.StringType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -303,12 +303,12 @@ public class PatientSearchCriteria {
 				// if the regex is present, search on that
 				else {
 					regex = replaceSearchString(regex, identifier);
-					conjunction.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
+					conjunction.add(Restrictions.sqlRestriction("identifier regexp ?", regex, StringType.INSTANCE));
 				}
 			}
 		}
 		
-		// TODO add a junit test for patientIdentifierType restrictions
+		// TODO add a junit test for patientIdentifierType restrictions	
 		
 		// do the type restriction
 		if (!CollectionUtils.isEmpty(identifierTypes)) {
