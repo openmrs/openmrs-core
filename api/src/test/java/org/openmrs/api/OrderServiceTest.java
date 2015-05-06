@@ -2177,16 +2177,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Concept newConcept = conceptService.getConcept(5089);
 		assertFalse(order.getPreviousOrder().getConcept().equals(newConcept));
 		
-		//Make the next call before changing the order, because the thrown 
-		//APIException("Order.cannot.change.concept", ) will call Context.getLocale() and then
-		//LocaleUtility.getDefaultLocale(), which will flush when fetching the default
-		//locale global property via Critetia.uniqueResult() in HibernateAdministrationDAO
-		//This results into ImmutableEntityInterceptor throwing
-		//the APIException("editing.fields.not.allowed", ) and hence
-		//an infinite loop as another flush happens during the above process of 
-		//Context.getLocale(), leading to ImmutableEntityInterceptor being called infinitely.
-		Locale locale = Context.getLocale();
-		
 		order.getPreviousOrder().setConcept(newConcept);
 		
 		expectedException.expect(APIException.class);
