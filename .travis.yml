@@ -1,10 +1,8 @@
 language: java
 jdk:
- - oraclejdk7
  - oraclejdk8
 script: mvn clean install --batch-mode
 matrix:
-  allow_failures:
     - jdk: oraclejdk8
 branches:
   only:
