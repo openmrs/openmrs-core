@@ -748,6 +748,7 @@
 					<version>2.8.1</version>
 					<configuration>
 						<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
+                        <additionalparam>-Xdoclint:none</additionalparam>
 						<tagletArtifact>
 							<groupId>org.openmrs.tools</groupId>
 							<artifactId>openmrs-tools</artifactId>
