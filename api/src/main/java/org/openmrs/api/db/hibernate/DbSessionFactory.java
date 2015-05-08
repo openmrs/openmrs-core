@@ -31,4 +31,8 @@ public class DbSessionFactory {
 	public DbSession getCurrentSession() {
 		return new DbSession(sessionFactory);
 	}
+	
+	public SessionFactory getHibernateSessionFactory() {
+		return sessionFactory;
+	}
 }
