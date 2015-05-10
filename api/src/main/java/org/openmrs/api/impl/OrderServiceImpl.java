@@ -92,7 +92,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getDateActivated() == null) {
 			order.setDateActivated(new Date());
 		}
-		//Reject if there is an active order for the same orderable with overlapping schedule
 		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
 		Concept concept = order.getConcept();
 		if (concept == null && isDrugOrder) {
@@ -203,15 +202,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (DISCONTINUE != order.getAction()) {
 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
 			for (Order activeOrder : activeOrders) {
-				if (order.hasSameOrderableAs(activeOrder)
-				        && !OpenmrsUtil.nullSafeEquals(order.getPreviousOrder(), activeOrder)
-				        && OrderUtil.checkScheduleOverlap(order, activeOrder)) {
+				//Reject if there is an active drug order for the same orderable with overlapping schedule
+				if (areDrugOrdersOfSameOrderableAndOverlappingSchedule(order, activeOrder)) {
 					throw new APIException("Order.cannot.have.more.than.one", (Object[]) null);
 				}
 			}
 		}
 		
 		return saveOrderInternal(order, orderContext);
+	}
+
+	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
+		return firstOrder.hasSameOrderableAs(secondOrder)
+				&& !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
+				&& OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
+				&& firstOrder.getOrderType().equals(Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
 	}
 	
 	/**
