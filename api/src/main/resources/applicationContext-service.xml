@@ -338,7 +338,7 @@
 	</bean>
 	
 	<bean id="transactionAttributeSource" class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		
+
 	<bean id="mutableResourceBundleMessageSource" class="org.openmrs.messagesource.impl.MutableResourceBundleMessageSource">
 		<property name="basenames">
 			<!--  ABKTODO: Ugh. Presumes to be in a web application... -->
@@ -346,6 +346,7 @@
 				<value>/WEB-INF/custom_messages</value>
 				<value>/WEB-INF/module_messages</value>
 				<value>/WEB-INF/messages</value>
+                <value>classpath:messages</value>
 			</list>
 		</property>
 		<property name="useCodeAsDefaultMessage"><value>true</value></property>

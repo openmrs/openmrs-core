@@ -107,7 +107,8 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 		        .getAuthenticatedUser(), errors);
 		
 		assertTrue(errors.hasErrors());
-		assertEquals("error.password.requireMixedCase", errors.getGlobalError().getCode());
+		assertEquals(Context.getMessageSourceService().getMessage("error.password.requireMixedCase"), errors
+		        .getGlobalError().getCode());
 	}
 	
 	/**

@@ -59,7 +59,7 @@ public class WebModuleUtilTest {
 	private static final String REAL_PATH = "/usr/local/apache-tomcat-7.0.27/webapps/openmrs";
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @verifies return false for different package names
 	 * @throws Exception
 	 */
@@ -72,7 +72,7 @@ public class WebModuleUtilTest {
 	}
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @verifies return false if module has longer package name
 	 * @throws Exception
 	 */
@@ -85,7 +85,7 @@ public class WebModuleUtilTest {
 	}
 	
 	/**
-	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String) 
+	 * @see WebModuleUtil#isModulePackageNameInTaskClass(String, String)
 	 * @verifies properly match subpackages
 	 * @throws Exception
 	 */
@@ -127,7 +127,7 @@ public class WebModuleUtilTest {
 		if (realPath == null)
 			realPath = System.getProperty("user.dir");
 		
-		// manually delete dwr-modules.xml 
+		// manually delete dwr-modules.xml
 		File f = new File(realPath + "/WEB-INF/dwr-modules.xml");
 		f.delete();
 		
@@ -269,7 +269,7 @@ public class WebModuleUtilTest {
 	 */
 	@Test(expected = ModuleException.class)
 	public void getModuleWebFolder_shouldReturnNullIfTheDispatcherServletIsNotYetSet() throws Exception {
-		//We need to do this in case it is run after getModuleWebFolder_shouldReturnTheCorrectModuleFolder 
+		//We need to do this in case it is run after getModuleWebFolder_shouldReturnTheCorrectModuleFolder
 		WebModuleUtil.setDispatcherServlet(null);
 		WebModuleUtil.getModuleWebFolder("");
 	}
