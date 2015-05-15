@@ -15,5 +15,5 @@ import org.springframework.stereotype.Component;
  * Test bean which should be loaded on OpenMRS 1.8 and later
  */
 @Component
-@OpenmrsProfile(openmrsVersion = "1.8")
+@OpenmrsProfile(openmrsPlatformVersion = "1.8")
 public class OpenmrsProfile1_8 {}

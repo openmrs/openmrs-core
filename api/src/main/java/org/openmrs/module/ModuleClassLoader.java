@@ -300,8 +300,9 @@ public class ModuleClassLoader extends URLClassLoader {
 			if (fileUrl.getPath().matches(".*" + conditionalResource.getPath() + "$")) {
 				include = false; //if a resource matches a path of contidionalResource then it must meet all conditions
 				
-				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsVersion())) { //openmrsVersion is optional
-					include = ModuleUtil.matchRequiredVersions(openmrsVersion, conditionalResource.getOpenmrsVersion());
+				if (StringUtils.isNotBlank(conditionalResource.getOpenmrsPlatformVersion())) { //openmrsPlatformVersion is optional
+					include = ModuleUtil.matchRequiredVersions(openmrsVersion, conditionalResource
+					        .getOpenmrsPlatformVersion());
 					
 					if (!include) {
 						return false;

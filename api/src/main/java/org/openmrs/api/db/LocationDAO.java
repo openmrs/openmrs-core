@@ -190,7 +190,7 @@ public interface LocationDAO {
 	 * @see LocationService#getLocationAttributeTypeByName(String)
 	 */
 	public LocationAttributeType getLocationAttributeTypeByName(String name);
-
+	
 	/**
 	 * Get locations that have all the location tags specified.
 	 *
