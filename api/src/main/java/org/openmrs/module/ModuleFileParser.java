@@ -360,7 +360,11 @@ public class ModuleFileParser {
 					}
 					resource.setPath(resourceElement.getTextContent());
 				} else if ("openmrsVersion".equals(resourceElement.getNodeName())) {
-					resource.setOpenmrsVersion(resourceElement.getTextContent());
+					if (StringUtils.isBlank(resource.getOpenmrsPlatformVersion())) {
+						resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
+					}
+				} else if ("openmrsPlatformVersion".equals(resourceElement.getNodeName())) {
+					resource.setOpenmrsPlatformVersion(resourceElement.getTextContent());
 				} else if ("modules".equals(resourceElement.getNodeName())) {
 					NodeList modulesNode = resourceElement.getChildNodes();
 					for (int k = 0; k < modulesNode.getLength(); k++) {

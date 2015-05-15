@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+
 /**
  * This is the base implementation of the {@link OpenmrsObject} interface.<br/>
  * It implements the uuid variable that all objects are expected to have.
