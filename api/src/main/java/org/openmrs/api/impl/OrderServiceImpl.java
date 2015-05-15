@@ -333,14 +333,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {
-				if(orderToBeDiscontinued==null){
-					orderToBeDiscontinued = checkDrugOrdersForDiscontinuing((DrugOrder) order, (DrugOrder) activeOrder);
-				}	
+				orderToBeDiscontinued = checkDrugOrdersForDiscontinuing((DrugOrder) order, (DrugOrder) activeOrder);
+				break;
 			} else if (activeOrder.getConcept().equals(order.getConcept())) {
 				if(orderToBeDiscontinued==null){
 					orderToBeDiscontinued = activeOrder;
 				}else{
-					throw new AmbiguousOrderException();
+					throw new AmbiguousOrderException("Order.discontinuing.ambiguous.orders");
 				}
 			}
 		}
