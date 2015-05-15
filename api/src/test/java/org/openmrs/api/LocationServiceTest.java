@@ -420,7 +420,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationService ls = Context.getLocationService();
 		Assert.assertEquals(5, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
 	}
-
+	
 	/**
 	 * Get locations that have any of specified set of tags among its child tags.
 	 * 

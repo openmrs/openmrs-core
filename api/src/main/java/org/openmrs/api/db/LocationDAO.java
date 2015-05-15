@@ -185,7 +185,7 @@ public interface LocationDAO {
 	 * @see LocationService#getLocationAttributeByUuid(String)
 	 */
 	public LocationAttribute getLocationAttributeByUuid(String uuid);
-
+	
 	/**
 	 * Get locations that have all the location tags specified.
 	 *
