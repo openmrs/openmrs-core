@@ -221,20 +221,20 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Allows to ignore the test if the environment does not match the given parameters.
 	 * 
-	 * @param openmrsVersion
+	 * @param openmrsPlatformVersion
 	 * @param modules
-	 * @since 1.11, 1.10.2, 1.9.9
+	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
-	public void assumeOpenmrsProfile(String openmrsVersion, String... modules) {
+	public void assumeOpenmrsProfile(String openmrsPlatformVersion, String... modules) {
 		OpenmrsProfileExcludeFilter filter = new OpenmrsProfileExcludeFilter();
 		Map<String, Object> profile = new HashMap<String, Object>();
-		profile.put("openmrsVersion", openmrsVersion);
+		profile.put("openmrsPlatformVersion", openmrsPlatformVersion);
 		if (modules != null) {
 			profile.put("modules", modules);
 		} else {
 			profile.put("modules", new String[0]);
 		}
-		String errorMessage = "Ignored. Expected profile: {openmrsVersion=" + openmrsVersion + ", modules=["
+		String errorMessage = "Ignored. Expected profile: {openmrsPlatformVersion=" + openmrsPlatformVersion + ", modules=["
 		        + StringUtils.join((String[]) profile.get("modules"), ", ") + "]}";
 		Assume.assumeTrue(errorMessage, filter.matchOpenmrsProfileAttributes(profile));
 	}
@@ -244,7 +244,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * 
 	 * @param module in the format moduleId:version
 	 * @param modules additional list of modules in the format moduleId:version
-	 * @since 1.11, 1.10.2, 1.9.9
+	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
 	public void assumeOpenmrsModules(String module, String... modules) {
 		String[] allModules = ArrayUtils.addAll(modules, module);
@@ -254,11 +254,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Allows to ignore the test if the environment does not match the given OpenMRS version.
 	 * 
-	 * @param openmrsVersion
-	 * @since 1.11, 1.10.2, 1.9.9
+	 * @param openmrsPlatformVersion
+	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
-	public void assumeOpenmrsVersion(String openmrsVersion) {
-		assumeOpenmrsProfile(openmrsVersion);
+	public void assumeOpenmrsPlatformVersion(String openmrsPlatformVersion) {
+		assumeOpenmrsProfile(openmrsPlatformVersion);
 	}
 	
 	/**

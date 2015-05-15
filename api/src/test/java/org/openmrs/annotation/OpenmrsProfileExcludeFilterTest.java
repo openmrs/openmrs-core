@@ -62,7 +62,7 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldBeIgnoredIfOpenmrsVersionDoesNotMatch() {
-		assumeOpenmrsVersion("1.6.*");
+		assumeOpenmrsPlatformVersion("1.6.*");
 		
 		fail("It should have been ignored!");
 	}
@@ -76,6 +76,6 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldNotBeIgnoredIfOpenmrsVersionDoesMatch() {
-		assumeOpenmrsVersion("1.9");
+		assumeOpenmrsPlatformVersion("1.9");
 	}
 }
