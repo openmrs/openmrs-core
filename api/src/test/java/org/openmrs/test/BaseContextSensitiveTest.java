@@ -39,6 +39,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dbunit.database.DatabaseConfig;
@@ -57,10 +59,12 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
@@ -187,6 +191,49 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			throw new RuntimeException(
 			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}
+	}
+	
+	/**
+	 * Allows to ignore the test if the environment does not match the given parameters.
+	 * 
+	 * @param openmrsPlatformVersion
+	 * @param modules
+	 * @since 1.11.3, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsProfile(String openmrsPlatformVersion, String... modules) {
+		OpenmrsProfileExcludeFilter filter = new OpenmrsProfileExcludeFilter();
+		Map<String, Object> profile = new HashMap<String, Object>();
+		profile.put("openmrsPlatformVersion", openmrsPlatformVersion);
+		if (modules != null) {
+			profile.put("modules", modules);
+		} else {
+			profile.put("modules", new String[0]);
+		}
+		String errorMessage = "Ignored. Expected profile: {openmrsPlatformVersion=" + openmrsPlatformVersion + ", modules=["
+		        + StringUtils.join((String[]) profile.get("modules"), ", ") + "]}";
+		Assume.assumeTrue(errorMessage, filter.matchOpenmrsProfileAttributes(profile));
+	}
+	
+	/**
+	 * Allows to ignore the test if the given modules are not running.
+	 * 
+	 * @param module in the format moduleId:version
+	 * @param modules additional list of modules in the format moduleId:version
+	 * @since 1.11.3, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsModules(String module, String... modules) {
+		String[] allModules = ArrayUtils.addAll(modules, module);
+		assumeOpenmrsProfile(null, allModules);
+	}
+	
+	/**
+	 * Allows to ignore the test if the environment does not match the given OpenMRS version.
+	 * 
+	 * @param openmrsPlatformVersion
+	 * @since 1.11.3, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsPlatformVersion(String openmrsPlatformVersion) {
+		assumeOpenmrsProfile(openmrsPlatformVersion);
 	}
 	
 	/**

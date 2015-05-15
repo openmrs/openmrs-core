@@ -9,13 +9,14 @@
  */
 package org.openmrs.annotation;
 
-import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	
@@ -46,5 +47,24 @@ public class OpenmrsProfileExcludeFilterTest extends BaseContextSensitiveTest {
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void match_shouldNotIncludeBeanForOpenmrs1_10AndLaterIfModuleMissing() throws Exception {
 		applicationContext.getBean(OpenmrsProfile1_10WithHtmlformentry.class);
+	}
+	
+	@Test
+	public void shouldBeIgnoredIfOpenmrsVersionDoesNotMatch() {
+		assumeOpenmrsPlatformVersion("1.6.*");
+		
+		fail("It should have been ignored!");
+	}
+	
+	@Test
+	public void shouldBeIgnoredIfModuleDoesNotMatch() {
+		assumeOpenmrsModules("metadatasharing:1.2");
+		
+		fail("It should have been ignored!");
+	}
+	
+	@Test
+	public void shouldNotBeIgnoredIfOpenmrsVersionDoesMatch() {
+		assumeOpenmrsPlatformVersion("1.9");
 	}
 }

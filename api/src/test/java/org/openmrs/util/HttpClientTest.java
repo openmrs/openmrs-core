@@ -17,9 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,7 +55,8 @@ public class HttpClientTest {
 		verify(connection).setRequestProperty("Content-Length", String.valueOf(16));
 		verify(connection).setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		
-		assertThat(stream.toString(), is("&two=two&one=one"));
+		assertThat(stream.toString(), containsString("&two=two"));
+		assertThat(stream.toString(), containsString("&one=one"));
 		assertThat(response, containsString("response"));
 	}
 }
