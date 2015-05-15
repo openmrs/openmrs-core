@@ -1167,7 +1167,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (object == null) {
 			throw new APIException("error.null", (Object[]) null);
 		}
-		
+
 		dao.validate(object, errors);
 	}
 	

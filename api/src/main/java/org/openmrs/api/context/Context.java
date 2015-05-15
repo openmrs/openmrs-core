@@ -77,6 +77,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.aop.Advisor;
 
 /**
@@ -1095,6 +1096,11 @@ public class Context {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
 		}
+
+		// setting default validation rule
+		AdministrationService as = Context.getAdministrationService();
+		Boolean disableValidation = Boolean.valueOf(as.getGlobalProperty(OpenmrsConstants.GP_DISABLE_VALIDATION, "false"));
+		ValidateUtil.setDisableValidation(disableValidation);
 	}
 	
 	/**
