@@ -38,8 +38,8 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:https://github.com/openmrs/openmrs-core</connection>
-		<developerConnection>scm:git:https://github.com/openmrs/openmrs-core</developerConnection>
+		<connection>scm:git:git@github.com:openmrs/openmrs-core</connection>
+		<developerConnection>scm:git:git@github.com:openmrs/openmrs-core</developerConnection>
 		<url>https://github.com/openmrs/openmrs-core</url>
 	</scm>
 
@@ -727,6 +727,7 @@
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<useReleaseProfile>false</useReleaseProfile>
 						<arguments>-Prelease</arguments>
+						<tagNameFormat>@{project.version}</tagNameFormat>
 					</configuration>
 				</plugin>
 				<plugin>
