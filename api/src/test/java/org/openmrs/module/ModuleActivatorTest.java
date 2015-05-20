@@ -11,6 +11,7 @@ package org.openmrs.module;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -73,6 +74,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 		assertTrue(moduleTestData.getStoppedCallCount(MODULE2_ID) == 0);
 	}
 	
+	@Ignore("TRUNK-4678")
 	@Test
 	public void shouldStopDependantModulesOnStopModule() throws Exception {
 		//since module2 depends on module1, and module3 depends on module2
