@@ -942,6 +942,7 @@
 						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery/**</exclude>
 						<exclude>src/main/webapp/WEB-INF/view/scripts/jquery-ui/**</exclude>
 						<exclude>src/main/webapp/WEB-INF/view/module/**</exclude>
+						<exclude>release-scripts/**</exclude>
 						<!-- From gitignore -->
 						<exclude>.idea/**</exclude>
 						<exclude>target/**</exclude>
