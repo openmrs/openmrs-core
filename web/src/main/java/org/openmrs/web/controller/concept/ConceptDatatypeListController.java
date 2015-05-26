@@ -124,5 +124,4 @@ public class ConceptDatatypeListController extends SimpleFormController {
 		
 		return cdList;
 	}
-	
 }

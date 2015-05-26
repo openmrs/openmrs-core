@@ -151,5 +151,4 @@ public class PrivilegeListController extends SimpleFormController {
 		
 		return privilegeList;
 	}
-	
 }

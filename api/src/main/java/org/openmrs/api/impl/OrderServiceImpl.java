@@ -92,7 +92,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getDateActivated() == null) {
 			order.setDateActivated(new Date());
 		}
-		//Reject if there is an active order for the same orderable with overlapping schedule
 		boolean isDrugOrder = DrugOrder.class.isAssignableFrom(getActualType(order));
 		Concept concept = order.getConcept();
 		if (concept == null && isDrugOrder) {
@@ -164,19 +163,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			//Check that patient, careSetting, concept and drug if is drug order have not changed
 			//we need to use a SQL query to by pass the hibernate cache
 			boolean isPreviousDrugOrder = DrugOrder.class.isAssignableFrom(previousOrder.getClass());
-			List<List<Object>> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
-			List<Object> rowData = rows.get(0);
-			if (!rowData.get(0).equals(previousOrder.getPatient().getPatientId())) {
+			List<Object[]> rows = dao.getOrderFromDatabase(previousOrder, isPreviousDrugOrder);
+			Object[] rowData = rows.get(0);
+			if (!rowData[0].equals(previousOrder.getPatient().getPatientId())) {
 				throw new APIException("Order.cannot.change.patient", (Object[]) null);
-			} else if (!rowData.get(1).equals(previousOrder.getCareSetting().getCareSettingId())) {
+			} else if (!rowData[1].equals(previousOrder.getCareSetting().getCareSettingId())) {
 				throw new APIException("Order.cannot.change.careSetting", (Object[]) null);
-			} else if (!rowData.get(2).equals(previousOrder.getConcept().getConceptId())) {
+			} else if (!rowData[2].equals(previousOrder.getConcept().getConceptId())) {
 				throw new APIException("Order.cannot.change.concept", (Object[]) null);
 			} else if (isPreviousDrugOrder) {
 				Drug previousDrug = ((DrugOrder) previousOrder).getDrug();
-				if (previousDrug == null && rowData.get(3) != null) {
+				if (previousDrug == null && rowData[3] != null) {
 					throw new APIException("Order.cannot.change.drug", (Object[]) null);
-				} else if (previousDrug != null && !OpenmrsUtil.nullSafeEquals(rowData.get(3), previousDrug.getDrugId())) {
+				} else if (previousDrug != null && !OpenmrsUtil.nullSafeEquals(rowData[3], previousDrug.getDrugId())) {
 					throw new APIException("Order.cannot.change.drug", (Object[]) null);
 				}
 			}
@@ -203,15 +202,21 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (DISCONTINUE != order.getAction()) {
 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
 			for (Order activeOrder : activeOrders) {
-				if (order.hasSameOrderableAs(activeOrder)
-				        && !OpenmrsUtil.nullSafeEquals(order.getPreviousOrder(), activeOrder)
-				        && OrderUtil.checkScheduleOverlap(order, activeOrder)) {
+				//Reject if there is an active drug order for the same orderable with overlapping schedule
+				if (areDrugOrdersOfSameOrderableAndOverlappingSchedule(order, activeOrder)) {
 					throw new APIException("Order.cannot.have.more.than.one", (Object[]) null);
 				}
 			}
 		}
 		
 		return saveOrderInternal(order, orderContext);
+	}
+
+	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
+		return firstOrder.hasSameOrderableAs(secondOrder)
+				&& !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
+				&& OrderUtil.checkScheduleOverlap(firstOrder, secondOrder)
+				&& firstOrder.getOrderType().equals(Context.getOrderService().getOrderTypeByUuid(OrderType.DRUG_ORDER_TYPE_UUID));
 	}
 	
 	/**

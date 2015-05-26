@@ -9,8 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
 import org.hibernate.criterion.Order;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,9 +21,6 @@ import org.junit.Test;
 import org.openmrs.Obs;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Tests for {@link org.openmrs.api.db.hibernate.HibernateObsDAO}

@@ -144,5 +144,4 @@ public class ConceptClassListController extends SimpleFormController {
 		
 		return conceptClassList;
 	}
-	
 }

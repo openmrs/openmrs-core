@@ -26,7 +26,7 @@ public class WebHandlerUtils {
 	 * 
 	 * @param obs
 	 * @param view
-	 * @return String url that will render the image file object (in this case, this rendering is
+	 * @return String url that will render the complex observation object (in this case, this rendering is
 	 *         done by the ComplexObsServlet)
 	 */
 	public static String getHyperlink(Obs obs, String view) {

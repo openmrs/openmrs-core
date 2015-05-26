@@ -222,6 +222,8 @@ public class DWRConceptServiceTest extends BaseWebContextSensitiveTest {
 		answer3.addName(new ConceptName("T", new Locale("es")));
 		Context.getConceptService().saveConcept(answer3);
 		
+		updateSearchIndex();
+		
 		//when
 		List<Object> findConceptAnswers = dwrConceptService.findConceptAnswers("T", 21, false, true);
 		
@@ -256,6 +258,8 @@ public class DWRConceptServiceTest extends BaseWebContextSensitiveTest {
 		Concept answer2 = Context.getConceptService().getConcept(7);
 		answer2.addName(new ConceptName("True", new Locale("en")));
 		Context.getConceptService().saveConcept(answer2);
+		
+		updateSearchIndex();
 		
 		//when
 		List<Object> findConceptAnswers = dwrConceptService.findConceptAnswers("T", 21, false, true);

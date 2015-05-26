@@ -48,10 +48,10 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private String strength;
 	
-	@IndexedEmbedded(depth = 1)
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Concept concept;
 	
-	@IndexedEmbedded
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Set<DrugReferenceMap> drugReferenceMaps;
 	
 	private Collection<DrugIngredient> ingredients;

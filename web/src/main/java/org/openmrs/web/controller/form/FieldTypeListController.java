@@ -122,5 +122,4 @@ public class FieldTypeListController extends SimpleFormController {
 		
 		return fieldTypeList;
 	}
-	
 }

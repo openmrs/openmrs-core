@@ -18,7 +18,6 @@ import org.simpleframework.xml.Root;
  * ConceptDatatype
  */
 @Root
-@Indexed
 public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 473L;

@@ -620,10 +620,14 @@
             </property>
 		<!--  default properties must be set in the hibernate.default.properties -->
 	</bean>
+	
+	<bean id="dbSessionFactory" class="org.openmrs.api.db.hibernate.DbSessionFactory">
+		<constructor-arg name="sessionFactory" ref="sessionFactory" />
+	</bean>
 
 	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>
 	</bean>
 

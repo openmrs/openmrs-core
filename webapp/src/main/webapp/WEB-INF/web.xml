@@ -123,15 +123,6 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>mrnGeneratorServlet</servlet-name>
-		<servlet-class>org.openmrs.web.servlet.MRNGeneratorServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>mrnGeneratorServlet</servlet-name>
-		<url-pattern>/mrnGenerator</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
 		<servlet-name>quickReportServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.QuickReportServlet</servlet-class>
 	</servlet>
@@ -272,7 +263,7 @@
 	      hibernate filter (to help with lazy loading) -->
 	<filter>
         <filter-name>HibernateFilter</filter-name>
-        <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+        <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
     </filter>
     <filter-mapping>
 		<filter-name>HibernateFilter</filter-name> 

@@ -9,14 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -33,12 +26,10 @@ import org.hibernate.mapping.PersistentClass;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.HandlerUtil;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -76,84 +67,6 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String, java.lang.Integer, java.lang.Integer)
-	 */
-	public void mrnGeneratorLog(String site, Integer start, Integer count) {
-		PreparedStatement ps = null;
-		try {
-			String sql = "insert into `";
-			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
-			sql += "(date_generated, generated_by, site, mrn_first, mrn_count) values (?, ?, ?, ?, ?)";
-			
-			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
-			
-			ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-			ps.setInt(2, Context.getAuthenticatedUser().getUserId());
-			ps.setString(3, site);
-			ps.setInt(4, start);
-			ps.setInt(5, count);
-			ps.execute();
-		}
-		catch (Exception e) {
-			throw new DAOException("Error generating mrn log", e);
-		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
-	 */
-	public Collection getMRNGeneratorLog() {
-		Collection<Map<String, Object>> logs = new Vector<Map<String, Object>>();
-		
-		PreparedStatement ps = null;
-		try {
-			Map<String, Object> row;
-			
-			String sql = "select * from `";
-			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
-			sql += "order by mrn_log_id desc";
-			
-			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
-			
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				row = new HashMap<String, Object>();
-				row.put("date", rs.getTimestamp("date_generated"));
-				row.put("user", rs.getString("generated_by"));
-				row.put("site", rs.getString("site"));
-				row.put("first", rs.getInt("mrn_first"));
-				row.put("count", rs.getInt("mrn_count"));
-				logs.add(row);
-			}
-		}
-		catch (Exception e) {
-			throw new DAOException("Error getting mrn log", e);
-		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
-		}
-		
-		return logs;
 	}
 	
 	/**
@@ -251,13 +164,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		if (HibernateUtil.isHSQLDialect(sessionFactory)) {
 			sql = sql.replace("`", "");
 		}
-		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), sql, selectOnly);
+		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession(), sql, selectOnly);
 	}
 	
 	@Override
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		if (configuration == null) {
-			LocalSessionFactoryBean sessionFactoryBean = (LocalSessionFactoryBean) applicationContext
+			HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
 			        .getBean("&sessionFactory");
 			configuration = sessionFactoryBean.getConfiguration();
 		}

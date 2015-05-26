@@ -203,7 +203,6 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @param tags Set of LocationTag criteria
 	 * @should get locations having all tags
-	 * @should return empty list when no location has the given tags
 	 * @should return all unretired locations given an empty tag list
 	 * @since 1.5
 	 */

@@ -8392,14 +8392,6 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="201406152043" author="harsz89">
-        <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent"/></not>
-        </preConditions>
-        <comment>Adding foreign key constraint from order_type.parent column to orders.order_id column</comment>
-        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent" referencedTableName="orders" referencedColumnNames="order_id"/>
-    </changeSet>
-
     <changeSet id="201406201443" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="brand_name" /></not>
@@ -8503,6 +8495,22 @@
         </preConditions>
         <comment>Changing duration column of drug_order to int</comment>
         <modifyDataType tableName="drug_order" columnName="duration" newDataType="int"/>
+    </changeSet>
+
+    <changeSet id="20150428-TRUNK-4693-1" author="mseaton">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="order_type_parent"/>
+        </preConditions>
+        <comment>Removing invalid foreign key constraint from order_type.parent column to order.order_id column</comment>
+        <dropForeignKeyConstraint baseTableName="order_type" constraintName="order_type_parent"/>
+    </changeSet>
+
+    <changeSet id="20150428-TRUNK-4693-2" author="mseaton">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent_order_type"/></not>
+        </preConditions>
+        <comment>Adding foreign key constraint from order_type.parent column to order_type.order_type_id column</comment>
+        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent_order_type" referencedTableName="order_type" referencedColumnNames="order_type_id"/>
     </changeSet>
     
     <changeSet id="201409230113-TRUNK-3484" author="k-joseph">

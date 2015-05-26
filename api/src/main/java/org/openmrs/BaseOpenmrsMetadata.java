@@ -14,6 +14,7 @@ import java.util.Date;
 import org.hibernate.search.annotations.Field;
 
 import javax.persistence.Column;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 /**
@@ -36,12 +37,14 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Column(name = "description", length = 255)
 	private String description;
 	
-	@Column(name = "creator", nullable = false)
+	@ManyToOne(optional = false)
+	@Column(name = "creator")
 	private User creator;
 	
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@ManyToOne
 	@Column(name = "changed_by")
 	private User changedBy;
 	
@@ -55,6 +58,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Column(name = "date_retired")
 	private Date dateRetired;
 	
+	@ManyToOne
 	@Column(name = "retired_by")
 	private User retiredBy;
 	

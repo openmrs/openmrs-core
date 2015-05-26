@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -102,7 +101,7 @@ public class DWRConceptService {
 		//TODO factor out the reusable code in this and findCountAndConcepts methods to a single utility method
 		// List to return
 		// Object type gives ability to return error strings
-		Vector<Object> objectList = new Vector<Object>();
+		List<Object> objectList = new ArrayList<Object>();
 		
 		// TODO add localization for messages
 		
@@ -121,21 +120,21 @@ public class DWRConceptService {
 		}
 		
 		if (includeClassNames == null) {
-			includeClassNames = new Vector<String>();
+			includeClassNames = new ArrayList<String>();
 		}
 		if (excludeClassNames == null) {
-			excludeClassNames = new Vector<String>();
+			excludeClassNames = new ArrayList<String>();
 		}
 		if (includeDatatypeNames == null) {
-			includeDatatypeNames = new Vector<String>();
+			includeDatatypeNames = new ArrayList<String>();
 		}
 		if (excludeDatatypeNames == null) {
-			excludeDatatypeNames = new Vector<String>();
+			excludeDatatypeNames = new ArrayList<String>();
 		}
 		
 		try {
 			ConceptService cs = Context.getConceptService();
-			List<ConceptSearchResult> searchResults = new Vector<ConceptSearchResult>();
+			List<ConceptSearchResult> searchResults = new ArrayList<ConceptSearchResult>();
 			
 			if (phrase.matches("\\d+")) {
 				// user searched on a number. Insert concept with
@@ -163,7 +162,7 @@ public class DWRConceptService {
 			
 			if (!StringUtils.isBlank(phrase)) {
 				// turn classnames into class objects
-				List<ConceptClass> includeClasses = new Vector<ConceptClass>();
+				List<ConceptClass> includeClasses = new ArrayList<ConceptClass>();
 				for (String name : includeClassNames) {
 					if (!"".equals(name)) {
 						includeClasses.add(cs.getConceptClassByName(name));
@@ -171,7 +170,7 @@ public class DWRConceptService {
 				}
 				
 				// turn classnames into class objects
-				List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
+				List<ConceptClass> excludeClasses = new ArrayList<ConceptClass>();
 				for (String name : excludeClassNames) {
 					if (!"".equals(name)) {
 						excludeClasses.add(cs.getConceptClassByName(name));
@@ -179,7 +178,7 @@ public class DWRConceptService {
 				}
 				
 				// turn classnames into class objects
-				List<ConceptDatatype> includeDatatypes = new Vector<ConceptDatatype>();
+				List<ConceptDatatype> includeDatatypes = new ArrayList<ConceptDatatype>();
 				for (String name : includeDatatypeNames) {
 					if (!"".equals(name)) {
 						includeDatatypes.add(cs.getConceptDatatypeByName(name));
@@ -187,7 +186,7 @@ public class DWRConceptService {
 				}
 				
 				// turn classnames into class objects
-				List<ConceptDatatype> excludeDatatypes = new Vector<ConceptDatatype>();
+				List<ConceptDatatype> excludeDatatypes = new ArrayList<ConceptDatatype>();
 				for (String name : excludeDatatypeNames) {
 					if (!"".equals(name)) {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
@@ -254,7 +253,7 @@ public class DWRConceptService {
 		ConceptService cs = Context.getConceptService();
 		
 		List<Concept> concepts = cs.getProposedConcepts(text);
-		List<ConceptListItem> cli = new Vector<ConceptListItem>();
+		List<ConceptListItem> cli = new ArrayList<ConceptListItem>();
 		for (Concept c : concepts) {
 			ConceptName cn = c.getName(locale);
 			cli.add(new ConceptListItem(c, cn, locale));
@@ -303,14 +302,14 @@ public class DWRConceptService {
 			}
 		}
 		
-		List<Drug> drugAnswers = new Vector<Drug>();
+		List<Drug> drugAnswers = new ArrayList<Drug>();
 		for (ConceptAnswer conceptAnswer : concept.getAnswers(false)) {
 			if (conceptAnswer.getAnswerDrug() != null) {
 				drugAnswers.add(conceptAnswer.getAnswerDrug());
 			}
 		}
 		
-		List<Object> items = new Vector<Object>();
+		List<Object> items = new ArrayList<Object>();
 		Set<Integer> uniqueItems = new HashSet<Integer>();
 		for (ConceptSearchResult searchResult : searchResults) {
 			if (!uniqueItems.add(searchResult.getConcept().getConceptId())) {
@@ -341,7 +340,7 @@ public class DWRConceptService {
 		
 		Concept concept = cs.getConcept(conceptId);
 		
-		List<Object> returnList = new Vector<Object>();
+		List<Object> returnList = new ArrayList<Object>();
 		
 		if (concept.isSet()) {
 			for (ConceptSet set : concept.getConceptSets()) {
@@ -377,7 +376,7 @@ public class DWRConceptService {
 		
 		List<Concept> concepts = cs.getConceptsByAnswer(concept);
 		
-		List<ConceptListItem> items = new Vector<ConceptListItem>();
+		List<ConceptListItem> items = new ArrayList<ConceptListItem>();
 		for (Concept c : concepts) {
 			ConceptName cn = c.getName(locale);
 			items.add(new ConceptListItem(c, cn, locale));
@@ -399,7 +398,7 @@ public class DWRConceptService {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = cs.getConcept(conceptId);
 		
-		List<Object> items = new Vector<Object>();
+		List<Object> items = new ArrayList<Object>();
 		
 		// Add this concept as the first option in the list
 		// If there are no drugs to choose from, this will be automatically
@@ -434,7 +433,7 @@ public class DWRConceptService {
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		
-		List<Object> items = new Vector<Object>();
+		List<Object> items = new ArrayList<Object>();
 		
 		// find drugs for this concept
 		Set<Drug> drugs = new HashSet<Drug>();
@@ -464,7 +463,7 @@ public class DWRConceptService {
 	}
 	
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {
-		Vector<ConceptListItem> ret = new Vector<ConceptListItem>();
+		List<ConceptListItem> ret = new ArrayList<ConceptListItem>();
 		Concept c = Context.getConceptService().getConcept(conceptId);
 		Collection<ConceptAnswer> answers = c.getAnswers(false);
 		// TODO: deal with concept answers (e.g. drug) whose answer concept is null. (Not sure if this actually ever happens)
@@ -527,7 +526,7 @@ public class DWRConceptService {
 	        Integer start, Integer length, boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
-		Vector<Object> objectList = new Vector<Object>();
+		List<Object> objectList = new ArrayList<Object>();
 		
 		// get the list of locales to search on
 		List<Locale> searchLocales = Context.getAdministrationService().getSearchLocales();
@@ -542,16 +541,16 @@ public class DWRConceptService {
 		}
 		
 		if (includeClassNames == null) {
-			includeClassNames = new Vector<String>();
+			includeClassNames = new ArrayList<String>();
 		}
 		if (excludeClassNames == null) {
-			excludeClassNames = new Vector<String>();
+			excludeClassNames = new ArrayList<String>();
 		}
 		if (includeDatatypeNames == null) {
-			includeDatatypeNames = new Vector<String>();
+			includeDatatypeNames = new ArrayList<String>();
 		}
 		if (excludeDatatypeNames == null) {
-			excludeDatatypeNames = new Vector<String>();
+			excludeDatatypeNames = new ArrayList<String>();
 		}
 		
 		try {
@@ -559,7 +558,7 @@ public class DWRConceptService {
 			
 			if (!StringUtils.isBlank(phrase)) {
 				// turn classnames into class objects
-				List<ConceptClass> includeClasses = new Vector<ConceptClass>();
+				List<ConceptClass> includeClasses = new ArrayList<ConceptClass>();
 				for (String name : includeClassNames) {
 					if (!"".equals(name)) {
 						includeClasses.add(cs.getConceptClassByName(name));
@@ -567,7 +566,7 @@ public class DWRConceptService {
 				}
 				
 				// turn classnames into class objects
-				List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
+				List<ConceptClass> excludeClasses = new ArrayList<ConceptClass>();
 				for (String name : excludeClassNames) {
 					if (!"".equals(name)) {
 						excludeClasses.add(cs.getConceptClassByName(name));
@@ -575,7 +574,7 @@ public class DWRConceptService {
 				}
 				
 				// turn classnames into class objects
-				List<ConceptDatatype> includeDatatypes = new Vector<ConceptDatatype>();
+				List<ConceptDatatype> includeDatatypes = new ArrayList<ConceptDatatype>();
 				for (String name : includeDatatypeNames) {
 					if (!"".equals(name)) {
 						includeDatatypes.add(cs.getConceptDatatypeByName(name));
@@ -583,7 +582,7 @@ public class DWRConceptService {
 				}
 				
 				// turn classnames into class objects
-				List<ConceptDatatype> excludeDatatypes = new Vector<ConceptDatatype>();
+				List<ConceptDatatype> excludeDatatypes = new ArrayList<ConceptDatatype>();
 				for (String name : excludeDatatypeNames) {
 					if (!"".equals(name)) {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
@@ -662,11 +661,11 @@ public class DWRConceptService {
 	 */
 	public List<Object> findBatchOfConceptReferenceTerms(String phrase, Integer sourceId, Integer start, Integer length,
 	        boolean includeRetired) {
-		Vector<Object> objectList = new Vector<Object>();
+		List<Object> objectList = new ArrayList<Object>();
 		MessageSourceService mss = Context.getMessageSourceService();
 		try {
 			ConceptService cs = Context.getConceptService();
-			List<ConceptReferenceTerm> terms = new Vector<ConceptReferenceTerm>();
+			List<ConceptReferenceTerm> terms = new ArrayList<ConceptReferenceTerm>();
 			
 			if (StringUtils.isEmpty(phrase)) {
 				objectList.add(mss.getMessage("searchWidget.searchPhraseCannotBeNull"));
@@ -682,7 +681,7 @@ public class DWRConceptService {
 				objectList.add(mss.getMessage("general.noMatchesFound", new Object[] { "'" + phrase + "'" }, Context
 				        .getLocale()));
 			} else {
-				objectList = new Vector<Object>(terms.size());
+				objectList = new ArrayList<Object>(terms.size());
 				for (ConceptReferenceTerm term : terms) {
 					objectList.add(new ConceptReferenceTermListItem(term));
 				}
@@ -710,7 +709,7 @@ public class DWRConceptService {
 	        Integer length, boolean includeRetired, boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
-		List<Object> objectList = new Vector<Object>();
+		List<Object> objectList = new ArrayList<Object>();
 		try {
 			ConceptService cs = Context.getConceptService();
 			int conceptReferenceTermCount = 0;

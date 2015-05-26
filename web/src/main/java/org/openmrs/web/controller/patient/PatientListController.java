@@ -94,5 +94,4 @@ public class PatientListController extends SimpleFormController {
 		//default empty Object
 		return new HashSet<Patient>();
 	}
-	
 }

@@ -33,12 +33,15 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -46,6 +49,10 @@ import org.springframework.validation.Errors;
  * Tests methods on the {@link DrugOrderValidator} class.
  */
 public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
+	
+	@Autowired
+	@Qualifier("adminService")
+	AdministrationService adminService;
 	
 	/**
 	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
@@ -451,8 +458,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDrug(drug);
 		
 		Errors errors = new BindException(order, "order");
-		new DrugOrderValidator().validate(order, errors);
-		
+		adminService.validate(order, errors);
 		Assert.assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
