@@ -9,13 +9,17 @@
  */
 package org.openmrs.web.controller.maintenance;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ContextDAO;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the {@link SearchIndexController} controller
@@ -24,12 +28,12 @@ public class SearchIndexControllerTest  extends BaseWebContextSensitiveTest {
 
     private SearchIndexController controller;
 
+    @Mock
+    private ContextDAO contextDao;
+
     @Before
     public void before() {
-        createController();
-    }
-
-    private void createController() {
+        Context.setDAO(contextDao);
         controller = new SearchIndexController();
     }
 
@@ -49,7 +53,19 @@ public class SearchIndexControllerTest  extends BaseWebContextSensitiveTest {
      */
     @Test
     public void rebuildSearchIndex_shouldReturnTrueForSuccessIfTheUpdateDoesNotFail() throws Exception {
+        Mockito.doNothing().when(contextDao).updateSearchIndex();
         Map<String, Object> response = controller.rebuildSearchIndex();
         assertEquals(true, response.get("success"));
+    }
+
+    /**
+     * @verifies return false for success if a RuntimeException is thrown
+     * @see SearchIndexController#rebuildSearchIndex()
+     */
+    @Test
+    public void rebuildSearchIndex_shouldReturnFalseForSuccessIfARuntimeExceptionIsThrown() throws Exception {
+        Mockito.doThrow(new RuntimeException("boom")).when(contextDao).updateSearchIndex();
+        Map<String, Object> response = controller.rebuildSearchIndex();
+        assertEquals(false, response.get("success"));
     }
 }
