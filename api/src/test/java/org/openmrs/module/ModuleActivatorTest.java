@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -76,6 +77,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
+	@Ignore("Unignore after investigating and fixing - TRUNK-4678")
 	public void shouldStopDependantModulesOnStopModule() throws Exception {
 		//since module2 depends on module1, and module3 depends on module2
 		//stopping module1 should also stop both module2 and module3
