@@ -127,6 +127,7 @@ public class ModuleActivatorTest extends BaseModuleActivatorTest {
 	}
 	
 	@Test
+	@Ignore("Unignore after investigating and fixing - TRUNK-4678")
 	public void shouldExcludePreviouslyStoppedModulesOnShutdown() {
 		//At OpenMRS shutdown, willStop() and stopped() methods get called for all 
 		//started module's activator EXCLUDING any module(s) that were previously stopped.
