@@ -1099,6 +1099,11 @@ public final class OpenmrsConstants {
 	 * @since 1.11
 	 */
 	public static final Integer SEARCH_INDEX_VERSION = 3;
+
+    /**
+     * @since 1.12
+     */
+    public static final String GP_DISABLE_VALIDATION = "validation.disable";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1554,6 +1559,9 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE,
 		                GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_EXACT,
 		                "Specifies how person attributes are matched while searching person. Valid values are 'ANYWHERE' or 'EXACT'. Defaults to exact if missing or invalid value is present."));
+
+        props.add(new GlobalProperty(GP_DISABLE_VALIDATION, "false",
+                "Disables validation of OpenMRS Object. Warning: only do this is you know what you are doing!"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

@@ -1167,8 +1167,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (object == null) {
 			throw new APIException("error.null", (Object[]) null);
 		}
-		
-		dao.validate(object, errors);
+
+        if (!Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_DISABLE_VALIDATION, "false")
+                .equalsIgnoreCase("true")) {
+            dao.validate(object, errors);
+        }
 	}
 	
 	/**
