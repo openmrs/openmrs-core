@@ -105,6 +105,8 @@ public class DatabaseConfig {
 		dataSource.setUrl("jdbc:mysql://localhost:3306/openmrs?autoReconnect=true");
 		dataSource.setUsername("root");
 		dataSource.setPassword("root");
+		dataSource.setUsername("test");
+		dataSource.setPassword("test");
 		return dataSource;
 	}
 	
