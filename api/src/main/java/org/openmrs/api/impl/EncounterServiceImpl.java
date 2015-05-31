@@ -189,7 +189,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		
 		// do the actual saving to the database
-		dao.saveEncounter(encounter);
+		encounterDaoJpa.save(encounter);
 		
 		// save the new orders
 		for (Order o : encounter.getOrders()) {

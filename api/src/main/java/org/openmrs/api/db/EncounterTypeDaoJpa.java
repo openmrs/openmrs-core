@@ -9,7 +9,11 @@
  */
 package org.openmrs.api.db;
 
-import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EncounterDaoJpa extends JpaRepository<Encounter, Integer> {}
+/**
+ * Created by spereverziev on 31.05.15.
+ */
+public interface EncounterTypeDaoJpa extends JpaRepository<EncounterType,Integer> {
+}
