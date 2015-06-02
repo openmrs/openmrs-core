@@ -1116,7 +1116,7 @@ public class ModuleFactory {
 			List<Module> startedModulesCopy = new ArrayList<Module>();
 			startedModulesCopy.addAll(getStartedModules());
 			for (Module dependentModule : startedModulesCopy) {
-				if (!dependentModule.equals(mod)) {
+				if (dependentModule != null && !dependentModule.equals(mod)) {
 					if (dependentModule.getRequiredModules() != null && dependentModule.getRequiredModules().contains(modulePackage)) {
 						dependentModulesStopped.add(dependentModule);
 						dependentModulesStopped.addAll(stopModule(dependentModule, skipOverStartedProperty, isFailedStartup));
