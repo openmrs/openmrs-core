@@ -200,7 +200,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
 		    true, includeVoided);
 		
-		LinkedHashSet<Patient> patients = new LinkedHashSet<Patient>();
+		Set<Patient> patients = new LinkedHashSet<Patient>();
 		
 		if (start < listSize) {
 			setFirstAndMaxResult(criteriaExactMatch, start, length);

@@ -444,7 +444,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * Set of locales which can be used to present messages in the user interface. Created lazily as
 	 * needed by {@link #getAllowedLocales()}.
 	 */
-	private HashSet<Locale> presentationLocales;
+	private Set<Locale> presentationLocales;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getSystemVariables()

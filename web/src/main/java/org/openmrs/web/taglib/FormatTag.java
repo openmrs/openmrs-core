@@ -563,7 +563,7 @@ public class FormatTag extends TagSupport {
 	private void printEncounterProviders(StringBuilder sb, Map<EncounterRole, Set<Provider>> eps) {
 		if (eps != null) {
 			
-			LinkedHashSet<Provider> providerList = getDisplayEncounterProviders(eps);
+			Set<Provider> providerList = getDisplayEncounterProviders(eps);
 			
 			String providers = null;
 			for (Provider provider : providerList) {
@@ -603,7 +603,7 @@ public class FormatTag extends TagSupport {
 	 * @param eps the encounter providers to filter.
 	 * @return the filtered encounter providers.
 	 */
-	private LinkedHashSet<Provider> getDisplayEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
+	private Set<Provider> getDisplayEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
 		String encounterRoles = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GP_DASHBOARD_PROVIDER_DISPLAY_ENCOUNTER_ROLES, null);
 		
@@ -630,8 +630,8 @@ public class FormatTag extends TagSupport {
 	 * @param rolesArray the roles string array.
 	 * @return a filtered list of providers.
 	 */
-	private LinkedHashSet<Provider> filterProviders(Map<EncounterRole, Set<Provider>> encounterProviders, String[] rolesArray) {
-		LinkedHashSet<Provider> filteredProviders = new LinkedHashSet<Provider>();
+	private Set<Provider> filterProviders(Map<EncounterRole, Set<Provider>> encounterProviders, String[] rolesArray) {
+		Set<Provider> filteredProviders = new LinkedHashSet<Provider>();
 		
 		for (Map.Entry<EncounterRole, Set<Provider>> entry : encounterProviders.entrySet()) {
 			EncounterRole encounterRole = entry.getKey();

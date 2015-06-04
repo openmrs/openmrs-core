@@ -1090,8 +1090,9 @@ public class ModuleFactory {
 			}
 			
 			try {
-				if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
+				if (mod.getModuleActivator() != null) { // if extends BaseModuleActivator
 					mod.getModuleActivator().willStop();
+				}
 			}
 			catch (Exception t) {
 				log.warn("Unable to call module's Activator.willStop() method", t);
@@ -1171,8 +1172,9 @@ public class ModuleFactory {
 						String extId = ext.getExtensionId();
 						try {
 							List<Extension> tmpExtensions = getExtensions(extId);
-							if (tmpExtensions == null)
+							if (tmpExtensions == null) {
 								tmpExtensions = new Vector<Extension>();
+							}
 							
 							tmpExtensions.remove(ext);
 							getExtensionMap().put(extId, tmpExtensions);
@@ -1196,10 +1198,11 @@ public class ModuleFactory {
 			}
 			
 			try {
-				if (mod.getModuleActivator() != null)//extends BaseModuleActivator
+				if (mod.getModuleActivator() != null) {// extends BaseModuleActivator
 					mod.getModuleActivator().stopped();
-				else
-					mod.getActivator().shutdown();//implements old  Activator interface
+				} else {
+					mod.getActivator().shutdown(); // implements old Activator interface
+				}
 			}
 			catch (Exception t) {
 				log.warn("Unable to call module's Activator.shutdown() method", t);

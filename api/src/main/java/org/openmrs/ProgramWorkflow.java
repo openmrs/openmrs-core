@@ -189,7 +189,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 			
 		};
 		
-		TreeSet<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(stateComparator);
+		Set<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(stateComparator);
 		if (getStates() != null) {
 			sorted.addAll(getStates());
 		}

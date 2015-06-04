@@ -9,7 +9,7 @@
  */
 package org.openmrs.util;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.openmrs.hl7.HL7Constants;
 
@@ -138,7 +138,7 @@ public class FormConstants {
 	 *             complex definitions
 	 */
 	@Deprecated
-	public static final Hashtable<String, String> simpleDatatypes = HL7Constants.simpleDatatypes;
+	public static final Map<String, String> simpleDatatypes = HL7Constants.simpleDatatypes;
 	
 	public static final int INDENT_SIZE = 2;
 	

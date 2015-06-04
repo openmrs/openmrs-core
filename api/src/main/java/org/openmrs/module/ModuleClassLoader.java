@@ -95,9 +95,9 @@ public class ModuleClassLoader extends URLClassLoader {
 			throw new IllegalArgumentException("Parent must not be ModuleClassLoader");
 		}
 		
-		if (log.isDebugEnabled())
+		if (log.isDebugEnabled()){
 			log.debug("URLs length: " + urls.size());
-		
+		}
 		this.module = module;
 		requiredModules = collectRequiredModuleImports(module);
 		awareOfModules = collectAwareOfModuleImports(module);
@@ -533,8 +533,9 @@ public class ModuleClassLoader extends URLClassLoader {
 			        + ", resolve? " + resolve);
 			StringBuilder output = new StringBuilder();
 			for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-				if (element.getClassName().contains("openmrs"))
+				if (element.getClassName().contains("openmrs")) {
 					output.append("+ ");
+				}
 				output.append(element);
 				output.append("\n");
 			}
@@ -626,18 +627,21 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	protected void checkClassVisibility(final Class<?> cls, final ModuleClassLoader requestor) throws ClassNotFoundException {
 		
-		if (this == requestor)
+		if (this == requestor) {
 			return;
-		
+		}
+
 		URL lib = getClassBaseUrl(cls);
-		
-		if (lib == null)
+
+		if (lib == null) {
 			return; // cls is a system class
-			
+		}
+
 		ClassLoader loader = cls.getClassLoader();
-		
-		if (!(loader instanceof ModuleClassLoader))
+
+		if (!(loader instanceof ModuleClassLoader)) {
 			return;
+		}
 		
 		if (loader != this) {
 			((ModuleClassLoader) loader).checkClassVisibility(cls, requestor);
@@ -649,8 +653,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	@Override
 	protected String findLibrary(final String name) {
-		if ((name == null) || "".equals(name.trim()))
+		if ((name == null) || "".equals(name.trim())) {
 			return null;
+		}
 		
 		if (log.isTraceEnabled()) {
 			log.trace("findLibrary(String): name=" + name + ", this=" + this);
@@ -841,8 +846,9 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		
-		if ((seenModules != null) && seenModules.contains(getModule().getModuleId()))
+		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
 			return null;
+		}
 		
 		URL result = super.findResource(name);
 		if (result != null) { // found resource in this module class path
@@ -853,8 +859,9 @@ public class ModuleClassLoader extends URLClassLoader {
 			return null;
 		}
 		
-		if (seenModules == null)
+		if (seenModules == null) {
 			seenModules = new HashSet<String>();
+		}
 		
 		seenModules.add(getModule().getModuleId());
 		
@@ -865,8 +872,9 @@ public class ModuleClassLoader extends URLClassLoader {
 				
 				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
 				
-				if (mcl != null)
+				if (mcl != null) {
 					result = mcl.findResource(name, requestor, seenModules);
+				}
 				
 				if (result != null) {
 					return result; // found resource in required module
@@ -876,14 +884,16 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		//look through the aware of modules.
 		for (Module publicImport : awareOfModules) {
-			if (seenModules.contains(publicImport.getModuleId()))
+			if (seenModules.contains(publicImport.getModuleId())) {
 				continue;
-			
+			}
+
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
-			
-			if (mcl != null)
+
+			if (mcl != null) {
 				result = mcl.findResource(name, requestor, seenModules);
-			
+			}
+
 			if (result != null) {
 				return result; // found resource in aware of module
 			}

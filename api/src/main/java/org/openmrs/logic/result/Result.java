@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.Concept;
@@ -752,7 +753,7 @@ public class Result extends ArrayList<Result> {
 			return this;
 		}
 		Integer something = Integer.valueOf(1);
-		HashMap<Result, Integer> map = new HashMap<Result, Integer>();
+		Map<Result, Integer> map = new HashMap<Result, Integer>();
 		for (Result r : this) {
 			map.put(r, something);
 		}

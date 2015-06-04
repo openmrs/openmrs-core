@@ -1067,31 +1067,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * Convenience method
-	 * 
-	 * @param parent
-	 * @param subList
-	 * @return
-	 */
-	private Boolean containsAll(Collection<String> parent, Collection<String> subList) {
-		
-		for (String s : subList) {
-			s = s.toUpperCase();
-			boolean found = false;
-			for (String p : parent) {
-				p = p.toUpperCase();
-				if (p.startsWith(s)) {
-					found = true;
-				}
-			}
-			if (!found) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
 	 * @see org.openmrs.api.ConceptService#checkIfLocked()
 	 */
 	@Transactional(readOnly = true)

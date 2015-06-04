@@ -168,10 +168,6 @@ public class EncounterRoleFormController {
 		return "admin/encounters/encounterRoleList";
 	}
 	
-	private String showForm(Integer encounterRoleId) {
-		return "redirect:encounterRole.form?encounterRoleId=" + encounterRoleId;
-	}
-	
 	private String showEncounterList() {
 		return "redirect:encounterRole.list";
 	}

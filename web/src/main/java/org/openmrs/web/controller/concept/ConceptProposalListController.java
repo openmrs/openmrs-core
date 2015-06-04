@@ -70,7 +70,7 @@ public class ConceptProposalListController extends SimpleFormController {
 			sortOn = "occurences";
 		}
 		
-		TreeMap<List<ConceptProposal>, Integer> cpMap = new TreeMap<List<ConceptProposal>, Integer>();
+		Map<List<ConceptProposal>, Integer> cpMap = new TreeMap<List<ConceptProposal>, Integer>();
 		
 		if (sortOn.equals("occurences")) {
 			cpMap = new TreeMap<List<ConceptProposal>, Integer>(new CompareListSize(asc));

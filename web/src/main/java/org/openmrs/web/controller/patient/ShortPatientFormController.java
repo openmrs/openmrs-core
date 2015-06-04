@@ -661,7 +661,7 @@ public class ShortPatientFormController {
 	 * @return the transformed string ignoring blanks and nulls
 	 */
 	public static String getPersonNameString(PersonName name) {
-		ArrayList<String> tempName = new ArrayList<String>();
+		List<String> tempName = new ArrayList<String>();
 		if (StringUtils.isNotBlank(name.getGivenName())) {
 			tempName.add(name.getGivenName().trim());
 		}
