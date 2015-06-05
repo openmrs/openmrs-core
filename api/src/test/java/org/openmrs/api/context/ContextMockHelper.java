@@ -35,6 +35,7 @@ import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
+import org.openmrs.api.db.ContextDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.util.RoleConstants;
 import org.springframework.context.ApplicationContext;
@@ -92,11 +93,17 @@ public class ContextMockHelper {
 	
 	UserContext userContext;
 	
+	ContextDAO contextDAO;
+	
 	Map<Class<?>, Object> realServices = new HashMap<Class<?>, Object>();
 	
 	UserContext realUserContext;
 	
 	boolean userContextMocked = false;
+	
+	ContextDAO realContextDAO;
+	
+	boolean contextDAOMocked = false;
 	
 	ApplicationContext applicationContext;
 	
@@ -145,6 +152,15 @@ public class ContextMockHelper {
 			userContext = null;
 		}
 		
+		if (contextDAOMocked) {
+			if (realContextDAO != null) {
+				Context.setDAO(realContextDAO);
+				realContextDAO = null;
+			}
+			contextDAOMocked = false;
+			contextDAO = null;
+		}
+		
 		if (applicationContextMocked) {
 			if (realApplicationContext != null) {
 				Context.getServiceContext().setApplicationContext(realApplicationContext);
@@ -153,6 +169,7 @@ public class ContextMockHelper {
 			applicationContextMocked = false;
 			applicationContext = null;
 		}
+		
 	}
 	
 	public void setService(Class<?> type, Object service) {
@@ -276,6 +293,22 @@ public class ContextMockHelper {
 		Context.setUserContext(userContext);
 		this.userContext = userContext;
 		authenticateMockUser();
+	}
+	
+	public void setContextDAO(ContextDAO contextDAO) {
+		if (!contextDAOMocked) {
+			try {
+				realContextDAO = Context.getContextDAO();
+			}
+			catch (Exception e) {
+				//let's not fail if context is not configured
+			}
+			
+			contextDAOMocked = true;
+		}
+		
+		Context.setDAO(contextDAO);
+		this.contextDAO = contextDAO;
 	}
 	
 }

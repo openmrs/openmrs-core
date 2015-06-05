@@ -9,17 +9,16 @@
  */
 package org.openmrs.web.controller.maintenance;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
-
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the {@link SearchIndexController} controller
@@ -33,7 +32,6 @@ public class SearchIndexControllerTest  extends BaseWebContextSensitiveTest {
 
     @Before
     public void before() {
-        Context.setDAO(contextDao);
         controller = new SearchIndexController();
     }
 
