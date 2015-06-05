@@ -161,7 +161,7 @@ public class Context {
 	 * 
 	 * @return ContextDAO
 	 */
-	private static ContextDAO getContextDAO() {
+	static ContextDAO getContextDAO() {
 		if (contextDAO == null) {
 			throw new APIException("error.context.null", (Object[]) null);
 		}
