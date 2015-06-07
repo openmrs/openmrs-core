@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.filter.util;
 
@@ -53,6 +49,7 @@ public class FilterUtil {
 	public static String restoreLocale(String username) {
 		String currentLocale = null;
 		if (StringUtils.isNotBlank(username)) {
+			PreparedStatement statement = null;
 			Connection connection = null;
 			try {
 				connection = DatabaseUpdater.getConnection();
@@ -62,7 +59,7 @@ public class FilterUtil {
 				
 				if (userId != null) {
 					String select = "select property_value from user_property where user_id = ? and property = ?";
-					PreparedStatement statement = connection.prepareStatement(select);
+					statement = connection.prepareStatement(select);
 					statement.setInt(1, userId);
 					statement.setString(2, OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 					if (statement.execute()) {
@@ -71,6 +68,9 @@ public class FilterUtil {
 							currentLocale = results.getString(1);
 						}
 					}
+					
+					//close statement
+					statement.close();
 				}
 				
 				// if locale is still null we should try to retrieve system locale global property's value
@@ -82,6 +82,15 @@ public class FilterUtil {
 				log.error("Error while retriving locale property", e);
 			}
 			finally {
+				try {
+					if (statement != null && !statement.isClosed()) {
+						statement.close();
+					}
+				}
+				catch (SQLException e) {
+					log.warn("Error while closing statement");
+				}
+				
 				if (connection != null) {
 					try {
 						connection.close();
@@ -129,14 +138,12 @@ public class FilterUtil {
 			log.error("Error while retrieving system default locale", e);
 		}
 		finally {
-			if (needToCloseConection) {
-				if (connection != null) {
-					try {
-						connection.close();
-					}
-					catch (SQLException e) {
-						log.debug("Error while closing the database", e);
-					}
+			if (needToCloseConection && connection != null) {
+				try {
+					connection.close();
+				}
+				catch (SQLException e) {
+					log.debug("Error while closing the database", e);
 				}
 			}
 		}
@@ -163,22 +170,48 @@ public class FilterUtil {
 				// first we are saving locale as administrative user's property
 				if (userId != null) {
 					String insert = "insert into user_property (user_id, property, property_value) values (?, 'defaultLocale', ?)";
-					PreparedStatement statement = connection.prepareStatement(insert);
-					statement.setInt(1, userId);
-					statement.setString(2, locale);
-					if (statement.executeUpdate() != 1) {
-						log.warn("Unable to save user locale as admin property.");
+					PreparedStatement statement = null;
+					try {
+						statement = connection.prepareStatement(insert);
+						statement.setInt(1, userId);
+						statement.setString(2, locale);
+						if (statement.executeUpdate() != 1) {
+							log.warn("Unable to save user locale as admin property.");
+						}
+					}
+					finally {
+						if (statement != null) {
+							try {
+								statement.close();
+							}
+							catch (Exception statementCloseEx) {
+								log.error("Failed to quietly close Statement", statementCloseEx);
+							}
+						}
 					}
 					
 				}
 				
 				// and the second step is to save locale as system default locale global property
 				String update = "update global_property set property_value = ? where property = ? ";
-				PreparedStatement statement = connection.prepareStatement(update);
-				statement.setString(1, locale);
-				statement.setString(2, OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
-				if (statement.executeUpdate() != 1) {
-					log.warn("Unable to set system default locale property.");
+				PreparedStatement statement = null;
+				try {
+					statement = connection.prepareStatement(update);
+					statement.setString(1, locale);
+					statement.setString(2, OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
+					if (statement.executeUpdate() != 1) {
+						log.warn("Unable to set system default locale property.");
+					}
+				}
+				finally {
+					if (statement != null) {
+						try {
+							statement.close();
+						}
+						catch (Exception statementCloseEx) {
+							log.error("Failed to quietly close Statement", statementCloseEx);
+						}
+					}
 				}
 			}
 			catch (Exception e) {

@@ -1,21 +1,13 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 import org.openmrs.Person;
 import org.openmrs.Provider;
@@ -24,6 +16,10 @@ import org.openmrs.ProviderAttributeType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This service contains methods relating to providers.
@@ -94,10 +90,8 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * @param provider
 	 * @return the Provider object after saving it in the database
-	 * @should save a Provider with provider name alone
 	 * @should save a Provider with Person alone
-	 * @should not save a Provider with both name and person
-	 * @should not save a Provider with both name and person being null
+	 * @should not save a Provider person being null
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
 	public Provider saveProvider(Provider provider);

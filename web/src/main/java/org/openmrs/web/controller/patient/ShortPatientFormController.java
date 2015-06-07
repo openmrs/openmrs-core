@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.patient;
 
@@ -355,8 +351,8 @@ public class ShortPatientFormController {
 	
 	/**
 	 * Creates a map of string of the form 3b, 3a and the actual person Relationships
-	 * @param result 
 	 * 
+	 * @param result
 	 * @param person the patient/person whose relationships to return
 	 * @param request the webRequest Object
 	 * @return map of strings matched against actual relationships
@@ -408,7 +404,7 @@ public class ShortPatientFormController {
 				// flag to know if we need to create a stub relationship
 				boolean relationshipFound = false;
 				
-				if (person != null && person.getPersonId() != null) {
+				if (person.getPersonId() != null) {
 					if (aIsToB) {
 						List<Relationship> relationships = Context.getPersonService().getRelationships(null, person,
 						    relationshipType);
@@ -427,7 +423,7 @@ public class ShortPatientFormController {
 				}
 				
 				// if no relationship was found, create a stub one now
-				if (relationshipFound == false) {
+				if (!relationshipFound) {
 					Relationship relationshipStub = new Relationship();
 					relationshipStub.setRelationshipType(relationshipType);
 					if (aIsToB) {
@@ -665,7 +661,7 @@ public class ShortPatientFormController {
 	 * @return the transformed string ignoring blanks and nulls
 	 */
 	public static String getPersonNameString(PersonName name) {
-		ArrayList<String> tempName = new ArrayList<String>();
+		List<String> tempName = new ArrayList<String>();
 		if (StringUtils.isNotBlank(name.getGivenName())) {
 			tempName.add(name.getGivenName().trim());
 		}

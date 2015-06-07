@@ -1,3 +1,12 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
 package org.openmrs.validator;
 
 import org.junit.Assert;
@@ -154,5 +163,54 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		
 		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 *
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		PatientIdentifierType type = new PatientIdentifierType();
+		type.setName("name");
+		type.setFormat("format");
+		type.setFormatDescription("formatDescription");
+		type.setValidator("validator");
+		type.setRetireReason("retireReason");
+		
+		Errors errors = new BindException(type, "type");
+		new PatientIdentifierTypeValidator().validate(type, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 *
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		PatientIdentifierType type = new PatientIdentifierType();
+		type
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setFormat("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setFormatDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setValidator("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(type, "type");
+		new PatientIdentifierTypeValidator().validate(type, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("format"));
+		Assert.assertTrue(errors.hasFieldErrors("formatDescription"));
+		Assert.assertTrue(errors.hasFieldErrors("validator"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

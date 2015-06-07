@@ -1,6 +1,17 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
-<global_property property="layout.address.format" property_value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;
+<global_property property="layout.address.format" property_value="&lt;org.openmrs.layout.address.AddressTemplate&gt;
     &lt;nameMappings class=&quot;properties&quot;&gt;
       &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;
       &lt;property name=&quot;address2&quot; value=&quot;Location.address2&quot;/&gt;
@@ -25,5 +36,5 @@
     &lt;requiredElements&gt;
       &lt;string&gt;address1&lt;/string&gt;
     &lt;/requiredElements&gt;
-  &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;" uuid="ffbe5674-4aa7-413f-bad4-1b2e21e4df9c"/>
+  &lt;/org.openmrs.layout.address.AddressTemplate&gt;" uuid="ffbe5674-4aa7-413f-bad4-1b2e21e4df9c"/>
 </dataset>

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
@@ -64,23 +60,30 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+			if (obj == null) {
 				return false;
-			if (getClass() != obj.getClass())
+			}
+			if (getClass() != obj.getClass()) {
 				return false;
+			}
 			Key other = (Key) obj;
 			if (handlerType == null) {
-				if (other.handlerType != null)
+				if (other.handlerType != null) {
 					return false;
-			} else if (!handlerType.equals(other.handlerType))
+				}
+			} else if (!handlerType.equals(other.handlerType)) {
 				return false;
+			}
 			if (type == null) {
-				if (other.type != null)
+				if (other.type != null) {
 					return false;
-			} else if (!type.equals(other.type))
+				}
+			} else if (!type.equals(other.type)) {
 				return false;
+			}
 			return true;
 		}
 		
@@ -174,15 +177,14 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		}
 		List<H> handlers = getHandlersForType(handlerType, type);
 		if (handlers == null || handlers.isEmpty()) {
-			throw new APIException("No " + handlerType + " is found that is able to handle a " + type);
+			throw new APIException("handler.type.not.found", new Object[] { handlerType, type });
 		}
 		
 		if (handlers.size() > 1) {
 			int order1 = getOrderOfHandler(handlers.get(0).getClass());
 			int order2 = getOrderOfHandler(handlers.get(1).getClass());
 			if (order1 == order2) {
-				throw new APIException("There are at least 2 handlers of type " + handlerType + " for " + type
-				        + " and neither is more preferred than the other");
+				throw new APIException("handler.type.multiple", new Object[] { handlerType, type });
 			}
 		}
 		
@@ -200,7 +202,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 	public static Integer getOrderOfHandler(Class<?> handlerClass) {
 		Handler annotation = handlerClass.getAnnotation(Handler.class);
 		if (annotation == null) {
-			throw new APIException("Class " + handlerClass + " is not annotated as a Handler.");
+			throw new APIException("class.not.annotated.as.handler", new Object[] { handlerClass });
 		}
 		return annotation.order();
 	}

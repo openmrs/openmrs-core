@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <!DOCTYPE dwr PUBLIC
     "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN"
     "http://directwebremoting.org/schema/dwr20.dtd">
@@ -57,6 +68,7 @@
 			<include method="removeProblem"/>
 			<include method="voidProblem"/>
 			<include method="findCountAndPatients"/>
+			<include method="findCountAndPatientsWithVoided"/>
 			<include method="findBatchOfPatients"/>
 		</create>
 		
@@ -285,6 +297,7 @@
 			DWRPatientService.findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length);
 			DWRPatientService.findPatients(String searchValue, boolean includeVoided);
 			DWRPatientService.findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount);
+			DWRPatientService.findCountAndPatientsWithVoided(String searchValue, Integer start, Integer length, boolean getMatchCount, Boolean includeVoided);
 			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId, Integer outcomeId);
 			DWRVisitService.findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided);
 			DWRVisitService.getVisit(Integer visitId);

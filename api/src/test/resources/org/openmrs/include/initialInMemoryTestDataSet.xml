@@ -1,4 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <dataset>
   <person person_id="1" gender="" birthdate="1975-06-30" birthdate_estimated="false" dead="false" date_created="2005-01-01 00:00:00.0" voided="false" uuid="6adb7c42-cfd2-4301-b53b-ff17c5654ff7"/>
   <role role="Anonymous" description="Everyone and their brother should have this role" uuid="5b773b4d-90be-4d3f-81ca-cbb1441541ec"/>

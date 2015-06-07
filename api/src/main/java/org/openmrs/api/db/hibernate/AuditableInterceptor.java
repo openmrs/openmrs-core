@@ -1,22 +1,19 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,7 +82,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 				log.debug("Setting changed by fields on " + entity.getClass());
 			}
 			
-			HashMap<String, Object> propertyValues = getPropertyValuesToUpdate();
+			Map<String, Object> propertyValues = getPropertyValuesToUpdate();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, false);
 		}
 		return objectWasChanged;
@@ -111,14 +108,14 @@ public class AuditableInterceptor extends EmptyInterceptor {
 				log.debug("Setting creator and dateCreated on " + entity);
 			}
 			
-			HashMap<String, Object> propertyValues = getPropertyValuesToSave();
+			Map<String, Object> propertyValues = getPropertyValuesToSave();
 			objectWasChanged = changeProperties(currentState, propertyNames, objectWasChanged, propertyValues, true);
 		}
 		return objectWasChanged;
 	}
 	
 	private boolean changeProperties(Object[] currentState, String[] propertyNames, boolean objectWasChanged,
-	        HashMap<String, Object> propertyValues, Boolean setNullOnly) {
+	        Map<String, Object> propertyValues, Boolean setNullOnly) {
 		
 		for (String property : propertyValues.keySet()) {
 			if (changePropertyValue(currentState, propertyNames, property, propertyValues.get(property), setNullOnly)) {
@@ -128,8 +125,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		return objectWasChanged;
 	}
 	
-	private HashMap<String, Object> getPropertyValuesToSave() {
-		HashMap<String, Object> propertyValues = new HashMap<String, Object>();
+	private Map<String, Object> getPropertyValuesToSave() {
+		Map<String, Object> propertyValues = new HashMap<String, Object>();
 		propertyValues.put("creator", Context.getAuthenticatedUser());
 		propertyValues.put("dateCreated", new Date());
 		propertyValues.put("personCreator", Context.getAuthenticatedUser());
@@ -137,8 +134,8 @@ public class AuditableInterceptor extends EmptyInterceptor {
 		return propertyValues;
 	}
 	
-	private HashMap<String, Object> getPropertyValuesToUpdate() {
-		HashMap<String, Object> propertyValues = new HashMap<String, Object>();
+	private Map<String, Object> getPropertyValuesToUpdate() {
+		Map<String, Object> propertyValues = new HashMap<String, Object>();
 		propertyValues.put("changedBy", Context.getAuthenticatedUser());
 		propertyValues.put("dateChanged", new Date());
 		propertyValues.put("personChangedBy", Context.getAuthenticatedUser());
@@ -165,13 +162,9 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			return false;
 		}
 		
-		if (index >= 0) {
-			if (currentState[index] == null || !setNullOnly) {
-				if (!value.equals(currentState[index])) {
-					currentState[index] = value;
-					return true;
-				}
-			}
+		if (index >= 0 && (currentState[index] == null || !setNullOnly) && !value.equals(currentState[index])) {
+			currentState[index] = value;
+			return true;
 		}
 		return false;
 	}

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util.databasechange;
 
@@ -40,6 +36,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -47,7 +44,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Tests database upgrade from OpenMRS 1.9.7.
  */
-public class Database1_9_7UpgradeIT {
+public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	public static final String TEST_DATA_DIR = "/org/openmrs/util/databasechange/";
 	
@@ -164,7 +161,7 @@ public class Database1_9_7UpgradeIT {
 		expectedException.expect(IOException.class);
 		String errorMsgSubString1 = "liquibase.exception.MigrationFailedException: Migration failed for change set liquibase-update-to-latest.xml::201401101647-TRUNK-4187::wyclif";
 		expectedException.expectMessage(errorMsgSubString1);
-		String errorMsgSubString2 = "Your order entry upgrade settings file does not have mapping for mg";
+		String errorMsgSubString2 = "upgrade.settings.file.not.have.mapping";
 		expectedException.expectMessage(errorMsgSubString2);
 		upgradeTestUtil.upgrade();
 	}
@@ -437,8 +434,8 @@ public class Database1_9_7UpgradeIT {
 	public void shouldSetValuesToNullIfUnitsOrFrequencyBlank() throws Exception {
 		upgradeTestUtil.executeDataset(STANDARD_TEST_1_9_7_DATASET);
 		upgradeTestUtil.executeDataset(UPGRADE_TEST_1_9_7_TO_1_10_DATASET);
-		
 		upgradeTestUtil.executeDataset(TEST_DATA_DIR + "UpgradeTest-orderWithBlankUnitsOrFrequency.xml");
+		createOrderEntryUpgradeFileWithTestData("mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		
 		upgradeTestUtil.upgrade();
 		

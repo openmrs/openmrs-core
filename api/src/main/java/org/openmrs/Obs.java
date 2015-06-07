@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -323,6 +319,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated The {@link #getObsGroup()} method should be used
 	 * @see #getObsGroup()
 	 */
+	@Deprecated
 	public Integer getObsGroupId() {
 		if (getObsGroup() == null) {
 			return null;
@@ -336,9 +333,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated This method should not be used. The #setObsGroup() method should be used instead
 	 * @see #setObsGroup(Obs)
 	 */
+	@Deprecated
 	public void setObsGroupId(Integer obsGroupId) {
-		throw new APIException("I don't know what to do here because I don't" + "know what the parent is of the group I'm "
-		        + "being put into. This method is deprecated " + "and should not be used.");
+		throw new APIException("Obs.error.setObsGroupId", (Object[]) null);
 	}
 	
 	/**
@@ -488,8 +485,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		// a quick sanity check to make sure someone isn't adding
 		// itself to the group
 		if (member.equals(this)) {
-			throw new APIException("An obsGroup cannot have itself as a mentor. obsGroup: " + this
-			        + " obsMember attempting to add: " + member);
+			throw new APIException("Obs.error.groupCannotHaveItselfAsAMentor", new Object[] { this, member });
 		}
 		
 		member.setObsGroup(this);
@@ -579,6 +575,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use getPerson()
 	 * @return Returns the patient.
 	 */
+	@Deprecated
 	public Patient getPatient() {
 		return (Patient) getPerson();
 	}
@@ -589,6 +586,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @deprecated use setPerson(org.openmrs.Person)
 	 * @param patient
 	 */
+	@Deprecated
 	public void setPatient(Patient patient) {
 		setPerson(patient);
 	}
@@ -922,6 +920,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * 
 	 * 
+	 * 
 	 * Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
 	 * </pre>
 	 * 
@@ -975,9 +974,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if (abbrev.equals("BIT")) {
+			if ("BIT".equals(abbrev)) {
 				return getValueAsBoolean() == null ? "" : getValueAsBoolean().toString();
-			} else if (abbrev.equals("CWE")) {
+			} else if ("CWE".equals(abbrev)) {
 				if (getValueCoded() == null) {
 					return "";
 				}
@@ -997,13 +996,13 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 						
 					}
 				}
-			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				if (getValueNumeric() == null) {
 					return "";
 				} else {
 					if (getConcept() instanceof ConceptNumeric) {
 						ConceptNumeric cn = (ConceptNumeric) getConcept();
-						if (cn.isPrecise() != true) {
+						if (!cn.isPrecise()) {
 							double d = getValueNumeric();
 							int i = (int) d;
 							return Integer.toString(i);
@@ -1012,18 +1011,18 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 						}
 					}
 				}
-			} else if (abbrev.equals("DT")) {
+			} else if ("DT".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : dateFormat.format(getValueDatetime()));
-			} else if (abbrev.equals("TM")) {
+			} else if ("TM".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIME));
-			} else if (abbrev.equals("TS")) {
+			} else if ("TS".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIMESTAMP));
-			} else if (abbrev.equals("ST")) {
+			} else if ("ST".equals(abbrev)) {
 				return getValueText();
-			} else if (abbrev.equals("ED") && getValueComplex() != null) {
+			} else if ("ED".equals(abbrev) && getValueComplex() != null) {
 				String[] valueComplex = getValueComplex().split("\\|");
 				for (int i = 0; i < valueComplex.length; i++) {
-					if (!"".equals(valueComplex[i])) {
+					if (StringUtils.isNotEmpty(valueComplex[i])) {
 						return valueComplex[i].trim();
 					}
 				}
@@ -1068,7 +1067,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		if (getValueComplex() != null) {
 			String[] valueComplex = getValueComplex().split("\\|");
 			for (int i = 0; i < valueComplex.length; i++) {
-				if (!"".equals(valueComplex[i])) {
+				if (StringUtils.isNotEmpty(valueComplex[i])) {
 					return valueComplex[i].trim();
 				}
 			}
@@ -1098,19 +1097,19 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		
 		if (getConcept() != null && !StringUtils.isBlank(s)) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
-			if (abbrev.equals("BIT")) {
+			if ("BIT".equals(abbrev)) {
 				setValueBoolean(Boolean.valueOf(s));
-			} else if (abbrev.equals("CWE")) {
+			} else if ("CWE".equals(abbrev)) {
 				throw new RuntimeException("Not Yet Implemented");
-			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				setValueNumeric(Double.valueOf(s));
-			} else if (abbrev.equals("DT")) {
+			} else if ("DT".equals(abbrev)) {
 				setValueDatetime(dateFormat.parse(s));
-			} else if (abbrev.equals("TM")) {
+			} else if ("TM".equals(abbrev)) {
 				setValueDatetime(timeFormat.parse(s));
-			} else if (abbrev.equals("TS")) {
+			} else if ("TS".equals(abbrev)) {
 				setValueDatetime(datetimeFormat.parse(s));
-			} else if (abbrev.equals("ST")) {
+			} else if ("ST".equals(abbrev)) {
 				setValueText(s);
 			} else {
 				throw new RuntimeException("Don't know how to handle " + abbrev);
@@ -1130,6 +1129,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @deprecated
 	 */
+	@Deprecated
 	public Map<Locale, String> getValueAsString() {
 		Map<Locale, String> localeMap = new HashMap<Locale, String>();
 		Locale[] locales = Locale.getAvailableLocales(); // ABKTODO: get actual available locales
@@ -1248,8 +1248,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should reject a namepace and path combination longer than the max length
 	 */
 	public void setFormField(String namespace, String formFieldPath) {
-		if (namespace == null && formFieldPath == null)
+		if (namespace == null && formFieldPath == null) {
 			return;
+		}
 		
 		String nsAndPathTemp = "";
 		if (StringUtils.isNotBlank(namespace) && StringUtils.isNotBlank(formFieldPath)) {
@@ -1261,10 +1262,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		
 		if (nsAndPathTemp.length() > FORM_NAMESPACE_PATH_MAX_LENGTH) {
-			throw new APIException(Context.getMessageSourceService().getMessage("Obs.namespaceAndPathTooLong"));
+			throw new APIException("Obs.namespaceAndPathTooLong", (Object[]) null);
 		}
 		if (StringUtils.countMatches(nsAndPathTemp, FORM_NAMESPACE_PATH_SEPARATOR) > 1) {
-			throw new APIException(Context.getMessageSourceService().getMessage("Obs.namespaceAndPathNotContainSeparator"));
+			throw new APIException("Obs.namespaceAndPathNotContainSeparator", (Object[]) null);
 		}
 		
 		formNamespaceAndPath = nsAndPathTemp;

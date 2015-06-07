@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>  
+  <field field_id="1" name="Some concept" description="This is a test field" field_type="1" concept_id="1" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false" uuid="e1843048-ca2f-4349-a9b7-1165b98d91de"/>
+  <field field_id="2" name="Some same concept" description="This is a duplicate field" field_type="1" concept_id="1" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false" uuid="a2843248-ca4c-4349-a3b7-1162b98d91df"/>
+  <field field_id="3" name="Some same concept" description="This is a duplicate field" field_type="1" concept_id="1" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false" uuid="b1843148-da2f-4349-c9c7-1164b98d91dd"/>
+  <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false" retired_reason="" uuid="c156e1a8-6731-4ebd-89ff-d0d1c45eb577"/>
+  <form_field form_field_id="2" form_id="1" field_id="1" field_number="1" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:11:53.0" creator="1" date_created="2006-07-18 11:04:36.0" sort_weight="10.0" uuid="6cbc3f1a-0b69-4f93-8865-f7ee4dd6a879"/>
+  <form_field form_field_id="3" form_id="1" field_id="1" field_number="2" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:12:05.0" creator="1" date_created="2006-07-18 11:06:52.0" sort_weight="20.0" uuid="22a5ea24-f755-42c2-ae56-b0d23aaa46f7"/>
+  <form_field form_field_id="5" form_id="1" field_id="1" field_number="3" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:13:59.0" creator="1" date_created="2006-07-18 11:13:57.0" sort_weight="30.0" uuid="0d38e38e-19da-41d6-9d24-af7e08e5e0f0"/>
+  <form_field form_field_id="6" form_id="1" field_id="2" field_number="4" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:13:59.0" creator="1" date_created="2006-07-18 11:13:57.0" sort_weight="30.0" uuid="3bb44f19-e162-219a-a5f5-19bd1eaa0f3b"/>
+  <form_field form_field_id="7" form_id="1" field_id="3" field_number="5" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:13:59.0" creator="1" date_created="2006-07-18 11:13:57.0" sort_weight="30.0" uuid="dbb44d19-d162-219d-d5f5-19dd1daa0f3b"/>
+  
+  <form form_id="2" name="Basic Form 2" version="0.1" build="0" published="0" description="Test form" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false" retired_reason="" uuid="c156e1a8-6731-4ebd-89ff-d0d1c45eb571"/>
+  <form_field form_field_id="8" form_id="2" field_id="1" field_number="6" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:11:53.0" creator="1" date_created="2006-07-18 11:04:36.0" sort_weight="10.0" uuid="6cbc3f1a-0b69-4f93-8865-f7ee4dd6a871"/>
+  
+  <form form_id="3" name="Basic Form 3" version="0.1" build="0" published="0" description="Test form" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false" retired_reason="" uuid="c156e1a8-6731-4ebd-89ff-d0d1c45eb570"/>
+  <form_field form_field_id="9" form_id="3" field_id="1" field_number="7" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:11:53.0" creator="1" date_created="2006-07-18 11:04:36.0" sort_weight="10.0" uuid="6cbc3f1a-0b69-4f93-8865-f7ee4dd6a870"/>
+  
+</dataset>

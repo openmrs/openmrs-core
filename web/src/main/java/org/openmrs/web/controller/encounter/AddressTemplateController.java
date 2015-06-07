@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.encounter;
 
@@ -17,7 +13,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.LocationTag;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
-import org.openmrs.layout.web.address.AddressTemplate;
+import org.openmrs.layout.address.AddressTemplate;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,7 +46,7 @@ public class AddressTemplateController {
 	@RequestMapping("/admin/locations/addressTemplateAdd")
 	public String add(@RequestParam("xml") String xml, WebRequest request) {
 		
-		if (!StringUtils.hasText(xml) || xml.trim().equals("")) {
+		if (!StringUtils.hasText(xml) || "".equals(xml.trim())) {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
 			    "AddressTemplate.error.empty"), WebRequest.SCOPE_SESSION);
 		} else {
@@ -64,7 +59,7 @@ public class AddressTemplateController {
 				if (requiredElements != null) {
 					for (String fieldName : requiredElements) {
 						try {
-							Object value = PropertyUtils.getProperty(new PersonAddress(), fieldName);
+							PropertyUtils.getProperty(new PersonAddress(), fieldName);
 						}
 						catch (Exception e) {
 							//wrong field declared in template

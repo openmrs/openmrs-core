@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -18,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Address;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
@@ -60,7 +57,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	public Location saveLocation(Location location) throws APIException {
 		if (location.getName() == null) {
-			throw new APIException("Location name is required");
+			throw new APIException("Location.name.required", (Object[]) null);
 		}
 		
 		// Check for transient tags. If found, try to match by name and overwrite, otherwise throw exception.
@@ -70,7 +67,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 				// only check transient (aka non-precreated) location tags
 				if (tag.getLocationTagId() == null) {
 					if (!StringUtils.hasLength(tag.getName())) {
-						throw new APIException("A tag name is required");
+						throw new APIException("Location.tag.name.required", (Object[]) null);
 					}
 					
 					LocationTag existing = Context.getLocationService().getLocationTagByName(tag.getName());
@@ -78,14 +75,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 						location.removeTag(tag);
 						location.addTag(existing);
 					} else {
-						throw new APIException("Cannot add transient tags! "
-						        + "Save all location tags to the database before saving this location");
+						throw new APIException("Location.cannot.add.transient.tags", (Object[]) null);
 					}
 				}
 			}
 		}
-		//Check for XSS
-		location.validateXSS();
+		
 		CustomDatatypeUtil.saveAttributesIfNecessary(location);
 		
 		return dao.saveLocation(location);
@@ -121,12 +116,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 		
 		//Try to look up 'Unknown Location' in case the global property is something else
-		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown Location"))) {
+		if (location == null && (!StringUtils.hasText(locationGP) || !"Unknown Location".equalsIgnoreCase(locationGP))) {
 			location = Context.getLocationService().getLocation("Unknown Location");
 		}
 		
 		// If Unknown Location does not exist, try Unknown if the global property was different
-		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown"))) {
+		if (location == null && (!StringUtils.hasText(locationGP) || !"Unknown".equalsIgnoreCase(locationGP))) {
 			location = Context.getLocationService().getLocation("Unknown");
 		}
 		
@@ -205,15 +200,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Transactional(readOnly = true)
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException {
-		List<Location> locations = new ArrayList<Location>();
-		
-		for (Location loc : dao.getAllLocations(false)) {
-			if (loc.getTags().containsAll(tags)) {
-				locations.add(loc);
-			}
-		}
-		
-		return locations;
+		return CollectionUtils.isEmpty(tags) ? getAllLocations(false) : dao.getLocationsHavingAllTags(tags);
 	}
 	
 	/**
@@ -302,7 +289,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Transactional(readOnly = true)
 	public List<LocationTag> getLocationTags(String search) throws APIException {
-		if (search == null || search.equals("")) {
+		if (StringUtils.isEmpty(search)) {
 			return Context.getLocationService().getAllLocationTags(true);
 		}
 		
@@ -317,7 +304,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 			return tag;
 		} else {
 			if (reason == null) {
-				throw new APIException("Reason is required");
+				throw new APIException("Location.retired.reason.required", (Object[]) null);
 			}
 			tag.setRetired(true);
 			tag.setRetireReason(reason);
@@ -356,6 +343,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	
 	/**
 	 * @see LocationService#getLocations(String, boolean, Integer, Integer)
+	 * @deprecated
 	 */
 	@Override
 	@Deprecated

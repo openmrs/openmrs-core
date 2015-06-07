@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -58,7 +54,7 @@ import org.springframework.validation.BindException;
  * <p>
  * This class should not be instantiated alone, get a service class from the Context:
  * Context.getFormService();
- *
+ * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.FormService
  */
@@ -80,7 +76,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * Method used to inject the data access object.
-	 *
+	 * 
 	 * @param dao
 	 */
 	public void setFormDAO(FormDAO dao) {
@@ -151,7 +147,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * Duplicate this form and form_fields associated with this form
-	 *
+	 * 
 	 * @param form
 	 * @return New duplicated form
 	 * @throws APIException
@@ -691,8 +687,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field, boolean)
 	 */
 	public void purgeField(Field field, boolean cascade) throws APIException {
-		if (cascade == true) {
-			throw new APIException("Not Yet Implemented");
+		if (cascade) {
+			throw new APIException("general.not.yet.implemented", (Object[]) null);
 		} else {
 			dao.deleteField(field);
 		}
@@ -710,8 +706,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form, boolean)
 	 */
 	public void purgeForm(Form form, boolean cascade) throws APIException {
-		if (cascade == true) {
-			throw new APIException("Not Yet Implemented");
+		if (cascade) {
+			throw new APIException("general.not.yet.implemented", (Object[]) null);
 		}
 		
 		// remove resources
@@ -733,7 +729,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#retireField(org.openmrs.Field)
 	 */
 	public Field retireField(Field field) throws APIException {
-		if (field.getRetired() == false) {
+		if (!field.getRetired()) {
 			field.setRetired(true);
 			return Context.getFormService().saveField(field);
 		} else {
@@ -764,7 +760,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 				if (ff.getForm() == null) {
 					ff.setForm(form);
 				} else if (!ff.getForm().equals(form)) {
-					throw new APIException("Form contains FormField " + ff + " that already belongs to a different form");
+					throw new APIException("Form.contains.FormField.error", new Object[] { ff });
 				}
 			}
 		}
@@ -819,7 +815,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#unretireField(org.openmrs.Field)
 	 */
 	public Field unretireField(Field field) throws APIException {
-		if (field.getRetired() == true) {
+		if (field.getRetired()) {
 			field.setRetired(false);
 			return Context.getFormService().saveField(field);
 		} else {
@@ -994,7 +990,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * duplicates form resources from one form to another
-	 *
+	 * 
 	 * @param source the form to copy resources from
 	 * @param destination the form to copy resources to
 	 */

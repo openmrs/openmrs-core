@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -413,5 +409,78 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(errors.hasFieldErrors("dateActivated"));
 		Assert.assertEquals("Order.error.dateActivatedInFuture", errors.getFieldError("dateActivated").getCode());
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Order order = new Order();
+		Encounter encounter = new Encounter();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		Patient patient = Context.getPatientService().getPatient(2);
+		encounter.setPatient(patient);
+		order.setPatient(patient);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setCareSetting(new CareSetting());
+		order.setEncounter(encounter);
+		order.setUrgency(Order.Urgency.ROUTINE);
+		order.setAction(Order.Action.NEW);
+		
+		order.setOrderReasonNonCoded("orderReasonNonCoded");
+		order.setAccessionNumber("accessionNumber");
+		order.setCommentToFulfiller("commentToFulfiller");
+		order.setVoidReason("voidReason");
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Order order = new Order();
+		Encounter encounter = new Encounter();
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		Patient patient = Context.getPatientService().getPatient(2);
+		encounter.setPatient(patient);
+		order.setPatient(patient);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setCareSetting(new CareSetting());
+		order.setEncounter(encounter);
+		order.setUrgency(Order.Urgency.ROUTINE);
+		order.setAction(Order.Action.NEW);
+		
+		order
+		        .setOrderReasonNonCoded("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order
+		        .setAccessionNumber("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order
+		        .setCommentToFulfiller("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order
+		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(order, "order");
+		new OrderValidator().validate(order, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("accessionNumber"));
+		Assert.assertTrue(errors.hasFieldErrors("orderReasonNonCoded"));
+		Assert.assertTrue(errors.hasFieldErrors("commentToFulfiller"));
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 }

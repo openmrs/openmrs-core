@@ -64,7 +64,7 @@ $j(document).ready(function() {
 			},
 			callback: {
 				onselect: function(NODE, TREE_OBJ) {
-					$j('#${id}_display').html($j(NODE).children(":first").text());
+					$j('#${id}_display').text($j(NODE).children(":first").text()).html();
 					$j('#${id}_hidden_input').val($j(NODE).attr('id'));
 					locationTreeTag_hideTree('${id}');
 				}

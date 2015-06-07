@@ -1,14 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -125,5 +122,46 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * Test for all the field being set to some values
+	 * @see RelationshipTypeValidator#validate(Object,Errors)
+	 * @verifies pass validation if field lengths are correct
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		RelationshipType type = new RelationshipType();
+		type.setaIsToB("A is To B");
+		type.setbIsToA("B is To A");
+		type.setDescription("description");
+		type.setRetireReason("retireReason");
+		Errors errors = new BindException(type, "type");
+		new RelationshipTypeValidator().validate(type, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * Test for all the field being set to some values
+	 * @see RelationshipTypeValidator#validate(Object,Errors)
+	 * @verifies fail validation if field lengths are not correct
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		RelationshipType type = new RelationshipType();
+		type
+		        .setaIsToB("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setbIsToA("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Errors errors = new BindException(type, "type");
+		new RelationshipTypeValidator().validate(type, errors);
+		Assert.assertTrue(errors.hasFieldErrors("aIsToB"));
+		Assert.assertTrue(errors.hasFieldErrors("bIsToA"));
+		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

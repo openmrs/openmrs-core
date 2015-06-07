@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -32,7 +28,9 @@ import junit.framework.Assert;
 
 import org.junit.AfterClass;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -54,6 +52,11 @@ import org.openmrs.util.Security;
 public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
+	
+	protected static final String XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION = "org/openmrs/api/include/UserServiceTest-changePasswordAction.xml";
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * Methods in this class might authenticate with a different user, so log that user out after
@@ -785,6 +788,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void isSecretAnswer_shouldReturnTrueWhenGivenAnswerMatchesStoredSecretAnswer() throws Exception {
 		executeDataSet(XML_FILENAME);
 		User user = Context.getUserService().getUser(5507);
+		Context.getUserService().changeQuestionAnswer(user, "question", "answer");
 		Assert.assertTrue(Context.getUserService().isSecretAnswer(user, "answer"));
 	}
 	
@@ -1028,14 +1032,22 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should throw error if role inherits from itself", method = "saveRole(Role)")
 	public void saveRole_shouldThrowErrorIfRoleInheritsFromItself() throws Exception {
-		//		Role role = new Role();
-		//		Set<Role> inheritedRoles = new HashSet<Role>();
-		//		inheritedRoles.add(role);
-		//		role.setInheritedRoles(inheritedRoles);
-		//		
-		//		Context.getUserService().saveRole(role);
+		Role parentRole = new Role("parent role");
 		
-		// stack overflow error getting thrown in handlers 
+		// Have child inherit parent role
+		Role childRole = new Role("child role");
+		Set<Role> inheritsFromParent = new HashSet<Role>();
+		inheritsFromParent.add(parentRole);
+		childRole.setInheritedRoles(inheritsFromParent);
+		
+		// Now have parent try to inherit the child role.
+		Set<Role> inheritsFromChild = new HashSet<Role>();
+		inheritsFromChild.add(childRole);
+		parentRole.setInheritedRoles(inheritsFromChild);
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("Role.cannot.inherit.descendant"));
+		Context.getUserService().saveRole(parentRole);
 	}
 	
 	/**
@@ -1195,5 +1207,115 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//Verify that the new properties were saved
 		assertEquals(USER_PROPERTY_VALUE_1, updatedUser.getUserProperty(USER_PROPERTY_KEY_1));
 		assertEquals(USER_PROPERTY_VALUE_2, updatedUser.getUserProperty(USER_PROPERTY_KEY_2));
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies change password for given user if oldPassword is correctly passed
+	 */
+	@Test
+	public void changePassword_shouldChangePasswordForGivenUserIfOldPasswordIsCorrectlyPassed() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		String oldPassword = "userServiceTest";
+		String newPassword = "newPasswordString123";
+		userService.changePassword(user6001, oldPassword, newPassword);
+		//try to authenticate with new password
+		Context.authenticate(user6001.getUsername(), newPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies change password for given user if oldPassword is null and changing user have privileges
+	 */
+	@Test
+	public void changePassword_shouldChangePasswordForGivenUserIfOldPasswordIsNullAndChangingUserHavePrivileges()
+	        throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		String oldPassword = null;
+		String newPassword = "newPasswordString123";
+		userService.changePassword(user6001, oldPassword, newPassword);
+		Context.authenticate(user6001.getUsername(), newPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies throw APIException if old password is not correct
+	 */
+	@Test
+	public void changePassword_shouldThrowAPIExceptionIfOldPasswordIsNotCorrect() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		String wrongPassword = "wrong password!";
+		String newPassword = "newPasswordString";
+		//log in user without change user passwords privileges
+		//user6001 has not got required priviliges
+		Context.authenticate(user6001.getUsername(), "userServiceTest");
+		
+		expectedException.expect(APIAuthenticationException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired"));
+		userService.changePassword(user6001, wrongPassword, newPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies throw exception if oldPassword is null and changing user have not privileges
+	 */
+	@Test
+	public void changePassword_shouldThrowExceptionIfOldPasswordIsNullAndChangingUserHaveNotPrivileges() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		assertFalse(user6001.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		String oldPassword = null;
+		String newPassword = "newPasswordString";
+		//log in user without change user passwords privileges
+		//user6001 has not got required priviliges
+		Context.authenticate(user6001.getUsername(), "userServiceTest");
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.privilegesRequired"));
+		userService.changePassword(user6001, oldPassword, newPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies throw exception if new password is too short
+	 */
+	@Test
+	public void changePassword_shouldThrowExceptionIfNewPasswortIsTooShort() throws Exception {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		final UserService userService = Context.getUserService();
+		//user 6001 has password userServiceTest
+		User user6001 = userService.getUser(6001);
+		String oldPassword = "userServiceTest";
+		String weakPassword = "weak";
+		
+		expectedException.expectMessage(Context.getMessageSourceService().getMessage("error.password.length"));
+		userService.changePassword(user6001, oldPassword, weakPassword);
+	}
+	
+	/**
+	 * @see UserService#changePassword(User,String,String)
+	 * @verifies throw APIException if given user does not exist
+	 */
+	@Test
+	public void changePassword_shouldThrowAPIExceptionIfGivenUserDoesNotExist() throws Exception {
+		//user.getUserId is null - so it is not existing user
+		User notExistingUser = new User();
+		final UserService userService = Context.getUserService();
+		String anyString = "anyString";
+		
+		expectedException.expect(APIException.class);
+		expectedException.expectMessage("user.must.exist");
+		userService.changePassword(notExistingUser, anyString, anyString);
 	}
 }

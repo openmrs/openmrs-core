@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.maintenance;
 
@@ -25,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.directwebremoting.util.Logger;
 import org.openmrs.GlobalProperty;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -98,11 +95,16 @@ public class SettingsController {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "GlobalProperty.not.saved");
 			
 		} else {
-			for (GlobalProperty gp : toSave) {
-				getService().saveGlobalProperty(gp);
+			try {
+				for (GlobalProperty gp : toSave) {
+					getService().saveGlobalProperty(gp);
+				}
+				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.saved");
 			}
-			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.saved");
-			
+			catch (APIException e) {
+				errors.reject("GlobalProperty.not.saved");
+				session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+			}
 			// TODO: move this to a GlobalPropertyListener
 			// refresh log level from global property(ies)
 			OpenmrsUtil.applyLogLevels();

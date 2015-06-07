@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.form;
 
@@ -42,7 +38,7 @@ public class FormListController extends SimpleFormController {
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -71,14 +67,14 @@ public class FormListController extends SimpleFormController {
 					//TODO convenience method deleteForm(Integer) ??
 					try {
 						fs.purgeForm(fs.getForm(Integer.valueOf(p)));
-						if (!success.equals("")) {
+						if (!"".equals(success.toString())) {
 							success.append("<br/>");
 						}
 						success.append(textForm).append(" ").append(p).append(" ").append(deleted);
 					}
 					catch (APIException e) {
 						log.warn("Error deleting form", e);
-						if (!error.equals("")) {
+						if (!"".equals(error.toString())) {
 							error.append("<br/>");
 						}
 						error.append(textForm).append(" ").append(p).append(" ").append(notDeleted);
@@ -88,10 +84,10 @@ public class FormListController extends SimpleFormController {
 				success.append(noneDeleted);
 			}
 			view = getSuccessView();
-			if (!success.equals("")) {
+			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!error.equals("")) {
+			if (!"".equals(error.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}
@@ -102,7 +98,7 @@ public class FormListController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -119,5 +115,4 @@ public class FormListController extends SimpleFormController {
 		
 		return formList;
 	}
-	
 }

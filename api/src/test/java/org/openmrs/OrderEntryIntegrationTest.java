@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -184,7 +180,6 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		discontinuationOrder.setEncounter(encounterService.getEncounter(6));
 		orderService.saveOrder(discontinuationOrder, null);
 		
-		Thread.sleep(1000);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(ordersCount - 3, activeOrders.size());
 		assertFalse(activeOrders.contains(firstOrderToDiscontinue));
@@ -208,11 +203,9 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
 		
-		//If the time is too close, the original order may be returned because it
-		//dateStopped will be exactly the same as the asOfDate(now) to the millisecond
-		Thread.sleep(1);
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
+		assertEquals(revisedOrder.getDateActivated(), DateUtils.addSeconds(originalOrder.getDateStopped(), 1));
 		assertFalse(OrderUtilTest.isActiveOrder(originalOrder, null));
 	}
 	
@@ -290,9 +283,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		revisedOrder.setEncounter(encounterService.getEncounter(3));
 		orderService.saveOrder(revisedOrder, null);
 		Context.flushSession();
-		//If the time is too close, the original order may be returned because it
-		//dateStopped will be exactly the same as the asOfDate(now) to the millisecond
-		Thread.sleep(1);
+		
 		List<Order> activeOrders = orderService.getActiveOrders(patient, null, null, null);
 		assertEquals(originalOrderCount, activeOrders.size());
 		assertFalse(OrderUtilTest.isActiveOrder(originalOrder, null));
@@ -304,7 +295,7 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertFalse(encounter.getOrders().isEmpty());
 		encounter.getOrders().iterator().next().setInstructions("new");
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage(Matchers.is("Editing some fields on Order is not allowed"));
+		expectedException.expectMessage(Matchers.is("editing.fields.not.allowed"));
 		encounterService.saveEncounter(encounter);
 		Context.flushSession();
 	}

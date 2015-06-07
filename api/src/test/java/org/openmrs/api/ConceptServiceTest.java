@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -247,6 +243,98 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
 		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
 		
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should save non ConceptComplex object as conceptComplex", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveNonConceptComplexObjectAsConceptComplex() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// this tests saving a current concept as a newly changed conceptComplex
+		// assumes there is already a concept in the database
+		// with a concept id of #1
+		ConceptComplex cn = new ConceptComplex(1);
+		cn.setDatatype(new ConceptDatatype(13));
+		cn.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn.setHandler("SomeHandler");
+		conceptService.saveConcept(cn);
+		
+		Concept firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		ConceptComplex firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+		
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "save changes between concept numeric and complex", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveChangesBetweenConceptNumericAndComplex() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		//save a concept numeric
+		ConceptNumeric cn = new ConceptNumeric(1);
+		cn.setDatatype(new ConceptDatatype(1));
+		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.setHiAbsolute(20.0);
+		conceptService.saveConcept(cn);
+		
+		//confirm that we saved a concept numeric
+		Concept firstConcept = conceptService.getConceptNumeric(1);
+		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptNumeric);
+		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
+		
+		//change to concept complex
+		ConceptComplex cn2 = new ConceptComplex(1);
+		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.setHandler("SomeHandler");
+		conceptService.saveConcept(cn2);
+		
+		//confirm that we saved a concept complex
+		firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		ConceptComplex firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+		
+		//change to concept numeric
+		cn = new ConceptNumeric(1);
+		ConceptDatatype dt = new ConceptDatatype(1);
+		dt.setName("Numeric");
+		cn.setDatatype(dt);
+		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.setHiAbsolute(20.0);
+		conceptService.saveConcept(cn);
+		
+		//confirm that we saved a concept numeric
+		firstConcept = conceptService.getConceptNumeric(1);
+		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptNumeric);
+		firstConceptNumeric = (ConceptNumeric) firstConcept;
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
+		
+		//change to concept complex
+		cn2 = new ConceptComplex(1);
+		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.setHandler("SomeHandler");
+		conceptService.saveConcept(cn2);
+		
+		//confirm we saved a concept complex
+		firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
 	}
 	
 	/**
@@ -622,6 +710,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptsByMapping_shouldSortNonRetiredConceptsFirst() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("766554", "SSTRM", true);
 		Assert.assertEquals(16, concepts.get(0).getId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should ignore case while returning results", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldIgnoreCase() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("wgt234", "sstrm");
+		Assert.assertEquals(5089, concept.getId().intValue());
 	}
 	
 	/**
@@ -1036,7 +1134,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptSourceByName_shouldGetConceptSourceWithTheGivenName() throws Exception {
 		ConceptSource conceptSource = conceptService.getConceptSourceByName("SNOMED CT");
-		assertEquals("Method did not retrieve ConceptSource by name", new Integer(2), conceptSource.getConceptSourceId());
+		assertEquals("Method did not retrieve ConceptSource by name", Integer.valueOf(2), conceptSource.getConceptSourceId());
 	}
 	
 	/**
@@ -1207,6 +1305,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#getUnknownConcept()}
+	 */
+	@Test
+	@Verifies(value = "should return the unknown concept", method = "getUnknownConcept()")
+	public void getUnknownConcept_shouldReturnTheUnknownConcept() throws Exception {
+		createUnknownConceptGlobalProperty();
+		Assert.assertNotNull(conceptService.getUnknownConcept());
+		Assert.assertEquals(9, conceptService.getUnknownConcept().getId().intValue());
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
 	 */
 	@Test
@@ -1310,6 +1419,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * Utility method that creates the global property concept.unknown'
+	 */
+	private static void createUnknownConceptGlobalProperty() {
+		GlobalProperty unknownConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_UNKNOWN_CONCEPT,
+		        "9", "Concept id of the concept defining the UNKNOWN concept");
+		Context.getAdministrationService().saveGlobalProperty(unknownConceptGlobalProperty);
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
 	 */
 	@Test
@@ -1404,7 +1522,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 				cn.setName("new name");
 		}
 		//ensure that the conceptName has actually been found and replaced
-		Assert.assertEquals(true, concept.hasName("new name", new Locale("en")));
+		Assert.assertEquals(true, concept.hasName("new name", new Locale("en", "GB")));
 		conceptService.saveConcept(concept);
 		Assert.assertEquals(true, conceptService.getConceptName(1847).isVoided().booleanValue());
 	}
@@ -1645,7 +1763,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//add some other locales to locale.allowed.list for testing purposes
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 		    OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
-		gp.setPropertyValue(gp.getPropertyValue().concat(",fr,ja"));
+		gp.setPropertyValue(gp.getPropertyValue().concat(",fr,ja,en_GB"));
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		
 		Concept concept = new Concept();
@@ -2121,7 +2239,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		//Insert a row to simulate an existing duplicate fully specified/preferred name that needs to be edited
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-conceptWithDuplicateName.xml");
 		Concept conceptToEdit = conceptService.getConcept(10000);
-		Locale locale = Locale.ENGLISH;
+		Locale locale = new Locale("en", "GB");
 		ConceptName duplicateNameToEdit = conceptToEdit.getFullySpecifiedName(locale);
 		//Ensure the name is a duplicate in it's locale
 		Concept otherConcept = conceptService.getConcept(5497);
@@ -2598,10 +2716,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not fail with null Classes and Datatypes", method = "getConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)")
 	public void getConcepts_shouldNotFailWithNullClassesAndDatatypes() throws Exception {
-		
 		ConceptService conceptService = Context.getConceptService();
-		Concept concept = conceptService.getConcept(7);
-		conceptService.updateConceptIndex(concept);
 		Assert.assertNotNull(conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
 		    null, null, null, null, null, null));
 	}
@@ -2616,8 +2731,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not fail with null Classes and Datatypes", method = "getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept)")
 	public void getCountOfConcepts_shouldNotFailWithNullClassesAndDatatypes() throws Exception {
 		ConceptService conceptService = Context.getConceptService();
-		Concept concept = conceptService.getConcept(7);
-		conceptService.updateConceptIndex(concept);
 		Assert.assertNotNull(conceptService.getCountOfConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false,
 		    null, null, null, null, null));
 	}
@@ -2683,7 +2796,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldExcludeRetiredConceptsWhenSetIncludeRetiredToFalse() throws Exception {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, true, false);
 		
-		assertEquals(33, allConcepts.size());
+		assertEquals(34, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2695,14 +2808,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptField() throws Exception {
 		List<Concept> allConcepts = conceptService.getAllConcepts("dateCreated", true, true);
 		
-		assertEquals(35, allConcepts.size());
+		assertEquals(36, allConcepts.size());
 		assertEquals(88, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(27, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 		
 		//check desc order
 		allConcepts = conceptService.getAllConcepts("dateCreated", false, true);
 		
-		assertEquals(35, allConcepts.size());
+		assertEquals(36, allConcepts.size());
 		assertEquals(23, allConcepts.get(0).getConceptId().intValue());
 		assertEquals(88, allConcepts.get(allConcepts.size() - 1).getConceptId().intValue());
 	}
@@ -2715,14 +2828,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByAConceptNameField() throws Exception {
 		List<Concept> allConcepts = conceptService.getAllConcepts("name", true, false);
 		
-		assertEquals(33, allConcepts.size());
+		assertEquals(34, allConcepts.size());
 		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(0).getName().getName());
 		assertEquals("tab (s)", allConcepts.get(allConcepts.size() - 1).getName().getName());
 		
 		//test the desc order
 		allConcepts = conceptService.getAllConcepts("name", false, false);
 		
-		assertEquals(33, allConcepts.size());
+		assertEquals(34, allConcepts.size());
 		assertEquals("tab (s)", allConcepts.get(0).getName().getName());
 		assertEquals("ANTIRETROVIRAL TREATMENT GROUP", allConcepts.get(allConcepts.size() - 1).getName().getName());
 	}
@@ -2735,7 +2848,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdAndIncludeRetiredWhenGivenNoParameters() throws Exception {
 		final List<Concept> allConcepts = conceptService.getAllConcepts();
 		
-		assertEquals(35, allConcepts.size());
+		assertEquals(36, allConcepts.size());
 		assertEquals(3, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2747,7 +2860,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getAllConcepts_shouldOrderByConceptIdDescendingWhenSetAscParameterToFalse() throws Exception {
 		final List<Concept> allConcepts = conceptService.getAllConcepts(null, false, true);
 		
-		assertEquals(35, allConcepts.size());
+		assertEquals(36, allConcepts.size());
 		assertEquals(5497, allConcepts.get(0).getConceptId().intValue());
 	}
 	
@@ -2763,7 +2876,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cp.setFinalText(cp.getOriginalText());
 		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM);
 		Concept mappedConcept = cs.getConcept(5);
-		Locale locale = Locale.ENGLISH;
+		Locale locale = new Locale("en", "GB");
 		Assert.assertTrue(mappedConcept.hasName(cp.getFinalText(), locale));
 		
 		cs.mapConceptProposalToConcept(cp, mappedConcept, locale);
@@ -3087,7 +3200,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugsByMapping_shouldFailIfSourceIsNull() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("ConceptSource is required");
+		expectedException.expectMessage("ConceptSource.is.required");
 		conceptService.getDrugsByMapping("random", null, null, false);
 	}
 	
@@ -3171,7 +3284,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugByMapping_shouldFailIfSourceIsNull() throws Exception {
 		expectedException.expect(APIException.class);
-		expectedException.expectMessage("ConceptSource is required");
+		expectedException.expectMessage("ConceptSource.is.required");
 		conceptService.getDrugByMapping("random", null, null);
 	}
 	
@@ -3201,6 +3314,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		c2.setConceptClass(cc3);
 		c2.setDatatype(dt);
 		cs.saveConcept(c2);
+		
+		updateSearchIndex();
 		
 		List<ConceptSearchResult> conceptSearchResultList = Context.getConceptService().getOrderableConcepts("one",
 		    Collections.singletonList(locale), true, null, null);

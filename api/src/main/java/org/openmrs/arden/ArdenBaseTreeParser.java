@@ -1,3 +1,12 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
 // $ANTLR 2.7.6 (2005-12-22): "ArdenRecognizer.g" -> "ArdenBaseTreeParser.java"$
 
 package org.openmrs.arden;
@@ -839,7 +848,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 					}
 				}
 				
-				if (b.equals("")) {
+				if ("".equals(b)) {
 					b = a;
 					a = "";
 				}
@@ -2103,7 +2112,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 						_t = _t.getFirstChild();
 						a = ift.getText();
 						System.err.println("text = " + a);
-						if (instr.equals("")) {
+						if ("".equals(instr)) {
 							obj.AddToEvaluateList(section, a);
 							s = a;
 							
@@ -2274,7 +2283,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 							match(_t, TERM_LITERAL);
 							_t = _t.getNextSibling();
 							
-							if (instr.equals("")) {
+							if ("".equals(instr)) {
 								// LHS , example - 'ABC' in Variable
 								b = termlit.getText();
 								s = obj.SetAnswerList(section, b, instr);

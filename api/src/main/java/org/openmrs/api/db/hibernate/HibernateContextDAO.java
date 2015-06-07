@@ -1,23 +1,16 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -37,7 +30,6 @@ import org.hibernate.search.Search;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.hibernate.type.StandardBasicTypes;
-import org.hibernate.util.ConfigHelper;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -46,14 +38,14 @@ import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.SessionHolder;
+import org.springframework.orm.hibernate4.SessionFactoryUtils;
+import org.springframework.orm.hibernate4.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
  * directly, instead, the methods on the static {@link Context} file should be used.
- *
+ * 
  * @see ContextDAO
  * @see Context
  */
@@ -69,7 +61,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
-	 *
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -230,7 +222,7 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	/**
 	 * Call the UserService to save the given user while proxying the privileges needed to do so.
-	 *
+	 * 
 	 * @param user the User to save
 	 */
 	private void saveUserProperties(User user) {
@@ -239,7 +231,7 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	/**
 	 * Get the integer stored for the given user that is their number of login attempts
-	 *
+	 * 
 	 * @param user the user to check
 	 * @return the # of login attempts for this user defaulting to zero if none defined
 	 */
@@ -271,7 +263,7 @@ public class HibernateContextDAO implements ContextDAO {
 			if (log.isDebugEnabled()) {
 				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
 			}
-			Session session = SessionFactoryUtils.getSession(sessionFactory, true);
+			Session session = sessionFactory.openSession();
 			session.setFlushMode(FlushMode.MANUAL);
 			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
 		}
@@ -290,7 +282,7 @@ public class HibernateContextDAO implements ContextDAO {
 				try {
 					if (value instanceof SessionHolder) {
 						Session session = ((SessionHolder) value).getSession();
-						SessionFactoryUtils.releaseSession(session, sessionFactory);
+						SessionFactoryUtils.closeSession(session);
 					}
 				}
 				catch (RuntimeException e) {
@@ -378,7 +370,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Takes the default properties defined in /metadata/api/hibernate/hibernate.default.properties
 	 * and merges it into the user-defined runtime properties
-	 *
+	 * 
 	 * @see org.openmrs.api.db.ContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
 	 * @should merge default runtime properties
 	 */

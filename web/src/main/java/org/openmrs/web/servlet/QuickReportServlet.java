@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.servlet;
 
@@ -29,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
@@ -106,7 +103,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		DateFormat dateFormat = Context.getDateFormat();
 		
-		Concept c = cs.getConcept(new Integer("5096")); // RETURN VISIT DATE
+		Concept c = cs.getConcept(Integer.valueOf("5096")); // RETURN VISIT DATE
 		Calendar cal = Calendar.getInstance();
 		
 		Date start;
@@ -128,7 +125,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		
 		// if they don't input an end date, assume they meant "this week"
-		if (endDate == null || endDate.equals("")) {
+		if (endDate == null || "".equals(endDate)) {
 			while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 				cal.add(Calendar.DAY_OF_MONTH, -1);
 			}
@@ -149,7 +146,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		List<Obs> allObs = null;
 		
-		if (location == null || location.equals("")) {
+		if (location == null || "".equals(location)) {
 			allObs = os.getObservations(c, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
 		} else {
 			Location locationObj = es.getLocation(Integer.valueOf(location));
@@ -160,10 +157,8 @@ public class QuickReportServlet extends HttpServlet {
 		List<Obs> obs = new Vector<Obs>();
 		
 		for (Obs o : allObs) {
-			if (o.getValueDatetime() != null) {
-				if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end)) {
-					obs.add(o);
-				}
+			if (o.getValueDatetime() != null && o.getValueDatetime().after(start) && o.getValueDatetime().before(end)) {
+				obs.add(o);
 			}
 		}
 		
@@ -199,7 +194,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		
 		// if they don't input an end date, assume they meant "this week"
-		if (endDate == null || endDate.equals("")) {
+		if (endDate == null || "".equals(endDate)) {
 			while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 				cal.add(Calendar.DAY_OF_MONTH, -1);
 			}
@@ -220,7 +215,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		Collection<Encounter> encounters = null;
 		
-		if (location == null || location.equals("")) {
+		if (location == null || "".equals(location)) {
 			encounters = es.getEncounters(null, null, start, end, null, null, null, true);
 		} else {
 			Location locationObj = ls.getLocation(Integer.valueOf(location));
@@ -261,7 +256,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		
 		// if they don't input an end date, assume they meant "this week"
-		if (endDate == null || endDate.equals("")) {
+		if (StringUtils.isEmpty(endDate)) {
 			while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 				cal.add(Calendar.DAY_OF_MONTH, -1);
 			}
@@ -285,7 +280,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 		List<Obs> obs = new Vector<Obs>();
 		for (Obs o : allObs) {
-			if (o.getVoided() == true) {
+			if (o.getVoided()) {
 				obs.add(o);
 			}
 		}

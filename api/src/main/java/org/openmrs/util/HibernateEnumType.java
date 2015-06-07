@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
@@ -20,20 +16,24 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.type.EnumType;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
 import org.openmrs.api.context.Context;
 
 /**
- * This is intended to be a temporary utility class until enums are handled properly in Hibernate:
- * http://community.jboss.org/wiki/Java5EnumUserType
- * http://docs.jboss.org/hibernate/stable/core/reference/en/html_single/#inheritance
+ * This is left for backwards compatibility with OpenMRS 1.11. and before. OpenMRS 1.12 and later
+ * are shipped with Hibernate 4+, which has the built-in support for enums. Please use EnumType
+ * instead.
  *
  * @since 1.7
+ * @deprecated since 1.12. Use {@link EnumType}.
  */
+@Deprecated
 public class HibernateEnumType implements UserType, ParameterizedType {
 	
 	private static final int[] SQL_TYPES = { Types.VARCHAR };
@@ -62,22 +62,24 @@ public class HibernateEnumType implements UserType, ParameterizedType {
 		return clazz;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws HibernateException, SQLException {
-		String name = resultSet.getString(names[0]);
+	@Override
+	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner)
+	        throws HibernateException, SQLException {
+		String name = rs.getString(names[0]);
 		Object result = null;
-		if (!resultSet.wasNull() && !StringUtils.isBlank(name)) {
+		if (!rs.wasNull() && !StringUtils.isBlank(name)) {
 			result = Enum.valueOf(clazz, name);
 		}
 		return result;
 	}
 	
-	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index) throws HibernateException,
-	        SQLException {
+	@Override
+	public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session)
+	        throws HibernateException, SQLException {
 		if (null == value) {
-			preparedStatement.setNull(index, Types.VARCHAR);
+			st.setNull(index, Types.VARCHAR);
 		} else {
-			preparedStatement.setString(index, ((Enum) value).name());
+			st.setString(index, ((Enum) value).name());
 		}
 	}
 	
@@ -105,6 +107,7 @@ public class HibernateEnumType implements UserType, ParameterizedType {
 		return x.hashCode();
 	}
 	
+	@SuppressWarnings("squid:S1201")
 	public boolean equals(Object x, Object y) throws HibernateException {
 		if (x == y) {
 			return true;
@@ -114,4 +117,5 @@ public class HibernateEnumType implements UserType, ParameterizedType {
 		}
 		return x.equals(y);
 	}
+	
 }

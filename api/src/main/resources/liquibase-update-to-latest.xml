@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
@@ -3497,35 +3508,73 @@
 			<where>concept_name_tag_id = 2</where>
 		</delete>
 	</changeSet>
-
+	
 	<changeSet id="20100607-1550f" author="wyclif">
 		<validCheckSum><comment>After changing to boolean</comment>3:b57c0f651ed477457fd16e503eaf51a4</validCheckSum>
 		<validCheckSum>3:002108aacdf55731f4fd472d5308c5c8</validCheckSum>
         <validCheckSum>3:6a72bbb390155596e52da4e8d065d1a2</validCheckSum>
+        <validCheckSum><comment>Fixing TRUNK-4040</comment>3:74026cd4543ebbf561999a81c276224d</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
-					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred%'
+					SELECT count(*) FROM concept_name_tag WHERE tag like 'preferred\___' OR concept_name_tag_id = 4
 				</sqlCheck>
 			</not>
 		</preConditions>
 		<comment>
-			Converting concept names with preferred concept name tags to preferred and fully specified names
+			Converting concept names with 'preferred' and 'preferred_XX' concept name tags to preferred names
 		</comment>    	
 		<update tableName="concept_name">
-            <column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<column name="locale_preferred" valueBoolean="true"/>
+			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
 			<where>
 				concept_name_id IN (SELECT concept_name_id FROM concept_name_tag cnt, concept_name_tag_map cntm 
-				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND cnt.tag LIKE 'preferred%')
+				WHERE cnt.concept_name_tag_id = cntm.concept_name_tag_id AND (cnt.tag like 'preferred\___' OR cnt.concept_name_tag_id = 4))
 			</where>
 		</update>
 		<delete tableName="concept_name_tag_map">
 			<where>
-				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred%')
+				concept_name_tag_id IN (SELECT concept_name_tag_id FROM concept_name_tag WHERE tag LIKE 'preferred\___') OR concept_name_tag_id = 4
 			</where>
 		</delete>
-		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred%'</where></delete>
+		<delete tableName="concept_name_tag"><where>tag LIKE 'preferred\___' OR concept_name_tag_id = 4</where></delete>
+	</changeSet>
+	
+	<changeSet id="20150122-1414" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 1
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Reverting concept name type to NULL for concepts having names tagged as default</comment>
+		<update tableName="concept_name">
+			<column name="concept_name_type" />
+			<where>concept_id IN (SELECT concept_id FROM (SELECT concept_id FROM concept_name LEFT JOIN concept_name_tag_map 
+			ON concept_name.concept_name_id = concept_name_tag_map.concept_name_id WHERE concept_name_tag_id = 1) AS x)</where>
+		</update>
+	</changeSet>
+	
+	<changeSet id="20150122-1420" author="rkorytkowski">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 1
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Setting concept name type to fully specified for names tagged as default</comment>
+		<update tableName="concept_name">
+			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
+			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 1)</where>
+		</update>
+		<delete tableName="concept_name_tag_map">
+			<where>concept_name_tag_id = 1</where>
+		</delete>	
+		<delete tableName="concept_name_tag">
+			<where>concept_name_tag_id = 1</where>
+		</delete>
 	</changeSet>
 
 	<changeSet id="20100607-1550g" author="wyclif">
@@ -4607,6 +4656,7 @@
 	</changeSet>
     
 	<changeSet id="201109301703" author="suho">
+		<validCheckSum>3:5118bfbc227de5580786f6cce75b6347</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4659,7 +4709,7 @@
 		</preConditions>
 		<comment>Converting general address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 			&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 			  &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;&#10;
 			  &lt;property name=&quot;longitude&quot; value=&quot;Location.longitude&quot;/&gt;&#10;
@@ -4691,13 +4741,14 @@
 			  &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
 			  &lt;string&gt;startDate endDate&lt;/string&gt;&#10;
 			&lt;/lineByLineFormat&gt;&#10;
-		  &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+		  &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301704" author="suho">
+		<validCheckSum>3:6dda0cc75bebb1cbb6c67a3c462a7878</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 				<and>
 					<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4710,7 +4761,7 @@
 		</preConditions>
 		<comment>Converting Spain address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address2&quot; value=&quot;Location.address2&quot;/&gt;&#10;
 					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.stateProvince&quot;/&gt;&#10;
@@ -4737,13 +4788,14 @@
 					 &lt;string&gt;cityVillage stateProvince country postalCode&lt;/string&gt;&#10;
 					 &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				 &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				 &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301705" author="suho">
+		<validCheckSum>3:464ccc7834881a26600aa995aa175d57</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4761,7 +4813,7 @@
 		</preConditions>
 		<comment>Converting Rwanda address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address3&quot; value=&quot;Location.cell&quot;/&gt;&#10;
 					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.province&quot;/&gt;&#10;
@@ -4786,13 +4838,14 @@
 					 &lt;string&gt;address3&lt;/string&gt;&#10;
 					 &lt;string&gt;address1&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				 &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				 &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301706" author="suho">
+		<validCheckSum>3:7c654c2e26d9c89e8a405e5e39c86143</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4810,7 +4863,7 @@
 		</preConditions>
 		<comment>Converting USA address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address2&quot; value=&quot;Location.address2&quot;/&gt;&#10;
 					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.state&quot;/&gt;&#10;
@@ -4833,13 +4886,14 @@
 					 &lt;string&gt;address2&lt;/string&gt;&#10;
 					 &lt;string&gt;cityVillage stateProvince postalCode&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-					&lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+					&lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301707" author="suho">
+		<validCheckSum>3:16443a97b649b95129f4df95ef2772e7</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4857,7 +4911,7 @@
 		</preConditions>
 		<comment>Converting Kenya address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;postalCode&quot; value=&quot;Location.postalCode&quot;/&gt;&#10;
 					 &lt;property name=&quot;longitude&quot; value=&quot;Location.longitude&quot;/&gt;&#10;
@@ -4909,13 +4963,14 @@
 					 &lt;string&gt;latitude longitude&lt;/string&gt;&#10;
 					 &lt;string&gt;country&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-			  &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+			  &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301708" author="suho">
+		<validCheckSum>3:c0a63cb8054a29ae8a46949d0a025fe0</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4933,7 +4988,7 @@
 		</preConditions>
 		<comment>Converting Lesotho address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;countyDistrict&quot; value=&quot;Location.district&quot;/&gt;&#10;
 					 &lt;property name=&quot;cityVillage&quot; value=&quot;Location.village&quot;/&gt;&#10;
@@ -4949,13 +5004,14 @@
 					 &lt;string&gt;&#10;countyDistrict&lt;/string&gt;&#10;
 					 &lt;string&gt;&#10;cityVillage&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				&lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				&lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301709" author="suho">
+		<validCheckSum>3:c477d196658523a0ec8b477a1750c2f3</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -4973,7 +5029,7 @@
 		</preConditions>
 		<comment>Converting Malawi address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address3&quot; value=&quot;Location.neighborhood&quot;/&gt;&#10;
 					 &lt;property name=&quot;stateProvince&quot; value=&quot;Location.district&quot;/&gt;&#10;
@@ -4998,13 +5054,14 @@
 					 &lt;string&gt;countyDistrict&lt;/string&gt;&#10;
 					 &lt;string&gt;stateProvince&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				 &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				 &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
 	</changeSet>
 
 	<changeSet id="201109301710" author="suho">
+		<validCheckSum>3:a52f8e9920c42fd31df171e05bd0d91c</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<sqlCheck expectedResult="1">SELECT count(property_value) FROM global_property WHERE property =
@@ -5022,7 +5079,7 @@
 		</preConditions>
 		<comment>Converting Tanzania address format (if applicable)</comment>
 		<update tableName="global_property">
-			<column name="property_value" value="&lt;org.openmrs.layout.web.address.AddressTemplate&gt;&#10;
+			<column name="property_value" value="&lt;org.openmrs.layout.address.AddressTemplate&gt;&#10;
 					&lt;nameMappings class=&quot;properties&quot;&gt;&#10;
 					 &lt;property name=&quot;address6&quot; value=&quot;Location.region&quot;/&gt;&#10;
 					 &lt;property name=&quot;address5&quot; value=&quot;Location.ward&quot;/&gt;&#10;
@@ -5041,7 +5098,7 @@
 					 &lt;string&gt;countyDistrict&lt;/string&gt;&#10;
 					 &lt;string&gt;address6&lt;/string&gt;&#10;
 					&lt;/lineByLineFormat&gt;&#10;
-				 &lt;/org.openmrs.layout.web.address.AddressTemplate&gt;"/>
+				 &lt;/org.openmrs.layout.address.AddressTemplate&gt;"/>
 			<column name="description" value="XML description of address formats"/>
 			<where>property = 'layout.address.format'</where>
 		</update>
@@ -7555,18 +7612,6 @@
         </ext:modifyColumn>
     </changeSet>
 
-    <changeSet id="201403011348" author="alexisduque">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="orders" columnName="orderer" />
-        </preConditions>
-        <comment>Make orders.orderer not NULLable</comment>
-        <ext:modifyColumn tableName="orders">
-            <column name="orderer" type="int">
-                <constraints nullable="false" />
-            </column>
-        </ext:modifyColumn>
-    </changeSet>
-
     <changeSet id="201311041510" author="wyclif">
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="drug_order" columnName="as_needed" /></not>
@@ -8250,6 +8295,19 @@
                                  referencedTableName="provider" referencedColumnNames="provider_id" />
     </changeSet>
 
+    <!-- TRUNK-4690: Orders.orderer column cannot be set to NOT NULL until after user to provider migration occurs -->
+    <changeSet id="201403011348" author="alexisduque">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="orders" columnName="orderer" />
+        </preConditions>
+        <comment>Make orders.orderer not NULLable</comment>
+        <ext:modifyColumn tableName="orders">
+            <column name="orderer" type="int">
+                <constraints nullable="false" />
+            </column>
+        </ext:modifyColumn>
+    </changeSet>
+
     <changeSet id="201403061758-TRUNK-4284" author="Banka, Vinay">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">select count(*) from concept_class where uuid = '8e071bfe-520c-44c0-a89b-538e9129b42a'</sqlCheck>
@@ -8332,14 +8390,6 @@
         <addColumn tableName="order_type">
             <column name="date_changed" type="datetime" />
         </addColumn>
-    </changeSet>
-
-    <changeSet id="201406152043" author="harsz89">
-        <preConditions onFail="MARK_RAN">
-            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent"/></not>
-        </preConditions>
-        <comment>Adding foreign key constraint from order_type.parent column to orders.order_id column</comment>
-        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent" referencedTableName="orders" referencedColumnNames="order_id"/>
     </changeSet>
 
     <changeSet id="201406201443" author="wyclif">
@@ -8446,6 +8496,22 @@
         <comment>Changing duration column of drug_order to int</comment>
         <modifyDataType tableName="drug_order" columnName="duration" newDataType="int"/>
     </changeSet>
+
+    <changeSet id="20150428-TRUNK-4693-1" author="mseaton">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="order_type_parent"/>
+        </preConditions>
+        <comment>Removing invalid foreign key constraint from order_type.parent column to order.order_id column</comment>
+        <dropForeignKeyConstraint baseTableName="order_type" constraintName="order_type_parent"/>
+    </changeSet>
+
+    <changeSet id="20150428-TRUNK-4693-2" author="mseaton">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="order_type_parent_order_type"/></not>
+        </preConditions>
+        <comment>Adding foreign key constraint from order_type.parent column to order_type.order_type_id column</comment>
+        <addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent_order_type" referencedTableName="order_type" referencedColumnNames="order_type_id"/>
+    </changeSet>
     
     <changeSet id="201409230113-TRUNK-3484" author="k-joseph">
 		<preConditions onFail="MARK_RAN">
@@ -8544,4 +8610,93 @@
 		<renameColumn tableName="drug_ingredient"
 			oldColumnName="quantity" newColumnName="strength" columnDataType="double"/>
 	</changeSet>
+
+	<changeSet id="20150108-TRUNK-3849" author="rpuzdrowski" >
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">SELECT count(*) FROM global_property WHERE property = 'layout.address.format'
+				AND property_value LIKE '%org.openmrs.layout.web.%'
+			</sqlCheck>
+		</preConditions>
+		<comment>Updating layout.address.format global property</comment>
+		<customChange class="org.openmrs.util.databasechange.UpdateLayoutAddressFormatChangeSet"/>
+	</changeSet>
+
+	<changeSet id="20150108-TRUNK-14" author="rpuzdrowski">
+		<comment>Removing dashboard.regimen.standardRegimens global property</comment>
+		<delete tableName="global_property">
+			<where>property = 'dashboard.regimen.standardRegimens'</where>
+		</delete>
+	</changeSet>
+
+	<changeSet id="20150211-TRUNK-3709" author="jkondrat">
+		<comment>Encrypting the users.secret_answer column</comment>
+		<customChange class="org.openmrs.util.databasechange.EncryptSecretAnswersChangeSet"/>
+	</changeSet>
+
+    <changeSet id="201411101055-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit" />
+        </preConditions>
+        <comment>Temporarily removing foreign key constraint from person_attribute_type.edit_privilege column</comment>
+        <dropForeignKeyConstraint baseTableName="person_attribute_type" constraintName="privilege_which_can_edit" />
+    </changeSet>
+
+    <changeSet id="201411101056-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="privilege_definitions" />
+        </preConditions>
+        <comment>Temporarily removing foreign key constraint from role_privilege.privilege column</comment>
+        <dropForeignKeyConstraint baseTableName="role_privilege" constraintName="privilege_definitions" />
+    </changeSet>
+
+    <changeSet id="201411101057-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="privilege" columnName="privilege"/>
+        </preConditions>
+        <comment>Increasing the size of the privilege column in the privilege table</comment>
+        <ext:modifyColumn tableName="privilege">
+            <column name="privilege" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </ext:modifyColumn>
+    </changeSet>
+
+    <changeSet id="201411101058-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit" /></not>
+        </preConditions>
+        <comment>Adding foreign key constraint to person_attribute_type.edit_privilege column</comment>
+        <addForeignKeyConstraint constraintName="privilege_which_can_edit" baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
+                                 referencedTableName="privilege" referencedColumnNames="privilege" />
+    </changeSet>
+
+    <changeSet id="201411101106-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="role_privilege" columnName="privilege"/>
+        </preConditions>
+        <comment>Increasing the size of the privilege column in the role_privilege table</comment>
+        <ext:modifyColumn tableName="role_privilege">
+            <column name="privilege" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </ext:modifyColumn>
+    </changeSet>
+
+    <changeSet id="201411101107-TRUNK-3386" author="pmuchowski">
+        <preConditions onFail="MARK_RAN">
+            <not><foreignKeyConstraintExists foreignKeyName="privilege_definitions" /></not>
+        </preConditions>
+        <comment>Adding foreign key constraint to role_privilege.privilege column</comment>
+        <addForeignKeyConstraint constraintName="privilege_definitions" baseTableName="role_privilege" baseColumnNames="privilege"
+                                 referencedTableName="privilege" referencedColumnNames="privilege" />
+    </changeSet>
+    <changeSet id="20150221-1644" author="sandeepraparthi">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="patient_id" tableName="patient_identifier" />
+            <not><foreignKeyConstraintExists foreignKeyName="fk_patient_id_patient_identifier"/></not>
+        </preConditions>
+         <comment>Adding foreign key on patient_identifier.patient_id column</comment>
+        <addForeignKeyConstraint constraintName="fk_patient_id_patient_identifier" baseTableName="patient_identifier" baseColumnNames="patient_id"	referencedTableName="patient" referencedColumnNames="patient_id" /> 
+ 	</changeSet>
+
 </databaseChangeLog>

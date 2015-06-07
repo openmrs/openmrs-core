@@ -1,22 +1,18 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
+import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 import java.util.Date;
 import java.util.Locale;
 
-import static org.apache.commons.lang3.time.DateUtils.addMilliseconds;
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -101,8 +97,8 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	@Override
 	public DosingInstructions getDosingInstructions(DrugOrder order) {
 		if (!order.getDosingType().equals(this.getClass())) {
-			throw new APIException("Dosing type of drug order is mismatched. Expected:" + this.getClass().getName()
-			        + " but received:" + order.getDosingType());
+			throw new APIException("DrugOrder.error.dosingTypeIsMismatched", new Object[] { this.getClass().getName(),
+			        order.getDosingType() });
 		}
 		SimpleDosingInstructions simpleDosingInstructions = new SimpleDosingInstructions();
 		simpleDosingInstructions.setDose(order.getDose());
@@ -129,10 +125,9 @@ public class SimpleDosingInstructions implements DosingInstructions {
 		ValidationUtils.rejectIfEmpty(errors, "doseUnits", "DrugOrder.error.doseUnitsIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "route", "DrugOrder.error.routeIsNullForDosingTypeSimple");
 		ValidationUtils.rejectIfEmpty(errors, "frequency", "DrugOrder.error.frequencyIsNullForDosingTypeSimple");
-		if (order.getAutoExpireDate() == null && order.getDurationUnits() != null) {
-			if (Duration.getCode(order.getDurationUnits()) == null) {
-				errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode");
-			}
+		if (order.getAutoExpireDate() == null && order.getDurationUnits() != null
+		        && Duration.getCode(order.getDurationUnits()) == null) {
+			errors.rejectValue("durationUnits", "DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode");
 		}
 	}
 	
@@ -228,7 +223,7 @@ public class SimpleDosingInstructions implements DosingInstructions {
 	}
 	
 	private Date aMomentBefore(Date date) {
-		return addMilliseconds(date, -1);
+		return addSeconds(date, -1);
 	}
 	
 }

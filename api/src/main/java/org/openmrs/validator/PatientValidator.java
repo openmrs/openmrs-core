@@ -1,33 +1,24 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.springframework.validation.ValidationUtils;
 import org.openmrs.annotation.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 /**
  * This class validates a Patient object.
@@ -42,7 +33,7 @@ public class PatientValidator extends PersonValidator {
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
-	 *
+	 * 
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -57,7 +48,7 @@ public class PatientValidator extends PersonValidator {
 	/**
 	 * Validates the given Patient. Currently just checks for errors in identifiers. TODO: Check for
 	 * errors in all Patient fields.
-	 *
+	 * 
 	 * @param obj The patient to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
@@ -70,6 +61,8 @@ public class PatientValidator extends PersonValidator {
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should fail validation if a preferred patient identifier is not chosen for voided patients
 	 * @should not fail when patient has only one identifier and its not preferred
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled()) {
@@ -100,14 +93,18 @@ public class PatientValidator extends PersonValidator {
 		if (!preferredIdentifierChosen && identifiers.size() != 1) {
 			errors.reject("error.preferredIdentifier");
 		}
-		
+		int index = 0;
 		if (!errors.hasErrors()) {
 			// Validate PatientIdentifers
 			if (patient.getIdentifiers() != null) {
 				for (PatientIdentifier identifier : patient.getIdentifiers()) {
+					errors.pushNestedPath("identifiers[" + index + "]");
 					patientIdentifierValidator.validate(identifier, errors);
+					errors.popNestedPath();
+					index++;
 				}
 			}
 		}
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 	}
 }

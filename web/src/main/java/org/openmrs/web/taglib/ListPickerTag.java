@@ -1,20 +1,17 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Random;
 import java.util.Vector;
 
 import javax.servlet.jsp.tagext.TagSupport;
@@ -36,10 +33,12 @@ public class ListPickerTag extends TagSupport {
 	
 	private Collection<Object> inheritedItems;
 	
+	private Collection<Object> descendantItems;
+	
 	public int doStartTag() {
-		
+		Random gen = new Random();
 		if (name == null) {
-			name = "list" + (int) (Math.random() * 100);
+			name = "list" + (gen.nextInt() * 100);
 		}
 		if (currentItems == null) {
 			currentItems = new Vector<Object>();
@@ -47,13 +46,18 @@ public class ListPickerTag extends TagSupport {
 		if (inheritedItems == null) {
 			inheritedItems = new Vector<Object>();
 		}
+		if (descendantItems == null) {
+			descendantItems = new Vector<Object>();
+		}
 		if (allItems == null) {
 			allItems = new Vector<Object>();
 		}
-		
 		String str = "\n<div id='" + name + "' class='listItemBox'>";
 		
 		for (Object item : allItems) {
+			if (descendantItems.contains(item)) {
+				continue;
+			}
 			boolean checked = false;
 			boolean inherited = false;
 			if (currentItems.contains(item)) {
@@ -125,6 +129,14 @@ public class ListPickerTag extends TagSupport {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public Collection<Object> getDescendantItems() {
+		return descendantItems;
+	}
+	
+	public void setDescendantItems(Collection<Object> descendantItems) {
+		this.descendantItems = descendantItems;
 	}
 	
 }

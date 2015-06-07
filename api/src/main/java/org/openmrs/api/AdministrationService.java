@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -35,11 +31,8 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
-import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.Report;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
@@ -58,7 +51,7 @@ import org.springframework.validation.Errors;
  * 
  * @see org.openmrs.api.context.Context
  */
-public interface AdministrationService extends OpenmrsService, GlobalPropertyListener {
+public interface AdministrationService extends OpenmrsService {
 	
 	/**
 	 * Used by Spring to set the specific/chosen database access implementation
@@ -261,66 +254,6 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException;
 	
 	/**
-	 * Create a new Report
-	 * 
-	 * @param report Report to create
-	 * @throws APIException
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void createReport(Report report) throws APIException;
-	
-	/**
-	 * Update Report
-	 * 
-	 * @param report Report to update
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void updateReport(Report report) throws APIException;
-	
-	/**
-	 * Delete Report
-	 * 
-	 * @param report Report to delete
-	 * @throws APIException
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void deleteReport(Report report) throws APIException;
-	
-	/**
-	 * Create a new Report Object
-	 * 
-	 * @param reportObject Report Object to create
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void createReportObject(AbstractReportObject reportObject) throws APIException;
-	
-	/**
-	 * Update Report Object
-	 * 
-	 * @param reportObject the Report Object to update
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void updateReportObject(AbstractReportObject reportObject) throws APIException;
-	
-	/**
-	 * Delete Report Object
-	 * 
-	 * @param reportObjectId Internal identifier for the Report Object to delete
-	 * @deprecated see reportingcompatibility module
-	 * @throws APIException
-	 */
-	@Deprecated
-	public void deleteReportObject(Integer reportObjectId) throws APIException;
-	
-	/**
 	 * Create a concept proposal
 	 * 
 	 * @param cp
@@ -357,20 +290,6 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	 *             {@link org.openmrs.api.ConceptService#rejectConceptProposal(ConceptProposal)}
 	 */
 	public void rejectConceptProposal(ConceptProposal cp);
-	
-	/**
-	 * @param site
-	 * @param start
-	 * @param count
-	 * @deprecated use the mrngen module instead
-	 */
-	public void mrnGeneratorLog(String site, Integer start, Integer count);
-	
-	/**
-	 * @deprecated use the mrngen module instead
-	 */
-	
-	public Collection<?> getMRNGeneratorLog();
 	
 	/**
 	 * Get a global property by its uuid. There should be only one of these in the database (well,
@@ -655,6 +574,10 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	 * @return list of allowed presentation locales TODO change this return type to list?
 	 * @should return at least one locale if no locales defined in database yet
 	 * @should not return more locales than message source service locales
+	 * @should return only country locale if both country locale and language locale are specified in allowed list
+	 * @should return all country locales if language locale and no country locales are specified in allowed list
+	 * @should return language locale if country locale is specified in allowed list but country locale message file is missing
+	 * @should return language locale if it is specified in allowed list and there are no country locale message files available
 	 */
 	public Set<Locale> getPresentationLocales();
 	
@@ -702,21 +625,8 @@ public interface AdministrationService extends OpenmrsService, GlobalPropertyLis
 	 * @should include currently selected full locale and langugage
 	 * @should include users proficient locales
 	 * @should exclude not allowed locales
-	 * @should cache results for an user
-	 * @should update cached results
 	 */
 	public List<Locale> getSearchLocales() throws APIException;
-	
-	/**
-	 * For inner use.
-	 *
-	 * @param currentLocale
-	 * @param user
-	 * @return locales
-	 * @throws APIException
-	 * @since 1.12
-	 */
-	public List<Locale> getSearchLocales(Locale currentLocale, User user) throws APIException;
 	
 	/**
 	 * Used by Spring to set the http client for accessing the openmrs implementation service

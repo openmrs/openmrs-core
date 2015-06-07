@@ -1,19 +1,14 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.dwr;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -25,14 +20,10 @@ import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.validator.VisitValidator;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 
 /**
  * Contains methods for processing DWR requests for visits
- *
+ * 
  * @since 1.9
  */
 public class DWRVisitService {
@@ -41,7 +32,7 @@ public class DWRVisitService {
 	
 	/**
 	 * Gets all visits for the patient matching the given patientId
-	 *
+	 * 
 	 * @param patientId the patient id for the patient whose visits to find
 	 * @param includeInactive specifies if ended visits should be returned or not
 	 * @param includeVoided specifies if voided visits should be returned or not
@@ -64,8 +55,7 @@ public class DWRVisitService {
 					visits = Context.getVisitService().getVisitsByPatient(p, includeInactive, includeVoided);
 				}
 			} else {
-				throw new APIException(mss.getMessage("errors.patientId.cannotBeNull", null, "Patient Id cannot be null",
-				    Context.getLocale()));
+				throw new APIException("errors.patientId.cannotBeNull", (Object[]) null);
 			}
 			
 			if (visits.size() > 0) {
@@ -84,7 +74,7 @@ public class DWRVisitService {
 	
 	/**
 	 * Gets the visit matching the specified visitId
-	 *
+	 * 
 	 * @param visitId the visit id to search against
 	 * @return the {@link VisitListItem} for the matching visit
 	 * @throws APIException
@@ -96,7 +86,7 @@ public class DWRVisitService {
 	
 	/**
 	 * Fetches all encounters belonging to the visit that matches the specified visitId
-	 *
+	 * 
 	 * @param visitId
 	 * @return
 	 * @throws APIException
@@ -114,7 +104,7 @@ public class DWRVisitService {
 					encounters = Context.getEncounterService().getEncountersByVisit(v, false);
 				}
 			} else {
-				throw new APIException(Context.getMessageSourceService().getMessage("VisitId.cannotBeNull"));
+				throw new APIException("VisitId.cannotBeNull", (Object[]) null);
 			}
 			
 			if (encounters.size() > 0) {

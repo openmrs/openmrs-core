@@ -1,27 +1,15 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -37,16 +25,11 @@ import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.User;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.Report;
-import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.HandlerUtil;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -84,162 +67,6 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#createReport(org.openmrs.reporting.Report)
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void createReport(Report r) throws DAOException {
-		r.setCreator(Context.getAuthenticatedUser());
-		r.setDateCreated(new Date());
-		sessionFactory.getCurrentSession().save(r);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#updateReport(org.openmrs.reporting.Report)
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void updateReport(Report r) throws DAOException {
-		if (r.getReportId() == null) {
-			createReport(r);
-		} else {
-			sessionFactory.getCurrentSession().saveOrUpdate(r);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#deleteReport(org.openmrs.reporting.Report)
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void deleteReport(Report r) throws DAOException {
-		sessionFactory.getCurrentSession().delete(r);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String, java.lang.Integer, java.lang.Integer)
-	 */
-	public void mrnGeneratorLog(String site, Integer start, Integer count) {
-		PreparedStatement ps = null;
-		try {
-			String sql = "insert into `";
-			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
-			sql += "(date_generated, generated_by, site, mrn_first, mrn_count) values (?, ?, ?, ?, ?)";
-			
-			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
-			
-			ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-			ps.setInt(2, Context.getAuthenticatedUser().getUserId());
-			ps.setString(3, site);
-			ps.setInt(4, start);
-			ps.setInt(5, count);
-			ps.execute();
-		}
-		catch (Exception e) {
-			throw new DAOException("Error generating mrn log", e);
-		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
-	 */
-	public Collection getMRNGeneratorLog() {
-		Collection<Map<String, Object>> logs = new Vector<Map<String, Object>>();
-		
-		PreparedStatement ps = null;
-		try {
-			Map<String, Object> row;
-			
-			String sql = "select * from `";
-			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
-			sql += "order by mrn_log_id desc";
-			
-			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
-			
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				row = new HashMap<String, Object>();
-				row.put("date", rs.getTimestamp("date_generated"));
-				row.put("user", rs.getString("generated_by"));
-				row.put("site", rs.getString("site"));
-				row.put("first", rs.getInt("mrn_first"));
-				row.put("count", rs.getInt("mrn_count"));
-				logs.add(row);
-			}
-		}
-		catch (Exception e) {
-			throw new DAOException("Error getting mrn log", e);
-		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
-		}
-		
-		return logs;
-	}
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void createReportObject(AbstractReportObject ro) throws DAOException {
-		
-		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
-		User user = Context.getAuthenticatedUser();
-		Date now = new Date();
-		wrappedReportObject.setCreator(user);
-		wrappedReportObject.setDateCreated(now);
-		wrappedReportObject.setVoided(false);
-		sessionFactory.getCurrentSession().save(wrappedReportObject);
-	}
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void updateReportObject(AbstractReportObject ro) throws DAOException {
-		if (ro.getReportObjectId() == null) {
-			createReportObject(ro);
-		} else {
-			sessionFactory.getCurrentSession().clear();
-			ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
-			User user = Context.getAuthenticatedUser();
-			Date now = new Date();
-			wrappedReportObject.setChangedBy(user);
-			wrappedReportObject.setDateChanged(now);
-			
-			sessionFactory.getCurrentSession().saveOrUpdate(wrappedReportObject);
-		}
-	}
-	
-	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void deleteReportObject(Integer reportObjectId) throws DAOException {
-		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(
-		    ReportObjectWrapper.class, reportObjectId);
-		
-		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
 	
 	/**
@@ -337,23 +164,31 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		if (HibernateUtil.isHSQLDialect(sessionFactory)) {
 			sql = sql.replace("`", "");
 		}
-		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), sql, selectOnly);
+		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession(), sql, selectOnly);
 	}
 	
 	@Override
 	public int getMaximumPropertyLength(Class<? extends OpenmrsObject> aClass, String fieldName) {
 		if (configuration == null) {
-			LocalSessionFactoryBean sessionFactoryBean = (LocalSessionFactoryBean) applicationContext
+			HibernateSessionFactoryBean sessionFactoryBean = (HibernateSessionFactoryBean) applicationContext
 			        .getBean("&sessionFactory");
 			configuration = sessionFactoryBean.getConfiguration();
 		}
 		
-		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName());
+		PersistentClass persistentClass = configuration.getClassMapping(aClass.getName().split("_")[0]);
 		if (persistentClass == null) {
-			log.error("Uh oh, couldn't find a class in the hibernate configuration named: " + aClass.getName());
+			throw new APIException("Couldn't find a class in the hibernate configuration named: " + aClass.getName());
+		} else {
+			int fieldLength;
+			try {
+				fieldLength = ((Column) persistentClass.getProperty(fieldName).getColumnIterator().next()).getLength();
+			}
+			catch (Exception e) {
+				log.debug("Could not determine maximum length", e);
+				return -1;
+			}
+			return fieldLength;
 		}
-		
-		return persistentClass.getTable().getColumn(new Column(fieldName)).getLength();
 	}
 	
 	@Override

@@ -304,10 +304,10 @@
 					<input type="button" value="<openmrs:message code="Visit.end"/>" onclick="patientHeaderEndVisit('${visit.visitId}', '<openmrs:formatDate date="${visit.stopDatetime}" format="dd/MM/yyyy HH:mm" />');" />
 				</openmrs:hasPrivilege>
 				<br />&nbsp;
-				<c:if test="${empty visit.encounters}">
+				<c:if test="${empty visit.nonVoidedEncounters}">
 					<i><openmrs:message code="Encounter.noEncounters" /></i>
 				</c:if>
-				<c:forEach var="encounter" items="${visit.encounters}" varStatus="status">
+				<c:forEach var="encounter" items="${visit.nonVoidedEncounters}" varStatus="status">
 					<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}"/>
 					<c:choose>
 						<c:when test="${ model.formToViewUrlMap[encounter.form] != null }">

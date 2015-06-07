@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller;
 
@@ -258,7 +254,9 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				try {
+					errors.pushNestedPath("concept");
 					ValidateUtil.validate(concept, errors);
+					errors.popNestedPath();
 					
 					validateConceptUsesPersistedObjects(concept, errors);
 					
@@ -276,16 +274,19 @@ public class ConceptFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 				}
 				catch (ConceptsLockedException cle) {
+					errors.popNestedPath();
 					log.error("Tried to save concept while concepts were locked", cle);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked");
 					errors.reject("concept", "Concept.concepts.locked");
 				}
 				catch (DuplicateConceptNameException e) {
+					errors.popNestedPath();
 					log.error("Tried to save concept with a duplicate name", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.rejectValue("concept", "Concept.name.duplicate");
 				}
 				catch (APIException e) {
+					errors.popNestedPath();
 					log.error("Error while trying to save concept", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.reject("concept", "Concept.cannot.save");
@@ -482,7 +483,7 @@ public class ConceptFormController extends SimpleFormController {
 			conceptMappings = ListUtils.lazyList(new ArrayList<ConceptMap>(concept.getConceptMappings()), FactoryUtils
 			        .instantiateFactory(ConceptMap.class));
 			
-			if (concept.isNumeric()) {
+			if (concept instanceof ConceptNumeric) {
 				ConceptNumeric cn = (ConceptNumeric) concept;
 				this.hiAbsolute = cn.getHiAbsolute();
 				this.lowAbsolute = cn.getLowAbsolute();
@@ -493,7 +494,7 @@ public class ConceptFormController extends SimpleFormController {
 				this.precise = cn.getPrecise();
 				this.displayPrecision = cn.getDisplayPrecision();
 				this.units = cn.getUnits();
-			} else if (concept.isComplex()) {
+			} else if (concept instanceof ConceptComplex) {
 				ConceptComplex complex = (ConceptComplex) concept;
 				this.handlerKey = complex.getHandler();
 			}
@@ -508,6 +509,7 @@ public class ConceptFormController extends SimpleFormController {
 		 * object so that it can be saved to the database
 		 *
 		 * @return the concept to be saved to the database
+		 * @should set concept on concept answers
 		 */
 		public Concept getConceptFromFormData() {
 			
@@ -568,8 +570,10 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				
 				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
-				if (StringUtils.hasLength(descInLocale.getDescription())
-				        && !concept.getDescriptions().contains(descInLocale)) {
+				
+				if (!StringUtils.hasText(descInLocale.getDescription())) {
+					concept.removeDescription(descInLocale);
+				} else if (!concept.getDescriptions().contains(descInLocale)) {
 					concept.addDescription(descInLocale);
 				}
 			}
@@ -602,16 +606,16 @@ public class ConceptFormController extends SimpleFormController {
 			}
 			
 			// if the user unchecked the concept sets box, erase past saved sets
-			if (!concept.isSet()) {
-				if (concept.getConceptSets() != null) {
-					concept.getConceptSets().clear();
-				}
+			if (!concept.isSet() && concept.getConceptSets() != null) {
+				concept.getConceptSets().clear();
 			}
 			
 			// if the user changed the datatype to be non "Coded", erase past saved datatypes
-			if (!concept.getDatatype().isCoded()) {
-				if (concept.getAnswers(true) != null) {
-					concept.getAnswers(true).clear();
+			if (!concept.getDatatype().isCoded() && concept.getAnswers(true) != null) {
+				concept.getAnswers(true).clear();
+			} else {
+				for (ConceptAnswer ca : concept.getAnswers(true)) {
+					ca.setConcept(concept);
 				}
 			}
 			
@@ -909,6 +913,7 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		
 		/**
+		 *
 		 * Get the list of extensions/metadata and the specific instances of them that use this
 		 * concept.
 		 *
@@ -1091,6 +1096,6 @@ public class ConceptFormController extends SimpleFormController {
 		public void setConceptAnswersByLocale(Map<Locale, Map<String, String>> conceptAnswersByLocale) {
 			this.conceptAnswersByLocale = conceptAnswersByLocale;
 		}
+		
 	}
-	
 }

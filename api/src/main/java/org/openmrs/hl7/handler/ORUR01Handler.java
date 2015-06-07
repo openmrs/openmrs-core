@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.hl7.handler;
 
@@ -352,7 +348,7 @@ public class ORUR01Handler implements Application {
 					Concept questionConcept = proposingException.getConcept();
 					String value = proposingException.getValueName();
 					//if the sender never specified any text for the proposed concept
-					if (value != null && !value.equals("")) {
+					if (!StringUtils.isEmpty(value)) {
 						conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
 					} else {
 						errorInHL7Queue = new HL7Exception(Context.getMessageSourceService().getMessage(
@@ -687,7 +683,7 @@ public class ORUR01Handler implements Application {
 			if (value == null || value.length() == 0) {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
-			} else if (value.equals("0") || value.equals("1")) {
+			} else if ("0".equals(value) || "1".equals(value)) {
 				concept = concept.hydrate(concept.getConceptId().toString());
 				obs.setConcept(concept);
 				if (concept.getDatatype().isBoolean()) {
@@ -702,7 +698,7 @@ public class ORUR01Handler implements Application {
 						    new Object[] { value, concept.getConceptId(), conceptName.getName(), uid }, null), e);
 					}
 				} else if (concept.getDatatype().isCoded()) {
-					Concept answer = value.equals("1") ? Context.getConceptService().getTrueConcept() : Context
+					Concept answer = "1".equals(value) ? Context.getConceptService().getTrueConcept() : Context
 					        .getConceptService().getFalseConcept();
 					boolean isValidAnswer = false;
 					Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
@@ -753,7 +749,7 @@ public class ORUR01Handler implements Application {
 					obs.setValueCoded(valueConcept);
 					if (HL7Constants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
 						Drug valueDrug = new Drug();
-						valueDrug.setDrugId(new Integer(value.getAlternateIdentifier().getValue()));
+						valueDrug.setDrugId(Integer.valueOf(value.getAlternateIdentifier().getValue()));
 						obs.setValueDrug(valueDrug);
 					} else {
 						ConceptName valueConceptName = getConceptName(value);
@@ -804,12 +800,8 @@ public class ORUR01Handler implements Application {
 			if (value != null) {
 				Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), value.getHour(), value
 				        .getMinute(), value.getSecond());
-				if (valueDate != null) {
-					obs.setValueDatetime(valueDate);
-				} else {
-					log.warn("Not creating null valued obs for concept " + concept);
-					return null;
-				}
+				
+				obs.setValueDatetime(valueDate);
 			} else {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
@@ -893,11 +885,9 @@ public class ORUR01Handler implements Application {
 	 * @return
 	 */
 	private ConceptName getConceptName(ST altIdentifier, ID altCodingSystem) throws HL7Exception {
-		if (altIdentifier != null) {
-			if (HL7Constants.HL7_LOCAL_CONCEPT_NAME.equals(altCodingSystem.getValue())) {
-				String hl7ConceptNameId = altIdentifier.getValue();
-				return getConceptName(hl7ConceptNameId);
-			}
+		if (altIdentifier != null && HL7Constants.HL7_LOCAL_CONCEPT_NAME.equals(altCodingSystem.getValue())) {
+			String hl7ConceptNameId = altIdentifier.getValue();
+			return getConceptName(hl7ConceptNameId);
 		}
 		
 		return null;
@@ -917,7 +907,7 @@ public class ORUR01Handler implements Application {
 		if (hl7ConceptNameId != null) {
 			// get the exact concept name specified by the id
 			try {
-				Integer conceptNameId = new Integer(hl7ConceptNameId);
+				Integer conceptNameId = Integer.valueOf(hl7ConceptNameId);
 				specifiedConceptName = new ConceptName();
 				specifiedConceptName.setConceptNameId(conceptNameId);
 			}
@@ -989,7 +979,7 @@ public class ORUR01Handler implements Application {
 		if (codingSystem == null || HL7Constants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
 			// the concept is local
 			try {
-				Integer conceptId = new Integer(hl7ConceptId);
+				Integer conceptId = Integer.valueOf(hl7ConceptId);
 				return Context.getConceptService().getConcept(conceptId);
 			}
 			catch (NumberFormatException e) {
@@ -1295,7 +1285,7 @@ public class ORUR01Handler implements Application {
 			
 			PersonAttribute currentHealthCenter = patient.getAttribute("Health Center");
 			
-			if (currentHealthCenter == null || !currentHealthCenter.equals(newLocationId.toString())) {
+			if (currentHealthCenter == null || !newLocationId.toString().equals(currentHealthCenter.getValue())) {
 				PersonAttribute newHealthCenter = new PersonAttribute(healthCenterAttrType, newLocationId.toString());
 				
 				log.debug("Updating patient's location from " + currentHealthCenter + " to " + newLocationId);

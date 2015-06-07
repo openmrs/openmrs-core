@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -209,5 +205,56 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 		String expectedMsg = "'" + orderType + "' failed to validate with reason: name: error.name";
 		expectedException.expectMessage(expectedMsg);
 		orderService.saveOrderType(orderType);
+	}
+	
+	/**
+	 * @verifies pass validation if field lengths are correct
+	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		OrderType orderType = new OrderType();
+		orderType.setName("unique name");
+		orderType.setJavaClassName("org.openmrs.TestDrugOrder");
+		Collection<ConceptClass> col = new HashSet<ConceptClass>();
+		col.add(Context.getConceptService().getConceptClass(2));
+		orderType.setConceptClasses(col);
+		
+		orderType.setDescription("description");
+		orderType.setRetireReason("retireReason");
+		
+		Errors errors = new BindException(orderType, "orderType");
+		new OrderTypeValidator().validate(orderType, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @verifies fail validation if field lengths are not correct
+	 * @see OrderTypeValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		OrderType orderType = new OrderType();
+		orderType
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		orderType
+		        .setJavaClassName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		Collection<ConceptClass> col = new HashSet<ConceptClass>();
+		col.add(Context.getConceptService().getConceptClass(2));
+		orderType.setConceptClasses(col);
+		
+		orderType
+		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		orderType
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(orderType, "orderType");
+		new OrderTypeValidator().validate(orderType, errors);
+		
+		Assert.assertEquals(true, errors.hasFieldErrors("name"));
+		Assert.assertEquals(true, errors.hasFieldErrors("javaClassName"));
+		Assert.assertEquals(true, errors.hasFieldErrors("description"));
+		Assert.assertEquals(true, errors.hasFieldErrors("retireReason"));
 	}
 }

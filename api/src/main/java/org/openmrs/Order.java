@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -44,14 +40,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.9.2, 1.10
 	 */
 	public enum Urgency {
-		ROUTINE, STAT, ON_SCHEDULED_DATE
+		ROUTINE,
+		STAT,
+		ON_SCHEDULED_DATE
 	}
 	
 	/**
 	 * @since 1.10
 	 */
 	public enum Action {
-		NEW, REVISE, DISCONTINUE, RENEW
+		NEW,
+		REVISE,
+		DISCONTINUE,
+		RENEW
 	}
 	
 	private static final Log log = LogFactory.getLog(Order.class);
@@ -388,6 +389,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see #isActive(java.util.Date)
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was current on the input date
+	 * @deprecated use {@link #isActive(Date)}
 	 */
 	@Deprecated
 	public boolean isCurrent(Date checkDate) {
@@ -397,6 +399,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @see #isActive()
 	 * @return
+	 * @deprecated use {@link #isActive()}
 	 */
 	@Deprecated
 	public boolean isCurrent() {
@@ -417,8 +420,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Deprecated
 	public boolean isFuture(Date checkDate) {
-		if (isVoided())
+		if (isVoided()) {
 			return false;
+		}
 		if (checkDate == null) {
 			checkDate = new Date();
 		}
@@ -493,7 +497,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public boolean isDiscontinued(Date checkDate) {
 		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
-			throw new APIException("The order has invalid dateStopped and autoExpireDate values");
+			throw new APIException("Order.error.invalidDateStoppedAndAutoExpireDate", (Object[]) null);
 		}
 		if (isVoided()) {
 			return false;
@@ -535,7 +539,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public boolean isExpired(Date checkDate) {
 		if (dateStopped != null && autoExpireDate != null && dateStopped.after(autoExpireDate)) {
-			throw new APIException("The order has invalid dateStopped and autoExpireDate values");
+			throw new APIException("Order.error.invalidDateStoppedAndAutoExpireDate", (Object[]) null);
 		}
 		if (isVoided()) {
 			return false;

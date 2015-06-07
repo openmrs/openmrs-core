@@ -1,28 +1,25 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -66,7 +63,7 @@ public class FormUtil {
 		
 		// special characters that should be replaced with valid text
 		// all other invalid characters will be removed
-		Hashtable<String, String> swapChars = new Hashtable<String, String>();
+		Map<String, String> swapChars = new HashMap<String, String>();
 		swapChars.put("!", "bang");
 		swapChars.put("#", "pound");
 		swapChars.put("\\*", "star");
@@ -97,11 +94,9 @@ public class FormUtil {
 		StringBuilder token = new StringBuilder("");
 		boolean underscoreFlag = false;
 		for (int i = 0; i < s.length(); i++) {
-			if (nameChars.indexOf(s.charAt(i)) != -1) {
-				if (s.charAt(i) != '_' || !underscoreFlag) {
-					token.append(s.charAt(i));
-					underscoreFlag = (s.charAt(i) == '_');
-				}
+			if (nameChars.indexOf(s.charAt(i)) != -1 && (s.charAt(i) != '_' || !underscoreFlag)) {
+				token.append(s.charAt(i));
+				underscoreFlag = (s.charAt(i) == '_');
 			}
 		}
 		
@@ -157,8 +152,8 @@ public class FormUtil {
 	 * @return sorted map of <code>FormField</code>s, where the top-level fields are under the key
 	 *         zero and all other leaves are stored under their parent <code>FormField</code>'s id.
 	 */
-	public static TreeMap<Integer, TreeSet<FormField>> getFormStructure(Form form) {
-		TreeMap<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
+	public static Map<Integer, TreeSet<FormField>> getFormStructure(Form form) {
+		Map<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
 		Integer base = Integer.valueOf(0);
 		formStructure.put(base, new TreeSet<FormField>());
 		

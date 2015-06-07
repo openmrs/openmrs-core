@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db;
 
@@ -149,7 +145,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not return concepts with matching names that are voided", method = "getConcepts(String,Locale,null,List<QConceptClass;>,List<QConceptDatatype;>)")
 	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() throws Exception {
 		Concept concept = dao.getConcept(7);
-		Context.getConceptService().updateConceptIndex(concept);
+		updateSearchIndex();
 		List<Concept> concepts = dao.getConcepts("VOIDED", null, false, new ArrayList<ConceptClass>(),
 		    new ArrayList<ConceptDatatype>());
 		Assert.assertEquals(0, concepts.size());
@@ -231,6 +227,8 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		c2.setConceptClass(cc);
 		c2.setDatatype(dt);
 		cs.saveConcept(c2);
+		
+		updateSearchIndex();
 		
 		List<ConceptSearchResult> searchResults1 = dao
 		        .getConcepts("one", Collections.singletonList(locale), false, Collections.EMPTY_LIST,

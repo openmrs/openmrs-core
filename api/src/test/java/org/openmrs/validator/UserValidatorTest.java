@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -259,5 +255,54 @@ public class UserValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(new User(), "user");
 		userValidator.validate(null, errors);
 		Assert.assertTrue(true);
+	}
+	
+	/**
+	 * @see {@link UserValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		User user = new User();
+		user.setUsername("test");
+		user.setSystemId("systemId");
+		user.setSecretQuestion("secretQuestion");
+		user.setRetireReason("retireReason");
+		user.setPerson(new Person(999));
+		user.getPerson().addName(new PersonName("Users", "Need", "People"));
+		user.getPerson().setGender("F");
+		
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link UserValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		User user = new User();
+		user
+		        .setUsername("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		user
+		        .setSystemId("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		user
+		        .setSecretQuestion("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		user
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		user.setPerson(new Person(999));
+		user.getPerson().addName(new PersonName("Users", "Need", "People"));
+		user.getPerson().setGender("F");
+		
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("username"));
+		Assert.assertTrue(errors.hasFieldErrors("systemId"));
+		Assert.assertTrue(errors.hasFieldErrors("secretQuestion"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

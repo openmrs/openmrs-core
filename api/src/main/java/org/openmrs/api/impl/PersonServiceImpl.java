@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.impl;
 
@@ -114,7 +110,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Transactional(readOnly = true)
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) {
 		if (includeVoided) {
-			throw new APIException("You should consider voided people as if they are deleted and they cannot be searched");
+			throw new APIException("Person.should.consider.voided", (Object[]) null);
 		}
 		
 		// convert the list to a set
@@ -131,15 +127,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) {
 		List<String> roleList = null;
 		
-		if (roles != null) {
-			if (roles.length() > 0) {
-				String[] splitRoles = roles.split(",");
-				for (String role : splitRoles) {
-					if (roleList == null) {
-						roleList = new ArrayList<String>();
-					}
-					roleList.add(role);
+		if (roles != null && roles.length() > 0) {
+			String[] splitRoles = roles.split(",");
+			for (String role : splitRoles) {
+				if (roleList == null) {
+					roleList = new ArrayList<String>();
 				}
+				roleList.add(role);
 			}
 		}
 		
@@ -253,7 +247,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException {
 		checkIfPersonAttributeTypesAreLocked();
 		if (retiredReason == null || retiredReason.length() < 1) {
-			throw new APIException("A reason is required when retiring a person attribute type");
+			throw new APIException("Person.retiring.reason.required", (Object[]) null);
 		}
 		
 		type.setRetired(true);
@@ -366,8 +360,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	@Transactional(readOnly = true)
 	public List<Relationship> getRelationships(Person p, boolean showVoided) throws APIException {
 		if (showVoided) {
-			throw new APIException(
-			        "Voided relationships should be considered gone and unusable.  Don't search for or show them");
+			throw new APIException("Relationship.voided.should.be.considered", (Object[]) null);
 		}
 		
 		return Context.getPersonService().getRelationshipsByPerson(p);
@@ -641,7 +634,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	public Relationship saveRelationship(Relationship relationship) throws APIException {
 		if (relationship.getPersonA().equals(relationship.getPersonB())) {
-			throw new APIException("Person A and Person B can't be the same");
+			throw new APIException("Person.cannot.same", (Object[]) null);
 		}
 		
 		return dao.saveRelationship(relationship);
@@ -761,8 +754,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
 		if (StringUtils.isBlank(relationshipType.getDescription())) {
-			throw new APIException(Context.getMessageSourceService().getMessage("error.required",
-			    new Object[] { Context.getMessageSourceService().getMessage("general.description") }, Context.getLocale()));
+			throw new APIException("error.required", new Object[] { Context.getMessageSourceService().getMessage(
+			    "general.description") });
 		}
 		
 		return dao.saveRelationshipType(relationshipType);
@@ -869,10 +862,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			personType = PERSON_TYPE.PATIENT;
 		} else if ("user".equals(personTypeStr)) {
 			personType = PERSON_TYPE.USER;
-		} else if (personTypeStr == null || personTypeStr.equals("")) {
+		} else if (StringUtils.isEmpty(personTypeStr)) {
 			personType = null;
 		} else {
-			throw new APIException(personTypeStr + " is an invalid value for 'personType' attribute");
+			throw new APIException("Person.invalid.personType.attribute", new Object[] { personTypeStr });
 		}
 		
 		ATTR_VIEW_TYPE attrDisplayType = null;
@@ -885,7 +878,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		} else if ("all".equals(displayTypeStr)) {
 			attrDisplayType = null;
 		} else {
-			throw new APIException(displayTypeStr + " is an invalid value for 'displayType' attribute");
+			throw new APIException("Person.invalid.displayType.attribute", new Object[] { displayTypeStr });
 		}
 		
 		return Context.getPersonService().getPersonAttributeTypes(personType, attrDisplayType);
@@ -1072,8 +1065,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public PersonMergeLog savePersonMergeLog(PersonMergeLog personMergeLog) throws SerializationException, APIException {
 		//verify required fields
 		if (Context.getSerializationService().getDefaultSerializer() == null) {
-			throw new APIException(
-			        "A default serializer was not found. Cannot proceed without at least one installed serializer");
+			throw new APIException("serializer.default.not.found", (Object[]) null);
 		}
 		log.debug("Auditing merging of non-preferred person " + personMergeLog.getLoser().getUuid()
 		        + " with preferred person " + personMergeLog.getWinner().getId());
@@ -1094,7 +1086,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public PersonMergeLog getPersonMergeLogByUuid(String uuid, boolean deserialize) throws SerializationException,
 	        APIException {
 		if (uuid == null) {
-			throw new APIException("UUID cannot be null");
+			throw new APIException("uuid.cannot.null", (Object[]) null);
 		}
 		PersonMergeLog personMergeLog = dao.getPersonMergeLogByUuid(uuid);
 		//deserialize if requested
@@ -1198,7 +1190,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException {
 		if (retiredReason == null || retiredReason.length() < 1) {
-			throw new APIException("A reason is required when retiring a relationship type");
+			throw new APIException("Relationship.retiring.reason.required", (Object[]) null);
 		}
 		
 		type.setRetired(true);

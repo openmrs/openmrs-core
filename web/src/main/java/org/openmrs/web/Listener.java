@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web;
 
@@ -57,6 +53,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
@@ -75,6 +72,8 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoader implements ServletContextListener { // extends ContextLoaderListener {
 
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	private static boolean runtimePropertiesFound = false;
 	
 	private static Throwable errorAtStartup = null;
@@ -297,11 +296,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				log.error(e);
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
 		}
 		
 		// trim off initial slash if it exists
@@ -515,6 +514,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *
 	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(javax.servlet.ServletContextEvent)
 	 */
+	@SuppressWarnings("squid:S1215")
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
 		
@@ -531,7 +531,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			if (!"contextDAO is null".equals(e.getMessage())) {
 				// not using log.error here so it can be garbage collected
 				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
-				e.printStackTrace();
+				log.error(e);
 			}
 		}
 		finally {
@@ -564,7 +564,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 		catch (Exception e) {
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
-			e.printStackTrace();
+			log.error(e);
 		}
 		
 		MemoryLeakUtil.shutdownMysqlCancellationTimer();
@@ -575,6 +575,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		LogManager.shutdown();
 		
 		// just to make things nice and clean.
+		// Suppressing sonar issue squid:S1215
 		System.gc();
 		System.gc();
 	}
@@ -623,6 +624,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				WebModuleUtil.refreshWAC(servletContext, true, null);
 			}
 			catch (ModuleMustStartException ex) {
+				// pass this up to the calling method so that openmrs loading stops
+				throw ex;
+			}
+			catch (BeanCreationException ex) {
 				// pass this up to the calling method so that openmrs loading stops
 				throw ex;
 			}

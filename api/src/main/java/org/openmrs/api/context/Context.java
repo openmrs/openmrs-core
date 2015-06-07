@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.context;
 
@@ -22,7 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.WeakHashMap;
-
+import java.util.Arrays;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -41,7 +37,6 @@ import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.DataSetService;
 import org.openmrs.api.DatatypeService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
@@ -54,7 +49,6 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
@@ -73,7 +67,6 @@ import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
-import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
@@ -84,9 +77,8 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.aop.Advisor;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
@@ -169,9 +161,9 @@ public class Context {
 	 * 
 	 * @return ContextDAO
 	 */
-	private static ContextDAO getContextDAO() {
+	static ContextDAO getContextDAO() {
 		if (contextDAO == null) {
-			throw new APIException("contextDAO is null");
+			throw new APIException("error.context.null", (Object[]) null);
 		}
 		return contextDAO;
 	}
@@ -241,7 +233,7 @@ public class Context {
 		Object[] arr = userContextHolder.get();
 		
 		if (log.isTraceEnabled()) {
-			log.trace("Getting user context " + arr + " from userContextHolder " + userContextHolder);
+			log.trace("Getting user context " + Arrays.toString(arr) + " from userContextHolder " + userContextHolder);
 		}
 		
 		if (arr == null) {
@@ -476,33 +468,6 @@ public class Context {
 	 */
 	public static SerializationService getSerializationService() {
 		return getServiceContext().getSerializationService();
-	}
-	
-	/**
-	 * @return report service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public static ReportService getReportService() {
-		return getServiceContext().getReportService();
-	}
-	
-	/**
-	 * @return report object service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public static ReportObjectService getReportObjectService() {
-		return getServiceContext().getReportObjectService();
-	}
-	
-	/**
-	 * @return dataset service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public static DataSetService getDataSetService() {
-		return getServiceContext().getDataSetService();
 	}
 	
 	/**
@@ -797,6 +762,7 @@ public class Context {
 	 */
 	public static void closeSessionWithCurrentUser() {
 		getContextDAO().closeSession();
+		;
 	}
 	
 	/**
@@ -1130,6 +1096,11 @@ public class Context {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES);
 		}
+
+		// setting default validation rule
+		AdministrationService as = Context.getAdministrationService();
+		Boolean disableValidation = Boolean.valueOf(as.getGlobalProperty(OpenmrsConstants.GP_DISABLE_VALIDATION, "false"));
+		ValidateUtil.setDisableValidation(disableValidation);
 	}
 	
 	/**
@@ -1311,7 +1282,7 @@ public class Context {
 	
 	/**
 	 * @since 1.9
-	 * @see ServiceCotext#getDatatypeService()
+	 * @see ServiceContext#getDatatypeService()
 	 */
 	public static DatatypeService getDatatypeService() {
 		return getServiceContext().getDatatypeService();

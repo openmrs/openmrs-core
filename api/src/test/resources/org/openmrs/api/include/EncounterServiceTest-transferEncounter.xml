@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <!-- Patient with id = 200 -->
+    <person person_id="200" gender="" birthdate="1948-01-01 00:00:00.0" birthdate_estimated="0" dead="0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="bed9239a-8dfd-11e0-9188-705ab6a580e0"/>
+    <person_name person_id="200" person_name_id="101" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" given_name="qwerty" middle_name="O" family_name="One" uuid="d8744a76-90de-11e0-9c16-705ab6a580e0"/>
+    <patient patient_id="200" creator="1" date_created="2005-09-22 00:00:00.0" voided="0" />
+    <!-- Patient with id = 201 -->
+    <person person_id="201" gender="" birthdate="1948-01-01 00:00:00.0" birthdate_estimated="0" dead="0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="aed9239a-8dfd-11e0-9188-705ab6a580e0"/>
+    <person_name person_id="201" person_name_id="201" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" given_name="qwerty" middle_name="O" family_name="Two" uuid="a8744a76-90de-11e0-9c16-705ab6a580e0"/>
+    <patient patient_id="201" creator="1" date_created="2005-09-22 00:00:00.0" voided="0" />
+    <!-- Visits -->
+    <visit visit_id="200" visit_type_id="2" date_started="2001-01-01 00:00:00.0" patient_id="200" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="8fffd6b9-0970-4967-88c7-0b7b50f12ab9"/>
+    <visit visit_id="201" visit_type_id="2" date_started="2001-01-01 00:00:00.0" patient_id="200" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="afffd6b9-0970-4967-88c7-0b7b50f12ab9"/>
+    <!-- Forms -->
+    <form form_id="200" name="Basic Form" version="0.1" build="0" published="0" description="Test form" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false" uuid="aa45c87e-e43d-42ff-83c7-e70a229fa99d"/>
+    <!-- Encounters -->
+    <encounter encounter_id="200" visit_id="200" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="200" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="03c4fe3c-90df-11e0-9c16-705ab6a580e0"/>
+    <encounter encounter_id="201" visit_id="201" form_id="200" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="200" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="a3c4fe3c-90df-11e0-9c16-705ab6a580e0"/>
+    <!-- Orders -->
+    <orders order_id="201" order_type_id="17" order_number="2" urgency="ROUTINE" patient_id="200" encounter_id="201" concept_id="1" date_activated="2012-08-19 00:00:00.0" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="a1bc39d2-9a62-46b1-9df6-c35d3cb29e08" order_action="NEW" care_setting="1"/>
+    <!-- Obs -->
+    <obs obs_id="201" order_id="201" person_id="200" encounter_id="201" concept_id="5089" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="false" uuid="a0b5fbfb-6c8b-43fd-918d-41d578d571ec"/>
+    <obs obs_id="202" order_id="201" person_id="200" encounter_id="201" concept_id="5497" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="2.0" creator="1" date_created="2006-02-11 15:57:35.0" voided="false" uuid="a6d6835c-c038-4ca1-bead-4bfa36bd7fa0"/>
+
+    <encounter_provider encounter_provider_id="2" encounter_id="201" provider_id="2" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="c92be2b5-b456-4c3b-9bab-5f8c01ae125a" />
+</dataset>

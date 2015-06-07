@@ -1,28 +1,28 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
@@ -50,7 +50,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public Location saveLocation(Location location) {
 		if (location.getChildLocations() != null && location.getLocationId() != null) {
 			// hibernate has a problem updating child collections
-			// if the parent object was already saved so we do it 
+			// if the parent object was already saved so we do it
 			// explicitly here
 			for (Location child : location.getChildLocations()) {
 				if (child.getLocationId() == null) {
@@ -318,5 +318,34 @@ public class HibernateLocationDAO implements LocationDAO {
 	public LocationAttributeType getLocationAttributeTypeByName(String name) {
 		return (LocationAttributeType) sessionFactory.getCurrentSession().createCriteria(LocationAttributeType.class).add(
 		    Restrictions.eq("name", name)).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationsHavingAllTags(java.util.List)
+	 */
+	@Override
+	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) {
+		tags.removeAll(Collections.singleton(null));
+		
+		DetachedCriteria numberOfMatchingTags = DetachedCriteria.forClass(Location.class, "alias").createAlias("alias.tags",
+		    "locationTag").add(Restrictions.in("locationTag.locationTagId", getLocationTagIds(tags))).setProjection(
+		    Projections.rowCount()).add(Restrictions.eqProperty("alias.locationId", "outer.locationId"));
+		
+		return sessionFactory.getCurrentSession().createCriteria(Location.class, "outer").add(
+		    Restrictions.eq("retired", false)).add(Subqueries.eq(new Long(tags.size()), numberOfMatchingTags)).list();
+	}
+	
+	/**
+	 * Extract locationTagIds from the list of LocationTag objects provided.
+	 *
+	 * @param tags
+	 * @return
+	 */
+	private List<Integer> getLocationTagIds(List<LocationTag> tags) {
+		List<Integer> locationTagIds = new ArrayList<Integer>();
+		for (LocationTag tag : tags) {
+			locationTagIds.add(tag.getLocationTagId());
+		}
+		return locationTagIds;
 	}
 }

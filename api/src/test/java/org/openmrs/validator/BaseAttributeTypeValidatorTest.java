@@ -1,3 +1,12 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
 package org.openmrs.validator;
 
 import org.junit.Assert;
@@ -103,5 +112,36 @@ public class BaseAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		attributeType.setDatatypeConfig("[a-z]+");
 		validator.validate(attributeType, errors);
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
+	 * @verifies pass validation if field lengths are correct
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		attributeType.setName("name");
+		attributeType.setMinOccurs(1);
+		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
+		attributeType.setDatatypeConfig("[a-z]+");
+		attributeType.setHandlerConfig("HandlerConfig");
+		validator.validate(attributeType, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see BaseAttributeTypeValidator#validate(Object,Errors)
+	 * @verifies fail validation if field lengths are not correct
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		attributeType.setName("name");
+		attributeType.setMinOccurs(1);
+		attributeType.setDatatypeClassname(RegexValidatedTextDatatype.class.getName());
+		attributeType.setDatatypeConfig(new String(new char[66000]));
+		attributeType.setHandlerConfig(new String(new char[66000]));
+		validator.validate(attributeType, errors);
+		Assert.assertTrue(errors.hasFieldErrors("datatypeConfig"));
+		Assert.assertTrue(errors.hasFieldErrors("handlerConfig"));
 	}
 }

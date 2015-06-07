@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -26,12 +22,7 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.cohort.CohortDefinition;
-import org.openmrs.report.EvaluationContext;
-import org.openmrs.reporting.PatientCharacteristicFilter;
-import org.openmrs.reporting.PatientSearch;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.Verifies;
 
 /**
@@ -54,23 +45,6 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeAllTests() throws Exception {
 		service = Context.getCohortService();
-	}
-	
-	/**
-	 * @see {@link CohortService#evaluate(CohortDefinition,EvaluationContext)}
-	 */
-	@Test
-	@SkipBaseSetup
-	@Verifies(value = "should return all patients with blank patient search cohort definition provider", method = "evaluate(CohortDefinition,EvaluationContext)")
-	public void evaluate_shouldReturnAllPatientsWithBlankPatientSearchCohortDefinitionProvider() throws Exception {
-		initializeInMemoryDatabase();
-		executeDataSet(CREATE_PATIENT_XML);
-		authenticate();
-		
-		CohortDefinition def = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
-		Cohort result = service.evaluate(def, null);
-		assertNotNull("Should not return null", result);
-		assertEquals("Should return one member", 1, result.size());
 	}
 	
 	/**

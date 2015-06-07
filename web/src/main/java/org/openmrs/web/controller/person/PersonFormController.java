@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.person;
 
@@ -56,6 +52,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -65,18 +62,18 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * This class controls the generic person properties (address, name, attributes). The Patient and
  * User form controllers extend this class.
- *
+ * 
  * @see org.openmrs.web.controller.patient.PatientFormController
  */
 public class PersonFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected static final Log log = LogFactory.getLog(PersonFormController.class);
+	private static final Log log = LogFactory.getLog(PersonFormController.class);
 	
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
 	 * are expected
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
@@ -130,7 +127,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Redirects to the patient form if the given personId points to a patient.
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException)
 	 */
@@ -151,7 +148,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Redirects to the patient form if the given personId points to a patient.
-	 *
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException,
 	 *      java.util.Map)
@@ -225,20 +222,20 @@ public class PersonFormController extends SimpleFormController {
 		String action = request.getParameter("action");
 		PersonService ps = Context.getPersonService();
 		
-		String linkedProviders = "";
+		StringBuilder linkedProviders = new StringBuilder();
 		if (action.equals(msa.getMessage("Person.delete")) || action.equals(msa.getMessage("Person.void"))) {
 			Collection<Provider> providerCollection = Context.getProviderService().getProvidersByPerson(person);
 			if (providerCollection != null && !providerCollection.isEmpty()) {
 				for (Provider provider : providerCollection) {
-					linkedProviders = linkedProviders + provider.getName() + ", ";
+					linkedProviders.append(provider.getName() + ", ");
 				}
-				linkedProviders = linkedProviders.substring(0, linkedProviders.length() - 2);
+				linkedProviders = new StringBuilder(linkedProviders.substring(0, linkedProviders.length() - 2));
 			}
 		}
-		
+		String linkedProvidersString = linkedProviders.toString();
 		if (action.equals(msa.getMessage("Person.delete"))) {
 			try {
-				if (!linkedProviders.isEmpty()) {
+				if (!linkedProvidersString.isEmpty()) {
 					errors.reject(Context.getMessageSourceService().getMessage("Person.cannot.delete.linkedTo.providers")
 					        + " " + linkedProviders);
 				}
@@ -277,7 +274,7 @@ public class PersonFormController extends SimpleFormController {
 				voidReason = msa.getMessage("PersonForm.default.voidReason", null, "Voided from person form", Context
 				        .getLocale());
 			}
-			if (linkedProviders.isEmpty()) {
+			if (linkedProvidersString.isEmpty()) {
 				ps.voidPerson(person, voidReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Person.voided");
 			} else {
@@ -417,7 +414,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person attributes based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param errors
 	 * @param person
@@ -463,7 +460,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person names based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param person
 	 */
@@ -537,7 +534,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Updates person addresses based on request parameters
-	 *
+	 * 
 	 * @param request
 	 * @param person
 	 * @param errors
@@ -567,80 +564,50 @@ public class PersonFormController extends SimpleFormController {
 		        || add4s != null || startDates != null || endDates != null) {
 			int maxAddrs = 0;
 			
-			if (add1s != null) {
-				if (add1s.length > maxAddrs) {
-					maxAddrs = add1s.length;
-				}
+			if (add1s != null && add1s.length > maxAddrs) {
+				maxAddrs = add1s.length;
 			}
-			if (add2s != null) {
-				if (add2s.length > maxAddrs) {
-					maxAddrs = add2s.length;
-				}
+			if (add2s != null && add2s.length > maxAddrs) {
+				maxAddrs = add2s.length;
 			}
-			if (cities != null) {
-				if (cities.length > maxAddrs) {
-					maxAddrs = cities.length;
-				}
+			if (cities != null && cities.length > maxAddrs) {
+				maxAddrs = cities.length;
 			}
-			if (states != null) {
-				if (states.length > maxAddrs) {
-					maxAddrs = states.length;
-				}
+			if (states != null && states.length > maxAddrs) {
+				maxAddrs = states.length;
 			}
-			if (countries != null) {
-				if (countries.length > maxAddrs) {
-					maxAddrs = countries.length;
-				}
+			if (countries != null && countries.length > maxAddrs) {
+				maxAddrs = countries.length;
 			}
-			if (lats != null) {
-				if (lats.length > maxAddrs) {
-					maxAddrs = lats.length;
-				}
+			if (lats != null && lats.length > maxAddrs) {
+				maxAddrs = lats.length;
 			}
-			if (longs != null) {
-				if (longs.length > maxAddrs) {
-					maxAddrs = longs.length;
-				}
+			if (longs != null && longs.length > maxAddrs) {
+				maxAddrs = longs.length;
 			}
-			if (pCodes != null) {
-				if (pCodes.length > maxAddrs) {
-					maxAddrs = pCodes.length;
-				}
+			if (pCodes != null && pCodes.length > maxAddrs) {
+				maxAddrs = pCodes.length;
 			}
-			if (counties != null) {
-				if (counties.length > maxAddrs) {
-					maxAddrs = counties.length;
-				}
+			if (counties != null && counties.length > maxAddrs) {
+				maxAddrs = counties.length;
 			}
-			if (add3s != null) {
-				if (add3s.length > maxAddrs) {
-					maxAddrs = add3s.length;
-				}
+			if (add3s != null && add3s.length > maxAddrs) {
+				maxAddrs = add3s.length;
 			}
-			if (add6s != null) {
-				if (add6s.length > maxAddrs) {
-					maxAddrs = add6s.length;
-				}
+			if (add6s != null && add6s.length > maxAddrs) {
+				maxAddrs = add6s.length;
 			}
-			if (add5s != null) {
-				if (add5s.length > maxAddrs) {
-					maxAddrs = add5s.length;
-				}
+			if (add5s != null && add5s.length > maxAddrs) {
+				maxAddrs = add5s.length;
 			}
-			if (add4s != null) {
-				if (add4s.length > maxAddrs) {
-					maxAddrs = add4s.length;
-				}
+			if (add4s != null && add4s.length > maxAddrs) {
+				maxAddrs = add4s.length;
 			}
-			if (startDates != null) {
-				if (startDates.length > maxAddrs) {
-					maxAddrs = startDates.length;
-				}
+			if (startDates != null && startDates.length > maxAddrs) {
+				maxAddrs = startDates.length;
 			}
-			if (endDates != null) {
-				if (endDates.length > maxAddrs) {
-					maxAddrs = endDates.length;
-				}
+			if (endDates != null && endDates.length > maxAddrs) {
+				maxAddrs = endDates.length;
 			}
 			
 			log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
@@ -697,7 +664,13 @@ public class PersonFormController extends SimpleFormController {
 				}
 				
 				//check if all required addres fields are filled
-				new PersonAddressValidator().validate(pa, errors);
+				Errors addressErrors = new BindException(pa, "personAddress");
+				new PersonAddressValidator().validate(pa, addressErrors);
+				if (addressErrors.hasErrors()) {
+					for (ObjectError error : addressErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				if (errors.hasErrors()) {
 					return;
 				}
@@ -711,7 +684,13 @@ public class PersonFormController extends SimpleFormController {
 				currentAddress = addresses.next();
 				
 				//check if all required addres fields are filled
-				new PersonAddressValidator().validate(currentAddress, errors);
+				Errors addressErrors = new BindException(currentAddress, "personAddress");
+				new PersonAddressValidator().validate(currentAddress, addressErrors);
+				if (addressErrors.hasErrors()) {
+					for (ObjectError error : addressErrors.getAllErrors()) {
+						errors.reject(error.getCode(), error.getArguments(), "");
+					}
+				}
 				if (errors.hasErrors()) {
 					return;
 				}
@@ -732,7 +711,7 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Setup the person object. Should be called by the
 	 * PersonFormController.formBackingObject(request)
-	 *
+	 * 
 	 * @param person
 	 * @return
 	 */
@@ -758,7 +737,7 @@ public class PersonFormController extends SimpleFormController {
 	/**
 	 * Setup the reference map object. Should be called by the
 	 * PersonFormController.referenceData(...)
-	 *
+	 * 
 	 * @param person
 	 * @return
 	 */
@@ -800,7 +779,7 @@ public class PersonFormController extends SimpleFormController {
 	
 	/**
 	 * Add the given name, gender, and birthdate/age to the given Person
-	 *
+	 * 
 	 * @param <P> Should be a Patient or User object
 	 * @param person
 	 * @param name
@@ -815,7 +794,7 @@ public class PersonFormController extends SimpleFormController {
 		person.setGender(gender);
 		Date birthdate = null;
 		boolean birthdateEstimated = false;
-		if (date != null && !date.equals("")) {
+		if (StringUtils.isNotEmpty(date)) {
 			try {
 				// only a year was passed as parameter
 				if (date.length() < 5) {
@@ -835,7 +814,7 @@ public class PersonFormController extends SimpleFormController {
 			catch (ParseException e) {
 				log.debug("Error getting date from birthdate", e);
 			}
-		} else if (age != null && !age.equals("")) {
+		} else if (age != null && !"".equals(age)) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			Integer d = c.get(Calendar.YEAR);

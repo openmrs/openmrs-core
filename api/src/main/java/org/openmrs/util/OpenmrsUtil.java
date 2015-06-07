@@ -1,20 +1,14 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -56,10 +50,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
@@ -107,8 +100,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
-import org.openmrs.cohort.CohortSearchHistory;
-import org.openmrs.logic.LogicCriteria;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.patient.IdentifierValidator;
@@ -121,12 +112,6 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
-import org.openmrs.report.EvaluationContext;
-import org.openmrs.reporting.CohortFilter;
-import org.openmrs.reporting.PatientFilter;
-import org.openmrs.reporting.PatientSearch;
-import org.openmrs.reporting.PatientSearchReportObject;
-import org.openmrs.reporting.SearchArgument;
 import org.openmrs.xml.OpenmrsCycleStrategy;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.load.Persister;
@@ -460,7 +445,7 @@ public class OpenmrsUtil {
 		Set<Class<?>> classes = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(HasAddOnStartupPrivileges.class);
 		
 		for (Class cls : classes) {
-			Field flds[] = cls.getDeclaredFields();
+			Field[] flds = cls.getDeclaredFields();
 			for (Field fld : flds) {
 				String fieldValue = null;
 				
@@ -499,7 +484,7 @@ public class OpenmrsUtil {
 	public static Map<String, String> getCoreRoles() {
 		Map<String, String> roles = new HashMap<String, String>();
 		
-		Field flds[] = RoleConstants.class.getDeclaredFields();
+		Field[] flds = RoleConstants.class.getDeclaredFields();
 		for (Field fld : flds) {
 			String fieldValue = null;
 			
@@ -663,7 +648,7 @@ public class OpenmrsUtil {
 		if (logLevel != null) {
 			
 			// the default log level is org.openmrs
-			if (logClass == null || "".equals(logClass)) {
+			if (StringUtils.isEmpty(logClass)) {
 				logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
 			}
 			
@@ -916,7 +901,7 @@ public class OpenmrsUtil {
 				Integer conceptId = null;
 				
 				try {
-					conceptId = new Integer(token);
+					conceptId = Integer.valueOf(token);
 				}
 				catch (NumberFormatException nfe) {
 					conceptId = null;
@@ -969,7 +954,7 @@ public class OpenmrsUtil {
 		Integer conceptId = null;
 		
 		try {
-			conceptId = new Integer(idOrName);
+			conceptId = Integer.valueOf(idOrName);
 		}
 		catch (NumberFormatException nfe) {
 			conceptId = null;
@@ -1364,7 +1349,7 @@ public class OpenmrsUtil {
 		}
 		
 		if (!folder.isDirectory()) {
-			throw new APIException("'" + folder.getAbsolutePath() + "' should be a directory but it is not");
+			throw new APIException("should.be.directory", new Object[] { folder.getAbsolutePath() });
 		}
 		
 		return folder;
@@ -1637,14 +1622,6 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
-		return toPatientFilter(search, history, null);
-	}
-	
-	/**
 	 * Takes a String (e.g. a user-entered one) and parses it into an object of the specified class
 	 * 
 	 * @param string
@@ -1738,224 +1715,6 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Uses reflection to translate a PatientSearch into a PatientFilter
-	 * 
-	 * @deprecated see reportingcompatibility module
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history,
-	        EvaluationContext evalContext) {
-		if (search.isSavedSearchReference()) {
-			PatientSearch ps = ((PatientSearchReportObject) Context.getReportObjectService().getReportObject(
-			    search.getSavedSearchId())).getPatientSearch();
-			return toPatientFilter(ps, history, evalContext);
-		} else if (search.isSavedFilterReference()) {
-			return Context.getReportObjectService().getPatientFilterById(search.getSavedFilterId());
-		} else if (search.isSavedCohortReference()) {
-			Cohort c = Context.getCohortService().getCohort(search.getSavedCohortId());
-			// to prevent lazy loading exceptions, cache the member ids here
-			if (c != null) {
-				c.getMemberIds().size();
-			}
-			return new CohortFilter(c);
-		} else if (search.isComposition()) {
-			if (history == null && search.requiresHistory()) {
-				throw new IllegalArgumentException("You can't evaluate this search without a history");
-			} else {
-				return search.cloneCompositionAsFilter(history, evalContext);
-			}
-		} else {
-			Class clz = search.getFilterClass();
-			if (clz == null) {
-				throw new IllegalArgumentException("search must be saved, composition, or must have a class specified");
-			}
-			log.debug("About to instantiate " + clz);
-			PatientFilter pf = null;
-			try {
-				pf = (PatientFilter) clz.newInstance();
-			}
-			catch (Exception ex) {
-				log.error("Couldn't instantiate a " + search.getFilterClass(), ex);
-				return null;
-			}
-			Class[] stringSingleton = { String.class };
-			if (search.getArguments() != null) {
-				for (SearchArgument sa : search.getArguments()) {
-					if (log.isDebugEnabled()) {
-						log.debug("Looking at (" + sa.getPropertyClass() + ") " + sa.getName() + " -> " + sa.getValue());
-					}
-					PropertyDescriptor pd = null;
-					try {
-						pd = new PropertyDescriptor(sa.getName(), clz);
-					}
-					catch (IntrospectionException ex) {
-						log.error("Error while examining property " + sa.getName(), ex);
-						continue;
-					}
-					Class<?> realPropertyType = pd.getPropertyType();
-					
-					// instantiate the value of the search argument
-					String valueAsString = sa.getValue();
-					String testForExpression = search.getArgumentValue(sa.getName());
-					if (testForExpression != null) {
-						log.debug("Setting " + sa.getName() + " to: " + testForExpression);
-						if (evalContext != null && EvaluationContext.isExpression(testForExpression)) {
-							Object evaluated = evalContext.evaluateExpression(testForExpression);
-							if (evaluated != null) {
-								if (evaluated instanceof Date) {
-									valueAsString = Context.getDateFormat().format((Date) evaluated);
-								} else {
-									valueAsString = evaluated.toString();
-								}
-							}
-							log.debug("Evaluated " + sa.getName() + " to: " + valueAsString);
-						}
-					}
-					
-					Object value = null;
-					Class<?> valueClass = sa.getPropertyClass();
-					try {
-						// If there's a valueOf(String) method, just use that
-						// (will cover at least String, Integer, Double,
-						// Boolean)
-						Method valueOfMethod = null;
-						try {
-							valueOfMethod = valueClass.getMethod("valueOf", stringSingleton);
-						}
-						catch (NoSuchMethodException ex) {}
-						if (valueOfMethod != null) {
-							Object[] holder = { valueAsString };
-							value = valueOfMethod.invoke(pf, holder);
-						} else if (realPropertyType.isEnum()) {
-							// Special-case for enum types
-							List<Enum> constants = Arrays.asList((Enum[]) realPropertyType.getEnumConstants());
-							for (Enum e : constants) {
-								if (e.toString().equals(valueAsString)) {
-									value = e;
-									break;
-								}
-							}
-						} else if (String.class.equals(valueClass)) {
-							value = valueAsString;
-						} else if (Location.class.equals(valueClass)) {
-							LocationEditor ed = new LocationEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (Concept.class.equals(valueClass)) {
-							ConceptEditor ed = new ConceptEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (Program.class.equals(valueClass)) {
-							ProgramEditor ed = new ProgramEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (ProgramWorkflowState.class.equals(valueClass)) {
-							ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (EncounterType.class.equals(valueClass)) {
-							EncounterTypeEditor ed = new EncounterTypeEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (Form.class.equals(valueClass)) {
-							FormEditor ed = new FormEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (Drug.class.equals(valueClass)) {
-							DrugEditor ed = new DrugEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (PersonAttributeType.class.equals(valueClass)) {
-							PersonAttributeTypeEditor ed = new PersonAttributeTypeEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (Cohort.class.equals(valueClass)) {
-							CohortEditor ed = new CohortEditor();
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (Date.class.equals(valueClass)) {
-							// TODO: this uses the date format from the current
-							// session, which could cause problems if the user
-							// changes it after searching.
-							DateFormat df = Context.getDateFormat(); // new
-							// SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()),
-							// Context.getLocale());
-							CustomDateEditor ed = new CustomDateEditor(df, true, 10);
-							ed.setAsText(valueAsString);
-							value = ed.getValue();
-						} else if (LogicCriteria.class.equals(valueClass)) {
-							value = Context.getLogicService().parseString(valueAsString);
-						} else {
-							// TODO: Decide whether this is a hack. Currently
-							// setting Object arguments with a String
-							value = valueAsString;
-						}
-					}
-					catch (Exception ex) {
-						log.error("error converting \"" + valueAsString + "\" to " + valueClass, ex);
-						continue;
-					}
-					
-					if (value != null) {
-						
-						if (realPropertyType.isAssignableFrom(valueClass)) {
-							log.debug("setting value of " + sa.getName() + " to " + value);
-							try {
-								pd.getWriteMethod().invoke(pf, value);
-							}
-							catch (Exception ex) {
-								log.error(
-								    "Error setting value of " + sa.getName() + " to " + sa.getValue() + " -> " + value, ex);
-								continue;
-							}
-						} else if (Collection.class.isAssignableFrom(realPropertyType)) {
-							log.debug(sa.getName() + " is a Collection property");
-							// if realPropertyType is a collection, add this
-							// value to it (possibly after instantiating)
-							try {
-								Collection collection = (Collection) pd.getReadMethod().invoke(pf, (Object[]) null);
-								if (collection == null) {
-									// we need to instantiate this collection.
-									// I'm going with the following rules, which
-									// should be rethought:
-									// SortedSet -> TreeSet
-									// Set -> HashSet
-									// Otherwise -> ArrayList
-									if (SortedSet.class.isAssignableFrom(realPropertyType)) {
-										collection = new TreeSet();
-										log.debug("instantiated a TreeSet");
-										pd.getWriteMethod().invoke(pf, collection);
-									} else if (Set.class.isAssignableFrom(realPropertyType)) {
-										collection = new HashSet();
-										log.debug("instantiated a HashSet");
-										pd.getWriteMethod().invoke(pf, collection);
-									} else {
-										collection = new ArrayList();
-										log.debug("instantiated an ArrayList");
-										pd.getWriteMethod().invoke(pf, collection);
-									}
-								}
-								collection.add(value);
-							}
-							catch (Exception ex) {
-								log.error("Error instantiating collection for property " + sa.getName() + " whose class is "
-								        + realPropertyType, ex);
-								continue;
-							}
-						} else {
-							log.error(pf.getClass() + " . " + sa.getName() + " should be " + realPropertyType
-							        + " but is given as " + valueClass);
-						}
-					}
-				}
-			}
-			log.debug("Returning " + pf);
-			return pf;
-		}
-	}
-	
-	/**
 	 * Loops over the collection to check to see if the given object is in that collection. This
 	 * method <i>only</i> uses the .equals() method for comparison. This should be used in the
 	 * patient/person objects on their collections. Their collections are SortedSets which use the
@@ -2035,7 +1794,7 @@ public class OpenmrsUtil {
 	 * @return file new file that is able to be written to
 	 */
 	public static File getOutFile(File dir, Date date, User user) {
-		
+		Random gen = new Random();
 		File outFile;
 		do {
 			// format to print date in filenmae
@@ -2059,7 +1818,7 @@ public class OpenmrsUtil {
 			}
 			
 			// the end of the filename is a randome number between 0 and 10000
-			filename.append((int) (Math.random() * 10000));
+			filename.append(gen.nextInt() * 10000);
 			filename.append(".xml");
 			
 			outFile = new File(dir, filename.toString());
@@ -2078,9 +1837,10 @@ public class OpenmrsUtil {
 	 * @return unique string
 	 */
 	public static String generateUid(Integer size) {
+		Random gen = new Random();
 		StringBuffer sb = new StringBuffer(size);
 		for (int i = 0; i < size; i++) {
-			int ch = (int) (Math.random() * 62);
+			int ch = gen.nextInt() * 62;
 			if (ch < 10) {
 				// 0-9
 				sb.append(ch);
@@ -2254,6 +2014,7 @@ public class OpenmrsUtil {
 	 * @param props the properties object to write into
 	 * @param input the input stream to read from
 	 */
+	@Deprecated
 	public static void loadProperties(Properties props, InputStream input) {
 		try {
 			InputStreamReader reader = new InputStreamReader(input, "UTF-8");
@@ -2275,10 +2036,10 @@ public class OpenmrsUtil {
 	 * @param propertyFile the properties file to read
 	 */
 	public static void loadProperties(Properties props, File propertyFile) {
-		InputStream inputStream = null;
+		InputStreamReader reader = null;
 		try {
-			inputStream = new FileInputStream(propertyFile);
-			InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8");
+			InputStream inputStream = new FileInputStream(propertyFile);
+			reader = new InputStreamReader(inputStream, "UTF-8");
 			props.load(reader);
 		}
 		catch (FileNotFoundException fnfe) {
@@ -2292,30 +2053,14 @@ public class OpenmrsUtil {
 		}
 		finally {
 			try {
-				if (inputStream != null) {
-					inputStream.close();
+				if (reader != null) {
+					reader.close();
 				}
 			}
 			catch (IOException ioe) {
 				log.error("Unable to close properties file " + ioe);
 			}
 		}
-	}
-	
-	/**
-	 * By default java will escape colons and equal signs when writing properites files. <br/>
-	 * <br/>
-	 * This method turns escaped colons into colons and escaped equal signs into just equal signs.
-	 * 
-	 * @param value the value portion of a properties file to fix
-	 * @return the value with escaped characters fixed
-	 */
-	private static String fixPropertiesValueString(String value) {
-		String returnString = value.replace("\n", "");
-		returnString = returnString.replace("\\:", ":");
-		returnString = returnString.replace("\\=", "=");
-		
-		return returnString;
 	}
 	
 	/**

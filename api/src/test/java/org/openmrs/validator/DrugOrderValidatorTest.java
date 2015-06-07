@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -37,12 +33,15 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.SimpleDosingInstructions;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.OrderUtilTest;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -50,6 +49,10 @@ import org.springframework.validation.Errors;
  * Tests methods on the {@link DrugOrderValidator} class.
  */
 public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
+	
+	@Autowired
+	@Qualifier("adminService")
+	AdministrationService adminService;
 	
 	/**
 	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
@@ -455,8 +458,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setDrug(drug);
 		
 		Errors errors = new BindException(order, "order");
-		new DrugOrderValidator().validate(order, errors);
-		
+		adminService.validate(order, errors);
 		Assert.assertTrue(errors.hasFieldErrors("concept"));
 	}
 	
@@ -599,6 +601,8 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveOrder_shouldPassDrugOrderWithoutADrugWhenDrugOrderRequireDrugGBIsNotSet() throws Exception {
+		deleteAllData();
+		baseSetupWithStandardDataAndAuthentication();
 		Patient patient = Context.getPatientService().getPatient(7);
 		CareSetting careSetting = Context.getOrderService().getCareSetting(2);
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Drug order");
@@ -652,5 +656,80 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		new DrugOrderValidator().validate(order, errors);
 		assertEquals("DrugOrder.error.durationUnitsNotMappedToSnomedCtDurationCode", errors.getFieldError("durationUnits")
 		        .getCode());
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = new Encounter();
+		Patient patient = Context.getPatientService().getPatient(2);
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("Instructions");
+		order.setDosingInstructions("Test Instruction");
+		order.setPatient(patient);
+		encounter.setPatient(patient);
+		order.setEncounter(encounter);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
+		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order.setQuantity(2.00);
+		order.setQuantityUnits(Context.getConceptService().getConcept(51));
+		order.setNumRefills(10);
+		
+		order.setAsNeededCondition("asNeededCondition");
+		order.setBrandName("brandName");
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		DrugOrder order = new DrugOrder();
+		Encounter encounter = new Encounter();
+		Patient patient = Context.getPatientService().getPatient(2);
+		order.setConcept(Context.getConceptService().getConcept(88));
+		order.setOrderer(Context.getProviderService().getProvider(1));
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setInstructions("Instructions");
+		order.setDosingInstructions("Test Instruction");
+		order.setPatient(patient);
+		encounter.setPatient(patient);
+		order.setEncounter(encounter);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+		order.setDateActivated(cal.getTime());
+		order.setAutoExpireDate(new Date());
+		order.setOrderType(Context.getOrderService().getOrderTypeByName("Drug order"));
+		order.setDrug(Context.getConceptService().getDrug(3));
+		order.setCareSetting(Context.getOrderService().getCareSetting(1));
+		order.setQuantity(2.00);
+		order.setQuantityUnits(Context.getConceptService().getConcept(51));
+		order.setNumRefills(10);
+		
+		order
+		        .setAsNeededCondition("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		order
+		        .setBrandName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		Assert.assertTrue(errors.hasFieldErrors("asNeededCondition"));
+		Assert.assertTrue(errors.hasFieldErrors("brandName"));
 	}
 }

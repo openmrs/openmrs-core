@@ -1,21 +1,14 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -144,128 +137,94 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @param concept the concept that will be inserted
 	 */
 	private void insertRowIntoSubclassIfNecessary(Concept concept) {
-		Connection connection = sessionFactory.getCurrentSession().connection();
-		
-		PreparedStatement ps = null;
-		PreparedStatement ps2 = null;
 		
 		// check the concept_numeric table
 		if (concept instanceof ConceptNumeric) {
 			
-			try {
-				ps = connection
-				        .prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_numeric WHERE concept_id = ?)");
-				ps.setInt(1, concept.getConceptId());
-				ps.setInt(2, concept.getConceptId());
-				ps.execute();
+			String select = "SELECT 1 from concept_numeric WHERE concept_id = :conceptId";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(select);
+			query.setInteger("conceptId", concept.getConceptId());
+			
+			// Converting to concept numeric:  A single concept row exists, but concept numeric has not been populated yet.
+			if (query.uniqueResult() == null) {
+				// we have to evict the current concept out of the session because
+				// the user probably had to change the class of this object to get it
+				// to now be a numeric
+				// (must be done before the "insert into...")
+				sessionFactory.getCurrentSession().clear();
 				
-				// Converting to concept numeric:  A single concept row exists, but concept numeric has not been populated yet.
-				if (ps.getResultSet().next()) {
-					// we have to evict the current concept out of the session because
-					// the user probably had to change the class of this object to get it
-					// to now be a numeric
-					// (must be done before the "insert into...")
-					sessionFactory.getCurrentSession().clear();
-					
-					ps2 = connection.prepareStatement("INSERT INTO concept_numeric (concept_id, precise) VALUES (?, false)");
-					ps2.setInt(1, concept.getConceptId());
-					ps2.executeUpdate();
-				}
+				//Just in case this was changed from concept_complex to numeric
+				//We need to add a delete line for each concept sub class that is not concept_numeric
+				deleteSubclassConcept("concept_complex", concept.getConceptId());
+				
+				String insert = "INSERT INTO concept_numeric (concept_id, precise) VALUES (:conceptId, false)";
+				query = sessionFactory.getCurrentSession().createSQLQuery(insert);
+				query.setInteger("conceptId", concept.getConceptId());
+				query.executeUpdate();
+				
+			} else {
 				// Converting from concept numeric:  The concept and concept numeric rows both exist, so we need to delete concept_numeric.
-				else {
-					//concept is changed from numeric to something else
-					// hence row should be deleted from the concept_numeric
-					if (!concept.isNumeric()) {
-						ps2 = connection.prepareStatement("DELETE FROM concept_numeric WHERE concept_id = ?");
-						ps2.setInt(1, concept.getConceptId());
-						ps2.executeUpdate();
-					} else {
-						// it is indeed numeric now... don't delete
-					}
-				}
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this ConceptNumeric is in the concept_numeric table already", e);
-			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-				if (ps2 != null) {
-					try {
-						ps2.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
+				
+				// concept is changed from numeric to something else
+				// hence row should be deleted from the concept_numeric
+				if (!concept.isNumeric()) {
+					deleteSubclassConcept("concept_numeric", concept.getConceptId());
+				} else {
+					// it is indeed numeric now... don't delete
 				}
 			}
 		}
 		// check the concept complex table
 		else if (concept instanceof ConceptComplex) {
 			
-			try {
-				ps = connection
-				        .prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_complex WHERE concept_id = ?)");
-				ps.setInt(1, concept.getConceptId());
-				ps.setInt(2, concept.getConceptId());
-				ps.execute();
+			String select = "SELECT 1 FROM concept_complex WHERE concept_id = :conceptId";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(select);
+			query.setInteger("conceptId", concept.getConceptId());
+			
+			// Converting to concept complex:  A single concept row exists, but concept complex has not been populated yet.
+			if (query.uniqueResult() == null) {
+				// we have to evict the current concept out of the session because
+				// the user probably had to change the class of this object to get it
+				// to now be a ConceptComplex
+				// (must be done before the "insert into...")
+				sessionFactory.getCurrentSession().clear();
 				
-				// Converting to concept complex:  A single concept row exists, but concept complex has not been populated yet.
-				if (ps.getResultSet().next()) {
-					// we have to evict the current concept out of the session because
-					// the user probably had to change the class of this object to get it
-					// to now be a ConceptComplex
-					// (must be done before the "insert into...")
-					sessionFactory.getCurrentSession().clear();
-					
-					// Add an empty row into the concept_complex table
-					ps2 = connection.prepareStatement("INSERT INTO concept_complex (concept_id) VALUES (?)");
-					ps2.setInt(1, concept.getConceptId());
-					ps2.executeUpdate();
-				}
+				//Just in case this was changed from concept_numeric to complex
+				//We need to add a delete line for each concept sub class that is not concept_complex
+				deleteSubclassConcept("concept_numeric", concept.getConceptId());
+				
+				// Add an empty row into the concept_complex table
+				String insert = "INSERT INTO concept_complex (concept_id) VALUES (:conceptId)";
+				query = sessionFactory.getCurrentSession().createSQLQuery(insert);
+				query.setInteger("conceptId", concept.getConceptId());
+				query.executeUpdate();
+				
+			} else {
 				// Converting from concept complex:  The concept and concept complex rows both exist, so we need to delete the concept_complex row.
 				// no stub insert is needed because either a concept row doesn't exist OR a concept_complex row does exist
-				else {
-					// concept is changed from complex to something else
-					// hence row should be deleted from the concept_complex
-					if (!concept.isComplex()) {
-						ps2 = connection.prepareStatement("DELETE FROM concept_complex WHERE concept_id = ?");
-						ps2.setInt(1, concept.getConceptId());
-						ps2.executeUpdate();
-					} else {
-						// it is indeed numeric now... don't delete
-					}
-					
-				}
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this ConceptComplex is in the concept_complex table already", e);
-			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-				if (ps2 != null) {
-					try {
-						ps2.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
+				
+				// concept is changed from complex to something else
+				// hence row should be deleted from the concept_complex
+				if (!concept.isComplex()) {
+					deleteSubclassConcept("concept_complex", concept.getConceptId());
+				} else {
+					// it is indeed numeric now... don't delete
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Deletes a concept from a sub class table
+	 * 
+	 * @param tableName the sub class table name
+	 * @param conceptId the concept id
+	 */
+	private void deleteSubclassConcept(String tableName, Integer conceptId) {
+		String delete = "DELETE FROM " + tableName + " WHERE concept_id = :conceptId";
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(delete);
+		query.setInteger("conceptId", conceptId);
+		query.executeUpdate();
 	}
 	
 	/**
@@ -1025,12 +984,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.createAlias("conceptReferenceTerm", "term");
 		
 		// match the source code to the passed code
-		criteria.add(Restrictions.eq("term.code", code));
+		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+			criteria.add(Restrictions.eq("term.code", code).ignoreCase());
+		} else {
+			criteria.add(Restrictions.eq("term.code", code));
+		}
 		
 		// join to concept reference source and match to the h17Code or source name
 		criteria.createAlias("term.conceptSource", "source");
-		criteria.add(Restrictions.or(Restrictions.eq("source.name", sourceName), Restrictions.eq("source.hl7Code",
-		    sourceName)));
+		if (Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive()) {
+			criteria.add(Restrictions.or(Restrictions.eq("source.name", sourceName).ignoreCase(), Restrictions.eq(
+			    "source.hl7Code", sourceName).ignoreCase()));
+		} else {
+			criteria.add(Restrictions.or(Restrictions.eq("source.name", sourceName), Restrictions.eq("source.hl7Code",
+			    sourceName)));
+		}
 		
 		criteria.createAlias("concept", "concept");
 		
@@ -1544,9 +1512,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (terms.size() == 0) {
 			return null;
 		} else if (terms.size() > 1) {
-			throw new APIException(Context.getMessageSourceService().getMessage(
-			    "ConceptReferenceTerm.foundMultipleTermsWithNameInSource", new Object[] { name, conceptSource.getName() },
-			    null));
+			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithNameInSource", new Object[] { name,
+			        conceptSource.getName() });
 		}
 		return (ConceptReferenceTerm) terms.get(0);
 	}
@@ -1565,9 +1532,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (terms.size() == 0) {
 			return null;
 		} else if (terms.size() > 1) {
-			throw new APIException(Context.getMessageSourceService().getMessage(
-			    "ConceptReferenceTerm.foundMultipleTermsWithCodeInSource", new Object[] { code, conceptSource.getName() },
-			    null));
+			throw new APIException("ConceptReferenceTerm.foundMultipleTermsWithCodeInSource", new Object[] { code,
+			        conceptSource.getName() });
 		}
 		return (ConceptReferenceTerm) terms.get(0);
 	}

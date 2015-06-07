@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <!DOCTYPE hibernate-configuration PUBLIC
 "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
@@ -82,10 +93,6 @@
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InQueue.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InArchive.hbm.xml" />
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7InError.hbm.xml" />
-		
-		<!-- Reporting -->
-		<mapping resource="org/openmrs/reporting/db/hibernate/ReportObject.hbm.xml" />
-		<mapping resource="org/openmrs/reporting/db/hibernate/ReportSchemaXml.hbm.xml" />
 		
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Template.hbm.xml" />

@@ -1,23 +1,19 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
-
 package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
@@ -27,6 +23,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	
@@ -51,14 +50,21 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderValidator#validate(Object,Errors)
+	 * @see ProviderValidator#validate(Object, Errors)
 	 * @verifies be valid if identifier is not set
 	 */
 	@Test
 	public void validate_shouldBeValidIfIdentifierIsNotSet() throws Exception {
 		//given
 		provider.setIdentifier(null);
-		provider.setName("bcj");
+		
+		Person person = new Person();
+		Set<PersonName> personNames = new HashSet<PersonName>(1);
+		PersonName personName = new PersonName();
+		personName.setFamilyName("name");
+		personNames.add(personName);
+		person.setNames(personNames);
+		provider.setPerson(person);
 		
 		//when
 		providerValidator.validate(provider, errors);
@@ -68,7 +74,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderValidator#validate(Object,Errors)
+	 * @see ProviderValidator#validate(Object, Errors)
 	 * @verifies be valid if identifier is set
 	 */
 	@Test
@@ -84,7 +90,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderValidator#validate(Object,Errors)
+	 * @see ProviderValidator#validate(Object, Errors)
 	 * @verifies be invalid if provider is retired and the retired reason is not mentioned
 	 */
 	@Test
@@ -108,15 +114,14 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderValidator#validate(Object,Errors)
-	 * @verifies be invalid if person or name is not set
+	 * @see ProviderValidator#validate(Object, Errors)
+	 * @verifies be invalid if person is not set
 	 */
 	@Test
-	public void validate_shouldBeInvalidIfPersonOrNameIsNotSet() throws Exception {
+	public void validate_shouldBeInvalidIfPersonIsNotSet() throws Exception {
 		//given
 		provider.setIdentifier("id");
 		provider.setPerson(null);
-		provider.setName(null);
 		
 		//when
 		providerValidator.validate(provider, errors);
@@ -128,43 +133,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderValidator#validate(Object,Errors)
-	 * @verifies never have both person and name set
-	 */
-	@Test
-	public void validate_shouldNeverHaveBothPersonAndNameSet() throws Exception {
-		//given
-		provider.setIdentifier("id");
-		provider.setPerson(new Person(1));
-		provider.setName("1");
-		
-		//when
-		providerValidator.validate(provider, errors);
-		
-		//then
-		Assert.assertFalse(errors.hasErrors());
-		Assert.assertFalse(errors.hasFieldErrors("name"));
-	}
-	
-	/**
-	 * @see ProviderValidator#validate(Object,Errors)
-	 * @verifies be valid if only name is set
-	 */
-	@Test
-	public void validate_shouldBeValidIfOnlyNameIsSet() throws Exception {
-		//given
-		provider.setIdentifier("id");
-		provider.setName("1");
-		
-		//when
-		providerValidator.validate(provider, errors);
-		
-		//then
-		Assert.assertFalse(errors.hasErrors());
-	}
-	
-	/**
-	 * @see ProviderValidator#validate(Object,Errors)
+	 * @see ProviderValidator#validate(Object, Errors)
 	 * @verifies be valid if only person is set
 	 */
 	@Test
@@ -181,7 +150,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderValidator#validate(Object,Errors)
+	 * @see ProviderValidator#validate(Object, Errors)
 	 * @verifies reject a provider if it has fewer than min occurs of an attribute
 	 */
 	@Test
@@ -201,7 +170,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderValidator#validate(Object,Errors)
+	 * @see ProviderValidator#validate(Object, Errors)
 	 * @verifies reject a Provider if it has more than max occurs of an attribute
 	 */
 	@Test
@@ -225,7 +194,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 * @see {@link ProviderValidator#validate(Object, Errors)}
 	 */
 	@Test
 	@Verifies(value = "should accept duplicate identifier if the existing provider is not retired", method = "validate(Object,Errors)")
@@ -241,7 +210,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 * @see {@link ProviderValidator#validate(Object, Errors)}
 	 */
 	@Test
 	@Verifies(value = "should accept duplicate identifier if the existing provider is retired", method = "validate(Object,Errors)")
@@ -258,7 +227,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 * @see {@link ProviderValidator#validate(Object, Errors)}
 	 */
 	@Test
 	@Verifies(value = "should accept a duplicate identifier for a new provider which is not retired", method = "validate(Object,Errors)")
@@ -268,14 +237,13 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 		
 		Provider provider = new Provider();
 		provider.setIdentifier(duplicateProvider.getIdentifier());
-		provider.setName("name");
 		
 		providerValidator.validate(provider, errors);
 		Assert.assertFalse(errors.hasFieldErrors("identifier"));
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object,Errors)}
+	 * @see {@link ProviderValidator#validate(Object, Errors)}
 	 */
 	@Test
 	@Verifies(value = "should accept a duplicate identifier for a new provider which is retired", method = "validate(Object,Errors)")
@@ -293,21 +261,43 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see ProviderValidator#validate(Object,Errors)
-	 * @verifies pass if both person and name set for existing provider
+	 * @see {@link ProviderValidator#validate(Object, Errors)}
 	 */
 	@Test
-	public void validate_shouldPassIfBothPersonAndNameSetForExistingProvider() throws Exception {
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Provider provider = new Provider();
+		provider.setIdentifier("identifier");
+		provider.setRetireReason("retireReason");
 		
-		Provider existingProvider = Context.getProviderService().getProvider(1);
+		Person person = new Person();
+		Set<PersonName> personNames = new HashSet<PersonName>(1);
+		PersonName personName = new PersonName();
+		personName.setFamilyName("name");
+		personNames.add(personName);
+		person.setNames(personNames);
+		provider.setPerson(person);
 		
-		Assert.assertFalse(existingProvider.isRetired());
-		
-		existingProvider.setName("name");
-		existingProvider.setPerson(new Person());
-		
-		providerValidator.validate(existingProvider, errors);
-		
+		providerValidator.validate(provider, errors);
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Provider provider = new Provider();
+		provider
+		        .setIdentifier("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		provider
+		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		
+		Errors errors = new BindException(provider, "type");
+		providerValidator.validate(provider, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("identifier"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 }

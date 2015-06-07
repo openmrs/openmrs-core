@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -18,8 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.annotation.Independent;
@@ -454,7 +448,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		}
 		
 		if (child.equals(this)) {
-			throw new APIException("A location cannot be its own child!");
+			throw new APIException("Location.cannot.be.its.own.child", (Object[]) null);
 		}
 		
 		// Traverse all the way up (down?) to the root, then check whether the child is already
@@ -465,9 +459,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		}
 		
 		if (isInHierarchy(child, root)) {
-			throw new APIException("Location hierarchy loop detected! You cannot add: '" + child + "' to the parent: '"
-			        + this
-			        + "' because it is in the parent hierarchy somewhere already and a location cannot be its own parent.");
+			throw new APIException("Location.hierarchy.loop", new Object[] { child, this });
 		}
 		
 		child.setParentLocation(this);
@@ -582,47 +574,6 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 */
 	public String getAddress3() {
 		return address3;
-	}
-	
-	/**
-	 * Checks and fixes for XSS.
-	 *
-	 * @since 1.9
-	 */
-	public void validateXSS() {
-		setName(escapeXSS(getName()));
-		address1 = escapeXSS(address1);
-		address2 = escapeXSS(address2);
-		address3 = escapeXSS(address3);
-		address4 = escapeXSS(address4);
-		address5 = escapeXSS(address5);
-		address6 = escapeXSS(address6);
-		cityVillage = escapeXSS(cityVillage);
-		stateProvince = escapeXSS(stateProvince);
-		country = escapeXSS(country);
-		latitude = escapeXSS(latitude);
-		longitude = escapeXSS(longitude);
-		countyDistrict = escapeXSS(countyDistrict);
-		postalCode = escapeXSS(postalCode);
-		
-	}
-	
-	/**
-	 * Checks and fixes XSS.
-	 * @param text the string of text to escape
-	 * @return the escaped text
-	 * @since 1.9
-	 * @should not fail given null parameter
-	 */
-	private String escapeXSS(String text) {
-		if (StringUtils.isNotEmpty(text)) {
-			String escapeText;
-			escapeText = StringEscapeUtils.escapeHtml(text);
-			escapeText = StringEscapeUtils.escapeJavaScript(escapeText);
-			return escapeText;
-		}
-		return text;
-		
 	}
 	
 	/**

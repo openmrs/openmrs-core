@@ -1,3 +1,12 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
 package org.openmrs.validator;
 
 import org.junit.Assert;
@@ -135,5 +144,38 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 		program = Context.getProgramWorkflowService().getProgram(3);
 		
 		Assert.assertTrue(program.getDescription().equals("Edited description"));
+	}
+	
+	/**
+	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() throws Exception {
+		Program prog = new Program();
+		prog.setName("Hypochondriasis program");
+		prog.setConcept(Context.getConceptService().getConcept(3));
+		
+		Errors errors = new BindException(prog, "prog");
+		programValidator.validate(prog, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ProgramValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() throws Exception {
+		Program prog = new Program();
+		prog
+		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text");
+		prog.setConcept(Context.getConceptService().getConcept(3));
+		
+		Errors errors = new BindException(prog, "prog");
+		programValidator.validate(prog, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("name"));
 	}
 }

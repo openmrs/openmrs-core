@@ -1,19 +1,14 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.util;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -66,7 +61,7 @@ public class Security {
 	 */
 	public static boolean hashMatches(String hashedPassword, String passwordToHash) {
 		if (hashedPassword == null || passwordToHash == null) {
-			throw new APIException("Neither the hashed password or the password to hash cannot be null");
+			throw new APIException("password.cannot.be.null", (Object[]) null);
 		}
 		
 		return hashedPassword.equals(encodeString(passwordToHash))
@@ -93,10 +88,10 @@ public class Security {
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
-			throw new APIException("System cannot find password encryption algorithm", e);
+			throw new APIException("system.cannot.find.password.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return hexString(md.digest(input));
 	}
@@ -118,10 +113,10 @@ public class Security {
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
-			throw new APIException("System cannot find SHA1 encryption algorithm", e);
+			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return hexString(md.digest(input));
 	}
@@ -166,10 +161,10 @@ public class Security {
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
-			throw new APIException("System cannot find SHA1 encryption algorithm", e);
+			throw new APIException("system.cannot.find.encryption.algorithm", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		return incorrectHexString(md.digest(input));
 	}
@@ -228,10 +223,10 @@ public class Security {
 			encrypted = cipher.doFinal(text.getBytes(encoding));
 		}
 		catch (GeneralSecurityException e) {
-			throw new APIException("could not encrypt text", e);
+			throw new APIException("could.not.encrypt.text", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		
 		return Base64.encode(encrypted);
@@ -273,10 +268,10 @@ public class Security {
 			decrypted = new String(original, encoding);
 		}
 		catch (GeneralSecurityException e) {
-			throw new APIException("could not decrypt text", e);
+			throw new APIException("could.not.decrypt.text", null, e);
 		}
 		catch (UnsupportedEncodingException e) {
-			throw new APIException("System cannot find " + encoding + " encoding", e);
+			throw new APIException("system.cannot.find.encoding", new Object[] { encoding }, e);
 		}
 		
 		return decrypted;
@@ -308,7 +303,7 @@ public class Security {
 			return Base64.decode(initVectorText);
 		}
 		
-		throw new APIException("no encryption initialization vector found");
+		throw new APIException("no.encryption.initialization.vector.found", (Object[]) null);
 	}
 	
 	/**
@@ -345,7 +340,7 @@ public class Security {
 			return Base64.decode(keyText);
 		}
 		
-		throw new APIException("no encryption secret key found");
+		throw new APIException("no.encryption.secret.key.found", (Object[]) null);
 	}
 	
 	/**
@@ -362,7 +357,7 @@ public class Security {
 			kgen = KeyGenerator.getInstance(OpenmrsConstants.ENCRYPTION_KEY_SPEC);
 		}
 		catch (NoSuchAlgorithmException e) {
-			throw new APIException("Could not generate cipher key", e);
+			throw new APIException("could.not.generate.cipher.key", null, e);
 		}
 		kgen.init(128); // 192 and 256 bits may not be available
 		

@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -55,6 +51,8 @@ public class PersonValidator implements Validator {
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 * @should pass validation if gender is blank for Persons
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
@@ -68,19 +66,23 @@ public class PersonValidator implements Validator {
 		
 		Person person = (Person) target;
 		
+		int index = 0;
 		boolean atLeastOneNonVoidPersonNameLeft = false;
 		for (PersonName personName : person.getNames()) {
+			errors.pushNestedPath("names[" + index + "]");
 			personNameValidator.validate(personName, errors);
 			if (!personName.isVoided()) {
 				atLeastOneNonVoidPersonNameLeft = true;
 			}
+			errors.popNestedPath();
+			index++;
 		}
 		if (!person.isVoided() && !atLeastOneNonVoidPersonNameLeft) {
 			errors.rejectValue("names", "Person.shouldHaveAtleastOneNonVoidedName");
 		}
 		
 		//validate the personAddress
-		int index = 0;
+		index = 0;
 		for (PersonAddress address : person.getAddresses()) {
 			try {
 				errors.pushNestedPath("addresses[" + index + "]");
@@ -101,7 +103,7 @@ public class PersonValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "causeOfDeath", "Person.dead.causeOfDeathNull");
 		}
 		
-		ValidateUtil.validateFieldLengths(errors, Person.class, "gender");
+		ValidateUtil.validateFieldLengths(errors, Person.class, "gender", "personVoidReason");
 	}
 	
 	/**

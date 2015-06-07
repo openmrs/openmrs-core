@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
@@ -75,7 +71,6 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
@@ -129,17 +124,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		ret.append("</patientset>");
 		return ret.toString();
 	}
-	
-	private String formatUserName(User u) {
-		return u.getPersonName().getFullName();
-	}
-	
-	private String formatUser(User u) {
-		StringBuilder ret = new StringBuilder();
-		ret.append(u.getUserId() + "^" + formatUserName(u));
-		return ret.toString();
-	}
-	
+
 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private Element obsElementHelper(Document doc, Locale locale, Obs obs) {
@@ -1166,25 +1151,25 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				}
 				continue;
 				//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
-			} else if (attribute.equals("valueDate")) {
+			} else if ("valueDate".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("valueTime")) {
+			} else if ("valueTime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("valueDatetime")) {
+			} else if ("valueDatetime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("obsDatetime")) {
+			} else if ("obsDatetime".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("location")) {
+			} else if ("location".equals(attribute)) {
 				// pass -- same column name
 				classNames.add("obs.location");
 				attribute = "location.name";
-			} else if (attribute.equals("comment")) {
+			} else if ("comment".equals(attribute)) {
 				// pass -- same column name
-			} else if (attribute.equals("encounterType")) {
+			} else if ("encouterType".equals(attribute)) {
 				classNames.add("obs.encounter");
 				classNames.add("encounter.encounterType");
 				attribute = "encounterType.name";
-			} else if (attribute.equals("provider")) {
+			} else if ("provider".equals(attribute)) {
 				classNames.add("obs.encounter");
 				attribute = "encounter.provider";
 			} else {
@@ -1290,16 +1275,16 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		String abbrev = c.getDatatype().getHl7Abbreviation();
 		List<String> columns = new Vector<String>();
 		
-		if (abbrev.equals("BIT")) {
+		if ("BIT".equals(abbrev)) {
 			columns.add("valueCoded");
-		} else if (abbrev.equals("CWE")) {
+		} else if ("CWE".equals(abbrev)) {
 			columns.add("valueDrug");
 			columns.add("valueCoded");
-		} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+		} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 			columns.add("valueNumeric");
-		} else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS")) {
+		} else if ("DT".equals(abbrev) || "TM".equals(abbrev) || "TS".equals(abbrev)) {
 			columns.add("valueDatetime");
-		} else if (abbrev.equals("ST")) {
+		} else if ("ST".equals(abbrev)) {
 			columns.add("valueText");
 		}
 		
@@ -1493,9 +1478,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Criteria criteria = null;
 		
 		// make 'patient.**' reference 'patient' like alias instead of object
-		if (className.equals("org.openmrs.Patient")) {
+		if ("org.openmrs.Patient".equals(className)) {
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Patient", "patient");
-		} else if (className.equals("org.openmrs.Person")) {
+		} else if ("org.openmrs.Person".equals(className)) {
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Person", "person");
 		} else {
 			criteria = sessionFactory.getCurrentSession().createCriteria(className);
@@ -1516,7 +1501,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			
 			// do not include voided person rows
-			if (className.equals("org.openmrs.Person")) {
+			if ("org.openmrs.Person".equals(className)) {
 				// the voided column on the person table is mapped to the person object
 				// through the getPersonVoided() to distinguish it from patient/user.voided
 				criteria.add(Restrictions.eq("personVoided", false));
@@ -1543,7 +1528,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		try {
 			boolean hasPreferred = false;
 			for (Field f : Class.forName(className).getDeclaredFields()) {
-				if (f.getName().equals("preferred")) {
+				if ("preferred".equals(f.getName())) {
 					hasPreferred = true;
 				}
 			}
@@ -1783,7 +1768,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date fromDate, Date toDate)
 	        throws DAOException {
-		HashSet<Integer> idsLookup = patientIds == null ? null
+		Set<Integer> idsLookup = patientIds == null ? null
 		        : (patientIds instanceof HashSet ? (HashSet<Integer>) patientIds : new HashSet<Integer>(patientIds));
 		
 		Map<Integer, Collection<Integer>> ret = new HashMap<Integer, Collection<Integer>>();
@@ -1991,10 +1976,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			throw new IllegalArgumentException("Must give a relationship type");
 		}
 		Map<Integer, List<Person>> ret = new HashMap<Integer, List<Person>>();
-		if (patients != null) {
-			if (patients.size() == 0) {
-				return ret;
-			}
+		if (patients != null && patients.size() == 0) {
+			return ret;
 		}
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);
@@ -2109,7 +2092,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" and orderReason.id in (:orderReasonIdList) ");
 		}
 		if (discontinued != null) {
-			if (discontinued == true) {
+			if (discontinued) {
 				if (stopDateFrom != null && stopDateTo != null) {
 					sb.append(" and dateStopped between :stopDateFrom and :stopDateTo ");
 				} else {
@@ -2331,7 +2314,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@Override
 	public Integer getCountOfPatients() {
 		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = '0'");
-		return new Integer(query.uniqueResult().toString());
+		return Integer.valueOf(query.uniqueResult().toString());
 	}
 	
 	@Override

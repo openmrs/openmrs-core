@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db;
 
@@ -175,7 +171,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should escape underscore character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapeUnderscoreCharacterInIdentifierPhrase() throws Exception {
-		
+		deleteAllData();
+		baseSetupWithStandardDataAndAuthentication();
 		Patient patient2 = pService.getPatient(2);
 		PatientIdentifier patientIdentifier = new PatientIdentifier("_567", pService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));
@@ -2024,6 +2021,29 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @verifies return exact match first
+	 * @see HibernatePatientDAO#getPatients(String, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldReturnExactMatchFirst() throws Exception {
+		List<Patient> patients = dao.getPatients("Ben", 0, 11);
+		
+		Assert.assertEquals(4, patients.size());
+		Assert.assertEquals("Alan", patients.get(0).getGivenName());
+		Assert.assertEquals("Ben", patients.get(1).getGivenName());
+		Assert.assertEquals("Adam", patients.get(2).getGivenName());
+		Assert.assertEquals("Benedict", patients.get(3).getGivenName());
+		
+		patients = dao.getPatients("Ben Frank", 0, 11);
+		
+		Assert.assertEquals(4, patients.size());
+		Assert.assertEquals("Ben", patients.get(0).getGivenName());
+		Assert.assertEquals("Alan", patients.get(1).getGivenName());
+		Assert.assertEquals("Benedict", patients.get(2).getGivenName());
+		Assert.assertEquals("Adam", patients.get(3).getGivenName());
+	}
+	
+	/**
 	 * @verifies obey attribute match mode
 	 * @see HibernatePatientDAO#getCountOfPatients(String)
 	 */
@@ -2043,4 +2063,23 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patientCount);
 	}
 	
+	/**
+	 * @verifies get voided person when voided=true is passed
+	 * @see PatientDAO#getPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldGetVoidedPersonWhenVoidedTrueIsPassed() throws Exception {
+		List<Patient> patients = dao.getPatients("voided-bravo", true, 0, 11);
+		Assert.assertEquals(1, patients.size());
+	}
+	
+	/**
+	 * @verifies get no voided person when voided=false is passed
+	 * @see PatientDAO#getPatients(String, boolean, Integer, Integer)
+	 */
+	@Test
+	public void getPatients_shouldGetNoVoidedPersonWhenVoidedFalseIsPassed() throws Exception {
+		List<Patient> patients = dao.getPatients("voided-bravo", false, 0, 11);
+		Assert.assertEquals(0, patients.size());
+	}
 }

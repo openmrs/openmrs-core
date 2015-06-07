@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.controller.concept;
 
@@ -94,5 +90,45 @@ public class ConceptProposalFormControllerTest extends BaseWebContextSensitiveTe
 		proposals = cs.getConceptProposals(cp.getFinalText());
 		Assert.assertEquals(1, proposals.size());
 		Assert.assertEquals(21, proposals.get(0).getObsConcept().getConceptId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptProposalFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should work properly for country locales", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldWorkProperlyForCountryLocales() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-proposals.xml");
+		
+		ConceptService cs = Context.getConceptService();
+		
+		final Integer conceptproposalId = 5;
+		ConceptProposal cp = cs.getConceptProposal(conceptproposalId);
+		Concept conceptToMap = cs.getConcept(4);
+		Locale locale = new Locale("en", "GB");
+		
+		Assert.assertFalse(conceptToMap.hasName(cp.getOriginalText(), locale));
+		
+		ConceptProposalFormController controller = (ConceptProposalFormController) applicationContext
+		        .getBean("conceptProposalForm");
+		controller.setApplicationContext(applicationContext);
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setSession(new MockHttpSession(null));
+		request.setMethod("POST");
+		request.addParameter("conceptProposalId", conceptproposalId.toString());
+		request.addParameter("finalText", cp.getOriginalText());
+		request.addParameter("conceptId", conceptToMap.getConceptId().toString());
+		request.addParameter("conceptNamelocale", locale.toString());
+		request.addParameter("action", "");
+		request.addParameter("actionToTake", "saveAsSynonym");
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		ModelAndView mav = controller.handleRequest(request, response);
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Assert.assertEquals(cp.getOriginalText(), cp.getFinalText());
+		Assert.assertTrue(conceptToMap.hasName(cp.getOriginalText(), locale));
 	}
 }

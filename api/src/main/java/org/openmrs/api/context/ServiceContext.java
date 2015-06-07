@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.context;
 
@@ -30,7 +26,6 @@ import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.DataSetService;
 import org.openmrs.api.DatatypeService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
@@ -43,7 +38,6 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
@@ -54,7 +48,6 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NoteService;
-import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.aop.Advisor;
@@ -82,7 +75,7 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	private static final Log log = LogFactory.getLog(ServiceContext.class);
 	
-	private static ServiceContext instance;
+	private static volatile ServiceContext instance;
 	
 	private ApplicationContext applicationContext;
 	
@@ -250,28 +243,10 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @return report object service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public ReportObjectService getReportObjectService() {
-		return getService(ReportObjectService.class);
-	}
-	
-	/**
 	 * @return serialization service
 	 */
 	public SerializationService getSerializationService() {
 		return getService(SerializationService.class);
-	}
-	
-	/**
-	 * @return report service
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public ReportService getReportService() {
-		return getService(ReportService.class);
 	}
 	
 	/**
@@ -440,46 +415,10 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * @param reportObjectService the reportObjectService to set
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void setReportObjectService(ReportObjectService reportObjectService) {
-		setService(ReportObjectService.class, reportObjectService);
-	}
-	
-	/**
-	 * @param reportService
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void setReportService(ReportService reportService) {
-		setService(ReportService.class, reportService);
-	}
-	
-	/**
 	 * @param serializationService
 	 */
 	public void setSerializationService(SerializationService serializationService) {
 		setService(SerializationService.class, serializationService);
-	}
-	
-	/**
-	 * @param dataSetService
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public void setDataSetService(DataSetService dataSetService) {
-		setService(DataSetService.class, dataSetService);
-	}
-	
-	/**
-	 * @return the DataSetService
-	 * @deprecated see reportingcompatibility module
-	 */
-	@Deprecated
-	public DataSetService getDataSetService() {
-		return getService(DataSetService.class);
 	}
 	
 	/**
@@ -684,7 +623,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private Set<Advisor> getAddedAdvisors(Class cls) {
 		Set<Advisor> result = addedAdvisors.get(cls);
-		return result == null ? Collections.EMPTY_SET : result;
+		return (Set<Advisor>) (result == null ? Collections.emptySet() : result);
 	}
 	
 	/**
@@ -712,7 +651,7 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	private Set<Advice> getAddedAdvice(Class cls) {
 		Set<Advice> result = addedAdvice.get(cls);
-		return result == null ? Collections.EMPTY_SET : result;
+		return (Set<Advice>) (result == null ? Collections.emptySet() : result);
 	}
 	
 	/**
@@ -798,7 +737,8 @@ public class ServiceContext implements ApplicationContextAware {
 				log.debug("Service: " + cls + " set successfully");
 			}
 			catch (Exception e) {
-				throw new APIException("Unable to create proxy factory for: " + classInstance.getClass().getName(), e);
+				throw new APIException("service.unable.create.proxy.factory", new Object[] { classInstance.getClass()
+				        .getName() }, e);
 			}
 			
 		}
@@ -820,7 +760,7 @@ public class ServiceContext implements ApplicationContextAware {
 		Object classInstance = params.get(1);
 		
 		if (classString == null || classInstance == null) {
-			throw new APIException("Unable to find classString or classInstance in params");
+			throw new APIException("service.unable.find", (Object[]) null);
 		}
 		
 		Class cls = null;
@@ -829,7 +769,7 @@ public class ServiceContext implements ApplicationContextAware {
 		// loader or the system class loader depending on if we're in a testing
 		// environment or not (system == testing, openmrs == normal)
 		try {
-			if (useSystemClassLoader == false) {
+			if (!useSystemClassLoader) {
 				cls = OpenmrsClassLoader.getInstance().loadClass(classString);
 				
 				if (cls != null && log.isDebugEnabled()) {
@@ -839,7 +779,7 @@ public class ServiceContext implements ApplicationContextAware {
 					}
 					catch (Exception e) { /*pass*/}
 				}
-			} else if (useSystemClassLoader == true) {
+			} else if (useSystemClassLoader) {
 				try {
 					cls = Class.forName(classString);
 					if (log.isDebugEnabled()) {
@@ -855,7 +795,7 @@ public class ServiceContext implements ApplicationContextAware {
 			}
 		}
 		catch (ClassNotFoundException e) {
-			throw new APIException("Unable to set module service: " + classString, e);
+			throw new APIException("service.unable.set", new Object[] { classString }, e);
 		}
 		
 		// add this module service to the normal list of services
@@ -967,7 +907,7 @@ public class ServiceContext implements ApplicationContextAware {
 			return applicationContext.getBean(beanName, type);
 		}
 		catch (BeansException beanException) {
-			throw new APIException("Error during getting registered component.", beanException);
+			throw new APIException("service.error.during.getting.component", null, beanException);
 		}
 	}
 	

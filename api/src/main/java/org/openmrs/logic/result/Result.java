@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.logic.result;
 
@@ -17,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.openmrs.Concept;
@@ -96,7 +93,7 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * Builds result upon another result &mdash; the first step in create a result that contains a
 	 * list of other results.
-	 *
+	 * 
 	 * @param result the result that will be the sole member of the new result
 	 * @should not fail with null result
 	 */
@@ -108,7 +105,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a result from a list of results
-	 *
+	 * 
 	 * @param list a list of results
 	 * @should not fail with null list
 	 * @should not fail with empty list
@@ -121,7 +118,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a boolean result with a result date of today
-	 *
+	 * 
 	 * @param valueBoolean
 	 */
 	public Result(Boolean valueBoolean) {
@@ -130,7 +127,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a boolean result with a specific result date
-	 *
+	 * 
 	 * @param resultDate
 	 * @param valueBoolean
 	 */
@@ -140,7 +137,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a coded result with a result date of today
-	 *
+	 * 
 	 * @param valueCoded
 	 */
 	public Result(Concept valueCoded) {
@@ -149,7 +146,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a coded result with a specific result date
-	 *
+	 * 
 	 * @param resultDate
 	 * @param valueCoded
 	 */
@@ -159,7 +156,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a coded result from an observation
-	 *
+	 * 
 	 * @param obs
 	 */
 	public Result(Obs obs) {
@@ -191,7 +188,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a datetime result with a result date of today
-	 *
+	 * 
 	 * @param valueDatetime
 	 */
 	public Result(Date valueDatetime) {
@@ -200,7 +197,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a datetime result with a specific result date
-	 *
+	 * 
 	 * @param resultDate
 	 * @param valueDatetime
 	 */
@@ -210,7 +207,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a numeric result with a result date of today
-	 *
+	 * 
 	 * @param valueNumeric
 	 */
 	public Result(Double valueNumeric) {
@@ -219,7 +216,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a numeric result with a specific result date
-	 *
+	 * 
 	 * @param resultDate
 	 * @param valueNumeric
 	 */
@@ -229,7 +226,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a numeric result with a result date of today
-	 *
+	 * 
 	 * @param valueNumeric
 	 */
 	public Result(Integer valueNumeric) {
@@ -238,7 +235,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a numeric result with a specific result date
-	 *
+	 * 
 	 * @param resultDate
 	 * @param valueNumeric
 	 */
@@ -248,7 +245,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a text result with a result date of today
-	 *
+	 * 
 	 * @param valueText
 	 */
 	public Result(String valueText) {
@@ -257,7 +254,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Builds a text result with a specific result date
-	 *
+	 * 
 	 * @param resultDate
 	 * @param valueText
 	 */
@@ -271,21 +268,15 @@ public class Result extends ArrayList<Result> {
 	 * automatically into string format), this contructor allows the various datatype
 	 * representations of the result to be individually controlled. Any values set to <em>null</em>
 	 * will yield the natural translation of the default datatype. For example,
-	 *
+	 * 
 	 * <pre>
 	 * Result result = new Result(new Date(), 2.5);
 	 * assertEqualtes(&quot;2.5&quot;, result.toString());
-	 *
-	 * Result result = new Result(new Date(),
-	 *                            Result.Datatype.NUMERIC,
-	 *                            2.5,
-	 *                            null,
-	 *                            null,
-	 *                            &quot;Two and a half&quot;,
-	 *                            null);
+	 * 
+	 * Result result = new Result(new Date(), Result.Datatype.NUMERIC, 2.5, null, null, &quot;Two and a half&quot;, null);
 	 * assertEquals(&quot;Two and a half&quot;, result.toString());
 	 * </pre>
-	 *
+	 * 
 	 * @param resultDate
 	 * @param datatype
 	 * @param valueBoolean
@@ -322,7 +313,7 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * Returns the datatype of the result. If the result is a list of other results, then the
 	 * datatype of the first element is returned
-	 *
+	 * 
 	 * @return datatype of the result
 	 */
 	public Datatype getDatatype() {
@@ -336,7 +327,7 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * Changes the result date time &mdash; not to be confused with a value that is a date. The
 	 * result date time is typically the datetime that the observation was recorded.
-	 *
+	 * 
 	 * @param resultDatetime
 	 */
 	public void setResultDate(Date resultDatetime) {
@@ -345,7 +336,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Changes the default datatype of the result
-	 *
+	 * 
 	 * @param datatype
 	 */
 	public void setDatatype(Datatype datatype) {
@@ -354,7 +345,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the boolean representation of ths result without changing the default datatype
-	 *
+	 * 
 	 * @param valueBoolean
 	 */
 	public void setValueBoolean(Boolean valueBoolean) {
@@ -363,7 +354,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the coded representation of ths result without changing the default datatype
-	 *
+	 * 
 	 * @param valueCoded
 	 */
 	public void setValueCoded(Concept valueCoded) {
@@ -372,7 +363,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the datetime representation of ths result without changing the default datatype
-	 *
+	 * 
 	 * @param valueDatetime
 	 */
 	public void setValueDatetime(Date valueDatetime) {
@@ -381,7 +372,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the numeric representation of ths result without changing the default datatype
-	 *
+	 * 
 	 * @param valueNumeric
 	 */
 	public void setValueNumeric(Integer valueNumeric) {
@@ -390,7 +381,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the numeric representation of ths result without changing the default datatype
-	 *
+	 * 
 	 * @param valueNumeric
 	 */
 	public void setValueNumeric(Double valueNumeric) {
@@ -399,7 +390,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Overrides the text representation of ths result without changing the default datatype
-	 *
+	 * 
 	 * @param valueText
 	 */
 	public void setValueText(String valueText) {
@@ -412,7 +403,7 @@ public class Result extends ArrayList<Result> {
 	 * (returned by this method) would be the date the observation was recorded while the
 	 * <em>toDatetime()</em> method would be used to get the actual answer (when the patient started
 	 * their treatment).
-	 *
+	 * 
 	 * @return date of the result (usually the date the result was recorded or observed)
 	 * @see #toDatetime()
 	 */
@@ -425,7 +416,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Get the result object
-	 *
+	 * 
 	 * @return the underlying result object
 	 */
 	public Object getResultObject() {
@@ -434,7 +425,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Set the result object
-	 *
+	 * 
 	 * @param object
 	 */
 	public void setResultObject(Object object) {
@@ -762,7 +753,7 @@ public class Result extends ArrayList<Result> {
 			return this;
 		}
 		Integer something = Integer.valueOf(1);
-		HashMap<Result, Integer> map = new HashMap<Result, Integer>();
+		Map<Result, Integer> map = new HashMap<Result, Integer>();
 		for (Result r : this) {
 			map.put(r, something);
 		}
@@ -926,7 +917,7 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * Convenience method to know if this Result represents multiple results or not
-	 *
+	 * 
 	 * @return true/false whether this is just one Result or more than one
 	 */
 	private boolean isSingleResult() {

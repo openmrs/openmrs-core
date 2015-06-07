@@ -1,18 +1,16 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.context;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -31,6 +29,8 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * module startup when there is no user to authenticate as.
  */
 public class Daemon {
+	
+	protected static final Log log = LogFactory.getLog(Daemon.class);
 	
 	/**
 	 * The uuid defined for the daemon user object
@@ -118,8 +118,7 @@ public class Daemon {
 		//Class<?> callerClass = Reflection.getCallerClass(0);
 		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
 		if (!TimerSchedulerTask.class.isAssignableFrom(callerClass)) {
-			throw new APIException("This method can only be called from the TimerSchedulerTask class, not "
-			        + callerClass.getName());
+			throw new APIException("Scheduler.timer.task.only", new Object[] { callerClass.getName() });
 		}
 		
 		// now create a new thread and execute that task in it
@@ -169,6 +168,7 @@ public class Daemon {
 	 * @should throw error if called from a non daemon thread
 	 * @should not throw error if called from a daemon thread
 	 */
+	@SuppressWarnings("squid:S1217")
 	public static Thread runInNewDaemonThread(final Runnable runnable) {
 		// make sure we're already in a daemon thread
 		if (!isDaemonThread()) {
@@ -183,6 +183,8 @@ public class Daemon {
 				isDaemonThread.set(true);
 				try {
 					Context.openSession();
+					//Suppressing sonar issue "squid:S1217"
+					//We intentionally do not start a new thread yet, rather wrap the run call in a session.
 					runnable.run();
 				}
 				finally {
@@ -244,7 +246,7 @@ public class Daemon {
 		}
 		catch (InterruptedException e) {
 			// ignore
-			e.printStackTrace();
+			log.error(e);
 		}
 		
 		if (onStartupThread.exceptionThrown != null) {
@@ -264,6 +266,7 @@ public class Daemon {
 	 * @return the newly spawned {@link Thread}
 	 * @since 1.9.2
 	 */
+	@SuppressWarnings("squid:S1217")
 	public static Thread runInDaemonThread(final Runnable runnable, DaemonToken token) {
 		if (!ModuleFactory.isTokenValid(token)) {
 			throw new ContextAuthenticationException("Invalid token " + token);
@@ -276,6 +279,8 @@ public class Daemon {
 				isDaemonThread.set(true);
 				try {
 					Context.openSession();
+					//Suppressing sonar issue "squid:S1217"
+					//We intentionally do not start a new thread yet, rather wrap the run call in a session.
 					runnable.run();
 				}
 				finally {

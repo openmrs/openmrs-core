@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
@@ -52,7 +48,7 @@ import org.openmrs.util.OpenmrsConstants;
  *   PersonService ps = Context.getPersonService();
  *   ps.getPeople("name", false);
  * </code>
- *
+ * 
  * @see org.openmrs.api.db.PersonDAO
  * @see org.openmrs.api.PersonService
  * @see org.openmrs.api.context.Context
@@ -68,7 +64,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * Set session factory
-	 *
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -76,8 +72,10 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer, java.lang.String, java.lang.String)
-	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String gender)
+	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
+	 *      java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(String name, Integer birthyear, String
+	 *      gender)
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException {
@@ -175,7 +173,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			q.append(" and " + genderMatch);
 		}
 		
-		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc").append(
+		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,").append(
 		    " pname.familyName2 asc");
 		
 		String qStr = q.toString();
@@ -196,10 +194,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPeople(java.lang.String, java.lang.Boolean)
-	 *
 	 * @should get no one by null
 	 * @should get every one by empty string
-	 *
 	 * @should get no one by non-existing attribute
 	 * @should get no one by non-searchable attribute
 	 * @should get no one by voided attribute
@@ -208,38 +204,29 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @should get one person by searching for a mix of attribute and voided attribute
 	 * @should get multiple people by single attribute
 	 * @should get multiple people by multiple attributes
-	 *
 	 * @should get no one by non-existing name
 	 * @should get one person by name
 	 * @should get one person by random case name
 	 * @should get multiple people by single name
 	 * @should get multiple people by multiple names
-	 *
 	 * @should get no one by non-existing name and non-existing attribute
 	 * @should get no one by non-existing name and non-searchable attribute
 	 * @should get no one by non-existing name and voided attribute
 	 * @should get one person by name and attribute
 	 * @should get one person by name and voided attribute
 	 * @should get multiple people by name and attribute
-	 *
 	 * @should get one person by given name
 	 * @should get multiple people by given name
-	 *
 	 * @should get one person by middle name
 	 * @should get multiple people by middle name
-	 *
 	 * @should get one person by family name
 	 * @should get multiple people by family name
-	 *
 	 * @should get one person by family name2
 	 * @should get multiple people by family name2
-	 *
 	 * @should get one person by multiple name parts
 	 * @should get multiple people by multiple name parts
-	 *
 	 * @should get no one by voided name
 	 * @should not get voided person
-	 *
 	 * @should not get dead person
 	 * @should get single dead person
 	 * @should get multiple dead people
@@ -259,8 +246,9 @@ public class HibernatePersonDAO implements PersonDAO {
 		
 		personSearchCriteria.addAliasForName(criteria);
 		personSearchCriteria.addAliasForAttribute(criteria);
-		if (voided == null || voided == false)
+		if (voided == null || voided == false) {
 			criteria.add(Restrictions.eq("personVoided", false));
+		}
 		if (dead != null) {
 			criteria.add(Restrictions.eq("dead", dead));
 		}
@@ -292,7 +280,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * Fetch the max results value from the global properties table
-	 *
+	 * 
 	 * @return Integer value for the person search max results global property
 	 */
 	public static Integer getMaximumSearchResults() {
@@ -572,7 +560,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * Used by deletePerson, deletePatient, and deleteUser to remove all properties of a person
 	 * before deleting them.
-	 *
+	 * 
 	 * @param sessionFactory the session factory from which to pull the current session
 	 * @param person the person to delete
 	 */
@@ -581,12 +569,10 @@ public class HibernatePersonDAO implements PersonDAO {
 		for (PersonAddress address : person.getAddresses()) {
 			if (address.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(address);
-				address = null;
 			} else {
 				sessionFactory.getCurrentSession().delete(address);
 			}
 		}
-		sessionFactory.getCurrentSession().evict(person.getAddresses());
 		person.setAddresses(null);
 		
 		for (PersonAttribute attribute : person.getAttributes()) {
@@ -596,7 +582,6 @@ public class HibernatePersonDAO implements PersonDAO {
 				sessionFactory.getCurrentSession().delete(attribute);
 			}
 		}
-		sessionFactory.getCurrentSession().evict(person.getAttributes());
 		person.setAttributes(null);
 		
 		for (PersonName name : person.getNames()) {
@@ -606,7 +591,6 @@ public class HibernatePersonDAO implements PersonDAO {
 				sessionFactory.getCurrentSession().delete(name);
 			}
 		}
-		sessionFactory.getCurrentSession().evict(person.getNames());
 		person.setNames(null);
 		
 		// finally, just tell hibernate to delete our object

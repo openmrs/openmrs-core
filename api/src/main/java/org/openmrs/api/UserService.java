@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -52,19 +48,44 @@ public interface UserService extends OpenmrsService {
 	 * @should update users username
 	 * @should grant new roles in roles list to user
 	 * @should fail to create the user with a weak password
+	 * @deprecated replaced by {@link #createUser(User, String)}
 	 */
+	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_USERS, PrivilegeConstants.EDIT_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User saveUser(User user, String password) throws APIException;
 	
 	/**
-	 * @see #saveUser(User, String)
-	 * @deprecated replaced by {@link #saveUser(User, String)}
+	 * Create user with given password.
+	 *
+	 * @param user the user to create
+	 * @param password the password for created user
+	 * @return created user
+	 * @throws APIException
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User createUser(User user, String password) throws APIException;
+	
+	/**
+	 * Change user password.
+	 *
+	 * @param user the user to update password
+	 * @param oldPassword the user password to update
+	 * @param newPassword the new user password
+	 * @throws APIException for not existing user and if old password is weak
+	 * @since 1.12
+	 * @should throw APIException if old password is not correct
+	 * @should throw APIException if given user does not exist
+	 * @should change password for given user if oldPassword is correctly passed
+	 * @should change password for given user if oldPassword is null and changing user have privileges
+	 * @should throw exception if oldPassword is null and changing user have not privileges
+	 * @should throw exception if new password is too short
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@Logging(ignoredArgumentIndexes = { 1, 2 })
+	public void changePassword(User user, String oldPassword, String newPassword) throws APIException;
 	
 	/**
 	 * Get user by internal user identifier.
@@ -389,9 +410,11 @@ public interface UserService extends OpenmrsService {
 	 * @param pw new password
 	 * @throws APIException
 	 * @should change password for the given user and password
+	 * @deprecated replaced by {@link #changePassword(User, String, String)}
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
 	@Logging(ignoredArgumentIndexes = { 1 })
+	@Deprecated
 	public void changePassword(User u, String pw) throws APIException;
 	
 	/**

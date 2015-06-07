@@ -79,7 +79,7 @@
 					<tr>
 						<c:forEach items="${inheritingRoles}" var="role" varStatus="varStatus"> 
 							<c:if test="${varStatus.index % 2 == 0}"></tr><tr></c:if>
-							<td><a href="role.form?role=${role.role}" onclick="return leaveForm()" title="${role.description}">${role.role}</a></td>
+							<td><a href="role.form?roleName=${role.role}" onclick="return leaveForm()" title="${role.description}">${role.role}</a></td>
 						</c:forEach>
 					</tr>
 				</table>
@@ -96,7 +96,7 @@
 			<br/>
 			<c:if test="${role.role == superuser}"><openmrs:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
-				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" />
+				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" descendantItems="${role.allChildRoles}" />
 			</c:if>
 		</td>
 	</tr>

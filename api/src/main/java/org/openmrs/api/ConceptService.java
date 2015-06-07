@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -175,6 +171,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @should generate id for new concept if none is specified
 	 * @should keep id for new concept if one is specified
 	 * @should save non ConceptNumeric object as conceptNumeric
+	 * @should save non ConceptComplex object as conceptComplex
+	 * @should save changes between concept numeric and complex
 	 * @should save a ConceptNumeric as a concept
 	 * @should save a new ConceptNumeric
 	 * @should void the conceptName if the text of the name has changed
@@ -1292,6 +1290,14 @@ public interface ConceptService extends OpenmrsService {
 	public Concept getFalseConcept();
 	
 	/**
+	 * Returns the UNKNOWN concept
+	 *
+	 * @return unknown concept
+	 * @should return the unknown concept
+	 */
+	public Concept getUnknownConcept();
+	
+	/**
 	 * Changes the datatype of a concept from boolean to coded when it has observations it is
 	 * associated to.
 	 * 
@@ -1390,7 +1396,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.8
 	 * @deprecated as of 1.11 call {@link #updateConceptIndexes()} or
-	 *             {@link #updateConceptIndex(Concept)
+	 *             {@link #updateConceptIndex(Concept)
 	 */
 	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })

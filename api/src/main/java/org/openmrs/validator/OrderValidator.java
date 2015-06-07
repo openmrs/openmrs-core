@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -70,6 +66,8 @@ public class OrderValidator implements Validator {
 	 * @should pass validation if the class of the order is a subclass of orderType.javaClass
 	 * @should pass validation if all fields are correct
 	 * @should not allow a future dateActivated
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Order order = (Order) obj;
@@ -92,6 +90,9 @@ public class OrderValidator implements Validator {
 			validateOrderTypeClass(order, errors);
 			validateDateActivated(order, errors);
 			validateScheduledDate(order, errors);
+			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "orderReasonNonCoded", "accessionNumber",
+			    "commentToFulfiller", "voidReason");
+			
 		}
 	}
 	
@@ -129,8 +130,9 @@ public class OrderValidator implements Validator {
 	
 	private void validateSamePatientInOrderAndEncounter(Order order, Errors errors) {
 		if (order.getEncounter() != null && order.getPatient() != null) {
-			if (!order.getEncounter().getPatient().equals(order.getPatient()))
+			if (!order.getEncounter().getPatient().equals(order.getPatient())) {
 				errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
+			}
 		}
 	}
 	

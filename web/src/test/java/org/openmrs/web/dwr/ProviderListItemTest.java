@@ -1,19 +1,13 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.web.dwr;
-
-import java.util.HashSet;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,6 +15,8 @@ import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
+
+import java.util.HashSet;
 
 public class ProviderListItemTest {
 	
@@ -67,19 +63,6 @@ public class ProviderListItemTest {
 	}
 	
 	/**
-	 * @see ProviderListItem#getDisplayName()
-	 * @verifies return a display name based on provider name when person is not associated
-	 */
-	@Test
-	public void getDisplayName_shouldReturnADisplayNameBasedOnProviderNameWhenPersonIsNotAssociated() throws Exception {
-		Provider provider = new Provider();
-		provider.setName("providerName");
-		
-		ProviderListItem providerListItem = new ProviderListItem(provider);
-		Assert.assertEquals("providerName", providerListItem.getDisplayName());
-	}
-	
-	/**
 	 * @see ProviderListItem#getIdentifier()
 	 * @verifies return the identifier that is mentioned for the provider when a person is not
 	 *           specified
@@ -88,7 +71,6 @@ public class ProviderListItemTest {
 	public void getIdentifier_shouldReturnTheIdentifierThatIsMentionedForTheProviderWhenAPersonIsNotSpecified()
 	        throws Exception {
 		Provider provider = new Provider();
-		provider.setName("providerName");
 		provider.setIdentifier("identifier");
 		ProviderListItem providerListItem = new ProviderListItem(provider);
 		Assert.assertEquals("identifier", providerListItem.getIdentifier());
@@ -103,7 +85,7 @@ public class ProviderListItemTest {
 		provider.setProviderId(2);
 		
 		ProviderListItem providerListItem = new ProviderListItem(provider);
-		Assert.assertEquals(new Integer(2), providerListItem.getProviderId());
+		Assert.assertEquals(Integer.valueOf(2), providerListItem.getProviderId());
 	}
 	
 }

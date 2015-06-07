@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api.db.hibernate;
 
@@ -30,21 +26,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.util.ConfigHelper;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
-public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
+public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
-	protected Set<String> tmpMappingResources = new HashSet<String>();
+	protected Set<String> mappingResources = new HashSet<String>();
 	
 	/**
 	 * @since 1.9.2, 1.10
@@ -59,11 +52,63 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 	@Autowired(required = false)
 	public Map<String, Interceptor> interceptors = new HashMap<String, Interceptor>();
 	
-	//public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
-	public Configuration newConfiguration() throws HibernateException {
-		Configuration config = super.newConfiguration();
+	/**
+	 * Collect the mapping resources for future use because the mappingResources object is defined
+	 * as 'private' instead of 'protected'
+	 */
+	@Override
+	public void setMappingResources(String... mappingResources) {
+		for (String resource : mappingResources) {
+			this.mappingResources.add(resource);
+		}
 		
+		super.setMappingResources(this.mappingResources.toArray(new String[] {}));
+	}
+	
+	/**
+	 * Collect packages to scan that are set in core and for tests in modules.
+	 * <p>
+	 * It adds to the set instead of overwriting it with each call.
+	 */
+	@Override
+	public void setPackagesToScan(String... packagesToScan) {
+		this.packagesToScan.addAll(Arrays.asList(packagesToScan));
+		
+		super.setPackagesToScan(this.packagesToScan.toArray(new String[0]));
+	}
+	
+	public Set<String> getModuleMappingResources() {
+		for (Module mod : ModuleFactory.getStartedModules()) {
+			for (String s : mod.getMappingFiles()) {
+				mappingResources.add(s);
+			}
+		}
+		return mappingResources;
+	}
+	
+	/**
+	 * Gets packages with mapped classes from all modules.
+	 *
+	 * @return the set of packages with mapped classes
+	 * @since 1.9.2, 1.10
+	 */
+	public Set<String> getModulePackagesWithMappedClasses() {
+		Set<String> packages = new HashSet<String>();
+		for (Module module : ModuleFactory.getStartedModules()) {
+			for (String pack : module.getPackagesWithMappedClasses()) {
+				packages.add(pack);
+			}
+		}
+		return packages;
+	}
+	
+	/**
+	 * Overridden to populate mappings from modules.
+	 */
+	@Override
+	public void afterPropertiesSet() throws IOException {
 		log.debug("Configuring hibernate sessionFactory properties");
+		Properties config = getHibernateProperties();
 		
 		Properties moduleProperties = Context.getConfigProperties();
 		
@@ -95,13 +140,19 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 		
 		// load in the default hibernate properties
 		try {
-			InputStream propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
+			InputStream propertyStream = getClass().getResourceAsStream("/hibernate.default.properties");
 			Properties props = new Properties();
+			
 			OpenmrsUtil.loadProperties(props, propertyStream);
 			propertyStream.close();
 			
 			// Only load in the default properties if they don't exist
-			config.mergeProperties(props);
+			for (Entry<Object, Object> prop : props.entrySet()) {
+				if (!config.containsKey(prop.getKey())) {
+					config.put(prop.getKey(), prop.getValue());
+				}
+			}
+			
 		}
 		catch (IOException e) {
 			log.fatal("Unable to load default hibernate properties", e);
@@ -109,7 +160,7 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 		
 		log.debug("Replacing variables in hibernate properties");
 		final String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
-		for (Entry<Object, Object> entry : config.getProperties().entrySet()) {
+		for (Entry<Object, Object> entry : config.entrySet()) {
 			String value = (String) entry.getValue();
 			
 			value = value.replace("%APPLICATION_DATA_DIRECTORY%", applicationDataDirectory);
@@ -126,77 +177,12 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 			chainingInterceptor.addInterceptor(interceptors.get(key));
 		}
 		
-		config.setInterceptor(chainingInterceptor);
+		setEntityInterceptor(chainingInterceptor);
 		
-		return config;
-	}
-	
-	/**
-	 * Collect the mapping resources for future use because the mappingResources object is defined
-	 * as 'private' instead of 'protected'
-	 *
-	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingResources(java.lang.String[])
-	 */
-	@Override
-	public void setMappingResources(String[] mappingResources) {
-		for (String resource : mappingResources) {
-			tmpMappingResources.add(resource);
-		}
+		//Adding each module's mapping file to the list of mapping resources
+		setMappingResources(getModuleMappingResources().toArray(new String[0]));
 		
-		super.setMappingResources(tmpMappingResources.toArray(new String[] {}));
-	}
-	
-	/**
-	 * Collect packages to scan that are set in core and for tests in modules.
-	 * <p>
-	 * It adds to the set instead of overwriting it with each call.
-	 *
-	 * @see org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean#setPackagesToScan(java.lang.String[])
-	 */
-	@Override
-	public void setPackagesToScan(String[] packagesToScan) {
-		this.packagesToScan.addAll(Arrays.asList(packagesToScan));
-		
-		super.setPackagesToScan(this.packagesToScan.toArray(new String[0]));
-	}
-	
-	public Set<String> getModuleMappingResources() {
-		for (Module mod : ModuleFactory.getStartedModules()) {
-			for (String s : mod.getMappingFiles()) {
-				tmpMappingResources.add(s);
-			}
-		}
-		return tmpMappingResources;
-	}
-	
-	/**
-	 * Gets packages with mapped classes from all modules.
-	 *
-	 * @return the set of packages with mapped classes
-	 * @since 1.9.2, 1.10
-	 */
-	public Set<String> getModulePackagesWithMappedClasses() {
-		Set<String> packages = new HashSet<String>();
-		for (Module module : ModuleFactory.getStartedModules()) {
-			for (String pack : module.getPackagesWithMappedClasses()) {
-				packages.add(pack);
-			}
-		}
-		return packages;
-	}
-	
-	/**
-	 * Overridden to populate mappings from modules.
-	 *
-	 * @see org.springframework.orm.hibernate3.AbstractSessionFactoryBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		// adding each module's mapping file to the list of mapping resources
-		super.setMappingResources(getModuleMappingResources().toArray(new String[] {}));
-		
-		packagesToScan.addAll(getModulePackagesWithMappedClasses());
-		super.setPackagesToScan(packagesToScan.toArray(new String[0]));
+		setPackagesToScan(getModulePackagesWithMappedClasses().toArray(new String[0]));
 		
 		super.afterPropertiesSet();
 	}
@@ -213,17 +199,6 @@ public class HibernateSessionFactoryBean extends AnnotationSessionFactoryBean {
 			// ignore errors sometimes thrown by the CacheManager trying to shut down twice
 			// see net.sf.ehcache.CacheManager#removeShutdownHook()
 		}
-	}
-	
-	/**
-	 * Used by the module testing framework to set the dependent modules in the hibernate session
-	 * factory
-	 *
-	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingJarLocations(org.springframework.core.io.Resource[])
-	 */
-	@Override
-	public void setMappingJarLocations(Resource[] mappingJarLocations) {
-		super.setMappingJarLocations(mappingJarLocations);
 	}
 	
 }

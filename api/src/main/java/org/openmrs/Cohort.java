@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs;
 
@@ -23,9 +19,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.ReportService;
-import org.openmrs.cohort.CohortDefinition;
-import org.openmrs.report.EvaluationContext;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -36,7 +29,7 @@ import org.simpleframework.xml.Root;
  * {@link ReportService#evaluate(org.openmrs.report.ReportSchema, Cohort, EvaluationContext)} then
  * it will contain a link back to the CohortDefinition it came from and the EvalutionContext that
  * definition was evaluated in.
- *
+ * 
  * @see org.openmrs.cohort.CohortDefinition
  */
 @Root(strict = false)
@@ -54,10 +47,6 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	private Set<Integer> memberIds;
 	
-	private CohortDefinition cohortDefinition;
-	
-	private EvaluationContext evaluationContext;
-	
 	public Cohort() {
 		memberIds = new TreeSet<Integer>();
 	}
@@ -65,7 +54,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * Convenience constructor to create a Cohort object that has an primarykey/internal identifier
 	 * of <code>cohortId</code>
-	 *
+	 * 
 	 * @param cohortId the internal identifier for this cohort
 	 */
 	public Cohort(Integer cohortId) {
@@ -76,7 +65,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param name
 	 * @param description optional description
@@ -94,7 +83,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param name
 	 * @param description optional description
@@ -112,7 +101,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
@@ -125,7 +114,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param name
 	 * @param description optional description
@@ -151,7 +140,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * Convenience contructor taking in a string that is a list of comma separated patient ids This
 	 * constructor does not check whether the database contains patients with the given ids, but
-	 *
+	 * 
 	 * @see CohortService.saveCohort(Cohort) will.
 	 * @param commaSeparatedIds
 	 */
@@ -159,7 +148,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 		this();
 		for (StringTokenizer st = new StringTokenizer(commaSeparatedIds, ","); st.hasMoreTokens();) {
 			String id = st.nextToken();
-			memberIds.add(new Integer(id.trim()));
+			memberIds.add(Integer.valueOf(id.trim()));
 		}
 	}
 	
@@ -220,7 +209,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * Returns the union of two cohorts
-	 *
+	 * 
 	 * @param a The first Cohort
 	 * @param b The second Cohort
 	 * @return Cohort
@@ -241,7 +230,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * Returns the intersection of two cohorts, treating null as an empty cohort
-	 *
+	 * 
 	 * @param a The first Cohort
 	 * @param b The second Cohort
 	 * @return Cohort
@@ -258,7 +247,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	
 	/**
 	 * Subtracts a cohort from a cohort
-	 *
+	 * 
 	 * @param a the original Cohort
 	 * @param b the Cohort to subtract
 	 * @return Cohort
@@ -315,10 +304,11 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This method is only here for some backwards compatibility with the PatientSet object that
 	 * this Cohort object replaced. Do not use this method.
-	 *
+	 * 
 	 * @deprecated use #getMemberIds()
 	 * @return the memberIds
 	 */
+	@Deprecated
 	public Set<Integer> getPatientIds() {
 		return getMemberIds();
 	}
@@ -326,42 +316,6 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	@ElementList(required = true)
 	public void setMemberIds(Set<Integer> memberIds) {
 		this.memberIds = memberIds;
-	}
-	
-	/**
-	 * @return the cohortDefinition
-	 */
-	@Element(required = false)
-	@Deprecated
-	public CohortDefinition getCohortDefinition() {
-		return cohortDefinition;
-	}
-	
-	/**
-	 * @param cohortDefinition the cohortDefinition to set
-	 */
-	@Element(required = false)
-	@Deprecated
-	public void setCohortDefinition(CohortDefinition cohortDefinition) {
-		this.cohortDefinition = cohortDefinition;
-	}
-	
-	/**
-	 * @return the evaluationContext
-	 */
-	@Element(required = false)
-	@Deprecated
-	public EvaluationContext getEvaluationContext() {
-		return evaluationContext;
-	}
-	
-	/**
-	 * @param evaluationContext the evaluationContext to set
-	 */
-	@Element(required = false)
-	@Deprecated
-	public void setEvaluationContext(EvaluationContext evaluationContext) {
-		this.evaluationContext = evaluationContext;
 	}
 	
 	/**

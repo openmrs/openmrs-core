@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.activelist;
 
@@ -21,7 +17,7 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 
 /**
- * TODO
+ * Active list item is the abstraction of an entry within a clinical list. Active lists can be of two types which are  allergies and problems.
  */
 public abstract class ActiveListItem extends BaseOpenmrsData {
 	
@@ -46,10 +42,23 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 	protected ActiveListItem() {
 	}
 	
+	/**
+	 * Construct an Active List item with a given id
+	 *
+	 * @param activeListId the activeListId to set. This parameter is the id of the active list item.
+	 */
 	protected ActiveListItem(Integer activeListId) {
 		this.activeListId = activeListId;
 	}
 	
+	/**
+	 * Convenience constructor to construct an active list item with a given person, active list type, concept and start date
+	 *
+	 * @param person the person to set this active list item
+	 * @param activeListType the type of activeList
+	 * @param concept the concept to set
+	 * @param startDate the startDate to set, when the active list item occurred
+	 */
 	protected ActiveListItem(Person person, ActiveListType activeListType, Concept concept, Date startDate) {
 		this.person = person;
 		this.activeListType = activeListType;
@@ -73,10 +82,16 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 		setActiveListId(id);
 	}
 	
+	/**
+	 * @param activeListId the active list id to set
+	 */
 	public void setActiveListId(Integer activeListId) {
 		this.activeListId = activeListId;
 	}
 	
+	/**
+	 * @return the activeListId
+	 */
 	public Integer getActiveListId() {
 		return activeListId;
 	}

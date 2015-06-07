@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
@@ -84,12 +80,15 @@ public interface OrderService extends OpenmrsService {
 	 * @should fail if the careSetting of the previous order does not match
 	 * @should set concept for drug orders if null
 	 * @should pass for a discontinuation order with no previous order
-	 * @should fail if an active order for the same concept and care setting exists
+	 * @should fail if an active drug order for the same concept and care setting exists
+	 * @should pass if an active test order for the same concept and care setting exists
 	 * @should pass if an active order for the same concept exists in a different care setting
 	 * @should set Order type of Drug Order to drug order if not set and concept not mapped
 	 * @should set Order type of Test Order to test order if not set and concept not mapped
 	 * @should fail if an active drug order for the same drug formulation exists
 	 * @should pass if an active order for the same concept exists in a different care setting
+	 * @should fail for revision order if an active drug order for the same concept and care settings exists
+	 * @should pass for revision order if an active test order for the same concept and care settings exists
 	 * @should roll the autoExpireDate to the end of the day if it has no time component
 	 * @should not change the autoExpireDate if it has a time component
 	 */

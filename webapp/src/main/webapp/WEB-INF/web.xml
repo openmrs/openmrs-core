@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
@@ -109,15 +120,6 @@
 	<servlet-mapping>
 		<servlet-name>downloadDictionaryServlet</servlet-name>
 		<url-pattern>/downloadDictionary.csv</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>mrnGeneratorServlet</servlet-name>
-		<servlet-class>org.openmrs.web.servlet.MRNGeneratorServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>mrnGeneratorServlet</servlet-name>
-		<url-pattern>/mrnGenerator</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
@@ -261,7 +263,7 @@
 	      hibernate filter (to help with lazy loading) -->
 	<filter>
         <filter-name>HibernateFilter</filter-name>
-        <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+        <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
     </filter>
     <filter-mapping>
 		<filter-name>HibernateFilter</filter-name> 
@@ -401,7 +403,7 @@
 	
 	<servlet>
 		<servlet-name>jsp</servlet-name>
-		<servlet-class>org.openmrs.web.OpenmrsJspServlet</servlet-class>
+		<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
 	</servlet>
 	
 	<!-- Gives access to servlets within modules -->

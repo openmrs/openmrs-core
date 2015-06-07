@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.module;
 
@@ -257,7 +253,8 @@ public class ModuleUtil {
 	 * @should not match when version has wild card and is outside boundary
 	 */
 	public static boolean matchRequiredVersions(String version, String versionRange) {
-		if (versionRange != null && !versionRange.equals("")) {
+		// There is a null check so no risk in keeping the literal on the right side
+		if (StringUtils.isNotEmpty(versionRange)) {
 			String[] ranges = versionRange.split(",");
 			for (String range : ranges) {
 				// need to externalize this string
@@ -275,8 +272,9 @@ public class ModuleUtil {
 					while (indexOfSeparator > 0) {
 						lowerBound = range.substring(0, indexOfSeparator);
 						upperBound = range.substring(indexOfSeparator + 1);
-						if (upperBound.matches("^\\s?\\d+.*"))
+						if (upperBound.matches("^\\s?\\d+.*")) {
 							break;
+						}
 						indexOfSeparator = range.indexOf(separator, indexOfSeparator + 1);
 					}
 					
@@ -287,12 +285,14 @@ public class ModuleUtil {
 					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
 					
 					// if the lower contains "*" then change it to zero
-					if (lowerBound.indexOf("*") > 0)
+					if (lowerBound.indexOf("*") > 0) {
 						lowerBound = lowerBound.replaceAll("\\*", "0");
+					}
 					
 					// if the upper contains "*" then change it to maxRevisionNumber
-					if (upperBound.indexOf("*") > 0)
+					if (upperBound.indexOf("*") > 0) {
 						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
+					}
 					
 					int lowerReturn = compareVersion(version, lowerBound);
 					
@@ -517,7 +517,7 @@ public class ModuleUtil {
 				if (name == null || jarEntry.getName().startsWith(name)) {
 					String entryName = jarEntry.getName();
 					// trim out the name path from the name of the new file
-					if (keepFullPath == false && name != null) {
+					if (!keepFullPath && name != null) {
 						entryName = entryName.replaceFirst(name, "");
 					}
 					
@@ -529,7 +529,7 @@ public class ModuleUtil {
 						log.debug("Creating parent dirs: " + parent.getAbsolutePath());
 					}
 					// we don't want to "expand" directories or empty names
-					if (entryName.endsWith("/") || entryName.equals("")) {
+					if (entryName.endsWith("/") || "".equals(entryName)) {
 						continue;
 					}
 					input = jarFile.getInputStream(jarEntry);
@@ -654,7 +654,7 @@ public class ModuleUtil {
 					http.disconnect();
 					// Redirection should be allowed only for HTTP and HTTPS
 					// and should be limited to 5 redirections at most.
-					if (target == null || !(target.getProtocol().equals("http") || target.getProtocol().equals("https"))
+					if (target == null || !("http".equals(target.getProtocol()) || "https".equals(target.getProtocol()))
 					        || redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
 					}
@@ -720,7 +720,7 @@ public class ModuleUtil {
 		
 		for (Module mod : ModuleFactory.getLoadedModules()) {
 			String updateURL = mod.getUpdateURL();
-			if (updateURL != null && !updateURL.equals("")) {
+			if (StringUtils.isNotEmpty(updateURL)) {
 				try {
 					// get the contents pointed to by the url
 					URL url = new URL(updateURL);
@@ -731,7 +731,7 @@ public class ModuleUtil {
 					String content = getURL(url);
 					
 					// skip empty or invalid updates
-					if (content.equals("")) {
+					if ("".equals(content)) {
 						continue;
 					}
 					
@@ -1065,7 +1065,7 @@ public class ModuleUtil {
 	 */
 	public static Collection<String> getPackagesFromFile(File file) {
 		
-		// end early if we're given a non jar file
+		// End early if we're given a non jar file
 		if (!file.getName().endsWith(".jar")) {
 			return Collections.<String> emptySet();
 		}
@@ -1080,31 +1080,35 @@ public class ModuleUtil {
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = jarEntries.nextElement();
 				if (jarEntry.isDirectory()) {
-					// skip over directory entries, we only care about dirs with files in it
+					// skip over directory entries, we only care about files
 					continue;
 				}
 				String name = jarEntry.getName();
+				
+				// Skip over some folders in the jar/omod
+				if (name.startsWith("lib") || name.startsWith("META-INF") || name.startsWith("web/module")) {
+					continue;
+				}
+				
 				Integer indexOfLastSlash = name.lastIndexOf("/");
 				if (indexOfLastSlash <= 0) {
 					continue;
 				}
 				String packageName = name.substring(0, indexOfLastSlash);
 				
-				// skip over some folders in the jar/omod
-				if (packageName.equals("lib") || packageName.equals("META-INF") || packageName.startsWith("web/module")) {
-					continue;
-				}
-				
 				packageName = packageName.replaceAll("/", ".");
 				
 				if (packagesProvided.add(packageName)) {
-					log.trace("Adding module's jarentry with package: " + packageName);
+					if (log.isTraceEnabled()) {
+						log.trace("Adding module's jarentry with package: " + packageName);
+					}
 				}
 			}
 			
+			jar.close();
 		}
 		catch (IOException e) {
-			log.error("Unable to open jar from file: " + file.getAbsolutePath(), e);
+			log.error("Error while reading file: " + file.getAbsolutePath(), e);
 		}
 		finally {
 			if (jar != null) {
@@ -1112,31 +1116,10 @@ public class ModuleUtil {
 					jar.close();
 				}
 				catch (IOException e) {
-					// do nothing
+					// Ignore quietly
 				}
 			}
-			
 		}
-		
-		// clean up packages contained within other packages this is
-		// O(n^2), but its better than putting extra packages into the
-		// set and having the classloader continually loop over them
-		Set<String> packagesProvidedCopy = new HashSet<String>();
-		packagesProvidedCopy.addAll(packagesProvided);
-		
-		for (String packageNameOuter : packagesProvidedCopy) {
-			// add the period so that we don't match to ourselves or to
-			// similarly named packages. eg. org.pih and org.pihrwanda
-			// should not match
-			packageNameOuter += ".";
-			for (String packageNameInner : packagesProvidedCopy) {
-				if (packageNameInner.contains(packageNameOuter)) {
-					packagesProvided.remove(packageNameInner);
-				}
-			}
-			
-		}
-		// end cleanup
 		
 		return packagesProvided;
 	}
@@ -1198,8 +1181,9 @@ public class ModuleUtil {
 				log.warn("Could not delete temporary jarfile: " + tempFile);
 			}
 			try {
-				if (innerJarFile != null)
+				if (innerJarFile != null) {
 					innerJarFile.close();
+				}
 			}
 			catch (IOException e) {
 				log.warn("Unable to close inner jarfile: " + innerJarFile, e);

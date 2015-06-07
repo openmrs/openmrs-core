@@ -1,14 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.validator;
 
@@ -44,6 +41,9 @@ public class RelationshipValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 *
 	 * @should fail if end date is prior to the start date
+	 * @should fail if start date is a future date
+	 * @should pass validation if field lengths are correct
+	 * @should fail validation if field lengths are not correct
 	 * @param target Relationship object to be validate
 	 * @param errors Error object to hold any errors encounter in the test
 	 *
@@ -56,9 +56,14 @@ public class RelationshipValidator implements Validator {
 		if (relationship != null) {
 			Date startDate = relationship.getStartDate();
 			Date endDate = relationship.getEndDate();
-			if (startDate != null && endDate != null) {
-				if (startDate.after(endDate)) {
-					errors.reject("Relationship.InvalidEndDate.error");
+			if (startDate != null && endDate != null && startDate.after(endDate)) {
+				errors.reject("Relationship.InvalidEndDate.error");
+			}
+			ValidateUtil.validateFieldLengths(errors, target.getClass(), "voidReason");
+			if (startDate != null) {
+				Date currentDate = new Date();
+				if (startDate.after(currentDate)) {
+					errors.reject("error.date.future");
 				}
 			}
 		}

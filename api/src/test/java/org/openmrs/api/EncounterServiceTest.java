@@ -1,19 +1,14 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.api;
 
-import org.hibernate.cfg.Environment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -29,13 +24,15 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Provider;
 import org.openmrs.Role;
+import org.openmrs.TestOrder;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
-import org.openmrs.TestOrder;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
@@ -55,7 +52,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import static org.junit.Assert.assertEquals;
@@ -74,6 +72,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String UNIQUE_ENC_WITH_PAGING_XML = "org/openmrs/api/include/EncounterServiceTest-pagingWithUniqueEncounters.xml";
 	
+	protected static final String TRANSFER_ENC_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-transferEncounter.xml";
+	
 	/**
 	 * This method is run before all of the tests in this class because it has the @Before
 	 * annotation on it. This will add the contents of {@link #ENC_INITIAL_DATA_XML} to the current
@@ -85,16 +85,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ENC_INITIAL_DATA_XML);
-	}
-	
-	@Override
-	public Properties getRuntimeProperties() {
-		Properties props = super.getRuntimeProperties();
-		String url = props.getProperty(Environment.URL);
-		if (url.contains("jdbc:h2:") && !url.contains(";MVCC=TRUE")) {
-			props.setProperty(Environment.URL, url + ";MVCC=TRUE");
-		}
-		return props;
 	}
 	
 	/**
@@ -1679,13 +1669,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = Context.getEncounterService().saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		Provider provider2 = new Provider();
-		provider2.setName("provider2");
 		provider2.setIdentifier("id2");
+		provider2.setPerson(newPerson("name2"));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -1731,13 +1721,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role2 = Context.getEncounterService().saveEncounterRole(role2);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name1"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		Provider provider2 = new Provider();
-		provider2.setName("provider2");
 		provider2.setIdentifier("id2");
+		
+		provider2.setPerson(newPerson("name2"));
 		provider2 = Context.getProviderService().saveProvider(provider2);
 		
 		encounter.addProvider(role, provider);
@@ -2002,8 +1993,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2041,8 +2032,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2091,8 +2083,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		role = encounterService.saveEncounterRole(role);
 		
 		Provider provider = new Provider();
-		provider.setName("provider");
 		provider.setIdentifier("id1");
+		provider.setPerson(newPerson("name"));
 		provider = Context.getProviderService().saveProvider(provider);
 		
 		encounter.addProvider(role, provider);
@@ -2689,5 +2681,87 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("valid EncounterROle object should be returned", encounterRoles);
 		assertEquals(encounterRoles.size(), 1);
 		assertEquals(encounterRoles.get(0).getName(), name);
+	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 */
+	@Test
+	@Verifies(value = "transfer an encounter with orders and observations to given patient", method = "transferEncounter(Encounter,Patient)")
+	public void transferEncounter_shouldTransferAnEncounterWithOrdersAndObservationsToGivenPatient() throws Exception {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient targetPatient = Context.getPatientService().getPatient(201);
+		// encounter has 2 obs which are connected with the same order
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(201);
+		
+		Assert.assertEquals(1, sourceEncounter.getOrders().size());
+		Assert.assertEquals(2, sourceEncounter.getObs().size());
+		
+		//transfer
+		Encounter transferredEncounter = Context.getEncounterService().transferEncounter(sourceEncounter, targetPatient);
+		List<Order> transferredOrders = new ArrayList<Order>(transferredEncounter.getOrders());
+		List<Obs> transferredObservations = new ArrayList<Obs>(transferredEncounter.getObs());
+		
+		//check if transferredEncounter is newly created encounter
+		Assert.assertNotEquals(sourceEncounter.getId(), transferredEncounter.getId());
+		Assert.assertEquals(targetPatient, transferredEncounter.getPatient());
+		
+		//check order
+		Assert.assertEquals(1, transferredOrders.size());
+		Order transferredOrder = transferredOrders.get(0);
+		Assert.assertEquals(targetPatient, transferredOrder.getPatient());
+		
+		//check obs
+		Assert.assertEquals(2, transferredObservations.size());
+		Assert.assertEquals(targetPatient, transferredObservations.get(0).getPerson());
+		Assert.assertEquals(targetPatient, transferredObservations.get(1).getPerson());
+		
+		//check if obs has reference to the same order
+		Assert.assertEquals(transferredOrder, transferredObservations.get(0).getOrder());
+		Assert.assertEquals(transferredOrder, transferredObservations.get(1).getOrder());
+		Assert.assertSame(transferredObservations.get(0).getOrder(), transferredObservations.get(1).getOrder());
+		
+		//check if form is transferred
+		Assert.assertNotNull(transferredEncounter.getForm());
+	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 */
+	@Test
+	@Verifies(value = "void given encounter", method = "transferEncounter(Encounter,Patient)")
+	public void transferEncounter_shouldVoidGivenEncounter() throws Exception {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient anyPatient = new Patient(2);
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(200);
+		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
+		//get fresh encounter from db
+		Encounter sourceEncounterAfterTransfer = Context.getEncounterService().getEncounter(sourceEncounter.getId());
+		Assert.assertTrue(sourceEncounterAfterTransfer.isVoided());
+	}
+	
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 */
+	@Test
+	@Verifies(value = "void given encounter visit if given encounter is the only encounter", method = "transferEncounter(Encounter,Patient)")
+	public void transferEncounter_shouldVoidGivenEncounterVisitIfGivenEncounterIsTheOnlyEncounter() throws Exception {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient anyPatient = new Patient(2);
+		//belongs to visit with id 2 (has this encounter only)
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(200);
+		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
+		Visit visit = Context.getVisitService().getVisit(200);
+		Assert.assertTrue(visit.isVoided());
+	}
+	
+	private Person newPerson(String name) {
+		Person person = new Person();
+		Set<PersonName> personNames = new TreeSet<PersonName>();
+		PersonName personName = new PersonName();
+		personName.setFamilyName(name);
+		personNames.add(personName);
+		person.setNames(personNames);
+		return person;
 	}
 }

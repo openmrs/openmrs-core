@@ -1,15 +1,11 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
  *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.test;
 
@@ -30,7 +26,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
@@ -45,6 +43,8 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dbunit.DatabaseUnitException;
@@ -64,8 +64,10 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
+import org.hibernate.jdbc.ReturningWork;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -73,6 +75,7 @@ import org.mockito.MockitoAnnotations;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.User;
+import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
@@ -216,6 +219,49 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * Allows to ignore the test if the environment does not match the given parameters.
+	 * 
+	 * @param openmrsPlatformVersion
+	 * @param modules
+	 * @since 1.11.3, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsProfile(String openmrsPlatformVersion, String... modules) {
+		OpenmrsProfileExcludeFilter filter = new OpenmrsProfileExcludeFilter();
+		Map<String, Object> profile = new HashMap<String, Object>();
+		profile.put("openmrsPlatformVersion", openmrsPlatformVersion);
+		if (modules != null) {
+			profile.put("modules", modules);
+		} else {
+			profile.put("modules", new String[0]);
+		}
+		String errorMessage = "Ignored. Expected profile: {openmrsPlatformVersion=" + openmrsPlatformVersion + ", modules=["
+		        + StringUtils.join((String[]) profile.get("modules"), ", ") + "]}";
+		Assume.assumeTrue(errorMessage, filter.matchOpenmrsProfileAttributes(profile));
+	}
+	
+	/**
+	 * Allows to ignore the test if the given modules are not running.
+	 * 
+	 * @param module in the format moduleId:version
+	 * @param modules additional list of modules in the format moduleId:version
+	 * @since 1.11.3, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsModules(String module, String... modules) {
+		String[] allModules = ArrayUtils.addAll(modules, module);
+		assumeOpenmrsProfile(null, allModules);
+	}
+	
+	/**
+	 * Allows to ignore the test if the environment does not match the given OpenMRS version.
+	 * 
+	 * @param openmrsPlatformVersion
+	 * @since 1.11.3, 1.10.2, 1.9.9
+	 */
+	public void assumeOpenmrsPlatformVersion(String openmrsPlatformVersion) {
+		assumeOpenmrsProfile(openmrsPlatformVersion);
+	}
+	
+	/**
 	 * Get the number of times this class has been loaded. This is a rough approx of how many tests
 	 * have been run so far. This can be used to determine if the test is being run in a standalone
 	 * context or if other tests have been run before.
@@ -254,15 +300,17 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// properties
 		if (useInMemoryDatabase() == true) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			runtimeProperties.setProperty(Environment.URL, "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000");
+			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
+			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
 			runtimeProperties.setProperty(Environment.PASS, "");
 			
-			// these two properties need to be set in case the user has this exact
+			// these properties need to be set in case the user has this exact
 			// phrasing in their runtime file.
 			runtimeProperties.setProperty("connection.username", "sa");
 			runtimeProperties.setProperty("connection.password", "");
+			runtimeProperties.setProperty("connection.url", url);
 			
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
@@ -478,7 +526,13 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public Connection getConnection() {
 		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 		
-		return sessionFactory.getCurrentSession().connection();
+		return sessionFactory.getCurrentSession().doReturningWork(new ReturningWork<Connection>() {
+			
+			@Override
+			public Connection execute(Connection connection) throws SQLException {
+				return connection;
+			}
+		});
 	}
 	
 	/**
@@ -490,6 +544,15 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (!useInMemoryDatabase())
 			throw new Exception(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
+		/*
+		 * Hbm2ddl used in tests creates primary key columns, which are not auto incremented, if
+		 * NativeIfNotAssignedIdentityGenerator is used. We need to alter those columns in tests.
+		 */
+		List<String> tables = Arrays.asList("concept", "active_list");
+		for (String table : tables) {
+			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
+			        .execute();
+		}
 		
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 	}
@@ -804,9 +867,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	/**
 	 * It needs to be call if you want to do a concept search after you modify a concept in a test.
-	 * 
-	 * It is because index is automatically updated only after transaction is committed, which happens
-	 * only at the end of a test in our transactional tests.
+	 * It is because index is automatically updated only after transaction is committed, which
+	 * happens only at the end of a test in our transactional tests.
 	 */
 	public void updateSearchIndex() {
 		for (Class<?> indexType : getIndexedTypes()) {
