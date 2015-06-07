@@ -282,9 +282,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
-		// add/remove entries in the concept_word table (used for searching)
-		this.updateConceptIndex(conceptToReturn);
-		
 		return conceptToReturn;
 	}
 	
@@ -1067,31 +1064,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	@Transactional(readOnly = true)
 	public Concept getNextConcept(Concept c) {
 		return dao.getNextConcept(c);
-	}
-	
-	/**
-	 * Convenience method
-	 * 
-	 * @param parent
-	 * @param subList
-	 * @return
-	 */
-	private Boolean containsAll(Collection<String> parent, Collection<String> subList) {
-		
-		for (String s : subList) {
-			s = s.toUpperCase();
-			boolean found = false;
-			for (String p : parent) {
-				p = p.toUpperCase();
-				if (p.startsWith(s)) {
-					found = true;
-				}
-			}
-			if (!found) {
-				return false;
-			}
-		}
-		return true;
 	}
 	
 	/**

@@ -333,11 +333,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#saveRole(org.openmrs.Role)
 	 */
 	public Role saveRole(Role role) throws APIException {
-		
 		// make sure one of the parents of this role isn't itself...this would
 		// cause an infinite loop
 		if (role.getAllParentRoles().contains(role)) {
-			throw new APIAuthenticationException("Invalid Role or parent Role.  A role cannot inherit itself.");
+			throw new APIException("Role.cannot.inherit.descendant", (Object[]) null);
 		}
 		
 		checkPrivileges(role);

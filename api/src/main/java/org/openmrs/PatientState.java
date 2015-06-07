@@ -190,7 +190,9 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	 * @should return negative if this startDate null
 	 * @should pass if two states have the same start date, end date and uuid
 	 * @should return positive or negative if two states have the same start date and end date but different uuids
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	@Override
 	public int compareTo(PatientState o) {
 		int result = OpenmrsUtil.compareWithNullAsEarliest(getStartDate(), o.getStartDate());

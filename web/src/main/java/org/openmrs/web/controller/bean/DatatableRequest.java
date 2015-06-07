@@ -401,5 +401,4 @@ public class DatatableRequest {
 		}
 		return values;
 	}
-	
 }

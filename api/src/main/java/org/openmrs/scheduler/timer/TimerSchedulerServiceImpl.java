@@ -438,7 +438,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 	 * Get system variables.
 	 */
 	public SortedMap<String, String> getSystemVariables() {
-		TreeMap<String, String> systemVariables = new TreeMap<String, String>();
+		SortedMap<String, String> systemVariables = new TreeMap<String, String>();
 		// scheduler username and password can be found in the global properties
 		// TODO Look into java.util.concurrent.TimeUnit class.  
 		// TODO Remove this from global properties.  This is a constant value that should never change.  

@@ -23,7 +23,7 @@
 			</generator>
 		</id>
 		
-		<discriminator column="location_tag_id" insert="false" />
+		
 		
 		<property name="name" type="java.lang.String" not-null="true" length="50"/>
 		<property name="description" type="java.lang.String" length="255" />

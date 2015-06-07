@@ -12,13 +12,14 @@ package org.openmrs.util;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -62,7 +63,7 @@ public class FormUtil {
 		
 		// special characters that should be replaced with valid text
 		// all other invalid characters will be removed
-		Hashtable<String, String> swapChars = new Hashtable<String, String>();
+		Map<String, String> swapChars = new HashMap<String, String>();
 		swapChars.put("!", "bang");
 		swapChars.put("#", "pound");
 		swapChars.put("\\*", "star");
@@ -151,8 +152,8 @@ public class FormUtil {
 	 * @return sorted map of <code>FormField</code>s, where the top-level fields are under the key
 	 *         zero and all other leaves are stored under their parent <code>FormField</code>'s id.
 	 */
-	public static TreeMap<Integer, TreeSet<FormField>> getFormStructure(Form form) {
-		TreeMap<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
+	public static Map<Integer, TreeSet<FormField>> getFormStructure(Form form) {
+		Map<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
 		Integer base = Integer.valueOf(0);
 		formStructure.put(base, new TreeSet<FormField>());
 		

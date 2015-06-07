@@ -272,8 +272,9 @@ public class ModuleUtil {
 					while (indexOfSeparator > 0) {
 						lowerBound = range.substring(0, indexOfSeparator);
 						upperBound = range.substring(indexOfSeparator + 1);
-						if (upperBound.matches("^\\s?\\d+.*"))
+						if (upperBound.matches("^\\s?\\d+.*")) {
 							break;
+						}
 						indexOfSeparator = range.indexOf(separator, indexOfSeparator + 1);
 					}
 					
@@ -284,12 +285,14 @@ public class ModuleUtil {
 					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
 					
 					// if the lower contains "*" then change it to zero
-					if (lowerBound.indexOf("*") > 0)
+					if (lowerBound.indexOf("*") > 0) {
 						lowerBound = lowerBound.replaceAll("\\*", "0");
+					}
 					
 					// if the upper contains "*" then change it to maxRevisionNumber
-					if (upperBound.indexOf("*") > 0)
+					if (upperBound.indexOf("*") > 0) {
 						upperBound = upperBound.replaceAll("\\*", Integer.toString(Integer.MAX_VALUE));
+					}
 					
 					int lowerReturn = compareVersion(version, lowerBound);
 					
@@ -1178,8 +1181,9 @@ public class ModuleUtil {
 				log.warn("Could not delete temporary jarfile: " + tempFile);
 			}
 			try {
-				if (innerJarFile != null)
+				if (innerJarFile != null) {
 					innerJarFile.close();
+				}
 			}
 			catch (IOException e) {
 				log.warn("Unable to close inner jarfile: " + innerJarFile, e);

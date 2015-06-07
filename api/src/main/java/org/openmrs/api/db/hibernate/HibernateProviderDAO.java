@@ -9,11 +9,15 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Junction;
@@ -29,10 +33,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.util.OpenmrsConstants;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Hibernate specific Provider related functions. This class should not be used directly. All calls

@@ -323,9 +323,10 @@ public abstract class BaseCommandController extends AbstractController {
 	protected void initApplicationContext() {
 		if (this.validators != null) {
 			for (int i = 0; i < this.validators.length; i++) {
-				if (this.commandClass != null && !this.validators[i].supports(this.commandClass))
+				if (this.commandClass != null && !this.validators[i].supports(this.commandClass)) {
 					throw new IllegalArgumentException("Validator [" + this.validators[i]
 					        + "] does not support command class [" + this.commandClass.getName() + "]");
+				}
 			}
 		}
 	}

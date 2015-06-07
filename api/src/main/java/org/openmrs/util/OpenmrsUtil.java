@@ -2064,22 +2064,6 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * By default java will escape colons and equal signs when writing properites files. <br/>
-	 * <br/>
-	 * This method turns escaped colons into colons and escaped equal signs into just equal signs.
-	 * 
-	 * @param value the value portion of a properties file to fix
-	 * @return the value with escaped characters fixed
-	 */
-	private static String fixPropertiesValueString(String value) {
-		String returnString = value.replace("\n", "");
-		returnString = returnString.replace("\\:", ":");
-		returnString = returnString.replace("\\=", "=");
-		
-		return returnString;
-	}
-	
-	/**
 	 * Utility method for getting the translation for the passed code
 	 * 
 	 * @param code the message key to lookup

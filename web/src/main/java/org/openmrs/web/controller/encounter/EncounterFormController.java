@@ -128,7 +128,7 @@ public class EncounterFormController extends SimpleFormController {
 				EncounterService es = Context.getEncounterService();
 				if (providerIdsArray != null && roleIdsArray != null) {
 					//list to store role provider mappings to be used below to detect removed providers
-					ArrayList<String> unremovedRoleAndProviders = new ArrayList<String>();
+					List<String> unremovedRoleAndProviders = new ArrayList<String>();
 					for (int i = 0; i < providerIdsArray.length; i++) {
 						if (StringUtils.hasText(providerIdsArray[i]) && StringUtils.hasText(roleIdsArray[i])) {
 							unremovedRoleAndProviders.add(roleIdsArray[i] + "-" + providerIdsArray[i]);

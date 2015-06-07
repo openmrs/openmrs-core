@@ -246,6 +246,98 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should save non ConceptComplex object as conceptComplex", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveNonConceptComplexObjectAsConceptComplex() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// this tests saving a current concept as a newly changed conceptComplex
+		// assumes there is already a concept in the database
+		// with a concept id of #1
+		ConceptComplex cn = new ConceptComplex(1);
+		cn.setDatatype(new ConceptDatatype(13));
+		cn.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn.setHandler("SomeHandler");
+		conceptService.saveConcept(cn);
+		
+		Concept firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		ConceptComplex firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+		
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "save changes between concept numeric and complex", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveChangesBetweenConceptNumericAndComplex() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		//save a concept numeric
+		ConceptNumeric cn = new ConceptNumeric(1);
+		cn.setDatatype(new ConceptDatatype(1));
+		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.setHiAbsolute(20.0);
+		conceptService.saveConcept(cn);
+		
+		//confirm that we saved a concept numeric
+		Concept firstConcept = conceptService.getConceptNumeric(1);
+		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptNumeric);
+		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
+		
+		//change to concept complex
+		ConceptComplex cn2 = new ConceptComplex(1);
+		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.setHandler("SomeHandler");
+		conceptService.saveConcept(cn2);
+		
+		//confirm that we saved a concept complex
+		firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		ConceptComplex firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+		
+		//change to concept numeric
+		cn = new ConceptNumeric(1);
+		ConceptDatatype dt = new ConceptDatatype(1);
+		dt.setName("Numeric");
+		cn.setDatatype(dt);
+		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		cn.setHiAbsolute(20.0);
+		conceptService.saveConcept(cn);
+		
+		//confirm that we saved a concept numeric
+		firstConcept = conceptService.getConceptNumeric(1);
+		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptNumeric);
+		firstConceptNumeric = (ConceptNumeric) firstConcept;
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute(), 0);
+		
+		//change to concept complex
+		cn2 = new ConceptComplex(1);
+		cn2.setDatatype(new ConceptDatatype(13));
+		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
+		cn2.setHandler("SomeHandler");
+		conceptService.saveConcept(cn2);
+		
+		//confirm we saved a concept complex
+		firstConcept = conceptService.getConceptComplex(1);
+		assertEquals("a new conceptComplex", firstConcept.getName(Locale.US).getName());
+		assertTrue(firstConcept instanceof ConceptComplex);
+		firstConceptComplex = (ConceptComplex) firstConcept;
+		assertEquals("SomeHandler", firstConceptComplex.getHandler());
+	}
+	
+	/**
 	 * @see {@link ConceptService#getConceptComplex(Integer)}
 	 */
 	@Test
@@ -2624,10 +2716,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should not fail with null Classes and Datatypes", method = "getConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)")
 	public void getConcepts_shouldNotFailWithNullClassesAndDatatypes() throws Exception {
-		
 		ConceptService conceptService = Context.getConceptService();
-		Concept concept = conceptService.getConcept(7);
-		conceptService.updateConceptIndex(concept);
 		Assert.assertNotNull(conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
 		    null, null, null, null, null, null));
 	}
@@ -2642,8 +2731,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not fail with null Classes and Datatypes", method = "getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes, Concept answersToConcept)")
 	public void getCountOfConcepts_shouldNotFailWithNullClassesAndDatatypes() throws Exception {
 		ConceptService conceptService = Context.getConceptService();
-		Concept concept = conceptService.getConcept(7);
-		conceptService.updateConceptIndex(concept);
 		Assert.assertNotNull(conceptService.getCountOfConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false,
 		    null, null, null, null, null));
 	}
@@ -3227,6 +3314,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		c2.setConceptClass(cc3);
 		c2.setDatatype(dt);
 		cs.saveConcept(c2);
+		
+		updateSearchIndex();
 		
 		List<ConceptSearchResult> conceptSearchResultList = Context.getConceptService().getOrderableConcepts("one",
 		    Collections.singletonList(locale), true, null, null);

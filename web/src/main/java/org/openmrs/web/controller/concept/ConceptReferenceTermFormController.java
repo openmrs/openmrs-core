@@ -288,7 +288,7 @@ public class ConceptReferenceTermFormController {
 		@SuppressWarnings("unchecked")
 		public ConceptReferenceTermModel(ConceptReferenceTerm conceptReferenceTerm) {
 			this.conceptReferenceTerm = conceptReferenceTerm;
-			ArrayList<ConceptReferenceTermMap> maps = null;
+			List<ConceptReferenceTermMap> maps = null;
 			if (conceptReferenceTerm.getConceptReferenceTermMaps().size() == 0) {
 				maps = new ArrayList<ConceptReferenceTermMap>();
 				maps.add(new ConceptReferenceTermMap(null, null));

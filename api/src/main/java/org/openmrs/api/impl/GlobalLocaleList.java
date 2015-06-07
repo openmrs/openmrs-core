@@ -24,7 +24,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class GlobalLocaleList implements GlobalPropertyListener {
 	
-	private LinkedHashSet<Locale> allowedLocales = null;
+	private Set<Locale> allowedLocales = null;
 	
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)

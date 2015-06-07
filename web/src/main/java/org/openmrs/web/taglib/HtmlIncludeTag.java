@@ -183,7 +183,7 @@ public class HtmlIncludeTag extends TagSupport {
 			
 			// retrieve the htmlinclude map from the page request
 			//HashMap<String,String> hmIncludeMap = (HashMap<String, String>) initialRequest.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
-			HashMap<String, String> hmIncludeMap = (HashMap<String, String>) pageContext.getAttribute(
+			Map<String, String> hmIncludeMap = (Map<String, String>) pageContext.getAttribute(
 			    HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE);
 			
 			// reset the hmIncludeMap if not found or if not on the initial request anymore

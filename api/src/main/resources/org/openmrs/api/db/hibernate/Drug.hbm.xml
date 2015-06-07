@@ -21,9 +21,7 @@
 				<param name="sequence">drug_drug_id_seq</param>
 			</generator>
 		</id>
-
-		<discriminator column="drug_id" insert="false" />
-
+		
 		<property name="name" type="java.lang.String" length="255" />
 		<property name="combination" type="java.lang.Boolean" length="1"
 			not-null="true" />

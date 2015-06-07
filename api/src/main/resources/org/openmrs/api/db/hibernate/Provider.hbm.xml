@@ -23,7 +23,7 @@
 			<generator class="native" />
 		</id>
 
-		<discriminator column="provider_id" insert="false" />
+		
 
 		<many-to-one name="person" class="Person" column="person_id"
 			cascade="save-update" />

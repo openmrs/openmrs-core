@@ -65,5 +65,4 @@ public class VisitTypeListController extends SimpleFormController {
 		
 		return visitTypeList;
 	}
-	
 }

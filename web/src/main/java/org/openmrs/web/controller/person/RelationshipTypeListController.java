@@ -65,5 +65,4 @@ public class RelationshipTypeListController extends SimpleFormController {
 		
 		return relationshipTypeList;
 	}
-	
 }

@@ -37,7 +37,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.TEXT_VIEW, ComplexObsHandler.RAW_VIEW,
-	        ComplexObsHandler.URI_VIEW, };
+	        ComplexObsHandler.URI_VIEW };
 	
 	public static final Log log = LogFactory.getLog(TextHandler.class);
 	
@@ -76,15 +76,14 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 			}
 		} else if (ComplexObsHandler.URI_VIEW.equals(view)) {
 			complexData = new ComplexData(file.getName(), file.getPath());
-		}
-		// No other view supported
-		// NOTE: if adding support for another view, don't forget to update supportedViews list above
-		else {
+		} else {
+			// No other view supported
+			// NOTE: if adding support for another view, don't forget to update supportedViews list above
 			return null;
 		}
 		
 		Assert.notNull(complexData, "Complex data must not be null");
-		complexData.setMIMEType("text/plain");
+		complexData.setMimeType("text/plain");
 		obs.setComplexData(complexData);
 		
 		return obs;

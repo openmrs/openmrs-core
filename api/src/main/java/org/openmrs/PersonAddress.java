@@ -437,7 +437,9 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(PersonAddress other) {
 		int retValue = 0;
 		if (other != null) {

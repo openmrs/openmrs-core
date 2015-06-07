@@ -306,7 +306,7 @@ public class FieldGenTag extends TagSupport {
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.type", type);
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.formFieldName", formFieldName);
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameters", OpenmrsUtil.parseParameterList(parameters));
-		HashMap<String, Object> hmParamMap = (HashMap<String, Object>) pageContext.getRequest().getAttribute(
+		Map<String, Object> hmParamMap = (Map<String, Object>) pageContext.getRequest().getAttribute(
 		    "org.openmrs.fieldGen.parameterMap");
 		if (hmParamMap == null) {
 			hmParamMap = new HashMap<String, Object>();

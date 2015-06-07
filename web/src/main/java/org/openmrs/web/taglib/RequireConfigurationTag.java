@@ -58,8 +58,13 @@ public class RequireConfigurationTag extends TagSupport {
 				
 				pageContext.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.configurationRequired");
 				try {
-					log.info("Configuration not complete, missing property (" + p.getProperty()
-					        + ").  Redirecting to page: " + request.getContextPath() + configurationPage);
+					if (p != null) {
+						log.info("Configuration not complete, missing property (" + p.getProperty()
+						        + ").  Redirecting to page: " + request.getContextPath() + configurationPage);
+					} else {
+						log.info("Configuration not complete.  Redirecting to page: " + request.getContextPath()
+						        + configurationPage);
+					}
 					response.sendRedirect(request.getContextPath() + configurationPage);
 					return SKIP_PAGE;
 				}

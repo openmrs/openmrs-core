@@ -123,12 +123,12 @@
          <groupId>stax</groupId>
          <artifactId>stax-api</artifactId>
       </dependency>
-      <dependency>
-        <groupId>javassist</groupId>
-        <artifactId>javassist</artifactId>
+       <dependency>
+         <groupId>org.javassist</groupId>
+         <artifactId>javassist</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.openmrs.hibernate</groupId>
+         <groupId>org.hibernate</groupId>
          <artifactId>hibernate-core</artifactId>
       </dependency>
       <dependency>
@@ -141,7 +141,11 @@
       </dependency>
       <dependency>
          <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-search</artifactId>
+         <artifactId>hibernate-search-orm</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.lucene</groupId>
+         <artifactId>lucene-queryparser</artifactId>
       </dependency>
       <dependency>
          <groupId>org.apache.lucene</groupId>
@@ -157,7 +161,7 @@
       </dependency>
       <dependency>
          <groupId>net.sf.ehcache</groupId>
-         <artifactId>ehcache-core</artifactId>
+         <artifactId>ehcache</artifactId>
       </dependency>
       <dependency>
          <groupId>org.slf4j</groupId>

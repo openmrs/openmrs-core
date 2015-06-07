@@ -23,7 +23,7 @@
 				<param name="sequence">notification_note_note_id_seq</param>
 			</generator>
 		</id>
-		<discriminator column="note_id" insert="false" />
+		
 
 		<property name="text" type="java.lang.String" column="text"
 			not-null="true" length="512" />
