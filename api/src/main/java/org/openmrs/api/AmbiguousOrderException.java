@@ -15,7 +15,7 @@ package org.openmrs.api;
  * @since 1.12
  */
 public class AmbiguousOrderException extends APIException {
-
+	
 	private static final long serialVersionUID = -2946935560419378572L;
 	
 	public AmbiguousOrderException(String message) {
