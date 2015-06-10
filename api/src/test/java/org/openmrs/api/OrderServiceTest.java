@@ -2918,4 +2918,21 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setCareSetting(orderService.getCareSetting(1));
 		order = (DrugOrder) orderService.saveOrder(order, null);
 	}
+	
+	/**
+	 * @see OrderServiceImpl#discontinueExistingOrdersIfNecessary()
+	 * @verifies throw AmbiguousOrderException if disconnecting multiple active drug orders with the same drug
+	 */
+	@Test(expected = AmbiguousOrderException.class)
+	public void saveOrder_shouldThrowAmbiguousOrderExceptionIfDisconnectingMultipleActiveDrugOrdersWithTheSameDrug() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setAction(Order.Action.DISCONTINUE);
+		order.setOrderReasonNonCoded("Discontinue this");
+		order.setDrug(conceptService.getDrug(2));
+		order.setEncounter(encounterService.getEncounter(6));
+		order.setPatient(patientService.getPatient(2));
+		order.setOrderer(providerService.getProvider(1));
+		order.setCareSetting(orderService.getCareSetting(1));
+		order = (DrugOrder) orderService.saveOrder(order, null);
+	}
 }
