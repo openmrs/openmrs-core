@@ -155,6 +155,14 @@ function removeHiddenRows() {
 	}
 }
 
+function fillRandomName() {
+	var nameInputField = document.getElementById("namesByLocale[en].name");
+	var nameInputFieldValue = document.getElementById("namesByLocale[en].name").value;
+	var length = nameInputFieldValue.length;
+	if (length == 0 )
+		nameInputField.value = "SomeRandomString"; //Some random string to be inputted.
+}
+
 function changeSetStatus(obj) {
 	var row = document.getElementById("conceptSetRow");
 	if (obj.checked)
