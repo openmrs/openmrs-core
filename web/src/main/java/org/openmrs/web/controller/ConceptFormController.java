@@ -121,6 +121,10 @@ public class ConceptFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
 	        BindException errors) throws Exception {
 		
+		if (getMessageSourceAccessor().getMessage("Concept.cancel").equals(request.getParameter("action"))) {
+			return new ModelAndView(new RedirectView("index.htm"));
+		}
+		
 		Concept concept = ((ConceptFormBackingObject) object).getConcept();
 		ConceptService cs = Context.getConceptService();
 		
@@ -290,8 +294,11 @@ public class ConceptFormController extends SimpleFormController {
 	protected ConceptFormBackingObject formBackingObject(HttpServletRequest request) throws ServletException {
 		String conceptId = request.getParameter("conceptId");
 		try {
-			ConceptService cs = Context.getConceptService();
-			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
+			Concept concept = null;
+			if (StringUtils.hasText(conceptId)) {
+				concept = Context.getConceptService().getConcept(Integer.valueOf(conceptId));
+			}
+			
 			if (concept == null) {
 				return new ConceptFormBackingObject(new Concept());
 			} else {
