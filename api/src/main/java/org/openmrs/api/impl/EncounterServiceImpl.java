@@ -43,6 +43,8 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.db.EncounterDaoJpa;
+import org.openmrs.api.db.EncounterRoleDaoJpa;
+import org.openmrs.api.db.EncounterTypeDaoJpa;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -71,6 +73,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	
 	@Inject
 	private EncounterDaoJpa encounterDaoJpa;
+
+	@Inject
+	private EncounterRoleDaoJpa encounterRoleDaoJpa;
+
+	@Inject
+	private EncounterTypeDaoJpa encounterTypeDaoJpa;
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#setEncounterDAO(org.openmrs.api.db.EncounterDAO)
@@ -827,7 +835,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException {
-		dao.saveEncounterRole(encounterRole);
+		encounterRoleDaoJpa.save(encounterRole);
 		return encounterRole;
 	}
 	
@@ -871,7 +879,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public EncounterRole getEncounterRoleByName(String name) {
-		return dao.getEncounterRoleByName(name);
+		return encounterRoleDaoJpa.findOneByName(name);
 	}
 	
 	/**

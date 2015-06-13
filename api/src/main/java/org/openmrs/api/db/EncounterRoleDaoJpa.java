@@ -16,4 +16,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Created by spereverziev on 31.05.15.
  */
 public interface EncounterRoleDaoJpa extends JpaRepository<EncounterRole,Integer> {
+    EncounterRole findOneByName(String name);
 }
