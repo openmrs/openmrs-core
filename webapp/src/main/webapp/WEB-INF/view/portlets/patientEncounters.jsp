@@ -59,7 +59,7 @@
             	null
         	],
 			"oLanguage": {
-					"sLengthMenu": 'Show <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select> entries',
+					/*"sLengthMenu": 'Show <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select> entries',*/
 					"sZeroRecords": '<openmrs:message code="Encounter.no.previous"/>'
 			}
 		} );

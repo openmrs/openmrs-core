@@ -1389,7 +1389,7 @@ span.otherHit{
 	text-align: right;
 }
 div#openmrsSearchTable_length{
-	text-align: left; float: left; padding-top: 5px;
+	text-align: left; float: left; padding-top: 5px; visibility: hidden;
 }
 tr.headerRow{
 	background-color: #CCCCCC;
