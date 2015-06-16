@@ -13,11 +13,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+import java.text.SimpleDateFormat;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernatePersonDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -75,4 +80,23 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 		assertNull(personName);
 	}
 	
+	@Test
+	public void savePerson_shouldSavePersonWithBirthDateTime() throws Exception {
+		
+		executeDataSet("org/openmrs/api/db/include/PersonDAOTest-people.xml");
+		
+		HibernatePersonDAO hibernatePersonDAO = (HibernatePersonDAO) applicationContext.getBean("personDAO");
+		
+		Person person = new Person();
+		person.setBirthtime(new SimpleDateFormat("HH:mm:ss").parse("15:23:56"));
+		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-05-29"));
+		person.setDead(false);
+		person.setVoided(false);
+		person.setBirthdateEstimated(false);
+		person.setId(345);
+		hibernatePersonDAO.savePerson(person);
+
+		Person savedPerson = hibernatePersonDAO.getPerson(345);
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-05-29 15:23:56"), savedPerson.getBirthDateTime());
+	}
 }

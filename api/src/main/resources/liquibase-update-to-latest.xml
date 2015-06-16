@@ -7605,4 +7605,15 @@
 		<addForeignKeyConstraint baseTableName="order_type" baseColumnNames="parent" constraintName="order_type_parent_order_type" referencedTableName="order_type" referencedColumnNames="order_type_id"/>
 	</changeSet>
 
+	<changeSet id="201506051103-TRUNK-4727" author="Chethan, Preethi">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="person" columnName="birthtime" /></not>
+		</preConditions>
+		<comment>Adding birthtime column to person</comment>
+
+		<addColumn tableName="person">
+			<column name="birthtime" type="time" />
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
