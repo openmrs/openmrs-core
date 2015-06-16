@@ -37,6 +37,9 @@
 		<property name="birthdateEstimated" type="boolean"
 			column="birthdate_estimated" />
 
+		<property name="birthtime" type="java.sql.Time"
+			column="birthtime"/>
+
 		<property name="dead" type="boolean" length="1" not-null="true" />
 
 		<property name="deathDate" type="java.util.Date"

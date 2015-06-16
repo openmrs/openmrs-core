@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,6 +57,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	private String gender;
 	
 	private Date birthdate;
+	
+	private Date birthtime;
 	
 	private Boolean birthdateEstimated = false;
 	
@@ -121,6 +125,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
+		birthtime = person.getBirthDateTime();
 		birthdateEstimated = person.getBirthdateEstimated();
 		deathdateEstimated = person.getDeathdateEstimated();
 		dead = person.isDead();
@@ -235,6 +240,40 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		this.deathdateEstimated = deathdateEstimated;
 	}
 	
+	/**
+	 * @param birthtime person's time of birth
+	 */
+	@Element(required = false)
+	public void setBirthtime(Date birthtime) {
+		this.birthtime = birthtime;
+	}
+	
+	/**
+	 * @return person's time of birth with the date portion set to the date from person's birthdate
+	 */
+	@Element(required = false)
+	public Date getBirthDateTime() {
+        if(birthdate != null && birthtime != null){
+            String birthDateString = new SimpleDateFormat("yyyy-MM-dd").format(birthdate);
+            String birthTimeString = new SimpleDateFormat("HH:mm:ss").format(birthtime);
+
+            try {
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(birthDateString + " " + birthTimeString);
+            } catch (ParseException e) {
+                log.error(e);
+            }
+        }
+        return null;
+    }
+	
+	/**
+	 * @return person's time of birth.
+	 */
+	@Element(required = false)
+	public Date getBirthtime() {
+        return this.birthtime;
+    }
+
 	/**
 	 * @return Returns the death status.
 	 */
