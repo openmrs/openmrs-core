@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+    <!--
+        People with names and attributes to test searches by names and/or attributes
+    -->
+    <person person_id="42" gender="M" birthdate="1965-09-30" birthtime="12:34:56" birthdate_estimated="0" dead="false" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="29BF6F2B-0CE4-4CDB-A9BD-231E1B01C044"/>
+    <person person_id="43" gender="M" birthdate="1995-09-30" birthdate_estimated="0" dead="false" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="BB3D4E98-1804-471E-B4B5-5180C1ECCEA0"/>
+
+    <person_name person_name_id="42" preferred="true" person_id="42" prefix="Mr." given_name="Bilbo Odilon" middle_name="B." family_name="Baggins" family_name2="Senior" family_name_suffix="Hobbit" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" void_reason="" uuid="1305DB6D-9F74-434A-AA11-7E0B62DA8153"/>
+    <person_name person_name_id="43" preferred="true" person_id="43" prefix="Mr." given_name="Frodo Ansilon" middle_name="F." family_name="Baggins" family_name2="Junior" family_name_suffix="Hobbit" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" void_reason="" uuid="FF981B8A-6692-4CBF-8BB9-74BFB3F62357"/>
+
+    <person_attribute_type person_attribute_type_id="44" name="Profession" description="Profession of this person" format="java.lang.String" searchable="true" creator="1" date_created="2013-03-01 12:34:56.7" retired="false" uuid="AB9F5949-6B3C-4F49-A64D-3960BA19E1B1" sort_weight="2"/>
+    <person_attribute_type person_attribute_type_id="45" name="Favourite meal" description="Favourite meal of this person" format="java.lang.String" searchable="false" creator="1" date_created="2013-03-01 12:34:56.7" retired="false" uuid="A756EDE5-C9DD-423D-8C91-C9B5C6A8527A" sort_weight="2"/>
+    <person_attribute_type person_attribute_type_id="46" name="Phone number" description="Phone number of this person" format="java.lang.String" searchable="true" creator="1" date_created="2013-03-01 12:34:56.7" retired="false" uuid="A756EDE5-C9DD-423D-8C91-C9B5C6A8527B" sort_weight="2"/>
+
+    <person_attribute person_attribute_id="46" person_id="42" value="Master thief" person_attribute_type_id="44" creator="1" date_created="2013-03-01 12:34:56.7" voided="true" uuid="7FA3D76E-D360-4630-B74F-7C47CB67713F"/>
+    <person_attribute person_attribute_id="47" person_id="42" value="Senior ring bearer" person_attribute_type_id="44" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="1220023D-B89D-42AE-99C3-41471E3FC6ED"/>
+    <person_attribute person_attribute_id="48" person_id="42" value="Story teller" person_attribute_type_id="44" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="5B6F18A8-4172-42F7-82A3-F609EE6C8778"/>
+    <person_attribute person_attribute_id="49" person_id="42" value="Porridge with honey" person_attribute_type_id="45" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="2224C129-DEC0-41CA-B519-E8B308D53696"/>
+    <person_attribute person_attribute_id="50" person_id="43" value="Senior ring bearer" person_attribute_type_id="44" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="32F006BF-C682-41C3-8BE5-D82367252D38"/>
+    <person_attribute person_attribute_id="51" person_id="43" value="Mushroom pie" person_attribute_type_id="45" creator="1" date_created="2013-03-01 12:34:56.7" voided="true" uuid="D5ACDAF6-A48B-407B-9A9C-79C7270DABAB"/>
+    <person_attribute person_attribute_id="52" person_id="43" value="337-4820" person_attribute_type_id="46" creator="1" date_created="2013-03-01 12:34:56.7" voided="false" uuid="D5ACDAF6-A48B-407B-9A9C-79C7270DABAC"/>
+
+    <!--
+        People without attributes for testing searches for different parts of names
+    -->
+    <person person_id="44" gender="M" birthdate="1984-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="03409E24-E6FA-483A-9EE6-F5BE456B7A6F"/>
+    <person person_id="45" gender="M" birthdate="1985-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="F6D19167-EF3C-4693-AB1E-02B49D1AF084"/>
+    <person person_id="46" gender="M" birthdate="1986-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="B2EFCA4C-9499-4D52-80A1-87AC64547A44"/>
+    <person person_id="47" gender="M" birthdate="1987-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="7026D388-9541-4FC3-813B-E68A6FAF6854"/>
+    <person person_id="48" gender="M" birthdate="1988-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" uuid="7D1C9CE1-F776-4FC6-AC32-F659FAFEAD91"/>
+
+    <person_name person_name_id="44" preferred="true" person_id="44" prefix="Mr." given_name="alpha"   middle_name="echo"    family_name="india"  family_name2="mike"     creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="A9656873-5034-43CE-B4D1-D2A6784ADCD7"/>
+    <person_name person_name_id="45" preferred="true" person_id="45" prefix="Mr." given_name="alpha"   middle_name="foxtrot" family_name="juliet" family_name2="november" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="EBB4A295-DCC1-4D8F-A30D-5E0C650D51AB"/>
+    <person_name person_name_id="46" preferred="true" person_id="46" prefix="Mr." given_name="bravo"   middle_name="foxtrot" family_name="kilo"   family_name2="oscar"    creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="649A8F8F-67EF-4D18-9E97-524369AD7C38"/>
+    <person_name person_name_id="47" preferred="true" person_id="47" prefix="Mr." given_name="charlie" middle_name="golf"    family_name="kilo"   family_name2="papa"     creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="511EB8FB-49E9-4ADB-AE73-398EA6832957"/>
+    <person_name person_name_id="48" preferred="true" person_id="48" prefix="Mr." given_name="delta"   middle_name="hotel"   family_name="lima"   family_name2="papa"     creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="341B561F-ACC0-44B0-A517-629E1CBA8DD4"/>
+
+    <!--
+        Voided person name
+    -->
+    <person_name person_name_id="49" preferred="true" person_id="48" prefix="Mr." given_name="voided-delta" middle_name="voided-hotel" family_name="voided-lima" family_name2="voided-papa" creator="1" date_created="2013-04-25 12:34:56.7" voided="true" void_reason="" uuid="CB0091D1-3DA4-4DC2-865D-6DAFFE11B1ED"/>
+
+    <!--
+        Voided person with non-voided name
+    -->
+    <person person_id="50" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="false" creator="1" date_created="2013-04-25 12:34:56.7" voided="true" uuid="2B856CBF-23D4-4D37-B2F6-FF8BD23A0434"/>
+    <person_name person_name_id="50" preferred="true" person_id="50" prefix="Mr." given_name="voided-bravo" middle_name="voided-foxtrot" family_name="voided-kilo" family_name2="voided-oscar" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="3CCEB428-2B96-48AF-AAA3-36DB80601C9B"/>
+
+    <!--
+        Dead people with non-voided name
+    -->
+    <person person_id="51" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="true" creator="1" date_created="2013-04-25 12:34:56.7" voided="false" uuid="A10595DC-B782-4F19-8693-0F6963A67DB6"/>
+    <person person_id="52" gender="M" birthdate="1998-09-30 12:34:56.7" birthdate_estimated="0" dead="true"  creator="1" date_created="2013-04-25 12:34:56.7" voided="false" uuid="1A1108EB-D6F6-4676-BF33-DF7BF7B1C882"/>
+
+    <person_name person_name_id="51" preferred="true" person_id="51" prefix="Mr." given_name="dead-charlie" middle_name="dead-golf"  family_name="dead-kilo" family_name2="dead-papa" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="C9495BF5-6082-4A17-8D3C-AFD3DFA5FD65"/>
+    <person_name person_name_id="52" preferred="true" person_id="52" prefix="Mr." given_name="dead-delta"   middle_name="dead-hotel" family_name="dead-lima" family_name2="dead-papa" creator="1" date_created="2013-04-18 12:34:56.7" voided="false" void_reason="" uuid="00337604-57E0-4E75-B358-27A7A464FF62"/>
+
+</dataset>
