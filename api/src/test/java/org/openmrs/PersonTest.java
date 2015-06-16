@@ -257,7 +257,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		p.addAttribute(pa3);
 		// make sure the attribute IS added
 		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(),
-		    p.getAttributes().size() == 3);
+				p.getAttributes().size() == 3);
 		
 		p.removeAttribute(pa3);
 		assertTrue("There should be only 2 attribute in the person object now", p.getAttributes().size() == 2);
@@ -615,7 +615,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		PersonName expectedPersonName = notVoidedName;
 		
 		checkGetPersonNameResultForVoidedPerson(expectedPersonName, new HashSet<PersonName>(Arrays.asList(notVoidedName,
-		    voidedName)));
+				voidedName)));
 	}
 	
 	/**
@@ -650,6 +650,45 @@ public class PersonTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return birthtime along with birthdate
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnBirthDateTimeAlongWithBirthdate() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01"));
+		person.setBirthtime(new SimpleDateFormat("HH:mm:ss").parse("11:11:11"));
+
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-01-01 11:11:11"), person.getBirthDateTime());
+	}
+
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return null if birthdate is null
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnNullIfBirthdateIsNull() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(null);
+		Assert.assertNull(person.getBirthDateTime());
+	}
+
+	/**
+	 * @see Person#getBirthDateTime()
+	 * @verifies return null if birthtime is null
+	 */
+	@Test
+	public void getBirthDateTime_shouldReturnNullIfBirthtimeIsNull() throws Exception {
+		Person person = new Person();
+
+		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-01"));
+		person.setBirthtime(null);
+		Assert.assertNull(person.getBirthDateTime());
+	}
+
 	private void checkGetPersonAddressResultForVoidedPerson(PersonAddress expectedPersonAddress,
 	        Set<PersonAddress> personAddresses) {
 		
