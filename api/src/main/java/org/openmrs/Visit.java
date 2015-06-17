@@ -15,7 +15,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 import org.openmrs.customdatatype.Customizable;
+
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 /**
  * A 'visit' is a contiguous time period where encounters occur between patients and healthcare
@@ -24,23 +32,37 @@ import org.openmrs.customdatatype.Customizable;
  * @since 1.9
  */
 
+@Entity
+@Table(name = "visit")
 public class Visit extends BaseCustomizableData<VisitAttribute> implements Auditable, Customizable<VisitAttribute> {
-	
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer visitId;
-	
+
+    @ManyToOne
 	private Patient patient;
-	
+
+    @ManyToOne
 	private VisitType visitType;
-	
+
+    @ManyToOne
 	private Concept indication;
-	
+
+    @ManyToOne
 	private Location location;
-	
+
+    @Column(name = "date_started")
 	private Date startDatetime;
-	
+
+    @Column(name = "date_stopped")
 	private Date stopDatetime;
-	
-	private Set<Encounter> encounters;
+
+    @OneToMany(mappedBy = "visit", fetch = FetchType.LAZY)
+    @JsonIgnore
+	@OrderBy("encounter_datetime desc, encounter_id desc")
+    @Cascade(CascadeType.ALL)
+    private Set<Encounter> encounters;
 	
 	/**
 	 * Default Constructor
