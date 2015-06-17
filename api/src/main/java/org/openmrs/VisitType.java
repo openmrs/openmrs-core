@@ -9,16 +9,22 @@
  */
 package org.openmrs;
 
+import javax.persistence.*;
+
 /**
  * Represents the assortment of visit types available to an implementation. These could include
  * items like "Initial HIV Clinic Visit", "Return TB Clinic Visit", and "Hospitalization".
  * 
  * @since 1.9
  */
+@Entity
+@Table(name = "visit_type")
 public class VisitType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer visitTypeId;
 	
 	/** default constructor */
