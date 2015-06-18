@@ -356,9 +356,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	private DrugOrder checkDrugOrdersForDiscontinuing(DrugOrder drugOrder1, DrugOrder drugOrder2){
 		if (OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
 			return drugOrder2;
-		}else{
-			return null;
 		}
+		return null;
 	}
 	
 	/**
