@@ -8710,4 +8710,29 @@
 		</addColumn>
 	</changeSet>
 
+	<changeSet id="201506192000-TRUNK-4729" author="thomasvandoren">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="encounter_type" columnName="changed_by" /></not>
+		</preConditions>
+		<comment>Add changed_by column to encounter_type table</comment>
+
+		<addColumn tableName="encounter_type">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="encounter_type_changed_by"
+			baseTableName="encounter_type" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+
+	<changeSet id="201506192001-TRUNK-4729" author="thomasvandoren">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="encounter_type" columnName="date_changed" /></not>
+		</preConditions>
+		<comment>Add date_changed column to encounter_type table</comment>
+
+		<addColumn tableName="encounter_type">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
