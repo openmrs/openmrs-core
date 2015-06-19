@@ -310,7 +310,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * 
 	 * @param order
 	 */
-		//Ignore and return if this is not an order to discontinue
+	//Ignore and return if this is not an order to discontinue
 	private void discontinueExistingOrdersIfNecessary(Order order) {
 		if (DISCONTINUE != order.getAction()) {
 			return;
@@ -335,27 +335,29 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			}
 			//For drug orders, the drug must match if the order has a drug
 			if (isDrugOrderAndHasADrug) {
-				if(orderToBeDiscontinued==null){
-					orderToBeDiscontinued = checkDrugOrdersForDiscontinuing((DrugOrder) order, (DrugOrder) activeOrder);
-				}else{
-					throw new AmbiguousOrderException("Order.discontinuing.ambiguous.orders");
-				}	
+				Order existing = checkDrugOrdersForDiscontinuing((DrugOrder) order, (DrugOrder) activeOrder);
+				if (existing != null) {
+					if (orderToBeDiscontinued == null) {
+						orderToBeDiscontinued = existing;
+					} else {
+						throw new AmbiguousOrderException("Order.discontinuing.ambiguous.orders");
+					}
+				}
 			} else if (activeOrder.getConcept().equals(order.getConcept())) {
-				if(orderToBeDiscontinued==null){
+				if (orderToBeDiscontinued == null) {
 					orderToBeDiscontinued = activeOrder;
-				}else{
+				} else {
 					throw new AmbiguousOrderException("Order.discontinuing.ambiguous.orders");
 				}
 			}
 		}
-		if(orderToBeDiscontinued!=null){
+		if (orderToBeDiscontinued != null) {
 			order.setPreviousOrder(orderToBeDiscontinued);
 			stopOrder(orderToBeDiscontinued, aMomentBefore(order.getDateActivated()));
 		}
 	}
 	
-	
-	private DrugOrder checkDrugOrdersForDiscontinuing(DrugOrder drugOrder1, DrugOrder drugOrder2){
+	private DrugOrder checkDrugOrdersForDiscontinuing(DrugOrder drugOrder1, DrugOrder drugOrder2) {
 		if (OpenmrsUtil.nullSafeEquals(drugOrder1.getDrug(), drugOrder2.getDrug())) {
 			return drugOrder2;
 		}
