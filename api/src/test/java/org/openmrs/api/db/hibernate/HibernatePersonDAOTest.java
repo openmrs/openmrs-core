@@ -37,7 +37,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	
 	private PersonAttributeHelper personAttributeHelper;
 	
- 	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
+	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
 	
 	@Before
 	public void getPersonDAO() throws Exception {
@@ -342,8 +342,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("Baggins", people.get(1).getFamilyName());
 		Assert.assertFalse(people.get(0).getGivenName().equalsIgnoreCase(people.get(1).getGivenName()));
 	}
-
-    /**
+	
+	/**
 	 * @verifies get no one by non-existing name and non-existing attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
@@ -672,9 +672,10 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		person.setBirthdateEstimated(false);
 		person.setId(345);
 		hibernatePersonDAO.savePerson(person);
-
+		
 		Person savedPerson = hibernatePersonDAO.getPerson(345);
-		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-05-29 15:23:56"), savedPerson.getBirthDateTime());
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-05-29 15:23:56"), savedPerson
+		        .getBirthDateTime());
 	}
-
+	
 }

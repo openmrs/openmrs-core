@@ -2905,7 +2905,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies throw AmbiguousOrderException if disconnecting multiple active orders for the given concepts
 	 */
 	@Test(expected = AmbiguousOrderException.class)
-	public void saveOrder_shouldThrowAmbiguousOrderExceptionIfDisconnectingMultipleActiveOrdersForTheGivenConcepts() throws Exception {
+	public void saveOrder_shouldThrowAmbiguousOrderExceptionIfDisconnectingMultipleActiveOrdersForTheGivenConcepts()
+	        throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-discontinueAmbiguousOrderByConcept.xml");
 		DrugOrder order = new DrugOrder();
 		order.setAction(Order.Action.DISCONTINUE);
@@ -2923,7 +2924,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies throw AmbiguousOrderException if disconnecting multiple active drug orders with the same drug
 	 */
 	@Test(expected = AmbiguousOrderException.class)
-	public void saveOrder_shouldThrowAmbiguousOrderExceptionIfDisconnectingMultipleActiveDrugOrdersWithTheSameDrug() throws Exception {
+	public void saveOrder_shouldThrowAmbiguousOrderExceptionIfDisconnectingMultipleActiveDrugOrdersWithTheSameDrug()
+	        throws Exception {
 		executeDataSet("org/openmrs/api/include/OrderServiceTest-ambiguousDrugOrders.xml");
 		DrugOrder order = new DrugOrder();
 		order.setAction(Order.Action.DISCONTINUE);
