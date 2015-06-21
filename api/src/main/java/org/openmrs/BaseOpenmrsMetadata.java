@@ -13,6 +13,10 @@ import java.util.Date;
 
 import org.hibernate.search.annotations.Field;
 
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+
 /**
  * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
  * system and descriptive data such as data types &mdash; a relationship type or encounter type.
@@ -22,29 +26,43 @@ import org.hibernate.search.annotations.Field;
  * @since 1.5
  * @see OpenmrsMetadata
  */
+@MappedSuperclass
 public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
+	@Column(name = "name", nullable = false, length = 255)
 	@Field
 	private String name;
 	
+	@Column(name = "description", length = 255)
 	private String description;
 	
+	@ManyToOne(optional = false)
+	@Column(name = "creator")
 	private User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@Column(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
+	@Column(name = "retired", nullable = false)
 	@Field
 	private Boolean retired = Boolean.FALSE;
 	
+	@Column(name = "date_retired")
 	private Date dateRetired;
 	
+	@ManyToOne
+	@Column(name = "retired_by")
 	private User retiredBy;
 	
+	@Column(name = "retire_reason", length = 255)
 	private String retireReason;
 	
 	//***** Constructors *****

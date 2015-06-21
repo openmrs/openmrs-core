@@ -278,7 +278,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
-		HashMap<Integer, List<Encounter>> encountersBypatient = new HashMap<Integer, List<Encounter>>();
+		Map<Integer, List<Encounter>> encountersBypatient = new HashMap<Integer, List<Encounter>>();
 		
 		@SuppressWarnings("unchecked")
 		List<Encounter> allEncounters = createEncounterCriteria(patients).list();

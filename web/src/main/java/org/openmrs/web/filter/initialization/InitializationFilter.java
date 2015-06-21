@@ -1104,6 +1104,7 @@ public class InitializationFilter extends StartupFilter {
 	private int executeStatement(boolean silent, String user, String pw, String sql, String... args) {
 		
 		Connection connection = null;
+		Statement statement = null;
 		try {
 			String replacedSql = sql;
 			
@@ -1129,7 +1130,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			// run the sql statement
-			Statement statement = connection.createStatement();
+			statement = connection.createStatement();
 			
 			int updateDelta = statement.executeUpdate(replacedSql);
 			statement.close();
@@ -1154,6 +1155,15 @@ public class InitializationFilter extends StartupFilter {
 		}
 		finally {
 			try {
+				if (statement != null && !statement.isClosed()) {
+					statement.close();
+				}
+			}
+			catch (SQLException e) {
+				log.warn("Error while closing statement");
+			}
+			try {
+				
 				if (connection != null) {
 					connection.close();
 				}
@@ -1384,7 +1394,7 @@ public class InitializationFilter extends StartupFilter {
 							
 							// connect via jdbc with root user and create an openmrs user
 							String host = "'%'";
-							if (wizardModel.databaseConnection.contains("localhost")) {
+							if (wizardModel.databaseConnection.contains("localhost") || wizardModel.databaseConnection.contains("127.0.0.1")) {
 								host = "'localhost'";
 							}
 							String sql = "drop user '?'@" + host;
@@ -1487,7 +1497,9 @@ public class InitializationFilter extends StartupFilter {
 								setMessage(message + " (" + i++ + "/" + numChangeSetsToRun + "): Author: "
 								        + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
 								        + changeSet.getDescription());
-								setCompletedPercentage(Math.round(i * 100 / numChangeSetsToRun));
+								float numChangeSetsToRunFloat = (float) numChangeSetsToRun;
+								float j = (float) i;
+								setCompletedPercentage(Math.round(j * 100 / numChangeSetsToRunFloat));
 							}
 							
 						}

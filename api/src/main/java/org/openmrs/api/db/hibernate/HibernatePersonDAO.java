@@ -173,7 +173,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			q.append(" and " + genderMatch);
 		}
 		
-		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc").append(
+		q.append(" order by pname.givenName asc,").append(" pname.middleName asc,").append(" pname.familyName asc,").append(
 		    " pname.familyName2 asc");
 		
 		String qStr = q.toString();
@@ -569,12 +569,10 @@ public class HibernatePersonDAO implements PersonDAO {
 		for (PersonAddress address : person.getAddresses()) {
 			if (address.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(address);
-				address = null;
 			} else {
 				sessionFactory.getCurrentSession().delete(address);
 			}
 		}
-		sessionFactory.getCurrentSession().evict(person.getAddresses());
 		person.setAddresses(null);
 		
 		for (PersonAttribute attribute : person.getAttributes()) {
@@ -584,7 +582,6 @@ public class HibernatePersonDAO implements PersonDAO {
 				sessionFactory.getCurrentSession().delete(attribute);
 			}
 		}
-		sessionFactory.getCurrentSession().evict(person.getAttributes());
 		person.setAttributes(null);
 		
 		for (PersonName name : person.getNames()) {
@@ -594,7 +591,6 @@ public class HibernatePersonDAO implements PersonDAO {
 				sessionFactory.getCurrentSession().delete(name);
 			}
 		}
-		sessionFactory.getCurrentSession().evict(person.getNames());
 		person.setNames(null);
 		
 		// finally, just tell hibernate to delete our object

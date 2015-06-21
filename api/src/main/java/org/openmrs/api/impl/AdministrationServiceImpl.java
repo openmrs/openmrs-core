@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -48,7 +49,6 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EventListeners;
@@ -63,9 +63,7 @@ import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 /**
@@ -436,34 +434,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,
-	 *      java.lang.Integer, java.lang.Integer)
-	 * @deprecated
-	 */
-	@Deprecated
-	public void mrnGeneratorLog(String site, Integer start, Integer count) throws APIException {
-		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS)) {
-			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.EDIT_PATIENTS);
-		}
-		
-		dao.mrnGeneratorLog(site, start, count);
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
-	 * @deprecated
-	 */
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Collection<?> getMRNGeneratorLog() throws APIException {
-		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS)) {
-			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.EDIT_PATIENTS);
-		}
-		
-		return dao.getMRNGeneratorLog();
-	}
-	
-	/**
 	 * Static-ish variable used to cache the system variables. This is not static so that every time
 	 * a module is loaded or removed the variable is destroyed (along with the administration
 	 * service) and recreated the next time it is called
@@ -474,7 +444,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * Set of locales which can be used to present messages in the user interface. Created lazily as
 	 * needed by {@link #getAllowedLocales()}.
 	 */
-	private HashSet<Locale> presentationLocales;
+	private Set<Locale> presentationLocales;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getSystemVariables()
@@ -1197,7 +1167,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (object == null) {
 			throw new APIException("error.null", (Object[]) null);
 		}
-		
+
 		dao.validate(object, errors);
 	}
 	

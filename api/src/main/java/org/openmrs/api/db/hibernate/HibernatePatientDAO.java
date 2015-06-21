@@ -10,14 +10,11 @@
 package org.openmrs.api.db.hibernate;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -112,69 +109,33 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @param patient
 	 */
 	private void insertPatientStubIfNeeded(Patient patient) {
-		Connection connection = sessionFactory.getCurrentSession().connection();
 		
 		boolean stubInsertNeeded = false;
 		
-		PreparedStatement ps = null;
-		
 		if (patient.getPatientId() != null) {
 			// check if there is a row with a matching patient.patient_id
-			try {
-				ps = connection.prepareStatement("SELECT * FROM patient WHERE patient_id = ?");
-				ps.setInt(1, patient.getPatientId());
-				ps.execute();
-				
-				if (ps.getResultSet().next()) {
-					stubInsertNeeded = false;
-				} else {
-					stubInsertNeeded = true;
-				}
-				
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this person is a patient already", e);
-			}
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
+			String sql = "SELECT 1 FROM patient WHERE patient_id = :patientId";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+			query.setInteger("patientId", patient.getPatientId());
+			
+			stubInsertNeeded = (query.uniqueResult() == null);
 		}
 		
 		if (stubInsertNeeded) {
-			try {
-				ps = connection
-				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
-				
-				ps.setInt(1, patient.getPatientId());
-				if (patient.getCreator() == null) { //If not yet persisted
-					patient.setCreator(Context.getAuthenticatedUser());
-				}
-				ps.setInt(2, patient.getCreator().getUserId());
-				if (patient.getDateCreated() == null) { //If not yet persisted
-					patient.setDateCreated(new java.sql.Date(new Date().getTime()));
-				}
-				ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
-				
-				ps.executeUpdate();
+			if (patient.getCreator() == null) { //If not yet persisted
+				patient.setCreator(Context.getAuthenticatedUser());
 			}
-			catch (SQLException e) {
-				log.warn("SQL Exception while trying to create a patient stub", e);
+			if (patient.getDateCreated() == null) { //If not yet persisted
+				patient.setDateCreated(new Date());
 			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-			}
+			
+			String insert = "INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (:patientId, :creator, 0, :dateCreated)";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(insert);
+			query.setInteger("patientId", patient.getPatientId());
+			query.setInteger("creator", patient.getCreator().getUserId());
+			query.setDate("dateCreated", patient.getDateCreated());
+			
+			query.executeUpdate();
 			
 			//Without evicting person, you will get this error when promoting person to patient
 			//org.hibernate.NonUniqueObjectException: a different object with the same identifier
@@ -184,8 +145,6 @@ public class HibernatePatientDAO implements PatientDAO {
 			sessionFactory.getCurrentSession().evict(person);
 		}
 		
-		// commenting this out to get the save patient as a user option to work correctly
-		//sessionFactory.getCurrentSession().flush();
 	}
 	
 	/**
@@ -241,7 +200,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		criteriaExactMatch = new PatientSearchCriteria(sessionFactory, criteriaExactMatch).prepareCriteria(query, true,
 		    true, includeVoided);
 		
-		LinkedHashSet<Patient> patients = new LinkedHashSet<Patient>();
+		Set<Patient> patients = new LinkedHashSet<Patient>();
 		
 		if (start < listSize) {
 			setFirstAndMaxResult(criteriaExactMatch, start, length);

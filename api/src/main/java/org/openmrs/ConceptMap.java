@@ -11,7 +11,6 @@ package org.openmrs;
 
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -22,7 +21,6 @@ import org.simpleframework.xml.Root;
  * N mappings to any and all concept sources in the database.
  */
 @Root
-@Indexed
 public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 754677L;
@@ -34,7 +32,7 @@ public class ConceptMap extends BaseConceptMap implements java.io.Serializable {
 	@ContainedIn
 	private Concept concept;
 	
-	@IndexedEmbedded
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private ConceptReferenceTerm conceptReferenceTerm;
 	
 	// Constructors

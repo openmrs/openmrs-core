@@ -53,6 +53,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
@@ -513,6 +514,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *
 	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(javax.servlet.ServletContextEvent)
 	 */
+	@SuppressWarnings("squid:S1215")
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
 		
@@ -573,6 +575,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		LogManager.shutdown();
 		
 		// just to make things nice and clean.
+		// Suppressing sonar issue squid:S1215
 		System.gc();
 		System.gc();
 	}
@@ -621,6 +624,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				WebModuleUtil.refreshWAC(servletContext, true, null);
 			}
 			catch (ModuleMustStartException ex) {
+				// pass this up to the calling method so that openmrs loading stops
+				throw ex;
+			}
+			catch (BeanCreationException ex) {
 				// pass this up to the calling method so that openmrs loading stops
 				throw ex;
 			}

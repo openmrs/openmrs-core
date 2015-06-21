@@ -12,6 +12,7 @@ package org.openmrs.web.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -364,7 +365,7 @@ public class OptionsFormController extends SimpleFormController {
 			map.put("resetPassword", resetPasswordAttribute);
 			
 			//generate the password hint depending on the security GP settings
-			ArrayList<String> hints = new ArrayList<String>(5);
+			List<String> hints = new ArrayList<String>(5);
 			int minChar = 1;
 			MessageSourceService mss = Context.getMessageSourceService();
 			try {
@@ -416,7 +417,7 @@ public class OptionsFormController extends SimpleFormController {
 	 * @param gpValue the value of the global property
 	 * @param message the localized message to add
 	 */
-	private void addHint(ArrayList<String> hints, String gpValue, String message) {
+	private void addHint(List<String> hints, String gpValue, String message) {
 		if (Boolean.valueOf(gpValue) && !StringUtils.isBlank(message)) {
 			hints.add(message);
 		}

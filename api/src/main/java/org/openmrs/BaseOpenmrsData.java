@@ -9,6 +9,10 @@
  */
 package org.openmrs;
 
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+
 import java.util.Date;
 
 /**
@@ -19,24 +23,35 @@ import java.util.Date;
  * @since 1.5
  * @see OpenmrsData
  */
+@MappedSuperclass
 public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****
-	
+	@ManyToOne(optional = false)
+	@Column(name = "creator")
 	protected User creator;
 	
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 	
+	@ManyToOne
+	@Column(name = "changed_by")
 	private User changedBy;
 	
+	@Column(name = "date_changed")
 	private Date dateChanged;
 	
+	@Column(name = "voided", nullable = false)
 	private Boolean voided = Boolean.FALSE;
 	
+	@Column(name = "date_voided")
 	private Date dateVoided;
 	
+	@ManyToOne
+	@Column(name = "voided_by")
 	private User voidedBy;
 	
+	@Column(name = "void_reason", length = 255)
 	private String voidReason;
 	
 	//***** Constructors *****

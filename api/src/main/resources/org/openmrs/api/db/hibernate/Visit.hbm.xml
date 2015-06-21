@@ -23,7 +23,7 @@
 			</generator>
 		</id>
 
-		<discriminator column="visit_id" insert="false" />
+		
 
 		<property name="startDatetime" type="java.util.Date" column="date_started"
 			not-null="true" length="19" />

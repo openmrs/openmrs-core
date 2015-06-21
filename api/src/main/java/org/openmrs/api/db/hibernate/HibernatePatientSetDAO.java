@@ -71,7 +71,6 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
@@ -125,17 +124,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		ret.append("</patientset>");
 		return ret.toString();
 	}
-	
-	private String formatUserName(User u) {
-		return u.getPersonName().getFullName();
-	}
-	
-	private String formatUser(User u) {
-		StringBuilder ret = new StringBuilder();
-		ret.append(u.getUserId() + "^" + formatUserName(u));
-		return ret.toString();
-	}
-	
+
 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private Element obsElementHelper(Document doc, Locale locale, Obs obs) {
@@ -1779,7 +1768,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date fromDate, Date toDate)
 	        throws DAOException {
-		HashSet<Integer> idsLookup = patientIds == null ? null
+		Set<Integer> idsLookup = patientIds == null ? null
 		        : (patientIds instanceof HashSet ? (HashSet<Integer>) patientIds : new HashSet<Integer>(patientIds));
 		
 		Map<Integer, Collection<Integer>> ret = new HashMap<Integer, Collection<Integer>>();

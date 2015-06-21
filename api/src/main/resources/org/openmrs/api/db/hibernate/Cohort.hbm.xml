@@ -22,8 +22,6 @@
 			</generator>
 		</id>
 		
-		<discriminator column="cohort_id" insert="false" />
-		
 		<property name="name" type="java.lang.String" 
 			not-null="true" length="255" />
 		<property name="description" type="java.lang.String" 

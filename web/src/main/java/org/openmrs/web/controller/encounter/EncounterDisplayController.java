@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -235,7 +236,7 @@ public class EncounterDisplayController implements Controller {
 		/**
 		 * these are the column names in the obsGroup table
 		 */
-		private LinkedHashSet<Concept> groupMemberConcepts;
+		private Set<Concept> groupMemberConcepts;
 		
 		/**
 		 * A row must be created with both a FormField to act as its label and an obs that is the
@@ -384,6 +385,28 @@ public class EncounterDisplayController implements Controller {
 				        .compareWithNullAsGreatest(formField.getSortWeight(), other.getFormField().getSortWeight());
 			}
 			return temp;
+		}
+		
+		/**
+		 * Indicates whether some other object is "equal to" this one.
+		 *
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (!(obj instanceof FieldHolder)) {
+				return false;
+			}
+			FieldHolder other = (FieldHolder) obj;
+			return compareTo(other) == 0;
+		}
+		
+		@Override
+		public int hashCode() {
+			return new HashCodeBuilder().append(getPageNumber()).build();
 		}
 		
 		/**

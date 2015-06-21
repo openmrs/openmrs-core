@@ -292,20 +292,6 @@ public interface AdministrationService extends OpenmrsService {
 	public void rejectConceptProposal(ConceptProposal cp);
 	
 	/**
-	 * @param site
-	 * @param start
-	 * @param count
-	 * @deprecated use the mrngen module instead
-	 */
-	public void mrnGeneratorLog(String site, Integer start, Integer count);
-	
-	/**
-	 * @deprecated use the mrngen module instead
-	 */
-	
-	public Collection<?> getMRNGeneratorLog();
-	
-	/**
 	 * Get a global property by its uuid. There should be only one of these in the database (well,
 	 * in the world actually). If multiple are found, an error is thrown.
 	 * 

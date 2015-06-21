@@ -87,7 +87,7 @@ public class ComplexData implements java.io.Serializable {
 	 * @param mimeType
 	 * @since 1.12
 	 */
-	public void setMIMEType(String mimeType) {
+	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
 	}
 	
@@ -97,7 +97,7 @@ public class ComplexData implements java.io.Serializable {
 	 * @return data MIME type
 	 * @since 1.12
 	 */
-	public String getMIMEType() {
+	public String getMimeType() {
 		return this.mimeType;
 	}
 	

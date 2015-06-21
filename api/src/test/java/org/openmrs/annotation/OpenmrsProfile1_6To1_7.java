@@ -15,5 +15,5 @@ import org.springframework.stereotype.Component;
  * Test bean which should be only loaded when running on OpenMRS from 1.6 to 1.7.
  */
 @Component
-@OpenmrsProfile(openmrsVersion = "[1.6.* - 1.7.*]")
+@OpenmrsProfile(openmrsPlatformVersion = "[1.6.* - 1.7.*]")
 public class OpenmrsProfile1_6To1_7 {}

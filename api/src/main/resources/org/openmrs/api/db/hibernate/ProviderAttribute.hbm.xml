@@ -22,7 +22,7 @@
             <generator class="native" />
         </id>
 
-        <discriminator column="provider_attribute_id" insert="false" />
+        
         
         <many-to-one name="provider" class="Provider" not-null="true" column="provider_id" />
         

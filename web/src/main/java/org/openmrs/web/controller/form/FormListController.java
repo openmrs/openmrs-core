@@ -67,14 +67,14 @@ public class FormListController extends SimpleFormController {
 					//TODO convenience method deleteForm(Integer) ??
 					try {
 						fs.purgeForm(fs.getForm(Integer.valueOf(p)));
-						if (!"".equals(success)) {
+						if (!"".equals(success.toString())) {
 							success.append("<br/>");
 						}
 						success.append(textForm).append(" ").append(p).append(" ").append(deleted);
 					}
 					catch (APIException e) {
 						log.warn("Error deleting form", e);
-						if (!"".equals(error)) {
+						if (!"".equals(error.toString())) {
 							error.append("<br/>");
 						}
 						error.append(textForm).append(" ").append(p).append(" ").append(notDeleted);
@@ -84,10 +84,10 @@ public class FormListController extends SimpleFormController {
 				success.append(noneDeleted);
 			}
 			view = getSuccessView();
-			if (!"".equals(success)) {
+			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
-			if (!"".equals(error)) {
+			if (!"".equals(error.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}
@@ -115,5 +115,4 @@ public class FormListController extends SimpleFormController {
 		
 		return formList;
 	}
-	
 }

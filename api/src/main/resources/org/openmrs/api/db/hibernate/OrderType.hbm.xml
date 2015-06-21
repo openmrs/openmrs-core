@@ -23,7 +23,7 @@
             </generator>
         </id>
 
-        <discriminator column="order_type_id" insert="false"/>
+        
 
         <property name="name" type="java.lang.String" not-null="true" length="255" unique="true" />
 

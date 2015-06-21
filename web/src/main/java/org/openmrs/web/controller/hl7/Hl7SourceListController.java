@@ -65,5 +65,4 @@ public class Hl7SourceListController extends SimpleFormController {
 		
 		return hl7SourceList;
 	}
-	
 }

@@ -194,7 +194,9 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(ConceptSet cs) {
 		int value = OpenmrsUtil.compareWithNullAsLowest(concept.isRetired(), cs.concept.isRetired());
 		if (value == 0) {

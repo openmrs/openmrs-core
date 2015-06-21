@@ -79,7 +79,7 @@ public class ConceptClassListController extends SimpleFormController {
 				for (String cc : conceptClassList) {
 					try {
 						cs.purgeConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
-						if (!"".equals(success)) {
+						if (!"".equals(success.toString())) {
 							success.append("<br/>");
 						}
 						success.append(cc).append(" ").append(deleted);
@@ -96,7 +96,7 @@ public class ConceptClassListController extends SimpleFormController {
 			}
 			
 			view = getSuccessView();
-			if (!"".equals(success)) {
+			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
 			if (!"".equals(error)) {
@@ -144,5 +144,4 @@ public class ConceptClassListController extends SimpleFormController {
 		
 		return conceptClassList;
 	}
-	
 }

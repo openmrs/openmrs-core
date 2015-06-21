@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -115,7 +114,7 @@ public class FormFormController extends SimpleFormController {
 						
 						FormService fs = Context.getFormService();
 						
-						TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
+						Map<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
 						for (Map.Entry<Integer, TreeSet<FormField>> entry : treeMap.entrySet()) {
 							float sortWeight = 0;
 							for (FormField formField : entry.getValue()) {

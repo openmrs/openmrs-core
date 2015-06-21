@@ -21,7 +21,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.GlobalPropertiesTestHelper;
 import org.openmrs.util.OpenmrsConstants;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Date;
 
 public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	
@@ -35,7 +37,7 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 	
 	private PersonAttributeHelper personAttributeHelper;
 	
-	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
+ 	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
 	
 	@Before
 	public void getPersonDAO() throws Exception {
@@ -340,8 +342,8 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("Baggins", people.get(1).getFamilyName());
 		Assert.assertFalse(people.get(0).getGivenName().equalsIgnoreCase(people.get(1).getGivenName()));
 	}
-	
-	/**
+
+    /**
 	 * @verifies get no one by non-existing name and non-existing attribute
 	 * @see HibernatePersonDAO#getPeople(String, Boolean)
 	 */
@@ -660,4 +662,19 @@ public class HibernatePersonDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, patientCount);
 	}
 	
+	@Test
+	public void savePerson_shouldSavePersonWithBirthDateTime() throws Exception {
+		Person person = new Person();
+		person.setBirthtime(new SimpleDateFormat("HH:mm:ss").parse("15:23:56"));
+		person.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").parse("2012-05-29"));
+		person.setDead(false);
+		person.setVoided(false);
+		person.setBirthdateEstimated(false);
+		person.setId(345);
+		hibernatePersonDAO.savePerson(person);
+
+		Person savedPerson = hibernatePersonDAO.getPerson(345);
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-05-29 15:23:56"), savedPerson.getBirthDateTime());
+	}
+
 }

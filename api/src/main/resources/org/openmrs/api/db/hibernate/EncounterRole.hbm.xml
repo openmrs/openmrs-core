@@ -22,7 +22,7 @@
 			<generator class="native" />
 		</id>
 
-		<discriminator column="encounter_role_id" insert="false" />
+		
 
         <property name="name" type="java.lang.String" length="50" not-null="true" unique="true" />
 

@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.util.Comparator;
+
 /**
  * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
  * have many 0 to n fields associated with it in a hierarchical manor. This FormField object governs
@@ -62,74 +64,13 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	 *
 	 * @param f FormField to compare this object to
 	 * @return -1, 0, or +1 depending on the difference between the FormFields
+	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
+	@SuppressWarnings("squid:S1210")
 	public int compareTo(FormField f) {
-		if (getSortWeight() != null || f.getSortWeight() != null) {
-			if (getSortWeight() == null) {
-				return -1;
-			}
-			if (f.getSortWeight() == null) {
-				return 1;
-			}
-			int c = getSortWeight().compareTo(f.getSortWeight());
-			if (c != 0) {
-				return c;
-			}
-		}
-		if (getPageNumber() != null || f.getPageNumber() != null) {
-			if (getPageNumber() == null) {
-				return -1;
-			}
-			if (f.getPageNumber() == null) {
-				return 1;
-			}
-			int c = getPageNumber().compareTo(f.getPageNumber());
-			if (c != 0) {
-				return c;
-			}
-		}
-		if (getFieldNumber() != null || f.getFieldNumber() != null) {
-			if (getFieldNumber() == null) {
-				return -1;
-			}
-			if (f.getFieldNumber() == null) {
-				return 1;
-			}
-			int c = getFieldNumber().compareTo(f.getFieldNumber());
-			if (c != 0) {
-				return c;
-			}
-		}
-		if (getFieldPart() != null || f.getFieldPart() != null) {
-			if (getFieldPart() == null) {
-				return -1;
-			}
-			if (f.getFieldPart() == null) {
-				return 1;
-			}
-			int c = getFieldPart().compareTo(f.getFieldPart());
-			if (c != 0) {
-				return c;
-			}
-		}
-		if (getField() != null && f.getField() != null) {
-			int c = getField().getName().compareTo(f.getField().getName());
-			if (c != 0) {
-				return c;
-			}
-		}
-		if (getFormFieldId() == null && f.getFormFieldId() != null) {
-			return -1;
-		}
-		if (getFormFieldId() != null && f.getFormFieldId() == null) {
-			return 1;
-		}
-		if (getFormFieldId() == null && f.getFormFieldId() == null) {
-			return 1;
-		}
-		
-		return getFormFieldId().compareTo(f.getFormFieldId());
-		
+		DefaultComparator ffDComparator = new DefaultComparator();
+		return ffDComparator.compare(this, f);
 	}
 	
 	// Property accessors
@@ -323,4 +264,79 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 		
 	}
 	
+	/**
+	 Provides a default comparator.
+	 @since 1.12
+	 **/
+	public static class DefaultComparator implements Comparator<FormField> {
+		
+		@Override
+		public int compare(FormField ff1, FormField ff2) {
+			if (ff1.getSortWeight() != null || ff2.getSortWeight() != null) {
+				if (ff1.getSortWeight() == null) {
+					return -1;
+				}
+				if (ff2.getSortWeight() == null) {
+					return 1;
+				}
+				int c = ff1.getSortWeight().compareTo(ff2.getSortWeight());
+				if (c != 0) {
+					return c;
+				}
+			}
+			if (ff1.getPageNumber() != null || ff2.getPageNumber() != null) {
+				if (ff1.getPageNumber() == null) {
+					return -1;
+				}
+				if (ff2.getPageNumber() == null) {
+					return 1;
+				}
+				int c = ff1.getPageNumber().compareTo(ff2.getPageNumber());
+				if (c != 0) {
+					return c;
+				}
+			}
+			if (ff1.getFieldNumber() != null || ff2.getFieldNumber() != null) {
+				if (ff1.getFieldNumber() == null) {
+					return -1;
+				}
+				if (ff2.getFieldNumber() == null) {
+					return 1;
+				}
+				int c = ff1.getFieldNumber().compareTo(ff2.getFieldNumber());
+				if (c != 0) {
+					return c;
+				}
+			}
+			if (ff1.getFieldPart() != null || ff2.getFieldPart() != null) {
+				if (ff1.getFieldPart() == null) {
+					return -1;
+				}
+				if (ff2.getFieldPart() == null) {
+					return 1;
+				}
+				int c = ff1.getFieldPart().compareTo(ff2.getFieldPart());
+				if (c != 0) {
+					return c;
+				}
+			}
+			if (ff1.getField() != null && ff2.getField() != null) {
+				int c = ff1.getField().getName().compareTo(ff2.getField().getName());
+				if (c != 0) {
+					return c;
+				}
+			}
+			if (ff1.getFormFieldId() == null && ff2.getFormFieldId() != null) {
+				return -1;
+			}
+			if (ff1.getFormFieldId() != null && ff2.getFormFieldId() == null) {
+				return 1;
+			}
+			if (ff1.getFormFieldId() == null && ff2.getFormFieldId() == null) {
+				return 1;
+			}
+			
+			return ff1.getFormFieldId().compareTo(ff2.getFormFieldId());
+		}
+	}
 }

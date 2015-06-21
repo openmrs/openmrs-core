@@ -9,7 +9,7 @@
  */
 package org.openmrs.annotation;
 
-@OpenmrsProfile(openmrsVersion = "1.8")
+@OpenmrsProfile(openmrsPlatformVersion = "1.8")
 public class OpenmrsComponent1_8 {
 
 }

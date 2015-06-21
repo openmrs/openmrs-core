@@ -398,13 +398,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, ls.getLocationsByTag(ls.getLocationTagByName("Retired")).size());
 	}
 	
-	/**
-	 * Get locations that have a specified set of tags among its child tags.
-	 * 
-	 * @see {@link LocationService#getLocationsHavingAllTags(List<QLocationTag;>)}
-	 */
 	@Test
-	@Verifies(value = "should get locations having all tags", method = "getLocationsHavingAllTags(List<QLocationTag;>)")
+	@Verifies(value = "get locations having all tags", method = "getLocationsHavingAllTags(List<LocationTag>)")
 	public void getLocationsHavingAllTags_shouldGetLocationsHavingAllTags() throws Exception {
 		LocationService ls = Context.getLocationService();
 		
@@ -412,50 +407,23 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		list1.add(ls.getLocationTag(1));
 		list1.add(ls.getLocationTag(2));
 		
-		List<LocationTag> list2 = new ArrayList<LocationTag>();
-		list2.add(ls.getLocationTag(3));
-		list2.add(ls.getLocationTag(4));
-		
-		List<LocationTag> list3 = new ArrayList<LocationTag>();
-		list3.add(ls.getLocationTag(1));
-		list3.add(ls.getLocationTag(2));
-		list3.add(ls.getLocationTag(3));
-		list3.add(ls.getLocationTag(4));
-		
-		List<LocationTag> list4 = new ArrayList<LocationTag>();
-		list4.add(ls.getLocationTag(4));
-		
 		assertEquals(1, ls.getLocationsHavingAllTags(list1).size());
-		assertEquals(2, ls.getLocationsHavingAllTags(list2).size());
-		assertEquals(0, ls.getLocationsHavingAllTags(list3).size());
-		assertEquals(4, ls.getLocationsHavingAllTags(list4).size());
 	}
 	
 	/**
-	 * @see {@link LocationService#getLocationsHavingAllTags(List<QLocationTag;>)}
+	 * @see {@link LocationService#getLocationsHavingAllTags(List<LocationTag;>)}
 	 */
 	@Test
-	@Verifies(value = "should return empty list when no location has the given tags", method = "getLocationsHavingAllTags(List<QLocationTag;>)")
-	public void getLocationsHavingAllTags_shouldReturnEmptyListWhenNoLocationHasTheGivenTags() throws Exception {
-		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(0, ls.getLocationsHavingAllTags(Collections.singletonList(ls.getLocationTagByName("Retired")))
-		        .size());
-	}
-	
-	/**
-	 * @see {@link LocationService#getLocationsHavingAllTags(List<QLocationTag;>)}
-	 */
-	@Test
-	@Verifies(value = "return all unretired locations given an empty tag list", method = "getLocationsHavingAllTags(List<QLocationTag;>)")
+	@Verifies(value = "return all unretired locations given an empty tag list", method = "getLocationsHavingAllTags(List<LocationTag>)")
 	public void getLocationsHavingAllTags_shouldReturnAllUnretiredLocationsGivenAnEmptyTagList() throws Exception {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(5, ls.getLocationsHavingAllTags(new ArrayList<LocationTag>()).size());
+		Assert.assertEquals(5, ls.getLocationsHavingAllTags(Collections.EMPTY_LIST).size());
 	}
 	
 	/**
 	 * Get locations that have any of specified set of tags among its child tags.
 	 * 
-	 * @see {@link LocationService#getLocationsHavingAnyTag(List<QLocationTag;>)}
+	 * @see {@link LocationService#getLocationsHavingAnyTag(List<LocationTag;>)}
 	 */
 	@Test
 	@Verifies(value = "should get locations having any tag", method = "getLocationsHavingAnyTag(List<QLocationTag;>)")
@@ -771,7 +739,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnAllLocationTagsIncludingRetired() throws Exception {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags();
 		
-		Assert.assertEquals(5, tags.size());
+		Assert.assertEquals(6, tags.size());
 	}
 	
 	/**
@@ -782,7 +750,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnAllLocationTagsIfIncludeRetiredIsTrue() throws Exception {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(true);
 		
-		Assert.assertEquals(5, tags.size());
+		Assert.assertEquals(6, tags.size());
 	}
 	
 	/**
@@ -793,7 +761,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocationTags_shouldReturnOnlyUnretiredLocationTagsIfIncludeRetiredIsFalse() throws Exception {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags(false);
 		
-		Assert.assertEquals(4, tags.size());
+		Assert.assertEquals(5, tags.size());
 	}
 	
 	/**
