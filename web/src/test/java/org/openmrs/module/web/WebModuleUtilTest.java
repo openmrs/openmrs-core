@@ -136,6 +136,8 @@ public class WebModuleUtilTest {
 		
 		// test if dwr-modules.xml is created
 		assertTrue(f.exists());
+		
+		ModuleFactory.getStartedModulesMap().clear();
 	}
 	
 	/**
@@ -172,6 +174,8 @@ public class WebModuleUtilTest {
 			scanner.close();
 		
 		assertTrue(found);
+		
+		ModuleFactory.getStartedModulesMap().clear();
 	}
 	
 	/**
