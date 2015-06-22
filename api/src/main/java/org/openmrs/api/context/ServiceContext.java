@@ -74,9 +74,7 @@ import org.springframework.context.ApplicationContextAware;
 public class ServiceContext implements ApplicationContextAware {
 	
 	private static final Log log = LogFactory.getLog(ServiceContext.class);
-	
-	private static volatile ServiceContext instance;
-	
+
 	private ApplicationContext applicationContext;
 	
 	private static boolean refreshingContext = false;
@@ -119,6 +117,10 @@ public class ServiceContext implements ApplicationContextAware {
 		log.debug("Instantiating service context");
 	}
 	
+	private static class ServiceContextHolder {
+		private static ServiceContext instance = null;
+	}
+	
 	/**
 	 * There should only be one ServiceContext per openmrs (java virtual machine). This method
 	 * should be used when wanting to fetch the service context Note: The ServiceContext shouldn't
@@ -128,11 +130,11 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @see org.openmrs.api.context.Context
 	 */
 	public static ServiceContext getInstance() {
-		if (instance == null) {
-			instance = new ServiceContext();
+		if (ServiceContextHolder.instance == null) {
+			ServiceContextHolder.instance = new ServiceContext();
 		}
 		
-		return instance;
+		return ServiceContextHolder.instance;
 	}
 	
 	/**
@@ -140,48 +142,48 @@ public class ServiceContext implements ApplicationContextAware {
 	 * refreshing (being added/removed) and/or openmrs is shutting down
 	 */
 	public static void destroyInstance() {
-		if (instance != null && instance.services != null) {
+		if (ServiceContextHolder.instance != null && ServiceContextHolder.instance.services != null) {
 			if (log.isDebugEnabled()) {
-				for (Map.Entry<Class, Object> entry : instance.services.entrySet()) {
+				for (Map.Entry<Class, Object> entry : ServiceContextHolder.instance.services.entrySet()) {
 					log.debug("Service - " + entry.getKey().getName() + ":" + entry.getValue());
 				}
 			}
 			
 			// Remove advice and advisors that this service added
-			for (Class serviceClass : instance.services.keySet()) {
-				instance.removeAddedAOP(serviceClass);
+			for (Class serviceClass : ServiceContextHolder.instance.services.keySet()) {
+				ServiceContextHolder.instance.removeAddedAOP(serviceClass);
 			}
 			
-			if (instance.services != null) {
-				instance.services.clear();
-				instance.services = null;
+			if (ServiceContextHolder.instance.services != null) {
+				ServiceContextHolder.instance.services.clear();
+				ServiceContextHolder.instance.services = null;
 			}
 			
-			if (instance.addedAdvisors != null) {
-				instance.addedAdvisors.clear();
-				instance.addedAdvisors = null;
+			if (ServiceContextHolder.instance.addedAdvisors != null) {
+				ServiceContextHolder.instance.addedAdvisors.clear();
+				ServiceContextHolder.instance.addedAdvisors = null;
 			}
 			
-			if (instance.addedAdvice != null) {
-				instance.addedAdvice.clear();
-				instance.addedAdvice = null;
+			if (ServiceContextHolder.instance.addedAdvice != null) {
+				ServiceContextHolder.instance.addedAdvice.clear();
+				ServiceContextHolder.instance.addedAdvice = null;
 			}
 		}
 		
-		if (instance != null) {
-			instance.applicationContext = null;
+		if (ServiceContextHolder.instance != null) {
+			ServiceContextHolder.instance.applicationContext = null;
 			
-			if (instance.moduleOpenmrsServices != null) {
-				instance.moduleOpenmrsServices.clear();
-				instance.moduleOpenmrsServices = null;
+			if (ServiceContextHolder.instance.moduleOpenmrsServices != null) {
+				ServiceContextHolder.instance.moduleOpenmrsServices.clear();
+				ServiceContextHolder.instance.moduleOpenmrsServices = null;
 			}
 		}
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Destroying ServiceContext instance: " + instance);
+			log.debug("Destroying ServiceContext instance: " + ServiceContextHolder.instance);
 		}
 		
-		instance = null;
+		ServiceContextHolder.instance = null;
 	}
 	
 	/**
