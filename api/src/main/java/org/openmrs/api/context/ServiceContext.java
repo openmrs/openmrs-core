@@ -173,6 +173,11 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		if (instance != null) {
 			instance.applicationContext = null;
+			
+			if (instance.moduleOpenmrsServices != null) {
+				instance.moduleOpenmrsServices.clear();
+				instance.moduleOpenmrsServices = null;
+			}
 		}
 		
 		if (log.isDebugEnabled()) {
