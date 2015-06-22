@@ -22,4 +22,8 @@ public class AmbiguousOrderException extends APIException {
 		super(message);
 	}
 	
+	public AmbiguousOrderException(String messageKey, Object[] parameters) {
+		super(messageKey, parameters);
+	}
+	
 }
