@@ -11,6 +11,11 @@ package org.openmrs.customdatatype.datatype;
 
 import org.openmrs.OpenmrsObject;
 
+/**
+ * This is a class for custom datatypes for programs
+ * 
+ * @since 1.12
+ */
 public class ProgramDatatype<T extends OpenmrsObject> extends BaseOpenmrsDatatype<T> {
 	@Override
 	public T deserialize(String serializedValue){

@@ -26,8 +26,10 @@ import org.springframework.stereotype.Component;
 
 /**
  * Handler for the Program custom datatype
+ *
+ * @Component
+ * @since 1.12
  */
-@Component
 public class ProgramFieldGenDatatypeHandler<DT extends BaseMetadataDatatype<T>, T extends OpenmrsMetadata> extends BaseMetadataFieldGenDatatypeHandler<DT, T> {
 	
 	/**
