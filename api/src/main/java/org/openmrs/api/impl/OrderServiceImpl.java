@@ -14,6 +14,7 @@ import static org.openmrs.Order.Action.REVISE;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -201,18 +202,22 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 		
 		if (DISCONTINUE != order.getAction()) {
-			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
-			for (Order activeOrder : activeOrders) {
-				//Reject if there is an active drug order for the same orderable with overlapping schedule
-				if (areDrugOrdersOfSameOrderableAndOverlappingSchedule(order, activeOrder)) {
-					throw new APIException("Order.cannot.have.more.than.one", (Object[]) null);
-				}
+ 			List<Order> activeOrders = getActiveOrders(order.getPatient(), null, order.getCareSetting(), null);
+			List<String> parallelOrders = Collections.emptyList();
+			if(orderContext!=null && orderContext.getAttribute(PARALLEL_ORDERS)!=null){
+				parallelOrders= Arrays.asList((String[])orderContext.getAttribute(PARALLEL_ORDERS));
 			}
-		}
+ 			for (Order activeOrder : activeOrders) {
+ 				//Reject if there is an active drug order for the same orderable with overlapping schedule
+				if (!parallelOrders.contains(activeOrder.getUuid()) && areDrugOrdersOfSameOrderableAndOverlappingSchedule(order, activeOrder)) {
+					throw new AmbiguousOrderException("Order.cannot.have.more.than.one", (Object[]) null);
+ 				}
+ 			}
+ 		}
 		
 		return saveOrderInternal(order, orderContext);
 	}
-
+	
 	private boolean areDrugOrdersOfSameOrderableAndOverlappingSchedule(Order firstOrder, Order secondOrder) {
 		return firstOrder.hasSameOrderableAs(secondOrder)
 				&& !OpenmrsUtil.nullSafeEquals(firstOrder.getPreviousOrder(), secondOrder)
