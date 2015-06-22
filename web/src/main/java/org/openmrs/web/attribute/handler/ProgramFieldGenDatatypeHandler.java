@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Program;
 import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.OpenmrsMetadata;
+import org.openmrs.customdatatype.datatype.BaseMetadataDatatype;
 import org.openmrs.customdatatype.CustomDatatype.Summary;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.datatype.ProgramDatatype;
@@ -26,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Handler for the Program custom datatype
  */
 @Component
-public class ProgramFieldGenDatatypeHandler implements FieldGenDatatypeHandler<ProgramDatatype, Program> {
+public class ProgramFieldGenDatatypeHandler<DT extends BaseMetadataDatatype<T>, T extends OpenmrsMetadata> extends BaseMetadataFieldGenDatatypeHandler<DT, T> {
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(java.lang.String)
@@ -50,45 +52,5 @@ public class ProgramFieldGenDatatypeHandler implements FieldGenDatatypeHandler<P
 	@Override
 	public Map<String, Object> getWidgetConfiguration() {
 		return null;
-	}
-	
-	/**
-	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getValue(org.openmrs.customdatatype.CustomDatatype, javax.servlet.http.HttpServletRequest, java.lang.String)
-	 */
-	@Override
-	public Program getValue(ProgramDatatype datatype, HttpServletRequest request, String formFieldName)
-	        throws InvalidCustomValueException {
-		String fieldValue = request.getParameter(formFieldName);
-		if (StringUtils.isBlank(fieldValue))
-			return null;
-		try {
-			SimpleXStreamSerializer serializer = new SimpleXStreamSerializer();
-			return serializer.deserialize(fieldValue, Program.class);
-		}
-		catch (SerializationException ex) {
-			throw new InvalidCustomValueException("Invalid Program " + fieldValue);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtmlSummary(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
-	 */
-	@Override
-	public Summary toHtmlSummary(CustomDatatype<Program> datatype, String valueReference) {
-		return new CustomDatatype.Summary(toHtml(datatype, valueReference), true);
-	}
-	
-	/**
-	 * @see org.openmrs.web.attribute.handler.HtmlDisplayableDatatypeHandler#toHtml(org.openmrs.customdatatype.CustomDatatype, java.lang.String)
-	 */
-	@Override
-	public String toHtml(CustomDatatype<Program> datatype, String valueReference) {
-		try {
-			SimpleXStreamSerializer serializer = new SimpleXStreamSerializer();
-			return serializer.deserialize(valueReference, Program.class).toString();
-		}
-		catch (SerializationException ex) {
-			throw new InvalidCustomValueException("Invalid renders Program" + valueReference);
-		}
 	}
 }

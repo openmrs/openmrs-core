@@ -9,32 +9,11 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import org.openmrs.Program;
-import org.openmrs.customdatatype.SerializingCustomDatatype;
+import org.openmrs.OpenmrsObject;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-
-public class ProgramDatatype extends SerializingCustomDatatype<Program> {
-	
-	private final static XStream xstream = new XStream(new DomDriver());
-	
-	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
-	 */
+public class ProgramDatatype<T extends OpenmrsObject> extends BaseOpenmrsDatatype<T> {
 	@Override
-	public String serialize(Program typedValue) {
-		if (typedValue == null)
-			return null;
-		return xstream.toXML(typedValue);
+	public T deserialize(String serializedValue){
+		return null;
 	}
-	
-	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
-	 */
-	@Override
-	public Program deserialize(String serializedValue) {
-		return (Program) xstream.fromXML(serializedValue);
-	}
-	
 }
