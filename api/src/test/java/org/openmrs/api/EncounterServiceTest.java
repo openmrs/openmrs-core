@@ -1006,6 +1006,36 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link EncounterService#saveEncounterType(EncounterType)}
+	 */
+	@Test
+	@Verifies(value = "should set audit info if any item in EncounterType is Edited", method = "saveEncounterType(EncounterType)")
+	public void saveEncounterType_shouldSetAuditInfoIfAnyItemInEncounterTypeIsEdited() throws Exception {
+		EncounterService es = Context.getEncounterService();
+
+		// Create encounter type, ensure creator/dateCreated are set, and changedBy and dateChanged are not setDateCreated.
+		EncounterType encounterType = es.saveEncounterType(new EncounterType("testing", "desc"));
+		User creator = encounterType.getCreator();
+		Date dateCreated = encounterType.getDateCreated();
+
+		assertNotNull("creator should be set after saving", creator);
+		assertNotNull("date creates should be set after saving", dateCreated);
+		assertNull("changed by should not be set after creation", encounterType.getChangedBy());
+		assertNull("date changed should not be set after creation", encounterType.getDateChanged());
+
+		// Edit encounter type.
+		encounterType.setDescription("This has been a test!");
+		EncounterType editedEt = es.saveEncounterType(encounterType);
+		Context.flushSession();
+
+		// Ensure creator/dateCreated remain unchanged, and changedBy and dateChanged are set.
+		assertTrue("creator should not change during edit", creator.equals(editedEt.getCreator()));
+		assertTrue("date created should not changed during edit", dateCreated.equals(editedEt.getDateCreated()));
+		assertNotNull("changed by should be set after edit", editedEt.getChangedBy());
+		assertNotNull("date changed should be set after edit", editedEt.getDateChanged());
+	}
+
+	/**
 	 * @see {@link EncounterService#getEncounterType(String)}
 	 */
 	@Test
