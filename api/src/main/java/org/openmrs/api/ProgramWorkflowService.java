@@ -30,7 +30,7 @@ import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Contains methods pertaining to management of Programs, ProgramWorkflows, ProgramWorkflowStates,
- * PatientPrograms, PatientStates, and ConceptStateConversions Use:<br/>
+ * PatientPrograms, PatientStates, and ConceptStateConversions Use:<br>
  * 
  * <pre>
  *   Program program = new Program();
@@ -107,7 +107,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * Returns all programs, includes retired programs. This method delegates to the
 	 * #getAllPrograms(boolean) method
 	 * 
-	 * @return List<Program> of all existing programs, including retired programs
+	 * @return List&lt;Program&gt; of all existing programs, including retired programs
 	 * @throws APIException
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
@@ -117,7 +117,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * Returns all programs
 	 * 
 	 * @param includeRetired whether or not to include retired programs
-	 * @return List<Program> all existing programs, including retired based on the input parameter
+	 * @return List&lt;Program&gt; all existing programs, including retired based on the input parameter
 	 * @throws APIException
 	 * @should return all programs including retired when includeRetired equals true
 	 * @should return all programs excluding retired when includeRetired equals false
@@ -130,7 +130,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * list will be returned if there are no programs matching this <code>nameFragment</code>
 	 * 
 	 * @param nameFragment is the string used to search for programs
-	 * @return List<Program> - list of Programs whose name matches the input parameter
+	 * @return List&lt;Program&gt; - list of Programs whose name matches the input parameter
 	 * @throws APIException
 	 * @should return all programs with partial name match
 	 * @should return all programs when exact name match
@@ -173,7 +173,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Retires the given program
 	 * 
-	 * @deprecated use {@link retireProgram(Program program,String reason)}
+	 * @deprecated use {@link #retireProgram(Program, String)}
 	 * @param program Program to be retired
 	 * @return the Program which has been retired
 	 * @throws APIException
@@ -202,7 +202,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Unretires the given program
 	 * 
-	 * @deprecated use {@link unretireProgram(Program program)}
+	 * @deprecated use {@link #unretireProgram(Program)}
 	 * @param program Program to be unretired
 	 * @return the Program which has been unretired
 	 * @throws APIException
@@ -302,7 +302,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param maxCompletionDate if supplied will limit PatientPrograms to those completed on or
 	 *            before this Date
 	 * @param includeVoided if true, will also include voided PatientPrograms
-	 * @return List<PatientProgram> of PatientPrograms that match the passed input parameters
+	 * @return List&lt;PatientProgram&gt; of PatientPrograms that match the passed input parameters
 	 * @throws APIException
 	 * @should return patient programs for given patient
 	 * @should return patient programs for given program
@@ -388,7 +388,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * Get ProgramWorkflow by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return program work flow or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -424,7 +424,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Returns all conceptStateConversions
 	 * 
-	 * @return List<ConceptStateConversion> of all ConceptStateConversions that exist
+	 * @return List&lt;ConceptStateConversion&gt; of all ConceptStateConversions that exist
 	 * @throws APIException
 	 * @should return all concept state conversions
 	 */
@@ -502,7 +502,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Returns all programs, includes retired programs.
 	 * 
-	 * @return List<Program> of all existing programs
+	 * @return List&lt;Program&gt; of all existing programs
 	 * @deprecated use {@link #getAllPrograms()}
 	 * @throws APIException
 	 */
@@ -593,7 +593,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Returns all ProgramWorkflowStates
 	 * 
-	 * @return List<ProgramWorkflowState> - all ProgramWorkflowStates that exist
+	 * @return List&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates that exist
 	 * @deprecated ProgramWorkflowStates should be retrieved from the {@link ProgramWorkflow} they
 	 *             belong to
 	 * @see ProgramWorkflow#getStates()
@@ -607,7 +607,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * Returns all ProgramWorkflowStates
 	 * 
 	 * @param includeVoided - if false, only returns non-voided ProgramWorkflowStates
-	 * @return List<ProgramWorkflowState> - all ProgramWorkflowStates that exist, including voided
+	 * @return List&lt;ProgramWorkflowState&gt; - all ProgramWorkflowStates that exist, including voided
 	 *         based on the input parameter
 	 * @deprecated ProgramWorkflowStates should be retrieved from the {@link ProgramWorkflow} they
 	 *             belong to
@@ -656,7 +656,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 * @param patientProgram - the PatientProgram to retrieve possible next transitions from
 	 * @param workflow - the ProgramWorkflow to retrieve possible next transitions from
-	 * @return List<ProgramWorkflowState> - returns List<ProgramWorkflowState> that a patient with
+	 * @return List&lt;ProgramWorkflowState&gt; - returns List&lt;ProgramWorkflowState&gt; that a patient with
 	 *         the given PatientProgram and ProgramWorkflow is allowed to transition into
 	 * @deprecated use {@link ProgramWorkflow#getPossibleNextStates(PatientProgram)}
 	 * @throws APIException
@@ -729,11 +729,11 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	        User creator) throws APIException;
 	
 	/**
-	 * Returns a Collection<PatientProgram> of all PatientPrograms for the passed
+	 * Returns a Collection&lt;PatientProgram&gt; of all PatientPrograms for the passed
 	 * <code>patient</code>
 	 * 
 	 * @param patient - The Patient to retrieve all PatientPrograms for
-	 * @return Collection<PatientProgram> of all PatientPrograms for the passed <code>patient</code>
+	 * @return Collection&lt;PatientProgram&gt; of all PatientPrograms for the passed <code>patient</code>
 	 * @deprecated use
 	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
 	 * @throws APIException
@@ -743,7 +743,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public Collection<PatientProgram> getPatientPrograms(Patient patient) throws APIException;
 	
 	/**
-	 * Get Collection<Integer> of PatientIds for patients who are enrolled in program between
+	 * Get Collection&lt;Integer&gt; of PatientIds for patients who are enrolled in program between
 	 * fromDate and toDate
 	 * 
 	 * @param program - The Program to check for patient enrollment
@@ -751,7 +751,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *            or after this Date
 	 * @param toDate - Used to check whether patients were enrolled in the <code>program</code> on
 	 *            or before this Date
-	 * @return Collection<Integer> containing all patientIds for patients who were enrolled in the
+	 * @return Collection&lt;Integer&gt; containing all patientIds for patients who were enrolled in the
 	 *         <code>program</code> between <code>fromDate</code> and <code>toDate</code>
 	 * @deprecated use
 	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
@@ -767,7 +767,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 * @param patient - The Patient to check for program enrollment
 	 * @param onDate - Specifies only to return programs that the patient is in as of this Date
-	 * @return Collection<PatientProgram> that contains all PatientPrograms are current for the
+	 * @return Collection&lt;PatientProgram&gt; that contains all PatientPrograms are current for the
 	 *         <code>patient</code> as of <code>onDate</code>
 	 * @deprecated use
 	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
@@ -832,7 +832,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * Returns a Set of current ProgramWorkflows for the given Patient
 	 * 
 	 * @param patient - The Patient to check
-	 * @return Set<ProgramWorkflow> containing all of the current ProgramWorkflows for the
+	 * @return Set&lt;ProgramWorkflow&gt; containing all of the current ProgramWorkflows for the
 	 *         <code>patient</code>
 	 * @deprecated No current use outside of this service. Should be retrieved from Patient,
 	 *             PatientProgram, and PatientState
@@ -846,7 +846,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * Returns a Set of current ProgramWorkflows for the given PatientProgram
 	 * 
 	 * @param program - The PatientProgram to check
-	 * @return Set<ProgramWorkflow> containing all of the current ProgramWorkflows for the
+	 * @return Set&lt;ProgramWorkflow&gt; containing all of the current ProgramWorkflows for the
 	 *         <code>program</code>
 	 * @deprecated No current use outside of this service. Should be retrieved from Patient,
 	 *             PatientProgram, and PatientState
@@ -891,7 +891,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 * @param cohort
 	 * @param programs
-	 * @return List<PatientProgram> for all Patients in the given Cohort that are in the given
+	 * @return List&lt;PatientProgram&gt; for all Patients in the given Cohort that are in the given
 	 *         programs
 	 * @should return patient programs with patients in given cohort and programs
 	 * @should return patient programs with patients in given cohort
@@ -989,7 +989,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	/**
 	 * Returns all conceptStateConversions, includes retired conceptStateConversions.
 	 * 
-	 * @return List<ConceptStateConversion> of all ConceptStateConversions that exist, including
+	 * @return List&lt;ConceptStateConversion&gt; of all ConceptStateConversions that exist, including
 	 *         retired
 	 * @see #getAllConceptStateConversions()
 	 * @deprecated use {@link #getAllConceptStateConversions()}

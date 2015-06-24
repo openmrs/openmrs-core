@@ -57,7 +57,7 @@ public class ConceptStopWord extends BaseOpenmrsObject implements java.io.Serial
 	 * locale
 	 * 
 	 * @param value
-	 * @param local
+	 * @param locale
 	 */
 	public ConceptStopWord(String value, Locale locale) {
 		setValue(value);

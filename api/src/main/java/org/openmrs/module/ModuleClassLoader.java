@@ -49,8 +49,8 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Standard implementation of module class loader. <br/>
- * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)<br/>
+ * Standard implementation of module class loader. <br>
+ * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)<br>
  * 2004-2006 Dmitry Olshansky
  */
 public class ModuleClassLoader extends URLClassLoader {
@@ -106,7 +106,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	/**
 	 * @param module the <code>Module</code> to load
-	 * @param urls <code>List<URL></code> of the resources "managed" by this class loader
+	 * @param urls <code>List&lt;URL&gt;</code> of the resources "managed" by this class loader
 	 * @param parent parent <code>ClassLoader</code>
 	 * @see URLClassLoader#URLClassLoader(java.net.URL[], java.lang.ClassLoader)
 	 */
@@ -143,7 +143,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	/**
 	 * @param module the <code>Module</code> to load
-	 * @param urls <code>List<URL></code> of thee resources "managed" by this class loader
+	 * @param urls <code>List&lt;URL&gt;</code> of thee resources "managed" by this class loader
 	 * @see URLClassLoader#URLClassLoader(java.net.URL[])
 	 */
 	protected ModuleClassLoader(final Module module, final List<URL> urls) {
@@ -196,7 +196,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * Get all urls for all files in the given <code>module</code>
 	 *
 	 * @param module Module in which to look
-	 * @return List<URL> of all urls found (and cached) in the module
+	 * @return List&lt;URL&gt; of all urls found (and cached) in the module
 	 */
 	private static List<URL> getUrls(final Module module) {
 		List<URL> result = new LinkedList<URL>();
@@ -403,7 +403,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 *
 	 * @param module Module in which to get urls
 	 * @param existingUrls Array of URLs to skip
-	 * @return List<URL> of new unique urls
+	 * @return List&lt;URL&gt; of new unique urls
 	 * @see #getUrls(Module)
 	 */
 	private static List<URL> getUrls(final Module module, final URL[] existingUrls) {
@@ -571,7 +571,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param name String path and name of the class to load
 	 * @param resolve boolean whether or not to resolve this class before returning
 	 * @param requestor ModuleClassLoader with which to try loading
-	 * @param seenModules Set<String> moduleIds that have been tried already
+	 * @param seenModules Set&lt;String&gt; moduleIds that have been tried already
 	 * @return Class that has been loaded
 	 * @throws ClassNotFoundException if no class found
 	 */
@@ -881,7 +881,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 *
 	 * @param name String path and name of the file
 	 * @param requestor ModuleClassLoader in which to look
-	 * @param seenModules Set<String> modules that have been checked already
+	 * @param seenModules Set&lt;String&gt; modules that have been checked already
 	 * @return URL to resource
 	 * @see #findResource(String)
 	 */
@@ -958,7 +958,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param result URL of the file found
 	 * @param name String path and name of the file to find
 	 * @param requestor ModuleClassLoader in which to start
-	 * @param seenModules Set<String> moduleIds that have been checked already
+	 * @param seenModules Set&lt;String&gt; moduleIds that have been checked already
 	 * @throws IOException
 	 * @see #findResources(String)
 	 * @see #findResource(String, ModuleClassLoader, Set)

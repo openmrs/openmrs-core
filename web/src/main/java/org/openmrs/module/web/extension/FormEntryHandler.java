@@ -21,9 +21,6 @@ import org.openmrs.module.web.FormEntryContext;
  * This class allows modules that provide form entry capabilities (like formentry, htmlformentry, and xforms) to appear in the
  * same place in the UI when the user indicates they want to enter a form, and wants to pick which form.
  * 
- * To be able to enter forms, your module should provide a subclass that overrides the {@link #getFormList(FormEntryContext))},
- * and {@link #getFormEntryUrl()} methods.
- * 
  * If your module wants to be able to take over the view or edit links in the list of existing encounters, then your subclass
  * should override the {@link #getViewFormUrl()} and {@link #getFormsModuleCanView()} methods (for viewing) and/or
  * the {@link #getEditFormUrl()} and {@link #getFormsModuleCanEdit()} methods (for editing).
@@ -67,7 +64,7 @@ public abstract class FormEntryHandler extends Extension {
 	 * If your module allows filling out forms, override this method.
 	 * 
 	 * @return the url to go to enter a form. (The framework will take care of adding
-	 *         ?personId=xyz&patientId=xyz&formId=abc to it.)
+	 *         ?personId=xyz&amp;patientId=xyz&amp;formId=abc to it.)
 	 */
 	public String getFormEntryUrl() {
 		return null;

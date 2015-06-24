@@ -23,7 +23,7 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 public class FilterUtilTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link FilterUtil#storeLocale(String))}
+	 * @see FilterUtil#storeLocale(String))
 	 */
 	@Test
 	@Ignore
@@ -33,7 +33,7 @@ public class FilterUtilTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link {@link FilterUtil#restoreLocale(String))}
+	 * @see {@link FilterUtil#restoreLocale(String))
 	 */
 	@Test
 	@Ignore

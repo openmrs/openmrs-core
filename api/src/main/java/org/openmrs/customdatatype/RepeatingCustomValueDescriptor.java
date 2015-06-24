@@ -23,7 +23,7 @@ public interface RepeatingCustomValueDescriptor extends CustomValueDescriptor {
 	Integer getMinOccurs();
 	
 	/**
-	 * Implementation should never return a number <= 0.
+	 * Implementation should never return a number &lt;= 0.
 	 * @return the maximum number of values of this type that may be present for the owner to be valid
 	 */
 	Integer getMaxOccurs();

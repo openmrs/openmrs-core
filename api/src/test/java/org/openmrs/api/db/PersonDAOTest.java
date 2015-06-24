@@ -39,7 +39,7 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonDAO#getSavedPersonAttributeTypeName(org.openmrs.PersonAttributeType)}
+	 * @see PersonDAO#getSavedPersonAttributeTypeName(org.openmrs.PersonAttributeType)
 	 */
 	@Test
 	@Verifies(value = "should get saved personAttributeType name from database", method = "getSavedPersonAttributeTypeName(org.openmrs.PersonAttributeType)")

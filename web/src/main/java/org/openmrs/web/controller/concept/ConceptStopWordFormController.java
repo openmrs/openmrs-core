@@ -49,9 +49,9 @@ public class ConceptStopWordFormController {
 	 * Handle the add new ConceptStopWord
 	 *
 	 * @param httpSession
-	 * @param commandObject
+	 * @param conceptStopWord
 	 * @param errors
-	 * @return
+	 * @return path to forward to or an error message
 	 * @should add new ConceptStopWord
 	 * @should return error message if a duplicate ConceptStopWord is added
 	 * @should return error message for an empty ConceptStopWord

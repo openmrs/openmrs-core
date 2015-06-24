@@ -418,7 +418,7 @@ public interface HL7Service extends OpenmrsService {
 	 * @param uuid
 	 * @return the HL7InError or <code>null</code>
 	 * @throws APIException
-	 * @sine 1.9
+	 * @since 1.9
 	 */
 	@Authorized(PrivilegeConstants.PRIV_VIEW_HL7_IN_EXCEPTION)
 	public HL7InError getHL7InErrorByUuid(String uuid) throws APIException;
@@ -426,7 +426,7 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * Get all <code>HL7InError</code> items from the database
 	 * 
-	 * @return a List<HL7InError> object with all <code>HL7InError</code> items from the database
+	 * @return a List&lt;HL7InError&gt; object with all <code>HL7InError</code> items from the database
 	 * @throws APIException
 	 */
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_EXCEPTION)
@@ -533,9 +533,9 @@ public interface HL7Service extends OpenmrsService {
 	public void encounterCreated(Encounter encounter);
 	
 	/**
-	 * Process the given {@link HL7InQueue} item. <br/>
-	 * If an error occurs while processing, a new {@link HL7InError} is created and saved. <br/>
-	 * If no error occurs, a new {@link HL7InArchive} is created and saved.<br/>
+	 * Process the given {@link HL7InQueue} item. <br>
+	 * If an error occurs while processing, a new {@link HL7InError} is created and saved. <br>
+	 * If no error occurs, a new {@link HL7InArchive} is created and saved.<br>
 	 * The given {@link HL7InQueue} is removed from the hl7 in queue table regardless of success or
 	 * failure of the processing.
 	 * 
@@ -566,7 +566,6 @@ public interface HL7Service extends OpenmrsService {
 	 * @param hl7Message the {@link Message} to process and save to the db.
 	 * @return the processed message
 	 * @throws HL7Exception
-	 * @see {@link #processHL7String(String)}
 	 * @see #processHL7InQueue(HL7InQueue)
 	 * @should save hl7Message to the database
 	 * @should parse message type supplied by module
@@ -642,7 +641,7 @@ public interface HL7Service extends OpenmrsService {
 	 * @param uuid
 	 * @return the queue item or <code>null</code>
 	 * @throws APIException
-	 * @sine 1.9
+	 * @since 1.9
 	 */
 	public HL7QueueItem getHl7QueueItemByUuid(String uuid) throws APIException;
 	

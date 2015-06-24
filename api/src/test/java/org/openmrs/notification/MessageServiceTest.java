@@ -41,7 +41,7 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link MessageService#createMessage(String,String,String,String)}
+	 * @see MessageService#createMessage(String,String,String,String)
 	 */
 	@Test
 	@Verifies(value = "should create message", method = "createMessage(String,String,String,String)")
@@ -83,7 +83,7 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link MessageService#sendMessage(Message)}
+	 * @see MessageService#sendMessage(Message)
 	 */
 	@Test
 	@Verifies(value = "should send message", method = "sendMessage(Message)")

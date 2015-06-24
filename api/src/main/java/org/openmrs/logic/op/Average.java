@@ -11,10 +11,10 @@ package org.openmrs.logic.op;
 
 /**
  * The Average operator will calculate the average result from a collection of result returned by
- * the logic expression<br />
- * <br />
- * Example: <br />
- * - <code>logicService.parse("'CD4 COUNT'").average();</code><br />
+ * the logic expression<br>
+ * <br>
+ * Example: <br>
+ * - <code>logicService.parse("'CD4 COUNT'").average();</code><br>
  * The above will give us a criteria to get the average result of the "CD4 COUNT" observations
  */
 public class Average implements TransformOperator {

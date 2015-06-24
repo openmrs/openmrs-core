@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
  * Class dedicated for DataTables. It is a request that can be extracted from
  * {@link HttpServletRequest} with {@link #parseRequest(HttpServletRequest)}.
  * 
- * @see http://datatables.net/
+ * @see <a href="http://datatables.net/">http://datatables.net/</a>
  */
 public class DatatableRequest {
 	

@@ -61,7 +61,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if order and encounter have different patients", method = "validate(Object,Errors)")
@@ -100,7 +100,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if voided is null", method = "validate(Object,Errors)")
@@ -122,7 +122,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept is null", method = "validate(Object,Errors)")
@@ -141,7 +141,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if patient is null", method = "validate(Object,Errors)")
@@ -160,7 +160,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if orderer is null", method = "validate(Object,Errors)")
@@ -179,7 +179,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if encounter is null", method = "validate(Object,Errors)")
@@ -196,7 +196,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if urgency is null", method = "validate(Object,Errors)")
@@ -213,7 +213,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if action is null", method = "validate(Object,Errors)")
@@ -230,7 +230,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if dateActivated after dateStopped", method = "validate(Object,Errors)")
@@ -252,7 +252,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if dateActivated after autoExpireDate", method = "validate(Object,Errors)")
@@ -358,7 +358,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
@@ -412,7 +412,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -445,7 +445,7 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderValidator#validate(Object,Errors)}
+	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

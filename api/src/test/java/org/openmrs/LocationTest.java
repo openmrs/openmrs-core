@@ -25,7 +25,7 @@ public class LocationTest {
 	/**
 	 * Get locations that have any of specified set of tags among its child tags.
 	 * 
-	 * @see {@link Location#isInHierarchy(Location,Location)}
+	 * @see Location#isInHierarchy(Location,Location)
 	 */
 	@Test
 	@Verifies(value = "should should find location in hierarchy", method = "isInHierarchy(Location,Location)")

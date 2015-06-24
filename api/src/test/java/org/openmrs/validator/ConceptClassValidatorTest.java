@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
+	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if user is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -71,7 +71,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
+	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -87,7 +87,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
+	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if concept class name is already exist", method = "validate(Object,Errors)")
@@ -103,7 +103,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
+	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -120,7 +120,7 @@ public class ConceptClassValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
+	 * @see ConceptClassValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

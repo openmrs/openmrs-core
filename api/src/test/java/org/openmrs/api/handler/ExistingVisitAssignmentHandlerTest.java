@@ -41,7 +41,7 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should assign existing visit if match found", method = "beforeCreateEncounter(Encounter)")
@@ -56,7 +56,7 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not assign visit if no match found", method = "beforeCreateEncounter(Encounter)")
@@ -76,7 +76,7 @@ public class ExistingVisitAssignmentHandlerTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not assign visit which stopped before encounter date", method = "beforeCreateEncounter(Encounter)")

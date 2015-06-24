@@ -204,7 +204,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormField(Form,Concept,Collection<QFormField;>,null)}
+	 * @see FormService#getFormField(Form,Concept,Collection<QFormField;>,null)
 	 */
 	@Test
 	@Verifies(value = "should ignore formFields passed to ignoreFormFields", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
@@ -227,7 +227,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormField(Form,Concept,Collection<QFormField;>,null)}
+	 * @see FormService#getFormField(Form,Concept,Collection<QFormField;>,null)
 	 */
 	@Test
 	@Verifies(value = "should not fail with null ignoreFormFields argument", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
@@ -357,7 +357,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveFieldType(FieldType)}
+	 * @see FormService#saveFieldType(FieldType)
 	 */
 	@Test
 	@Verifies(value = "should create new field type", method = "saveFieldType(FieldType)")
@@ -376,7 +376,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveFieldType(FieldType)}
+	 * @see FormService#saveFieldType(FieldType)
 	 */
 	@Test
 	@Verifies(value = "should update existing field type", method = "saveFieldType(FieldType)")
@@ -395,7 +395,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#duplicateForm(Form)}
+	 * @see FormService#duplicateForm(Form)
 	 */
 	@Test
 	@Verifies(value = "should clear changed details and update creation details", method = "duplicateForm(Form)")
@@ -414,7 +414,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormField(Form,Concept,Collection<QFormField;>,null)}
+	 * @see FormService#getFormField(Form,Concept,Collection<QFormField;>,null)
 	 */
 	@Test
 	@Verifies(value = "should simply return null for nonexistent concepts", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
@@ -424,7 +424,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormField(Form,Concept,Collection<QFormField;>,null)}
+	 * @see FormService#getFormField(Form,Concept,Collection<QFormField;>,null)
 	 */
 	@Test
 	@Verifies(value = "should simply return null for nonexistent forms", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
@@ -434,7 +434,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#duplicateForm(Form)}
+	 * @see FormService#duplicateForm(Form)
 	 */
 	@Test
 	@Verifies(value = "should give a new uuid to the duplicated form", method = "duplicateForm(Form)")
@@ -449,7 +449,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFieldAnswerByUuid(String)}
+	 * @see FormService#getFieldAnswerByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldAnswerByUuid(String)")
@@ -458,7 +458,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFieldByUuid(String)}
+	 * @see FormService#getFieldByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getFieldByUuid(String)")
@@ -469,7 +469,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFieldByUuid(String)}
+	 * @see FormService#getFieldByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldByUuid(String)")
@@ -478,7 +478,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFieldTypeByUuid(String)}
+	 * @see FormService#getFieldTypeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getFieldTypeByUuid(String)")
@@ -489,7 +489,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFieldTypeByUuid(String)}
+	 * @see FormService#getFieldTypeByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldTypeByUuid(String)")
@@ -498,7 +498,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormByUuid(String)}
+	 * @see FormService#getFormByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getFormByUuid(String)")
@@ -509,7 +509,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormByUuid(String)}
+	 * @see FormService#getFormByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getFormByUuid(String)")
@@ -518,7 +518,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormFieldByUuid(String)}
+	 * @see FormService#getFormFieldByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getFormFieldByUuid(String)")
@@ -529,7 +529,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormFieldByUuid(String)}
+	 * @see FormService#getFormFieldByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getFormFieldByUuid(String)")
@@ -538,7 +538,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveFormField(FormField)}
+	 * @see FormService#saveFormField(FormField)
 	 */
 	@Test
 	@Verifies(value = "should propagate save to the Field property on the given FormField", method = "saveFormField(FormField)")
@@ -561,7 +561,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormsContainingConcept(Concept)}
+	 * @see FormService#getFormsContainingConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should get all forms for concept", method = "getFormsContainingConcept(Concept)")
@@ -572,7 +572,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#getFormsContainingConcept(Concept)}
+	 * @see FormService#getFormsContainingConcept(Concept)
 	 */
 	@Test
 	@Verifies(value = "should merge fields with similar attributes", method = "mergeDuplicateFields()")
@@ -615,7 +615,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#duplicateForm(Form)}
+	 * @see FormService#duplicateForm(Form)
 	 */
 	@Test
 	@Verifies(value = "should copy resources for old form to new form", method = "duplicateForm(Form)")
@@ -645,7 +645,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#purgeFormResource(Form,String,String)}
+	 * @see FormService#purgeFormResource(Form,String,String)
 	 */
 	@Test
 	@Verifies(value = "should delete a form resource", method = "purgeFormResource(Form,String,String)")
@@ -679,7 +679,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveFormResource(FormResource)}
+	 * @see FormService#saveFormResource(FormResource)
 	 */
 	@Test
 	@Verifies(value = "should overwrite an existing resource with same name", method = "saveFormResource(FormResource)")
@@ -718,7 +718,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#purgeForm(Form)}
+	 * @see FormService#purgeForm(Form)
 	 */
 	@Test
 	@Verifies(value = "should delete form resources for deleted form", method = "purgeForm(Form)")
@@ -756,7 +756,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveFormResource(FormResource)}
+	 * @see FormService#saveFormResource(FormResource)
 	 */
 	@Test
 	@Verifies(value = "should be able to save an XSLT", method = "saveFormResource(FormResource)")
@@ -807,7 +807,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveFormField(FormField)}
+	 * @see FormService#saveFormField(FormField)
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
@@ -898,7 +898,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveForm(Form)}
+	 * @see FormService#saveForm(Form)
 	 */
 	@Test
 	@Verifies(method = "saveForm(Form)", value = "should save given form successfully")
@@ -917,7 +917,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveForm(Form)}
+	 * @see FormService#saveForm(Form)
 	 */
 	@Test
 	@Verifies(method = "saveForm(Form)", value = "should update an existing form")
@@ -935,7 +935,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveForm(Form)}
+	 * @see FormService#saveForm(Form)
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
@@ -951,7 +951,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#saveForm(Form)}
+	 * @see FormService#saveForm(Form)
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
@@ -969,7 +969,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#purgeForm(Form)}
+	 * @see FormService#purgeForm(Form)
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
@@ -984,7 +984,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#purgeForm(Form)}
+	 * @see FormService#purgeForm(Form)
 	 */
 	@Test
 	@Verifies(method = "purgeForm(Form)", value = "should delete given form successfully")
@@ -999,7 +999,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#duplicateForm(Form)}}
+	 * @see FormService#duplicateForm(Form)}
 	 * @throws FormsLockedException
 	 */
 	@Test(expected = FormsLockedException.class)
@@ -1013,7 +1013,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormService#duplicateForm(Form)}
+	 * @see FormService#duplicateForm(Form)
 	 */
 	@Test
 	@Verifies(method = "duplicateForm(Form)", value = "should duplicate given form successfully")

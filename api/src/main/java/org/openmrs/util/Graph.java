@@ -128,7 +128,7 @@ public class Graph<T> {
 	/**
 	 * Obtains the edges ending with a given node 
 	 * @param aNode
-	 * @return
+	 * @return set of edges
 	 */
 	public Set<Edge> getEdgesEndingWith(T aNode) {
 		Set<Edge> edgesPointing = new HashSet<Edge>();
@@ -143,7 +143,7 @@ public class Graph<T> {
 	/**
 	 * Sort a graph in topological order
 	 * 
-	 * @return
+	 * @return sorted nodes
 	 * @throws CycleException
 	 */
 	public List<T> topologicalSort() throws CycleException {

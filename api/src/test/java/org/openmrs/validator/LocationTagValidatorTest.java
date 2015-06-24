@@ -24,7 +24,7 @@ import org.springframework.validation.Errors;
 public class LocationTagValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link LocationTagValidator#validate(Object, org.springframework.validation.Errors)}
+	 * @see LocationTagValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -42,7 +42,7 @@ public class LocationTagValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocationTagValidator#validate(Object,Errors)}
+	 * @see LocationTagValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

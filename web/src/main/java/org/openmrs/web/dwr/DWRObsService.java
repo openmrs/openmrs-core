@@ -60,7 +60,7 @@ public class DWRObsService {
 	 * Get all observations for the given encounter TODO: rename to getObservationsByEncounter
 	 * 
 	 * @param encounterId
-	 * @return
+	 * @return list of observations
 	 */
 	public Vector<Object> getObservations(Integer encounterId) {
 		
@@ -266,12 +266,10 @@ public class DWRObsService {
 	*/
 
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param personId
 	 * @param conceptId
 	 * @param encounterId
-	 * @return
+	 * @return list of obs items
 	 */
 	public Vector<ObsListItem> getObsByPatientConceptEncounter(String personId, String conceptId, String encounterId) {
 		log.debug("Started with: [" + personId + "] [" + conceptId + "] [" + encounterId + "]");
@@ -333,10 +331,8 @@ public class DWRObsService {
 	}
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param obsId
-	 * @return
+	 * @return list item or null
 	 */
 	public ObsListItem getObs(Integer obsId) {
 		Obs o = null;

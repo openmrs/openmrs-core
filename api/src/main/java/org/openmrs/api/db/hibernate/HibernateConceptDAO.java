@@ -71,8 +71,8 @@ import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * The Hibernate class for Concepts, Drugs, and related classes. <br/>
- * <br/>
+ * The Hibernate class for Concepts, Drugs, and related classes. <br>
+ * <br>
  * Use the {@link ConceptService} to access these methods
  * 
  * @see ConceptService
@@ -426,7 +426,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptNameTag(org.openmrs.ConceptNameTag)
+	 * @see org.openmrs.api.db.ConceptDAO#deleteConceptNameTag(ConceptNameTag)
 	 */
 	public void deleteConceptNameTag(ConceptNameTag cnt) throws DAOException {
 		sessionFactory.getCurrentSession().delete(cnt);
@@ -785,7 +785,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * returns a list of n-generations of parents of a concept in a concept set
 	 * 
 	 * @param Concept current
-	 * @return List<Concept>
+	 * @return List&lt;Concept&gt;
 	 * @throws DAOException
 	 */
 	@SuppressWarnings("unchecked")
@@ -861,7 +861,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptSources()
+	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptSources(boolean)
 	 */
 	
 	@SuppressWarnings("unchecked")
@@ -971,7 +971,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByMapping(java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByMapping(String, String, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) {
@@ -1215,7 +1215,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean)
+	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
 	 */
 	public Long getCountOfDrugs(String drugName, Concept concept, boolean searchKeywords, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws DAOException {
@@ -1556,7 +1556,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getCountOfConceptReferenceTerms(java.lang.String, boolean)
+	 * @see org.openmrs.api.db.ConceptDAO#getCountOfConceptReferenceTerms(String, ConceptSource, boolean)
 	 */
 	@Override
 	public Long getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)

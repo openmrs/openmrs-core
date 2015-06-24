@@ -33,7 +33,7 @@ public interface OpenmrsDataDAO<T extends BaseOpenmrsData> extends OpenmrsObject
 	/**
 	 * Returns total number of persistents (optionally voided)
 	 * @param includeVoided
-	 * @return
+	 * @return total number of persistents
 	 */
 	int getAllCount(boolean includeVoided);
 	
@@ -42,7 +42,7 @@ public interface OpenmrsDataDAO<T extends BaseOpenmrsData> extends OpenmrsObject
 	 * @param includeVoided
 	 * @param firstResult
 	 * @param maxResults
-	 * @return
+	 * @return list of persistents
 	 */
 	List<T> getAll(boolean includeVoided, Integer firstResult, Integer maxResults);
 	

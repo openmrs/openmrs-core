@@ -59,14 +59,14 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * Represents an OpenMRS <code>Service Context</code>, which returns the services represented
- * throughout the system. <br/>
- * <br/>
- * This class should not be access directly, but rather used through the <code>Context</code> class. <br/>
- * <br/>
+ * throughout the system. <br>
+ * <br>
+ * This class should not be access directly, but rather used through the <code>Context</code> class. <br>
+ * <br>
  * This class is essentially static and only one instance is kept because this is fairly
  * heavy-weight. Spring takes care of filling in the actual service implementations via dependency
- * injection. See the /metadata/api/spring/applicationContext-service.xml file. <br/>
- * <br/>
+ * injection. See the /metadata/api/spring/applicationContext-service.xml file. <br>
+ * <br>
  * Module services are also accessed through this class. See {@link #getService(Class)}
  *
  * @see org.openmrs.api.context.Context
@@ -752,11 +752,11 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * Allow other services to be added to our service layer <br/>
-	 * <br/>
-	 * Classes will be found/loaded with the ModuleClassLoader <br/>
-	 * <br/>
-	 * <code>params</code>[0] = string representing the service interface<br/>
+	 * Allow other services to be added to our service layer <br>
+	 * <br>
+	 * Classes will be found/loaded with the ModuleClassLoader <br>
+	 * <br>
+	 * <code>params</code>[0] = string representing the service interface<br>
 	 * <code>params</code>[1] = service instance
 	 *
 	 * @param params list of parameters

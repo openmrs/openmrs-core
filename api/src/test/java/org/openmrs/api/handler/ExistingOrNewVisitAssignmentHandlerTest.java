@@ -43,7 +43,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	}
 	
 	/**
-	 * @see {@link ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should assign existing visit if match found", method = "beforeCreateEncounter(Encounter)")
@@ -57,7 +57,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	}
 	
 	/**
-	 * @see {@link ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should assign new visit if no match found", method = "beforeCreateEncounter(Encounter)")
@@ -77,7 +77,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	}
 	
 	/**
-	 * @see {@link ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should assign first visit type if mapping global property is not set", method = "beforeCreateEncounter(Encounter)")
@@ -100,7 +100,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	}
 	
 	/**
-	 * @see {@link ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 * @see ExistingVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should assign mapping global property visit type", method = "beforeCreateEncounter(Encounter)")
@@ -128,7 +128,7 @@ public class ExistingOrNewVisitAssignmentHandlerTest extends BaseContextSensitiv
 	}
 	
 	/**
-	 * @see {@link ExistingOrNewVisitAssignmentHandler#beforeCreateEncounter(Encounter)}
+	 * @see ExistingOrNewVisitAssignmentHandler#beforeCreateEncounter(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should resolve encounter and visit type uuids as global property values", method = "beforeCreateEncounter(Encounter)")

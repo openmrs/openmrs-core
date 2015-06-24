@@ -29,7 +29,7 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 public class DWRObservationServiceTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)}
+	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
 	@Verifies(value = "should pass test on saving observation with coded concepts", method = "createObs(Integer, Integer,Integer, String, String)")
@@ -51,7 +51,7 @@ public class DWRObservationServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)}
+	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
 	@Verifies(value = "should pass test on saving observation with boolean concepts with value yes", method = "createObs(Integer, Integer, Integer, String, String)")
@@ -77,7 +77,7 @@ public class DWRObservationServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)}
+	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
 	@Verifies(value = "should pass test on saving observation with boolean concepts with value no", method = "createObs(Integer, Integer, Integer, String, String)")
@@ -103,7 +103,7 @@ public class DWRObservationServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)}
+	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
 	@Verifies(value = "should pass test on saving observation with boolean concepts with value true", method = "createObs(Integer, Integer, Integer, String, String)")
@@ -129,7 +129,7 @@ public class DWRObservationServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)}
+	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
 	@Verifies(value = "should pass test on saving observation with boolean concepts with value false", method = "createObs(Integer, Integer, Integer, String, String)")
@@ -155,7 +155,7 @@ public class DWRObservationServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)}
+	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
 	@Verifies(value = "should pass test on saving observation with boolean concepts with value zero", method = "createObs(Integer, Integer, Integer, String, String)")
@@ -181,7 +181,7 @@ public class DWRObservationServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)}
+	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
 	@Verifies(value = "should pass test on saving observation with boolean concepts with value one", method = "createObs(Integer, Integer, Integer, String, String)")

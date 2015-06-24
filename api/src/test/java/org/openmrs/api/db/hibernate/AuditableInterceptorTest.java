@@ -158,7 +158,7 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link AuditableInterceptor#onFlushDirty(Object,Serializable,null,null,null,null)}
+	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,null,null,null,null)
 	 * @verifies should not fail when the daemon user modifies something
 	 */
 	@Test

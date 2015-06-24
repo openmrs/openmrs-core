@@ -68,20 +68,20 @@ public interface SerializationService extends OpenmrsService {
 	        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException;
 	
 	/**
-	 * Gets the list of OpenmrsSerializers that have been registered with this service. <br/>
-	 * <br/>
+	 * Gets the list of OpenmrsSerializers that have been registered with this service. <br>
+	 * <br>
 	 * Modules are able to add more serializers by adding this in their moduleApplicationContext.
 	 * e.g.:
 	 * 
 	 * <pre>
-	 * 	&lt;bean parent="serializationServiceTarget">
-	 * 		&lt;property name="serializers">
-	 * 		&lt;list>
-	 * 			&lt;ref bean="xstreamSerializer"/>
-	 * 		&lt;/list>
-	 * 		&lt;/property>
-	 *  &lt;/bean>
-	 *  &lt;bean id="xstreamSerializer" class="org.openmrs.module.serialization.xstream.XStreamSerializer"/>
+	 * 	&lt;bean parent="serializationServiceTarget"&gt;
+	 * 		&lt;property name="serializers"&gt;
+	 * 		&lt;list&gt;
+	 * 			&lt;ref bean="xstreamSerializer"/&gt;
+	 * 		&lt;/list&gt;
+	 * 		&lt;/property&gt;
+	 *  &lt;/bean&gt;
+	 *  &lt;bean id="xstreamSerializer" class="org.openmrs.module.serialization.xstream.XStreamSerializer"/&gt;
 	 * </pre>
 	 * 
 	 * @return list of serializers currently loaded in openmrs

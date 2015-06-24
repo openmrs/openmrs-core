@@ -37,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class ConceptProposalFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link ConceptProposalFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptProposalFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should create a single unique synonym and obs for all similar proposals", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -93,7 +93,7 @@ public class ConceptProposalFormControllerTest extends BaseWebContextSensitiveTe
 	}
 	
 	/**
-	 * @see {@link ConceptProposalFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptProposalFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should work properly for country locales", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")

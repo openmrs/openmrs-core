@@ -115,7 +115,7 @@ public class StartupErrorFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
+	 * @see org.openmrs.web.filter.StartupFilter#skipFilter(HttpServletRequest)
 	 */
 	public boolean skipFilter(HttpServletRequest request) {
 		return !Listener.errorOccurredAtStartup();

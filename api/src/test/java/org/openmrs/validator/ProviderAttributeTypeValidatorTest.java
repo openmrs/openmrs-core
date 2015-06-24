@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link ProviderAttributeTypeValidator#validate(Object, org.springframework.validation.Errors)}
+	 * @see ProviderAttributeTypeValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -41,7 +41,7 @@ public class ProviderAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link ProviderAttributeTypeValidator#validate(Object,Errors)}
+	 * @see ProviderAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

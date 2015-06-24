@@ -33,9 +33,7 @@ public class FieldGenHandlerFactory {
 	}
 	
 	/**
-	 * Auto generated method comment
-	 *
-	 * @return
+	 * @return singleton instance
 	 */
 	public static FieldGenHandlerFactory getSingletonInstance() {
 		if (singleton == null) {
@@ -66,10 +64,8 @@ public class FieldGenHandlerFactory {
 	}
 	
 	/**
-	 * Auto generated method comment
-	 *
 	 * @param className
-	 * @return
+	 * @return handler class name or null
 	 */
 	public String getHandlerByClassName(String className) {
 		if (className != null) {

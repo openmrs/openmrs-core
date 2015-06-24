@@ -34,7 +34,7 @@ import org.springframework.validation.ObjectError;
 public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link ChangePasswordFormController#formBackingObject()} 
+	 * @see ChangePasswordFormController#formBackingObject()
 	 */
 	@Test
 	@Verifies(value = "return an authenticated User", method = "formBackingObject()")
@@ -46,7 +46,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "display an error message when the password and confirm password entries are different", method = "handleSubmission()")
@@ -62,7 +62,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "not display error message if password and confirm password are the same", method = "handleSubmission()")
@@ -78,7 +78,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 *           test =
 	 */
 	@Test
@@ -95,7 +95,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "display error message if password is weak", method = "handleSubmission()")
@@ -111,7 +111,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "display error message when question is empty and answer is not empty", method = "handleSubmission()")
@@ -127,7 +127,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "display error message when the answer and the confirm answer entered are not the same", method = "handleSubmission()")
@@ -143,7 +143,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "display error message when the answer is empty and question is not empty", method = "handleSubmission()")
@@ -159,7 +159,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "navigate to the home page if the authentication is successful", method = "handleSubmission()")
@@ -175,7 +175,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "set the user property forcePassword to false after successful password change", method = "handleSubmission()")
@@ -197,7 +197,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "do not set the user property forcePassword to false after unsuccessful password change", method = "handleSubmission()")
@@ -219,7 +219,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#formBackingObject()} 
+	 * @see ChangePasswordFormController#formBackingObject()
 	 */
 	@Test
 	@Verifies(value = "remain on the changePasswordForm page if there are errors", method = "formBackingObject()")
@@ -233,7 +233,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	}
 	
 	/**
-	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
+	 * @see ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "set the secret question and answer of the user", method = "handleSubmission()")

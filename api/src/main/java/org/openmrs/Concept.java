@@ -48,14 +48,14 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
- * usually an {@link Obs}. <br/>
- * <br/>
+ * usually an {@link Obs}. <br>
+ * <br>
  * A Concept can have multiple names and multiple descriptions within one locale and across multiple
- * locales.<br/>
- * <br/>
+ * locales.<br>
+ * <br>
  * To save a Concept to the database, first build up the Concept object in java, then pass that
- * object to the {@link ConceptService}.<br/>
- * <br/>
+ * object to the {@link ConceptService}.<br>
+ * <br>
  * To get a Concept that is stored in the database, call a method in the {@link ConceptService} to
  * fetch an object. To get child objects off of that Concept, further calls to the
  * {@link ConceptService} or the database are not needed. e.g. To get the list of answers that are
@@ -834,8 +834,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Returns all names available in a specific locale. <br/>
-	 * <br/>
+	 * Returns all names available in a specific locale. <br>
+	 * <br>
 	 * This is recommended when managing the concept dictionary.
 	 * 
 	 * @param locale locale for which names should be returned
@@ -852,8 +852,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Returns all names available for locale langueage "or" country. <br/>
-	 * <br/>
+	 * Returns all names available for locale langueage "or" country. <br>
+	 * <br>
 	 * 
 	 * @param locale locale for which names should be returned
 	 * @return Collection of ConceptNames with the given locale langueage or country
@@ -874,8 +874,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	/**
 	 * Returns all names from compatible locales. A locale is considered compatible if it is exactly
-	 * the same locale, or if either locale has no country specified and the language matches. <br/>
-	 * <br/>
+	 * the same locale, or if either locale has no country specified and the language matches. <br>
+	 * <br>
 	 * This is recommended when presenting possible names to the use.
 	 * 
 	 * @param desiredLocale locale with which the names should be compatible
@@ -1763,7 +1763,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * Sort the ConceptSet based on the weight
 	 * 
-	 * @return sortedConceptSet Collection<ConceptSet>
+	 * @return sortedConceptSet Collection&lt;ConceptSet&gt;
 	 */
 	private List<ConceptSet> getSortedConceptSets() {
 		List<ConceptSet> cs = new Vector<ConceptSet>();
@@ -1779,7 +1779,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * Get all the concept members of current concept
 	 * 
 	 * @since 1.7
-	 * @return List<Concept> the Concepts that are members of this Concept's set
+	 * @return List&lt;Concept&gt; the Concepts that are members of this Concept's set
 	 * @should return concept set members sorted according to the sort weight
 	 * @should return all the conceptMembers of current Concept
 	 * @should return unmodifiable list of conceptMember list
@@ -1811,11 +1811,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Add the concept to the existing member to the list of set members in the given location. <br/>
-	 * <br/>
-	 * index of 0 is before the first concept<br/>
-	 * index of -1 is after last.<br/>
-	 * index of 1 is after the first but before the second, etc<br/>
+	 * Add the concept to the existing member to the list of set members in the given location. <br>
+	 * <br>
+	 * index of 0 is before the first concept<br>
+	 * index of -1 is after last.<br>
+	 * index of 1 is after the first but before the second, etc<br>
 	 * 
 	 * @param setMember the Concept to add as a child of this Concept
 	 * @param index where in the list of set members to put this setMember

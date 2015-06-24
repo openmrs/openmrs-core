@@ -214,10 +214,10 @@ public class ModuleUtil {
 	
 	/**
 	 * This method is an enhancement of {@link #compareVersion(String, String)} and adds support for
-	 * wildcard characters and upperbounds. <br/>
-	 * <br/>
-	 * This method calls {@link ModuleUtil#checkRequiredVersion(String, String)} internally. <br/>
-	 * <br/>
+	 * wildcard characters and upperbounds. <br>
+	 * <br>
+	 * This method calls {@link ModuleUtil#checkRequiredVersion(String, String)} internally. <br>
+	 * <br>
 	 * The require version number in the config file can be in the following format:
 	 * <ul>
 	 * <li>1.2.3</li>
@@ -317,9 +317,9 @@ public class ModuleUtil {
 	
 	/**
 	 * This method is an enhancement of {@link #compareVersion(String, String)} and adds support for
-	 * wildcard characters and upperbounds. <br/>
-	 * <br/>
-	 * <br/>
+	 * wildcard characters and upperbounds. <br>
+	 * <br>
+	 * <br>
 	 * The require version number in the config file can be in the following format:
 	 * <ul>
 	 * <li>1.2.3</li>
@@ -327,7 +327,7 @@ public class ModuleUtil {
 	 * <li>1.2.2 - 1.2.3</li>
 	 * <li>1.2.* - 1.3.*</li>
 	 * </ul>
-	 * <br/>
+	 * <br>
 	 *
 	 * @param version openmrs version number to be compared
 	 * @param versionRange value in the config file for required openmrs version
@@ -490,7 +490,7 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Expand the given <code>fileToExpand</code> jar to the <code>tmpModuleFile<code> directory
+	 * Expand the given <code>fileToExpand</code> jar to the <code>tmpModuleFile</code> directory
 	 *
 	 * If <code>name</code> is null, the entire jar is expanded. If<code>name</code> is not null,
 	 * then only that path/file is expanded.
@@ -627,7 +627,7 @@ public class ModuleUtil {
 	 * @return an {@link InputStream} that is not necessarily at the same url, possibly at a 403
 	 *         redirect.
 	 * @throws IOException
-	 * @see {@link #getURLStream(URL)}
+	 * @see #getURLStream(URL)
 	 */
 	protected static InputStream openConnectionCheckRedirects(URLConnection c) throws IOException {
 		boolean redir;
@@ -784,7 +784,7 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * @see ModuleUtil#refreshApplicationContext(AbstractRefreshableApplicationContext, Module)
+	 * @see ModuleUtil#refreshApplicationContext(AbstractRefreshableApplicationContext, boolean, Module)
 	 */
 	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx) {
 		return refreshApplicationContext(ctx, false, null);
@@ -899,7 +899,7 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Looks at the <moduleid>.mandatory properties and at the currently started modules to make
+	 * Looks at the &lt;moduleid&gt;.mandatory properties and at the currently started modules to make
 	 * sure that all mandatory modules have been started successfully.
 	 *
 	 * @throws ModuleException if a mandatory module isn't started
@@ -971,7 +971,7 @@ public class ModuleUtil {
 	
 	/**
 	 * Returns all modules that are marked as mandatory. Currently this means there is a
-	 * <moduleid>.mandatory=true global property.
+	 * &lt;moduleid&gt;.mandatory=true global property.
 	 *
 	 * @return list of modules ids for mandatory modules
 	 * @should return mandatory module ids
@@ -1046,7 +1046,7 @@ public class ModuleUtil {
 	 *
 	 * @param module
 	 * @param path
-	 * @return
+	 * @return local path
 	 * @should handle ui springmvc css ui dot css example
 	 */
 	public static String getPathForResource(Module module, String path) {

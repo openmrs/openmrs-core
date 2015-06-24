@@ -19,7 +19,7 @@ import org.openmrs.test.Verifies;
 public class ProviderTest {
 	
 	/**
-	 * @see {@link Provider#getName()}
+	 * @see Provider#getName()
 	 */
 	@Test
 	@Verifies(value = "return person full name if person is not null or null otherwise", method = "getName()")
@@ -33,7 +33,7 @@ public class ProviderTest {
 	}
 	
 	/**
-	 * @see {@link Provider#toString()}
+	 * @see Provider#toString()
 	 */
 	@Test
 	@Verifies(value = "return person all names of person with specific format", method = "toString()")

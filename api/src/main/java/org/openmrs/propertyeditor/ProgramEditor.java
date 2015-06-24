@@ -20,10 +20,10 @@ import org.springframework.util.StringUtils;
 
 /**
  * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
- * an object back and forth through an html form or other medium. <br/>
+ * an object back and forth through an html form or other medium. <br>
  * If string value starts with "concept.", then the text after the dot is treated as a concept_id or uuid
  * The name of the concept associated with that id is treated as the name of the program to fetch.
- * <br/>
+ * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  *
  * @see Program

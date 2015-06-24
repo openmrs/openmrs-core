@@ -41,7 +41,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 	
 	/**
-	 * @see {@link PatientValidator#validate(Object,Errors)}
+	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if a preferred patient identifier is not chosen", method = "validate(Object,Errors)")
@@ -58,7 +58,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 	
 	/**
-	 * @see {@link PatientValidator#validate(Object,Errors)}
+	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if a preferred patient identifier is not chosen for voided patients", method = "validate(Object,Errors)")
@@ -109,7 +109,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.PatientValidator#validate(Object,Errors)}
+	 * @see org.openmrs.validator.PatientValidator#validate(Object,Errors)
 	 * @verifies fail validation if gender is blank
 	 */
 	@Test
@@ -123,7 +123,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 	
 	/**
-	 * @see {@link PatientValidator#validate(Object,Errors)}
+	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -161,7 +161,7 @@ public class PatientValidatorTest extends PersonValidatorTest {
 	}
 	
 	/**
-	 * @see {@link PatientValidator#validate(Object,Errors)}
+	 * @see PatientValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

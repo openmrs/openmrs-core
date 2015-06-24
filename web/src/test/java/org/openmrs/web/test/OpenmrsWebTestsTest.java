@@ -12,8 +12,8 @@ package org.openmrs.web.test;
 import org.openmrs.OpenmrsTestsTest;
 
 /**
- * This class will run all the tests found in {@link OpenmrsTestsTest} on the files in the web layer <br/>
- * <br/>
+ * This class will run all the tests found in {@link OpenmrsTestsTest} on the files in the web layer <br>
+ * <br>
  * This is needed because when running tests through maven, maven will separate each maven module
  * into batches of tests, so because the {@link OpenmrsTestsTest} is in the api module, it will not
  * verify the tests in the web layer

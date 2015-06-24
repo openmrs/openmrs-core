@@ -85,8 +85,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Hibernate specific implementation of the PatientSetDAO. <br/>
- * <br/>
+ * Hibernate specific implementation of the PatientSetDAO. <br>
+ * <br>
  * This class should not be instantiated. Rather, it is injected into the PatientSetService by
  * Spring.
  * 
@@ -2172,7 +2172,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * @param patients
-	 * @param types List<PatientIdentifierTypes> of types to get
+	 * @param types List&lt;PatientIdentifierTypes&gt; of types to get
 	 * @return Map of {@link PatientIdentifier}s
 	 */
 	@SuppressWarnings("unchecked")

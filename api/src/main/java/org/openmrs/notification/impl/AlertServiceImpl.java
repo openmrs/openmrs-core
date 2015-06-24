@@ -233,7 +233,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	}
 	
 	/**
-	 * @see org.openmrs.notification.AlertService#notifySuperUsers(java.lang.String, java.lang.Exception, java.lang.String[])
+	 * @see org.openmrs.notification.AlertService#notifySuperUsers(String, Exception, Object...)
 	 */
 	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments) {
 		

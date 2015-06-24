@@ -19,7 +19,7 @@ import org.openmrs.aop.RequiredDataAdvice;
 /**
  * This class unsets the personVoid* attributes on the given {@link Person} object when an unvoid*
  * method is called with this class. This differs from the {@link BaseUnvoidHandler} because the
- * Person object contains personVoided* attributes instead of the normal voided attributes. <br/>
+ * Person object contains personVoided* attributes instead of the normal voided attributes. <br>
  * 
  * @see RequiredDataAdvice
  * @see VoidHandler
@@ -29,8 +29,8 @@ import org.openmrs.aop.RequiredDataAdvice;
 public class PersonUnvoidHandler implements UnvoidHandler<Person> {
 	
 	/**
-	 * Called around every unvoid* method to set everything to null.<br/>
-	 * <br/>
+	 * Called around every unvoid* method to set everything to null.<br>
+	 * <br>
 	 * 
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)

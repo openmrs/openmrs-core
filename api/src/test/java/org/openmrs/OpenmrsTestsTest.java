@@ -101,8 +101,8 @@ public class OpenmrsTestsTest {
 	
 	/**
 	 * Checks that a user hasn't accidentally created a test class that doesn't end with "Test". (If
-	 * it doesn't, it isn't picked up by the test aggregator Ant target: junit-report) <br/>
-	 * <br/>
+	 * it doesn't, it isn't picked up by the test aggregator Ant target: junit-report) <br>
+	 * <br>
 	 * This class looks at all classes in the org.openmrs package. If a class contains an "@Test"
 	 * annotated method but its class name does not end with Test, it fails.
 	 * 

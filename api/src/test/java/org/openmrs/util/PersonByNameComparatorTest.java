@@ -21,7 +21,7 @@ import org.openmrs.test.Verifies;
 public class PersonByNameComparatorTest {
 	
 	/**
-	 * @see {@link PersonByNameComparator#comparePersonsByName(Person,Person)}
+	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
 	@Verifies(value = "should return negative if personName for person1 comes before that of person2", method = "comparePersonsByName(Person,Person)")
@@ -35,7 +35,7 @@ public class PersonByNameComparatorTest {
 	}
 	
 	/**
-	 * @see {@link PersonByNameComparator#comparePersonsByName(Person,Person)}
+	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
 	@Verifies(value = "should return positive if personName for person1 comes after that of person2", method = "comparePersonsByName(Person,Person)")
@@ -49,7 +49,7 @@ public class PersonByNameComparatorTest {
 	}
 	
 	/**
-	 * @see {@link PersonByNameComparator#comparePersonsByName(Person,Person)}
+	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
 	@Verifies(value = "should return zero if the givenName middleName and familyName match", method = "comparePersonsByName(Person,Person)")

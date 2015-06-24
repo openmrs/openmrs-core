@@ -101,9 +101,9 @@ public class AbstractHandler {
 	}
 	
 	/**
-	 * Get the extension for a given filename. <br/>
-	 * If given "asdf.jpg", will return "jpg". <br/>
-	 * If given "asdf", will return "asdf". <br/>
+	 * Get the extension for a given filename. <br>
+	 * If given "asdf.jpg", will return "jpg". <br>
+	 * If given "asdf", will return "asdf". <br>
 	 * 
 	 * @param filename
 	 * @return the filepart after the period in the given filename

@@ -24,7 +24,7 @@ import org.springframework.validation.Errors;
 public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null", method = "validate(Object,Errors)")
@@ -38,7 +38,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name already in use", method = "validate(Object,Errors)")
@@ -53,7 +53,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
@@ -70,7 +70,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if format is empty", method = "validate(Object,Errors)")
@@ -86,7 +86,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -111,7 +111,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -128,7 +128,7 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttributeTypeValidator#validate(Object,Errors)}
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

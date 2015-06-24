@@ -81,7 +81,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not.
 	 * If there is not, then the {@link InitializationFilter} takes over any openmrs url and
-	 * redirects to the {@link #SETUP_PAGE_URL}
+	 * redirects to the {@link WebConstants#SETUP_PAGE_URL}
 	 *
 	 * @return true/false whether an openmrs runtime properties file is defined
 	 */
@@ -471,8 +471,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 	
 	/**
-	 * Load the pre-packaged modules from web/WEB-INF/bundledModules. <br/>
-	 * <br/>
+	 * Load the pre-packaged modules from web/WEB-INF/bundledModules. <br>
+	 * <br>
 	 * This method assumes that the api startup() and WebModuleUtil.startup() will be called later
 	 * for modules that loaded here
 	 *

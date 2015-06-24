@@ -272,7 +272,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * 
 	 * @param patients
 	 * @param c
-	 * @return Map<patientId, List<Obs values>>
+	 * @return Map&lt;patientId, List&lt;Obs values&gt;&gt;
 	 */
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c);
 	
@@ -286,8 +286,8 @@ public interface PatientSetService extends OpenmrsService {
 	/**
 	 * Returns a mapping from patient id to obs for concept <code>c</code>
 	 * <p>
-	 * The returned List< attribute value > is [obs value, attr value, attr value, attr value...]
-	 * The returned List<List< attribute value >> represents the obs rows
+	 * The returned List&lt; attribute value &gt; is [obs value, attr value, attr value, attr value...]
+	 * The returned List&lt;List&lt; attribute value &gt;&gt; represents the obs rows
 	 * 
 	 * @param patients the cohort to restrict to. if null, then all patients are fetched
 	 * @param c the concept to look for in obs.concept_id
@@ -295,8 +295,8 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param limit the number of patients to limit the results to. If null or less than zero,
 	 *            return all
 	 * @param showMostRecentFirst if true, obs with the highest obsDatetime will be first in the
-	 *            List<List<Object>>
-	 * @return <code>Map<patientId, List<List< attribute value >>></code>
+	 *            List&lt;List&lt;Object&gt;&gt;
+	 * @return <code>Map&lt;patientId, List&lt;List&lt; attribute value &gt;&gt;&gt;</code>
 	 */
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
 	        Integer limit, boolean showMostRecentFirst);
@@ -306,7 +306,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * 
 	 * @param patients Cohort of patients to search
 	 * @param encType the type of the encounter
-	 * @return Map<Integer, Encounter> of patientId to encounters matching a specific type
+	 * @return Map&lt;Integer, Encounter&gt; of patientId to encounters matching a specific type
 	 */
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType);
 	
@@ -314,9 +314,9 @@ public interface PatientSetService extends OpenmrsService {
 	 * TODO write something here
 	 * 
 	 * @param patients Cohort of patients to search
-	 * @param encTypes List<EncounterType> to include in the search
+	 * @param encTypes List&lt;EncounterType&gt; to include in the search
 	 * @param attr <code>String</code> of attributes to get
-	 * @return Map<Integer, Object> of encounter attributes
+	 * @return Map&lt;Integer, Object&gt; of encounter attributes
 	 */
 	public Map<Integer, Object> getEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr);
 	
@@ -324,8 +324,8 @@ public interface PatientSetService extends OpenmrsService {
 	 * TODO write something here
 	 * 
 	 * @param patients Cohort of patients to search
-	 * @param encType List<EncounterType> to include in the search
-	 * @return Map<Integer, Encounter> of patientId to encounters matching a specific type
+	 * @param encType List&lt;EncounterType&gt; to include in the search
+	 * @return Map&lt;Integer, Encounter&gt; of patientId to encounters matching a specific type
 	 */
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> encType);
 	
@@ -336,7 +336,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * 
 	 * @see EncounterService#getAllEncounters(Cohort)
 	 * @param patients Cohort of patients to search
-	 * @return Map<Integer, Encounter> of all encounters for specified patients.
+	 * @return Map&lt;Integer, Encounter&gt; of all encounters for specified patients.
 	 */
 	public Map<Integer, Encounter> getEncounters(Cohort patients);
 	
@@ -345,7 +345,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * 
 	 * @param patients Cohort of patients to search
 	 * @param encType
-	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from
+	 * @return Map&lt;Integer, Encounter&gt; of patientId to first encounters of specified patients, from
 	 *         a specific type
 	 */
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType);
@@ -354,8 +354,8 @@ public interface PatientSetService extends OpenmrsService {
 	 * TODO write something here
 	 * 
 	 * @param patients Cohort of patients to search
-	 * @param types List<EncounterType> to include in the search
-	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from
+	 * @param types List&lt;EncounterType&gt; to include in the search
+	 * @return Map&lt;Integer, Encounter&gt; of patientId to first encounters of specified patients, from
 	 *         a specific list of types
 	 */
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, List<EncounterType> types);
@@ -364,9 +364,9 @@ public interface PatientSetService extends OpenmrsService {
 	 * TODO write something here
 	 * 
 	 * @param patients Cohort of patients to search
-	 * @param encTypes List<EncounterType> to include in the search
+	 * @param encTypes List&lt;EncounterType&gt; to include in the search
 	 * @param attr
-	 * @return Map<Integer, Object> of patientId to first encounters properties
+	 * @return Map&lt;Integer, Object&gt; of patientId to first encounters properties
 	 */
 	public Map<Integer, Object> getFirstEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr);
 	
@@ -377,7 +377,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param className
 	 * @param property
 	 * @param returnAll
-	 * @return Map<Integer, Object> of patientId to patient properties
+	 * @return Map&lt;Integer, Object&gt; of patientId to patient properties
 	 */
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll);
 	
@@ -387,7 +387,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param patients
 	 * @param classNameDotProperty
 	 * @param returnAll
-	 * @return Map<Integer, Object> of patientId to patient properties
+	 * @return Map&lt;Integer, Object&gt; of patientId to patient properties
 	 */
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String classNameDotProperty, boolean returnAll);
 	
@@ -399,7 +399,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * @param joinProperty
 	 * @param outputColumn
 	 * @param returnAll
-	 * @return Map<Integer, Object> of patientId to person properties
+	 * @return Map&lt;Integer, Object&gt; of patientId to person properties
 	 */
 	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeName, String joinClass,
 	        String joinProperty, String outputColumn, boolean returnAll);
@@ -408,7 +408,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * TODO write something here
 	 * 
 	 * @param patients Cohort of patients to look up
-	 * @return Map<Integer,Map<String,Object>> with characteristics of specified patients
+	 * @return Map&lt;Integer,Map&lt;String,Object&gt;&gt; with characteristics of specified patients
 	 */
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
 	
@@ -492,7 +492,7 @@ public interface PatientSetService extends OpenmrsService {
 	 * 
 	 * @param patients Cohort of the patients to filter by (null will return all encounters for all
 	 *            patients)
-	 * @param form List<Form> of the forms to filter by
+	 * @param form List&lt;Form&gt; of the forms to filter by
 	 */
 	public List<Encounter> getEncountersByForm(Cohort patients, List<Form> form);
 	
@@ -549,8 +549,8 @@ public interface PatientSetService extends OpenmrsService {
 	 * perform faster by delegating to the database. (The current implementation has *not* been
 	 * optimized.)
 	 * 
-	 * @param cached
-	 * @return
+	 * @param cohort
+	 * @return inverse of the given cohort
 	 * @since 1.8
 	 */
 	public Cohort getInverseOfCohort(Cohort cohort);

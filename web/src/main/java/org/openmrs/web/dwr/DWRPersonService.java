@@ -48,10 +48,10 @@ public class DWRPersonService {
 	 * extends Person
 	 *
 	 * @param name
-	 * @param birthyear
+	 * @param birthdate
 	 * @param age
 	 * @param gender
-	 * @return
+	 * @return list of people
 	 */
 	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender) {
 		Vector<Object> personList;
@@ -106,7 +106,7 @@ public class DWRPersonService {
 	/**
 	 * @param searchPhrase
 	 * @param includeVoided
-	 * @return
+	 * @return list of people
 	 */
 	public List<?> findPeople(String searchPhrase, boolean includeVoided) {
 		return findPeopleByRoles(searchPhrase, includeVoided, null);
@@ -185,8 +185,8 @@ public class DWRPersonService {
 	}
 	
 	/**
-	 * @param patientId
-	 * @return
+	 * @param personId
+	 * @return person or null
 	 */
 	public PersonListItem getPerson(Integer personId) {
 		Person p = Context.getPersonService().getPerson(personId);

@@ -866,7 +866,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#auditForm(org.openmrs.Form)
+	 * @see FormService#mergeDuplicateFields()
 	 */
 	@Override
 	public int mergeDuplicateFields() throws APIException {

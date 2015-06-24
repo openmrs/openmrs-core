@@ -103,7 +103,7 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see CustomChange#setFileOpener(FileOpener)
+	 * @see CustomChange#setFileOpener(ResourceAccessor)
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor fo) {

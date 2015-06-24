@@ -101,7 +101,7 @@ public class HL7InArchive extends HL7QueueItem {
 	 * sets the flag for hl7 data having been loaded from the filesystem
 	 * 
 	 * @since 1.7
-	 * @param the status to set
+	 * @param loaded status to set
 	 */
 	public void setLoaded(boolean loaded) {
 		this.loaded = loaded;

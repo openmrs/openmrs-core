@@ -18,8 +18,7 @@ import org.openmrs.logic.LogicExpression;
 public interface Operand {
 	
 	/**
-	 * Sanity check for this Operand vs a given operator. Would return true for {@link OperandDate}
-	 * .supports("BEFORE") but {@link OperandConcept}.supports("BEFORE") returns false
+	 * Sanity check for this Operand vs a given operator.
 	 * 
 	 * @param operator The operator to test against this Operand
 	 * @return true/false about whether this Operand supports this {@link ComparisonOperator}

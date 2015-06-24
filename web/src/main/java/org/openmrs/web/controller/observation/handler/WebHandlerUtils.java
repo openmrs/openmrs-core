@@ -14,7 +14,7 @@ import org.openmrs.web.WebConstants;
 
 /**
  * Common utilities for handling complex obs by the web application.
- * <br/>
+ * <br>
  * 
  * @since 1.12
  */

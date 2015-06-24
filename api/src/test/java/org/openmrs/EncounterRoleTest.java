@@ -15,7 +15,7 @@ import org.openmrs.test.Verifies;
 public class EncounterRoleTest {
 	
 	/**
-	 * @see {@link Encounter#toString()}
+	 * @see Encounter#toString()
 	 */
 	@Test
 	@Verifies(value = "should not fail with empty object", method = "toString()")

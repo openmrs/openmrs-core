@@ -52,8 +52,8 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Retires a given Provider
 	 * 
-	 * @param Provider provider to retire
-	 * @param String reason why the provider is retired
+	 * @param provider provider to retire
+	 * @param reason reason why the provider is retired
 	 * @should retire a provider
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
@@ -62,7 +62,7 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Unretire a given Provider
 	 * 
-	 * @param Provider provider to unretire
+	 * @param provider provider to unretire
 	 * @should unretire a provider
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROVIDERS })
@@ -71,7 +71,7 @@ public interface ProviderService extends OpenmrsService {
 	/**
 	 * Deletes a given Provider
 	 * 
-	 * @param Provider provider to be deleted
+	 * @param provider provider to be deleted
 	 * @should delete a provider
 	 */
 	@Authorized( { PrivilegeConstants.PURGE_PROVIDERS })
@@ -97,7 +97,7 @@ public interface ProviderService extends OpenmrsService {
 	public Provider saveProvider(Provider provider);
 	
 	/**
-	 * @param string
+	 * @param uuid
 	 * @return the Provider object having the given uuid
 	 * @should get provider given Uuid
 	 */

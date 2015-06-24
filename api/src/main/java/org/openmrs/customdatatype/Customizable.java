@@ -16,7 +16,7 @@ import org.openmrs.attribute.Attribute;
 
 /**
  * Marker interface for classes that may be customized by the user by adding custom attributes, e.g. Visit
- * has VisitAttributes, so it implements {@link Customizable}<VisitAttribute>
+ * has VisitAttributes, so it implements {@link Customizable}&lt;VisitAttribute&gt;
  * @param <A> the type of attribute held
  * @since 1.9
  */

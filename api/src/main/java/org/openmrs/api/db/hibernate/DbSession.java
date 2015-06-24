@@ -224,7 +224,7 @@ public class DbSession {
 	 * Force this session to flush. Must be called at the end of a unit of work, before committing
 	 * the transaction and closing the session (depending on {@link #setFlushMode(FlushMode)},
 	 * {@link Transaction#commit()} calls this method).
-	 * <p/>
+	 * <p>
 	 * <i>Flushing</i> is the process of synchronizing the underlying persistent store with
 	 * persistable state held in memory.
 	 *
@@ -237,11 +237,11 @@ public class DbSession {
 	
 	/**
 	 * Set the flush mode for this session.
-	 * <p/>
+	 * <p>
 	 * The flush mode determines the points at which the session is flushed. <i>Flushing</i> is the
 	 * process of synchronizing the underlying persistent store with persistable state held in
 	 * memory.
-	 * <p/>
+	 * <p>
 	 * For a logically "read only" session, it is reasonable to set the session's flush mode to
 	 * {@link FlushMode#MANUAL} at the start of the session (in order to achieve some extra
 	 * performance).
@@ -264,7 +264,7 @@ public class DbSession {
 	
 	/**
 	 * Set the cache mode.
-	 * <p/>
+	 * <p>
 	 * Cache mode determines the manner in which this session can interact with the second level
 	 * cache.
 	 *
@@ -306,7 +306,7 @@ public class DbSession {
 	
 	/**
 	 * Cancel the execution of the current query.
-	 * <p/>
+	 * <p>
 	 * This is the sole method on session which may be safely called from another thread.
 	 *
 	 * @throws HibernateException There was a problem canceling the query
@@ -568,7 +568,7 @@ public class DbSession {
 	 * Either {@link #save(Object)} or {@link #update(Object)} the given instance, depending upon
 	 * resolution of the unsaved-value checks (see the manual for discussion of unsaved-value
 	 * checking).
-	 * <p/>
+	 * <p>
 	 * This operation cascades to associated instances if the association is mapped with
 	 * {@code cascade="save-update"}
 	 *
@@ -584,7 +584,7 @@ public class DbSession {
 	 * Either {@link #save(String, Object)} or {@link #update(String, Object)} the given instance,
 	 * depending upon resolution of the unsaved-value checks (see the manual for discussion of
 	 * unsaved-value checking).
-	 * <p/>
+	 * <p>
 	 * This operation cascades to associated instances if the association is mapped with
 	 * {@code cascade="save-update"}
 	 *
@@ -629,7 +629,7 @@ public class DbSession {
 	 * it as a newly persistent instance. The given instance does not become associated with the
 	 * session. This operation cascades to associated instances if the association is mapped with
 	 * {@code cascade="merge"}
-	 * <p/>
+	 * <p>
 	 * The semantics of this method are defined by JSR-220.
 	 *
 	 * @param object a detached instance with state to be copied
@@ -646,7 +646,7 @@ public class DbSession {
 	 * it as a newly persistent instance. The given instance does not become associated with the
 	 * session. This operation cascades to associated instances if the association is mapped with
 	 * {@code cascade="merge"}
-	 * <p/>
+	 * <p>
 	 * The semantics of this method are defined by JSR-220.
 	 *
 	 * @param entityName The entity name
@@ -660,7 +660,7 @@ public class DbSession {
 	/**
 	 * Make a transient instance persistent. This operation cascades to associated instances if the
 	 * association is mapped with {@code cascade="persist"}
-	 * <p/>
+	 * <p>
 	 * The semantics of this method are defined by JSR-220.
 	 *
 	 * @param object a transient instance to be made persistent
@@ -672,7 +672,7 @@ public class DbSession {
 	/**
 	 * Make a transient instance persistent. This operation cascades to associated instances if the
 	 * association is mapped with {@code cascade="persist"}
-	 * <p/>
+	 * <p>
 	 * The semantics of this method are defined by JSR-220.
 	 *
 	 * @param entityName The entity name
@@ -745,7 +745,7 @@ public class DbSession {
 	 * Build a LockRequest that specifies the LockMode, pessimistic lock timeout and lock scope.
 	 * timeout and scope is ignored for optimistic locking. After building the LockRequest, call
 	 * LockRequest.lock to perform the requested locking.
-	 * <p/>
+	 * <p>
 	 * Example usage:
 	 * {@code session.buildLockRequest().setLockMode(LockMode.PESSIMISTIC_WRITE).setTimeOut(60000).lock(entity);}
 	 *
@@ -1134,10 +1134,10 @@ public class DbSession {
 	 * Disconnect the session from its underlying JDBC connection. This is intended for use in cases
 	 * where the application has supplied the JDBC connection to the session and which require
 	 * long-sessions (aka, conversations).
-	 * <p/>
+	 * <p>
 	 * It is considered an error to call this method on a session which was not opened by supplying
 	 * the JDBC connection and an exception will be thrown.
-	 * <p/>
+	 * <p>
 	 * For non-user-supplied scenarios, normal transaction management already handles disconnection
 	 * and reconnection automatically.
 	 *
@@ -1200,7 +1200,7 @@ public class DbSession {
 	/**
 	 * Convenience access to the {@link TypeHelper} associated with this session's
 	 * {@link SessionFactory}.
-	 * <p/>
+	 * <p>
 	 * Equivalent to calling {@link #getSessionFactory()}.{@link SessionFactory#getTypeHelper
 	 * getTypeHelper()}
 	 *

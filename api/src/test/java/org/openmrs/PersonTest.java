@@ -29,8 +29,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
- * This class should test all methods on the person object.<br/>
- * <br/>
+ * This class should test all methods on the person object.<br>
+ * <br>
  * This class does not touch the database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonTest extends BaseContextSensitiveTest {
@@ -309,7 +309,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age after birthday", method = "getAge(Date)")
@@ -324,7 +324,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age before birthday", method = "getAge(Date)")
@@ -339,7 +339,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age on birthday with minutes defined", method = "getAge(Date)")
@@ -354,7 +354,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age on birthday with no minutes defined", method = "getAge(Date)")
@@ -369,7 +369,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge()}
+	 * @see Person#getAge()
 	 */
 	@Test
 	@Verifies(value = "should get age after death", method = "getAge()")
@@ -386,7 +386,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date after death", method = "getAge(Date)")
@@ -405,7 +405,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date before death", method = "getAge(Date)")
@@ -424,7 +424,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#getAge(Date)}
+	 * @see Person#getAge(Date)
 	 */
 	@Test
 	@Verifies(value = "should get age with given date before birth", method = "getAge(Date)")
@@ -443,7 +443,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should not save an attribute with a blank string value", method = "addAttribute(PersonAttribute)")
@@ -464,7 +464,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should not save an attribute with a null value", method = "addAttribute(PersonAttribute)")
@@ -485,7 +485,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAttribute(PersonAttribute)}
+	 * @see Person#addAttribute(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should void old attribute when a null or blank string value is added", method = "addAttribute(PersonAttribute)")
@@ -523,7 +523,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Person#addAddress(PersonAddress)}
+	 * @see Person#addAddress(PersonAddress)
 	 */
 	@Test
 	@Verifies(value = "should not add a person address with blank fields", method = "addAddress(PersonAddress)")

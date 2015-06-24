@@ -31,7 +31,7 @@ public class DWRAlertService {
 	 * Calls the corresponding AlertService.getAlertsByUser(null) method to get alerts for the
 	 * current user or for the authenticated role
 	 *
-	 * @return
+	 * @return list of alerts
 	 */
 	public List<AlertListItem> getAlerts() {
 		

@@ -31,7 +31,7 @@ import org.springframework.validation.Errors;
 public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the code is a white space character", method = "validate(Object,Errors)")
@@ -46,7 +46,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the code is an empty string", method = "validate(Object,Errors)")
@@ -61,7 +61,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the code is null", method = "validate(Object,Errors)")
@@ -75,7 +75,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the concept reference term code is a duplicate in its concept source", method = "validate(Object,Errors)")
@@ -90,7 +90,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should fail if the concept reference term object is null", method = "validate(Object,Errors)")
@@ -100,7 +100,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the concept source is null", method = "validate(Object,Errors)")
@@ -114,7 +114,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Ignore
@@ -131,7 +131,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Ignore
@@ -147,7 +147,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Ignore
@@ -162,7 +162,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if all the required fields are set and valid", method = "validate(Object,Errors)")
@@ -177,7 +177,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if the duplicate code is for a term from another concept source", method = "validate(Object,Errors)")
@@ -193,7 +193,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if the duplicate name is for a term from another concept source", method = "validate(Object,Errors)")
@@ -209,7 +209,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if a concept reference term map has no concept map type", method = "validate(Object,Errors)")
@@ -225,7 +225,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if termB of a concept reference term map is not set", method = "validate(Object,Errors)")
@@ -243,7 +243,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if a term is mapped to itself", method = "validate(Object,Errors)")
@@ -259,7 +259,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if a term is mapped multiple times to the same term", method = "validate(Object,Errors)")
@@ -283,7 +283,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -301,7 +301,7 @@ public class ConceptReferenceTermValidatorTest extends BaseContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTermValidator#validate(Object,Errors)}
+	 * @see ConceptReferenceTermValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

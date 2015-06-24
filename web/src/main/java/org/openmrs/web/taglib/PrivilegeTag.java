@@ -67,7 +67,7 @@ public class PrivilegeTag extends TagSupport {
 	}
 	
 	/**
-	 * @param converse The privilege to set.
+	 * @param privilege The privilege to set.
 	 */
 	public void setPrivilege(String privilege) {
 		this.privilege = privilege;

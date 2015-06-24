@@ -64,7 +64,7 @@ public class FormField extends BaseOpenmrsMetadata implements java.io.Serializab
 	 *
 	 * @param f FormField to compare this object to
 	 * @return -1, 0, or +1 depending on the difference between the FormFields
-	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * @deprecated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	@SuppressWarnings("squid:S1210")

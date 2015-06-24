@@ -150,7 +150,7 @@ public class ForEachObsTag extends BodyTagSupport {
 	}
 	
 	/**
-	 * @param Num the Num to set
+	 * @param num the Num to set
 	 */
 	public void setNum(Integer num) {
 		this.num = num;

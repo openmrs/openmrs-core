@@ -40,10 +40,10 @@ import org.openmrs.person.PersonMergeLog;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * Hibernate specific Person database methods. <br/>
- * <br/>
- * This class should not be used directly. All database calls should go through the Service layer. <br/>
- * <br/>
+ * Hibernate specific Person database methods. <br>
+ * <br>
+ * This class should not be used directly. All database calls should go through the Service layer. <br>
+ * <br>
  * Proper use: <code>
  *   PersonService ps = Context.getPersonService();
  *   ps.getPeople("name", false);

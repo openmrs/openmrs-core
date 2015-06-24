@@ -31,7 +31,7 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 	/**
 	 * Test getting a concept by name and by partial name.
 	 * 
-	 * @see {@link PatientDashboardGraphController#showGraphData(Integer, Integer, ModelMap)}
+	 * @see PatientDashboardGraphController#showGraphData(Integer, Integer, ModelMap)
 	 */
 	@Test
 	@Verifies(value = "return json data with observation details and critical values for the concept", method = "showGraphData(Integer, Integer, ModelMap)")
@@ -65,7 +65,7 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 	/**
 	 * Test the path of the form for rendering the json data
 	 * 
-	 * @see {@link PatientDashboardGraphController#showGraphData(Integer, Integer, ModelMap)}
+	 * @see PatientDashboardGraphController#showGraphData(Integer, Integer, ModelMap)
 	 */
 	@Test
 	@Verifies(value = "return form for rendering the json data", method = "showGraphData(Integer, Integer, ModelMap)")

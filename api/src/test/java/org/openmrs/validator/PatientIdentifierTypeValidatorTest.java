@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
 	 * 
 	 */
 	@Test
@@ -49,7 +49,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
 	 * 
 	 */
 	@Test
@@ -75,7 +75,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
 	 * 
 	 */
 	@Test
@@ -148,7 +148,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 * @see org.openmrs.validator.PatientIdentifierTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if patient identifier type name is already exist", method = "validate(Object,Errors)")
@@ -166,7 +166,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
 	 *
 	 */
 	@Test
@@ -186,7 +186,7 @@ public class PatientIdentifierTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
+	 * @see PatientIdentifierTypeValidator#validate(Object,Errors)
 	 *
 	 */
 	@Test

@@ -514,7 +514,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Checks whether the name is explicitly marked as preferred in a locale with a matching
 	 * language. E.g 'en_US' and 'en_UK' for language en
 	 *
-	 * @see {@link #isPreferredForLocale(Locale)}
+	 * @see #isPreferredForLocale(Locale)
 	 * @param language ISO 639 2-letter code for a language
 	 * @return true if the name is preferred in a locale with a matching language code, otherwise
 	 *         false
@@ -532,7 +532,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * Checks whether the name is explicitly marked as preferred in a locale with a matching country
 	 * code E.g 'fr_RW' and 'en_RW' for country RW
 	 *
-	 * @see {@link #isPreferredForLocale(Locale)}
+	 * @see #isPreferredForLocale(Locale)
 	 * @param country ISO 3166 2-letter code for a country
 	 * @return true if the name is preferred in a locale with a matching country code, otherwise
 	 *         false
@@ -551,7 +551,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * method is different from {@link #isPreferredForLocale(Locale)} in that it checks if the given
 	 * name is marked as preferred irrespective of the locale in which it is preferred.
 	 *
-	 * @see {@link #isPreferredForLocale(Locale)}
+	 * @see #isPreferredForLocale(Locale)
 	 */
 	public Boolean isPreferred() {
 		return isLocalePreferred();
