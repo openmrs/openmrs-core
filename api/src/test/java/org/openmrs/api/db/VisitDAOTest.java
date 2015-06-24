@@ -46,7 +46,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitDAO#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date, java.util.Date, boolean, boolean)}
+	 * @see VisitDAO#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date, java.util.Date, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should return all unvoided visits if includeEnded is set to true", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean,boolean)")
@@ -56,7 +56,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitDAO#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date, java.util.Date, boolean, boolean)}
+	 * @see VisitDAO#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Date, java.util.Date, java.util.Date, java.util.Date, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should return only active visits if includeEnded is set to false", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean,boolean)")
@@ -66,7 +66,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitDAO#getNextVisit(Visit,Collection<VisitType>,Date)}
+	 * @see VisitDAO#getNextVisit(Visit,Collection<VisitType>,Date)
 	 */
 	@Test
 	@Verifies(value = "should return the next unvoided active visit matching the specified types and startDate", method = "getNextVisit(Visit,Collection<VisitType>,Date)")

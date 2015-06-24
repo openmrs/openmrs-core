@@ -179,7 +179,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	
 	/**
 	 *
-	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * @deprecated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	@Override

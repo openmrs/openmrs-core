@@ -463,7 +463,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable, A
 	}
 	
 	/**
-	 * @param userProperties A Map<String,String> of the properties to set.
+	 * @param userProperties A Map&lt;String,String&gt; of the properties to set.
 	 */
 	public void setUserProperties(Map<String, String> userProperties) {
 		this.userProperties = userProperties;

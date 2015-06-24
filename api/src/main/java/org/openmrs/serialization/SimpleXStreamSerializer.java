@@ -18,21 +18,21 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  * This serializer uses the xstream library to serialize and deserialize objects.
- * <br/>
+ * <br>
  * All classes are automatically aliased.  So a serialization of the {@link Patient} class
  * will not be:
  * <code>
- * &lt;org.openmrs.Patient ...>
+ * &lt;org.openmrs.Patient ...&gt;
  *   &lt;element
  *   ...
- * &lt;/org.openmrs.Patient>
+ * &lt;/org.openmrs.Patient&gt;
  * </code>
  * but instead will be:
  * <code>
- * &lt;patient ...>
+ * &lt;patient ...&gt;
  *   &lt;element
  *   ...
- * &lt;/patient>
+ * &lt;/patient&gt;
  * </code>
  *
  */

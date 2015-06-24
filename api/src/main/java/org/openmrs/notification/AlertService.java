@@ -20,7 +20,7 @@ import org.openmrs.notification.db.AlertDAO;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
- * Contains methods pertaining to creating/deleting/voiding Alerts in the system Use:<br/>
+ * Contains methods pertaining to creating/deleting/voiding Alerts in the system Use:<br>
  * 
  * <pre>
  *   Alert alert = new Alert();

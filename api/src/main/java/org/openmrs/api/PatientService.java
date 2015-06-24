@@ -428,7 +428,7 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Get patient identifierType by universally unique identifier
 	 * 
-	 * @param patientIdentifierTypeId
+	 * @param uuid
 	 * @return patientIdentifierType with specified internal identifier
 	 * @throws APIException
 	 * @should fetch patient identifier type with given uuid
@@ -821,7 +821,7 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Returns a patient identifier that matches the given patientIndentifier id
 	 * 
-	 * @param patientIdentifier the patientIdentifier id
+	 * @param patientIdentifierId the patientIdentifier id
 	 * @return the patientIdentifier matching the Id
 	 * @throws APIException
 	 * @should return the patientIdentifier with the given id
@@ -832,7 +832,7 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Void patient identifier (functionally delete patient identifier from system)
 	 * 
-	 * @param patient patientIdentifier to be voided
+	 * @param patientIdentifier patientIdentifier to be voided
 	 * @param reason reason for voiding patient identifier
 	 * @return the voided patient identifier
 	 * @throws APIException
@@ -847,7 +847,7 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Saved the given <code>patientIndentifier</code> to the database
 	 * 
-	 * @param patientIndentifier patientIndentifier to be created or updated
+	 * @param patientIdentifier patientIndentifier to be created or updated
 	 * @return patientIndentifier that was created or updated
 	 * @throws APIException
 	 * @should create new patientIndentifier

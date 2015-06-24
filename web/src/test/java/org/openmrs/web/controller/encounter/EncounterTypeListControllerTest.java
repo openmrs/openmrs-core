@@ -26,7 +26,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 public class EncounterTypeListControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link EncounterTypeListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see EncounterTypeListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should not fail if no encounter types are selected", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")

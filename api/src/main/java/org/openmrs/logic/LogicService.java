@@ -97,7 +97,7 @@ public interface LogicService {
 	/**
 	 * Fetch all known (registered) tokens matching a given string
 	 * 
-	 * @param token full or partial token name
+	 * @param partialToken full or partial token name
 	 * @return all tokens containing the given string
 	 * @should return all registered token matching the input fully
 	 * @should return all registered token matching the input partially
@@ -167,7 +167,7 @@ public interface LogicService {
 	 * @param expression expression to be parsed and evaluated
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
-	 * @see {@link #parse(String)}
+	 * @see #parse(String)
 	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Result eval(Integer patientId, String expression) throws LogicException;
@@ -180,7 +180,7 @@ public interface LogicService {
 	 * @param parameters parameters to be passed to the rule
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
-	 * @see {@link #parse(String)}
+	 * @see #parse(String)
 	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Result eval(Integer patientId, String expression, Map<String, Object> parameters) throws LogicException;
@@ -219,7 +219,7 @@ public interface LogicService {
 	 * @param expressions expressions to be parsed and run
 	 * @return results of the rule evaluations
 	 * @throws LogicException
-	 * @see {@link #parse(String)}
+	 * @see #parse(String)
 	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Map<String, Result> eval(Integer patientId, Map<String, Object> parameters, String... expressions)
@@ -248,7 +248,7 @@ public interface LogicService {
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
 	 * @deprecated use {@link #eval(Integer, String)}
-	 * @see {@link #parse(String)}
+	 * @see #parse(String)
 	 */
 	@Deprecated
 	public Result eval(Patient who, String expression) throws LogicException;
@@ -262,7 +262,7 @@ public interface LogicService {
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
 	 * @deprecated use {@link #eval(Integer, String, Map)}
-	 * @see {@link #parse(String)}
+	 * @see #parse(String)
 	 */
 	@Deprecated
 	public Result eval(Patient who, String expression, Map<String, Object> parameters) throws LogicException;
@@ -300,7 +300,7 @@ public interface LogicService {
 	 * @param expression expression to be parsed and evaluated for each patient
 	 * @return result for each patient
 	 * @throws LogicException
-	 * @see {@link #parse(String)}
+	 * @see #parse(String)
 	 */
 	public Map<Integer, Result> eval(Cohort who, String expression) throws LogicException;
 	
@@ -312,7 +312,7 @@ public interface LogicService {
 	 * @param parameters parameters to be passed to the rule
 	 * @return result for each patient
 	 * @throws LogicException
-	 * @see {@link #parse(String)}
+	 * @see #parse(String)
 	 */
 	public Map<Integer, Result> eval(Cohort who, String expression, Map<String, Object> parameters) throws LogicException;
 	
@@ -489,10 +489,10 @@ public interface LogicService {
 	public void removeLogicDataSource(String name);
 	
 	/**
-	 * Parse a criteria String to create a new LogicCriteria. <br />
-	 * <br />
-	 * Example: <br />
-	 * <code>logicService.parseString("LAST 'CD4 COUNT' < 200");</code>
+	 * Parse a criteria String to create a new LogicCriteria. <br>
+	 * <br>
+	 * Example: <br>
+	 * <code>logicService.parseString("LAST 'CD4 COUNT' &lt; 200");</code>
 	 * 
 	 * @param inStr LogicCriteria expression in a plain String object.
 	 * @return LogicCriteria using all possible operand and operator from the String input
@@ -502,10 +502,10 @@ public interface LogicService {
 	public LogicCriteria parseString(String inStr);
 	
 	/**
-	 * Parse a criteria String to create a new LogicCriteria. <br />
-	 * <br />
-	 * Example: <br />
-	 * <code>logicService.parseString("LAST 'CD4 COUNT' < 200");</code>
+	 * Parse a criteria String to create a new LogicCriteria. <br>
+	 * <br>
+	 * Example: <br>
+	 * <code>logicService.parseString("LAST 'CD4 COUNT' &lt; 200");</code>
 	 * 
 	 * @param criteria LogicCriteria expression in a plain String object.
 	 * @return LogicCriteria using all possible operand and operator from the String input

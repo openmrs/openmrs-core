@@ -87,7 +87,7 @@ public class SchedulerUtil {
 	/**
 	 * Sends an email with system information and the given exception
 	 * 
-	 * @param error
+	 * @param throwable
 	 */
 	public static void sendSchedulerError(Throwable throwable) {
 		try {
@@ -136,7 +136,7 @@ public class SchedulerUtil {
 	}
 	
 	/**
-	 * @param e
+	 * @param t
 	 * @return <code>String</code> representation of the given exception
 	 */
 	public static String getExceptionAsString(Throwable t) {

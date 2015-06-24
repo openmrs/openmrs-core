@@ -23,7 +23,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * This class deals with {@link Person} objects when they are saved via a save* method in an Openmrs
- * Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP class. <br/>
+ * Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP class. <br>
  *
  * @see RequiredDataHandler
  * @see SaveHandler

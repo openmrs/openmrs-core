@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -49,7 +49,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if taskClass is empty or whitespace", method = "validate(Object,Errors)")
@@ -70,7 +70,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if repeatInterval is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -90,7 +90,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if class is not instance of Task", method = "validate(Object,Errors)")
@@ -108,7 +108,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if class is not accessible", method = "validate(Object,Errors)")
@@ -126,7 +126,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if class cannot be instantiated", method = "validate(Object,Errors)")
@@ -144,7 +144,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "sshould fail validation if class not found", method = "validate(Object,Errors)")
@@ -162,7 +162,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -179,7 +179,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -198,7 +198,7 @@ public class SchedulerFormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link SchedulerFormValidator#validate(Object,Errors)}
+	 * @see SchedulerFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

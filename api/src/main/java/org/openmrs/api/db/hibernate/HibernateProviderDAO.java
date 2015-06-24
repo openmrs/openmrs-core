@@ -49,7 +49,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProviderDAO#getAllProviders()
+	 * @see org.openmrs.api.db.ProviderDAO#getAllProviders(boolean)
 	 */
 	@Override
 	public List<Provider> getAllProviders(boolean includeRetired) {
@@ -129,8 +129,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProviderDAO#getProviders(java.lang.String, java.util.Map,
-	 *      java.lang.Integer, java.lang.Integer)
+	 * @see org.openmrs.api.db.ProviderDAO#getProviders(String, Map, Integer, Integer, boolean)
 	 */
 	@Override
 	public List<Provider> getProviders(String name, Map<ProviderAttributeType, String> serializedAttributeValues,
@@ -235,7 +234,7 @@ public class HibernateProviderDAO implements ProviderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProviderDAO#getCountOfProviders(java.lang.String)
+	 * @see org.openmrs.api.db.ProviderDAO#getCountOfProviders(String, boolean)
 	 */
 	@Override
 	public Long getCountOfProviders(String name, boolean includeRetired) {

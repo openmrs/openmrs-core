@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Class dedicated for DataTables. It is a response that can be translated to JSON.
  * 
- * @see http://datatables.net/
+ * @see <a href="http://datatables.net/">http://datatables.net/</a>
  */
 public class DatatableResponse {
 	

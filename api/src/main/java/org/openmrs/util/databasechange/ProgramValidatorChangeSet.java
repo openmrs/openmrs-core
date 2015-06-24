@@ -106,7 +106,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see CustomChange#getConfirmationMessage()
+	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
 	@Override
 	public String getConfirmationMessage() {
@@ -114,21 +114,21 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see CustomChange#setFileOpener(ResourceAccessor)
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(ResourceAccessor)
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor fo) {
 	}
 	
 	/**
-	 * @see CustomChange#setUp()
+	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
 	@Override
 	public void setUp() throws SetupException {
 	}
 	
 	/**
-	 * @see CustomChange#validate(Database)
+	 * @see liquibase.change.custom.CustomChange#validate(Database)
 	 */
 	@Override
 	public ValidationErrors validate(Database db) {

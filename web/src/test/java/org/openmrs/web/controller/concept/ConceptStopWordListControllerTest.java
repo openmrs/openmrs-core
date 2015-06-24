@@ -28,7 +28,7 @@ import org.springframework.mock.web.MockHttpSession;
 public class ConceptStopWordListControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link ConceptStopWordListController#showForm(javax.servlet.http.HttpSession)}
+	 * @see ConceptStopWordListController#showForm(javax.servlet.http.HttpSession)
 	 */
 	@Test
 	@Verifies(value = "should return Concept Stop Word List View", method = "showForm(HttpSession)")
@@ -46,7 +46,7 @@ public class ConceptStopWordListControllerTest extends BaseWebContextSensitiveTe
 	}
 	
 	/**
-	 * @see {@link ConceptStopWordListController#showForm(javax.servlet.http.HttpSession)}
+	 * @see ConceptStopWordListController#showForm(javax.servlet.http.HttpSession)
 	 */
 	@SuppressWarnings("unchecked")
 	@Test

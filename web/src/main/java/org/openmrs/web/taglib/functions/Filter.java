@@ -20,15 +20,15 @@ import org.openmrs.Encounter;
 import org.openmrs.Obs;
 
 /**
- * Functions used within taglibs in a webapp jsp page. <br/>
- * <br/>
+ * Functions used within taglibs in a webapp jsp page. <br>
+ * <br>
  * Example:
  * 
  * <pre>
- * &lt;c:forEach items="${openmrs:filterObsByConcept(observations, concept)}" var="o" end="0">
+ * &lt;c:forEach items="${openmrs:filterObsByConcept(observations, concept)}" var="o" end="0"&gt;
  *   ....
  *   ....
- * &lt;/c:forEach>
+ * &lt;/c:forEach&gt;
  * </pre>
  */
 public class Filter {
@@ -38,9 +38,9 @@ public class Filter {
 	/**
 	 * Returns a subset of the passed set of encounters that match the passed encounter type id
 	 * 
-	 * @param encs: Superset of encounters
-	 * @param type: EncounterTypeId to match
-	 * @return: Subset of passed encounters that match EncounterTypeId
+	 * @param encs Superset of encounters
+	 * @param type EncounterTypeId to match
+	 * @return Subset of passed encounters that match EncounterTypeId
 	 */
 	public static Set<Encounter> filterEncountersByType(Collection<Encounter> encs, Integer type) {
 		log.debug("Filtering encounters for encounter type id: " + type);
@@ -59,9 +59,9 @@ public class Filter {
 	/**
 	 * Returns a subset of the passed set of observations that match the passed concept type id
 	 * 
-	 * @param obs: Superset of obs
-	 * @param concept: ConceptId to match
-	 * @return: Subset of passed obs that match ConceptId
+	 * @param obs Superset of obs
+	 * @param concept ConceptId to match
+	 * @return Subset of passed obs that match ConceptId
 	 */
 	public static Set<Obs> filterObsByConcept(Collection<Obs> obs, Integer concept) {
 		log.debug("Filtering obs for concept id: " + concept);

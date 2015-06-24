@@ -28,8 +28,8 @@ import org.openmrs.api.context.Context;
  * This class looks for {@link OpenmrsObject} and {@link Auditable} that are being inserted into the
  * database. The creator and dateCreated fields are set when inserting or updating objects and the
  * fields are still null. If the class is an update (instead of an insert) then the changedBy and
- * dateChanged fields are set to the current user and the current time. <br/>
- * <br/>
+ * dateChanged fields are set to the current user and the current time. <br>
+ * <br>
  * This class replaces the logic that was in the AuditableSaveHandler. It is here so that the
  * cascading does NOT happen for dateChanged/changedBy to child OpenmrsObjects (because all handlers
  * recurse on lists of OpenmrsObjects.

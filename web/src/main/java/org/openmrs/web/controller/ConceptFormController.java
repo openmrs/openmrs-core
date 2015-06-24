@@ -662,7 +662,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		/**
 		 * Builds a white-space separated list of concept ids belonging to a concept set
-		 * @return
+		 * @return white-space separated list
 		 */
 		public String getSetElements() {
 			StringBuilder result = new StringBuilder();
@@ -913,7 +913,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * Get the forms that this concept is declared to be used in
 		 *
-		 * @return
+		 * @return list of forms
 		 */
 		public List<Form> getFormsInUse() {
 			return Context.getFormService().getFormsContainingConcept(concept);
@@ -998,7 +998,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * Get the other concept questions that this concept is declared as an answer for
 		 *
-		 * @return
+		 * @return list of concepts
 		 */
 		public List<Concept> getQuestionsAnswered() {
 			return Context.getConceptService().getConceptsByAnswer(concept);
@@ -1007,7 +1007,7 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * Get the sets that this concept is declared to be a child member of
 		 *
-		 * @return
+		 * @return list of concept sets
 		 */
 		public List<ConceptSet> getContainedInSets() {
 			return Context.getConceptService().getSetsContainingConcept(concept);

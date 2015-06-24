@@ -155,7 +155,7 @@ public interface OrderService extends OpenmrsService {
 	 * Get Order by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return order or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -289,7 +289,6 @@ public interface OrderService extends OpenmrsService {
 	 * OrderType as of the specified date. Below is the criteria for determining an active order:
 	 * 
 	 * <pre>
-	 * <p>
 	 * - Not voided
 	 * - Not a discontinuation Order i.e one where action != Action#DISCONTINUE
 	 * - dateActivated is before or equal to asOfDate
@@ -297,8 +296,7 @@ public interface OrderService extends OpenmrsService {
 	 * after asOfDate OR if it has autoExpireDate, then it should be after asOfDate. NOTE: If both
 	 * dateStopped and autoExpireDate are set then dateStopped wins because an order can never
 	 * expire and then stopped later i.e. you stop an order that hasn't yet expired
-	 * <p/>
-	 * <pre/>
+	 * </pre>
 	 * 
 	 * @param patient the patient
 	 * @param orderType The OrderType to match
@@ -407,7 +405,7 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Gets all order frequencies
 	 * 
-	 * @return List<OrderFrequency>
+	 * @return List&lt;OrderFrequency&gt;
 	 * @since 1.10
 	 * @param includeRetired specifies whether retired ones should be included or not
 	 * @should return only non retired order frequencies if includeRetired is set to false
@@ -427,7 +425,7 @@ public interface OrderService extends OpenmrsService {
 	 *            matched
 	 * @param includeRetired Specifies if retired order frequencies that match should be included or
 	 *            not
-	 * @return List<OrderFrequency>
+	 * @return List&lt;OrderFrequency&gt;
 	 * @since 1.10
 	 * @should get non retired frequencies with names matching the phrase if includeRetired is false
 	 * @should include retired frequencies if includeRetired is set to true
@@ -657,7 +655,7 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @return concept list of drug routes
 	 * @since 1.10
-	 * @Should return an empty list if nothing is configured
+	 * @should return an empty list if nothing is configured
 	 */
 	@Authorized(PrivilegeConstants.GET_CONCEPTS)
 	public List<Concept> getDrugRoutes();

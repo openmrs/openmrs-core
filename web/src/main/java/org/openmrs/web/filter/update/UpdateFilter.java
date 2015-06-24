@@ -553,7 +553,7 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
+	 * @see org.openmrs.web.filter.StartupFilter#skipFilter(HttpServletRequest)
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {

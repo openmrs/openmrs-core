@@ -90,7 +90,7 @@ public class ConceptMapType extends BaseOpenmrsMetadata implements java.io.Seria
 	/**
 	 * Returns true if this concept map type is hidden otherwise false
 	 *
-	 * @return
+	 * @return true if this concept map type is hidden otherwise false
 	 */
 	public boolean isHidden() {
 		return isHidden;

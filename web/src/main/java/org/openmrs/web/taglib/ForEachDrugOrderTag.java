@@ -141,7 +141,7 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 	}
 	
 	/**
-	 * @param encounters the encounters to set
+	 * @param drugOrders the encounters to set
 	 */
 	public void setDrugOrders(Collection<DrugOrder> drugOrders) {
 		this.drugOrders = drugOrders;

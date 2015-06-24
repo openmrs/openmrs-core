@@ -28,7 +28,7 @@ public class TimerSchedulerServiceImplTest extends BaseContextSensitiveTest {
 	/**
 	 * Tests whether the TimerScheduler schedules tasks even if the repeatInterval is zero.
 	 * 
-	 * @see {@link TimerSchedulerServiceImpl#scheduleTask(TaskDefinition)}
+	 * @see TimerSchedulerServiceImpl#scheduleTask(TaskDefinition)
 	 */
 	@Test
 	@Verifies(value = "should handle zero repeat interval", method = "scheduleTask(TaskDefinition)")

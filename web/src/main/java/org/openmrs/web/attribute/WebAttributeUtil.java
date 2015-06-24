@@ -51,7 +51,7 @@ public class WebAttributeUtil {
 	 * @param request
 	 * @param handler
 	 * @param paramName
-	 * @return
+	 * @return value of the attribute
 	 */
 	public static <T> T getValue(HttpServletRequest request, CustomDatatype<T> dt,
 	        CustomDatatypeHandler<CustomDatatype<T>, T> handler, String paramName) {

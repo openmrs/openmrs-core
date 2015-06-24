@@ -10,6 +10,7 @@
 package org.openmrs.api.handler;
 
 import java.util.Date;
+import java.util.List;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
@@ -20,7 +21,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * services. The {@link RequiredDataAdvice} uses AOP around each method to call all handlers that a
  * certain interface. Having this superinterface makes it easier to have one method for this.
  * 
- * @see RequiredDataAdvice#recursivelyHandle(Class, OpenmrsObject, User, Date, String)
+ * @see RequiredDataAdvice#recursivelyHandle(Class, OpenmrsObject, User, Date, String, List)
  * @see RequiredDataAdvice
  * @see SaveHandler
  * @see VoidHandler

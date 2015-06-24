@@ -39,7 +39,7 @@ public class LuhnIdentifierValidatorTest {
 	private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def " };
 	
 	/**
-	 * @see {@link LuhnIdentifierValidator#getValidIdentifier(String)}
+	 * @see LuhnIdentifierValidator#getValidIdentifier(String)
 	 */
 	@Test
 	@Verifies(value = "should get valid identifier", method = "getValidIdentifier(String)")
@@ -54,7 +54,7 @@ public class LuhnIdentifierValidatorTest {
 	}
 	
 	/**
-	 * @see {@link LuhnIdentifierValidator#getValidIdentifier(String)}
+	 * @see LuhnIdentifierValidator#getValidIdentifier(String)
 	 */
 	@Test
 	@Verifies(value = "should fail with invalid identifiers", method = "getValidIdentifier(String)")

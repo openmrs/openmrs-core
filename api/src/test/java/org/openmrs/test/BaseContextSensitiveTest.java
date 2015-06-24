@@ -683,11 +683,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Runs the xml data file at the classpath location specified by <code>datasetFilename</code>
 	 * using XmlDataSet. It simply creates an {@link IDataSet} and calls
-	 * {@link #executeDataSet(IDataSet)}. <br/>
-	 * <br/>
+	 * {@link #executeDataSet(IDataSet)}. <br>
+	 * <br>
 	 * This method is different than {@link #executeDataSet(String)} in that this one does not
-	 * expect a flat file xml but instead a true XmlDataSet. <br/>
-	 * <br/>
+	 * expect a flat file xml but instead a true XmlDataSet. <br>
+	 * <br>
 	 * In addition, there is no replacing of [NULL] values in strings.
 	 * 
 	 * @param datasetFilename String path/filename on the classpath of the xml data set to clean

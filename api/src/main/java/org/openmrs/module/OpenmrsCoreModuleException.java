@@ -10,16 +10,17 @@
 package org.openmrs.module;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.openmrs.api.context.Context;
 
 /**
  * This error is thrown when OpenMRS is started but there is a module that is core to OpenMRS and
- * that module is not present or did not start <br/>
- * <br/>
+ * that module is not present or did not start <br>
+ * <br>
  * This error is also thrown when trying to stop a module that is marked as core.
  * 
- * @see Context#startup()
+ * @see Context#startup(Properties)
  * @see ModuleUtil#startup(java.util.Properties)
  * @see ModuleConstants#CORE_MODULES
  */
@@ -39,7 +40,7 @@ public class OpenmrsCoreModuleException extends ModuleMustStartException {
 	}
 	
 	/**
-	 * @param moduleIds map from module id to version that is core and didn't start
+	 * @param modules map from module id to version that is core and didn't start
 	 */
 	public OpenmrsCoreModuleException(Map<String, String> modules) {
 		super(createMessage(modules));

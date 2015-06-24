@@ -110,7 +110,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.RelationshipTypeValidator#validate(Object, Errors)}
+	 * @see org.openmrs.validator.RelationshipTypeValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if relationshipTypeName exist", method = "validate(Object,Errors)")

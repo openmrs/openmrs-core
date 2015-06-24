@@ -29,7 +29,7 @@ import org.openmrs.test.Verifies;
 public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link LocaleUtility#areCompatible(Locale,Locale)}
+	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
 	@Verifies(value = "should confirm matching language as compatible", method = "areCompatible(Locale,Locale)")
@@ -41,7 +41,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#areCompatible(Locale,Locale)}
+	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
 	@Verifies(value = "should not confirm different language as compatible", method = "areCompatible(Locale,Locale)")
@@ -53,7 +53,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#areCompatible(Locale,Locale)}
+	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
 	@Verifies(value = "should confirm matching country as compatible", method = "areCompatible(Locale,Locale)")
@@ -65,7 +65,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#areCompatible(Locale,Locale)}
+	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
 	@Verifies(value = "should not confirm different country as compatible", method = "areCompatible(Locale,Locale)")
@@ -80,7 +80,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * Two locales, where one has no country specified, but where the language matches, should be
 	 * considered compatible.
 	 * 
-	 * @see {@link LocaleUtility#areCompatible(Locale,Locale)}
+	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
 	@Verifies(value = "should confirm same language missing country as compatible", method = "areCompatible(Locale,Locale)")
@@ -95,7 +95,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	 * Two locales, where one has no country specified, but where the language does not match,
 	 * should not be considered compatible.
 	 * 
-	 * @see {@link LocaleUtility#areCompatible(Locale,Locale)}
+	 * @see LocaleUtility#areCompatible(Locale,Locale)
 	 */
 	@Test
 	@Verifies(value = "should confirm different language missing country as compatible", method = "areCompatible(Locale,Locale)")
@@ -107,7 +107,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getDefaultLocale()}
+	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
 	@Verifies(value = "should not fail with bogus global property value", method = "getDefaultLocale()")
@@ -126,7 +126,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getDefaultLocale()}
+	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
 	@Verifies(value = "should not fail with empty global property value", method = "getDefaultLocale()")
@@ -139,7 +139,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getDefaultLocale()}
+	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
 	@Verifies(value = "should not return null if global property does not exist", method = "getDefaultLocale()")
@@ -153,7 +153,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getDefaultLocale()}
+	 * @see LocaleUtility#getDefaultLocale()
 	 */
 	@Test
 	@Verifies(value = "should return locale object for global property", method = "getDefaultLocale()")
@@ -168,7 +168,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#fromSpecification(String)}
+	 * @see LocaleUtility#fromSpecification(String)
 	 */
 	@Test
 	@Verifies(value = "should get locale from two character language code", method = "fromSpecification(String)")
@@ -177,7 +177,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#fromSpecification(String)}
+	 * @see LocaleUtility#fromSpecification(String)
 	 */
 	@Test
 	@Verifies(value = "should get locale from language code and country code", method = "fromSpecification(String)")
@@ -186,7 +186,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#fromSpecification(String)}
+	 * @see LocaleUtility#fromSpecification(String)
 	 */
 	@Test
 	@Verifies(value = "should get locale from language code country code and variant", method = "fromSpecification(String)")
@@ -198,7 +198,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
 	@Verifies(value = "should always have english included in the returned collection", method = "getLocalesInOrder()")
@@ -208,7 +208,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
 	@Verifies(value = "should always have default locale default value included in the returned collection", method = "getLocalesInOrder()")
@@ -220,7 +220,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
 	@Verifies(value = "should have default locale as the first element if user has no preferred locale", method = "getLocalesInOrder()")
@@ -233,7 +233,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
 	@Verifies(value = "should have default locale as the second element if user has a preferred locale", method = "getLocalesInOrder()")
@@ -247,7 +247,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
 	@Verifies(value = "should return a set of locales with a predictable order", method = "getLocalesInOrder()")
@@ -268,7 +268,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 * @see LocaleUtility#getLocalesInOrder()
 	 */
 	@Test
 	@Verifies(value = "should return a set of locales with no duplicates", method = "getLocalesInOrder()")
@@ -290,8 +290,8 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * This test doesn't really test anything, and it should ALWAYS be the last method in this
-	 * class. <br/>
-	 * <br/>
+	 * class. <br>
+	 * <br>
 	 * This method just resets the current user's locale so that when things are run in batches all
 	 * tests still work.
 	 */

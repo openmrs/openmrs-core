@@ -962,8 +962,8 @@ public class ORUR01Handler implements Application {
 	}
 	
 	/**
-	 * Get a concept object representing this conceptId and coding system.<br/>
-	 * If codingSystem is 99DCT, then a new Concept with the given conceptId is returned.<br/>
+	 * Get a concept object representing this conceptId and coding system.<br>
+	 * If codingSystem is 99DCT, then a new Concept with the given conceptId is returned.<br>
 	 * Otherwise, the coding system is looked up in the ConceptMap for an openmrs concept mapped to
 	 * that code.
 	 *
@@ -998,7 +998,7 @@ public class ORUR01Handler implements Application {
 	 * @param obx the obs to parse and get the timestamp from
 	 * @return an obx timestamp or null
 	 * @throws HL7Exception
-	 * @see {@link #getDatetime(TS)}
+	 * @see #getDatetime(TS)
 	 */
 	private Date getDatetime(OBX obx) throws HL7Exception {
 		TS ts = obx.getDateTimeOfTheObservation();

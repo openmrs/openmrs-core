@@ -21,7 +21,7 @@ public class DWRAdministrationService {
 	 * Gets the value of a global property
 	 * 
 	 * @param name
-	 * @return
+	 * @return property value
 	 */
 	public String getGlobalProperty(String name) {
 		return Context.getAdministrationService().getGlobalProperty(name);

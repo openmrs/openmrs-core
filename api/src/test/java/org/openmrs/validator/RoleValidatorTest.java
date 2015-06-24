@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class RoleValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link RoleValidator#validate(Object,Errors)}
+	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if role is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -48,7 +48,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RoleValidator#validate(Object,Errors)}
+	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -73,7 +73,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RoleValidator#validate(Object,Errors)}
+	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if role has leading or trailing space", method = "validate(Object,Errors)")
@@ -95,7 +95,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RoleValidator#validate(Object,Errors)}
+	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -111,7 +111,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RoleValidator#validate(Object,Errors)}
+	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -127,7 +127,7 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RoleValidator#validate(Object,Errors)}
+	 * @see RoleValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

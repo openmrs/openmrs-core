@@ -19,7 +19,7 @@ import org.openmrs.test.Verifies;
 public class ConceptReferenceTermTest {
 	
 	/**
-	 * @see {@link ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)}
+	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
 	@Verifies(value = "should set termA as the term to which a mapping is being added", method = "addConceptReferenceTermMap(ConceptReferenceTermMap)")
@@ -30,7 +30,7 @@ public class ConceptReferenceTermTest {
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)}
+	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
 	@Verifies(value = "should not add a map where termB is itself", method = "addConceptReferenceTermMap(ConceptReferenceTermMap)")
@@ -44,7 +44,7 @@ public class ConceptReferenceTermTest {
 	}
 	
 	/**
-	 * @see {@link ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)}
+	 * @see ConceptReferenceTerm#addConceptReferenceTermMap(ConceptReferenceTermMap)
 	 */
 	@Test
 	@Verifies(value = "should not add duplicate concept reference term maps", method = "addConceptReferenceTermMap(ConceptReferenceTermMap)")

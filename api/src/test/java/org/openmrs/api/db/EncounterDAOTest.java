@@ -49,7 +49,7 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterDAO#getSavedEncounterDatetime(Encounter)}
+	 * @see EncounterDAO#getSavedEncounterDatetime(Encounter)
 	 */
 	@Test
 	@Verifies(value = "should get saved encounter datetime from database", method = "getSavedEncounterDatetime(Encounter)")

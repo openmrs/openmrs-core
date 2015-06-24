@@ -99,7 +99,7 @@ public interface ConceptDAO {
 	 * @param name
 	 * @param loc
 	 * @param searchOnPhrase This puts wildcard characters around the concept name search criteria
-	 * @return List<Concept>
+	 * @return List&lt;Concept&gt;
 	 * @throws DAOException
 	 * @should not return concepts with matching names that are voided
 	 */
@@ -138,7 +138,7 @@ public interface ConceptDAO {
 	 * @param drugName
 	 * @param concept
 	 * @param includeRetired
-	 * @return List<Drug>
+	 * @return List&lt;Drug&gt;
 	 * @throws DAOException
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean includeRetired) throws DAOException;
@@ -296,7 +296,7 @@ public interface ConceptDAO {
 	public ConceptSource getConceptSource(Integer conceptSourceId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getAllConceptSources(java.lang.boolean)
+	 * @see org.openmrs.api.ConceptService#getAllConceptSources(boolean)
 	 */
 	public List<ConceptSource> getAllConceptSources(boolean includeRetired) throws DAOException;
 	
@@ -326,23 +326,19 @@ public interface ConceptDAO {
 	public Iterator<Concept> conceptIterator();
 	
 	/**
-	 * @see org.openmrs.api.ConceptService@getConceptsByMapping(java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.ConceptService#getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return concept or null
 	 */
 	public Concept getConceptByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return concept class or null
 	 */
 	public ConceptClass getConceptClassByUuid(String uuid);
 	
@@ -355,42 +351,31 @@ public interface ConceptDAO {
 	public ConceptSource getConceptSourceByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return concept data type or null
 	 */
 	public ConceptDatatype getConceptDatatypeByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return concept numeric or null
 	 */
 	public ConceptNumeric getConceptNumericByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return concept proposal or null
 	 */
 	public ConceptProposal getConceptProposalByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return drug or null
 	 */
 	public Drug getDrugByUuid(String uuid);
 	
 	public DrugIngredient getDrugIngredientByUuid(String uuid);
 	
-	/**
-	 * @see org.openmrs.api.ConceptService#getConceptUuids()
-	 */
 	public Map<Integer, String> getConceptUuids();
 	
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
@@ -398,7 +383,7 @@ public interface ConceptDAO {
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
 	
 	/**
-	 * @see ConceptService#getConceptMapsBySource(ConceptSource)
+	 * @see ConceptService#getConceptMappingsToSource(ConceptSource)
 	 */
 	public List<ConceptMap> getConceptMapsBySource(ConceptSource conceptSource) throws DAOException;
 	
@@ -511,9 +496,6 @@ public interface ConceptDAO {
 	 */
 	public ConceptReferenceTerm getConceptReferenceTermByUuid(String uuid) throws DAOException;
 	
-	/**
-	 * @see ConceptService#getConceptReferenceTermsBySource(ConceptSource)
-	 */
 	public List<ConceptReferenceTerm> getConceptReferenceTermsBySource(ConceptSource conceptSource) throws DAOException;
 	
 	/**
@@ -559,7 +541,7 @@ public interface ConceptDAO {
 	 * specified term
 	 * 
 	 * @param term
-	 * @return
+	 * @return true if term is in use
 	 * @throws DAOException
 	 * @should return true if a term has a conceptMap or more using it
 	 * @should return true if a term has a conceptReferenceTermMap or more using it
@@ -572,7 +554,7 @@ public interface ConceptDAO {
 	 * specified mapType
 	 * 
 	 * @param mapType
-	 * @return
+	 * @return true if map type is in use
 	 * @throws DAOException
 	 * @should return true if a mapType has a conceptMap or more using it
 	 * @should return true if a mapType has a conceptReferenceTermMap or more using it
@@ -617,7 +599,7 @@ public interface ConceptDAO {
 	        Collection<ConceptMapType> withAnyOfTheseTypes, boolean includeRetired) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection
+	 * @see org.openmrs.api.ConceptService#getDrugByMapping(String, org.openmrs.ConceptSource, java.util.Collection)
 	 */
 	Drug getDrugByMapping(String code, ConceptSource conceptSource,
 	        Collection<ConceptMapType> withAnyOfTheseTypesOrOrderOfPreference) throws DAOException;

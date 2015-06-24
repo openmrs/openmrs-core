@@ -194,7 +194,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should accept duplicate identifier if the existing provider is not retired", method = "validate(Object,Errors)")
@@ -210,7 +210,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should accept duplicate identifier if the existing provider is retired", method = "validate(Object,Errors)")
@@ -227,7 +227,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should accept a duplicate identifier for a new provider which is not retired", method = "validate(Object,Errors)")
@@ -243,7 +243,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should accept a duplicate identifier for a new provider which is retired", method = "validate(Object,Errors)")
@@ -261,7 +261,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -283,7 +283,7 @@ public class ProviderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderValidator#validate(Object, Errors)}
+	 * @see ProviderValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

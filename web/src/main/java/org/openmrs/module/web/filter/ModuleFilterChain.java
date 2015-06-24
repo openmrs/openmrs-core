@@ -47,9 +47,9 @@ public class ModuleFilterChain implements FilterChain {
 	/**
 	 * Factory method to construct and return a ModuleFilterChain
 	 * 
-	 * @param filters: The Collection of {@link Filter}s that this FilterChain will iterate over
+	 * @param filters The Collection of {@link Filter}s that this FilterChain will iterate over
 	 *            before returning control back the the <code>initialFilterChain</code>
-	 * @param initialFilterChain: The {@link FilterChain} to return control to once all of the
+	 * @param initialFilterChain The {@link FilterChain} to return control to once all of the
 	 *            {@link Filter}s have been executed
 	 * @return The ModuleFilterChain that is fully initialized with the passed parameters
 	 */

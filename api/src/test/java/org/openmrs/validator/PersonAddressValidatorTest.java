@@ -45,7 +45,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the startDate is in the future", method = "validate(Object,Errors)")
@@ -61,7 +61,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the endDate is before the startDate", method = "validate(Object,Errors)")
@@ -77,7 +77,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if all the dates are valid", method = "validate(Object,Errors)")
@@ -92,7 +92,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if startDate and endDate are both null", method = "validate(Object,Errors)")
@@ -106,7 +106,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if startDate is null", method = "validate(Object,Errors)")
@@ -121,7 +121,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if endDate is null", method = "validate(Object,Errors)")
@@ -165,7 +165,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -192,7 +192,7 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAddressValidator#validate(Object,Errors)}
+	 * @see PersonAddressValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

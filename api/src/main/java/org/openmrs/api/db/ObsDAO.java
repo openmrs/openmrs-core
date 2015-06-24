@@ -87,7 +87,7 @@ public interface ObsDAO {
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.util.Date, java.util.Date, boolean, java.lang.String)
-	 * @see ObsService#getObservationCount(org.openmrs.ConceptName, boolean)
+	 * @see ObsService#getObservationCount(List, boolean)
 	 */
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
@@ -95,10 +95,8 @@ public interface ObsDAO {
 	        String accessionNumber) throws DAOException;
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return obs or null
 	 */
 	public Obs getObsByUuid(String uuid);
 	

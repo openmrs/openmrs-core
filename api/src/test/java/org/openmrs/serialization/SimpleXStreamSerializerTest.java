@@ -25,7 +25,7 @@ public class SimpleXStreamSerializerTest {
 	
 	/**
 	 * @throws SerializationException
-	 * @see {@link org.openmrs.serialization.SimpleXStreamSerializer#serialize(Object)}
+	 * @see org.openmrs.serialization.SimpleXStreamSerializer#serialize(Object)
 	 */
 	@Test
 	@Verifies(value = "should get serialized", method = "serialize(Object)")
@@ -59,7 +59,7 @@ public class SimpleXStreamSerializerTest {
 	
 	/**
 	 * @throws SerializationException
-	 * @see {@link org.openmrs.serialization.SimpleXStreamSerializer#serialize(Object)}
+	 * @see org.openmrs.serialization.SimpleXStreamSerializer#serialize(Object)
 	 */
 	@Test
 	@Verifies(value = "should get deserialized", method = "deserialize(String, Class)")

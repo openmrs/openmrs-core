@@ -30,7 +30,7 @@ import org.springframework.validation.Validator;
 public class HandlerUtilTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link HandlerUtil#getHandlerForType(Class, Class)}
+	 * @see HandlerUtil#getHandlerForType(Class, Class)
 	 */
 	@Test
 	@Verifies(value = "should return a list of all classes that can handle the passed type", method = "getHandlersForType(Class, Class)")
@@ -43,7 +43,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HandlerUtil#getHandlerForType(Class, Class)}
+	 * @see HandlerUtil#getHandlerForType(Class, Class)
 	 */
 	@Test
 	@Verifies(value = "should return an empty list if no classes can handle the passed type", method = "getHandlersForType(Class, Class)")
@@ -54,7 +54,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HandlerUtil#getPreferredHandler(Class, Class)}
+	 * @see HandlerUtil#getPreferredHandler(Class, Class)
 	 */
 	@Test
 	@Verifies(value = "should return the preferred handler for the passed handlerType and type", method = "getPreferredHandler(Class, Class)")
@@ -64,7 +64,7 @@ public class HandlerUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HandlerUtil#getPreferredHandler(Class, Class)}
+	 * @see HandlerUtil#getPreferredHandler(Class, Class)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw a APIException if no handler is found", method = "getPreferredHandler(Class, Class)")

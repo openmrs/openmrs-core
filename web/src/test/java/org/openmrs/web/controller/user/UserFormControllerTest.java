@@ -27,7 +27,7 @@ import org.springframework.web.context.request.WebRequest;
 public class UserFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link UserFormController#handleSubmission(WebRequest,HttpSession,String,String,String,null,User,BindingResult)}
+	 * @see UserFormController#handleSubmission(WebRequest,HttpSession,String,String,String,null,User,BindingResult)
 	 * 
 	 */
 	@Test

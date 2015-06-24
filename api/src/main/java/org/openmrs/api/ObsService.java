@@ -43,7 +43,6 @@ import org.openmrs.util.PrivilegeConstants;
  * people, or encounters
  * 
  * @see org.openmrs.Obs
- * @see org.openmrs.ComplexObs
  * @see org.openmrs.MimeType
  * @see org.openmrs.api.context.Context
  */
@@ -126,7 +125,7 @@ public interface ObsService extends OpenmrsService {
 	 * Get Obs by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return obs or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -335,7 +334,7 @@ public interface ObsService extends OpenmrsService {
 	 * voided observations.
 	 * 
 	 * @param who the user to match on
-	 * @return a List<Obs> object containing all non-voided observations for the specified person
+	 * @return a List&lt;Obs&gt; object containing all non-voided observations for the specified person
 	 * @see #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date,
 	 *      boolean)
 	 * @should get all observations assigned to given person
@@ -348,20 +347,20 @@ public interface ObsService extends OpenmrsService {
 	 * arguments are optional and nullable. If more than one argument is non-null, the result is
 	 * equivalent to an "and"ing of the arguments. (e.g. if both a <code>location</code> and a
 	 * <code>fromDate</code> are given, only Obs that are <u>both</u> at that Location and after the
-	 * fromDate are returned). <br/>
-	 * <br/>
-	 * Note: If <code>whom</code> has elements, <code>personType</code> is ignored <br/>
-	 * <br/>
-	 * Note: to get all observations on a certain date, use:<br/>
-	 * Date fromDate = "2009-08-15";<br/>
-	 * Date toDate = OpenmrsUtil.lastSecondOfDate(fromDate); List<Obs> obs = getObservations(....,
+	 * fromDate are returned). <br>
+	 * <br>
+	 * Note: If <code>whom</code> has elements, <code>personType</code> is ignored <br>
+	 * <br>
+	 * Note: to get all observations on a certain date, use:<br>
+	 * Date fromDate = "2009-08-15";<br>
+	 * Date toDate = OpenmrsUtil.lastSecondOfDate(fromDate); List&lt;Obs&gt; obs = getObservations(....,
 	 * fromDate, toDate, ...);
 	 * 
-	 * @param whom List<Person> to restrict obs to (optional)
-	 * @param encounters List<Encounter> to restrict obs to (optional)
-	 * @param questions List<Concept> to restrict the obs to (optional)
-	 * @param answers List<Concept> to restrict the valueCoded to (optional)
-	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
+	 * @param whom List&lt;Person&gt; to restrict obs to (optional)
+	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
+	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
+	 * @param answers List&lt;Concept&gt; to restrict the valueCoded to (optional)
+	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict this to. Only used if
 	 *            <code>whom</code> is an empty list (optional)
 	 * @param locations The org.openmrs.Location objects to restrict to (optional)
 	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
@@ -389,11 +388,11 @@ public interface ObsService extends OpenmrsService {
 	 * It effectively surpasses the above method; the old one is however kept for backward
 	 * compatibility reasons.
 	 *
-	 * @param whom List<Person> to restrict obs to (optional)
-	 * @param encounters List<Encounter> to restrict obs to (optional)
-	 * @param questions List<Concept> to restrict the obs to (optional)
-	 * @param answers List<Concept> to restrict the valueCoded to (optional)
-	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
+	 * @param whom List&lt;Person&gt; to restrict obs to (optional)
+	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
+	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
+	 * @param answers List&lt;Concept&gt; to restrict the valueCoded to (optional)
+	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict this to. Only used if
 	 *            <code>whom</code> is an empty list (optional)
 	 * @param locations The org.openmrs.Location objects to restrict to (optional)
 	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
@@ -434,20 +433,20 @@ public interface ObsService extends OpenmrsService {
 	 * arguments. All arguments are optional and nullable. If more than one argument is non-null,
 	 * the result is equivalent to an "and"ing of the arguments. (e.g. if both a
 	 * <code>location</code> and a <code>fromDate</code> are given, only Obs that are <u>both</u> at
-	 * that Location and after the fromDate are returned). <br/>
-	 * <br/>
-	 * Note: If <code>whom</code> has elements, <code>personType</code> is ignored <br/>
-	 * <br/>
-	 * Note: to get all observations count on a certain date, use:<br/>
-	 * Date fromDate = "2009-08-15";<br/>
-	 * Date toDate = OpenmrsUtil.lastSecondOfDate(fromDate); List<Obs> obs = getObservations(....,
+	 * that Location and after the fromDate are returned). <br>
+	 * <br>
+	 * Note: If <code>whom</code> has elements, <code>personType</code> is ignored <br>
+	 * <br>
+	 * Note: to get all observations count on a certain date, use:<br>
+	 * Date fromDate = "2009-08-15";<br>
+	 * Date toDate = OpenmrsUtil.lastSecondOfDate(fromDate); List&lt;Obs&gt; obs = getObservations(....,
 	 * fromDate, toDate, ...);
 	 * 
-	 * @param whom List<Person> to restrict obs to (optional)
-	 * @param encounters List<Encounter> to restrict obs to (optional)
-	 * @param questions List<Concept> to restrict the obs to (optional)
-	 * @param answers List<Concept> to restrict the valueCoded to (optional)
-	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
+	 * @param whom List&lt;Person&gt; to restrict obs to (optional)
+	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
+	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
+	 * @param answers List&lt;Concept&gt; to restrict the valueCoded to (optional)
+	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict this to. Only used if
 	 *            <code>whom</code> is an empty list (optional)
 	 * @param locations The org.openmrs.Location objects to restrict to (optional) obsDatetime
 	 *            (optional)
@@ -472,11 +471,11 @@ public interface ObsService extends OpenmrsService {
 	 * It effectively surpasses the above method; the old one is however kept for backward
 	 * compatibility reasons.
 	 *
-	 * @param whom List<Person> to restrict obs to (optional)
-	 * @param encounters List<Encounter> to restrict obs to (optional)
-	 * @param questions List<Concept> to restrict the obs to (optional)
-	 * @param answers List<Concept> to restrict the valueCoded to (optional)
-	 * @param personTypes List<PERSON_TYPE> objects to restrict this to. Only used if
+	 * @param whom List&lt;Person&gt; to restrict obs to (optional)
+	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
+	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
+	 * @param answers List&lt;Concept&gt; to restrict the valueCoded to (optional)
+	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict this to. Only used if
 	 *            <code>whom</code> is an empty list (optional)
 	 * @param locations The org.openmrs.Location objects to restrict to (optional) obsDatetime
 	 *            (optional)
@@ -583,7 +582,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param personType
 	 * @deprecated use
 	 *             {@link #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date, boolean)}
-	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=
+	 * @return List&lt;Object[]&gt; [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=
 	 *         <code>valueNumeric</code>s
 	 **/
 	@Deprecated
@@ -591,9 +590,6 @@ public interface ObsService extends OpenmrsService {
 	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType,
 	        boolean includeVoided);
 	
-	/**
-	 * @deprecated use {@link org.openmrs#Encounter.getObservations()}
-	 */
 	@Deprecated
 	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Set<Obs> getObservations(Encounter whichEncounter);

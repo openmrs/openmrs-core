@@ -56,7 +56,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptDAO#allConceptSources(boolean)}
+	 * @see ConceptDAO#allConceptSources(boolean)
 	 */
 	@Test
 	@Verifies(value = "should return all concept sources", method = "getAllConceptSources(boolean)")
@@ -65,7 +65,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptDAO#allConceptSources(boolean)}
+	 * @see ConceptDAO#allConceptSources(boolean)
 	 */
 	@Test
 	@Verifies(value = "should return all unretired concept sources", method = "getAllConceptSources(boolean)")
@@ -74,7 +74,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptDAO#isConceptMapTypeInUse(ConceptMapType)}
+	 * @see ConceptDAO#isConceptMapTypeInUse(ConceptMapType)
 	 */
 	@Test
 	@Verifies(value = "should return true if a mapType has a conceptMap or more using it", method = "isConceptMapTypeInUse(ConceptMapType)")
@@ -83,7 +83,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptDAO#isConceptMapTypeInUse(ConceptMapType)}
+	 * @see ConceptDAO#isConceptMapTypeInUse(ConceptMapType)
 	 */
 	@Test
 	@Verifies(value = "should return true if a mapType has a conceptReferenceTermMap or more using it", method = "isConceptMapTypeInUse(ConceptMapType)")
@@ -92,7 +92,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)}
+	 * @see ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)
 	 */
 	@Test
 	@Verifies(value = "should return true if a term has a conceptMap or more using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
@@ -101,7 +101,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)}
+	 * @see ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)
 	 */
 	@Test
 	@Verifies(value = "should return true if a term has a conceptReferenceTermMap or more using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")
@@ -111,7 +111,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptDAO#isConceptMapTypeInUse(ConceptMapType)}
+	 * @see ConceptDAO#isConceptMapTypeInUse(ConceptMapType)
 	 */
 	@Test
 	@Verifies(value = "should return false if a mapType has no maps using it", method = "isConceptMapTypeInUse(ConceptMapType)")
@@ -120,7 +120,7 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)}
+	 * @see ConceptDAO#isConceptReferenceTermInUse(ConceptReferenceTerm)
 	 */
 	@Test
 	@Verifies(value = "should return false if a term has no maps using it", method = "isConceptReferenceTermInUse(ConceptReferenceTerm)")

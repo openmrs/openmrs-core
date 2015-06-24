@@ -46,8 +46,8 @@ public class Security {
 	
 	/**
 	 * Compare the given hash and the given string-to-hash to see if they are equal. The
-	 * string-to-hash is usually of the form password + salt. <br/>
-	 * <br/>
+	 * string-to-hash is usually of the form password + salt. <br>
+	 * <br>
 	 * This should be used so that this class can compare against the new correct hashing algorithm
 	 * and the old incorrect hashin algorithm.
 	 *

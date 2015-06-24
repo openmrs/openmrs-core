@@ -117,7 +117,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
 	@Verifies(value = "should not save order if order doesnt validate", method = "saveOrder(Order)")
@@ -131,7 +131,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderByUuid(String)}
+	 * @see OrderService#getOrderByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getOrderByUuid(String)")
@@ -142,7 +142,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderByUuid(String)}
+	 * @see OrderService#getOrderByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderByUuid(String)")
@@ -197,7 +197,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderNumberGenerator#getNewOrderNumber(OrderContext)}
+	 * @see OrderNumberGenerator#getNewOrderNumber(OrderContext)
 	 */
 	@Test
 	@Verifies(value = "should always return unique orderNumbers when called multiple times without saving orders", method = "getNewOrderNumber()")
@@ -235,7 +235,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderByOrderNumber(String)}
+	 * @see OrderService#getOrderByOrderNumber(String)
 	 */
 	@Test
 	@Verifies(value = "should find object given valid order number", method = "getOrderByOrderNumber(String)")
@@ -246,7 +246,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderByOrderNumber(String)}
+	 * @see OrderService#getOrderByOrderNumber(String)
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given order number", method = "getOrderByOrderNumber(String)")
@@ -255,7 +255,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderHistoryByConcept(Patient,Concept)}
+	 * @see OrderService#getOrderHistoryByConcept(Patient,Concept)
 	 */
 	@Test
 	@Verifies(value = "should return orders with the given concept", method = "getOrderHistoryByConcept(Patient,Concept)")
@@ -283,7 +283,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderHistoryByConcept(Patient, Concept)}
+	 * @see OrderService#getOrderHistoryByConcept(Patient, Concept)
 	 */
 	@Test
 	@Verifies(value = "should return empty list for concept without orders", method = "getOrderHistoryByConcept(Patient,Concept)")
@@ -317,7 +317,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderHistoryByOrderNumber(String)}
+	 * @see OrderService#getOrderHistoryByOrderNumber(String)
 	 */
 	@Test
 	@Verifies(value = "should return all order history for given order number", method = "getOrderHistoryByOrderNumber(String)")
@@ -617,7 +617,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, String, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test
 	@Verifies(value = "should fail for a discontinuation order", method = "discontinueOrder(Order, String, Date, Provider, Encounter)")
@@ -632,7 +632,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)}
+	 * @see OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date, org.openmrs.Provider, org.openmrs.Encounter)
 	 */
 	@Test
 	@Verifies(value = "should not pass for a discontinuation order", method = "discontinueOrder(Order, Concept, Date, Provider, Encounter)")
@@ -680,7 +680,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
 	@Verifies(value = "should discontinue existing active order if new order being saved with action to discontinue", method = "saveOrder(Order)")
@@ -719,7 +719,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
 	@Verifies(value = "should discontinue previousOrder if it is not already discontinued", method = "saveOrder(Order)")
@@ -754,7 +754,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#saveOrder(org.openmrs.Order, OrderContext)}
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
 	 */
 	@Test
 	@Verifies(value = "should fail if concept in previous order does not match this concept", method = "saveOrder(Order)")
@@ -1289,7 +1289,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#saveOrderFrequency(OrderFrequency)}
+	 * @see OrderService#saveOrderFrequency(OrderFrequency)
 	 */
 	@Test
 	@Verifies(value = "should add a new order frequency to the database", method = "saveOrderFrequency(OrderFrequency)")
@@ -1313,7 +1313,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#saveOrderFrequency(OrderFrequency)}
+	 * @see OrderService#saveOrderFrequency(OrderFrequency)
 	 */
 	@Test
 	@Verifies(value = "should edit an existing order frequency that is not in use", method = "saveOrderFrequency(OrderFrequency)")
@@ -1327,7 +1327,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#saveOrderFrequency(OrderFrequency)}
+	 * @see OrderService#saveOrderFrequency(OrderFrequency)
 	 */
 	@Test
 	@Verifies(value = "should not allow editing an existing order frequency that is in use", method = "saveOrderFrequency(OrderFrequency)")
@@ -1342,7 +1342,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#purgeOrderFrequency(OrderFrequency)}
+	 * @see OrderService#purgeOrderFrequency(OrderFrequency)
 	 */
 	@Test
 	@Verifies(value = "should not allow deleting an order frequency that is in use", method = "purgeOrderFrequency(OrderFrequency)")
@@ -2016,7 +2016,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#saveOrderType(org.openmrs.OrderType)}
+	 * @see OrderService#saveOrderType(org.openmrs.OrderType)
 	 */
 	@Test
 	@Verifies(value = "should add a new order type to the database", method = "saveOrderType(org.openmrs.OrderType)")
@@ -2053,7 +2053,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#purgeOrderType(org.openmrs.OrderType)}
+	 * @see OrderService#purgeOrderType(org.openmrs.OrderType)
 	 */
 	@Test
 	@Verifies(value = "should delete order type if not in use", method = "purgeOrderType(org.openmrs.OrderType)")
@@ -2066,7 +2066,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#purgeOrderType(org.openmrs.OrderType)}
+	 * @see OrderService#purgeOrderType(org.openmrs.OrderType)
 	 */
 	@Test
 	@Verifies(value = "should not allow deleting an order type that is in use", method = "purgeOrderType(org.openmrs.OrderType)")
@@ -2079,7 +2079,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#retireOrderType(org.openmrs.OrderType, String)}
+	 * @see OrderService#retireOrderType(org.openmrs.OrderType, String)
 	 */
 	@Test
 	@Verifies(value = "should retire order type", method = "retireOrderType(org.openmrs.OrderType, String)")
@@ -2098,7 +2098,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#unretireOrderType(org.openmrs.OrderType)}
+	 * @see OrderService#unretireOrderType(org.openmrs.OrderType)
 	 */
 	@Test
 	@Verifies(value = "should unretire order type", method = "unretireOrderType(org.openmrs.OrderType)")
@@ -2117,7 +2117,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getSubtypes(org.openmrs.OrderType, boolean)}
+	 * @see OrderService#getSubtypes(org.openmrs.OrderType, boolean)
 	 */
 	@Test
 	@Verifies(value = "should return all order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")
@@ -2127,7 +2127,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getSubtypes(org.openmrs.OrderType, boolean)}
+	 * @see OrderService#getSubtypes(org.openmrs.OrderType, boolean)
 	 */
 	@Test
 	@Verifies(value = "should return unretired order subtypes of given order type", method = "getOrderSubtypes(org.openmrs.OrderType, boolean)")

@@ -22,7 +22,7 @@ public class VersionComparatorTest {
 	
 	/**
 	 * Regression test for TRUNK-1668
-	 * <br/>
+	 * <br>
 	 * 
 	 * @see VersionComparator#compare(String,String)
 	 * @verifies compare via numeric value not string value

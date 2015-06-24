@@ -94,7 +94,7 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 	 * 
 	 * @param request
 	 * @param response
-	 * @return
+	 * @return chart
 	 */
 	protected abstract JFreeChart createChart(HttpServletRequest request, HttpServletResponse response);
 	

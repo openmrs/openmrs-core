@@ -110,7 +110,7 @@ public class PatientListItem extends PersonListItem {
 	}
 	
 	/**
-	 * @param identifierIdentifierCheckdigit The identifierIdentifierCheckdigit to set.
+	 * @param identifierCheckDigit The identifierIdentifierCheckdigit to set.
 	 */
 	public void setIdentifierCheckDigit(Boolean identifierCheckDigit) {
 		this.identifierCheckDigit = identifierCheckDigit;

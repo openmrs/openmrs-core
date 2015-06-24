@@ -147,7 +147,7 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	
 	/**
 	 * @since 1.9
-	 * @param Sets relationship's start date.
+	 * @param startDate relationship's start date.
 	 */
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
@@ -164,7 +164,7 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	
 	/**
 	 * @since 1.9
-	 * @param Sets relationship's end date.
+	 * @param endDate relationship's end date.
 	 */
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;

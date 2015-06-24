@@ -52,7 +52,7 @@ public class PortletControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PortletController#handleRequest(HttpServletRequest,HttpServletResponse)}
+	 * @see PortletController#handleRequest(HttpServletRequest,HttpServletResponse)
 	 */
 	@Test
 	@Verifies(value = "should calculate bmi into patientBmiAsString", method = "handleRequest(HttpServletRequest,HttpServletResponse)")
@@ -63,7 +63,7 @@ public class PortletControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PortletController#handleRequest(HttpServletRequest,HttpServletResponse)}
+	 * @see PortletController#handleRequest(HttpServletRequest,HttpServletResponse)
 	 */
 	@Test
 	@Verifies(value = "should not fail with empty height and weight properties", method = "handleRequest(HttpServletRequest,HttpServletResponse)")

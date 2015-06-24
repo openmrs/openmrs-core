@@ -38,17 +38,17 @@ import org.openmrs.util.OpenmrsUtil;
  *       &lt;br/&gt;
  *       &lt;b&gt;Module Links:&lt;/b&gt;
  *     &lt;/c:if&gt;
- *  &lt;ul>
+ *  &lt;ul&gt;
  *    &lt;openmrs:hasPrivilege privilege=&quot;${extension.requiredPrivilege}&quot;&gt;
  *        &lt;form method=&quot;post&quot; action=&quot;${pageContext.request.contextPath}/${extension.url}&quot;&gt;
  *           &lt;input type=&quot;hidden&quot; name=&quot;patientIds&quot; value=&quot;&quot;/&gt;
- *           &lt;li>
+ *           &lt;li&gt;
  *              &lt;a href=&quot;#&quot; onClick=&quot;javascript:submitLink(this)&quot;&gt;&lt;spring:message code=&quot;${extension.label}&quot;/&gt;&lt;/a&gt;
- *           &lt;/li>
+ *           &lt;/li&gt;
  *        &lt;/form&gt;
  *    &lt;/openmrs:hasPrivilege&gt;
  *    &lt;c:if test=&quot;${stat.last}&quot;&gt;
- *      &lt;/ul>
+ *      &lt;/ul&gt;
  *    &lt;/c:if&gt;
  *  &lt;/openmrs:extensionPoint&gt;
  * </pre>

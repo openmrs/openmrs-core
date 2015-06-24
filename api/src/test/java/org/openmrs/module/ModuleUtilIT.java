@@ -27,7 +27,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	/**
 	 * This test requires a connection to the internet to pass
 	 * 
-	 * @see {@link ModuleUtil#getURLStream(URL)}
+	 * @see ModuleUtil#getURLStream(URL)
 	 */
 	@Test
 	@Verifies(value = "should return a valid input stream for old module urls", method = "getURLStream(URL)")
@@ -38,7 +38,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	/**
 	 * This test requires a connection to the internet to pass
 	 * 
-	 * @see {@link ModuleUtil#getURL(URL)}
+	 * @see ModuleUtil#getURL(URL)
 	 */
 	@Test
 	@Ignore
@@ -52,7 +52,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	/**
 	 * This test requires a connection to the internet to pass
 	 * 
-	 * @see {@link ModuleUtil#getURL(URL)}
+	 * @see ModuleUtil#getURL(URL)
 	 */
 	@Test
 	@Ignore
@@ -66,7 +66,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	/**
 	 * This test requires a connection to the internet to pass
 	 * 
-	 * @see {@link ModuleUtil#getURL(URL)}
+	 * @see ModuleUtil#getURL(URL)
 	 */
 	@Test
 	@Ignore
@@ -78,7 +78,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#checkMandatoryModulesStarted()}
+	 * @see ModuleUtil#checkMandatoryModulesStarted()
 	 */
 	@Test(expected = MandatoryModuleException.class)
 	@Verifies(value = "should throw ModuleException if a mandatory module is not started", method = "checkMandatoryModulesStarted()")
@@ -88,7 +88,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#getMandatoryModules()}
+	 * @see ModuleUtil#getMandatoryModules()
 	 */
 	@Test
 	@Verifies(value = "should return mandatory module ids", method = "getMandatoryModules()")
@@ -99,7 +99,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged required version", method = "matchRequiredVersions(String,String)")
@@ -110,7 +110,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged required version with wild card", method = "matchRequiredVersions(String,String)")
@@ -121,7 +121,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged required version with wild card on one end", method = "matchRequiredVersions(String,String)")
@@ -134,7 +134,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow single entry for required version", method = "matchRequiredVersions(String,String)")
@@ -145,7 +145,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow required version with wild card", method = "matchRequiredVersions(String,String)")
@@ -156,7 +156,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow non numeric character required version", method = "matchRequiredVersions(String,String)")
@@ -167,7 +167,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged non numeric character required version", method = "matchRequiredVersions(String,String)")
@@ -178,7 +178,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged non numeric character with wild card", method = "matchRequiredVersions(String,String)")
@@ -189,7 +189,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged non numeric character with wild card on one end", method = "matchRequiredVersions(String,String)")
@@ -202,7 +202,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when openmrs version beyond wild card range", method = "matchRequiredVersions(String,String)")
@@ -215,7 +215,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when required version beyond openmrs version", method = "matchRequiredVersions(String,String)")
@@ -226,7 +226,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when required version with wild card beyond openmrs version", method = "matchRequiredVersions(String,String)")
@@ -238,7 +238,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when required version with wild card on one end beyond openmrs version", method = "matchRequiredVersions(String,String)")
@@ -252,7 +252,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when single entry required version beyond openmrs version", method = "matchRequiredVersions(String,String)")
@@ -263,7 +263,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow release type in the version", method = "matchRequiredVersions(String,String)")
@@ -276,7 +276,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#getPathForResource(Module,String)}
+	 * @see ModuleUtil#getPathForResource(Module,String)
 	 */
 	@Test
 	@Verifies(value = "should handle ui springmvc css ui dot css example", method = "getPathForResource(Module,String)")
@@ -288,7 +288,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#getModuleForPath(String)}
+	 * @see ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
 	@Verifies(value = "should handle ui springmvc css ui dot css when ui dot springmvc module is running", method = "getModuleForPath(String)")
@@ -304,7 +304,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#getModuleForPath(String)}
+	 * @see ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
 	@Verifies(value = "should handle ui springmvc css ui dot css when ui module is running", method = "getModuleForPath(String)")
@@ -320,7 +320,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#getModuleForPath(String)}
+	 * @see ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
 	@Verifies(value = "should return null for ui springmvc css ui dot css when no relevant module is running", method = "getModuleForPath(String)")
@@ -331,7 +331,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if openmrs version beyond wild card range", method = "checkRequiredVersion(String, String)")
@@ -342,7 +342,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
@@ -353,7 +353,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if required version with wild card beyond openmrs version", method = "checkRequiredVersion(String, String)")
@@ -365,7 +365,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if required version with wild card on one end beyond openmrs version", method = "checkRequiredVersion(String, String)")
@@ -377,7 +377,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if single entry required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
@@ -389,7 +389,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#compareVersion(String,String)}
+	 * @see ModuleUtil#compareVersion(String,String)
 	 */
 	@Test
 	@Verifies(value = "should correctly comparing two version numbers", method = "compareVersion(String,String)")
@@ -400,7 +400,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#compareVersion(String,String)}
+	 * @see ModuleUtil#compareVersion(String,String)
 	 */
 	@Test
 	@Verifies(value = "treat SNAPSHOT as earliest version", method = "compareVersion(String,String)")
@@ -413,7 +413,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#getModuleRepository()}
+	 * @see ModuleUtil#getModuleRepository()
 	 */
 	@Test
 	@Verifies(value = "should use the runtime property as the first choice if specified", method = "getModuleRepository()")
@@ -435,7 +435,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#getModuleRepository()}
+	 * @see ModuleUtil#getModuleRepository()
 	 */
 	@Test
 	@Verifies(value = "should return the correct file if the runtime property is an absolute path", method = "getModuleRepository()")

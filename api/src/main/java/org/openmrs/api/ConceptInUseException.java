@@ -12,7 +12,6 @@ package org.openmrs.api;
 /**
  * This exception is thrown when concept is used/attached to an observation.
  * 
- * @see ConceptService#checkIfConceptIsAttachedToAnObservation()
  * @see ConceptService#saveConcept(org.openmrs.Concept)
  * @since Version 1.7
  */

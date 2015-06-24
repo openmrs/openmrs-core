@@ -30,7 +30,7 @@ import java.util.List;
 public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link PatientDataVoidHandler#handle(Patient,User,Date,String)}
+	 * @see PatientDataVoidHandler#handle(Patient,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should void the orders encounters and observations associated with the patient", method = "handle(Patient,User,Date,String)")

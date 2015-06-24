@@ -23,11 +23,11 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
- * API methods for managing Locations <br/>
- * <br/>
- * Example Usage: <br/>
+ * API methods for managing Locations <br>
+ * <br>
+ * Example Usage: <br>
  * <code>
- *   List<Location> locations = Context.getLocationService().getAllLocations();
+ *   List&lt;Location&gt; locations = Context.getLocationService().getAllLocations();
  * </code>
  * 
  * @see org.openmrs.api.context.Context
@@ -393,7 +393,7 @@ public interface LocationService extends OpenmrsService {
 	 * the Address Hierarchy module.
 	 * 
 	 * @param incomplete the incomplete address
-	 * @param field the address field we are looking for possible values for
+	 * @param fieldName the address field we are looking for possible values for
 	 * @return a list of possible address values for the specified field
 	 * @should return empty list if no possible address matches
 	 * @should return null if method not implemented

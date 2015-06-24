@@ -60,7 +60,7 @@ public interface ActiveListService extends OpenmrsService {
 	 * 
 	 * @param clazz extends ActiveListItem
 	 * @param activeListItemId the unique ID of the Active List
-	 * @return
+	 * @return active list item
 	 * @throws APIException
 	 */
 	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws APIException;
@@ -69,7 +69,7 @@ public interface ActiveListService extends OpenmrsService {
 	 * Return the ActiveList by the UUID
 	 * 
 	 * @param uuid unique identifier
-	 * @return
+	 * @return active list item
 	 * @throws APIException
 	 */
 	public ActiveListItem getActiveListItemByUuid(String uuid) throws APIException;

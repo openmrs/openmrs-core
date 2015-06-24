@@ -398,7 +398,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @see #isActive()
-	 * @return
+	 * @return boolean indicating whether the order is current
 	 * @deprecated use {@link #isActive()}
 	 */
 	@Deprecated
@@ -433,7 +433,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @deprecated use isStarted()
 	 * @see #isStarted()
-	 * @return
+	 * @return boolean indicating whether the order is in the future
 	 */
 	@Deprecated
 	public boolean isFuture() {

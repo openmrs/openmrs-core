@@ -73,9 +73,6 @@ public class ShortPatientFormController {
 	@Autowired
 	PatientValidator patientValidator;
 	
-	/**
-	 * @return
-	 */
 	@RequestMapping(method = RequestMethod.GET, value = SHORT_PATIENT_FORM_URL)
 	public void showForm() {
 	}
@@ -183,7 +180,6 @@ public class ShortPatientFormController {
 	 * @param patientModel the modelObject containing the patient info collected from the form
 	 *            fields
 	 * @param result
-	 * @param status
 	 * @return the view to forward to
 	 * @should pass if all the form data is valid
 	 * @should create a new patient

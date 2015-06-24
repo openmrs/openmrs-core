@@ -131,7 +131,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if patient is not set", method = "validate(Object,Errors)")
@@ -146,7 +146,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if startDatetime is not set", method = "validate(Object,Errors)")
@@ -161,7 +161,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if visit type is not set", method = "validate(Object,Errors)")
@@ -175,7 +175,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the endDatetime is before the startDatetime", method = "validate(Object,Errors)")
@@ -191,7 +191,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the startDatetime is after any encounter", method = "validate(Object,Errors)")
@@ -214,7 +214,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the stopDatetime is before any encounter", method = "validate(Object,Errors)")
@@ -442,7 +442,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -456,7 +456,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitValidator#validate(Object,Errors)}
+	 * @see VisitValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

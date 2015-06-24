@@ -26,7 +26,7 @@ public class CachedMessageSourceTest {
 	/**
 	 * The PresentationMessageCollection should be able to contain messages in different locales.
 	 * 
-	 * @see {@link CachedMessageSource#getLocales()}
+	 * @see CachedMessageSource#getLocales()
 	 */
 	@Test
 	@Verifies(value = "should should be able to contain multiple locales", method = "getLocales()")
@@ -43,7 +43,7 @@ public class CachedMessageSourceTest {
 	 * The PresentationMessageCollection should return messages that are the same whether returned
 	 * as Strings or when as part of full PresentationMessage object.
 	 * 
-	 * @see {@link CachedMessageSource#getPresentation(String,Locale)}
+	 * @see CachedMessageSource#getPresentation(String,Locale)
 	 */
 	@Test
 	@Verifies(value = "should match get message with presentation message", method = "getPresentation(String,Locale)")

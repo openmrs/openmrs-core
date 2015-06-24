@@ -26,8 +26,8 @@ import org.hibernate.type.Type;
  * <br>
  * By setting the Hibernate configuration's primary key column to use a "native" implementation,
  * Hibernate ALWAYS generates the entity's id when it is being saved. There is no way to "override"
- * the generated id. <br/>
- * <br/>
+ * the generated id. <br>
+ * <br>
  * This IdentityGenerator allows a programmer to override the "generated" id, with an "assigned" id
  * at runtime by simply setting the primary key property.
  * 

@@ -27,7 +27,7 @@ public class UserPropertiesTest {
 	/**
 	 * Add the user property 'forcePassword' when setSupposedToChangePassword is set to true.
 	 * 
-	 * @see {@link UserProperties#setSupposedToChangePassword(Boolean)}
+	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
 	@Verifies(value = "add forcePassword property in user properties map when value is set to true", method = "setSupposedToChangePassword(Boolean)")
@@ -45,7 +45,7 @@ public class UserPropertiesTest {
 	/**
 	 * Do nothing if the setSupposedToChangePassword is set to false.
 	 * 
-	 * @see {@link UserProperties#setSupposedToChangePassword(Boolean)}
+	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
 	@Verifies(value = "do not add forcePassword property in user properties when set to false", method = "setSupposedToChangePassword(Boolean)")
@@ -60,7 +60,7 @@ public class UserPropertiesTest {
 	/**
 	 * Remove the existing 'forcePassword' property if setSupposedToChangePassword is set to false.
 	 * 
-	 * @see {@link UserProperties#setSupposedToChangePassword(Boolean)}
+	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
 	@Verifies(value = "remove forcePassword property from user properties when set to false", method = "setSupposedToChangePassword(Boolean)")
@@ -77,7 +77,7 @@ public class UserPropertiesTest {
 	/**
 	 * Do nothing if the setSupposedToChangePassword is set to null.
 	 * 
-	 * @see {@link UserProperties#setSupposedToChangePassword(Boolean)}
+	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
 	@Verifies(value = "do not add forcePassword property in user properties when set to null", method = "setSupposedToChangePassword(Boolean)")
@@ -92,7 +92,7 @@ public class UserPropertiesTest {
 	/**
 	 * Remove the existing 'forcePassword' property if setSupposedToChangePassword is set to null.
 	 * 
-	 * @see {@link UserProperties#setSupposedToChangePassword(Boolean)}
+	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
 	@Verifies(value = "remove forcePassword property from user properties when set to null", method = "setSupposedToChangePassword(Boolean)")
@@ -107,7 +107,7 @@ public class UserPropertiesTest {
 	}
 	
 	/**
-	 * @see {@link UserProperties#isSupposedToChangePassword()}
+	 * @see UserProperties#isSupposedToChangePassword()
 	 */
 	@Test
 	@Verifies(value = "return true or false depending on the presence or absence of forcePassword key in "

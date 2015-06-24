@@ -38,13 +38,13 @@ public abstract class AdministrationSectionExt extends Extension {
 	}
 	
 	/**
-	 * The links are appear under the <code>getTitle<code> heading on the 
+	 * The links are appear under the <code>getTitle</code> heading on the
 	 * admin screen.  Links can be either absolute or relative.  Title of the 
 	 * links can be either plain text or Spring message codes.
 	 * 
 	 * In order to sort the links, you should use a <code>LinkedHashMap</code>.
 	 * 
-	 * @return Map<String, String> of <link, title>
+	 * @return Map&lt;String, String&gt; of &lt;link, title&gt;
 	 */
 	public abstract Map<String, String> getLinks();
 	

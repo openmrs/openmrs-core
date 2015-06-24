@@ -49,7 +49,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	Properties initialRuntimeProperties;
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkMandatoryModulesStarted()}
+	 * @see org.openmrs.module.ModuleUtil#checkMandatoryModulesStarted()
 	 */
 	@Test(expected = MandatoryModuleException.class)
 	@Verifies(value = "should throw ModuleException if a mandatory module is not started", method = "checkMandatoryModulesStarted()")
@@ -74,7 +74,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#getMandatoryModules()}
+	 * @see org.openmrs.module.ModuleUtil#getMandatoryModules()
 	 */
 	@Test
 	@Verifies(value = "should return mandatory module ids", method = "getMandatoryModules()")
@@ -91,7 +91,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged required version", method = "matchRequiredVersions(String,String)")
@@ -102,7 +102,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged required version with wild card", method = "matchRequiredVersions(String,String)")
@@ -113,7 +113,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged required version with wild card on one end", method = "matchRequiredVersions(String,String)")
@@ -126,7 +126,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow single entry for required version", method = "matchRequiredVersions(String,String)")
@@ -137,7 +137,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow required version with wild card", method = "matchRequiredVersions(String,String)")
@@ -148,7 +148,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow non numeric character required version", method = "matchRequiredVersions(String,String)")
@@ -159,7 +159,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged non numeric character required version", method = "matchRequiredVersions(String,String)")
@@ -170,7 +170,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged non numeric character with wild card", method = "matchRequiredVersions(String,String)")
@@ -181,7 +181,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow ranged non numeric character with wild card on one end", method = "matchRequiredVersions(String,String)")
@@ -194,7 +194,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when openmrs version beyond wild card range", method = "matchRequiredVersions(String,String)")
@@ -207,7 +207,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when required version beyond openmrs version", method = "matchRequiredVersions(String,String)")
@@ -218,7 +218,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when required version with wild card beyond openmrs version", method = "matchRequiredVersions(String,String)")
@@ -230,7 +230,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when required version with wild card on one end beyond openmrs version", method = "matchRequiredVersions(String,String)")
@@ -244,7 +244,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false when single entry required version beyond openmrs version", method = "matchRequiredVersions(String,String)")
@@ -255,7 +255,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should allow release type in the version", method = "matchRequiredVersions(String,String)")
@@ -268,7 +268,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match when revision number is below maximum revision number", method = "matchRequiredVersions(String version, String versionRange)")
@@ -279,7 +279,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should not match when revision number is above maximum revision number", method = "matchRequiredVersions(String version, String versionRange)")
@@ -291,7 +291,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should not match when version has wild card and is outside boundary", method = "matchRequiredVersions(String version, String versionRange)")
@@ -302,7 +302,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match when version has wild card and is within boundary", method = "matchRequiredVersions(String version, String versionRange)")
@@ -313,7 +313,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should not match when version has wild card plus qualifier and is outside boundary", method = "matchRequiredVersions(String version, String versionRange)")
@@ -324,7 +324,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should match when version has wild card plus qualifier and is within boundary", method = "matchRequiredVersions(String version, String versionRange)")
@@ -335,7 +335,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
 	 */
 	@Test
 	@Verifies(value = "should correctly set upper and lower limit for versionRange with qualifiers and wild card", method = "matchRequiredVersions(String version, String versionRange)")
@@ -351,7 +351,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#getPathForResource(org.openmrs.module.Module,String)}
+	 * @see org.openmrs.module.ModuleUtil#getPathForResource(org.openmrs.module.Module,String)
 	 */
 	@Test
 	@Verifies(value = "should handle ui springmvc css ui dot css example", method = "getPathForResource(Module,String)")
@@ -363,7 +363,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#getModuleForPath(String)}
+	 * @see org.openmrs.module.ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
 	@Verifies(value = "should handle ui springmvc css ui dot css when ui dot springmvc module is running", method = "getModuleForPath(String)")
@@ -379,7 +379,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#getModuleForPath(String)}
+	 * @see org.openmrs.module.ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
 	@Verifies(value = "should handle ui springmvc css ui dot css when ui module is running", method = "getModuleForPath(String)")
@@ -395,7 +395,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#getModuleForPath(String)}
+	 * @see org.openmrs.module.ModuleUtil#getModuleForPath(String)
 	 */
 	@Test
 	@Verifies(value = "should return null for ui springmvc css ui dot css when no relevant module is running", method = "getModuleForPath(String)")
@@ -406,7 +406,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if openmrs version beyond wild card range", method = "checkRequiredVersion(String, String)")
@@ -417,7 +417,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
@@ -428,7 +428,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if required version with wild card beyond openmrs version", method = "checkRequiredVersion(String, String)")
@@ -440,7 +440,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if required version with wild card on one end beyond openmrs version", method = "checkRequiredVersion(String, String)")
@@ -452,7 +452,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if single entry required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
@@ -464,7 +464,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#compareVersion(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
 	 */
 	@Test
 	@Verifies(value = "should correctly comparing two version numbers", method = "compareVersion(String,String)")
@@ -475,7 +475,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#compareVersion(String,String)}
+	 * @see org.openmrs.module.ModuleUtil#compareVersion(String,String)
 	 */
 	@Test
 	@Verifies(value = "treat SNAPSHOT as earliest version", method = "compareVersion(String,String)")
@@ -488,7 +488,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if SNAPSHOT not handled correctly", method = "checkRequiredVersion(String, String)")
@@ -499,7 +499,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test
 	@Verifies(value = "Should handle SNAPSHOT versions ", method = "checkRequiredVersion(String, String)")
@@ -510,7 +510,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)}
+	 * @see org.openmrs.module.ModuleUtil#checkRequiredVersion(String, String)
 	 */
 	@Test
 	@Verifies(value = "Should handle UUID suffix versions ", method = "checkRequiredVersion(String, String)")

@@ -25,7 +25,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class ConceptSourceFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should retire concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -48,7 +48,7 @@ public class ConceptSourceFormControllerTest extends BaseWebContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should delete concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
@@ -69,7 +69,7 @@ public class ConceptSourceFormControllerTest extends BaseWebContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should restore retired concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")

@@ -207,7 +207,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return true if all fields other than ID, person and preferred are equal", method = "equalsContent(PersonName)")
@@ -240,7 +240,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if suffixes are not equal", method = "equalsContent(PersonName)")
@@ -255,7 +255,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if family name prefixes are not equal", method = "equalsContent(PersonName)")
@@ -270,7 +270,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if family name 2 is not equal", method = "equalsContent(PersonName)")
@@ -285,7 +285,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if prefix is not equal", method = "equalsContent(PersonName)")
@@ -300,7 +300,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return false if degrees are not equal", method = "equalsContent(PersonName)")
@@ -315,7 +315,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#equalsContent(PersonName)}
+	 * @see PersonName#equalsContent(PersonName)
 	 */
 	@Test
 	@Verifies(value = "should return true if only difference in content fields is between null and empty string", method = "equalsContent(PersonName)")
@@ -348,7 +348,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFamilyName()}
+	 * @see PersonName#getFamilyName()
 	 */
 	@Test
 	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getFamilyName()")
@@ -362,7 +362,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFamilyName2()}
+	 * @see PersonName#getFamilyName2()
 	 */
 	@Test
 	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyName2()")
@@ -377,7 +377,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFamilyNamePrefix()}
+	 * @see PersonName#getFamilyNamePrefix()
 	 */
 	@Test
 	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyNamePrefix()")
@@ -392,7 +392,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFamilyNameSuffix()}
+	 * @see PersonName#getFamilyNameSuffix()
 	 */
 	@Test
 	@Verifies(value = "should return null if obscure_patients is set to true", method = "getFamilyNameSuffix()")
@@ -407,7 +407,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getGivenName()}
+	 * @see PersonName#getGivenName()
 	 */
 	@Test
 	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getGivenName()")
@@ -421,7 +421,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getMiddleName()}
+	 * @see PersonName#getMiddleName()
 	 */
 	@Test
 	@Verifies(value = "should return obscured name if obscure_patients is set to true", method = "getMiddleName()")
@@ -435,7 +435,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getPrefix()}
+	 * @see PersonName#getPrefix()
 	 */
 	@Test
 	@Verifies(value = "should return null if obscure_patients is set to true", method = "getPrefix()")
@@ -463,7 +463,7 @@ public class PersonNameTest {
 	}
 	
 	/**
-	 * @see {@link PersonName#getFullName()}
+	 * @see PersonName#getFullName()
 	 */
 	@Test
 	@Verifies(value = "should Not Return Long If Person Name Format Is Short", method = "getFullName()")

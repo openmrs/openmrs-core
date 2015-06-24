@@ -19,15 +19,15 @@ public class CustomDatatypeException extends APIException {
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * @param string
+	 * @param msg
 	 */
 	public CustomDatatypeException(String msg) {
 		super(msg);
 	}
 	
 	/**
-	 * @param string
-	 * @param ex
+	 * @param msg
+	 * @param cause
 	 */
 	public CustomDatatypeException(String msg, Exception cause) {
 		super(msg, cause);

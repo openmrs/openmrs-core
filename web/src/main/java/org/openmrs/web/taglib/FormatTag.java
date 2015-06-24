@@ -949,7 +949,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @since 1.9
-	 * @param encounterProviders the encounterProviders to set
+	 * @return the encounterProviders
 	 */
 	public Map<EncounterRole, Set<Provider>> getEncounterProviders() {
 		return encounterProviders;
@@ -957,7 +957,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @since 1.9
-	 * @return the encounterProviders
+	 * @param encounterProviders the encounterProviders to set
 	 */
 	public void setEncounterProviders(Map<EncounterRole, Set<Provider>> encounterProviders) {
 		this.encounterProviders = encounterProviders;
@@ -965,7 +965,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @return the withConceptNameType
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public String getWithConceptNameType() {
 		return withConceptNameType;
@@ -973,7 +973,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @param withConceptNameType the withConceptNameType to set
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public void setWithConceptNameType(String withConceptNameType) {
 		this.withConceptNameType = withConceptNameType;
@@ -981,7 +981,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @return the withConceptNameTag
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public String getWithConceptNameTag() {
 		return withConceptNameTag;
@@ -989,7 +989,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * @param withConceptNameTag the withConceptNameTag to set
-	 * @Since 1.9
+	 * @since 1.9
 	 */
 	public void setWithConceptNameTag(String withConceptNameTag) {
 		this.withConceptNameTag = withConceptNameTag;

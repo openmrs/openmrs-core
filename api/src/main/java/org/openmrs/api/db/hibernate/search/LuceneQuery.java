@@ -230,7 +230,7 @@ public abstract class LuceneQuery<T> extends SearchQuery<T> {
 	 * query. When called it will project the query and create a filter to eliminate duplicates.
 	 * 
 	 * @param field
-	 * @return
+	 * @return this
 	 */
 	public LuceneQuery<T> skipSame(String field) {
 		String idPropertyName = getSession().getSessionFactory().getClassMetadata(getType()).getIdentifierPropertyName();

@@ -1583,7 +1583,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#getObservationCount(List, boolean)}
+	 * @see ObsService#getObservationCount(List, boolean)
 	 */
 	@Test
 	@Verifies(value = "should include voided observations using the specified conceptNames as answers", method = "getObservationCount(List, boolean)")
@@ -1617,7 +1617,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#getObservationCount(List, boolean)}
+	 * @see ObsService#getObservationCount(List, boolean)
 	 */
 	@Test
 	@Verifies(value = "should return the count of all observations using the specified conceptNames as answers", method = "getObservationCount(List, boolean)")
@@ -1652,7 +1652,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#getObservationCount(List, boolean)}
+	 * @see ObsService#getObservationCount(List, boolean)
 	 */
 	@Test
 	@Verifies(value = "should return zero if no observation is using any of the concepNames in the list", method = "getObservationCount(List, boolean)")

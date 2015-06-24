@@ -26,7 +26,7 @@ public interface LogicContext {
 	 * Gets the patient object for the given patient id (this patient must be in the cohort of this context)
 	 * 
 	 * @param patientId
-	 * @return
+	 * @return patient object
 	 */
 	public Patient getPatient(Integer patientId);
 	

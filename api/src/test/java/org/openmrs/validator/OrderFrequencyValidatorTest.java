@@ -35,7 +35,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @see OrderFrequencyValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if orderFrequency is null", method = "validate(Object,Errors)")
@@ -47,7 +47,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @see OrderFrequencyValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if concept is null", method = "validate(Object,Errors)")
@@ -61,7 +61,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @see OrderFrequencyValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the concept is not of class frequency", method = "validate(Object,Errors)")
@@ -75,7 +75,7 @@ public class OrderFrequencyValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderFrequencyValidator#validate(Object,Errors)}
+	 * @see OrderFrequencyValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if concept is used by another frequency", method = "validate(Object,Errors)")

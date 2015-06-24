@@ -36,7 +36,7 @@ public class VerhoeffIdentifierValidatorTest {
 	        "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999" };
 	
 	/**
-	 * @see {@link VerhoeffIdentifierValidator#getValidIdentifier(String)}
+	 * @see VerhoeffIdentifierValidator#getValidIdentifier(String)
 	 */
 	@Test
 	@Verifies(value = "should get valid identifier", method = "getValidIdentifier(String)")

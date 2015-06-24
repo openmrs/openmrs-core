@@ -225,7 +225,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getAllVisits()}
+	 * @see VisitService#getAllVisits()
 	 */
 	@Test
 	@Verifies(value = "should return all unvoided visits", method = "getAllVisits()")
@@ -234,7 +234,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getVisitByUuid(String)}
+	 * @see VisitService#getVisitByUuid(String)
 	 */
 	@Test
 	@Verifies(value = "should return a visit matching the specified uuid", method = "getVisitByUuid(String)")
@@ -245,7 +245,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should add a new visit to the database", method = "saveVisit(Visit)")
@@ -262,7 +262,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should save a visit though changedBy and dateCreated are not set for VisitAttribute explicitly", method = "saveVisit(Visit)")
@@ -287,7 +287,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should void an attribute if max occurs is 1 and same attribute type already exists", method = "saveVisit(Visit)")
@@ -316,7 +316,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should update an existing visit in the database", method = "saveVisit(Visit)")
@@ -335,7 +335,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#voidVisit(Visit,String)}
+	 * @see VisitService#voidVisit(Visit,String)
 	 */
 	@Test
 	@Verifies(value = "should void the visit and set the voidReason", method = "voidVisit(Visit,String)")
@@ -354,7 +354,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#voidVisit(Visit,String)}
+	 * @see VisitService#voidVisit(Visit,String)
 	 */
 	@Test
 	@Verifies(value = "should void encounters with visit", method = "voidVisit(Visit,String)")
@@ -378,7 +378,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#unvoidVisit(Visit)}
+	 * @see VisitService#unvoidVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should unvoid the visit and unset all the void related fields", method = "unvoidVisit(Visit)")
@@ -397,7 +397,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#unvoidVisit(Visit)}
+	 * @see VisitService#unvoidVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should unvoid encounters voided with visit", method = "unvoidVisit(Visit)")
@@ -426,7 +426,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#purgeVisit(Visit)}
+	 * @see VisitService#purgeVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should erase the visit from the database", method = "purgeVisit(Visit)")
@@ -439,7 +439,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getVisitsByPatient(Patient)}
+	 * @see VisitService#getVisitsByPatient(Patient)
 	 */
 	@Test
 	@Verifies(value = "should return all unvoided visits for the specified patient", method = "getVisitsByPatient(Patient)")
@@ -448,7 +448,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getActiveVisitsByPatient(Patient)}
+	 * @see VisitService#getActiveVisitsByPatient(Patient)
 	 */
 	@Test
 	@Verifies(value = "return all active unvoided visits for the specified patient", method = "getActiveVisitsByPatient(Patient)")
@@ -472,7 +472,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)}
+	 * @see VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get visits by indications", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
@@ -482,7 +482,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)}
+	 * @see VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get visits by locations", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
@@ -494,7 +494,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)}
+	 * @see VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get visits by visit type", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
@@ -506,7 +506,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)}
+	 * @see VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get visits ended between the given end dates", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
@@ -541,7 +541,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)}
+	 * @see VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)
 	 */
 	@Test
 	@Verifies(value = "should get visits started between the given start dates", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
@@ -557,7 +557,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)}
+	 * @see VisitService#getVisits(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, Date, Date, Date, Date, boolean)
 	 */
 	@Test
 	@Verifies(value = "should return all visits if includeVoided is set to true", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
@@ -758,7 +758,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if validation errors are found", method = "saveVisit(Visit)")
@@ -772,7 +772,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should pass if no validation errors are found", method = "saveVisit(Visit)")
@@ -786,7 +786,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#endVisit(Visit,Date)}
+	 * @see VisitService#endVisit(Visit,Date)
 	 */
 	@Test
 	@Verifies(value = "should set stopDateTime as currentDate if stopDate is null", method = "endVisit(Visit,Date)")
@@ -799,7 +799,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#endVisit(Visit,Date)}
+	 * @see VisitService#endVisit(Visit,Date)
 	 */
 	@Test
 	@Verifies(value = "should not fail if no validation errors are found", method = "endVisit(Visit,Date)")
@@ -810,7 +810,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#endVisit(Visit,Date)}
+	 * @see VisitService#endVisit(Visit,Date)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if validation errors are found", method = "endVisit(Visit,Date)")
@@ -824,7 +824,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#purgeVisit(Visit)}
+	 * @see VisitService#purgeVisit(Visit)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if the visit has encounters associated to it", method = "purgeVisit(Visit)")
@@ -870,7 +870,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#stopVisits()}
+	 * @see VisitService#stopVisits()
 	 */
 	@Test
 	@Verifies(value = "should close all unvoided active visit matching the specified visit types", method = "stopVisits()")
@@ -895,7 +895,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should save new visit with encounters successfully", method = "saveVisit(Visit)")
@@ -928,7 +928,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "should associate encounter with visit on save encounter", method = "saveVisit(Visit)")
@@ -960,7 +960,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#saveVisit(Visit)}
+	 * @see VisitService#saveVisit(Visit)
 	 */
 	@Test
 	@Verifies(value = "save visit should persist new encounter", method = "saveVisit(Visit)")
@@ -990,7 +990,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link VisitService#getAllVisitTypes(boolean)}
+	 * @see VisitService#getAllVisitTypes(boolean)
 	 */
 	@Test
 	@Verifies(value = "get all visit types based on include retired flag", method = "getAllVisitTypes(boolean)")

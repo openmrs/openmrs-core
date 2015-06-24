@@ -10,10 +10,10 @@
 package org.openmrs.logic.op;
 
 /**
- * The Last operator will return a subset result of the entire result returned by the criteria.<br />
- * <br />
- * Example: <br />
- * - <code>logicService.parse("'CD4 COUNT'").last(2);</code><br />
+ * The Last operator will return a subset result of the entire result returned by the criteria.<br>
+ * <br>
+ * Example: <br>
+ * - <code>logicService.parse("'CD4 COUNT'").last(2);</code><br>
  * The above will give us a criteria to get the last two "CD4 COUNT" observations
  * 
  * @see First

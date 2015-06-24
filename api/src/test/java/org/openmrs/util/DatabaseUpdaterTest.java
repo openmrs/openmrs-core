@@ -24,7 +24,7 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	private static Log log = LogFactory.getLog(DatabaseUpdaterTest.class);
 	
 	/**
-	 * @see {@link DatabaseUpdater#updatesRequired()}
+	 * @see DatabaseUpdater#updatesRequired()
 	 */
 	@Test
 	@Verifies(value = "should always have a valid update to latest file", method = "updatesRequired()")

@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class FormValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link FormValidator#validate(Object,Errors)}
+	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null", method = "validate(Object,Errors)")
@@ -39,7 +39,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormValidator#validate(Object,Errors)}
+	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if version is null", method = "validate(Object,Errors)")
@@ -55,7 +55,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormValidator#validate(Object,Errors)}
+	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if version does not match regex", method = "validate(Object,Errors)")
@@ -72,7 +72,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormValidator#validate(Object,Errors)}
+	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if retiredReason is null", method = "validate(Object,Errors)")
@@ -91,7 +91,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormValidator#validate(Object,Errors)}
+	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
@@ -107,7 +107,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormValidator#validate(Object,Errors)}
+	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if retiredReason is empty", method = "validate(Object,Errors)")
@@ -125,7 +125,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormValidator#validate(Object,Errors)}
+	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -143,7 +143,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormValidator#validate(Object,Errors)}
+	 * @see FormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
