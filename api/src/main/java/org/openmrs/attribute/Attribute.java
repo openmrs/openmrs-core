@@ -19,13 +19,12 @@ import org.openmrs.customdatatype.SingleCustomValue;
  * is required, whether it may repeat, and how it is serialized and deserialized for storage.
  * These attribute types are intended for use cases that would involve adding custom columns to the base
  * table in a less generic system. 
- * For example Visit has VisitAttributes (which implements Attribute<Visit>) that are defined by
+ * For example Visit has VisitAttributes (which implements Attribute&lt;Visit&gt;) that are defined by
  * VisitAttributeTypes.
  * @param <AT> the AttributeType for this Attribute
  * @param <OT> the type this attribute can belong to
  * @see AttributeType
  * @see Customizable
- * @see AttributeHandler
  * @since 1.9
  */
 public interface Attribute<AT extends AttributeType, OT extends Customizable<?>> extends OpenmrsData, SingleCustomValue<AT> {

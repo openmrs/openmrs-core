@@ -109,7 +109,7 @@ public class ConceptSearchResult implements java.io.Serializable {
 	/**
 	 * Getter for transientWeight
 	 *
-	 * @return
+	 * @return transient weight
 	 */
 	public Double getTransientWeight() {
 		return transientWeight;

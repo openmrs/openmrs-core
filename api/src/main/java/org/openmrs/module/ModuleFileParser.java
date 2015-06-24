@@ -93,8 +93,8 @@ public class ModuleFileParser {
 	}
 	
 	/**
-	 * Convenience constructor to parse the given inputStream file into an omod. <br/>
-	 * This copies the stream into a temporary file just so things can be parsed.<br/>
+	 * Convenience constructor to parse the given inputStream file into an omod. <br>
+	 * This copies the stream into a temporary file just so things can be parsed.<br>
 	 *
 	 * @param inputStream the inputStream pointing to an omod file
 	 */

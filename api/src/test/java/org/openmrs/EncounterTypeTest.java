@@ -23,7 +23,7 @@ public class EncounterTypeTest {
 	/**
 	 * Make sure the EncounterType(Integer) constructor sets the encounterTypeId
 	 * 
-	 * @see {@link EncounterType#EncounterType(Integer)}
+	 * @see EncounterType#EncounterType(Integer)
 	 */
 	@Test
 	@Verifies(value = "should set encounter type id with given parameter", method = "EncounterType(Integer)")

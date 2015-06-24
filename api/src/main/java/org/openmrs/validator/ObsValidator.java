@@ -28,7 +28,7 @@ import org.springframework.validation.Validator;
  * <li>all required properties are filled in on the Obs object.
  * <li>checks for no recursion in the obs grouping.
  * <li>Makes sure the obs has at least one value (if not an obs grouping)</li>
- *
+ * </ul>
  * @see org.openmrs.Obs
  */
 @Handler(supports = { Obs.class }, order = 50)

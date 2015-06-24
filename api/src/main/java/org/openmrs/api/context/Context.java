@@ -82,17 +82,17 @@ import org.springframework.aop.Advisor;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
- * obtain services in order to interact with the system.<br/>
- * <br/>
+ * obtain services in order to interact with the system.<br>
+ * <br>
  * The Context is split into a {@link UserContext} and {@link ServiceContext}. The UserContext is
  * lightweight and there is an instance for every user logged into the system. The ServiceContext is
  * heavier and contains each service class. This is more static and there is only one ServiceContext
- * per OpenMRS instance. <br/>
- * <br/>
+ * per OpenMRS instance. <br>
+ * <br>
  * Both the {@link UserContext} and the {@link ServiceContext} should not be used directly. This
  * Context class has methods to pass through to the currently defined UserContext for the thread and
- * the currently defined ServiceContext. <br/>
- * <br/>
+ * the currently defined ServiceContext. <br>
+ * <br>
  * To use the OpenMRS api there are four things that have to be done:
  * <ol>
  * <li>Call {@link Context#startup(String, String, String, Properties)} to let the Context contact
@@ -103,7 +103,7 @@ import org.springframework.aop.Advisor;
  * <li>Call {@link Context#closeSession()} to end your "unit of work" and commit all changes to the
  * database.</li>
  * </ol>
- * <br/>
+ * <br>
  * Example usage:
  * 
  * <pre>
@@ -112,7 +112,7 @@ import org.springframework.aop.Advisor;
  * 		try {
  * 			Context.openSession();
  * 			Context.authenticate("admin", "test");
- * 			List<Patients> patients = Context.getPatientService().getPatientsByName("Fred");
+ * 			List&lt;Patients&gt; patients = Context.getPatientService().getPatientsByName("Fred");
  * 			patients.get(0).setBirthdate(new Date());
  * 			Context.getPatientService().savePatient(patients.get(0));
  * 			...
@@ -196,8 +196,8 @@ public class Context {
 	
 	/**
 	 * Sets the user context on the thread local so that the service layer can perform
-	 * authentication/authorization checks.<br/>
-	 * <br />
+	 * authentication/authorization checks.<br>
+	 * <br>
 	 * This is thread safe since it stores the given user context in ThreadLocal.
 	 * 
 	 * @param ctx UserContext to set
@@ -810,12 +810,8 @@ public class Context {
 	}
 	
 	/**
-	 * Starts the OpenMRS System Should be called prior to any kind of activity <br/>
-	 * <br/>
-	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
-	 * will be required with a mapping from question prompt to user answer before startup can be
-	 * called again.
-	 * 
+	 * Starts the OpenMRS System Should be called prior to any kind of activity
+	 *
 	 * @param props Runtime properties to use for startup
 	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
 	 *             cannot continue without input from the user
@@ -849,12 +845,8 @@ public class Context {
 	}
 	
 	/**
-	 * Starts the OpenMRS System in a _non-webapp_ environment<br/>
-	 * <br/>
-	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
-	 * will be required with a mapping from question prompt to user answer before startup can be
-	 * called again. <br/>
-	 * <br/>
+	 * Starts the OpenMRS System in a _non-webapp_ environment<br>
+	 * <br>
 	 * <b>Note:</b> This method calls {@link Context#openSession()}, so you must call
 	 * {@link Context#closeSession()} somewhere on the same thread of this application so as to not
 	 * leak memory.
@@ -1105,8 +1097,8 @@ public class Context {
 	
 	/**
 	 * Runs any needed updates on the current database if the user has the allow_auto_update runtime
-	 * property set to true. If not set to true, then {@link #updateDatabase(Map)} must be called.<br/>
-	 * <br/>
+	 * property set to true. If not set to true, then {@link #updateDatabase(Map)} must be called.<br>
+	 * <br>
 	 * If an {@link InputRequiredException} is thrown, a call to {@link #updateDatabase(Map)} is
 	 * required with a mapping from question prompt to user answer.
 	 * 
@@ -1137,8 +1129,8 @@ public class Context {
 	}
 	
 	/**
-	 * Updates the openmrs database to the latest. This is only needed if using the API alone. <br/>
-	 * <br/>
+	 * Updates the openmrs database to the latest. This is only needed if using the API alone. <br>
+	 * <br>
 	 * The typical use-case would be: Try to {@link #startup(String, String, String, Properties)},
 	 * if that fails, call this method to get the database up to speed.
 	 * 

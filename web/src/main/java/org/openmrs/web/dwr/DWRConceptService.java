@@ -702,7 +702,7 @@ public class DWRConceptService {
 	 * @param start beginning index for the batch
 	 * @param length number of terms to return in the batch
 	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
-	 * @return
+	 * @return map with keys "count" and "objectList"
 	 * @throws APIException
 	 */
 	public Map<String, Object> findCountAndConceptReferenceTerms(String phrase, Integer sourceId, Integer start,

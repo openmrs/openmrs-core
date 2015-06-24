@@ -20,14 +20,14 @@ public abstract class PatientDashboardTabExt extends Extension {
 	/**
 	 * The visible name of this tab. This can return either a string or a spring message code
 	 * 
-	 * @return
+	 * @return tab name or message code
 	 */
 	public abstract String getTabName();
 	
 	/**
 	 * Tabs should be named uniquely. (The id will probably just be the name without spaces)
 	 * 
-	 * @return
+	 * @return tab id
 	 */
 	public abstract String getTabId();
 	
@@ -35,7 +35,7 @@ public abstract class PatientDashboardTabExt extends Extension {
 	 * Tab views are controlled by privileges. The user must have this privilege to be able to view
 	 * this tab
 	 * 
-	 * @return
+	 * @return privilege
 	 */
 	public abstract String getRequiredPrivilege();
 	

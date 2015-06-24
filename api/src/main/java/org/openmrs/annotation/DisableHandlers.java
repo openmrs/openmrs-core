@@ -19,16 +19,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *    In {@link RequiredDataAdvice}, by default, RequiredDataHandlers are called on all child collections of the {@link OpenmrsObject} being handled.
+ *    In {@link org.openmrs.aop.RequiredDataAdvice}, by default, RequiredDataHandlers are called on all child collections
+ *    of the {@link org.openmrs.OpenmrsObject} being handled.
  *    By annotating a Collection with a @DisableHandlers annotation, you specific that RequiredDataAdvice should NOT apply the specified
  *    handler(s) to a child collection.  For example:
- *
+ *    <pre>
  *      private class ClassWithDisableHandlersAnnotation extends BaseOpenmrsData {
- *          @DisableHandlers(handlerTypes = {VoidHandler.class, SaveHandler.class})
- *          private List<Person> persons;
+ *          {@literal @}DisableHandlers(handlerTypes = {VoidHandler.class, SaveHandler.class})
+ *          private List&lt;Person&gt; persons;
  *      }
- *
- *      You can disable all RequiredDataAdviceHandlers by specifying the parent class: @DisableHandlers(handlerTypes = { RequiredDataHandler.class })
+ *    </pre>
+ *      You can disable all RequiredDataAdviceHandlers by specifying the parent class: {@literal @}DisableHandlers(handlerTypes = { RequiredDataHandler.class })
  **/
 
 @Target( { ElementType.FIELD })

@@ -42,7 +42,7 @@ import org.springframework.validation.Errors;
 /**
  * Contains methods pertaining to doing some administrative tasks in OpenMRS
  * <p>
- * Use:<br/>
+ * Use:<br>
  * 
  * <pre>
  * 
@@ -249,7 +249,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param cd ConceptDatatype to delete
 	 * @throws APIException
-	 * @deprecated use {@link org.openmrs.api#deleteConceptDatatype(ConceptDatatype)}
+	 * @deprecated use {@link org.openmrs.api.ConceptService#purgeConceptDatatype(ConceptDatatype)}
 	 */
 	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException;
 	
@@ -373,7 +373,7 @@ public interface AdministrationService extends OpenmrsService {
 	/**
 	 * Gets all global properties that end with <code>suffix</code>.
 	 * 
-	 * @param prefix The end of the property name to match.
+	 * @param suffix The end of the property name to match.
 	 * @return a <code>List</code> of <code>GlobalProperty</code>s that match <code>.*suffix</code>
 	 * @since 1.6
 	 * @should return all relevant global properties in the database

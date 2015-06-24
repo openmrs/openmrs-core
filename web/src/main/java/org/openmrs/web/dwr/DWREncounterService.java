@@ -270,7 +270,7 @@ public class DWREncounterService {
 	 * are 'count' and 'objectList' respectively, if the length parameter is not specified, then all
 	 * matches will be returned from the start index if specified.
 	 * 
-	 * @param searchValue is the string used to search for locations
+	 * @param phrase is the string used to search for locations
 	 * @param includeRetired Specifies if retired locations should be returned
 	 * @param start the beginning index
 	 * @param length the number of matching encounters to return

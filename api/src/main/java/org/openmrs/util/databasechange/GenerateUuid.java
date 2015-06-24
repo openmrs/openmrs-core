@@ -31,13 +31,13 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Uses Java's {@link UUID} class to generate UUIDs for all rows in all tables in the tableNames
- * parameter. <br/>
- * <br/>
+ * parameter. <br>
+ * <br>
  * This class should only be used if you are not using MySQL, Oracle, MsSql, or some other dbms that
- * has a UUID-like function. <br/>
- * <br/>
- * Expects parameter: "tableNames" : whitespace delimited list of table names to add <br/>
- * Expects parameter: "columnName" : name of the column to change. Default: "uuid" <br/>
+ * has a UUID-like function. <br>
+ * <br>
+ * Expects parameter: "tableNames" : whitespace delimited list of table names to add <br>
+ * Expects parameter: "columnName" : name of the column to change. Default: "uuid" <br>
  * Expects parameter: "idExceptions" : list of id columns that don't follow the standard naming
  * convention. Should be a pipe-separated list of key=value, where key is the name an id column
  * would have by convention, and value is the name it actually has. In this example the id of the
@@ -60,7 +60,7 @@ public class GenerateUuid implements CustomTaskChange {
 	
 	/**
 	 * Key-value pairs of table name ids that don't follow the convention. The key is what the
-	 * convention would be and the value is what it actually is: <br/>
+	 * convention would be and the value is what it actually is: <br>
 	 * e.g. "field_answer_id=field_id|role_id=role|privilege_id=privilege"
 	 */
 	private String idExceptions = "";
@@ -159,7 +159,7 @@ public class GenerateUuid implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.ResourceAccessor)
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(ResourceAccessor)
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor fileOpener) {

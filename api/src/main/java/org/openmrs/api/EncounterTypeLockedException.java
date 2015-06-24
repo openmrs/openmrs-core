@@ -18,7 +18,7 @@ import org.openmrs.util.OpenmrsConstants;
  * @since 1.10 added to 1.8.5 and 1.9.4
  * 
  * @see OpenmrsConstants#GLOBAL_PROPERTY_ENCOUNTER_TYPES_LOCKED
- * @see EncounterService#checkIfLocked()
+ * @see EncounterService#checkIfEncounterTypesAreLocked()
  */
 public class EncounterTypeLockedException extends APIException {
 	

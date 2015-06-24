@@ -24,7 +24,7 @@ public abstract class TableRowExt extends Extension {
 	 * used as a Spring message. The map value will be the html to insert into the table cell In
 	 * order to sort the links, you should use a <code>LinkedHashMap</code>.
 	 * 
-	 * @return Map<String, String> of <label for cell, cell content>
+	 * @return Map&lt;String, String&gt; of &lt;label for cell, cell content&gt;
 	 */
 	public abstract Map<String, String> getRows();
 	

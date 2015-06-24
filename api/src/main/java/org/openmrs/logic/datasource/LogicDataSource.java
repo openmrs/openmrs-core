@@ -40,7 +40,7 @@ import org.openmrs.logic.result.Result;
  * <li><strong>pharmacy</strong> &mdash; returns a text result with the name of the pharmacy</li>
  * <li><strong>visit date</strong> &mdash; returns a date result with the date of the pharmacy visit
  * </li>
- * <li><strong>number of prescriptions</strong &mdash; returns a numeric result with the number of
+ * <li><strong>number of prescriptions</strong> &mdash; returns a numeric result with the number of
  * prescriptions filled</li>
  * </ul>
  * A consumer of the logic service could then use

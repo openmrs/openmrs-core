@@ -26,7 +26,7 @@ import org.springframework.validation.Errors;
 public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should throw APIException if ImplementationId is null", method = "validate(Object,Errors)")
@@ -41,7 +41,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if implementation id is null", method = "validate(Object,Errors)")
@@ -59,7 +59,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if description is null", method = "validate(Object,Errors)")
@@ -77,7 +77,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if pass phrase is null", method = "validate(Object,Errors)")
@@ -95,7 +95,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if given empty implementationId object", method = "validate(Object,Errors)")
@@ -111,7 +111,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if given a caret in the implementationId code", method = "validate(Object,Errors)")
@@ -130,7 +130,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if given a pipe in the implementationId code", method = "validate(Object,Errors)")
@@ -150,7 +150,7 @@ public class ImplementationIdValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ImplementationIdValidator#validate(Object,Errors)}
+	 * @see ImplementationIdValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null", method = "validate(Object,Errors)")

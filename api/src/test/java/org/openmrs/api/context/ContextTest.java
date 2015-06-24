@@ -48,7 +48,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#authenticate(String,String)}
+	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should not authenticate with null password", method = "authenticate(String,String)")
@@ -57,7 +57,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#authenticate(String,String)}
+	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should not authenticate with null password and proper system id", method = "authenticate(String,String)")
@@ -66,7 +66,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#authenticate(String,String)}
+	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should not authenticate with null password and proper username", method = "authenticate(String,String)")
@@ -75,7 +75,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#authenticate(String,String)}
+	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should not authenticate with null username", method = "authenticate(String,String)")
@@ -84,7 +84,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#authenticate(String,String)}
+	 * @see Context#authenticate(String,String)
 	 */
 	@Test(expected = ContextAuthenticationException.class)
 	@Verifies(value = "should not authenticate with null username and password", method = "authenticate(String,String)")
@@ -93,7 +93,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#getLocale()}
+	 * @see Context#getLocale()
 	 */
 	@Test
 	@Verifies(value = "should not fail if session hasnt been opened", method = "getLocale()")
@@ -103,7 +103,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#getUserContext()}
+	 * @see Context#getUserContext()
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if session hasnt been opened", method = "getUserContext()")
@@ -113,7 +113,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#logout()}
+	 * @see Context#logout()
 	 */
 	@Test
 	@Verifies(value = "should not fail if session hasnt been opened yet", method = "logout()")
@@ -123,7 +123,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#isSessionOpen()}
+	 * @see Context#isSessionOpen()
 	 */
 	@Test
 	@Verifies(value = "should return true if session is closed", method = "isSessionOpen()")
@@ -134,7 +134,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#refreshAuthenticatedUser()}
+	 * @see Context#refreshAuthenticatedUser()
 	 */
 	@Test
 	@Verifies(value = "should get fresh values from the database", method = "refreshAuthenticatedUser()")
@@ -156,7 +156,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#getRegisteredComponents(Class)}
+	 * @see Context#getRegisteredComponents(Class)
 	 */
 	@Test
 	@Verifies(value = "should return a list of all registered beans of the passed type", method = "getRegisteredComponents(Class)")
@@ -167,7 +167,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#getRegisteredComponents(Class)}
+	 * @see Context#getRegisteredComponents(Class)
 	 */
 	@Test
 	@Verifies(value = "should return an empty list if no beans have been registered of the passed type", method = "getRegisteredComponents(Class)")
@@ -178,7 +178,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#getRegisteredComponent(String,Class)}
+	 * @see Context#getRegisteredComponent(String,Class)
 	 */
 	@Test
 	@Verifies(value = "return bean of the correct type", method = "getRegisteredComponent(String, Class)")
@@ -191,7 +191,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#getRegisteredComponent(String, Class)}
+	 * @see Context#getRegisteredComponent(String, Class)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "fail for bean with the given type but different name", method = "getRegisteredComponent(String, Class)")
@@ -207,7 +207,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * Prevents regression after patch from #2174:
 	 * "Prevent duplicate proxies and AOP in context services"
 	 * 
-	 * @see {@link Context#getService(Class)}
+	 * @see Context#getService(Class)
 	 */
 	@Test
 	@Verifies(value = "should return the same object when called multiple times for the same class", method = "getService(Class)")
@@ -218,7 +218,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Context#becomeUser(String)}
+	 * @see Context#becomeUser(String)
 	 */
 	@Test
 	@Verifies(value = "change locale when become another user", method = "becomeUser(String)")

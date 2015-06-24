@@ -63,10 +63,10 @@ public class PortletController implements Controller {
 	 *     (if the request has a patientId attribute)
 	 *          (Integer) patientId
 	 *          (Patient) patient
-	 *          (List<Obs>) patientObs
-	 *          (List<Encounter>) patientEncounters
-	 *          (List<Visit>) patientVisits
-	 *          (List<Visit>) activeVisits
+	 *          (List&lt;Obs&gt;) patientObs
+	 *          (List&lt;Encounter&gt;) patientEncounters
+	 *          (List&lt;Visit&gt;) patientVisits
+	 *          (List&lt;Visit&gt;) activeVisits
 	 *          (Obs) patientWeight // most recent weight obs
 	 *          (Obs) patientHeight // most recent height obs
 	 *          (Double) patientBmi // BMI derived from most recent weight and most recent height
@@ -74,12 +74,12 @@ public class PortletController implements Controller {
 	 *          (Integer) personId
 	 *     (if the request has a personId or patientId attribute)
 	 *          (Person) person
-	 *          (List<Relationship>) personRelationships
-	 *          (Map<RelationshipType, List<Relationship>>) personRelationshipsByType
+	 *          (List&lt;Relationship&gt;) personRelationships
+	 *          (Map&lt;RelationshipType, List&lt;Relationship&gt;&gt;) personRelationshipsByType
 	 *     (if the request has an encounterId attribute)
 	 *          (Integer) encounterId
 	 *          (Encounter) encounter
-	 *          (Set<Obs>) encounterObs
+	 *          (Set&lt;Obs&gt;) encounterObs
 	 *     (if the request has a userId attribute)
 	 *          (Integer) userId
 	 *          (User) user
@@ -87,8 +87,8 @@ public class PortletController implements Controller {
 	 *          (PatientSet) patientSet
 	 *          (String) patientIds
 	 *     (if the request has a conceptIds attribute, which should be a (String) commas-separated list of conceptIds)
-	 *          (Map<Integer, Concept>) conceptMap
-	 *          (Map<String, Concept>) conceptMapByStringIds
+	 *          (Map&lt;Integer, Concept&gt;) conceptMap
+	 *          (Map&lt;String, Concept&gt;) conceptMapByStringIds
 	 * </pre>
 	 * 
 	 * @should calculate bmi into patientBmiAsString

@@ -42,7 +42,7 @@ public interface LocationDAO {
 	/**
 	 * Get a location by locationId
 	 * 
-	 * @param locationId Internal <code>Integer</code> identifier of the <code>Location<code> to get
+	 * @param locationId Internal <code>Integer</code> identifier of the <code>Location</code> to get
 	 * @return the requested <code>Location</code>
 	 */
 	public Location getLocation(Integer locationId);
@@ -59,7 +59,7 @@ public interface LocationDAO {
 	 * Get all locations
 	 * 
 	 * @param includeRetired boolean - include retired locations as well?
-	 * @return <code>List<Location></code> object of all <code>Location</code>s, possibly including
+	 * @return <code>List&lt;Location&gt;</code> object of all <code>Location</code>s, possibly including
 	 *         retired locations
 	 */
 	public List<Location> getAllLocations(boolean includeRetired);
@@ -114,7 +114,7 @@ public interface LocationDAO {
 	 * Get all location tags
 	 * 
 	 * @param includeRetired boolean - include retired tags as well?
-	 * @return List<LocationTag> object with all <code>LocationTag</code>s, possibly included
+	 * @return List&lt;LocationTag&gt; object with all <code>LocationTag</code>s, possibly included
 	 *         retired ones
 	 */
 	public List<LocationTag> getAllLocationTags(boolean includeRetired);
@@ -123,7 +123,7 @@ public interface LocationDAO {
 	 * Find all location tags with matching names.
 	 * 
 	 * @param search name to search
-	 * @return List<LocationTag> with all matching <code>LocationTags</code>
+	 * @return List&lt;LocationTag&gt; with all matching <code>LocationTags</code>
 	 */
 	public List<LocationTag> getLocationTags(String search);
 	
@@ -142,7 +142,7 @@ public interface LocationDAO {
 	
 	/**
 	 * @param uuid
-	 * @return
+	 * @return location tag or null
 	 */
 	public LocationTag getLocationTagByUuid(String uuid);
 	
@@ -195,7 +195,7 @@ public interface LocationDAO {
 	 * Get locations that have all the location tags specified.
 	 *
 	 * @param locationTagIdList
-	 * @return
+	 * @return list of locations
 	 * @should get locations having all tags
 	 * @should return empty list when no location has the given tags
 	 * @should ignore null values in location tag list

@@ -20,8 +20,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * Allows for serializing/deserializing a Person object to a string so that Spring knows how to pass
- * a Person back and forth through an html form or other medium. <br/>
- * <br/>
+ * a Person back and forth through an html form or other medium. <br>
+ * <br>
  * In version 1.9, added ability for this to also retrieve Person objects by uuid
  *
  * @see Person

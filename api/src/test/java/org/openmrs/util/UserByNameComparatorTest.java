@@ -30,7 +30,7 @@ public class UserByNameComparatorTest {
 	 * This tests sorting with the {@link UserByNameComparator} given a set of users with
 	 * personNames
 	 * 
-	 * @see {@link UserByNameComparator#compare(User,User)}
+	 * @see UserByNameComparator#compare(User,User)
 	 */
 	@Test
 	@Verifies(value = "should sort users by personNames", method = "compare(User,User)")

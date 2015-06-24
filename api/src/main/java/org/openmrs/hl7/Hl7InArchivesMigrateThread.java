@@ -20,11 +20,8 @@ import org.openmrs.api.context.UserContext;
 
 /**
  * Separate thread to move the hl7 in archives from the database tables to the filesystem. It is
- * highly recommended to start this thread by calling "startHl7ArchiveMigration(UserContext)" method
- * in the service layer as opposed to calling the thread's start() method to ensure the thread is
- * started after making all the necessary checks.
- *
- * @see {@link HL7Service#startHl7ArchiveMigration()}
+ * highly recommended to start this thread via DWRHL7Service as opposed to calling the thread's
+ * start() method to ensure the thread is started after making all the necessary checks.
  */
 public class Hl7InArchivesMigrateThread extends Thread {
 	

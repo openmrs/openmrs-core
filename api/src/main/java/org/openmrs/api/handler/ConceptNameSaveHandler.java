@@ -24,7 +24,7 @@ import org.openmrs.api.context.Context;
 /**
  * This class deals with {@link ConceptName} objects when they are saved via a save* method in an
  * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
- * class. <br/>
+ * class. <br>
  * This class does a lookup on all tag name for all child {@link ConceptNameTag}s that have a null
  * {@link ConceptNameTag#getConceptNameTagId()}.
  * 

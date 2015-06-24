@@ -153,7 +153,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param asNeeded the value to set
+	 * @param asNeeded the value to set
 	 * @since 1.10
 	 */
 	public void setAsNeeded(Boolean asNeeded) {
@@ -470,7 +470,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * @should delegate calculation to dosingInstructions
 	 * @should not calculate for discontinue action
 	 * @should not calculate if autoExpireDate already set
-	 * @return void
 	 */
 	public void setAutoExpireDateBasedOnDuration() {
 		if (DISCONTINUE != getAction() && getAutoExpireDate() == null) {

@@ -23,7 +23,7 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link UpdateFilter#authenticateAsSuperUser(String,String)}
+	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false if given invalid credentials", method = "authenticateAsSuperUser(String,String)")
@@ -32,7 +32,7 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UpdateFilter#authenticateAsSuperUser(String,String)}
+	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return false if given user is not superuser", method = "authenticateAsSuperUser(String,String)")
@@ -46,7 +46,7 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UpdateFilter#authenticateAsSuperUser(String,String)}
+	 * @see UpdateFilter#authenticateAsSuperUser(String,String)
 	 */
 	@Test
 	@Verifies(value = "should return true if given user is superuser", method = "authenticateAsSuperUser(String,String)")
@@ -55,7 +55,7 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UpdateFilter#isSuperUser(Connection,Integer)}
+	 * @see UpdateFilter#isSuperUser(Connection,Integer)
 	 */
 	@Test
 	@Verifies(value = "should return true if given user has superuser role", method = "isSuperUser(Connection,Integer)")
@@ -64,7 +64,7 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UpdateFilter#isSuperUser(Connection,Integer)}
+	 * @see UpdateFilter#isSuperUser(Connection,Integer)
 	 */
 	@Test
 	@Verifies(value = "should return false if given user does not have the super user role", method = "isSuperUser(Connection,Integer)")

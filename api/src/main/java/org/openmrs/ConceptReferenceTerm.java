@@ -180,7 +180,7 @@ public class ConceptReferenceTerm extends BaseOpenmrsMetadata implements java.io
 	 * Remove the given ConceptReferenceTermMap from the list of conceptReferenceTermMaps for this
 	 * {@link ConceptReferenceTerm}
 	 *
-	 * @param conceptReferenceMap
+	 * @param conceptReferenceTermMap
 	 * @return true if the entity was removed, false otherwise
 	 */
 	public boolean removeConceptReferenceTermMap(ConceptReferenceTermMap conceptReferenceTermMap) {

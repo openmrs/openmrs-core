@@ -48,7 +48,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if all identifiers have been voided", method = "validate(Object,Errors)")
@@ -63,7 +63,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if all name fields are empty or white space characters", method = "validate(Object,Errors)")
@@ -78,7 +78,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if any name has more than 50 characters", method = "validate(Object,Errors)")
@@ -93,7 +93,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if no identifiers are added", method = "validate(Object,Errors)")
@@ -113,7 +113,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the deathdate is before the birthdate incase the patient is dead", method = "validate(Object,Errors)")
@@ -131,7 +131,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if birthdate is a future date", method = "validate(Object,Errors)")
@@ -148,7 +148,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if birthdate is blank", method = "validate(Object,Errors)")
@@ -162,7 +162,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if causeOfDeath is blank when patient is dead", method = "validate(Object,Errors)")
@@ -178,7 +178,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if deathdate is a future date", method = "validate(Object,Errors)")
@@ -197,7 +197,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if gender is blank", method = "validate(Object,Errors)")
@@ -211,7 +211,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass if the minimum required fields are provided and are valid", method = "validate(Object,Errors)")
@@ -232,7 +232,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if birthdate makes patient 120 years old or older", method = "validate(Object,Errors)")
@@ -248,7 +248,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should reject a duplicate name", method = "validate(Object,Errors)")
@@ -276,7 +276,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 * @see ShortPatientFormValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should reject a duplicate address", method = "validate(Object,Errors)")

@@ -153,8 +153,8 @@ public class HL7Util {
 	
 	/**
 	 * Gets the timezone string for this given fullString. If fullString contains a + or - sign, the
-	 * strings after those are considered to be the timezone. <br/>
-	 * <br/>
+	 * strings after those are considered to be the timezone. <br>
+	 * <br>
 	 * If the fullString does not contain a timezone, the timezone is determined from the server's
 	 * timezone on the "givenDate". (givenDate is needed to account for daylight savings time.)
 	 *

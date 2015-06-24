@@ -94,7 +94,7 @@ public class WebConstants {
 	public static String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
 	
 	/**
-	 * User names of the logged-in users are stored in this map (session id -> user name) in the
+	 * User names of the logged-in users are stored in this map (session id -&gt; user name) in the
 	 * ServletContext under this key
 	 */
 	public static final String CURRENT_USERS = "CURRENT_USERS";

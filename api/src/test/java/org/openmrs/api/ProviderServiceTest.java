@@ -434,7 +434,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderService#isProviderIdentifierUnique(Provider)}
+	 * @see ProviderService#isProviderIdentifierUnique(Provider)
 	 */
 	@Test
 	@Verifies(value = "should return false if the identifier is a duplicate", method = "isProviderIdentifierUnique(Provider)")
@@ -448,7 +448,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderService#getProviderByIdentifier(String)}
+	 * @see ProviderService#getProviderByIdentifier(String)
 	 */
 	@Test
 	@Verifies(value = "should get a provider matching the specified identifier ignoring case", method = "getProviderByIdentifier(String)")
@@ -475,7 +475,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderService#isProviderIdentifierUnique(Provider)}
+	 * @see ProviderService#isProviderIdentifierUnique(Provider)
 	 */
 	@Test
 	@Verifies(value = "should return true if the identifier is null", method = "isProviderIdentifierUnique(Provider)")
@@ -485,7 +485,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderService#isProviderIdentifierUnique(Provider)}
+	 * @see ProviderService#isProviderIdentifierUnique(Provider)
 	 */
 	@Test
 	@Verifies(value = "should return true if the identifier is a blank string", method = "isProviderIdentifierUnique(Provider)")
@@ -496,7 +496,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderService#getCountOfProviders(String,null)}
+	 * @see ProviderService#getCountOfProviders(String,null)
 	 */
 	@Test
 	@Verifies(value = "should fetch number of provider matching given query", method = "getCountOfProviders(String,null)")
@@ -517,7 +517,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderService#getCountOfProviders(String)}
+	 * @see ProviderService#getCountOfProviders(String)
 	 */
 	@Test
 	@Ignore
@@ -527,7 +527,7 @@ public class ProviderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ProviderService#getCountOfProviders(String,null)}
+	 * @see ProviderService#getCountOfProviders(String,null)
 	 */
 	@Test
 	@Ignore

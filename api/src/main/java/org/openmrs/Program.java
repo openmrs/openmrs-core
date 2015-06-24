@@ -101,7 +101,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	/**
 	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that
-	 * matches the given <code>name</name>
+	 * matches the given <code>name</code>
 	 *
 	 * @param name the {@link ProgramWorkflow} name, in any {@link Locale}
 	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any
@@ -154,7 +154,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	/**
 	 * Get only the non-retired workflows
 	 *
-	 * @return Returns a Set<ProgramWorkflow> of all non-retired workflows
+	 * @return Returns a Set&lt;ProgramWorkflow&gt; of all non-retired workflows
 	 */
 	public Set<ProgramWorkflow> getWorkflows() {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
@@ -186,7 +186,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	/**
 	 * Get all workflows...including the retired ones
 	 *
-	 * @return Returns a Set<ProgramWorkflow> of all workflows
+	 * @return Returns a Set&lt;ProgramWorkflow&gt; of all workflows
 	 */
 	public Set<ProgramWorkflow> getAllWorkflows() {
 		if (allWorkflows == null) {

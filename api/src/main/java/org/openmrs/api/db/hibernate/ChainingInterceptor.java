@@ -25,7 +25,7 @@ import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
 /**
- * Used by the {@link HibernateSessionFactoryBean} to keep track of multiple interceptors <br/>
+ * Used by the {@link HibernateSessionFactoryBean} to keep track of multiple interceptors <br>
  * Each of the methods in {@link Interceptor} are called for each interceptor that is added to this
  * class
  * 

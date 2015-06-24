@@ -23,7 +23,7 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	/**
 	 * Regression test for TRUNK-82 (old TRAC-1511)
 	 * 
-	 * @see {@link ConceptNumeric#equals(Object)}
+	 * @see ConceptNumeric#equals(Object)
 	 */
 	@Test
 	@Verifies(value = "should not return true if obj is concept", method = "equals(Object)")

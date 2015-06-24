@@ -29,7 +29,7 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link DWRPatientService#findPatients(String,boolean)}
+	 * @see DWRPatientService#findPatients(String,boolean)
 	 */
 	// ignoring this test until we refactor person/patient/user
 	@Ignore
@@ -43,7 +43,7 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DWRPatientService#findPatients(String,null)}
+	 * @see DWRPatientService#findPatients(String,null)
 	 */
 	// ignoring this test until we refactor person/patient/user
 	@Ignore
@@ -57,7 +57,7 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DWRPatientService#findCountAndPatients(String,Integer,Integer,null)}
+	 * @see DWRPatientService#findCountAndPatients(String,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should not signal for a new search if it is not the first ajax call", method = "findCountAndPatients(String,Integer,Integer,null)")
@@ -70,7 +70,7 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DWRPatientService#findCountAndPatients(String,Integer,Integer,null)}
+	 * @see DWRPatientService#findCountAndPatients(String,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should not signal for a new search if the new search value has no matches", method = "findCountAndPatients(String,Integer,Integer,null)")
@@ -83,7 +83,7 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DWRPatientService#findCountAndPatients(String,Integer,Integer,null)}
+	 * @see DWRPatientService#findCountAndPatients(String,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should signal for a new search if the new search value has matches and is a first call", method = "findCountAndPatients(String,Integer,Integer,null)")
@@ -97,7 +97,7 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DWRPatientService#findCountAndPatients(String,Integer,Integer,null)}
+	 * @see DWRPatientService#findCountAndPatients(String,Integer,Integer,null)
 	 */
 	@Test
 	@Verifies(value = "should match patient with identifiers that contain no digit", method = "findCountAndPatients(String,Integer,Integer,null)")

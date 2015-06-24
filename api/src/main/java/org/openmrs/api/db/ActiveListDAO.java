@@ -24,8 +24,7 @@ import org.openmrs.activelist.ActiveListType;
 public interface ActiveListDAO {
 	
 	/**
-	 * @see org.openmrs.api.ActiveListService#getActiveListItems(org.openmrs.Patient,
-	 *      org.openmrs.activelist.ActiveListType)
+	 * @see org.openmrs.api.ActiveListService#getActiveListItems(Person, ActiveListType)
 	 */
 	public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws DAOException;
 	

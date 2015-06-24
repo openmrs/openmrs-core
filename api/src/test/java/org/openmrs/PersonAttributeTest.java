@@ -22,7 +22,7 @@ import org.openmrs.test.Verifies;
 public class PersonAttributeTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link PersonAttribute#toString()}
+	 * @see PersonAttribute#toString()
 	 */
 	@Test
 	@Verifies(value = "should return toString of hydrated value", method = "toString()")
@@ -34,7 +34,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
+	 * @see PersonAttribute#compareTo(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should return negative if other attribute is voided", method = "compareTo(PersonAttribute)")
@@ -47,7 +47,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
+	 * @see PersonAttribute#compareTo(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should return negative if other attribute has earlier date created", method = "compareTo(PersonAttribute)")
@@ -61,7 +61,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
+	 * @see PersonAttribute#compareTo(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should return negative if this attribute has lower attribute type than argument", method = "compareTo(PersonAttribute)")
@@ -75,7 +75,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
+	 * @see PersonAttribute#compareTo(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should not throw exception if attribute type is null", method = "compareTo(PersonAttribute)")
@@ -84,7 +84,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
+	 * @see PersonAttribute#compareTo(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should return negative if other attribute has lower value", method = "compareTo(PersonAttribute)")
@@ -100,7 +100,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
+	 * @see PersonAttribute#compareTo(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should return negative if this attribute has lower attribute id than argument", method = "compareTo(PersonAttribute)")
@@ -114,7 +114,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#equalsContent(PersonAttribute)}
+	 * @see PersonAttribute#equalsContent(PersonAttribute)
 	 */
 	@Test
 	@Verifies(value = "should return true if attributeType value and void status are the same", method = "equalsContent(PersonAttribute)")
@@ -132,7 +132,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#getHydratedObject()}
+	 * @see PersonAttribute#getHydratedObject()
 	 */
 	@Test
 	@Verifies(value = "should load class in format property", method = "getHydratedObject()")
@@ -149,7 +149,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#getHydratedObject()}
+	 * @see PersonAttribute#getHydratedObject()
 	 */
 	@Test
 	@Verifies(value = "should load user class in format property", method = "getHydratedObject()")
@@ -167,7 +167,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#getHydratedObject()}
+	 * @see PersonAttribute#getHydratedObject()
 	 */
 	@Test
 	@Verifies(value = "should still load class in format property if not Attributable", method = "getHydratedObject()")
@@ -185,7 +185,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonAttribute#voidAttribute(String)}
+	 * @see PersonAttribute#voidAttribute(String)
 	 */
 	@Test
 	@Verifies(value = "should set voided bit to true", method = "voidAttribute(String)")

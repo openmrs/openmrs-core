@@ -38,7 +38,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 * @see PatientNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName object is null", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
@@ -50,7 +50,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.givenName is null", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -62,7 +62,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.givenName is empty", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -75,7 +75,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.givenName is just spaces", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -88,7 +88,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.givenName is spaces surrounded by quotation marks", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -101,7 +101,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.givenName is not blank", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -115,7 +115,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyName is null", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -127,7 +127,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyName is empty", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -140,7 +140,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyName is just spaces", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -153,7 +153,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyName is spaces surrounded by quotation marks", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -166,7 +166,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyName is not blank", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -179,7 +179,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.prefix is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -195,7 +195,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.prefix is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -208,7 +208,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.prefix is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -221,7 +221,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.givenName is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -235,7 +235,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.givenName is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -248,7 +248,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.givenName is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -261,7 +261,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.middleName is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -275,7 +275,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.middleName is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -288,7 +288,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.middleName is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -301,7 +301,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyNamePrefix is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -317,7 +317,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyNamePrefix is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -330,7 +330,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyNamePrefix is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -343,7 +343,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyName is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -357,7 +357,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyName is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -370,7 +370,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyName is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -383,7 +383,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyName2 is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -397,7 +397,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyName2 is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -410,7 +410,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyName2 is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -423,7 +423,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyNameSuffix is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -439,7 +439,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyNameSuffix is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -452,7 +452,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyNameSuffix is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -465,7 +465,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.degree is too long", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -481,7 +481,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.degree is exactly max length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -494,7 +494,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.degree is less than maximum field length", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -507,7 +507,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.givenName is invalid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -520,7 +520,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.givenName is valid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -533,7 +533,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.middleName is invalid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -546,7 +546,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.middleName is valid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -559,7 +559,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyName is invalid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -572,7 +572,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyName is valid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -585,7 +585,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if PersonName.familyName2 is invalid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -598,7 +598,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if PersonName.familyName2 is valid", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -611,7 +611,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if regex string is null", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -626,7 +626,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)}
+	 * @see PatientNameValidator#validatePersonName(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if regex string is empty", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -641,7 +641,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonNameValidator#validatePersonName(PersonName,Errors,null,null)}
+	 * @see PersonNameValidator#validatePersonName(PersonName,Errors,null,null)
 	 */
 	@Test
 	@Verifies(value = "should not validate against regex for blank names", method = "validatePersonName(PersonName,Errors,null,null)")
@@ -678,7 +678,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonNameValidator#validate(Object,Errors)}
+	 * @see PersonNameValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")
@@ -700,7 +700,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonNameValidator#validate(Object,Errors)}
+	 * @see PersonNameValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(java.lang.Object, org.springframework.validation.Errors, boolean, boolean)")

@@ -29,7 +29,7 @@ import org.openmrs.test.Verifies;
 public class OpenmrsObjectSaveHandlerTest {
 	
 	/**
-	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "set empty string properties to null", method = "handle(OpenmrsObject,User,Date,String)")
@@ -47,7 +47,7 @@ public class OpenmrsObjectSaveHandlerTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "not set empty string properties to null for AllowEmptyStrings annotation", method = "handle(OpenmrsObject,User,Date,String)")
@@ -58,7 +58,7 @@ public class OpenmrsObjectSaveHandlerTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "not trim empty strings for AllowLeadingOrTrailingWhitespace annotation", method = "handle(OpenmrsObject,User,Date,String)")
@@ -69,7 +69,7 @@ public class OpenmrsObjectSaveHandlerTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "trim strings without AllowLeadingOrTrailingWhitespace annotation", method = "handle(OpenmrsObject,User,Date,String)")
@@ -82,7 +82,7 @@ public class OpenmrsObjectSaveHandlerTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)}
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "trim empty strings for AllowEmptyStrings annotation", method = "handle(OpenmrsObject,User,Date,String)")

@@ -343,7 +343,7 @@ public final class Module {
 	}
 	
 	/**
-	 * @param requiredModulesMap <code>Map<String,String></code> of the <code>requiredModule</code>s
+	 * @param requiredModulesMap <code>Map&lt;String,String&gt;</code> of the <code>requiredModule</code>s
 	 *            to set
 	 * @since 1.5
 	 */
@@ -381,7 +381,7 @@ public final class Module {
 	/**
 	 * Gets names of modules which should start after this
 	 * @since 1.11
-	 * @return
+	 * @return list of module names or null
 	 */
 	public List<String> getStartBeforeModules() {
 		return this.startBeforeModulesMap == null ? null : new ArrayList<String>(this.startBeforeModulesMap.keySet());
@@ -390,7 +390,7 @@ public final class Module {
 	/**
 	 * Sets the modules that this module is aware of.
 	 *
-	 * @param awareOfModulesMap <code>Map<String,String></code> of the
+	 * @param awareOfModulesMap <code>Map&lt;String,String&gt;</code> of the
 	 *            <code>awareOfModulesMap</code>s to set
 	 * @since 1.9
 	 */
@@ -538,8 +538,8 @@ public final class Module {
 	
 	/**
 	 * A map of pointid to classname. The classname is expected to be a class that extends the
-	 * {@link Extension} object. <br/>
-	 * <br/>
+	 * {@link Extension} object. <br>
+	 * <br>
 	 * This map will be expanded into full Extension objects the first time {@link #getExtensions()}
 	 * is called
 	 *
@@ -558,8 +558,8 @@ public final class Module {
 	/**
 	 * Expand the temporary extensionNames map of pointid-classname to full pointid-classobject. <br>
 	 * This has to be done after the fact because when the pointid-classnames are parsed, the
-	 * module's objects aren't fully realized yet and so not all classes can be loaded. <br/>
-	 * <br/>
+	 * module's objects aren't fully realized yet and so not all classes can be loaded. <br>
+	 * <br>
 	 *
 	 * @return a list of full Extension objects
 	 */
@@ -734,7 +734,7 @@ public final class Module {
 	 * 'core' when this module is essentially part of the core code and must exist at all times
 	 *
 	 * @return true if this is an OpenMRS core module
-	 * @see {@link ModuleConstants#CORE_MODULES}
+	 * @see ModuleConstants#CORE_MODULES
 	 */
 	public boolean isCoreModule() {
 		return !ModuleUtil.ignoreCoreModules() && ModuleConstants.CORE_MODULES.containsKey(moduleId);

@@ -52,7 +52,7 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	/**
 	 * Get all notes from the database.
 	 * 
-	 * @return <code>Collection<Note></code> of all notes from the database
+	 * @return <code>Collection&lt;Note&gt;</code> of all notes from the database
 	 * @throws Exception
 	 */
 	public Collection<Note> getNotes() throws Exception {

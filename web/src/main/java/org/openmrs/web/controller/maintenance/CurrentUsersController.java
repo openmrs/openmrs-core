@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *
  * @see CurrentUsers
  * @see LoginServlet
- * @see SessionListener
+ * @see org.openmrs.web.SessionListener
  */
 @Controller
 public class CurrentUsersController {

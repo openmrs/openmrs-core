@@ -55,7 +55,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	AdministrationService adminService;
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if asNeeded is null", method = "validate(Object,Errors)")
@@ -71,7 +71,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if dosingType is null", method = "validate(Object,Errors)")
@@ -87,7 +87,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should not fail validation if drug is null", method = "validate(Object,Errors)")
@@ -102,7 +102,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all fields are correct", method = "validate(Object,Errors)")
@@ -294,7 +294,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if drug concept is different from order concept", method = "validate(Object,Errors)")
@@ -659,7 +659,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -695,7 +695,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DrugOrderValidator#validate(Object,Errors)}
+	 * @see DrugOrderValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

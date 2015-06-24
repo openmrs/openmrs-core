@@ -23,7 +23,7 @@ import java.util.Date;
 public class EncounterProviderTest {
 	
 	/**
-	 * @see {@link EncounterProvider#copy()}
+	 * @see EncounterProvider#copy()
 	 */
 	@Test
 	@Verifies(value = "should copy all EncounterProvider data", method = "copy()")

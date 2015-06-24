@@ -29,13 +29,13 @@ import org.openmrs.web.user.UserProperties;
 import org.springframework.util.StringUtils;
 
 /**
- * Controller for the <openmrs:require> taglib used on jsp pages. This taglib restricts the page
- * view to currently logged in (or anonymous) users that have the given privileges. <br/>
- * <br/>
+ * Controller for the &lt;openmrs:require&gt; taglib used on jsp pages. This taglib restricts the page
+ * view to currently logged in (or anonymous) users that have the given privileges. <br>
+ * <br>
  * Example use case:
  *
  * <pre>
- * &lt;openmrs:require privilege="Manage Concept Classes" otherwise="/login.htm" redirect="/admin/concepts/conceptClass.form" />
+ * &lt;openmrs:require privilege="Manage Concept Classes" otherwise="/login.htm" redirect="/admin/concepts/conceptClass.form" /&gt;
  * </pre>
  *
  * This will demand that the user have the "Manage Concept Classes" privilege. If they don't, kick
@@ -65,8 +65,8 @@ public class RequireTag extends TagSupport {
 	
 	/**
 	 * This is where all the magic happens. The privileges are checked and the user is redirected if
-	 * need be. <br/>
-	 * <br/>
+	 * need be. <br>
+	 * <br>
 	 * Returns SKIP_PAGE if the user doesn't have the privilege and SKIP_BODY if it does.
 	 *
 	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()

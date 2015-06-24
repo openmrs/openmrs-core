@@ -216,9 +216,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 	
 	/**
-	 * @see org.openmrs.api.VisitService#getVisits(java.util.Collection, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
-	 *      java.util.Date, java.util.Date, boolean, boolean)
+	 * @see org.openmrs.api.VisitService#getVisits(Collection, Collection, Collection, Collection, Date, Date, Date, Date, Map, boolean, boolean)
 	 */
 	@Override
 	@Transactional(readOnly = true)

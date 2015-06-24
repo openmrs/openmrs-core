@@ -20,8 +20,8 @@ import org.openmrs.util.OpenmrsConstants;
 /**
  * This class deals with {@link ConceptProposal} objects when they are saved via a save* method in
  * an Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
- * class. <br/>
- * <br/>
+ * class. <br>
+ * <br>
  */
 @Handler(supports = ConceptProposal.class)
 public class ConceptProposalHandler implements SaveHandler<ConceptProposal> {

@@ -22,7 +22,7 @@ public class SchedulerUtilTest {
 	/**
 	 * Tests whether the scheduler is handing out the correct execution times for tasks.
 	 * 
-	 * @see {@link SchedulerUtil#getNextExecution(TaskDefinition)}
+	 * @see SchedulerUtil#getNextExecution(TaskDefinition)
 	 */
 	@Test
 	@Verifies(value = "should get the correct repeat interval", method = "getNextExecution(TaskDefinition)")

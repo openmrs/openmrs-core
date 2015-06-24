@@ -29,7 +29,7 @@ import org.springframework.validation.MapBindingResult;
 public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "Should fail if start date is after end date", method = "validate(Relationship)")
@@ -44,7 +44,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "Should pass if end date is after the start date", method = "validate(Relationship)")
@@ -59,7 +59,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Relationship)")
@@ -74,7 +74,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Relationship)")
@@ -89,7 +89,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "Should fail if start date is in future", method = "validate(Object,Errors)")
@@ -106,7 +106,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "Should pass if start date is not in future", method = "validate(Object,Errors)")
@@ -123,7 +123,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RelationshipValidator#validate(Object,Errors)}
+	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "Should pass if start date is null since start date is optional while creating a relationship", method = "validate(Object,Errors)")

@@ -42,7 +42,7 @@ public class Hl7InQueueListController {
 	 * Render the pending HL7 queue messages page
 	 *
 	 * @param modelMap
-	 * @return
+	 * @return path
 	 */
 	@RequestMapping("/admin/hl7/hl7InQueuePending.htm")
 	public String listPendingHL7s(ModelMap modelMap) {
@@ -54,7 +54,7 @@ public class Hl7InQueueListController {
 	 * Render the suspended HL7 queue messages page
 	 *
 	 * @param modelMap
-	 * @return
+	 * @return path
 	 */
 	@RequestMapping("/admin/hl7/hl7InQueueHeld.htm")
 	public String listSuspendedHL7s(ModelMap modelMap) {

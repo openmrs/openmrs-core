@@ -18,7 +18,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
 
 /**
- * This is the base implementation of the {@link OpenmrsObject} interface.<br/>
+ * This is the base implementation of the {@link OpenmrsObject} interface.<br>
  * It implements the uuid variable that all objects are expected to have.
  */
 @MappedSuperclass
@@ -61,7 +61,7 @@ public abstract class BaseOpenmrsObject implements OpenmrsObject {
 	/**
 	 * Returns <code>true</code> if and only if <code>x</code> and <code>y</code> refer to the same
 	 * object (<code>x == y</code> has the value <code>true</code>) or both have the same
-	 * <code>uuid</code> (<code>((x.uuid != null) && x.uuid.equals(y.uuid))</code> has the value
+	 * <code>uuid</code> (<code>((x.uuid != null) &amp;&amp; x.uuid.equals(y.uuid))</code> has the value
 	 * <code>true</code>).
 	 *
 	 * @see java.lang.Object#equals(java.lang.Object)

@@ -28,7 +28,7 @@ import org.openmrs.test.Verifies;
 public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw IllegalArgumentException if Patient voidReason is null", method = "handle(Voidable,User,Date,String)")
@@ -38,7 +38,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw IllegalArgumentException if Encounter voidReason is empty", method = "handle(Voidable,User,Date,String)")
@@ -48,7 +48,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw IllegalArgumentException if Obs voidReason is blank", method = "handle(Voidable,User,Date,String)")
@@ -58,7 +58,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not throw Exception if voidReason is not blank", method = "handle(Voidable,User,Date,String)")
@@ -68,7 +68,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)}
+	 * @see RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "not throw Exception if voidReason is null for unsupported types", method = "handle(Voidable,User,Date,String)")

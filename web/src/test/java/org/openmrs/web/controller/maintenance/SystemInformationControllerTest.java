@@ -42,7 +42,7 @@ public class SystemInformationControllerTest extends BaseWebContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link SystemInformationController#showPage(ModelMap)}
+	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
 	@Verifies(value = "should add openmrs information attribute to the model map", method = "showPage()")
@@ -52,7 +52,7 @@ public class SystemInformationControllerTest extends BaseWebContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link SystemInformationController#showPage(ModelMap)}
+	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
 	@Verifies(value = "should add java runtime information attribute to the model map", method = "showPage()")
@@ -62,7 +62,7 @@ public class SystemInformationControllerTest extends BaseWebContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link SystemInformationController#showPage(ModelMap)}
+	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
 	@Verifies(value = "should add module information attribute to the model map", method = "showPage()")
@@ -72,7 +72,7 @@ public class SystemInformationControllerTest extends BaseWebContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link SystemInformationController#showPage(ModelMap)}
+	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
 	@Verifies(value = "should add database information attribute to the model map", method = "showPage()")
@@ -82,7 +82,7 @@ public class SystemInformationControllerTest extends BaseWebContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link SystemInformationController#showPage(ModelMap)}
+	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
 	@Verifies(value = "should add memory information attribute to the model map", method = "getMemoryInformation()")

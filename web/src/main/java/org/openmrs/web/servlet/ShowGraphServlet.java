@@ -50,12 +50,12 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
 /**
- * This servlet returns an image graphing the numeric values for given concept(s). <br/>
- * <br/>
- * This servlet is currently mapped to a /showGraphServlet url in web.xml<br/>
- * <br/>
- * For an example of usage, see WEB-INF/view/portlets/patientGraphs.jsp <br/>
- * <br/>
+ * This servlet returns an image graphing the numeric values for given concept(s). <br>
+ * <br>
+ * This servlet is currently mapped to a /showGraphServlet url in web.xml<br>
+ * <br>
+ * For an example of usage, see WEB-INF/view/portlets/patientGraphs.jsp <br>
+ * <br>
  * The only url parameters that are required are "patientId" and "conceptId".
  */
 public class ShowGraphServlet extends HttpServlet {

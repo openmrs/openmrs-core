@@ -588,7 +588,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	/**
 	 * Convenience Method that fetches all non-voided concept names from the database associated to
 	 * a concept with a matching concept id, stores the names in a map with locales as the keys and
-	 * the lists of conceptNames in each locale as the values i.e <Locale List<ConceptNames>>.
+	 * the lists of conceptNames in each locale as the values i.e &lt;Locale List&lt;ConceptNames&gt;&gt;.
 	 *
 	 * @param connection a DatabaseConnection
 	 * @param conceptId the conceptId for the conceptNames to fetch
@@ -815,7 +815,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.ResourceAccessor)
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(ResourceAccessor)
 	 */
 	@Override
 	public void setFileOpener(ResourceAccessor fileOpener) {

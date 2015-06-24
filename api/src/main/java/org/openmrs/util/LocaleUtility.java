@@ -125,7 +125,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	
 	/**
 	 * Creates a locale based on a string specification. The specification must be conform with the
-	 * following format: ll_CC_vv <br/>
+	 * following format: ll_CC_vv <br>
 	 * <ul>
 	 * <li>ll: two-character lowercase ISO-639 language code
 	 * <li>CC: two-character uppercase ISO-3166 country code optional
@@ -165,7 +165,7 @@ public class LocaleUtility implements GlobalPropertyListener {
 	 * in the order they are specified in the 'allowed.locale.list' global property and 'en' at the
 	 * very end of the set if it isn't yet among them.
 	 *
-	 * @returns a collection of all specified and allowed locales with no duplicates.
+	 * @return a collection of all specified and allowed locales with no duplicates.
 	 * @should return a set of locales with a predictable order
 	 * @should return a set of locales with no duplicates
 	 * @should have default locale as the first element if user has no preferred locale

@@ -62,14 +62,13 @@ public class EventListeners {
 	
 	/**
 	 * Convenience method called by spring to reset the static list of event
-	 * listeners.<br/>
+	 * listeners.<br>
 	 * Without this, the event listener list continues to grow with every Spring
 	 * restart. (and is a memory leak)
 	 *
+	 * @see "applicationContext-service.xml"
 	 * @param nullList
 	 *            if true, nulls the list instead of just clearing it
-	 *
-	 * @see applicationContext-service.xml
 	 */
 	public void setGlobalPropertyListenersToEmpty(boolean nullList) {
 		if (nullList) {

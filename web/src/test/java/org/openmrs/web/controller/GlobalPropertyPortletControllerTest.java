@@ -28,7 +28,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 public class GlobalPropertyPortletControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link GlobalPropertyPortletController#populateModel(HttpServletRequest,Map)}
+	 * @see GlobalPropertyPortletController#populateModel(HttpServletRequest,Map)
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
@@ -55,7 +55,7 @@ public class GlobalPropertyPortletControllerTest extends BaseWebContextSensitive
 	}
 	
 	/**
-	 * @see {@link GlobalPropertyPortletController#setupModelForModule(Map)}
+	 * @see GlobalPropertyPortletController#setupModelForModule(Map)
 	 */
 	@Test
 	@Verifies(value = "should change model if forModule is present", method = "setupModelForModule(Map<String,Object>)")
@@ -76,7 +76,7 @@ public class GlobalPropertyPortletControllerTest extends BaseWebContextSensitive
 	}
 	
 	/**
-	 * @see {@link GlobalPropertyPortletController#setupModelForModule(Map)}
+	 * @see GlobalPropertyPortletController#setupModelForModule(Map)
 	 */
 	@Test
 	@Verifies(value = "should not change mode if forModule is not present", method = "setupModelForModule(Map<String,Object>)")
@@ -95,7 +95,7 @@ public class GlobalPropertyPortletControllerTest extends BaseWebContextSensitive
 	}
 	
 	/**
-	 * @see {@link GlobalPropertyPortletController#setupModelForModule(Map)}
+	 * @see GlobalPropertyPortletController#setupModelForModule(Map)
 	 */
 	@Test
 	@Verifies(value = "should not override excludePrefix but concatenate", method = "setupModelForModule(Map<String,Object>)")

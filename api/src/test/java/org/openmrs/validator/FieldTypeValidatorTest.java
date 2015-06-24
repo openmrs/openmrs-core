@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link FieldTypeValidator#validate(Object,Errors)}
+	 * @see FieldTypeValidator#validate(Object,Errors)
 	 * 
 	 */
 	@Test
@@ -49,7 +49,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldTypeValidator#validate(Object,Errors)}
+	 * @see FieldTypeValidator#validate(Object,Errors)
 	 * 
 	 */
 	@Test
@@ -65,7 +65,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link org.openmrs.validator.FieldTypeValidator#validate(Object, Errors)}
+	 * @see org.openmrs.validator.FieldTypeValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if field type name is duplicate", method = "validate(Object,Errors)")
@@ -80,7 +80,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldTypeValidator#validate(Object,Errors)}
+	 * @see FieldTypeValidator#validate(Object,Errors)
 	 *
 	 */
 	@Test
@@ -96,7 +96,7 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldTypeValidator#validate(Object,Errors)}
+	 * @see FieldTypeValidator#validate(Object,Errors)
 	 *
 	 */
 	@Test

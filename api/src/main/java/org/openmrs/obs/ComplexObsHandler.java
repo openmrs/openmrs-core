@@ -16,10 +16,10 @@ import org.openmrs.util.OpenmrsConstants;
 /**
  * Interface for handling complex obs. Implementing classes are responsible for the storage and
  * retrieval of ComplexData associated with an Obs that is complex -- where Obs.isComplex() returns
- * true. <br/>
- * <br/>
- * These handler classes are delegated to by the ObsService and should never be called directly. <br/>
- * <br/>
+ * true. <br>
+ * <br>
+ * These handler classes are delegated to by the ObsService and should never be called directly. <br>
+ * <br>
  * Use case:
  * 
  * <pre>
@@ -56,8 +56,8 @@ public interface ComplexObsHandler {
 	
 	/**
 	 * Fetches the ComplexData from the location indicated from Obs.value_complex, attaches
-	 * ComplexData onto the Obs and returns the Obs. <br/>
-	 * The ComplexData is returned in the format specified by the view (which can be null). <br/>
+	 * ComplexData onto the Obs and returns the Obs. <br>
+	 * The ComplexData is returned in the format specified by the view (which can be null). <br>
 	 * This view is typically a contract between the view and the handler that has been registered,
 	 * so they those two know the types of views that can be handled.
 	 * 
@@ -69,8 +69,8 @@ public interface ComplexObsHandler {
 	public Obs getObs(Obs obs, String view);
 	
 	/**
-	 * Completely removes the ComplexData Object from its storage location. <br/>
-	 * <br/>
+	 * Completely removes the ComplexData Object from its storage location. <br>
+	 * <br>
 	 * TODO: If we cannot delete the complex data object because of an error, do we want to return
 	 * the Obs, a boolean false, or an Exception?
 	 * 

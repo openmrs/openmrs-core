@@ -22,7 +22,7 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 public class DWRPersonServiceTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link DWRPersonService#findPeopleByRoles(String,null,String)}
+	 * @see DWRPersonService#findPeopleByRoles(String,null,String)
 	 */
 	@Test
 	@Verifies(value = "should match on patient identifiers", method = "findPeopleByRoles(String,null,String)")
@@ -36,7 +36,7 @@ public class DWRPersonServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link DWRPersonService#findPeopleByRoles(String,null,String)}
+	 * @see DWRPersonService#findPeopleByRoles(String,null,String)
 	 */
 	@Test
 	@Verifies(value = "should allow null roles parameter", method = "findPeopleByRoles(String,null,String)")

@@ -24,7 +24,7 @@ import org.openmrs.test.Verifies;
 public class BaseRetireHandlerTest {
 	
 	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set the retired bit", method = "handle(Retireable,User,Date,String)")
@@ -37,7 +37,7 @@ public class BaseRetireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set the retireReason", method = "handle(Retireable,User,Date,String)")
@@ -49,7 +49,7 @@ public class BaseRetireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set retired by", method = "handle(Retireable,User,Date,String)")
@@ -61,7 +61,7 @@ public class BaseRetireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set retired by if non null", method = "handle(Retireable,User,Date,String)")
@@ -74,7 +74,7 @@ public class BaseRetireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set dateRetired", method = "handle(Retireable,User,Date,String)")
@@ -88,7 +88,7 @@ public class BaseRetireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set dateRetired if non null", method = "handle(Retireable,User,Date,String)")
@@ -104,7 +104,7 @@ public class BaseRetireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not set the retireReason if already voided", method = "handle(Retireable,User,Date,String)")
@@ -118,7 +118,7 @@ public class BaseRetireHandlerTest {
 	}
 	
 	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
+	 * @see BaseRetireHandler#handle(Retireable,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should set retiredBy even if retired bit is set but retiredBy is null", method = "handle(Retireable,User,Date,String)")

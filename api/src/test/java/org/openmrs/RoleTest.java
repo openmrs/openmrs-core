@@ -70,7 +70,7 @@ public class RoleTest {
 	/**
 	 * Simple test to check the hasPrivilege method
 	 * 
-	 * @see {@link Role#hasPrivilege(String)}
+	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
 	@Verifies(value = "should not fail given null parameter", method = "hasPrivilege(String)")
@@ -82,7 +82,7 @@ public class RoleTest {
 	}
 	
 	/**
-	 * @see {@link Role#hasPrivilege(String)}
+	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
 	@Verifies(value = "should return true if found", method = "hasPrivilege(String)")
@@ -96,7 +96,7 @@ public class RoleTest {
 	}
 	
 	/**
-	 * @see {@link Role#hasPrivilege(String)}
+	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
 	@Verifies(value = "should return false if not found", method = "hasPrivilege(String)")
@@ -106,7 +106,7 @@ public class RoleTest {
 	}
 	
 	/**
-	 * @see {@link Role#hasPrivilege(String)}
+	 * @see Role#hasPrivilege(String)
 	 */
 	@Test
 	@Verifies(value = "should return true for any privilegeName if super user", method = "hasPrivilege(String)")
@@ -121,7 +121,7 @@ public class RoleTest {
 	}
 	
 	/**
-	 * @see {@link Role#getAllParentRoles()}
+	 * @see Role#getAllParentRoles()
 	 */
 	@Test
 	@Verifies(value = "should only return parent roles", method = "getAllParentRoles()")
@@ -165,7 +165,7 @@ public class RoleTest {
 	}
 	
 	/**
-	 * @see {@link Role#getAllChildRoles()}
+	 * @see Role#getAllChildRoles()
 	 */
 	@Test
 	@Verifies(value = "should only return child roles", method = "getAllChildRoles()")

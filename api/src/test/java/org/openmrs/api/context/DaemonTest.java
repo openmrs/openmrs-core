@@ -178,7 +178,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Daemon#isDaemonUser(User user)}
+	 * @see Daemon#isDaemonUser(User user)
 	 * 
 	 */
 	@Test
@@ -190,7 +190,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link Daemon#isDaemonUser(User user)}
+	 * @see Daemon#isDaemonUser(User user)
 	 * 
 	 */
 	@Test

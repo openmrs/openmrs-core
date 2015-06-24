@@ -483,7 +483,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserDAO#updateLoginCredential(org.openmrs.LoginCredential)
+	 * @see org.openmrs.api.db.UserDAO#updateLoginCredential(LoginCredential)
 	 */
 	public void updateLoginCredential(LoginCredential credential) {
 		sessionFactory.getCurrentSession().update(credential);

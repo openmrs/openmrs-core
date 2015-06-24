@@ -36,7 +36,7 @@ public class DatabaseUtil {
 	private final static Log log = LogFactory.getLog(DatabaseUtil.class);
 	
 	/**
-	 * Load the jdbc driver class for the database which is specified by the connectionUrl parameter <br/>
+	 * Load the jdbc driver class for the database which is specified by the connectionUrl parameter <br>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
 	 *
@@ -49,12 +49,14 @@ public class DatabaseUtil {
 	public static void loadDatabaseDriver(String connectionUrl) throws ClassNotFoundException {
 		loadDatabaseDriver(connectionUrl, null);
 	}
-	
+
+	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
+
 	/**
 	 * Executes the passed SQL query, enforcing select only if that parameter is set Load the jdbc
 	 * driver class for the database which is specified by the connectionUrl and connectionDriver
-	 * parameters <br/>
-	 * <br/>
+	 * parameters <br>
+	 * <br>
 	 * This is only needed when loading up a jdbc connection manually for the first time. This is
 	 * not needed by most users and development practices with the openmrs API.
 	 *
@@ -63,9 +65,6 @@ public class DatabaseUtil {
 	 * @param connectionDriver the database driver class name, such as "com.mysql.jdbc.Driver"
 	 * @throws ClassNotFoundException
 	 */
-	
-	public final static String ORDER_ENTRY_UPGRADE_SETTINGS_FILENAME = "order_entry_upgrade_settings.txt";
-	
 	public static String loadDatabaseDriver(String connectionUrl, String connectionDriver) throws ClassNotFoundException {
 		if (StringUtils.hasText(connectionDriver)) {
 			Class.forName(connectionDriver);
@@ -192,7 +191,7 @@ public class DatabaseUtil {
 	 * @param columnName the column
 	 * @param tableName  the table
 	 * @param connection
-	 * @return
+	 * @return set of unique values
 	 * @throws Exception
 	 */
 	public static <T> Set<T> getUniqueNonNullColumnValues(String columnName, String tableName, Class<T> type,

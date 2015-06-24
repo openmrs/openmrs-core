@@ -56,7 +56,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	WebTestHelper webTestHelper;
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
 	@Verifies(value = "should pass if all the form data is valid", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
@@ -84,7 +84,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
 	@Verifies(value = "should create a new patient", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
@@ -123,7 +123,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
 	@Verifies(value = "should send the user back to the form in case of validation errors", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
@@ -148,7 +148,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
 	@Verifies(value = "should void a name and replace it with a new one if it is changed to a unique value", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
@@ -183,7 +183,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
 	@Verifies(value = "should add a new name if the person had no names", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
@@ -217,7 +217,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
 	@Verifies(value = "should void an address and replace it with a new one if it is changed to a unique value", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
@@ -254,7 +254,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,PersonName,ShortPatientModel,Map,BindingResult, SessionStatus)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,ShortPatientModel,Map,BindingResult, SessionStatus)
 	 */
 	@Test
 	@Verifies(value = "should add a new address if the person had none", method = "saveShortPatient(WebRequest,PersonName,ShortPatientModel,BindingResult,SessionStatus)")
@@ -287,7 +287,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult,SessionStatus)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
 	@Verifies(value = "should ignore a new address that was added and voided at same time", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult,SessionStatus)")
@@ -322,7 +322,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "should add a new person attribute with a non empty value", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
@@ -362,7 +362,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "should not add a new person attribute with an empty value", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
@@ -396,7 +396,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "should void an existing person attribute with an empty value", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
@@ -454,7 +454,7 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 	}
 	
 	/**
-	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)}
+	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
 	 */
 	@Test
 	@Verifies(value = "should should replace an existing attribute with a new one when edited", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")

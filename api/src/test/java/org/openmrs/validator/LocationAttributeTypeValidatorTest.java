@@ -39,7 +39,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link LocationAttributeTypeValidator#validate(Object,Errors)}
+	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -64,7 +64,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link LocationAttributeTypeValidator#validate(Object,Errors)}
+	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -80,7 +80,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link LocationAttributeTypeValidator#validate(Object, Errors)}
+	 * @see LocationAttributeTypeValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if location attribute type name is duplicate", method = "validate(Object,Errors)")
@@ -98,7 +98,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link LocationAttributeTypeValidator#validate(Object, Errors)}
+	 * @see LocationAttributeTypeValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass editing location attribute type name", method = "validate(Object,Errors)")
@@ -113,7 +113,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link LocationAttributeTypeValidator#validate(Object,Errors)}
+	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -131,7 +131,7 @@ public class LocationAttributeTypeValidatorTest extends BaseContextSensitiveTest
 	}
 	
 	/**
-	 * @see {@link LocationAttributeTypeValidator#validate(Object,Errors)}
+	 * @see LocationAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

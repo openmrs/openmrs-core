@@ -22,7 +22,7 @@ import org.springframework.validation.Errors;
 public class RequireNameValidatorTest {
 	
 	/**
-	 * @see {@link RequireNameValidator#validate(Object,Errors)}
+	 * @see RequireNameValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -47,7 +47,7 @@ public class RequireNameValidatorTest {
 	}
 	
 	/**
-	 * @see {@link RequireNameValidator#validate(Object,Errors)}
+	 * @see RequireNameValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if name has proper value", method = "validate(Object,Errors)")

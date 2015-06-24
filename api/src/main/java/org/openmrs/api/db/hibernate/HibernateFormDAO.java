@@ -545,7 +545,7 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormDAO#getFormFieldByField(org.openmrs.Field)
+	 * @see org.openmrs.api.db.FormDAO#getFormFieldsByField(Field)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

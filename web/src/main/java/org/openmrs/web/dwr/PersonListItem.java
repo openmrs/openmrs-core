@@ -191,7 +191,7 @@ public class PersonListItem {
 	 *Helper method to check if all the search names(separated by spaces) are contained in the person's full name.
 
 	 *@param fullName the fullName upon which the search names are to be compared
-	 *@param searchNames Array<String> of searched names
+	 *@param searchNames Array&lt;String&gt; of searched names
 	 *@should return true when all searched names are found in full name
 	 *@should return false if even one of the searched names are not found in full name
 	 */

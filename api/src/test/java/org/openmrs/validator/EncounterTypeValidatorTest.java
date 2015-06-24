@@ -24,7 +24,7 @@ import org.springframework.validation.Errors;
 public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -49,7 +49,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -74,7 +74,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -90,7 +90,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation for an existing EncounterType", method = "validate(Object,Errors)")
@@ -105,7 +105,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object, Errors)}
+	 * @see EncounterTypeValidator#validate(Object, Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if encounter type name is duplicate", method = "validate(Object,Errors)")
@@ -122,7 +122,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -138,7 +138,7 @@ public class EncounterTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
+	 * @see EncounterTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")
