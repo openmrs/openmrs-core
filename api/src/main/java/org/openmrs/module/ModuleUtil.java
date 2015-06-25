@@ -1187,4 +1187,18 @@ public class ModuleUtil {
 		return null;
 	}
 	
+	/**
+	 * Gets the root folder of a module's sources during development
+	 * 
+	 * @param moduleId the module id
+	 * @return the module's development folder is specified, else null
+	 */
+	public static File getDevelopmentDirectory(String moduleId) {
+		String directory = System.getProperty("uiFramework.development." + moduleId);
+		if (StringUtils.isNotBlank(directory)) {
+			return new File(directory);
+		}
+		
+		return null;
+	}
 }
