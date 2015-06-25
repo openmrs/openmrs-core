@@ -11,6 +11,7 @@ package org.openmrs.module;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -575,7 +576,16 @@ public class ModuleFileParser {
 				if (lang.length() > 0 && file.length() > 0) {
 					InputStream inStream = null;
 					try {
-						inStream = ModuleUtil.getResourceFromApi(jarfile, moduleId, version, file);
+						//if in development mode, load message properties file from the root dev folder
+						File devDir = ModuleUtil.getDevelopmentDirectory(moduleId);
+						if (devDir != null) {
+							File pathName = new File(devDir, "api" + File.separator + "target" + File.separator + "classes"
+							        + File.separator + file);
+							inStream = new FileInputStream(pathName);
+						} else {
+							inStream = ModuleUtil.getResourceFromApi(jarfile, moduleId, version, file);
+						}
+						
 						if (inStream == null) {
 							// Try the old way. Loading from the root of the omod
 							ZipEntry entry = jarfile.getEntry(file);

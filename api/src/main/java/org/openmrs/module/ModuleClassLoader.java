@@ -113,8 +113,31 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected ModuleClassLoader(final Module module, final List<URL> urls, final ClassLoader parent) {
 		this(module, urls, parent, null);
 		
-		for (URL url : urls) {
-			providedPackages.addAll(ModuleUtil.getPackagesFromFile(OpenmrsUtil.url2file(url)));
+		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
+		if (devDir != null) {
+			File dir = new File(devDir, "api" + File.separator + "target" + File.separator + "classes" + File.separator);
+			Collection<File> files = FileUtils.listFiles(dir, new String[] { "class" }, true);
+			addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
+			
+			dir = new File(devDir, "omod" + File.separator + "target" + File.separator + "classes" + File.separator);
+			files = FileUtils.listFiles(dir, new String[] { "class" }, true);
+			addClassFilePackages(files, dir.getAbsolutePath().length() + 1);
+		} else {
+			for (URL url : urls) {
+				providedPackages.addAll(ModuleUtil.getPackagesFromFile(OpenmrsUtil.url2file(url)));
+			}
+		}
+	}
+	
+	private void addClassFilePackages(Collection<File> files, int dirLength) {
+		for (File file : files) {
+			String name = file.getAbsolutePath().substring(dirLength);
+			Integer indexOfLastSlash = name.lastIndexOf("/");
+			if (indexOfLastSlash > 0) {
+				String packageName = name.substring(0, indexOfLastSlash);
+				packageName = packageName.replaceAll("/", ".");
+				providedPackages.add(packageName);
+			}
 		}
 	}
 	
@@ -178,48 +201,67 @@ public class ModuleClassLoader extends URLClassLoader {
 	private static List<URL> getUrls(final Module module) {
 		List<URL> result = new LinkedList<URL>();
 		
-		File tmpModuleDir = getLibCacheFolderForModule(module);
-		File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
+		//if in dev mode, add development folder to the classpath
+		File devDir = ModuleUtil.getDevelopmentDirectory(module.getModuleId());
+		try {
+			if (devDir != null) {
+				File dir = new File(devDir, "omod" + File.separator + "target" + File.separator + "classes" + File.separator);
+				result.add(dir.toURI().toURL());
+				
+				dir = new File(devDir, "api" + File.separator + "target" + File.separator + "classes" + File.separator);
+				result.add(dir.toURI().toURL());
+			}
+		}
+		catch (MalformedURLException ex) {
+			log.error("Failed to add development folder to the classpath", ex);
+		}
 		
-		if (!tmpModuleJar.exists()) {
+		File tmpModuleDir = getLibCacheFolderForModule(module);
+		
+		//add module jar to classpath only if we are not in dev mode
+		if (devDir == null) {
+			File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
+			
+			if (!tmpModuleJar.exists()) {
+				try {
+					tmpModuleJar.createNewFile();
+				}
+				catch (IOException io) {
+					log.warn("Unable to create tmpModuleFile", io);
+				}
+			}
+			
+			// copy the module jar into that temporary folder
+			FileInputStream in = null;
+			FileOutputStream out = null;
 			try {
-				tmpModuleJar.createNewFile();
+				in = new FileInputStream(module.getFile());
+				out = new FileOutputStream(tmpModuleJar);
+				OpenmrsUtil.copyFile(in, out);
 			}
 			catch (IOException io) {
-				log.warn("Unable to create tmpModuleFile", io);
+				log.warn("Unable to copy tmpModuleFile", io);
 			}
-		}
-		
-		// copy the module jar into that temporary folder
-		FileInputStream in = null;
-		FileOutputStream out = null;
-		try {
-			in = new FileInputStream(module.getFile());
-			out = new FileOutputStream(tmpModuleJar);
-			OpenmrsUtil.copyFile(in, out);
-		}
-		catch (IOException io) {
-			log.warn("Unable to copy tmpModuleFile", io);
-		}
-		finally {
+			finally {
+				try {
+					in.close();
+				}
+				catch (Exception e) { /* pass */}
+				try {
+					out.close();
+				}
+				catch (Exception e) { /* pass */}
+			}
+			
+			// add the module jar as a url in the classpath of the classloader
+			URL moduleFileURL = null;
 			try {
-				in.close();
+				moduleFileURL = ModuleUtil.file2url(tmpModuleJar);
+				result.add(moduleFileURL);
 			}
-			catch (Exception e) { /* pass */}
-			try {
-				out.close();
+			catch (MalformedURLException e) {
+				log.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
 			}
-			catch (Exception e) { /* pass */}
-		}
-		
-		// add the module jar as a url in the classpath of the classloader
-		URL moduleFileURL = null;
-		try {
-			moduleFileURL = ModuleUtil.file2url(tmpModuleJar);
-			result.add(moduleFileURL);
-		}
-		catch (MalformedURLException e) {
-			log.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
 		}
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
@@ -243,6 +285,14 @@ public class ModuleClassLoader extends URLClassLoader {
 				// recursively get files
 				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
+					
+					//if in dev mode, do not put the api jar file in the class path
+					if (devDir != null) {
+						if (file.getName().equals(module.getModuleId() + "-api-" + module.getVersion() + ".jar")) {
+							continue; //e.g uiframework-api-3.3-SNAPSHOT.jar
+						}
+					}
+					
 					URL fileUrl = ModuleUtil.file2url(file);
 					
 					boolean include = shouldResourceBeIncluded(module, fileUrl, OpenmrsConstants.OPENMRS_VERSION_SHORT,
