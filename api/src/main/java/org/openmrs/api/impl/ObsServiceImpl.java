@@ -9,24 +9,8 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
-import org.openmrs.Encounter;
-import org.openmrs.Location;
-import org.openmrs.MimeType;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.Person;
+import org.openmrs.*;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
@@ -42,6 +26,8 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 /**
  * Default implementation of the Observation Service
@@ -205,30 +191,16 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public Obs unvoidObs(Obs obs) throws APIException {
 		return dao.saveObs(obs);
 	}
-	
-	/**
-	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs, boolean)
-	 */
-	public void purgeObs(Obs obs, boolean cascade) throws APIException {
-		if (!purgeComplexData(obs)) {
-			throw new APIException("Obs.error.unable.purge.complex.data", new Object[] { obs });
-		}
-		
-		if (cascade) {
-			throw new APIException("Obs.error.cascading.purge.not.implemented", (Object[]) null);
-			// TODO delete any related objects here before deleting the obs
-			// obsGroups objects?
-			// orders?
-		}
-		
-		dao.deleteObs(obs);
-	}
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#purgeObs(org.openmrs.Obs)
 	 */
 	public void purgeObs(Obs obs) throws APIException {
-		Context.getObsService().purgeObs(obs, false);
+		if (!purgeComplexData(obs)) {
+			throw new APIException("Obs.error.unable.purge.complex.data", new Object[] { obs });
+		}
+
+		dao.deleteObs(obs);
 	}
 	
 	/**
