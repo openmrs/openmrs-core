@@ -217,11 +217,27 @@ public interface ObsService extends OpenmrsService {
 	 * 
 	 * @param obs
 	 * @throws APIException
+	 * @see #purgeObs(Obs, boolean)
 	 * @should delete the given obs from the database
 	 */
 	@Authorized(PrivilegeConstants.DELETE_OBS)
 	public void purgeObs(Obs obs) throws APIException;
-
+	
+	/**
+	 * Completely remove an observation from the database. This should typically not be called
+	 * because we don't want to ever lose data. The data really <i>should</i> be voided and then it
+	 * is not seen in interface any longer (see #voidObs(Obs) for that one)
+	 * 
+	 * @param obs the observation to remove from the database
+	 * @param cascade true/false whether or not to cascade down to other things that link to this
+	 *            observation (like Orders and ObsGroups)
+	 * @throws APIException
+	 * @see #purgeObs(Obs, boolean)
+	 * @should throw APIException if given true cascade
+	 */
+	@Authorized(PrivilegeConstants.DELETE_OBS)
+	public void purgeObs(Obs obs, boolean cascade) throws APIException;
+	
 	/**
 	 * @deprecated use {@link #getAllMimeTypes()}
 	 */
