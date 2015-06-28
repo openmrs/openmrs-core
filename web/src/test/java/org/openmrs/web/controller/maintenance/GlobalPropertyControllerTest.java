@@ -109,4 +109,38 @@ public class GlobalPropertyControllerTest extends BaseWebContextSensitiveTest {
 			}
 		}
 	}
+
+	/**
+	 * @see GlobalPropertyController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
+	 * @verifies whitespace within values (when comma-separated) get removed
+	 */
+	@Test
+	public void onSubmit_shouldRemoveWhitespacesInValues() throws Exception {
+		GlobalProperty gp = new GlobalProperty("test1", "test1_value");
+		administrationService.saveGlobalProperty(gp);
+
+		HttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("POST");
+		request.setParameter("action", messageSource.getMessage("general.save", new Object[0], Locale.getDefault()));
+		String[] keys = new String[] { "test1", "test2" };
+		String[] values = new String[] { "1, 2", " 1 " };
+		String[] descriptions = new String[] { "", "" };
+		request.setParameter(GlobalPropertyController.PROP_NAME, keys);
+		request.setParameter(GlobalPropertyController.PROP_VAL_NAME, values);
+		request.setParameter(GlobalPropertyController.PROP_DESC_NAME, descriptions);
+
+		controller.handleRequest(request, response);
+
+		Assert.assertEquals(2, administrationService.getAllGlobalProperties().size());
+		for (GlobalProperty globalProperty : administrationService.getAllGlobalProperties()) {
+			if (globalProperty.getProperty().equals("test1")) {
+				Assert.assertEquals(globalProperty.getPropertyValue(), "1,2");
+			} else if (globalProperty.getProperty().equals("test2")) {
+				Assert.assertEquals("1", globalProperty.getPropertyValue());
+			} else {
+				Assert.fail("Values should be '1,2' and '1'");
+			}
+		}
+	}
 }
