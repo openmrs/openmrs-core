@@ -9,16 +9,6 @@
  */
 package org.openmrs.web.controller.maintenance;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -30,6 +20,15 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -87,7 +86,7 @@ public class GlobalPropertyController extends SimpleFormController {
 				
 				for (int x = 0; x < keys.length; x++) {
 					String key = keys[x];
-					String val = values[x];
+					String val = values[x].replaceAll("\\s", "");
 					String desc = descriptions[x];
 					
 					// try to get an already-used global property for this key
