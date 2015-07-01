@@ -9,8 +9,9 @@
  */
 package org.openmrs.web.patient;
 
-import junit.framework.Assert;
-
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.controller.patient.PatientDashboardGraphController;
@@ -20,6 +21,7 @@ import org.springframework.ui.ModelMap;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 /**
  * Test for graphs on the patient dashboard
@@ -28,7 +30,7 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 	
 	/**
 	 * Test getting a concept by name and by partial name.
-	 * 
+	 *
 	 * @see {@link PatientDashboardGraphController#showGraphData(Integer, Integer, ModelMap)}
 	 */
 	@Test
@@ -43,16 +45,26 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 		ModelMap map = new ModelMap();
 		controller.showGraphData(2, 1, map);
 		PatientGraphData graph = (PatientGraphData) map.get("graph");
+		
 		String expectedData = String
 		        .format(
 		            "{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"name\":\"Some concept name\",\"normal\":{\"high\":null,\"low\":null},\"data\":[[%d,2.0],[%d,1.0]],\"units\":null}",
 		            secondObsDate, firstObsDate);
-		Assert.assertEquals(expectedData, graph.toString());
+		
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode expectedJson = mapper.readTree(expectedData);
+		JsonNode actualJson = mapper.readTree(graph.toString());
+		
+		Assert.assertEquals(expectedJson.size(), actualJson.size());
+		for (Iterator<String> fieldNames = expectedJson.getFieldNames(); fieldNames.hasNext();) {
+			String field = fieldNames.next();
+			Assert.assertEquals(expectedJson.get(field), actualJson.get(field));
+		}
 	}
 	
 	/**
 	 * Test the path of the form for rendering the json data
-	 * 
+	 *
 	 * @see {@link PatientDashboardGraphController#showGraphData(Integer, Integer, ModelMap)}
 	 */
 	@Test

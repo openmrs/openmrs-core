@@ -315,6 +315,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 		
 		String path = "/ui/springmvc/css/ui.css";
 		Assert.assertEquals(module, ModuleUtil.getModuleForPath(path));
+		ModuleFactory.getStartedModulesMap().clear();
 	}
 	
 	/**
@@ -330,6 +331,7 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 		
 		String path = "/ui/springmvc/css/ui.css";
 		Assert.assertEquals(module, ModuleUtil.getModuleForPath(path));
+		ModuleFactory.getStartedModulesMap().clear();
 	}
 	
 	/**

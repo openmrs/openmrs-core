@@ -180,6 +180,7 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 			//Ensure that the task was stopped
 			Assert.assertFalse(task.getTaskInstance().isExecuting());
 			Assert.assertFalse(task.getStarted());
+			deleteAllData();
 		}
 	}
 }

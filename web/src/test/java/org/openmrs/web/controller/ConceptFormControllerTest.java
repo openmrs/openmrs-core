@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -965,7 +964,6 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 * @verifies not save changes if there are validation errors
 	 */
 	@Test
-	@NotTransactional
 	public void onSubmit_shouldNotSaveChangesIfThereAreValidationErrors() throws Exception {
 		Integer conceptId = 792;
 		

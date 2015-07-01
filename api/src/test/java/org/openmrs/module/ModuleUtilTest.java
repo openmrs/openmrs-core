@@ -286,6 +286,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		
 		String path = "/ui/springmvc/css/ui.css";
 		Assert.assertEquals(module, ModuleUtil.getModuleForPath(path));
+		ModuleFactory.getStartedModulesMap().clear();
 	}
 	
 	/**
@@ -301,6 +302,7 @@ public class ModuleUtilTest extends BaseContextMockTest {
 		
 		String path = "/ui/springmvc/css/ui.css";
 		Assert.assertEquals(module, ModuleUtil.getModuleForPath(path));
+		ModuleFactory.getStartedModulesMap().clear();
 	}
 	
 	/**
