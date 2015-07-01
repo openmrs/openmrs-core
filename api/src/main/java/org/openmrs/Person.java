@@ -236,27 +236,28 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Element(required = false)
 	public Date getBirthDateTime() {
-        if(birthdate != null && birthtime != null){
-            String birthDateString = new SimpleDateFormat("yyyy-MM-dd").format(birthdate);
-            String birthTimeString = new SimpleDateFormat("HH:mm:ss").format(birthtime);
-
-            try {
-                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(birthDateString + " " + birthTimeString);
-            } catch (ParseException e) {
-                log.error(e);
-            }
-        }
-        return null;
-    }
+		if (birthdate != null && birthtime != null) {
+			String birthDateString = new SimpleDateFormat("yyyy-MM-dd").format(birthdate);
+			String birthTimeString = new SimpleDateFormat("HH:mm:ss").format(birthtime);
+			
+			try {
+				return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(birthDateString + " " + birthTimeString);
+			}
+			catch (ParseException e) {
+				log.error(e);
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * @return person's time of birth.
 	 */
 	@Element(required = false)
 	public Date getBirthtime() {
-        return this.birthtime;
-    }
-
+		return this.birthtime;
+	}
+	
 	/**
 	 * @return Returns the death status.
 	 */

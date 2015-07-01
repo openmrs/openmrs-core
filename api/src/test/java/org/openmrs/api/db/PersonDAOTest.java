@@ -95,8 +95,9 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 		person.setBirthdateEstimated(false);
 		person.setId(345);
 		hibernatePersonDAO.savePerson(person);
-
+		
 		Person savedPerson = hibernatePersonDAO.getPerson(345);
-		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-05-29 15:23:56"), savedPerson.getBirthDateTime());
+		Assert.assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-05-29 15:23:56"), savedPerson
+		        .getBirthDateTime());
 	}
 }
