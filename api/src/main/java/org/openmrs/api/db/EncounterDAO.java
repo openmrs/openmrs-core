@@ -9,7 +9,6 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +17,11 @@ import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
-import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.Provider;
 import org.openmrs.Visit;
-import org.openmrs.VisitType;
 import org.openmrs.api.EncounterService;
+import org.openmrs.parameter.EncounterSearchCriteria;
 
 /**
  * Encounter-related database functions
@@ -63,14 +60,9 @@ public interface EncounterDAO {
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
-	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection,
-	 *      boolean)
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
-	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
+	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
 	
 	/**
 	 * Save an Encounter Type
