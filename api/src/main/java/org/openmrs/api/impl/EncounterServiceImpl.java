@@ -43,6 +43,8 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.handler.EncounterVisitHandler;
+import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -285,9 +287,16 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
 	        boolean includeVoided) {
-		return Context.getEncounterService().filterEncountersByViewPermissions(
-		    dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, usersToProviders(providers),
-		        null, null, includeVoided), null);
+		EncounterSearchCriteriaBuilder encounterSearchCriteriaBuilder = new EncounterSearchCriteriaBuilder()
+				.setPatient(who)
+				.setLocation(loc)
+				.setFromDate(fromDate)
+				.setToDate(toDate)
+				.setEnteredViaForms(enteredViaForms)
+				.setEncounterTypes(encounterTypes)
+				.setProviders(usersToProviders(providers))
+				.setIncludeVoided(includeVoided);
+		return getEncounters(encounterSearchCriteriaBuilder.createEncounterSearchCriteria());
 	}
 	
 	/**
@@ -312,15 +321,37 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, boolean)
+	 * @deprecated replaced by
+	 *             {@link #getEncounters(org.openmrs.parameter.EncounterSearchCriteria)}
 	 */
+	@Deprecated
 	@Override
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<Provider> providers,
 	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
-		return Context.getEncounterService().filterEncountersByViewPermissions(
-		    dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, visitTypes, visits,
-		        includeVoided), null);
+		EncounterSearchCriteriaBuilder encounterSearchCriteriaBuilder = new EncounterSearchCriteriaBuilder()
+				.setPatient(who)
+				.setLocation(loc)
+				.setFromDate(fromDate)
+				.setToDate(toDate)
+				.setEnteredViaForms(enteredViaForms)
+				.setEncounterTypes(encounterTypes)
+				.setProviders(providers)
+				.setVisitTypes(visitTypes)
+				.setVisits(visits)
+				.setIncludeVoided(includeVoided);
+
+		return getEncounters(encounterSearchCriteriaBuilder.createEncounterSearchCriteria());
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
+	 */
+	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria) {
+		// the second search parameter is null as it defaults to authenticated user from context
+		return Context.getEncounterService().filterEncountersByViewPermissions(dao.getEncounters(encounterSearchCriteria),
+		    null);
 	}
 	
 	/**

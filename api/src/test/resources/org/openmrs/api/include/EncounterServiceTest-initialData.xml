@@ -78,13 +78,13 @@
   <orders order_id="1" order_type_id="2" order_number="1" urgency="ROUTINE" patient_id="3" encounter_id="1" date_activated="2012-08-19 00:00:00.0" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="0d86e8b4-2f33-495e-aa22-6954785e4e9e" order_action="NEW" care_setting="1"/>
 
   <!-- an encounter with a mismatched order.patient_id -->
-  <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" location_id="1" visit_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
+  <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" location_id="1" visit_id="1" creator="1" date_created="2005-01-01 00:00:00.0" date_changed="2006-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
   <encounter_provider encounter_provider_id="3" encounter_id="15" provider_id="1" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="8a030bef-4362-4a1c-9967-ac4a4b425b45" />
   <!-- a voided encounter with a mismatched order.patient_id -->
-  <encounter encounter_id="16" encounter_type="1" form_id="1" encounter_datetime="2007-01-01 00:00:00.0" patient_id="3" location_id="1" visit_id="1" creator="1" date_created="2007-01-01 00:00:00.0" voided="1" uuid="929809cc-8ef7-11e0-a7a1-91c116298e4b"/>
+  <encounter encounter_id="16" encounter_type="1" form_id="1" encounter_datetime="2007-01-01 00:00:00.0" patient_id="3" location_id="1" visit_id="1" creator="1" date_created="2009-01-01 00:00:00.0" date_changed="2010-01-01 00:00:00.0" voided="1" uuid="929809cc-8ef7-11e0-a7a1-91c116298e4b"/>
   <encounter_provider encounter_provider_id="4" encounter_id="16" provider_id="1" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="0d9b354c-e6fd-11e0-be7d-593b1cdbf439" />
   <!-- a voided encounter with a mismatched order.patient_id -->
-  <encounter encounter_id="16" encounter_type="1" form_id="1" encounter_datetime="2007-01-01 00:00:00.0" patient_id="3" location_id="1" visit_id="1" creator="1" date_created="2007-01-01 00:00:00.0" voided="1" void_reason="testing" uuid="929809cc-8ef7-11e0-a7a1-91c116298e4b"/>
+  <encounter encounter_id="16" encounter_type="1" form_id="1" encounter_datetime="2007-01-01 00:00:00.0" patient_id="3" location_id="1" visit_id="1" creator="1" date_created="2009-01-01 00:00:00.0" date_changed="2010-01-01 00:00:00.0" voided="1" void_reason="testing" uuid="929809cc-8ef7-11e0-a7a1-91c116298e4b"/>
   <encounter_provider encounter_provider_id="4" encounter_id="16" provider_id="1" encounter_role_id="2" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="0d9b354c-e6fd-11e0-be7d-593b1cdbf439" />
   <orders order_id="10" order_type_id="2" order_number="10" urgency="ROUTINE" patient_id="2" encounter_id="15" concept_id="1" orderer="1" creator="1" date_activated="2012-08-19 00:00:00.0" date_created="2006-03-11 15:57:35.0" voided="false" uuid="bf003896-2caf-42ef-8cfa-5ad29a11661f" order_action="NEW" care_setting="1"/>
 

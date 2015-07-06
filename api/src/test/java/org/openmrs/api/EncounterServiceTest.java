@@ -38,6 +38,8 @@ import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
 import org.openmrs.api.handler.NoVisitAssignmentHandler;
+import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -879,6 +881,21 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
+	 */
+	@Test
+	@Verifies(value = "should get encounters by date changed", method = "getEncounters(EncounterSearchParameter)")
+	public void getEncounters_shouldGetEncountersByDateChanged() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		Assert.assertEquals(7, encounterService.getEncounters(
+				encounterSearchForVoidedWithDateChanged("2006-01-01")).size());
+		Assert.assertEquals(5, encounterService.getEncounters(
+				encounterSearchForVoidedWithDateChanged("2008-06-01")).size());
+		Assert.assertEquals(1, encounterService.getEncounters(
+				encounterSearchForVoidedWithDateChanged("2010-01-01")).size());
+	}
+
+	/**
 	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@Test
@@ -1564,7 +1581,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("We should get back an encounter role", newSavedEncounterRole);
 		assertEquals(encounterRole, newSavedEncounterRole);
 		assertTrue("The created encounter role needs to equal the pojo encounter role", encounterRole
-		        .equals(newSavedEncounterRole));
+				.equals(newSavedEncounterRole));
 		
 	}
 	
@@ -2784,7 +2801,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Visit visit = Context.getVisitService().getVisit(200);
 		Assert.assertTrue(visit.isVoided());
 	}
-	
+
+	private EncounterSearchCriteria encounterSearchForVoidedWithDateChanged(String dateChanged) throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		return new EncounterSearchCriteriaBuilder()
+				.setIncludeVoided(true)
+				.setDateChanged(sdf.parse(dateChanged))
+				.createEncounterSearchCriteria();
+	}
+
 	private Person newPerson(String name) {
 		Person person = new Person();
 		Set<PersonName> personNames = new TreeSet<PersonName>();
