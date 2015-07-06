@@ -55,7 +55,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	private Log log = LogFactory.getLog(HL7ServiceTest.class);
 	
 	/**
-	 * @see {@link HL7Service#saveHL7InQueue(HL7InQueue)}
+	 * @see HL7Service#saveHL7InQueue(HL7InQueue)
 	 */
 	@Test
 	@Verifies(value = "should add generated uuid if uuid is null", method = "saveHL7InQueue(HL7InQueue)")
@@ -72,7 +72,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#processHL7InQueue(HL7InQueue)}
+	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
 	@Test
 	@Verifies(value = "should create HL7InArchive after successful parsing", method = "processHL7InQueue(HL7InQueue)")
@@ -101,7 +101,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#processHL7InQueue(HL7InQueue)}
+	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
 	@Test
 	@Verifies(value = "should create HL7InError after failed parsing", method = "processHL7InQueue(HL7InQueue)")
@@ -119,7 +119,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#processHL7InQueue(HL7InQueue)}
+	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail if given inQueue is already marked as processing", method = "processHL7InQueue(HL7InQueue)")
@@ -133,7 +133,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#processHL7Message(Message)}
+	 * @see HL7Service#processHL7Message(Message)
 	 */
 	@Test
 	@Verifies(value = "should save hl7Message to the database", method = "processHL7Message(Message)")
@@ -162,7 +162,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#parseHL7String(String)}
+	 * @see HL7Service#parseHL7String(String)
 	 */
 	@Test
 	@Verifies(value = "should parse the given string into Message", method = "parseHL7String(String)")
@@ -180,7 +180,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#processHL7Message(Message)}
+	 * @see HL7Service#processHL7Message(Message)
 	 */
 	@Test
 	@Ignore("TRUNK-3945")
@@ -230,7 +230,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#processHL7InQueue(HL7InQueue)}
+	 * @see HL7Service#processHL7InQueue(HL7InQueue)
 	 */
 	@Test
 	@Ignore("TRUNK-3945")
@@ -269,7 +269,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#resolvePersonFromIdentifiers(null)}
+	 * @see HL7Service#resolvePersonFromIdentifiers(null)
 	 */
 	@Test
 	@Verifies(value = "should find a person based on a patient identifier", method = "resolvePersonFromIdentifiers(null)")
@@ -294,7 +294,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#resolvePersonFromIdentifiers(null)}
+	 * @see HL7Service#resolvePersonFromIdentifiers(null)
 	 */
 	@Test
 	@Verifies(value = "should find a person based on a UUID", method = "resolvePersonFromIdentifiers(null)")
@@ -319,7 +319,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#resolvePersonFromIdentifiers(null)}
+	 * @see HL7Service#resolvePersonFromIdentifiers(null)
 	 */
 	@Test
 	@Verifies(value = "should find a person based on the internal person ID", method = "resolvePersonFromIdentifiers(null)")
@@ -344,7 +344,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#resolvePersonFromIdentifiers(null)}
+	 * @see HL7Service#resolvePersonFromIdentifiers(null)
 	 */
 	@Test
 	@Verifies(value = "should return null if no person is found", method = "resolvePersonFromIdentifiers(null)")
@@ -368,7 +368,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail if a person with the same UUID exists", method = "getPersonFromNK1(NK1)")
@@ -391,7 +391,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail if no birthdate specified", method = "getPersonFromNK1(NK1)")
@@ -413,7 +413,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail if no gender specified", method = "getPersonFromNK1(NK1)")
@@ -435,7 +435,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail on an invalid gender", method = "getPersonFromNK1(NK1)")
@@ -457,7 +457,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test
 	@Verifies(value = "should return a saved new person", method = "getPersonFromNK1(NK1)")
@@ -480,7 +480,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 * @see HL7Service#createPersonFromNK1(NK1)
 	 */
 	@Test
 	@Verifies(value = "should return a Patient if valid patient identifiers exist", method = "getPersonFromNK1(NK1)")
@@ -504,7 +504,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test
 	@Verifies(value = "should find a UUID in any position of the array", method = "getUuidFromIdentifiers(null)")
@@ -562,7 +562,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test
 	@Verifies(value = "should return null if no UUID found", method = "getUuidFromIdentifiers(null)")
@@ -585,7 +585,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test
 	@Verifies(value = "should not fail if multiple similar UUIDs exist in identifiers", method = "getUuidFromIdentifiers(null)")
@@ -608,7 +608,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test(expected = HL7Exception.class)
 	@Verifies(value = "should fail if multiple different UUIDs exist in identifiers", method = "getUuidFromIdentifiers(null)")
@@ -631,7 +631,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 * @see HL7Service#getUuidFromIdentifiers(null)
 	 */
 	@Test
 	@Verifies(value = "should not fail if no assigning authority is found", method = "getUuidFromIdentifiers(null)")
@@ -653,7 +653,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)}
+	 * @see HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)
 	 */
 	@Test
 	@Verifies(value = "should return internal identifier of location if only location name is specified", method = "resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)")
@@ -678,7 +678,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)}
+	 * @see HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)
 	 */
 	@Test
 	@Verifies(value = "should return internal identifier of location if only location id is specified", method = "resolveLocationId(null)")
@@ -703,7 +703,7 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)}
+	 * @see HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)
 	 */
 	@Test
 	@Verifies(value = "should return null if location id and name are incorrect", method = "resolveLocationId(null)")

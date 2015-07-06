@@ -24,7 +24,7 @@ import org.openmrs.aop.RequiredDataAdvice;
 /**
  * This class deals with {@link Concept} objects when they are saved via a save* method in an
  * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
- * class. <br/>
+ * class. <br>
  * 
  * @see RequiredDataHandler
  * @see SaveHandler

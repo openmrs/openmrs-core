@@ -24,7 +24,7 @@ import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 
 /**
- * Contains methods pertaining to Users in the system Use:<br/>
+ * Contains methods pertaining to Users in the system Use:<br>
  * 
  * <pre>
  * 
@@ -102,7 +102,7 @@ public interface UserService extends OpenmrsService {
 	 * Get user by the given uuid.
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return user or null
 	 * @throws APIException
 	 * @should fetch user with given uuid
 	 * @should find object given valid uuid
@@ -219,7 +219,6 @@ public interface UserService extends OpenmrsService {
 	 * Clears retired flag for a user.
 	 * 
 	 * @param user
-	 * @param reason
 	 * @throws APIException
 	 * @should unretire and unmark all attributes
 	 */
@@ -358,7 +357,7 @@ public interface UserService extends OpenmrsService {
 	 * Get Role by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return role or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
@@ -377,7 +376,7 @@ public interface UserService extends OpenmrsService {
 	 * Get Privilege by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return privilege or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 * @should fetch privilege for given uuid
@@ -403,7 +402,7 @@ public interface UserService extends OpenmrsService {
 	public List<User> getAllUsers() throws APIException;
 	
 	/**
-	 * Changes the <code>user<code>'s password
+	 * Changes the <code>user</code>'s password
 	 * ** Restricted to Super User access**
 	 * 
 	 * @param u user
@@ -527,8 +526,8 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @param givenName
 	 * @param familyName
-	 * @param includeVoided
-	 * @return List<User> object of users matching criteria
+	 * @param includeRetired
+	 * @return List&lt;User&gt; object of users matching criteria
 	 * @should fetch users exactly matching the given givenName and familyName
 	 * @should fetch voided users whenincludeVoided is true
 	 * @should not fetch any voided users when includeVoided is false

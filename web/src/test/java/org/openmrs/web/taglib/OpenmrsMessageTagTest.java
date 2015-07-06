@@ -60,7 +60,7 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
 	@Verifies(value = "evaluate specified message resolvable", method = "doEndTag()")
@@ -73,7 +73,7 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
 	@Verifies(value = "resolve message by code", method = "doEndTag()")
@@ -85,7 +85,7 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
 	@Verifies(value = "resolve message in locale that different from default", method = "doEndTag()")
@@ -101,7 +101,7 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
 	@Verifies(value = "return code if no message resolved", method = "doEndTag()")
@@ -113,7 +113,7 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
 	@Verifies(value = "use body content as fallback if no message resolved", method = "doEndTag()")
@@ -126,7 +126,7 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
 	@Verifies(value = "use text attribute as fallback if no message resolved", method = "doEndTag()")
@@ -139,7 +139,7 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
 	@Verifies(value = "use body content in prior to text attribute as fallback if no message resolved", method = "doEndTag()")
@@ -153,7 +153,7 @@ public class OpenmrsMessageTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OpenmrsMessageTag#doEndTag()}
+	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
 	@Verifies(value = "ignore fallbacks if tag locale differs from context locale", method = "doEndTag()")

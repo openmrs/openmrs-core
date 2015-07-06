@@ -197,7 +197,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#isComplex()}
+	 * @see Obs#isComplex()
 	 */
 	@Test
 	@Verifies(value = "should return true if the concept is complex", method = "isComplex()")
@@ -216,7 +216,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#setValueAsString(String)}
+	 * @see Obs#setValueAsString(String)
 	 */
 	@Test(expected = RuntimeException.class)
 	@Verifies(value = "should fail if the value of the string is empty", method = "setValueAsString(String)")
@@ -226,7 +226,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#setValueAsString(String)}
+	 * @see Obs#setValueAsString(String)
 	 */
 	@Test(expected = RuntimeException.class)
 	@Verifies(value = "should fail if the value of the string is null", method = "setValueAsString(String)")
@@ -236,7 +236,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getValueAsBoolean()}
+	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
 	@Verifies(value = "should return false for value_numeric concepts if value is 0", method = "getValueAsBoolean()")
@@ -247,7 +247,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getValueAsBoolean()}
+	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
 	@Verifies(value = "should return null for value_numeric concepts if value is neither 1 nor 0", method = "getValueAsBoolean()")
@@ -299,7 +299,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getValueAsBoolean()}
+	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
 	@Verifies(value = "should return true for value_numeric concepts if value is 1", method = "getValueAsBoolean()")
@@ -426,7 +426,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#setFormField(String,String)}
+	 * @see Obs#setFormField(String,String)
 	 */
 	@Test
 	@Verifies(value = "should set the underlying formNamespaceAndPath in the correct pattern", method = "setFormField(String,String)")
@@ -441,7 +441,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getFormFieldNamespace()}
+	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
 	@Verifies(value = "should return null if the namespace is not specified", method = "getFormFieldNamespace()")
@@ -452,7 +452,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getFormFieldNamespace()}
+	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
 	@Verifies(value = "should return the correct namespace for a form field with a path", method = "getFormFieldNamespace()")
@@ -465,7 +465,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getFormFieldNamespace()}
+	 * @see Obs#getFormFieldNamespace()
 	 */
 	@Test
 	@Verifies(value = "should return the namespace for a form field that has no path", method = "getFormFieldNamespace()")
@@ -477,7 +477,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getFormFieldPath()}
+	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
 	@Verifies(value = "should return null if the path is not specified", method = "getFormFieldPath()")
@@ -488,7 +488,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getFormFieldPath()}
+	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
 	@Verifies(value = "should return the correct path for a form field with a namespace", method = "getFormFieldPath()")
@@ -501,7 +501,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#getFormFieldPath()}
+	 * @see Obs#getFormFieldPath()
 	 */
 	@Test
 	@Verifies(value = "should return the path for a form field that has no namespace", method = "getFormFieldPath()")
@@ -513,7 +513,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#setFormField(String,String)}
+	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should reject a namepace and path combination longer than the max length", method = "setFormField(String,String)")
@@ -534,7 +534,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#setFormField(String,String)}
+	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should reject a namepace containing the separator", method = "setFormField(String,String)")
@@ -545,7 +545,7 @@ public class ObsTest {
 	}
 	
 	/**
-	 * @see {@link Obs#setFormField(String,String)}
+	 * @see Obs#setFormField(String,String)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should reject a path containing the separator", method = "setFormField(String,String)")

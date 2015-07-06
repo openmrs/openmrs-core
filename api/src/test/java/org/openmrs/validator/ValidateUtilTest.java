@@ -30,7 +30,7 @@ import static org.junit.Assert.fail;
 public class ValidateUtilTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link ValidateUtil#validate(Object)}
+	 * @see ValidateUtil#validate(Object)
 	 */
 	@Test(expected = ValidationException.class)
 	@Verifies(value = "should throw ValidationException if errors occur during validation", method = "validate(Object)")
@@ -55,7 +55,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see {@link ValidateUtil#validate(Object)}
+	 * @see ValidateUtil#validate(Object)
 	 */
 	@Test
 	@Verifies(value = "should return immediately if validation is disabled", method = "validate(Object)")
@@ -75,7 +75,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)}
+	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
 	 */
 	@Test
 	@Verifies(value = "fail validation if name field length is too long", method = "validateFieldLengths(org.springframework.validation.Errors, Class, String...)")
@@ -89,7 +89,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)}
+	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
 	 */
 	@Test
 	@Verifies(value = "pass validation if name field length is equal to maximum length", method = "validateFieldLengths(org.springframework.validation.Errors, Class, String...)")
@@ -103,7 +103,7 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see {@link ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)}
+	 * @see ValidateUtil#validateFieldLengths(org.springframework.validation.Errors, Class, String...)
 	 */
 	@Test
 	@Verifies(value = "should return immediately if validation is disabled and have no errors", method = "validateFieldLengths(org.springframework.validation.Errors, Class, String...)")

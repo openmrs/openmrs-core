@@ -18,7 +18,7 @@ import org.openmrs.Provider;
 public class ProviderByPersonNameComparatorTest {
 	
 	/**
-	 * @see {@link PersonByNameComparator#comparePersonsByName(org.openmrs.Person, org.openmrs.Person)}
+	 * @see PersonByNameComparator#comparePersonsByName(org.openmrs.Person, org.openmrs.Person)
 	 */
 	@Test
 	public void compareProvidersByPersonsName_shouldReturnNegativeIfPersonNameForProvider1ComesBeforeThatOfProvider2()
@@ -38,7 +38,7 @@ public class ProviderByPersonNameComparatorTest {
 	}
 	
 	/**
-	 * @see {@link PersonByNameComparator#comparePersonsByName(Person,Person)}
+	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
 	public void compareProvidersByPersonName_shouldReturnPositiveIfPersonNameForProvider1ComesAfterThatOfProvider2()
@@ -58,7 +58,7 @@ public class ProviderByPersonNameComparatorTest {
 	}
 	
 	/**
-	 * @see {@link PersonByNameComparator#comparePersonsByName(Person,Person)}
+	 * @see PersonByNameComparator#comparePersonsByName(Person,Person)
 	 */
 	@Test
 	public void compareProvidersByPersonName_shouldReturnZeroIfTheGivenNameMiddleNameAndFamilyNameMatch() throws Exception {

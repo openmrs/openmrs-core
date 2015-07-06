@@ -29,7 +29,7 @@ import org.springframework.validation.BindException;
 public class ProgramFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link ProgramFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see ProgramFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Transactional(readOnly = true)

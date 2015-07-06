@@ -22,10 +22,10 @@ import org.openmrs.api.context.Context;
  * Parameters to specify: * 'propertyPrefix' will limit to only global properties starting with that
  * prefix (e.g. "formentry.") * 'excludePrefix' will exclude global properties starting with that
  * prefix (e.g. "formentry.started") * 'hidePrefix' decides whether or not to trim the prefix on
- * what is displayed (i.e. "formentry.infopath_url" -> "infopath_url") (default false) *
+ * what is displayed (i.e. "formentry.infopath_url" -&gt; "infopath_url") (default false) *
  * 'hideDescription' whether or not to show the global property's description (default: false) *
  * 'title' will display that title * 'showHeader' whether or not to show a header row in the table
- * (default true) Values put in the model: * 'properties' -> List<GlobalProperty>
+ * (default true) Values put in the model: * 'properties' -&gt; List&lt;GlobalProperty&gt;
  */
 public class GlobalPropertyPortletController extends PortletController {
 	

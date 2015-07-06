@@ -99,7 +99,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * It currently returns true in this case.
 	 *
 	 * checks whether a double is in this range
-	 * @param 	d, the Double to check for in this range
+	 * @param 	d the Double to check for in this range
 	 * @return  true if d is in this range, false otherwise
 	 * @should return true if parameter is in range
 	 * @should return false if parameter is not in range

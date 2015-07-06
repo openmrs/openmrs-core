@@ -49,7 +49,7 @@ public interface CustomDatatype<T> {
 	 * values.)
 	 * 
 	 * @param typedValue
-	 * @return
+	 * @return reference string
 	 * @throws UnsupportedOperationException  if it is not feasible to calculate this efficiently (e.g. you'd need to go to remote storage)
 	 */
 	String getReferenceStringForValue(T typedValue) throws UnsupportedOperationException;
@@ -66,7 +66,7 @@ public interface CustomDatatype<T> {
 	T fromReferenceString(String referenceString) throws InvalidCustomValueException;
 	
 	/**
-	 * Converts a reference string to a short (generally < 100 characters) plain-text representation of its value. The return
+	 * Converts a reference string to a short (generally &lt; 100 characters) plain-text representation of its value. The return
 	 * value also indicates whether this representation is a complete view of the value, or if there is more to display. 
 	 * Implementations of this method must be high-performance, e.g. if the method is called thousands of times for a table
 	 * of objects with custom values.

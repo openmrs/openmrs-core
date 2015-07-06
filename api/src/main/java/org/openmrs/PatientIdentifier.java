@@ -196,7 +196,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * @deprecated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	@SuppressWarnings("squid:S1210")

@@ -68,7 +68,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 *
 	 * @param searchValue string to be looked for
 	 * @param includeVoided true/false whether or not to included voided patients
-	 * @return Collection<Object> of PatientListItem or String
+	 * @return Collection&lt;Object&gt; of PatientListItem or String
 	 * @should return only patient list items with nonnumeric search
 	 * @should return string warning if invalid patient identifier
 	 * @should not return string warning if searching with valid identifier
@@ -90,12 +90,12 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
 	 * search. Else, do a name search
 	 *
-	 * @see PatientService#getPatients(String, String, List, boolean, int, Integer)
+	 * @see PatientService#getPatients(String, String, List, boolean, Integer, Integer)
 	 * @param searchValue string to be looked for
 	 * @param includeVoided true/false whether or not to included voided patients
 	 * @param start The starting index for the results to return
 	 * @param length The number of results of return
-	 * @return Collection<Object> of PatientListItem or String
+	 * @return Collection&lt;Object&gt; of PatientListItem or String
 	 * @since 1.8
 	 */
 	public Collection<Object> findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length) {
@@ -376,13 +376,11 @@ public class DWRPatientService implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Auto generated method comment
-	 *
 	 * @param patientId
 	 * @param identifierType
 	 * @param identifier
 	 * @param identifierLocationId
-	 * @return
+	 * @return empty string or, in case of an error, a message key for the error description
 	 */
 	public String addIdentifier(Integer patientId, String identifierType, String identifier, Integer identifierLocationId) {
 		
@@ -456,14 +454,12 @@ public class DWRPatientService implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Auto generated method comment
-	 *
 	 * @param patientId
-	 * @param reasonForExitId
-	 * @param dateOfExit
-	 * @param causeOfDeath
+	 * @param exitReasonId
+	 * @param exitDateStr
+	 * @param causeOfDeathConceptId
 	 * @param otherReason
-	 * @return
+	 * @return empty string or, in case of an error, a description of the error
 	 */
 	public String exitPatientFromCare(Integer patientId, Integer exitReasonId, String exitDateStr,
 	        Integer causeOfDeathConceptId, String otherReason) {
@@ -589,11 +585,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Auto generated method comment
-	 *
 	 * @param patientId
 	 * @param locationId
-	 * @return
+	 * @return empty string
 	 */
 	public String changeHealthCenter(Integer patientId, Integer locationId) {
 		log.warn("Deprecated method in 'DWRPatientService.changeHealthCenter'");
@@ -666,9 +660,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * Resolve an allergy
 	 *
 	 * @param activeListId
-	 * @param resolved
 	 * @param reason
-	 * @param pEndDate
 	 */
 	public void removeAllergy(Integer activeListId, String reason) {
 		Allergy allergy = Context.getPatientService().getAllergy(activeListId);
@@ -730,7 +722,6 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * Remove a problem, sets the end date
 	 *
 	 * @param activeListId
-	 * @param resolved
 	 * @param reason
 	 * @param pEndDate
 	 */

@@ -112,7 +112,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	/**
 	 * Find all tasks in the database
 	 * 
-	 * @return <code>List<TaskDefinition></code> of all tasks
+	 * @return <code>List&lt;TaskDefinition&gt;</code> of all tasks
 	 * @throws DAOException
 	 */
 	@SuppressWarnings("unchecked")

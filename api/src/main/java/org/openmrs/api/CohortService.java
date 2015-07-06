@@ -211,7 +211,7 @@ public interface CohortService extends OpenmrsService {
 	 * Get Cohort by its UUID
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return cohort or null
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */

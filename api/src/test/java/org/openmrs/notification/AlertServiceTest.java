@@ -43,7 +43,7 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link AlertService#notifySuperUsers(String,Exception,null)}
+	 * @see AlertService#notifySuperUsers(String,Exception,null)
 	 * 
 	 */
 	@Test

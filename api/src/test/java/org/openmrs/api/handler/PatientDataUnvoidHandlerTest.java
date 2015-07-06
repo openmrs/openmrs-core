@@ -34,7 +34,7 @@ import java.util.List;
 public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link PatientDataUnvoidHandler#handle(Patient,User,Date,String)}
+	 * @see PatientDataUnvoidHandler#handle(Patient,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should unvoid the orders and encounters associated with the patient", method = "handle(Patient,User,Date,String)")
@@ -84,7 +84,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientDataUnvoidHandler#handle(Patient,User,Date,String)}
+	 * @see PatientDataUnvoidHandler#handle(Patient,User,Date,String)
 	 */
 	@Test
 	@Verifies(value = "should not unvoid the orders and encounters that never got voided with the patient", method = "handle(Patient,User,Date,String)")

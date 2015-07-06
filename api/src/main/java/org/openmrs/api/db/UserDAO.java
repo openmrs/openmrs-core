@@ -136,26 +136,20 @@ public interface UserDAO {
 	public boolean isSecretAnswer(User u, String answer) throws DAOException;
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return privilege or null
 	 */
 	public Privilege getPrivilegeByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return role or null
 	 */
 	public Role getRoleByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return user or null
 	 */
 	public User getUserByUuid(String uuid);
 	
@@ -166,10 +160,8 @@ public interface UserDAO {
 	public LoginCredential getLoginCredential(User user);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return login credential or null
 	 */
 	public LoginCredential getLoginCredentialByUuid(String uuid);
 	

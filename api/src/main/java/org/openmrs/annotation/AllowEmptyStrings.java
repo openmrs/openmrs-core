@@ -26,8 +26,8 @@ import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
  * public void setName(String name);
  * </pre>
  * 
- * Note: This should be annotated on the setter methods.<br/>
- * <br/>
+ * Note: This should be annotated on the setter methods.<br>
+ * <br>
  * If this annotation is not present the the property will be set to null by the
  * {@link OpenmrsObjectSaveHandler} if the value is an empty string.  
  * 

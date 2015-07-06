@@ -105,8 +105,8 @@ public class WebModuleUtil {
 	 * is not rerun. This will save a lot of time, but it also means that the calling method is
 	 * responsible for restarting the context if necessary (the calling method will also have to
 	 * call {@link #loadServlets(Module, ServletContext)} and
-	 * {@link #loadFilters(Module, ServletContext)}).<br/>
-	 * <br/>
+	 * {@link #loadFilters(Module, ServletContext)}).<br>
+	 * <br>
 	 * If delayContextRefresh is true and this module should have caused a context refresh, a true
 	 * value is returned. Otherwise, false is returned
 	 *
@@ -511,7 +511,6 @@ public class WebModuleUtil {
 	 *
 	 * @param mod
 	 * @param servletContext the servlet context
-	 * @return this module's servlet map
 	 */
 	public static void loadServlets(Module mod, ServletContext servletContext) {
 		Element rootNode = mod.getConfig().getDocumentElement();
@@ -1024,7 +1023,7 @@ public class WebModuleUtil {
 	}
 	
 	/**
-	 * Retrieves a path to a folder that stores web files of a module. <br/>
+	 * Retrieves a path to a folder that stores web files of a module. <br>
 	 * (path-to-openmrs/WEB-INF/view/module/moduleid)
 	 *
 	 * @param moduleId module id (e.g., "basicmodule")

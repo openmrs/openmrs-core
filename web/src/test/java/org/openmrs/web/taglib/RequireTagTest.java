@@ -28,7 +28,7 @@ import org.springframework.mock.web.MockPageContext;
 public class RequireTagTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link RequireTag#doStartTag()}
+	 * @see RequireTag#doStartTag()
 	 */
 	@Test
 	@SkipBaseSetup
@@ -49,7 +49,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireTag#doStartTag()}
+	 * @see RequireTag#doStartTag()
 	 */
 	@Test
 	@SkipBaseSetup
@@ -70,7 +70,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireTag#doStartTag()}
+	 * @see RequireTag#doStartTag()
 	 */
 	@Test
 	@SkipBaseSetup
@@ -91,7 +91,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireTag#doStartTag()}
+	 * @see RequireTag#doStartTag()
 	 */
 	@Test
 	@SkipBaseSetup
@@ -112,7 +112,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireTag#doStartTag()}
+	 * @see RequireTag#doStartTag()
 	 */
 	@Test
 	@SkipBaseSetup
@@ -133,7 +133,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireTag#doStartTag()}
+	 * @see RequireTag#doStartTag()
 	 */
 	@Test
 	@SkipBaseSetup
@@ -154,7 +154,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireTag#doStartTag()}
+	 * @see RequireTag#doStartTag()
 	 */
 	@Test
 	@SkipBaseSetup
@@ -183,7 +183,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link RequireTag#doStartTag()}
+	 * @see RequireTag#doStartTag()
 	 */
 	@Test
 	@SkipBaseSetup

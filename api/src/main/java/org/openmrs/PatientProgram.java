@@ -263,10 +263,10 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	}
 	
 	/**
-	 * Returns a Set<PatientState> of all current {@link PatientState}s for the
+	 * Returns a Set&lt;PatientState&gt; of all current {@link PatientState}s for the
 	 * {@link PatientProgram}
 	 * 
-	 * @return Set<PatientState> of all current {@link PatientState}s for the {@link PatientProgram}
+	 * @return Set&lt;PatientState&gt; of all current {@link PatientState}s for the {@link PatientProgram}
 	 */
 	public Set<PatientState> getCurrentStates() {
 		Set<PatientState> ret = new HashSet<PatientState>();
@@ -280,13 +280,13 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	}
 	
 	/**
-	 * Returns a List<PatientState> of all {@link PatientState}s in the passed
+	 * Returns a List&lt;PatientState&gt; of all {@link PatientState}s in the passed
 	 * {@link ProgramWorkflow} for the {@link PatientProgram}
 	 * 
 	 * @param programWorkflow - The {@link ProgramWorkflow} to check
 	 * @param includeVoided - If true, return voided {@link PatientState}s in the returned
 	 *            {@link List}
-	 * @return List<PatientState> of all {@link PatientState}s in the passed {@link ProgramWorkflow}
+	 * @return List&lt;PatientState&gt; of all {@link PatientState}s in the passed {@link ProgramWorkflow}
 	 *         for the {@link PatientProgram}
 	 */
 	public List<PatientState> statesInWorkflow(ProgramWorkflow programWorkflow, boolean includeVoided) {

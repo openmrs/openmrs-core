@@ -31,7 +31,7 @@ import org.springframework.validation.Errors;
 public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the patients for the visit and the encounter dont match", method = "validate(Object,Errors)")
@@ -47,7 +47,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if the visit has no patient", method = "validate(Object,Errors)")
@@ -62,7 +62,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if patient is not set", method = "validate(Object,Errors)")
@@ -74,7 +74,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if encounter dateTime is before visit startDateTime", method = "validate(Object,Errors)")
@@ -95,7 +95,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if encounter dateTime is after visit stopDateTime", method = "validate(Object,Errors)")
@@ -117,7 +117,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "fail if encounter dateTime is after current dateTime", method = "validate(Object,Errors)")
@@ -164,7 +164,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -180,7 +180,7 @@ public class EncounterValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 * @see EncounterValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

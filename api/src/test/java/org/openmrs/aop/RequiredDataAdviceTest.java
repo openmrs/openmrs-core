@@ -117,7 +117,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)}
+	 * @see RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)
 	 */
 	@Test
 	@Verifies(value = "should get value of given child collection on given field", method = "getChildCollection(OpenmrsObject,Field)")
@@ -168,7 +168,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)}
+	 * @see RequiredDataAdvice#getChildCollection(OpenmrsObject, Field)
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw APIException if getter method not found", method = "getChildCollection(OpenmrsObject,Field)")
@@ -216,7 +216,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
+	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Field)
 	 */
 	@Test
 	@Verifies(value = "should return false if field is collection of other objects", method = "isOpenmrsObjectCollection(Field)")
@@ -230,7 +230,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
+	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Field)
 	 */
 	@Test
 	@Verifies(value = "should return false if field is collection of parameterized type", method = "isOpenmrsObjectCollection(Field)")
@@ -240,7 +240,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
+	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Field)
 	 */
 	@Test
 	@Verifies(value = "should return false if field is not a collection", method = "isOpenmrsObjectCollection(Field)")
@@ -484,7 +484,7 @@ public class RequiredDataAdviceTest extends BaseContextMockTest {
 	}
 	
 	/**
-	 * @see {@link RequiredDataAdvice#before(Method, null, Object)}
+	 * @see RequiredDataAdvice#before(Method, null, Object)
 	 */
 	@Test
 	@Verifies(value = "should not fail on update method with no arguments", method = "before(Method,null,Object)")

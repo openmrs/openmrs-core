@@ -25,8 +25,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
- * This class is only used to get access to the DispatcherServlet. <br/>
- * <br/>
+ * This class is only used to get access to the DispatcherServlet. <br>
+ * <br>
  * After creation, this object is saved to WebUtil for later use. When Spring's
  * webApplicationContext is refreshed, the DispatcherServlet needs to be refreshed too.
  * 

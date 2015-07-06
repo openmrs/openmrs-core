@@ -87,7 +87,7 @@ public interface FormDAO {
 	 * Get all field types
 	 * 
 	 * @param includeRetired boolean - include retired field types as well?
-	 * @return List<FieldTypes> object with all FieldTypes, possibly including retired ones
+	 * @return List&lt;FieldTypes&gt; object with all FieldTypes, possibly including retired ones
 	 * @throws DAOException
 	 */
 	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws DAOException;
@@ -105,7 +105,7 @@ public interface FormDAO {
 	 * Returns all forms in the database, possibly including retired ones
 	 * 
 	 * @param includeRetired boolean - include retired forms?
-	 * @return List<Form> object of all forms, possibly including retired ones
+	 * @return List&lt;Form&gt; object of all forms, possibly including retired ones
 	 * @throws DAOException
 	 */
 	public List<Form> getAllForms(boolean includeRetired) throws DAOException;
@@ -113,7 +113,7 @@ public interface FormDAO {
 	/**
 	 * Returns all FormFields in the database
 	 * 
-	 * @return List<FormField> object of all FormFields in the database
+	 * @return List&lt;FormField&gt; object of all FormFields in the database
 	 * @throws DAOException
 	 */
 	public List<FormField> getAllFormFields() throws DAOException;
@@ -189,8 +189,8 @@ public interface FormDAO {
 	 *            fields must be
 	 * @param concepts <code>Collection</code> of <code>Concepts</code> which the fields must point
 	 *            to
-	 * @param tableNames <code>Collection of <code>TableName</code>s which the fields must point to
-	 * @param attributeNames <code>Collection of <code>String</code> attribute names which the
+	 * @param tableNames Collection of <code>TableName</code>s which the fields must point to
+	 * @param attributeNames Collection of <code>String</code> attribute names which the
 	 *            fields must point to
 	 * @param selectMultiple <code>Boolean</code> value that matching fields must have for
 	 *            selectMultiple
@@ -251,20 +251,16 @@ public interface FormDAO {
 	public void deleteFieldType(FieldType fieldType) throws DAOException;
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return field or null
 	 */
 	public Field getFieldByUuid(String uuid);
 	
 	public FieldAnswer getFieldAnswerByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return field type or null
 	 */
 	public FieldType getFieldTypeByUuid(String uuid);
 	
@@ -277,18 +273,14 @@ public interface FormDAO {
 	public FieldType getFieldTypeByName(String name);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return form or null
 	 */
 	public Form getFormByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
-	 * 
 	 * @param uuid
-	 * @return
+	 * @return form field or null
 	 */
 	public FormField getFormFieldByUuid(String uuid);
 	

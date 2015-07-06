@@ -154,9 +154,7 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
-	 *      java.util.Date, java.util.Date, boolean, String)
+	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(List, List, List, List, List, List, Integer, Date, Date, List, boolean, String)
 	 */
 	public Long getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,

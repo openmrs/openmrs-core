@@ -23,7 +23,7 @@ public class FormTest {
 	/**
 	 * Make sure the Form(Integer) constructor sets the formId
 	 * 
-	 * @see {@link Form#Form(Integer)}
+	 * @see Form#Form(Integer)
 	 */
 	@Test
 	@Verifies(value = "should set formId with given parameter", method = "Form(Integer)")

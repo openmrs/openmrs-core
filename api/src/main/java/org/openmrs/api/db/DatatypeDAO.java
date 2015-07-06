@@ -20,7 +20,7 @@ public interface DatatypeDAO {
 	 * Gets a clob storage object by its id
 	 * 
 	 * @param id
-	 * @return
+	 * @return clob storage object or null
 	 */
 	ClobDatatypeStorage getClobDatatypeStorage(Integer id);
 	
@@ -28,7 +28,7 @@ public interface DatatypeDAO {
 	 * Gets a clob storage object by its uuid
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return clob storage object or null
 	 */
 	ClobDatatypeStorage getClobDatatypeStorageByUuid(String uuid);
 	

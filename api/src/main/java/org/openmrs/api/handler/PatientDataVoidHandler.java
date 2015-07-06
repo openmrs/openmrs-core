@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * This class deals with {@link Patient} objects when they are voided via a void* method in an
  * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
- * class. <br/>
+ * class. <br>
  * The handler voids all the encounters(including their associated observations) and orders
  * associated with the specified patient object
  * 

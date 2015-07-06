@@ -38,7 +38,7 @@ public class DeprecationCheckTest {
 	private static final String OPENMRS_DWR_PACKAGE_NAME = "org.openmrs.web.dwr";
 	
 	/**
-	 * @verifies fail if any of the DWR*Service classes contain @Deprecated annotation (TRUNK-2517)
+	 * @verifies fail if any of the DWR*Service classes contain {@literal @}Deprecated annotation (TRUNK-2517)
 	 */
 	@Test
 	public void checkThatNoDeprecatedMethodExistsInServiceClassesInDWRPackage() {
@@ -64,13 +64,13 @@ public class DeprecationCheckTest {
 	}
 	
 	/**
-	 * Returns a list of class names which contain the @Deprecated annotation. Does this search ONLY for
+	 * Returns a list of class names which contain the {@literal @}Deprecated annotation. Does this search ONLY for
 	 * DWR*Service classes.
 	 *
 	 * Found the basic code here:
 	 * http://stackoverflow.com/questions/1456930/how-do-i-read-all-classes-from-a-java-package-in-the-classpath
 	 *
-	 * @return List of classes which contain the Deprecated annotation (@Deprecated)
+	 * @return List of classes which contain the Deprecated annotation ({@literal @}Deprecated)
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -101,9 +101,9 @@ public class DeprecationCheckTest {
 	}
 	
 	/**
-	 * For the given class, checks if it contains any @Deprecated annotation (at method/class level).
+	 * For the given class, checks if it contains any {@literal @}Deprecated annotation (at method/class level).
 	 * @param metadataReader
-	 * @return true if it finds @Deprecated annotation in the class or any of its methods.
+	 * @return true if it finds {@literal @}Deprecated annotation in the class or any of its methods.
 	 * @throws ClassNotFoundException
 	 */
 	private boolean doesClassContainDeprecatedAnnotation(MetadataReader metadataReader) throws ClassNotFoundException {

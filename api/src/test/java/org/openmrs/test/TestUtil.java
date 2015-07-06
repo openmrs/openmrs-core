@@ -123,8 +123,8 @@ public class TestUtil {
 	}
 	
 	/**
-	 * Convert the given multi-line output to lines of StringBuilder.append lines <br/>
-	 * <br/>
+	 * Convert the given multi-line output to lines of StringBuilder.append lines <br>
+	 * <br>
 	 * From an input of this this:
 	 * 
 	 * <pre>
@@ -133,12 +133,12 @@ public class TestUtil {
 	 * asdf"asdf"
 	 * </pre>
 	 * 
-	 * To this:<br/>
-	 * <br/>
-	 * StringBuilder correctOutput = new StringBuilder();<br/>
-	 * correctOutput.append("asdf\n");<br/>
-	 * correctOutput.append(" asdfasdf\n");<br/>
-	 * correctOutput.append("asdf\"asdf\"\n");<br/>
+	 * To this:<br>
+	 * <br>
+	 * StringBuilder correctOutput = new StringBuilder();<br>
+	 * correctOutput.append("asdf\n");<br>
+	 * correctOutput.append(" asdfasdf\n");<br>
+	 * correctOutput.append("asdf\"asdf\"\n");<br>
 	 * 
 	 * @param output multi line string to convert
 	 */
@@ -156,8 +156,8 @@ public class TestUtil {
 	}
 	
 	/**
-	 * Print the contents of the given tableName to system.out<br/>
-	 * <br/>
+	 * Print the contents of the given tableName to system.out<br>
+	 * <br>
 	 * Call this from any {@link BaseContextSensitiveTest} child by:
 	 * TestUtil.printOutTableContents(getConnection(), "encounter");
 	 * 

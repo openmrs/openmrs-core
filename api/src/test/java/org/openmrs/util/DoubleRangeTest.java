@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public class DoubleRangeTest {
 
         /**
-         * @see {@link DoubleRange#equals(Object)}
+         * @see DoubleRange#equals(Object)
          */
         @Test
         @Verifies(value = "should return true for the same object type and false for different objects", method = "equals(Object o)")

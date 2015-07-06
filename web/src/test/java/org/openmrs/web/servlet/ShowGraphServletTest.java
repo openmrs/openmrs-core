@@ -27,7 +27,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 public class ShowGraphServletTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link ShowGraphServlet#getChart(HttpServletRequest)}
+	 * @see ShowGraphServlet#getChart(HttpServletRequest)
 	 */
 	@Test
 	@Verifies(value = "should set value axis label to given units", method = "getChart(HttpServletRequest)")
@@ -43,7 +43,7 @@ public class ShowGraphServletTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShowGraphServlet#getChart(HttpServletRequest)}
+	 * @see ShowGraphServlet#getChart(HttpServletRequest)
 	 */
 	@Test
 	@Verifies(value = "should set value axis label to concept numeric units if given units is null", method = "getChart(HttpServletRequest)")
@@ -58,7 +58,7 @@ public class ShowGraphServletTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShowGraphServlet#getFromDate(String)}
+	 * @see ShowGraphServlet#getFromDate(String)
 	 */
 	@Test
 	@Verifies(value = "should return one year previous to today if parameter is null", method = "getFromDate(String)")
@@ -73,7 +73,7 @@ public class ShowGraphServletTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShowGraphServlet#getFromDate(String)}
+	 * @see ShowGraphServlet#getFromDate(String)
 	 */
 	@Test
 	@Verifies(value = "should return same date as given string parameter", method = "getFromDate(String)")
@@ -84,7 +84,7 @@ public class ShowGraphServletTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShowGraphServlet#getToDate(String)}
+	 * @see ShowGraphServlet#getToDate(String)
 	 */
 	@Test
 	@Verifies(value = "should return next months date if parameter is null", method = "getToDate(String)")
@@ -99,7 +99,7 @@ public class ShowGraphServletTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShowGraphServlet#getToDate(String)}
+	 * @see ShowGraphServlet#getToDate(String)
 	 */
 	@Test
 	@Verifies(value = "should return date one day after given string date", method = "getToDate(String)")
@@ -117,7 +117,7 @@ public class ShowGraphServletTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ShowGraphServlet#getToDate(String)}
+	 * @see ShowGraphServlet#getToDate(String)
 	 */
 	@Test
 	@Verifies(value = "should set hour minute and second to zero", method = "getToDate(String)")

@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class FieldFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link FieldFormController#formBackingObject(HttpServletRequest)}
+	 * @see FieldFormController#formBackingObject(HttpServletRequest)
 	 */
 	// @Transactional annotation needed because the parent class is @Transactional and so screws propagates to this readOnly test
 	@Transactional(readOnly = true)
@@ -53,7 +53,7 @@ public class FieldFormControllerTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FieldFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 * @see FieldFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Verifies(value = "should not fail on field answers", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")

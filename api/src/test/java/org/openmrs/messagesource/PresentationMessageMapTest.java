@@ -27,7 +27,7 @@ public class PresentationMessageMapTest {
 	 * PresentationMessageMap should not add PresentationMessages which are not from the same locale
 	 * set for the PresentationMessageMap.
 	 * 
-	 * @see {@link PresentationMessageMap#put(String,PresentationMessage)}
+	 * @see PresentationMessageMap#put(String,PresentationMessage)
 	 */
 	@Test
 	@Verifies(value = "should should ignore non matching locale messages", method = "put(String,PresentationMessage)")
@@ -43,7 +43,7 @@ public class PresentationMessageMapTest {
 	 * PresentationMessageMap should only add PresentationMessages which are from the same locale,
 	 * even when adding from a batch.
 	 * 
-	 * @see {@link PresentationMessageMap#putAll(Map<PresentationMessage>)}
+	 * @see PresentationMessageMap#putAll(Map<PresentationMessage>)
 	 */
 	@Test
 	@Verifies(value = "should filter out non matching locale messages from batch add", method = "putAll(Map<PresentationMessage>)")

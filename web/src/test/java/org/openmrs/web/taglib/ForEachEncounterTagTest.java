@@ -30,7 +30,7 @@ import org.springframework.mock.web.MockPageContext;
 public class ForEachEncounterTagTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link ForEachEncounterTag#doStartTag()}
+	 * @see ForEachEncounterTag#doStartTag()
 	 * @regression TRUNK-2465
 	 */
 	@Test
@@ -57,7 +57,7 @@ public class ForEachEncounterTagTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ForEachEncounterTag#doStartTag()}
+	 * @see ForEachEncounterTag#doStartTag()
 	 */
 	@Test
 	@Verifies(value = "should pass for a patient with no encounters", method = "doStartTag()")

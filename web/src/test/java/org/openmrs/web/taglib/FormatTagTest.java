@@ -122,7 +122,7 @@ public class FormatTagTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormatTag#doStartTag()}
+	 * @see FormatTag#doStartTag()
 	 */
 	@Test
 	@Verifies(value = "print any domain object", method = "doStartTag()")

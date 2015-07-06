@@ -17,8 +17,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.web.user.CurrentUsers;
 
 /**
- * Handles events of session life cycle. <br/>
- * <br/>
+ * Handles events of session life cycle. <br>
+ * <br>
  * This is set by the web.xml class
  */
 public class SessionListener implements HttpSessionListener {

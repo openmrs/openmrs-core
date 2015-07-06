@@ -29,7 +29,7 @@ public class OpenmrsProfileExcludeFilter implements TypeFilter {
 	/**
 	 * @param metadataReader
 	 * @param metadataReaderFactory
-	 * @return
+	 * @return whether this filter matches
 	 * @throws IOException
 	 *
 	 * @should not include bean for openmrs from 1_6 to 1_7

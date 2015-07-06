@@ -24,7 +24,7 @@ import java.util.Map;
 public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 * @see PersonListItem#PersonListItem(Person, String)
 	 */
 	@Test
 	@Verifies(value = "should identify best matching name for the family name", method = "PersonListItem(Person, String)")
@@ -37,7 +37,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 * @see PersonListItem#PersonListItem(Person, String)
 	 */
 	@Test
 	@Verifies(value = "identify best matching name as preferred name even if other names match", method = "PersonListItem(Person, String)")
@@ -51,7 +51,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 * @see PersonListItem#PersonListItem(Person, String)
 	 */
 	@Test
 	@Verifies(value = "identify best matching name as other name for the middle name", method = "PersonListItem(Person, String)")
@@ -64,7 +64,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 * @see PersonListItem#PersonListItem(Person, String)
 	 */
 	@Test
 	@Verifies(value = "identify best matching name as other name for the given name", method = "PersonListItem(Person, String)")
@@ -77,7 +77,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonListItem#PersonListItem(Person, String)}
+	 * @see PersonListItem#PersonListItem(Person, String)
 	 */
 	@Test
 	@Verifies(value = "identify best matching name in multiple search names", method = "PersonListItem(Person, String)")
@@ -90,7 +90,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonListItem#PersonListItem(Person)}
+	 * @see PersonListItem#PersonListItem(Person)
 	 */
 	@Test
 	@Verifies(value = "should put attribute toString value into attributes map", method = "PersonListItem(Person)")
@@ -109,7 +109,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonListItem#createBestMatch(Person)}
+	 * @see PersonListItem#createBestMatch(Person)
 	 */
 	@Test
 	@Verifies(value = "should return PatientListItem given patient parameter", method = "createBestMatch(Person)")
@@ -119,7 +119,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonListItem#createBestMatch(Person)}
+	 * @see PersonListItem#createBestMatch(Person)
 	 */
 	@Test
 	@Verifies(value = "should return PersonListItem given person parameter", method = "createBestMatch(Person)")

@@ -66,7 +66,7 @@ public class Reflect {
 	 * classes.
 	 * 
 	 * @param fieldClass Class
-	 * @return List<Field>
+	 * @return List&lt;Field&gt;
 	 * @should return all fields include private and super classes
 	 */
 	@SuppressWarnings("unchecked")
@@ -155,7 +155,7 @@ public class Reflect {
 	 * This method return all the fields (including private) until the given parameterized class
 	 * 
 	 * @param subClass Class
-	 * @return List<Field>
+	 * @return List&lt;Field&gt;
 	 * @should return only the sub class fields of given parameterized class
 	 */
 	@SuppressWarnings("unchecked")

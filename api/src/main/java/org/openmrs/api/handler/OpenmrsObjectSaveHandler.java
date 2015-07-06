@@ -29,8 +29,8 @@ import org.openmrs.api.APIException;
 /**
  * This class deals with any object that implements {@link OpenmrsObject}. When an
  * {@link OpenmrsObject} is saved (via a save* method in a service), this handler is automatically
- * called by the {@link RequiredDataAdvice} AOP class. <br/>
- * <br/>
+ * called by the {@link RequiredDataAdvice} AOP class. <br>
+ * <br>
  * This class sets the uuid property on the given OpenmrsObject to a randomly generated <a
  * href="http://wikipedia.org/wiki/UUID">UUID</a> if it is non-null.
  *

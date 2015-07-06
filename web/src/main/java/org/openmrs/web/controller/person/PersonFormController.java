@@ -713,7 +713,7 @@ public class PersonFormController extends SimpleFormController {
 	 * PersonFormController.formBackingObject(request)
 	 * 
 	 * @param person
-	 * @return
+	 * @return the given person object
 	 */
 	protected Person setupFormBackingObject(Person person) {
 		
@@ -739,7 +739,7 @@ public class PersonFormController extends SimpleFormController {
 	 * PersonFormController.referenceData(...)
 	 * 
 	 * @param person
-	 * @return
+	 * @return the given map object
 	 */
 	@SuppressWarnings("unchecked")
 	protected Map setupReferenceData(Map map, Person person) throws Exception {

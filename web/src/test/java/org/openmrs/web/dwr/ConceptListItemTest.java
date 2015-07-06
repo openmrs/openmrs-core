@@ -25,7 +25,7 @@ public class ConceptListItemTest {
 	 * Tests that the constructor sets the preferred name if any even if the matched name is marked
 	 * as fully specified
 	 * 
-	 * @see {@link ConceptListItem#ConceptListItem(Concept, ConceptName, Locale)}
+	 * @see ConceptListItem#ConceptListItem(Concept, ConceptName, Locale)
 	 */
 	@Test
 	public void shouldSetThePreferredNameIfFoundEvenWhenTheMatchedNameIsMarkedAsFullySpecified() throws Exception {
@@ -43,7 +43,7 @@ public class ConceptListItemTest {
 	}
 	
 	/**
-	 * @see {@link ConceptListItem#ConceptListItem(Concept, ConceptName, Locale)}
+	 * @see ConceptListItem#ConceptListItem(Concept, ConceptName, Locale)
 	 * @throws Exception
 	 */
 	@Test
@@ -62,7 +62,7 @@ public class ConceptListItemTest {
 	}
 	
 	/**
-	 * @see {@link ConceptListItem#ConceptListItem(Concept, ConceptName, Locale)}
+	 * @see ConceptListItem#ConceptListItem(Concept, ConceptName, Locale)
 	 * @throws Exception
 	 */
 	@Test
@@ -83,7 +83,7 @@ public class ConceptListItemTest {
 	}
 	
 	/**
-	 * @see {@link ConceptListItem#ConceptListItem(Concept, ConceptName, Locale)}
+	 * @see ConceptListItem#ConceptListItem(Concept, ConceptName, Locale)
 	 * @throws Exception
 	 */
 	@Test

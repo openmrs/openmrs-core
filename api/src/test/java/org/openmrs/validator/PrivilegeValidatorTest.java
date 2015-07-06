@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
 public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
+	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if privilege is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -48,7 +48,7 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
+	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
@@ -73,7 +73,7 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
+	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
@@ -91,7 +91,7 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
+	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should pass validation if field lengths are correct", method = "validate(Object,Errors)")
@@ -107,7 +107,7 @@ public class PrivilegeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PrivilegeValidator#validate(Object,Errors)}
+	 * @see PrivilegeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail validation if field lengths are not correct", method = "validate(Object,Errors)")

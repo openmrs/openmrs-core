@@ -42,7 +42,7 @@ public class Hl7InArchiveListController {
 	 * Render the archived HL7 messages page
 	 *
 	 * @param modelMap
-	 * @return
+	 * @return path
 	 */
 	@RequestMapping("/admin/hl7/hl7InArchives.htm")
 	public String listArchivedHL7s(ModelMap modelMap) {
@@ -56,7 +56,6 @@ public class Hl7InArchiveListController {
 	 * @param iDisplayLength amount of terms to return
 	 * @param sSearch search term(s)
 	 * @param sEcho check digit for datatables
-	 * @param messageState HL7InQueue state to look up
 	 * @return batch of HL7InQueue objects to be converted to JSON
 	 * @throws IOException
 	 */

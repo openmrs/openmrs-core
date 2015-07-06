@@ -531,7 +531,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * @should return negative if other familynamePrefix is greater
 	 * @should return negative if other familyNameSuffix is greater
 	 * @should return negative if other dateCreated is greater
-	 * @Depracated since 1.12. Use DefaultComparator instead.
+	 * @deprecated since 1.12. Use DefaultComparator instead.
 	 * Note: this comparator imposes orderings that are inconsistent with equals.
 	 */
 	@SuppressWarnings("squid:S1210")

@@ -377,8 +377,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#getPossibleAddressValues(org.openmrs.Address,
-	 *      org.openmrs.AddressField)
+	 * @see org.openmrs.api.LocationService#getPossibleAddressValues(Address, String)
 	 */
 	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException {
 		// not implemented by default

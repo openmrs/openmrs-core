@@ -208,7 +208,7 @@ public class ConceptTag extends BodyTagSupport {
 	}
 	
 	/**
-	 * @param SetMemberVar the SetMemberVar to set
+	 * @param setMemberVar the SetMemberVar to set
 	 */
 	public void setSetMemberVar(String setMemberVar) {
 		this.setMemberVar = setMemberVar;

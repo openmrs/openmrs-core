@@ -29,7 +29,7 @@ public class NoteServiceTest extends BaseContextSensitiveTest {
 	protected static final String INITIAL_NOTE_XML = "org/openmrs/api/include/NoteServiceTest-initial.xml";
 	
 	/**
-	 * @see {@link NoteService#voidNote(Note,String)}
+	 * @see NoteService#voidNote(Note,String)
 	 */
 	@Test
 	@Verifies(value = "should void the Note and set the voidReason", method = "voidNote(Note,String)")

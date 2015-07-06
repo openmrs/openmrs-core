@@ -135,7 +135,7 @@ public class DWRUserService {
 	 * Get the user identified by <code>userId</code>
 	 *
 	 * @param userId
-	 * @return
+	 * @return found user item or, if the current user is not authenticated, a dummy user object
 	 */
 	public UserListItem getUser(Integer userId) {
 		UserListItem user = new UserListItem();

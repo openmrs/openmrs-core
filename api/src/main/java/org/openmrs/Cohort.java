@@ -25,12 +25,7 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 /**
- * This class represents a list of patientIds. If it is generated from a CohortDefinition via
- * {@link ReportService#evaluate(org.openmrs.report.ReportSchema, Cohort, EvaluationContext)} then
- * it will contain a link back to the CohortDefinition it came from and the EvalutionContext that
- * definition was evaluated in.
- * 
- * @see org.openmrs.cohort.CohortDefinition
+ * This class represents a list of patientIds.
  */
 @Root(strict = false)
 public class Cohort extends BaseOpenmrsData implements Serializable {
@@ -65,8 +60,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param name
 	 * @param description optional description
 	 * @param ids option array of Integer ids
@@ -83,8 +77,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param name
 	 * @param description optional description
 	 * @param patients optional array of patients
@@ -101,8 +94,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
 	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
@@ -114,8 +106,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * This constructor does not check whether the database contains patients with the given ids,
 	 * but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param name
 	 * @param description optional description
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
@@ -140,8 +131,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	/**
 	 * Convenience contructor taking in a string that is a list of comma separated patient ids This
 	 * constructor does not check whether the database contains patients with the given ids, but
-	 * 
-	 * @see CohortService.saveCohort(Cohort) will.
+	 * {@link org.openmrs.api.CohortService#saveCohort(Cohort)} will.
 	 * @param commaSeparatedIds
 	 */
 	public Cohort(String commaSeparatedIds) {

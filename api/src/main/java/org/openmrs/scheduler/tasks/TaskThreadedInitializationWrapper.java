@@ -46,7 +46,6 @@ public class TaskThreadedInitializationWrapper implements Task {
 	}
 	
 	/**
-	 * @throws InterruptedException
 	 * @see org.openmrs.scheduler.Task#execute() Executes the task defined in the task definition
 	 *      but waits until the initialize method has finished
 	 */

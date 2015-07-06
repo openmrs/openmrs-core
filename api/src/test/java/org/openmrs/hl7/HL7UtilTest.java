@@ -23,7 +23,7 @@ import org.openmrs.test.Verifies;
 public class HL7UtilTest {
 	
 	/**
-	 * @see {@link HL7Util#parseHL7Timestamp(String)}
+	 * @see HL7Util#parseHL7Timestamp(String)
 	 */
 	@Test
 	@SuppressWarnings("deprecation")
@@ -45,7 +45,7 @@ public class HL7UtilTest {
 	}
 	
 	/**
-	 * @see {@link HL7Util#parseHL7Timestamp(String)}
+	 * @see HL7Util#parseHL7Timestamp(String)
 	 */
 	@Test
 	@Verifies(value = "should handle 197804110615-0200", method = "parseHL7Timestamp(String)")
@@ -55,7 +55,7 @@ public class HL7UtilTest {
 	}
 	
 	/**
-	 * @see {@link HL7Util#getTimeZoneOffset(String,Date)}
+	 * @see HL7Util#getTimeZoneOffset(String,Date)
 	 */
 	@Test
 	@Verifies(value = "should return timezone for givenDate and not the current date", method = "getTimeZoneOffset(String,Date)")
@@ -72,7 +72,7 @@ public class HL7UtilTest {
 	}
 	
 	/**
-	 * @see {@link HL7Util#getTimeZoneOffset(String,Date)}
+	 * @see HL7Util#getTimeZoneOffset(String,Date)
 	 */
 	@Test
 	@Verifies(value = "should return timezone string if exists in given string", method = "getTimeZoneOffset(String,Date)")
@@ -81,7 +81,7 @@ public class HL7UtilTest {
 	}
 	
 	/**
-	 * @see {@link HL7Util#parseHL7Time(String)}
+	 * @see HL7Util#parseHL7Time(String)
 	 */
 	@Test
 	@SuppressWarnings("deprecation")

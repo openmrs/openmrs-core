@@ -675,11 +675,11 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Takes a String like "size=compact|order=date" and returns a Map<String,String> from the keys
+	 * Takes a String like "size=compact|order=date" and returns a Map&lt;String,String&gt; from the keys
 	 * to the values.
 	 * 
 	 * @param paramList <code>String</code> with a list of parameters
-	 * @return Map<String, String> of the parameters passed
+	 * @return Map&lt;String, String&gt; of the parameters passed
 	 */
 	public static Map<String, String> parseParameterList(String paramList) {
 		Map<String, String> ret = new HashMap<String, String>();
@@ -1499,7 +1499,7 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Allows easy manipulation of a Map<?, Set>
+	 * Allows easy manipulation of a Map&lt;?, Set&gt;
 	 */
 	public static <K, V> void addToSetMap(Map<K, Set<V>> map, K key, V obj) {
 		Set<V> set = map.get(key);
@@ -1524,8 +1524,7 @@ public class OpenmrsUtil {
 	 * locale.
 	 * 
 	 * @return a simple date format
-	 * @deprecated use {@link Context#getDateFormat()} or {@link
-	 *             #getDateFormat(Context#getLocale())} instead
+	 * @deprecated use {@link Context#getDateFormat()} or {@link #getDateFormat(Locale)} instead
 	 */
 	@Deprecated
 	public static SimpleDateFormat getDateFormat() {
@@ -1867,7 +1866,7 @@ public class OpenmrsUtil {
 	 * Post the given map of variables to the given url string
 	 * 
 	 * @param urlString valid http url to post data to
-	 * @param dataToPost Map<String, String> of key value pairs to post to urlString
+	 * @param dataToPost Map&lt;String, String&gt; of key value pairs to post to urlString
 	 * @return response from urlString after posting
 	 * @deprecated use org.openmrs.util.HttpClient
 	 */
@@ -1948,7 +1947,7 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant <br/>
+	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant <br>
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
 	 * Reader/Writer object as an argument, making this method unnecessary.
 	 * 
@@ -1983,7 +1982,7 @@ public class OpenmrsUtil {
 	 * argument.
 	 * 
 	 * @param properties
-	 * @param file
+	 * @param outStream
 	 * @param comment (which appears in comments in properties file)
 	 */
 	public static void storeProperties(Properties properties, OutputStream outStream, String comment) {
@@ -2006,7 +2005,7 @@ public class OpenmrsUtil {
 	/**
 	 * This method is a replacement for Properties.load(InputStream) so that we can load in utf-8
 	 * characters. Currently the load method expects the inputStream to point to a latin1 encoded
-	 * file. <br/>
+	 * file. <br>
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
 	 * Reader/Writer object as an argument, making this method unnecessary.
 	 * 
@@ -2092,7 +2091,7 @@ public class OpenmrsUtil {
 	/**
 	 * Utility to check the validity of a password for a certain {@link User}. Passwords must be
 	 * non-null. Their required strength is configured via global properties:
-	 * <table>
+	 * <table summary="Configuration props">
 	 * <tr>
 	 * <th>Description</th>
 	 * <th>Property</th>
@@ -2484,7 +2483,7 @@ public class OpenmrsUtil {
 	 * 
 	 * @param s1 the string to compare
 	 * @param s2 the string to compare
-	 * @return
+	 * @return true if strings are equal (ignoring case)
 	 * @should return false if only one of the strings is null
 	 * @should be case insensitive
 	 * @since 1.8

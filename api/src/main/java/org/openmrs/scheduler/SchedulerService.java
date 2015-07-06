@@ -130,7 +130,7 @@ public interface SchedulerService extends OpenmrsService {
 	/**
 	 * Create the given task
 	 *
-	 * @param taskDefinition the task to be created
+	 * @param task the task to be created
 	 * @should save task to the database
 	 */
 	@Authorized( { "Manage Scheduler" })
@@ -140,7 +140,7 @@ public interface SchedulerService extends OpenmrsService {
 	/**
 	 * Return SchedulerConstants
 	 * 
-	 * @return SortedMap<String, String>
+	 * @return SortedMap&lt;String, String&gt;
 	 */
 	public SortedMap<String, String> getSystemVariables();
 	

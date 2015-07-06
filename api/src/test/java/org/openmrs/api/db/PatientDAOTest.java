@@ -101,7 +101,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
 	@Verifies(value = "should escape an asterix character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
@@ -134,7 +134,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
 	@Verifies(value = "should escape percentage character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
@@ -166,7 +166,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
 	@Verifies(value = "should escape underscore character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
@@ -199,7 +199,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
 	@Verifies(value = "should escape percentage character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
@@ -228,7 +228,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
 	@Verifies(value = "should escape underscore character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
@@ -258,7 +258,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 * @see PatientDAO#getPatients(String,String,List<QPatientIdentifierType;>,null)
 	 */
 	@Test
 	@Verifies(value = "should escape an asterix character in name phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")

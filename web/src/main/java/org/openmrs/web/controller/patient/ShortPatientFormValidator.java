@@ -34,7 +34,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * This class validates a Short Patient Model object in the {@link NewPatientFormController}
+ * This class validates a Short Patient Model object in the {@link ShortPatientFormController}.
  */
 public class ShortPatientFormValidator implements Validator {
 	

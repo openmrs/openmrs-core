@@ -1172,7 +1172,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#getSearchLocales(org.openmrs.User)
+	 * @see AdministrationService#getSearchLocales()
 	 */
 	@Override
 	@Transactional(readOnly = true)

@@ -20,8 +20,8 @@ import org.openmrs.aop.RequiredDataAdvice;
 /**
  * This class deals with {@link ConceptReferenceTerm} objects when they are saved via a save* method
  * in an Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
- * class. <br/>
- * It sets the termA field for all {@link ConceptReferenceTermMap}s</li>
+ * class. <br>
+ * It sets the termA field for all {@link ConceptReferenceTermMap}s
  *
  * @see RequiredDataHandler
  * @see SaveHandler

@@ -20,7 +20,7 @@ import org.openmrs.aop.RequiredDataAdvice;
 
 /**
  * Annotation used to indicate that a field of an OpenmrsObject allows direct access 
- * <br/>
+ * <br>
  * If this annotation is not present the field will be accessed via getter
  * 
  * @since 1.10

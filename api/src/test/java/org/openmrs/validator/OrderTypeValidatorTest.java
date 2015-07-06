@@ -42,7 +42,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should fail if the orderType object is null", method = "validate(Object,Errors)")
@@ -52,7 +52,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if name is null", method = "validate(Object,Errors)")
@@ -64,7 +64,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if name is empty", method = "validate(Object,Errors)")
@@ -90,7 +90,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if name is white space", method = "validate(Object,Errors)")
@@ -103,7 +103,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if name is a duplicate", method = "validate(Object,Errors)")
@@ -116,7 +116,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if conceptClass is a duplicate", method = "validate(Object,Errors)")
@@ -132,7 +132,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if parent is among its descendants", method = "validate(Object,Errors)")
@@ -147,7 +147,7 @@ public class OrderTypeValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderTypeValidator#validate(Object,Errors)}
+	 * @see OrderTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	@Verifies(value = "should fail if parent is also a direct child", method = "validate(Object,Errors)")

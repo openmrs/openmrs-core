@@ -24,10 +24,10 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 
 /**
- * This class should be used in the *Services to validate objects before saving them. <br/>
- * <br/>
- * The validators are added to this class in the spring applicationContext-service.xml file. <br/>
- * <br/>
+ * This class should be used in the *Services to validate objects before saving them. <br>
+ * <br>
+ * The validators are added to this class in the spring applicationContext-service.xml file. <br>
+ * <br>
  * Example usage:
  *
  * <pre>

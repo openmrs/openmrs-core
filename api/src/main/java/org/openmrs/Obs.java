@@ -38,11 +38,11 @@ import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
- * An observation is a single unit of clinical information. <br/>
- * <br/>
+ * An observation is a single unit of clinical information. <br>
+ * <br>
  * Observations are collected and grouped together into one Encounter (one visit). Obs can be
- * grouped in a hierarchical fashion. <br/>
- * <br/>
+ * grouped in a hierarchical fashion. <br>
+ * <br>
  * <p>
  * The {@link #getObsGroup()} method returns an optional parent. That parent object is also an Obs.
  * The parent Obs object knows about its child objects through the {@link #getGroupMembers()}
@@ -413,7 +413,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
 	 * true, then this returns null.
 	 * 
-	 * @return a Set<Obs> of the members of this group.
+	 * @return a Set&lt;Obs&gt; of the members of this group.
 	 * @see #addGroupMember(Obs)
 	 * @see #hasGroupMembers()
 	 */
@@ -512,13 +512,13 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method that returns related Obs If the Obs argument is not an ObsGroup: a
-	 * Set<Obs> will be returned containing all of the children of this Obs' parent that are not
+	 * Set&lt;Obs&gt; will be returned containing all of the children of this Obs' parent that are not
 	 * ObsGroups themselves. This will include this Obs by default, unless getObsGroup() returns
-	 * null, in which case an empty set is returned. If the Obs argument is an ObsGroup: a Set<Obs>
+	 * null, in which case an empty set is returned. If the Obs argument is an ObsGroup: a Set&lt;Obs&gt;
 	 * will be returned containing 1. all of this Obs' group members, and 2. all ancestor Obs that
 	 * are not themselves obsGroups.
 	 * 
-	 * @return Set<Obs>
+	 * @return Set&lt;Obs&gt;
 	 */
 	public Set<Obs> getRelatedObservations() {
 		Set<Obs> ret = new HashSet<Obs>();
@@ -889,8 +889,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Set the ComplexData for this Obs. The ComplexData is stored in the file system or elsewhere,
-	 * but is not persisted to the database. <br/>
-	 * <br/>
+	 * but is not persisted to the database. <br>
+	 * <br>
 	 * {@link ComplexObsHandler}s that are registered to {@link ConceptComplex}s will persist the
 	 * {@link ComplexData#getData()} object to the correct place for the given concept.
 	 * 
@@ -903,8 +903,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Get the ComplexData. This is retrieved by the {@link ComplexObsHandler} from the file system
-	 * or another location, not from the database. <br/>
-	 * <br/>
+	 * or another location, not from the database. <br>
+	 * <br>
 	 * This will be null unless you call:
 	 * 
 	 * <pre>
@@ -1125,7 +1125,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * as a string This method is a waste and should be not be used. This was used in the web layer
 	 * because jstl can't pass parameters to a method (${obs.valueAsString[locale]} was used instead
 	 * of what would be convenient ${obs.valueAsString(locale)}) Now the openmrs:format tag should
-	 * be used in the web layer: <openmrs:format obsValue="${obs}"/>
+	 * be used in the web layer: <code>&lt;openmrs:format obsValue="${obs}"/&gt;</code>
 	 * 
 	 * @deprecated
 	 */

@@ -32,7 +32,7 @@ public class PatientTest {
 	/**
 	 * Test the add/removeIdentifiers method in the patient object
 	 * 
-	 * @see {@link Patient#addIdentifier(PatientIdentifier)}
+	 * @see Patient#addIdentifier(PatientIdentifier)
 	 */
 	@Test
 	@Verifies(value = "should add identifier to current list", method = "addIdentifier(PatientIdentifier)")
@@ -139,7 +139,7 @@ public class PatientTest {
 	}
 	
 	/**
-	 * @see {@link Patient#addIdentifier(PatientIdentifier)}
+	 * @see Patient#addIdentifier(PatientIdentifier)
 	 */
 	@Test
 	@Verifies(value = "should not fail with null identifiers list", method = "addIdentifier(PatientIdentifier)")
@@ -150,7 +150,7 @@ public class PatientTest {
 	}
 	
 	/**
-	 * @see {@link Patient#getIdentifiers()}
+	 * @see Patient#getIdentifiers()
 	 */
 	@Test
 	@Verifies(value = "should not return null", method = "getIdentifiers()")
@@ -161,7 +161,7 @@ public class PatientTest {
 	}
 	
 	/**
-	 * @see {@link Patient#addIdentifier(PatientIdentifier)}
+	 * @see Patient#addIdentifier(PatientIdentifier)
 	 */
 	@Test
 	@Verifies(value = "should not add identifier that is in list already", method = "addIdentifier(PatientIdentifier)")
@@ -187,7 +187,7 @@ public class PatientTest {
 	}
 	
 	/**
-	 * @see {@link Patient#removeIdentifier(PatientIdentifier)}
+	 * @see Patient#removeIdentifier(PatientIdentifier)
 	 */
 	@Test
 	@Verifies(value = "should remove identifier if exists", method = "removeIdentifier(PatientIdentifier)")
@@ -287,7 +287,7 @@ public class PatientTest {
 	}
 	
 	/**
-	 * @see {@link Patient#getActiveIdentifiers()}
+	 * @see Patient#getActiveIdentifiers()
 	 */
 	@Test
 	@Verifies(value = "should return preferred identifiers first in the list", method = "getActiveIdentifiers()")

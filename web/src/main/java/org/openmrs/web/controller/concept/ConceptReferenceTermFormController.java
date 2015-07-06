@@ -212,7 +212,6 @@ public class ConceptReferenceTermFormController {
 	 * @param request the {@link WebRequest} object
 	 * @param conceptReferenceTermModel the concept reference term model object for the term to
 	 *            unretire
-	 * @param retireReason the reason why the concept reference term is being unretired
 	 * @return the url to redirect to
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/concepts/unretireConceptReferenceTerm")

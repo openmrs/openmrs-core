@@ -104,7 +104,7 @@ public class OpenmrsMessageTag extends OpenmrsHtmlEscapingAwareTag {
 	private boolean javaScriptEscape = false;
 	
 	/**
-	 * @see MessageTag#setMessage(Object)
+	 * @see MessageTag#setMessage(MessageSourceResolvable)
 	 */
 	public void setMessage(Object message) {
 		this.message = message;

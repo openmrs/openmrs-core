@@ -56,7 +56,7 @@ public class TestInstallUtil {
 	 * @param databaseName
 	 * @param user
 	 * @param pwd
-	 * @return
+	 * @return true if data was added successfully
 	 */
 	protected static boolean addTestData(String host, int port, String databaseName, String user, String pwd, String filePath) {
 		Process proc = null;
@@ -252,10 +252,10 @@ public class TestInstallUtil {
 	}
 	
 	/**
-	 * @param url
+	 * @param urlString
 	 * @param openmrsUsername
 	 * @param openmrsPassword
-	 * @return
+	 * @return input stream
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
