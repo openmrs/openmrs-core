@@ -884,8 +884,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.parameter.EncounterSearchCriteria)
 	 */
 	@Test
-	@Verifies(value = "should get encounters by date changed", method = "getEncounters(EncounterSearchParameter)")
-	public void getEncounters_shouldGetEncountersByDateChanged() throws Exception {
+	@Verifies(value = "should get encounters modified after specified date", method = "getEncounters(EncounterSearchParameter)")
+	public void getEncounters_shouldGetEncountersModifiedAfterSpecifiedDate() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		Assert.assertEquals(7, encounterService.getEncounters(
 				encounterSearchForVoidedWithDateChanged("2006-01-01")).size());
