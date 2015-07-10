@@ -213,7 +213,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterSearchCriteria the object containing search parameters
 	 * @return a list of encounters ordered by increasing encounterDatetime
 	 * @since 1.12
-	 * @should get encounters by date changed
+	 * @should get encounters modified after specified date
 	 */
 	@Authorized( { PrivilegeConstants.GET_ENCOUNTERS })
 	public List<Encounter> getEncounters(EncounterSearchCriteria encounterSearchCriteria);
