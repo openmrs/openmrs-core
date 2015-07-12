@@ -54,7 +54,7 @@ public class DoubleRangeTest {
 
         @Test
         @Verifies(value = "return infinite low and high if called with null parameters", method = "DoubleRange(Double low, Double high)")
-        public void DoubleRange_shouldReturnNullOnNullParameters() {
+        public void DoubleRange_shouldReturnInfiniteLowAndHighIfCalledWithNullParameters() {
                 DoubleRange dr = new DoubleRange(null, null);
                 assertEquals(Double.POSITIVE_INFINITY, dr.getHigh());
                 assertEquals(Double.NEGATIVE_INFINITY, dr.getLow());
@@ -84,8 +84,8 @@ public class DoubleRangeTest {
         }
 
         @Test
-        @Verifies(value = "set high to non-null parameter", method = "setHigh(Double high)")
-        public void setHigh_shouldSetHighToNonNullParameter() {
+        @Verifies(value = "cause high to have the set value", method = "setHigh(Double high)")
+        public void setHigh_shouldCauseHighToHaveTheSetValue() {
                 DoubleRange dr = new DoubleRange(null, null);
                 dr.setHigh(8.0);
                 assertEquals(8.0, dr.getHigh());
@@ -115,8 +115,8 @@ public class DoubleRangeTest {
         }
 
         @Test
-        @Verifies(value = "set low to non-null parameter", method = "setLow(Double low)")
-        public void setLow_shouldSetLowToNonNullParameter() {
+        @Verifies(value = "cause low to have the set value", method = "setLow(Double low)")
+        public void setLow_shouldCauseLowToHaveTheSetValue() {
                 DoubleRange dr = new DoubleRange(null, null);
                 dr.setLow(8.0);
                 assertEquals(8.0, dr.getLow());
@@ -167,11 +167,11 @@ public class DoubleRangeTest {
         }
 
         /**
-         * @verifies return minus one if both lows are equal but other high is greater than this high
+         * @verifies return minus one if both lows are equal but other high is less than this high
          * @see DoubleRange#compareTo(DoubleRange)
          */
         @Test
-        public void compareTo_shouldReturnMinusOneIfBothLowsAreEqualButOtherHighIsGreaterThanThisHigh() throws Exception {
+        public void compareTo_shouldReturnMinusOneIfBothLowsAreEqualButOtherHighIsLessThanThisHigh() throws Exception {
                 DoubleRange r1 = new DoubleRange(1.0, 2.0);
                 DoubleRange r2 = new DoubleRange(1.0, 1.0);
                 assertEquals(-1, r1.compareTo(r2));
