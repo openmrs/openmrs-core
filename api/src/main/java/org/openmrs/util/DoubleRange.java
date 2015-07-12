@@ -53,7 +53,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	/**
 	 * @param high The high to set.
 	 * @should set high to positive infinity on null parameter
-	 * @should set high to non-null parameter
+	 * @should cause low to have the set value
 	 */
 	public void setHigh(Double high) {
 		this.high = high == null ? new Double(Double.POSITIVE_INFINITY) : high;
@@ -71,7 +71,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	/**
 	 * @param low The low to set.
 	 * @should set low to negative infinity on null parameter
-	 * @should set low to non-null parameter
+	 * @should cause low to have the set value
 	 */
 	public void setLow(Double low) {
 		this.low = low == null ? new Double(Double.NEGATIVE_INFINITY) : low;
@@ -82,7 +82,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * @should return plus 1 if this low is greater than other low
 	 * @should return minus one if this low is lower than other low
 	 * @should return plus one if both lows are equal but other high is greater than this high
-	 * @should return minus one if both lows are equal but other high is greater than this high
+	 * @should return minus one if both lows are equal but other high is less than this high
 	 * @should return zero if both lows and both highs are equal
 	 * @should return 1 if this range is wider than other range
 	 */
