@@ -22,7 +22,7 @@ public class UncaughtExceptionController {
 	
 	private static final long serialVersionUID = 1L;
 	
-	@RequestMapping(value = "/uncaughtException", method = RequestMethod.POST)
+	@RequestMapping(value = "/uncaughtException", method = {RequestMethod.POST,RequestMethod.GET})
 	public void displayUncaughtException() {
 		
 	}
