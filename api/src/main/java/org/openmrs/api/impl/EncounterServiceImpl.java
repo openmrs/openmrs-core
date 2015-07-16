@@ -42,6 +42,9 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.api.db.EncounterDaoJpa;
+import org.openmrs.api.db.EncounterRoleDaoJpa;
+import org.openmrs.api.db.EncounterTypeDaoJpa;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
@@ -51,6 +54,8 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 
 /**
  * Default implementation of the {@link EncounterService}
@@ -67,6 +72,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	// private Log log = LogFactory.getLog(this.getClass());
 	
 	private EncounterDAO dao;
+	
+	@Inject
+	private EncounterDaoJpa encounterDaoJpa;
+
+	@Inject
+	private EncounterRoleDaoJpa encounterRoleDaoJpa;
+
+	@Inject
+	private EncounterTypeDaoJpa encounterTypeDaoJpa;
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#setEncounterDAO(org.openmrs.api.db.EncounterDAO)
@@ -185,7 +199,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		
 		// do the actual saving to the database
-		dao.saveEncounter(encounter);
+		encounterDaoJpa.save(encounter);
 		
 		// save the new orders
 		for (Order o : encounter.getOrders()) {
@@ -201,7 +215,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Transactional(readOnly = true)
 	public Encounter getEncounter(Integer encounterId) throws APIException {
-		Encounter encounter = dao.getEncounter(encounterId);
+		Encounter encounter = encounterDaoJpa.findOne(encounterId);
 		if (encounter == null) {
 			return null;
 		} else if (canViewEncounter(encounter, null)) {
@@ -852,7 +866,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public EncounterRole saveEncounterRole(EncounterRole encounterRole) throws APIException {
-		dao.saveEncounterRole(encounterRole);
+		encounterRoleDaoJpa.save(encounterRole);
 		return encounterRole;
 	}
 	
@@ -896,7 +910,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public EncounterRole getEncounterRoleByName(String name) {
-		return dao.getEncounterRoleByName(name);
+		return encounterRoleDaoJpa.findOneByName(name);
 	}
 	
 	/**
