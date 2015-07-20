@@ -28,9 +28,9 @@ public class NameSupportTest extends BaseWebContextSensitiveTest {
 	public void getInstance_shouldFindNameSupportBean() throws Exception {
 		NameSupport nameSupport = NameSupport.getInstance();
 		Assert.assertNotNull(nameSupport);
-		Assert.assertNotNull(nameSupport.getInstance().getDefaultLayoutFormat());
+		Assert.assertNotNull(nameSupport.getDefaultLayoutFormat());
 		//make sure that all 5 layout templates defined at the time of the package change continue to work
-		Assert.assertTrue(NameSupport.getInstance().getLayoutTemplates().size() >= 5);
+		Assert.assertTrue(nameSupport.getLayoutTemplates().size() >= 5);
 	}
 	
 }
