@@ -70,7 +70,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		Context.flushSession();
-		getConnection().commit(); // tasks reappear at the start of the next test otherwise
 		log.debug("SchedulerServiceTest setup() complete");
 	}
 	
