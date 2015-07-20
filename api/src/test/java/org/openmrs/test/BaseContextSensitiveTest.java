@@ -150,6 +150,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	private static boolean isBaseSetup;
 	
 	/**
+	 * Lock for synchronizing access to the isBaseSetup static variable
+	 */
+	private static final Object isBaseSetupLock = new Object();
+	
+	/**
 	 * Stores a user authenticated for running tests which allows to discover a situation when some
 	 * test authenticates as a different user and we need to revert to the original one
 	 */
@@ -795,7 +800,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		updateSearchIndex();
 		
-		isBaseSetup = false;
+		synchronized (isBaseSetupLock) {
+			isBaseSetup = false;
+		}
 	}
 	
 	/**
@@ -837,23 +844,27 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// marked this class as a non-inmemory database, skip these base steps.
 		if (useInMemoryDatabase()) {
 			if (!skipBaseSetup) {
-				if (!isBaseSetup) {
-					initializeInMemoryDatabase();
-					
-					executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
-					
-					//Commit so that it is not rolled back after a test.
-					getConnection().commit();
-					
-					updateSearchIndex();
-					
-					isBaseSetup = true;
+				synchronized (isBaseSetupLock) {
+					if (!isBaseSetup) {
+						initializeInMemoryDatabase();
+						
+						executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
+						
+						//Commit so that it is not rolled back after a test.
+						getConnection().commit();
+						
+						updateSearchIndex();
+						
+						isBaseSetup = true;
+					}
 				}
 				
 				authenticate();
 			} else {
-				if (isBaseSetup) {
-					deleteAllData();
+				synchronized (isBaseSetupLock) {
+					if (isBaseSetup) {
+						deleteAllData();
+					}
 				}
 			}
 		}
