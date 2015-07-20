@@ -171,8 +171,6 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should escape underscore character in identifier phrase", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
 	public void getPatients_shouldEscapeUnderscoreCharacterInIdentifierPhrase() throws Exception {
-		deleteAllData();
-		baseSetupWithStandardDataAndAuthentication();
 		Patient patient2 = pService.getPatient(2);
 		PatientIdentifier patientIdentifier = new PatientIdentifier("_567", pService.getPatientIdentifierType(5), Context
 		        .getLocationService().getLocation(1));

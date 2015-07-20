@@ -151,7 +151,6 @@ public class SchedulerFormControllerTest extends BaseWebContextSensitiveTest {
 		assertTrue(mav.getModel().isEmpty());
 		
 		Assert.assertSame(oldTaskInstance, task.getTaskInstance());
-		deleteAllData();
 	}
 	
 	/**

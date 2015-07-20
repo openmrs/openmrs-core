@@ -93,7 +93,6 @@ public class TaskHelperTest extends BaseWebContextSensitiveTest {
 		taskHelper.waitUntilTaskIsExecuting(task, MAX_WAIT_TIME_IN_MILLISECONDS);
 		
 		Assert.assertTrue(task.getTaskInstance().isExecuting());
-		deleteAllData();
 	}
 	
 	/**

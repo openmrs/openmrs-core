@@ -57,8 +57,6 @@ public class RoleFormControllerTest extends BaseWebContextSensitiveTest {
 		wth.handle(requestPOST);
 		
 		Assert.assertEquals("updated child", getUS().getRole("child").getDescription());
-		
-		deleteAllData();
 	}
 	
 }
