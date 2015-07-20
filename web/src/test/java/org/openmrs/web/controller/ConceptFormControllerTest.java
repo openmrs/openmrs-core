@@ -203,6 +203,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Collection<ConceptName> actualNames = actualConcept.getNames();
 		assertEquals(2, actualNames.size());
 		assertEquals(EXPECTED_PREFERRED_NAME, actualConcept.getFullySpecifiedName(new Locale("en", "GB")).getName());
+		assertEquals(1, actualConcept.getShortNames().size());
 		assertNotNull(actualConcept.getShortNameInLocale(new Locale("en", "GB")));
 		assertEquals(EXPECTED_SHORT_NAME, actualConcept.getShortNameInLocale(new Locale("en", "GB")).getName());
 		assertNull(actualConcept.getDescription(new Locale("en", "GB")));
