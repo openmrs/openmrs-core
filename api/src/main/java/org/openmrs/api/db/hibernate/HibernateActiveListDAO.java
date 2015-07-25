@@ -32,12 +32,16 @@ import org.openmrs.api.db.DAOException;
  * @see org.openmrs.api.db.ActiveListDAO
  * @see org.openmrs.api.ActiveListService
  */
-public class HibernateActiveListDAO implements ActiveListDAO {
+public class HibernateActiveListDAO extends HibernateOpenmrsDataDAO<ActiveListItem> implements ActiveListDAO {
 	
 	/**
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
+	
+	public HibernateActiveListDAO() {
+		super(ActiveListItem.class);
+	}
 	
 	/**
 	 * Set session factory

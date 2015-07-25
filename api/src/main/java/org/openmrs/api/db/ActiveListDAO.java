@@ -25,10 +25,10 @@ import org.openmrs.activelist.ActiveListType;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.ActiveListService
  */
-public interface ActiveListDAO {
+public interface ActiveListDAO extends OpenmrsDataDAO<ActiveListItem> {
 	
 	/**
-	 * @see org.openmrs.api.ActiveListService#getActiveListItems(org.openmrs.Patient,
+	 * @see org.openmrs.api.ActiveListService#getActiveListItems(org.openmrs.Person,
 	 *      org.openmrs.activelist.ActiveListType)
 	 */
 	public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws DAOException;
