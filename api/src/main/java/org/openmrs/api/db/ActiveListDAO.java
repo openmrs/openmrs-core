@@ -21,7 +21,7 @@ import org.openmrs.activelist.ActiveListType;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.ActiveListService
  */
-public interface ActiveListDAO {
+public interface ActiveListDAO extends OpenmrsDataDAO<ActiveListItem> {
 	
 	/**
 	 * @see org.openmrs.api.ActiveListService#getActiveListItems(Person, ActiveListType)
