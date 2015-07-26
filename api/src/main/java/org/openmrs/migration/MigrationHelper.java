@@ -60,11 +60,12 @@ import org.xml.sax.SAXException;
 
 public class MigrationHelper {
 	
+	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
 	protected final static Log log = LogFactory.getLog(MigrationHelper.class);
 	
 	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	
-	static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	public static Date parseDate(String s) throws ParseException {
 		if (s == null || s.length() == 0) {
@@ -73,6 +74,7 @@ public class MigrationHelper {
 			if (s.length() == 10) {
 				s += " 00:00:00";
 			}
+			DateFormat df = new SimpleDateFormat(DATE_TIME_PATTERN);
 			return df.parse(s);
 		}
 	}

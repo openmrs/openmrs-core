@@ -39,6 +39,8 @@ import org.openmrs.hl7.HL7Constants;
  */
 public class FormUtil {
 	
+	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+
 	/**
 	 * Converts a string into a valid XML token (tag name)
 	 *
@@ -178,9 +180,10 @@ public class FormUtil {
 		return dateToString(new Date());
 	}
 	
-	private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+	
 	
 	public static String dateToString(Date date) {
+		DateFormat dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT);
 		String dateString = dateFormatter.format(new Date());
 		// ISO 8601 requires a colon in time zone offset (Java doesn't
 		// include the colon, so we need to insert it
