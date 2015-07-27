@@ -68,6 +68,12 @@ import org.openmrs.util.Format.FORMAT_TYPE;
  */
 public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
+	private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
+
+	private static final String TIME_PATTERN = "HH:mm";
+
+	private static final String DATE_PATTERN = "yyyy-MM-dd";
+
 	public static final long serialVersionUID = 112342333L;
 	
 	private static final Log log = LogFactory.getLog(Obs.class);
@@ -1012,6 +1018,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 					}
 				}
 			} else if ("DT".equals(abbrev)) {
+				DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 				return (getValueDatetime() == null ? "" : dateFormat.format(getValueDatetime()));
 			} else if ("TM".equals(abbrev)) {
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIME));
@@ -1076,12 +1083,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		return "";
 	}
 	
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	
-	private static DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-	
-	private static DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	
 	/**
 	 * Sets the value for the obs from a string depending on the datatype of the question concept
 	 * 
@@ -1104,10 +1105,13 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			} else if ("NM".equals(abbrev) || "SN".equals(abbrev)) {
 				setValueNumeric(Double.valueOf(s));
 			} else if ("DT".equals(abbrev)) {
+				DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 				setValueDatetime(dateFormat.parse(s));
 			} else if ("TM".equals(abbrev)) {
+				DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
 				setValueDatetime(timeFormat.parse(s));
 			} else if ("TS".equals(abbrev)) {
+				DateFormat datetimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
 				setValueDatetime(datetimeFormat.parse(s));
 			} else if ("ST".equals(abbrev)) {
 				setValueText(s);
