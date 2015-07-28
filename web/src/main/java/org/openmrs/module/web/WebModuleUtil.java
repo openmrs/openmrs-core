@@ -153,20 +153,58 @@ public class WebModuleUtil {
 			JarFile jarFile = null;
 			OutputStream outStream = null;
 			InputStream inStream = null;
+			String owaName = "somename";
 			try {
 				File modFile = mod.getFile();
 				jarFile = new JarFile(modFile);
 				Enumeration<JarEntry> entries = jarFile.entries();
+				Enumeration<JarEntry> entriestoloop = jarFile.entries();
+				String owaAppPathFolder = Context.getAdministrationService().getGlobalProperty("owa.appFolderPath");
+				StringBuffer absPath;
+				
+				while (entriestoloop.hasMoreElements()) {
+					JarEntry testEntry = entriestoloop.nextElement();
+					String name = testEntry.getName();
+					if (name.endsWith("manifest.webapp")) {
+						owaName = name.substring(11, 22);
+					}
+				}
 				
 				while (entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
 					String name = entry.getName();
 					log.debug("Entry name: " + name);
-					if (name.startsWith("web/module/")) {
+					if (name.contains(owaName)) {
+						String filepath = name.substring(11);
+						String moduleName = mod.getName();
+						File modName = new File(String.format("%s/%s", owaAppPathFolder, moduleName.replace("/",
+						    File.separator)));
+						if (!modName.exists()) {
+							modName.mkdir();
+						}
+						absPath = new StringBuffer(owaAppPathFolder + "/" + moduleName);
+						absPath.append("/" + filepath);
+						File outFile = new File(absPath.toString().replace("/", File.separator));
+						if (entry.isDirectory()) {
+							if (!outFile.exists()) {
+								outFile.mkdirs();
+							}
+						} else {
+							// make the parent directories in case it doesn't exist
+							File parentDir = outFile.getParentFile();
+							if (!parentDir.exists()) {
+								parentDir.mkdirs();
+							}
+							outStream = new FileOutputStream(outFile, false);
+							inStream = jarFile.getInputStream(entry);
+							OpenmrsUtil.copyFile(inStream, outStream);
+						}
+					}
+					if (name.startsWith("web/module/") && !name.contains(owaName)) {
 						// trim out the starting path of "web/module/"
 						String filepath = name.substring(11);
 						
-						StringBuffer absPath = new StringBuffer(realPath + "/WEB-INF");
+						absPath = new StringBuffer(realPath + "/WEB-INF");
 						
 						// If this is within the tag file directory, copy it into /WEB-INF/tags/module/moduleId/...
 						if (filepath.startsWith("tags/")) {
@@ -199,7 +237,7 @@ public class WebModuleUtil {
 							}
 							
 							//if (outFile.getName().endsWith(".jsp") == false)
-							//	outFile = new File(absPath.replace("/", File.separator) + MODULE_NON_JSP_EXTENSION);
+							//      outFile = new File(absPath.replace("/", File.separator) + MODULE_NON_JSP_EXTENSION);
 							
 							// copy the contents over to the webapp for non directories
 							outStream = new FileOutputStream(outFile, false);
@@ -926,13 +964,13 @@ public class WebModuleUtil {
 		
 		if (skipRefresh == false) {
 			//try {
-			//	if (dispatcherServlet != null)
-			//		dispatcherServlet.reInitFrameworkServlet();
-			//	if (dwrServlet != null)
-			//		dwrServlet.reInitServlet();
+			//      if (dispatcherServlet != null)
+			//             dispatcherServlet.reInitFrameworkServlet();
+			//      if (dwrServlet != null)
+			//             dwrServlet.reInitServlet();
 			//}
 			//catch (ServletException se) {
-			//	log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
+			//      log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
 			//}
 			
 			refreshWAC(servletContext, false, null);
