@@ -179,6 +179,10 @@ public class Context {
 		contextDAO = dao;
 	}
 	
+	public static void setDAO(ContextDAO dao) {
+		contextDAO = dao;
+	}
+	
 	/**
 	 * Loads a class with an instance of the OpenmrsClassLoader. Convenience method equivalent to
 	 * OpenmrsClassLoader.getInstance().loadClass(className);
