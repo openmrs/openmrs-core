@@ -159,7 +159,7 @@ public class WebModuleUtil {
 				jarFile = new JarFile(modFile);
 				Enumeration<JarEntry> entries = jarFile.entries();
 				Enumeration<JarEntry> entriestoloop = jarFile.entries();
-				String owaAppPathFolder = Context.getAdministrationService().getGlobalProperty("owa.appFolderPath");
+				String owaAppFolderPath = Context.getAdministrationService().getGlobalProperty("owa.appFolderPath");
 				StringBuffer absPath;
 				
 				while (entriestoloop.hasMoreElements()) {
@@ -177,12 +177,12 @@ public class WebModuleUtil {
 					if (name.contains(owaName)) {
 						String filepath = name.substring(11);
 						String moduleName = mod.getName();
-						File modName = new File(String.format("%s/%s", owaAppPathFolder, moduleName.replace("/",
+						File modName = new File(String.format("%s/%s", owaAppFolderPath, moduleName.replace("/",
 						    File.separator)));
 						if (!modName.exists()) {
 							modName.mkdir();
 						}
-						absPath = new StringBuffer(owaAppPathFolder + "/" + moduleName);
+						absPath = new StringBuffer(owaAppFolderPath + "/" + moduleName);
 						absPath.append("/" + filepath);
 						File outFile = new File(absPath.toString().replace("/", File.separator));
 						if (entry.isDirectory()) {
@@ -342,6 +342,12 @@ public class WebModuleUtil {
 			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleIdAsPath();
 			File outFile = new File(folderPath.replace("/", File.separator));
 			outFile.deleteOnExit();
+			String owaAppFolderPath = Context.getAdministrationService().getGlobalProperty("owa.appFolderPath");
+			String owafolderPath = owaAppFolderPath + "/" + mod.getName();
+			File owaFile = new File(owafolderPath.replace("/", File.separator));
+			if (owaFile.exists()) {
+				owaFile.deleteOnExit();
+			}
 			
 			// additional checks on module needing a context refresh
 			if (moduleNeedsContextRefresh == false) {
@@ -886,6 +892,17 @@ public class WebModuleUtil {
 		if (moduleWebFolder.exists()) {
 			try {
 				OpenmrsUtil.deleteDirectory(moduleWebFolder);
+			}
+			catch (IOException io) {
+				log.warn("Couldn't delete: " + moduleWebFolder.getAbsolutePath(), io);
+			}
+		}
+		String owaAppFolderPath = Context.getAdministrationService().getGlobalProperty("owa.appFolderPath");
+		String owafolderPath = owaAppFolderPath + "/" + mod.getName();
+		File owaFile = new File(owafolderPath.replace("/", File.separator));
+		if (owaFile.exists()) {
+			try {
+				OpenmrsUtil.deleteDirectory(owaFile);
 			}
 			catch (IOException io) {
 				log.warn("Couldn't delete: " + moduleWebFolder.getAbsolutePath(), io);
