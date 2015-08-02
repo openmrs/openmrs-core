@@ -1727,6 +1727,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
+	 * @should delete any obsGroupMembers here before deleting the obs
 	 */
 	@Test
 	@Verifies(value = "Should delete any obsGroupMembers here before deleting the obs", method = "purgeObs(Obs,boolean)")
@@ -1793,6 +1794,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see ObsService#purgeObs(Obs,boolean)
+	 * @should not delete referenced orders when purging obs
 	 */
 	@Test
 	@Verifies(value = "Should not delete referenced orders when purging obs", method = "purgeObs(Obs,boolean)")
@@ -1800,10 +1802,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 
 		executeDataSet(INITIAL_OBS_XML);
 		ObsService obsService = Context.getObsService();
+		final OrderService orderService = Context.getOrderService();
+
 		final int orderReferencingObsId = 4;
 		final Obs obs = obsService.getObs(orderReferencingObsId);
 
 		final Order order = obsService.getObs(orderReferencingObsId).getOrder();
+		final Integer referencedOrderId = order.getOrderId();
 
 		Assert.assertNotNull(obsService.getObs(orderReferencingObsId));
 		Assert.assertNotNull(order);
@@ -1811,6 +1816,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Context.getObsService().purgeObs(obs, false);
 
 		Assert.assertNull(obsService.getObs(orderReferencingObsId));
-		Assert.assertNotNull(order);
+		Assert.assertNotNull(orderService.getOrder(referencedOrderId));
 	}
 }
