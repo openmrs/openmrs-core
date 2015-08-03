@@ -9,23 +9,16 @@
  */
 package org.openmrs.customdatatype.datatype;
 
-import org.openmrs.OpenmrsMetadata;
-import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.OpenmrsObject;
 
 /**
- * This is a superclass for custom datatypes for OpenmrsMetadata
+ * This is a class for custom datatypes for programs
  * 
  * @since 1.12
  */
-public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends BaseOpenmrsDatatype<T> {
-	
-	/**
-	 * @see BaseOpenmrsDatatype#doGetTextSummary(Object)
-	 * @should use the name in summary instance
-	 */
+public class ProgramDatatype<T extends OpenmrsObject> extends BaseOpenmrsDatatype<T> {
 	@Override
-	public Summary doGetTextSummary(T typedValue) {
-		return new CustomDatatype.Summary(typedValue.getName(), true);
+	public T deserialize(String serializedValue){
+		return null;
 	}
-	
 }
