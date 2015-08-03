@@ -9,20 +9,10 @@
  */
 package org.openmrs.web.attribute.handler;
 
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.Program;
-import org.openmrs.customdatatype.CustomDatatype;
-import org.openmrs.OpenmrsMetadata;
-import org.openmrs.customdatatype.datatype.BaseMetadataDatatype;
-import org.openmrs.customdatatype.CustomDatatype.Summary;
-import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.datatype.ProgramDatatype;
-import org.openmrs.serialization.SerializationException;
-import org.openmrs.serialization.SimpleXStreamSerializer;
-import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * Handler for the Program custom datatype
@@ -31,28 +21,28 @@ import org.springframework.stereotype.Component;
  * @since 1.12
  */
 public class ProgramFieldGenDatatypeHandler extends BaseMetadataFieldGenDatatypeHandler<ProgramDatatype, Program> {
-	
-	/**
-	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(java.lang.String)
-	 */
-	@Override
-	public void setHandlerConfiguration(String handlerConfig) {
-		// not used		
-	}
-	
-	/**
-	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getWidgetName()
-	 */
-	@Override
-	public String getWidgetName() {
-		return "org.openmrs.Program";
-	}
-	
-	/**
-	 * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getWidgetConfiguration()
-	 */
-	@Override
-	public Map<String, Object> getWidgetConfiguration() {
-		return null;
-	}
+
+    /**
+     * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(java.lang.String)
+     */
+    @Override
+    public void setHandlerConfiguration(String handlerConfig) {
+        // not used
+    }
+
+    /**
+     * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getWidgetName()
+     */
+    @Override
+    public String getWidgetName() {
+        return "org.openmrs.Program";
+    }
+
+    /**
+     * @see org.openmrs.web.attribute.handler.FieldGenDatatypeHandler#getWidgetConfiguration()
+     */
+    @Override
+    public Map<String, Object> getWidgetConfiguration() {
+        return null;
+    }
 }
