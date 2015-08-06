@@ -295,7 +295,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 			
 			// Update task that has been started
 			taskDefinition.setStarted(false);
-			saveTask(taskDefinition);
+			saveTaskDefinition(taskDefinition);
 		}
 	}
 	
