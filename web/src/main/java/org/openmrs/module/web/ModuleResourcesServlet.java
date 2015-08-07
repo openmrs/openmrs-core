@@ -97,7 +97,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		if (devDir != null) {
 			realPath = devDir.getAbsolutePath() + "/omod/target/classes/web/module/resources" + relativePath;
 		}
-				
+		
 		realPath = realPath.replace("/", File.separator);
 		
 		File f = new File(realPath);
