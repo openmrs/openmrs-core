@@ -179,6 +179,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		checkIfLocked();
 		checkIfDatatypeCanBeChanged(concept);
 		
+		// force isSet when concept has members
+		if (!concept.isSet() && (concept.getSetMembers().size() > 0)) {
+			concept.setSet(true);
+		}
+		
 		List<ConceptName> changedConceptNames = null;
 		Map<String, ConceptName> uuidClonedConceptNameMap = null;
 		
